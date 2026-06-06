@@ -25,6 +25,22 @@ initial → divergente de `main`. Intégration et réponses faites sur `claude/g
 - **Réponses de sync** : feu vert couche 1 + réponses aux 6 questions backend rédigées dans
   `INBOX_VINCENT.md`, `SYNC_THREAD_MALEX_VINCENT.md`, `INBOX_MALEX.md` (brouillons via Claude ;
   lancement backend = acte humain de Vincent).
+- **Réponses validées par Vincent (QCM)** : Q1 = champ `status` seul ; Q2 = aligner le seed
+  sur le réel ; Q3 = `user_runtime_loadout` hors V1 ; Q4 = `GET /actions/pending` suffit ;
+  Q5 = endpoints lourds plus tard (`future`) ; Q6 = **godmode étendu** (cf. ci-dessous).
+- **Sécu** : montée `vitest` `^2.1.0` → `^4.1.8` (corrige l'advisory critique vitest `<4.1.0`
+  + chaîne esbuild/vite dev-server, **dev-only**), puis `npm audit fix` non destructif →
+  **`npm audit` = 0 vulnérabilité**. Aucun `npm audit fix --force`.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| Backend `tsc --noEmit` | 0 erreur |
+| Frontend MALEX `tsc --noEmit` | 0 erreur |
+| Backend Vitest (v4.1.8) | 13/13 |
+| `npm audit` | 0 vulnérabilité |
+| Merge `codex/frontend-masterflow` | auto-merge propre, sans conflit |
 
 ### Décisions / notes
 

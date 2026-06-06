@@ -79,4 +79,6 @@ Multi-room, pipeline de correction, ComfyUI/rendu image, factories, OCR, dashboa
 
 ## État
 
-MVP backend **livré et validé** (`tsc` 0 erreur, vitest 13/13, streaming WS + invariants prouvés en run réel). Frontend MALEX (`apps/frontend`) : shell couche 1 (login + `GET /context/current`), avance par couches. PoC retiré. Détail daté dans `SUIVI.md`.
+MVP backend **livré et validé** (`tsc` 0 erreur, vitest **4.1.8** 13/13, **`npm audit` 0 vulnérabilité**, streaming WS + invariants prouvés en run réel). Frontend MALEX (`apps/frontend`) : shell couche 1 (login + `GET /context/current`), avance par couches. PoC retiré. Registre d'actions : champ `status` (`live`/`future`/`out_of_scope`) + `endpoint` alignés sur le réel.
+
+**Décisions de périmètre actées (sync MALEX/Vincent, 2026-06-06)** : `user_runtime_loadout`, validation inbox dédiée et endpoints lourds (`/da`, `/assets`, `/inventory`, `/subjects`) = **hors V1** ; backflow/factories = `out_of_scope` ; **godmode étendu** — en rôle `godmode` l'UI peut exécuter des actions et `owner_ops_private_diagnostic` est exposé, **gated rôle `godmode` uniquement** (jamais teacher/student ; Owner Ops pas encore implémenté). Détail daté dans `SUIVI.md` et `SYNC_THREAD_MALEX_VINCENT.md`.
