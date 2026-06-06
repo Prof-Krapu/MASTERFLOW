@@ -8,6 +8,8 @@ Règles de lecture :
 - traiter les entrées du haut vers le bas ;
 - une entrée peut être `open`, `answered`, `blocked` ou `done` ;
 - une réponse IA ne vaut pas validation humaine ;
+- Vincent peut transmettre ses demandes à MALEX via `INBOX_MALEX.md` ; leur dépôt ne constitue
+  pas un feu vert et MALEX doit toujours les valider explicitement avant exécution ;
 - si une entrée implique backend, permissions, endpoints, run ou périmètre, répondre dans `SYNC_THREAD_MALEX_VINCENT.md` ou par commit Git explicite.
 
 ---

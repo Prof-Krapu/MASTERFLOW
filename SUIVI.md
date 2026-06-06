@@ -31,6 +31,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   de confirmation dans `SYNC_THREAD_MALEX_VINCENT.md` (hostname MagicDNS à compléter par Vincent).
 - Branches distantes `claude/*` et `codex/*` : **conservées** (pas de suppression, sur consigne
   Vincent) ; codex porte des entrées doc à rebaser sur le `main` à jour.
+- Gouvernance inbox précisée : Vincent peut déposer des demandes dans `INBOX_MALEX.md`, mais
+  MALEX conserve la validation humaine obligatoire avant toute application ou exécution.
 
 ### Validation (état synchronisé, run réel)
 

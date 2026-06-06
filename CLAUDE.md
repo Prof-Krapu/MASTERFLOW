@@ -20,7 +20,12 @@ Avant toute reprise de travail, toute réponse de coordination ou toute modifica
 3. `INBOX_VINCENT.md`
 4. `INBOX_MALEX.md` si présent
 
-Règle : une inbox non lue = contexte incomplet. Une réponse IA n'est jamais une validation humaine. Si un message d'inbox demande une décision, résumer l'impact, proposer le patch minimal, puis attendre validation ou consigne explicite avant d'appliquer.
+Règle : une inbox non lue = contexte incomplet. Vincent peut déposer ses demandes dans
+`INBOX_MALEX.md`, mais elles restent au statut `open` et ne valent jamais autorisation. Une
+réponse IA n'est jamais une validation humaine. Codex/Claude peut analyser l'impact et proposer
+un patch minimal, mais aucune modification, exécution, permission, dépense, publication,
+déploiement ou changement de périmètre demandé par Vincent ne doit être appliqué sans validation
+humaine explicite de MALEX.
 
 ## Stack & commandes
 
