@@ -53,6 +53,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   - backend non lancé, conformément à la consigne human-in-the-loop.
 - Créé `BACKEND_INTEGRATION_MAP.md` : carte pré-code des modules, tables, endpoints réels, gates, risques et plan de PRs courtes.
 - Créé `VINCENT_BACKEND_SYNC_2026-06-06.md` : note courte à envoyer à Vincent pour clarifier les besoins backend avant frontend complet.
+- Mis en place par MALEX : un système de conversation asynchrone via Git et fichiers suivis, initialisé dans `SYNC_THREAD_MALEX_VINCENT.md`.
 - Commit + push de la branche `codex/frontend-masterflow`.
 
 ### Décisions / notes
@@ -60,6 +61,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - Les factories / bots extraits sont hors scope de cette version.
 - Le frontend complet doit avancer par couches : contrat/backend vérifié d'abord, intégration minimale ensuite, UI finale en dernier.
 - Toute retouche backend éventuelle doit passer par mapping engine / contrat / données / permissions / gates avant code.
+- Les échanges structurants MALEX / Vincent / Codex doivent être tracés dans Git quand ils impactent le run, le backend, le frontend ou les décisions de périmètre.
 
 ### Points à clarifier avec Vincent
 
