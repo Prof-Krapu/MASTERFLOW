@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * Props du composant {@link BlendCanvas}.
@@ -28,8 +28,7 @@ const DEFAULT_SECONDARY = '#39FF14';
  * Vertex shader minimal : dessine un quad plein cadre (deux triangles).
  * La position est directement en clip-space, aucune matrice n'est necessaire.
  */
-const VERTEX_SRC = `#version 100
-attribute vec2 a_position;
+const VERTEX_SRC = `attribute vec2 a_position;
 void main() {
   gl_Position = vec4(a_position, 0.0, 1.0);
 }`;
@@ -42,8 +41,7 @@ void main() {
  * les centres ET on augmente `k`, ce qui materialise la fusion (chimère).
  * Un leger mouvement organique ("creep" Zerg) est pilote par `u_time`.
  */
-const FRAGMENT_SRC = `#version 100
-precision highp float;
+const FRAGMENT_SRC = `precision mediump float;
 
 uniform vec2  u_resolution; // taille du canvas en pixels
 uniform float u_time;       // temps en secondes (0 si reduced-motion)
@@ -95,8 +93,10 @@ void main() {
   float k = mix(0.02, 0.45, u_blend);
   float d = smin(dA, dB, k);
 
-  // Masque de surface (anti-aliasing par la derivee de l'ecran).
-  float aa = fwidth(d) + 1e-4;
+  // Masque de surface. Anti-aliasing calcule depuis la resolution (1 pixel
+  // ecran = 1/min(resolution) en unites uv) — pas de dependance a fwidth()
+  // ni a l'extension OES_standard_derivatives (compile sur tout GPU WebGL1).
+  float aa = 1.5 / min(u_resolution.x, u_resolution.y);
   float mask = 1.0 - smoothstep(0.0, aa, d);
 
   // Halo doux autour de la masse (glow Zerg).
@@ -200,6 +200,9 @@ export function BlendCanvas({
 }: BlendCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Message d'erreur WebGL/shader, affiche en clair a l'ecran (diagnostic sans console).
+  const [glError, setGlError] = useState<string | null>(null);
+
   // On garde les props dans des refs pour que la boucle d'animation lise
   // toujours les dernieres valeurs sans recreer le contexte WebGL.
   const blendRef = useRef<number>(blendWeight);
@@ -222,27 +225,33 @@ export function BlendCanvas({
       return;
     }
 
+    // Repart d'un etat propre : un remontage reussi efface une erreur precedente.
+    setGlError(null);
+    canvas.style.display = 'block';
+
     const gl = canvas.getContext('webgl', { antialias: true, alpha: false });
     if (!gl) {
-      // Pas de WebGL disponible : on n'echoue pas brutalement.
+      // Pas de WebGL disponible : on degrade proprement (le fond CSS prend le relais).
       // eslint-disable-next-line no-console
-      console.warn('BlendCanvas : WebGL indisponible sur ce navigateur.');
+      console.warn('BlendCanvas : WebGL indisponible — fallback fond CSS.');
+      setGlError('WebGL indisponible (getContext a renvoye null).');
+      canvas.style.display = 'none';
       return;
     }
 
-    // L'extension OES_standard_derivatives fournit fwidth() en WebGL1.
-    const derivatives = gl.getExtension('OES_standard_derivatives');
-    if (!derivatives) {
-      // eslint-disable-next-line no-console
-      console.warn('BlendCanvas : OES_standard_derivatives indisponible, anti-aliasing degrade.');
-    }
-
+    // (Plus de dependance a OES_standard_derivatives : l'anti-aliasing est
+    // calcule depuis u_resolution dans le fragment shader.)
     let program: WebGLProgram;
     try {
       program = createProgram(gl);
     } catch (err) {
+      // Compilation/link KO (driver capricieux, GPU logiciel…) : on degrade
+      // proprement vers le fond CSS pour CE chargement (on retentera au suivant)
+      // plutot que de laisser un canvas noir/casse.
       // eslint-disable-next-line no-console
-      console.error('BlendCanvas :', err);
+      console.error('BlendCanvas : shader indisponible — fallback fond CSS.', err);
+      setGlError(err instanceof Error ? err.message : String(err));
+      canvas.style.display = 'none';
       return;
     }
     gl.useProgram(program);
@@ -382,8 +391,11 @@ export function BlendCanvas({
       applyMotionRef.current = null;
       gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
-      // Force la liberation du contexte GPU.
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      // NE PAS appeler loseContext() ici : `canvas.getContext('webgl')` renvoie
+      // toujours le MEME contexte pour ce canvas. Sous React StrictMode (dev), le
+      // composant est monte/demonte/remonte ; detruire le contexte au demontage
+      // le laisserait perdu au remontage -> compilation impossible (log vide).
+      // Le contexte est libere naturellement par le GC quand le canvas dispparait.
     };
   }, []);
 
@@ -394,11 +406,35 @@ export function BlendCanvas({
   }, [reducedMotion]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ display: 'block', width: '100%', height: '100%' }}
-      aria-hidden="true"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+        aria-hidden="true"
+      />
+      {glError ? (
+        <div
+          role="alert"
+          style={{
+            position: 'fixed',
+            top: 8,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 50,
+            maxWidth: '92vw',
+            padding: '8px 12px',
+            background: 'rgba(150, 12, 28, 0.94)',
+            color: '#fff',
+            font: '12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace',
+            borderRadius: 8,
+            whiteSpace: 'pre-wrap',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+          }}
+        >
+          {`WebGL/shader KO : ${glError}`}
+        </div>
+      ) : null}
+    </>
   );
 }
 
