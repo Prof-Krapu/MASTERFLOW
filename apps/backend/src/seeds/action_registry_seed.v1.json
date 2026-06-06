@@ -1,0 +1,113 @@
+{
+  "registry_version": "v1_seed_2026_06_03_bridge_update",
+  "actions": [
+    {
+      "action_id": "get_current_context",
+      "label": "Charger le contexte",
+      "endpoint": "GET /context/current",
+      "risk_level": "low",
+      "preflight_required": false,
+      "validation_required": false,
+      "ui_surface": "shell_context_card"
+    },
+    {
+      "action_id": "list_available_actions",
+      "label": "Voir les actions utiles",
+      "endpoint": "GET /actions/available",
+      "risk_level": "low",
+      "preflight_required": false,
+      "validation_required": false,
+      "ui_surface": "contextual_action_bar"
+    },
+    {
+      "action_id": "preflight_action",
+      "label": "Verifier avant action",
+      "endpoint": "POST /actions/preflight",
+      "risk_level": "variable",
+      "preflight_required": false,
+      "validation_required": false,
+      "ui_surface": "preflight_panel"
+    },
+    {
+      "action_id": "execute_action",
+      "label": "Executer action validee",
+      "endpoint": "POST /actions/{action_id}/execute",
+      "risk_level": "variable",
+      "preflight_required": true,
+      "validation_required": "depends_on_preflight",
+      "ui_surface": "action_result_widget"
+    },
+    {
+      "action_id": "submit_backflow_candidate",
+      "label": "Envoyer vers MasterFlow",
+      "endpoint": "POST /backflow/intake",
+      "risk_level": "medium",
+      "preflight_required": false,
+      "validation_required": true,
+      "ui_surface": "backflow_candidate_card"
+    },
+    {
+      "action_id": "approve_validation_item",
+      "label": "Valider",
+      "endpoint": "POST /validation/{item_id}/approve",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "validation_inbox"
+    },
+    {
+      "action_id": "compile_da_context",
+      "label": "Compiler la DA active",
+      "endpoint": "POST /da/compile-context",
+      "risk_level": "medium",
+      "preflight_required": true,
+      "validation_required": false,
+      "ui_surface": "da_inspector_panel"
+    },
+    {
+      "action_id": "preflight_image_action",
+      "label": "Cadrer avant generation image",
+      "endpoint": "POST /assets/image/preflight",
+      "risk_level": "high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "action_ready_image_gate"
+    },
+    {
+      "action_id": "create_render_manifest",
+      "label": "Preparer un manifest de rendu",
+      "endpoint": "POST /assets/render-manifests",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "render_manifest_card"
+    },
+    {
+      "action_id": "import_factory_backflow",
+      "label": "Importer un export factory",
+      "endpoint": "POST /backflow/intake",
+      "risk_level": "medium",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "backflow_candidate_card"
+    },
+    {
+      "action_id": "scan_inventory_photo",
+      "label": "Scanner une collection",
+      "endpoint": "POST /inventory/photo-scan",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "inventory_ocr_review_panel"
+    },
+    {
+      "action_id": "compile_subject_fullstack",
+      "label": "Compiler un sujet full stack",
+      "endpoint": "POST /subjects/{subject_id}/compile-fullstack",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "subject_compile_panel"
+    }
+  ]
+}

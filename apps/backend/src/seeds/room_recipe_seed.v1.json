@@ -1,0 +1,125 @@
+{
+  "recipe_version": "v1_seed_2026_06_03_bridge_update",
+  "zoom_levels": [
+    "overview",
+    "workspace",
+    "task",
+    "detail",
+    "debug",
+    "audit"
+  ],
+  "rooms": [
+    {
+      "room_type": "project",
+      "purpose": "Piloter un projet sans perdre le contexte.",
+      "default_widgets": [
+        "room_context_card",
+        "contextual_action_bar",
+        "last_context_widget",
+        "validation_inbox_mini"
+      ],
+      "default_actions": [
+        "reprendre",
+        "ouvrir prochaine action",
+        "exporter patch",
+        "simuler"
+      ]
+    },
+    {
+      "room_type": "visual_lab",
+      "purpose": "Compiler une DA, generer/revoir des assets et valider les sorties.",
+      "default_widgets": [
+        "asset_board",
+        "source_truth_strip",
+        "readiness_gauge",
+        "validation_inbox_mini"
+      ],
+      "default_actions": [
+        "cadrer brief",
+        "compiler DA",
+        "generer image",
+        "valider asset"
+      ]
+    },
+    {
+      "room_type": "narrative",
+      "purpose": "Lire, ecrire et auditer une histoire sans spoiler par defaut.",
+      "default_widgets": [
+        "reader_card",
+        "mode_switch",
+        "lore_card",
+        "backflow_candidate_chip"
+      ],
+      "default_actions": [
+        "continuer lecture",
+        "mode atelier",
+        "full spoilers",
+        "export patch"
+      ]
+    },
+    {
+      "room_type": "pedagogy",
+      "purpose": "Gerer sujets, ressources, classes, corrections et progression.",
+      "default_widgets": [
+        "subject_card",
+        "resource_strip",
+        "correction_queue",
+        "source_truth_strip"
+      ],
+      "default_actions": [
+        "chercher ressource",
+        "compiler sujet",
+        "corriger",
+        "voir non-rendus"
+      ]
+    },
+    {
+      "room_type": "factory",
+      "purpose": "Extraire, tester et deployer un bot autonome.",
+      "default_widgets": [
+        "factory_manifest",
+        "platform_limits",
+        "reference_board_status",
+        "test_prompt_panel"
+      ],
+      "default_actions": [
+        "build zip",
+        "tester boot",
+        "verifier limites",
+        "export backflow"
+      ]
+    },
+    {
+      "room_type": "inventory",
+      "purpose": "Scanner, valider et exploiter livres, materiel, ressources et collections.",
+      "default_widgets": [
+        "inventory_ocr_review_panel",
+        "source_truth_strip",
+        "validation_inbox_mini",
+        "collection_shelf"
+      ],
+      "default_actions": [
+        "scanner photo",
+        "valider candidats",
+        "resoudre collection",
+        "exporter inventaire"
+      ]
+    },
+    {
+      "room_type": "da_system",
+      "purpose": "Piloter DA root, canons, filtres, layers, themes, refs et providers.",
+      "default_widgets": [
+        "da_inspector_panel",
+        "reference_board_status",
+        "source_truth_strip",
+        "validation_inbox_mini"
+      ],
+      "default_actions": [
+        "compiler DA",
+        "creer filtre",
+        "valider canon",
+        "preparer manifest image"
+      ]
+    }
+  ]
+}

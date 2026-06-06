@@ -1,0 +1,150 @@
+{
+  "inventory_version": "v1_seed_2026_06_03_bridge_update",
+  "source_pack": "11_DEPLOYMENT/UI_BACKEND_ROADMAP_V1",
+  "principle": "show user actions, not engine names",
+  "capabilities": [
+    {
+      "feature_id": "room_context_card",
+      "label": "Comprendre cette room",
+      "type": "widget",
+      "owner": "UI_CONTEXTUELLE",
+      "description_short": "Explique ou l'utilisateur se trouve, a quoi sert la room, et quelles actions sont utiles.",
+      "activation_mode": "automatic",
+      "required_permissions": [
+        "room_read"
+      ],
+      "default_visibility": "visible",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "contextual_action_bar",
+      "label": "Actions utiles maintenant",
+      "type": "widget",
+      "owner": "ACTION_ROUTER",
+      "description_short": "Affiche 1 a 4 actions contextualisees avec fallback commande.",
+      "activation_mode": "automatic",
+      "required_permissions": [
+        "context_read"
+      ],
+      "default_visibility": "visible",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "runtime_control_panel",
+      "label": "Cockpit runtime",
+      "type": "widget",
+      "owner": "ROOM_RUNTIME",
+      "description_short": "Montre contexte, jauge, validations, jobs, backflow et source truth.",
+      "activation_mode": "contextual",
+      "required_permissions": [
+        "room_read"
+      ],
+      "default_visibility": "compact",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "validation_inbox",
+      "label": "Valider les actions sensibles",
+      "type": "workflow",
+      "owner": "VALIDATION_ENGINE",
+      "description_short": "Centralise les validations de canon, export, render, publication, feedback final.",
+      "activation_mode": "validation_required",
+      "required_permissions": [
+        "validation_read"
+      ],
+      "default_visibility": "contextual",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "backflow_inbox",
+      "label": "Reabsorber les bonnes idees",
+      "type": "workflow",
+      "owner": "CONVERSATION_HARVEST",
+      "description_short": "Capture les idees reutilisables issues des conversations et factories.",
+      "activation_mode": "contextual",
+      "required_permissions": [
+        "backflow_read"
+      ],
+      "default_visibility": "chip_when_detected",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "source_truth_strip",
+      "label": "Verifier les sources",
+      "type": "widget",
+      "owner": "SOURCE_TRUTH",
+      "description_short": "Affiche si la sortie vient du canon, de la BDD, d'une ressource, d'un upload ou d'une inference.",
+      "activation_mode": "contextual",
+      "required_permissions": [
+        "source_read"
+      ],
+      "default_visibility": "visible_on_outputs",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "factory_extractor",
+      "label": "Extraire un bot autonome",
+      "type": "workflow",
+      "owner": "FACTORY_RUNTIME",
+      "description_short": "Compile une factory par plateforme avec instructions, knowledge, refs, zip et rapport.",
+      "activation_mode": "manual",
+      "required_permissions": [
+        "factory_build"
+      ],
+      "default_visibility": "admin_or_creator",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "da_inspector_panel",
+      "label": "Inspecter la DA compilee",
+      "type": "widget",
+      "owner": "DA_COMPONENT_ORCHESTRATOR",
+      "description_short": "Montre DA root, canons, filtres, layers, themes, outputs, refs et manques.",
+      "activation_mode": "visual_or_asset_context",
+      "required_permissions": [
+        "source_read"
+      ],
+      "default_visibility": "contextual",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "action_ready_image_gate",
+      "label": "Valider avant image",
+      "type": "workflow",
+      "owner": "ACTION_READY_GATE",
+      "description_short": "Bloque generation image tant que le brief et la validation consciente ne sont pas clairs.",
+      "activation_mode": "image_generation_intent",
+      "required_permissions": [
+        "asset_generate"
+      ],
+      "default_visibility": "required_when_active",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "inventory_ocr_review_panel",
+      "label": "Scanner une bibliotheque ou un inventaire",
+      "type": "workflow",
+      "owner": "INVENTORY_ENGINE",
+      "description_short": "Photo/OCR -> candidats -> validation ownership/wishlist/collection -> inventaire.",
+      "activation_mode": "inventory_context",
+      "required_permissions": [
+        "inventory_write"
+      ],
+      "default_visibility": "manual_or_detected",
+      "status": "active_candidate"
+    },
+    {
+      "feature_id": "reader_mode_gate",
+      "label": "Lire sans spoiler",
+      "type": "workflow",
+      "owner": "MASTERSTORY_ENGINE",
+      "description_short": "Separe ordre lecteur, ordre auteur, canon et contradictions.",
+      "activation_mode": "narrative_context",
+      "required_permissions": [
+        "story_read"
+      ],
+      "default_visibility": "visible_in_story_rooms",
+      "status": "active_candidate"
+    }
+  ]
+}
