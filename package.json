@@ -6,15 +6,17 @@
   "description": "MasterFlow — OS pédagogique à personas fusionnables (client MALEX). Monorepo backend-first.",
   "workspaces": [
     "apps/backend",
-    "packages/shared",
-    "packages/poc-frontend"
+    "apps/frontend",
+    "packages/shared"
   ],
   "scripts": {
     "dev": "npm run dev --workspace apps/backend",
     "dev:backend": "npm run dev --workspace apps/backend",
-    "dev:poc": "npm run dev --workspace @masterflow/poc-frontend",
+    "dev:frontend": "npm run dev --workspace @masterflow/frontend",
     "seed": "npm run seed --workspace apps/backend",
     "test": "npm run test --workspace apps/backend",
-    "lint": "npm run lint --workspace apps/backend"
+    "lint": "npm run lint --workspace apps/backend",
+    "lint:frontend": "npm run lint --workspace @masterflow/frontend",
+    "build:frontend": "npm run build --workspace @masterflow/frontend"
   }
 }

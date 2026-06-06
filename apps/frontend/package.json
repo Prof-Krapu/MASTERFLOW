@@ -1,5 +1,5 @@
 {
-  "name": "@masterflow/poc-frontend",
+  "name": "@masterflow/frontend",
   "private": true,
   "type": "module",
   "version": "0.1.0",
@@ -10,15 +10,15 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@masterflow/shared": "*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@masterflow/shared": "*"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.0",
-    "vite": "^6.0.0",
-    "typescript": "~5.8.2",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.0.0"
   }
 }

@@ -4,6 +4,108 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-06 — Intégration MALEX : réconciliation, alignement seed, réponses de sync
+
+**Contexte.** MALEX a poussé `codex/frontend-masterflow` (6 commits) : workspace `apps/frontend`,
+carte d'intégration, protocole d'inbox/sync, modif `CLAUDE.md`. Branche basée sur le commit
+initial → divergente de `main`. Intégration et réponses faites sur `claude/gitlab-audit-suivi-6PjDS`.
+
+### Fait
+
+- **Réconciliation** : merge de `origin/codex/frontend-masterflow` (auto-merge propre, aucun
+  marqueur de conflit ; `SUIVI.md` et `CLAUDE.md` fusionnés sans perte).
+- **PoC retiré** (décision Vincent : frontend prioritaire à MALEX). Suppression de
+  `packages/poc-frontend`, retrait du workspace + script `dev:poc`, nettoyage `CLAUDE.md`/`README.md`.
+  `apps/frontend` (MALEX) devient le **seul** frontend.
+- **Alignement seed ↔ endpoints réels** (question MALEX #2) : `preflight_action` →
+  `POST /actions/{action_id}/preflight`, `approve_validation_item` → `POST /actions/{action_id}/validate`.
+- **Flag de capacité** (question MALEX #1) : champ `status` (`live`/`future`/`out_of_scope`)
+  ajouté à `ActionRegistryEntrySchema` (`packages/shared`) + tagué dans le seed. L'UI sait quoi
+  afficher comme fonctionnel / verrouillé / masqué. Default prudent `future`.
+- **Réponses de sync** : feu vert couche 1 + réponses aux 6 questions backend rédigées dans
+  `INBOX_VINCENT.md`, `SYNC_THREAD_MALEX_VINCENT.md`, `INBOX_MALEX.md` (brouillons via Claude ;
+  lancement backend = acte humain de Vincent).
+
+### Décisions / notes
+
+- `user_runtime_loadout`, validation inbox dédiée, endpoints `/da` `/assets` `/inventory`
+  `/subjects` : **hors V1** (anti-scope). Backflow/factories : `out_of_scope`.
+- godmode debug drawer lecture seule OK côté UI ; `owner_ops_private_diagnostic` jamais exposé.
+- Le contrat REST réel reste l'autorité ; on aligne les métadonnées descriptives du seed dessus.
+
+---
+
+## 2026-06-06 — Frontend couche 1 : shell MALEX minimal
+
+**Périmètre :** création du vrai workspace frontend MALEX, sans backend delta, sans lancement du backend, sans UI finale.
+
+### Construit
+
+- Ajout de `apps/frontend` comme workspace npm.
+- Ajout des scripts root :
+  - `dev:frontend` ;
+  - `lint:frontend` ;
+  - `build:frontend`.
+- Frontend React/Vite/TypeScript minimal :
+  - écran login ;
+  - client REST typé vers `/api/v1` ;
+  - stockage du token en mémoire ;
+  - appel `GET /context/current` ;
+  - affichage sobre du user, rôle, room, surface active et nombre d'actions disponibles.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| Frontend `tsc --noEmit` | 0 erreur |
+| Frontend `vite build` | OK · 30 modules / 198 KB JS |
+| Backend Vitest | 13/13 |
+| Backend `tsc --noEmit` | 0 erreur |
+
+### Décisions / notes
+
+- Cette couche prouve l'intégration workspace + contrat REST sans présumer des endpoints futurs.
+- Aucun backend lancé et aucune modification backend.
+- Les widgets chat, personas, actions, validation inbox et ressources seront ajoutés un par un.
+
+---
+
+## 2026-06-06 — Sync MALEX/Codex : baseline + carte d'intégration
+
+**Périmètre :** reprise côté MALEX sur la branche `codex/frontend-masterflow`, sans modification backend ni lancement du serveur.
+
+### Fait
+
+- Relu `CLAUDE.md` et `SUIVI.md` avant action.
+- Installé les dépendances du repo.
+- Vérifié la baseline locale :
+  - `npm test` OK : 13/13 ;
+  - `npm run lint` OK ;
+  - backend non lancé, conformément à la consigne human-in-the-loop.
+- Créé `BACKEND_INTEGRATION_MAP.md` : carte pré-code des modules, tables, endpoints réels, gates, risques et plan de PRs courtes.
+- Créé `VINCENT_BACKEND_SYNC_2026-06-06.md` : note courte à envoyer à Vincent pour clarifier les besoins backend avant frontend complet.
+- Mis en place par MALEX : un système de conversation asynchrone via Git et fichiers suivis, initialisé dans `SYNC_THREAD_MALEX_VINCENT.md`.
+- Ajout du protocole inbox systématique pour Vincent/MALEX : `CLAUDE.md`, `INBOX_VINCENT.md`, `INBOX_MALEX.md` et `SYNC_THREAD_MALEX_VINCENT.md`.
+- Commit + push de la branche `codex/frontend-masterflow`.
+
+### Décisions / notes
+
+- Les factories / bots extraits sont hors scope de cette version.
+- Le frontend complet doit avancer par couches : contrat/backend vérifié d'abord, intégration minimale ensuite, UI finale en dernier.
+- Toute retouche backend éventuelle doit passer par mapping engine / contrat / données / permissions / gates avant code.
+- Les échanges structurants MALEX / Vincent / Codex doivent être tracés dans Git quand ils impactent le run, le backend, le frontend ou les décisions de périmètre.
+- Règle opérationnelle : avant toute reprise ou action structurante, checker `SUIVI.md`, `SYNC_THREAD_MALEX_VINCENT.md`, puis l'inbox dédiée.
+
+### Points à clarifier avec Vincent
+
+- Alignement entre le seed d'actions et les endpoints réellement exposés.
+- Existence souhaitée d'un `capabilities` endpoint ou de champs `implemented/status/locked/ui_enabled`.
+- Forme minimale éventuelle de `user_runtime_loadout`.
+- Suffisance de `GET /actions/pending` comme validation inbox V1.
+- Frontière exacte entre `godmode` visible dans l'UI et diagnostics privés Owner Ops.
+
+---
+
 ## 2026-06-06 — MVP backend + PoC : livrés et validés
 
 **Périmètre :** backend (livrable principal) + PoC frontend de démonstration. Le frontend complet reste à MALEX.

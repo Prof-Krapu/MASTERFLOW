@@ -6,19 +6,30 @@ Les **spécifications** vivent ailleurs : `~/Documents/MALEXSIMPLE/` (corpus con
 ## Nature & frontière de travail
 
 MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), client **MALEX**.
-- **Backend + PoC front = nous** (livrable principal).
-- **Frontend complet = MALEX** : ne pas le construire. Le contrat qu'il consomme est `packages/shared` ; le PoC sert d'exemple d'intégration vivant.
+- **Backend = nous** (livrable principal).
+- **Frontend = MALEX**, dans `apps/frontend` (workspace npm). Ne pas le construire à leur place ; on garantit le contrat qu'il consomme (`packages/shared`). *(Le PoC `packages/poc-frontend` a été retiré : le frontend revient en priorité à MALEX — cf. SUIVI.)*
 - Langue de travail : **français** (JSDoc et termes métier en français : *room*, *persona*, *blend/chimère*, *preflight*, *validation inbox*, *canon*).
 - **Pas obligé de suivre les .md à la lettre** : si une spec est infaisable/incohérente, être agile et le signaler — mais ne jamais violer les invariants ci-dessous.
 
+## Sync MALEX / Vincent / Codex
+
+Avant toute reprise de travail, toute réponse de coordination ou toute modification qui touche backend, frontend, run local, permissions, endpoints, actions ou périmètre, vérifier systématiquement :
+
+1. `SUIVI.md`
+2. `SYNC_THREAD_MALEX_VINCENT.md`
+3. `INBOX_VINCENT.md`
+4. `INBOX_MALEX.md` si présent
+
+Règle : une inbox non lue = contexte incomplet. Une réponse IA n'est jamais une validation humaine. Si un message d'inbox demande une décision, résumer l'impact, proposer le patch minimal, puis attendre validation ou consigne explicite avant d'appliquer.
+
 ## Stack & commandes
 
-TypeScript ESM (exécuté par **tsx**, pas de build backend). Express 4 + better-sqlite3 + `ws` + JWT (`jsonwebtoken`/`bcryptjs`) + Zod. PoC : React 19 + Vite 6 + WebGL brut.
+TypeScript ESM (exécuté par **tsx**, pas de build backend). Express 4 + better-sqlite3 + `ws` + JWT (`jsonwebtoken`/`bcryptjs`) + Zod. Frontend MALEX (`apps/frontend`) : React 19 + Vite 6.
 
 ```bash
 npm install
 npm run dev            # backend → http://localhost:8000  (seed: vincent / masterflow, role godmode)
-npm run dev:poc        # PoC     → http://localhost:5173
+npm run dev:frontend   # frontend MALEX → http://localhost:5173
 npm test               # vitest (apps/backend) — 13 tests
 npm run lint           # tsc --noEmit (backend)
 npm run seed           # re-seed idempotent
@@ -39,7 +50,7 @@ LLM en mode `mock` par défaut (aucune clé). Provider réel via `apps/backend/.
 | `routers/*` | Transport HTTP : valident les bodies (Zod partagé) et délèguent aux engines. Exportent `createXxxRouter()`. |
 | `routers/ws/chat.ts` | `attachChatWs(server)` — auth à l'upgrade (token en query), streaming `chat_start→chat_chunk→chat_end`. |
 | `middleware/auth.ts` | `signToken`/`verifyToken`/`requireUser`/`requireRole(min)`, type `AuthUser`. |
-| `seeds/*.json` | **Source de vérité** du registre d'actions (`action_id`, `risk_level`, `validation_required`, `ui_surface`). |
+| `seeds/*.json` | **Source de vérité** du registre d'actions (`action_id`, `endpoint`, `risk_level`, `validation_required`, `ui_surface`, `status`). `status` ∈ `live`/`future`/`out_of_scope` : dit à l'UI quoi afficher comme fonctionnel, verrouillé ou masqué. |
 
 Montage (`index.ts`) : `auth`/`context`/`rooms`/`resources` sous leur sous-chemin ; `personas` et `actions` **auto-préfixés** (montés à la racine `/api/v1`).
 
@@ -68,4 +79,4 @@ Multi-room, pipeline de correction, ComfyUI/rendu image, factories, OCR, dashboa
 
 ## État
 
-MVP backend + PoC **livrés et validés** (`tsc` 0 erreur, vitest 13/13, `vite build` OK, streaming WS + invariants prouvés en run réel). Détail daté dans `SUIVI.md`.
+MVP backend **livré et validé** (`tsc` 0 erreur, vitest 13/13, streaming WS + invariants prouvés en run réel). Frontend MALEX (`apps/frontend`) : shell couche 1 (login + `GET /context/current`), avance par couches. PoC retiré. Détail daté dans `SUIVI.md`.

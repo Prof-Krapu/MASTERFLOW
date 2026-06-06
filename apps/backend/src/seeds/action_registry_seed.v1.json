@@ -1,5 +1,5 @@
 {
-  "registry_version": "v1_seed_2026_06_03_bridge_update",
+  "registry_version": "v1_seed_2026_06_06_endpoint_align",
   "actions": [
     {
       "action_id": "get_current_context",
@@ -8,7 +8,8 @@
       "risk_level": "low",
       "preflight_required": false,
       "validation_required": false,
-      "ui_surface": "shell_context_card"
+      "ui_surface": "shell_context_card",
+      "status": "live"
     },
     {
       "action_id": "list_available_actions",
@@ -17,16 +18,18 @@
       "risk_level": "low",
       "preflight_required": false,
       "validation_required": false,
-      "ui_surface": "contextual_action_bar"
+      "ui_surface": "contextual_action_bar",
+      "status": "live"
     },
     {
       "action_id": "preflight_action",
       "label": "Verifier avant action",
-      "endpoint": "POST /actions/preflight",
+      "endpoint": "POST /actions/{action_id}/preflight",
       "risk_level": "variable",
       "preflight_required": false,
       "validation_required": false,
-      "ui_surface": "preflight_panel"
+      "ui_surface": "preflight_panel",
+      "status": "live"
     },
     {
       "action_id": "execute_action",
@@ -35,7 +38,18 @@
       "risk_level": "variable",
       "preflight_required": true,
       "validation_required": "depends_on_preflight",
-      "ui_surface": "action_result_widget"
+      "ui_surface": "action_result_widget",
+      "status": "live"
+    },
+    {
+      "action_id": "approve_validation_item",
+      "label": "Valider",
+      "endpoint": "POST /actions/{action_id}/validate",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "validation_inbox",
+      "status": "live"
     },
     {
       "action_id": "submit_backflow_candidate",
@@ -44,43 +58,8 @@
       "risk_level": "medium",
       "preflight_required": false,
       "validation_required": true,
-      "ui_surface": "backflow_candidate_card"
-    },
-    {
-      "action_id": "approve_validation_item",
-      "label": "Valider",
-      "endpoint": "POST /validation/{item_id}/approve",
-      "risk_level": "medium_high",
-      "preflight_required": true,
-      "validation_required": true,
-      "ui_surface": "validation_inbox"
-    },
-    {
-      "action_id": "compile_da_context",
-      "label": "Compiler la DA active",
-      "endpoint": "POST /da/compile-context",
-      "risk_level": "medium",
-      "preflight_required": true,
-      "validation_required": false,
-      "ui_surface": "da_inspector_panel"
-    },
-    {
-      "action_id": "preflight_image_action",
-      "label": "Cadrer avant generation image",
-      "endpoint": "POST /assets/image/preflight",
-      "risk_level": "high",
-      "preflight_required": true,
-      "validation_required": true,
-      "ui_surface": "action_ready_image_gate"
-    },
-    {
-      "action_id": "create_render_manifest",
-      "label": "Preparer un manifest de rendu",
-      "endpoint": "POST /assets/render-manifests",
-      "risk_level": "medium_high",
-      "preflight_required": true,
-      "validation_required": true,
-      "ui_surface": "render_manifest_card"
+      "ui_surface": "backflow_candidate_card",
+      "status": "out_of_scope"
     },
     {
       "action_id": "import_factory_backflow",
@@ -89,7 +68,38 @@
       "risk_level": "medium",
       "preflight_required": true,
       "validation_required": true,
-      "ui_surface": "backflow_candidate_card"
+      "ui_surface": "backflow_candidate_card",
+      "status": "out_of_scope"
+    },
+    {
+      "action_id": "compile_da_context",
+      "label": "Compiler la DA active",
+      "endpoint": "POST /da/compile-context",
+      "risk_level": "medium",
+      "preflight_required": true,
+      "validation_required": false,
+      "ui_surface": "da_inspector_panel",
+      "status": "future"
+    },
+    {
+      "action_id": "preflight_image_action",
+      "label": "Cadrer avant generation image",
+      "endpoint": "POST /assets/image/preflight",
+      "risk_level": "high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "action_ready_image_gate",
+      "status": "future"
+    },
+    {
+      "action_id": "create_render_manifest",
+      "label": "Preparer un manifest de rendu",
+      "endpoint": "POST /assets/render-manifests",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "ui_surface": "render_manifest_card",
+      "status": "future"
     },
     {
       "action_id": "scan_inventory_photo",
@@ -98,7 +108,8 @@
       "risk_level": "medium_high",
       "preflight_required": true,
       "validation_required": true,
-      "ui_surface": "inventory_ocr_review_panel"
+      "ui_surface": "inventory_ocr_review_panel",
+      "status": "future"
     },
     {
       "action_id": "compile_subject_fullstack",
@@ -107,7 +118,8 @@
       "risk_level": "medium_high",
       "preflight_required": true,
       "validation_required": true,
-      "ui_surface": "subject_compile_panel"
+      "ui_surface": "subject_compile_panel",
+      "status": "future"
     }
   ]
 }

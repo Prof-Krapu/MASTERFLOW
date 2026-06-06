@@ -203,6 +203,16 @@ export const ActionSchema = z.object({
 });
 export type Action = z.infer<typeof ActionSchema>;
 
+/**
+ * Statut d'implémentation d'une action, pour que l'UI sache quoi afficher :
+ * - `live` : endpoint réellement branché et fonctionnel ;
+ * - `future` : prévu plus tard (à afficher verrouillé / « à venir », jamais comme fonctionnel) ;
+ * - `out_of_scope` : hors périmètre de cette version (à masquer côté UI).
+ * Défaut prudent : `future` (une action non taguée n'est jamais présentée comme fonctionnelle).
+ */
+export const RegistryStatusSchema = z.enum(['live', 'future', 'out_of_scope']);
+export type RegistryStatus = z.infer<typeof RegistryStatusSchema>;
+
 /** Entrée du registre d'actions (chargé depuis action_registry_seed.v1.json). */
 export const ActionRegistryEntrySchema = z.object({
   action_id: z.string(),
@@ -212,6 +222,7 @@ export const ActionRegistryEntrySchema = z.object({
   preflight_required: z.boolean(),
   validation_required: z.union([z.boolean(), z.literal('depends_on_preflight')]),
   ui_surface: z.string(),
+  status: RegistryStatusSchema.default('future'),
 });
 export type ActionRegistryEntry = z.infer<typeof ActionRegistryEntrySchema>;
 

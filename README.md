@@ -3,13 +3,13 @@
 **OS pédagogique à personas IA fusionnables** (« chimères »). Client : MALEX. Backend : Vincent.
 
 Monorepo **backend-first**. Le backend est l'autorité d'action ; le LLM propose, ne décide jamais.
-Stack : TypeScript/Node + Express + better-sqlite3 + Zod (backend) ; React 19 + Vite (PoC front).
+Stack : TypeScript/Node + Express + better-sqlite3 + Zod (backend) ; React 19 + Vite (frontend MALEX).
 
 ## Répartition
 
 - `apps/backend` — **livrable principal** : API REST + WebSocket, schéma, auth JWT, action router + validation inbox, persona engine + blend, registre de ressources anti-hallucination, audit.
 - `packages/shared` — **contrat** typé (Zod) consommé par le frontend MALEX.
-- `packages/poc-frontend` — preuve de concept (creep shader + métaballs de fusion + harness d'intégration). Le front complet est construit par MALEX.
+- `apps/frontend` — **frontend MALEX** : construit et porté par MALEX (le PoC initial a été retiré ; le frontend revient en priorité à MALEX).
 
 ## Invariants non négociables (cf. specs MALEXSIMPLE)
 
