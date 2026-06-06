@@ -94,9 +94,12 @@ Réponses aux 6 points de `VINCENT_BACKEND_SYNC_2026-06-06.md` :
    *plus tard.* Non implémentés au MVP ; marqués `status: future` dans le registre → affiche-les
    **verrouillés**, jamais comme fonctionnels.
 
-6. **godmode vs owner_ops** — debug drawer **`godmode`** OK dans l'UI, **lecture seule**
-   (diagnostic non destructif). **`owner_ops_private_diagnostic` reste privé/propriétaire** :
-   jamais exposé au frontend, même en godmode. Frontière = pas d'Owner Ops dans l'UI.
+6. **godmode vs owner_ops** — **godmode étendu** : en rôle `godmode`, l'UI peut **exécuter
+   des actions** (pas seulement lire) **et** `owner_ops_private_diagnostic` est **exposé**.
+   ⚠️ Décision assumée : ça **lève le cloisonnement strict Owner Ops** de la première carte
+   d'intégration. **Garde-fou impératif** : tout ça est **gated rôle `godmode` uniquement** —
+   rien de ces surfaces ne doit jamais apparaître pour teacher/student. (Owner Ops n'est pas
+   encore implémenté côté backend : à brancher derrière ce gate godmode le moment venu.)
 
 Backflow / factories : **hors scope**, confirmé des deux côtés (taggé `out_of_scope`).
 

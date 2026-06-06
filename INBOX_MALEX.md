@@ -40,7 +40,9 @@ De Vincent, suite à tes 6 questions :
 - **`user_runtime_loadout`** : hors V1, dériver les actions du registre + contexte.
 - **Validation inbox** : `GET /actions/pending` (teacher+) suffit en V1.
 - **Endpoints lourds** (`/da`, `/assets`, `/inventory`, `/subjects`) : `future`, verrouillés.
-- **Permissions** : debug drawer `godmode` lecture seule OK ; `owner_ops_private_diagnostic`
-  jamais exposé au frontend.
+- **Permissions** : **godmode étendu** — en rôle godmode, l'UI peut exécuter des actions ET
+  `owner_ops_private_diagnostic` est exposé. **Gated rôle godmode uniquement**, jamais pour
+  teacher/student. (Lève le cloisonnement strict Owner Ops de la première carte ; Owner Ops
+  pas encore implémenté backend.)
 - **Frontend** : `apps/frontend` est désormais le seul frontend (PoC `packages/poc-frontend`
   retiré). Il revient en priorité à MALEX.

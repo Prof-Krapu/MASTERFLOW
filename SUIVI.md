@@ -30,7 +30,9 @@ initial → divergente de `main`. Intégration et réponses faites sur `claude/g
 
 - `user_runtime_loadout`, validation inbox dédiée, endpoints `/da` `/assets` `/inventory`
   `/subjects` : **hors V1** (anti-scope). Backflow/factories : `out_of_scope`.
-- godmode debug drawer lecture seule OK côté UI ; `owner_ops_private_diagnostic` jamais exposé.
+- **godmode étendu** (décision Vincent, QCM) : en rôle godmode l'UI peut exécuter des actions
+  **et** `owner_ops_private_diagnostic` est exposé — gated rôle godmode uniquement (jamais
+  teacher/student). Lève le cloisonnement strict Owner Ops de la 1re carte d'intégration.
 - Le contrat REST réel reste l'autorité ; on aligne les métadonnées descriptives du seed dessus.
 
 ---
