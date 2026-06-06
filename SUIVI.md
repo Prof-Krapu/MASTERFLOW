@@ -4,6 +4,38 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-06 — Sync MALEX/Codex : baseline + carte d'intégration
+
+**Périmètre :** reprise côté MALEX sur la branche `codex/frontend-masterflow`, sans modification backend ni lancement du serveur.
+
+### Fait
+
+- Relu `CLAUDE.md` et `SUIVI.md` avant action.
+- Installé les dépendances du repo.
+- Vérifié la baseline locale :
+  - `npm test` OK : 13/13 ;
+  - `npm run lint` OK ;
+  - backend non lancé, conformément à la consigne human-in-the-loop.
+- Créé `BACKEND_INTEGRATION_MAP.md` : carte pré-code des modules, tables, endpoints réels, gates, risques et plan de PRs courtes.
+- Créé `VINCENT_BACKEND_SYNC_2026-06-06.md` : note courte à envoyer à Vincent pour clarifier les besoins backend avant frontend complet.
+- Commit + push de la branche `codex/frontend-masterflow`.
+
+### Décisions / notes
+
+- Les factories / bots extraits sont hors scope de cette version.
+- Le frontend complet doit avancer par couches : contrat/backend vérifié d'abord, intégration minimale ensuite, UI finale en dernier.
+- Toute retouche backend éventuelle doit passer par mapping engine / contrat / données / permissions / gates avant code.
+
+### Points à clarifier avec Vincent
+
+- Alignement entre le seed d'actions et les endpoints réellement exposés.
+- Existence souhaitée d'un `capabilities` endpoint ou de champs `implemented/status/locked/ui_enabled`.
+- Forme minimale éventuelle de `user_runtime_loadout`.
+- Suffisance de `GET /actions/pending` comme validation inbox V1.
+- Frontière exacte entre `godmode` visible dans l'UI et diagnostics privés Owner Ops.
+
+---
+
 ## 2026-06-06 — MVP backend + PoC : livrés et validés
 
 **Périmètre :** backend (livrable principal) + PoC frontend de démonstration. Le frontend complet reste à MALEX.
