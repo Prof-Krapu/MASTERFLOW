@@ -11,6 +11,17 @@ MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), clie
 - Langue de travail : **français** (JSDoc et termes métier en français : *room*, *persona*, *blend/chimère*, *preflight*, *validation inbox*, *canon*).
 - **Pas obligé de suivre les .md à la lettre** : si une spec est infaisable/incohérente, être agile et le signaler — mais ne jamais violer les invariants ci-dessous.
 
+## Sync MALEX / Vincent / Codex
+
+Avant toute reprise de travail, toute réponse de coordination ou toute modification qui touche backend, frontend, run local, permissions, endpoints, actions ou périmètre, vérifier systématiquement :
+
+1. `SUIVI.md`
+2. `SYNC_THREAD_MALEX_VINCENT.md`
+3. `INBOX_VINCENT.md`
+4. `INBOX_MALEX.md` si présent
+
+Règle : une inbox non lue = contexte incomplet. Une réponse IA n'est jamais une validation humaine. Si un message d'inbox demande une décision, résumer l'impact, proposer le patch minimal, puis attendre validation ou consigne explicite avant d'appliquer.
+
 ## Stack & commandes
 
 TypeScript ESM (exécuté par **tsx**, pas de build backend). Express 4 + better-sqlite3 + `ws` + JWT (`jsonwebtoken`/`bcryptjs`) + Zod. PoC : React 19 + Vite 6 + WebGL brut.

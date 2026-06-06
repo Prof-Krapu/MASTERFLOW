@@ -9,6 +9,17 @@ Règles :
 - une réponse IA n'est pas une validation humaine ;
 - les demandes backend doivent préciser le périmètre exact du run ou de la modification ;
 - les factories / bots extraits sont hors scope de cette version.
+- avant toute reprise ou action structurante, chaque système doit checker `SUIVI.md`, ce fil, puis son inbox dédiée ;
+- inbox Vincent : `INBOX_VINCENT.md` ;
+- inbox MALEX/Codex : `INBOX_MALEX.md` si présent.
+
+Règle inbox :
+
+```txt
+inbox non lue = contexte incomplet
+message IA != validation humaine
+demande structurante -> résumé impact -> patch minimal -> validation/consigne
+```
 
 ---
 
