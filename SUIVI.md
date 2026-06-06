@@ -4,6 +4,41 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-06 — Frontend couche 1 : shell MALEX minimal
+
+**Périmètre :** création du vrai workspace frontend MALEX, sans backend delta, sans lancement du backend, sans UI finale.
+
+### Construit
+
+- Ajout de `apps/frontend` comme workspace npm.
+- Ajout des scripts root :
+  - `dev:frontend` ;
+  - `lint:frontend` ;
+  - `build:frontend`.
+- Frontend React/Vite/TypeScript minimal :
+  - écran login ;
+  - client REST typé vers `/api/v1` ;
+  - stockage du token en mémoire ;
+  - appel `GET /context/current` ;
+  - affichage sobre du user, rôle, room, surface active et nombre d'actions disponibles.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| Frontend `tsc --noEmit` | 0 erreur |
+| Frontend `vite build` | OK · 30 modules / 198 KB JS |
+| Backend Vitest | 13/13 |
+| Backend `tsc --noEmit` | 0 erreur |
+
+### Décisions / notes
+
+- Cette couche prouve l'intégration workspace + contrat REST sans présumer des endpoints futurs.
+- Aucun backend lancé et aucune modification backend.
+- Les widgets chat, personas, actions, validation inbox et ressources seront ajoutés un par un.
+
+---
+
 ## 2026-06-06 — Sync MALEX/Codex : baseline + carte d'intégration
 
 **Périmètre :** reprise côté MALEX sur la branche `codex/frontend-masterflow`, sans modification backend ni lancement du serveur.
