@@ -4,11 +4,14 @@ Statut : pré-code / coordination MALEX-Vincent
 Branche : `codex/frontend-masterflow`  
 Date : 2026-06-06
 
-> **Mise à jour 2026-06-06 (décision Vincent, QCM).** La règle « cloisonnement strict
-> propriétaire » d'Owner Ops (§5, §7, §9) est **levée au profit du godmode** : en rôle
-> `godmode`, l'UI peut exécuter des actions ET `owner_ops_private_diagnostic` est exposé —
-> **gated rôle `godmode` uniquement**, jamais teacher/student. Owner Ops n'est pas encore
-> implémenté backend. Décisions complètes dans `SYNC_THREAD_MALEX_VINCENT.md`.
+> **Mise à jour 2026-06-07 (validation humaine Vincent — annule la note QCM « godmode étendu »
+> du 2026-06-06).** La règle **« cloisonnement strict propriétaire » d'Owner Ops (§5, §7, §9)
+> est MAINTENUE** : `owner_ops_private_diagnostic` reste privé/propriétaire, **jamais exposé
+> dans l'UI, même en rôle `godmode`**. `godmode` = surface console/diagnostic (lecture) qui
+> **ne court-circuite pas** la validation (`teacher+`) ; rien de ces surfaces pour
+> teacher/student. Owner Ops n'est pas implémenté backend ; le jour venu, derrière un **canal
+> propriétaire hors UI standard**. Décision complète dans `SYNC_THREAD_MALEX_VINCENT.md`
+> (entrée 2026-06-07).
 
 ## 1. Règle de source
 

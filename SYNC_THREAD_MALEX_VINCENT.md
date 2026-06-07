@@ -94,14 +94,48 @@ Réponses aux 6 points de `VINCENT_BACKEND_SYNC_2026-06-06.md` :
    *plus tard.* Non implémentés au MVP ; marqués `status: future` dans le registre → affiche-les
    **verrouillés**, jamais comme fonctionnels.
 
-6. **godmode vs owner_ops** — **godmode étendu** : en rôle `godmode`, l'UI peut **exécuter
-   des actions** (pas seulement lire) **et** `owner_ops_private_diagnostic` est **exposé**.
-   ⚠️ Décision assumée : ça **lève le cloisonnement strict Owner Ops** de la première carte
-   d'intégration. **Garde-fou impératif** : tout ça est **gated rôle `godmode` uniquement** —
-   rien de ces surfaces ne doit jamais apparaître pour teacher/student. (Owner Ops n'est pas
-   encore implémenté côté backend : à brancher derrière ce gate godmode le moment venu.)
+6. **godmode vs owner_ops** — ⚠️ **[RÉPONSE ANNULÉE le 2026-06-07 — brouillon IA. Décision
+   humaine retenue : *Owner Ops strict*, voir l'entrée « Correction humaine Q6 » en bas du fil.]**
+   ~~**godmode étendu** : en rôle `godmode`, l'UI peut **exécuter des actions** (pas seulement
+   lire) **et** `owner_ops_private_diagnostic` est **exposé**. Décision assumée : ça lève le
+   cloisonnement strict Owner Ops de la première carte d'intégration. Garde-fou : gated rôle
+   `godmode` uniquement — jamais teacher/student.~~
 
 Backflow / factories : **hors scope**, confirmé des deux côtés (taggé `out_of_scope`).
 
 > *Brouillon rédigé via Claude pour Vincent — les décisions ci-dessus valent consigne de
 > périmètre ; le lancement réel du backend reste mon acte (human in the loop).*
+
+---
+
+## 2026-06-07 — Correction humaine Q6 (Vincent) : Owner Ops strict
+
+MALEX,
+
+Reprise du fil. La réponse Q6 du 2026-06-06 (« godmode étendu ») était un **brouillon IA**.
+Conformément à notre règle *« réponse IA ≠ validation humaine »*, je tranche moi-même et **je la
+corrige**. C'est cette entrée qui fait foi.
+
+**Q6 — frontière `godmode` / `owner_ops_private_diagnostic` = Owner Ops STRICT :**
+
+- `owner_ops_private_diagnostic` reste **privé/propriétaire** : **jamais exposé dans l'UI**, pas
+  même en rôle `godmode`. Le **cloisonnement strict** de la 1re carte est **maintenu** (et non
+  levé).
+- `godmode` = rôle console/diagnostic haute-privilège ; dans l'UI il reste sur les surfaces
+  console/lecture et **ne court-circuite pas** le pipeline de validation : pas d'exécution
+  d'action sensible via un « bypass godmode » côté UI. La validation passe toujours par
+  `teacher+` sur `POST /actions/:id/validate`.
+- Garde-fou inchangé : rien de ces surfaces pour teacher/student.
+- Backend : **rien à coder** (Owner Ops hors V1). Le jour où il sera implémenté → derrière un
+  **canal propriétaire hors UI standard**, jamais derrière un simple gate de rôle UI.
+- Cohérent avec les invariants du corpus : *« GODMODE sees the console; USER sees the
+  experience »* + *« Permissions are never blended, never inferred from a preference »*.
+
+**Impact frontend MALEX :** le « debug drawer godmode » reste **sans Owner Ops privé** (déjà
+noté §9 de `BACKEND_INTEGRATION_MAP.md`). Aucune surface owner_ops à prévoir. Le commit codex
+`401e037 "Validate extended godmode access"` est **caduc**.
+
+Q1–Q5 inchangées (cf. entrée du 2026-06-06). Backflow/factories : `out_of_scope`.
+
+> *Cette fois c'est la validation humaine de Vincent (pas un brouillon IA) : elle fait foi et
+> remplace la réponse Q6 précédente.*
