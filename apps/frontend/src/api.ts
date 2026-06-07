@@ -1,4 +1,11 @@
-import type {ActionRegistryEntry, AuthResponse, CurrentContext, Persona} from '@masterflow/shared';
+import type {
+  ActionRegistryEntry,
+  AuthResponse,
+  CurrentContext,
+  Persona,
+  Resource,
+  SearchResourcesResponse,
+} from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
 
@@ -71,4 +78,9 @@ export async function getPersonas(token?: string | null): Promise<Persona[]> {
 
 export async function getAvailableActions(token?: string | null): Promise<ActionRegistryEntry[]> {
   return request<ActionRegistryEntry[]>('/actions/available', {method: 'GET'}, token);
+}
+
+export async function getResources(token?: string | null): Promise<Resource[]> {
+  const response = await request<SearchResourcesResponse>('/resources', {method: 'GET'}, token);
+  return response.results;
 }

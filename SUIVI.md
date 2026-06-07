@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Frontend couche 3 : Home Room canon compacte
+
+**Périmètre :** recadrer l'écran connecté selon le handoff Home Room, sans backend delta et sans
+exécuter d'action sensible.
+
+### Construit
+
+- Home Room recentrée sur :
+  - room active ;
+  - rôle/mode courant ;
+  - persona porte-parole ;
+  - 1 à 3 actions `live` utiles ;
+  - sources validées depuis `GET /resources`.
+- Les actions `future` restent visibles comme verrouillées ; les actions `out_of_scope` ne sont
+  plus exposées dans l'expérience normale.
+- Le panneau debug n'apparaît qu'en rôle `godmode` et sert à compter `live` / `future` /
+  `out_of_scope`, sans ouvrir Owner Ops fonctionnel.
+- Ajout client frontend `GET /resources` pour amorcer le `source_truth_strip`.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| Vite local `http://localhost:5174/` | HTTP 200 |
+
+Note : screenshot Playwright non réalisé car `playwright` n'est pas installé dans le workspace.
+
+---
+
 ## 2026-06-07 — Inbox MALEX : rebase main clôturé
 
 **Contexte.** Vérification après audit Drive canon avant reprise frontend.

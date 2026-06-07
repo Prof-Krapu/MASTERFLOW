@@ -1,9 +1,16 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {FormEvent, ReactElement} from 'react';
 
-import type {ActionRegistryEntry, AuthResponse, CurrentContext, Persona, RegistryStatus} from '@masterflow/shared';
+import type {
+  ActionRegistryEntry,
+  AuthResponse,
+  CurrentContext,
+  Persona,
+  RegistryStatus,
+  Resource,
+} from '@masterflow/shared';
 
-import {getAvailableActions, getCurrentContext, getPersonas, login, setToken} from './api.ts';
+import {getAvailableActions, getCurrentContext, getPersonas, getResources, login, setToken} from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
@@ -12,6 +19,13 @@ const STATUS_LABEL: Record<RegistryStatus, string> = {
   live: 'live',
   future: 'a venir',
   out_of_scope: 'masque',
+};
+
+const ROLE_LABEL: Record<string, string> = {
+  student: 'learn',
+  teacher: 'prof',
+  admin: 'admin',
+  godmode: 'godmode',
 };
 
 function bucketActions(actions: ActionRegistryEntry[]): ActionBuckets {
@@ -29,6 +43,7 @@ function App(): ReactElement {
   const [context, setContext] = useState<CurrentContext | null>(null);
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
   const [username, setUsername] = useState('vincent');
   const [password, setPassword] = useState('masterflow');
   const [state, setState] = useState<LoadState>('idle');
@@ -45,6 +60,11 @@ function App(): ReactElement {
   const visibleActions = actions.length > 0 ? actions : (context?.available_actions ?? []);
 
   const actionBuckets = useMemo(() => bucketActions(visibleActions), [visibleActions]);
+  const liveActions = actionBuckets.live;
+  const nextActions = liveActions.slice(0, 3);
+  const lockedActions = actionBuckets.future.slice(0, 4);
+  const isGodmode = context?.user.role === 'godmode';
+  const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
 
   const activePersonaId = context?.active_blend?.speaker_persona_id ?? null;
 
@@ -57,14 +77,16 @@ function App(): ReactElement {
     setState('loading');
     setError(null);
     try {
-      const [current, nextPersonas, nextActions] = await Promise.all([
+      const [current, nextPersonas, nextActions, nextResources] = await Promise.all([
         getCurrentContext(token),
         getPersonas(token),
         getAvailableActions(token),
+        getResources(token),
       ]);
       setContext(current);
       setPersonas(nextPersonas);
       setActions(nextActions);
+      setResources(nextResources);
       setState('ready');
     } catch (err) {
       setState('error');
@@ -94,6 +116,7 @@ function App(): ReactElement {
     setContext(null);
     setPersonas([]);
     setActions([]);
+    setResources([]);
     setToken(null);
     setState('idle');
     setError(null);
@@ -144,36 +167,36 @@ function App(): ReactElement {
         </form>
       ) : (
         <section className="workspace" aria-label="Contexte courant">
-          <article className="panel">
-            <div className="panel-header">
-              <h2>Contexte</h2>
-              <button className="secondary" onClick={handleLogout} type="button">
-                Deconnexion
-              </button>
-            </div>
+          <article className="panel room-hero">
             {context ? (
-              <dl className="facts">
-                <div>
-                  <dt>Utilisateur</dt>
-                  <dd>{context.user.display_name} · {context.user.role}</dd>
+              <>
+                <div className="room-title">
+                  <div>
+                    <p className="eyebrow">{roomMode}</p>
+                    <h2>{context.room.name}</h2>
+                  </div>
+                  <button className="secondary" onClick={handleLogout} type="button">
+                    Deconnexion
+                  </button>
                 </div>
-                <div>
-                  <dt>Room</dt>
-                  <dd>{context.room.name}</dd>
+                <div className="room-summary">
+                  <span>{context.user.display_name}</span>
+                  <span>{activePersona?.name ?? 'persona simple'}</span>
+                  <span>{context.room_instance.active_surface}</span>
                 </div>
-                <div>
-                  <dt>Surface</dt>
-                  <dd>{context.room_instance.active_surface}</dd>
+                <div className="next-actions" aria-label="Actions utiles">
+                  {nextActions.length > 0 ? (
+                    nextActions.map((action) => (
+                      <button className="action-chip" disabled={action.preflight_required} key={action.action_id} type="button">
+                        <span>{action.label}</span>
+                        <small>{action.preflight_required ? 'preflight' : action.risk_level}</small>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="muted compact">Aucune action live disponible.</p>
+                  )}
                 </div>
-                <div>
-                  <dt>Actions</dt>
-                  <dd>{actionSummary}</dd>
-                </div>
-                <div>
-                  <dt>Porte-parole</dt>
-                  <dd>{activePersona?.name ?? 'persona simple'}</dd>
-                </div>
-              </dl>
+              </>
             ) : (
               <p className="muted">Contexte en attente.</p>
             )}
@@ -188,22 +211,23 @@ function App(): ReactElement {
             ) : null}
           </article>
 
-          <article className="panel">
-            <h2>Réseau</h2>
-            <dl className="facts">
-              <div>
-                <dt>API</dt>
-                <dd>/api/v1</dd>
+          <article className="panel source-strip">
+            <div className="panel-header">
+              <h2>Sources</h2>
+              <span className="counter">{resources.length}</span>
+            </div>
+            {resources.length > 0 ? (
+              <div className="resource-list">
+                {resources.slice(0, 3).map((resource) => (
+                  <a className="resource-item" href={resource.url ?? '#'} key={resource.id}>
+                    <strong>{resource.title}</strong>
+                    <span>{resource.source}</span>
+                  </a>
+                ))}
               </div>
-              <div>
-                <dt>Mode distant</dt>
-                <dd>IP tailnet directe</dd>
-              </div>
-              <div>
-                <dt>Fallback</dt>
-                <dd>retry manuel</dd>
-              </div>
-            </dl>
+            ) : (
+              <p className="muted compact">Aucune source validee chargee.</p>
+            )}
           </article>
 
           <article className="panel panel--wide">
@@ -212,17 +236,14 @@ function App(): ReactElement {
               <span className="counter">{visiblePersonas.length}</span>
             </div>
             {visiblePersonas.length > 0 ? (
-              <div className="persona-grid">
+              <div className="persona-strip">
                 {visiblePersonas.map((persona) => (
                   <section
-                    className={`persona-card${persona.id === activePersonaId ? ' persona-card--active' : ''}`}
+                    className={`persona-pill${persona.id === activePersonaId ? ' persona-pill--active' : ''}`}
                     key={persona.id}
                   >
-                    <div>
-                      <h3>{persona.name}</h3>
-                      <p>{persona.domain}</p>
-                    </div>
-                    <span>{persona.status}</span>
+                    <strong>{persona.name}</strong>
+                    <span>{persona.domain}</span>
                   </section>
                 ))}
               </div>
@@ -233,32 +254,52 @@ function App(): ReactElement {
 
           <article className="panel panel--wide">
             <div className="panel-header">
-              <h2>Actions</h2>
-              <span className="counter">{visibleActions.length}</span>
+              <h2>Actions verrouillees</h2>
+              <span className="counter">{lockedActions.length}</span>
             </div>
-            <div className="action-columns">
-              {(['live', 'future', 'out_of_scope'] as const).map((status) => (
-                <section className="action-column" key={status}>
-                  <div className="column-title">
-                    <h3>{STATUS_LABEL[status]}</h3>
-                    <span>{actionBuckets[status].length}</span>
-                  </div>
-                  <div className="action-list">
-                    {actionBuckets[status].map((action) => (
-                      <article className={`action-item action-item--${status}`} key={action.action_id}>
-                        <div>
-                          <strong>{action.label}</strong>
-                          <span>{action.action_id}</span>
-                        </div>
-                        <small>{action.risk_level}</small>
-                      </article>
-                    ))}
-                    {actionBuckets[status].length === 0 ? <p className="muted compact">Vide.</p> : null}
-                  </div>
-                </section>
-              ))}
+            <div className="locked-grid">
+              {lockedActions.length > 0 ? (
+                lockedActions.map((action) => (
+                  <article className="locked-item" key={action.action_id}>
+                    <div>
+                      <strong>{action.label}</strong>
+                      <span>{action.endpoint}</span>
+                    </div>
+                    <small>{STATUS_LABEL[action.status]}</small>
+                  </article>
+                ))
+              ) : (
+                <p className="muted compact">Aucune action future dans le registre.</p>
+              )}
             </div>
           </article>
+
+          {isGodmode ? (
+            <article className="panel panel--wide debug-panel">
+              <div className="panel-header">
+                <h2>Debug</h2>
+                <span className="counter">{actionSummary}</span>
+              </div>
+              <dl className="facts">
+                <div>
+                  <dt>Live</dt>
+                  <dd>{actionBuckets.live.length}</dd>
+                </div>
+                <div>
+                  <dt>Future</dt>
+                  <dd>{actionBuckets.future.length}</dd>
+                </div>
+                <div>
+                  <dt>Hors scope</dt>
+                  <dd>{actionBuckets.out_of_scope.length}</dd>
+                </div>
+                <div>
+                  <dt>API</dt>
+                  <dd>/api/v1</dd>
+                </div>
+              </dl>
+            </article>
+          ) : null}
         </section>
       )}
     </main>
