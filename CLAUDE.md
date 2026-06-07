@@ -1,7 +1,9 @@
 # CLAUDE.md
 
 Guide pour Claude Code travaillant dans **ce dépôt de code** (`~/Documents/masterflow/`).
-Les **spécifications** vivent ailleurs : `~/Documents/MALEXSIMPLE/` (corpus condensé) et `~/Documents/MALEX/` (source complète, pour désambiguïser). Ici, on écrit du **code**.
+Le **canon produit** vit dans le Drive MASTERFLOW :
+`/Users/malex/Library/CloudStorage/GoogleDrive-oursdoriscomlille@gmail.com/Mon Drive/MASTERFLOW`.
+Ici, on écrit le **code GitHub** et on documente le périmètre V1 consommable.
 
 ## Nature & frontière de travail
 
@@ -10,6 +12,7 @@ MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), clie
 - **Frontend = MALEX**, dans `apps/frontend` (workspace npm). Ne pas le construire à leur place ; on garantit le contrat qu'il consomme (`packages/shared`). *(Le PoC `packages/poc-frontend` a été retiré : le frontend revient en priorité à MALEX — cf. SUIVI.)*
 - Langue de travail : **français** (JSDoc et termes métier en français : *room*, *persona*, *blend/chimère*, *preflight*, *validation inbox*, *canon*).
 - **Pas obligé de suivre les .md à la lettre** : si une spec est infaisable/incohérente, être agile et le signaler — mais ne jamais violer les invariants ci-dessous.
+- Drive canon != périmètre V1 : les specs longues décrivent MasterFlow complet. Le repo implémente par couches courtes ; toute couche future doit rester `future`/`out_of_scope` tant que contrat + endpoint + permission gate ne sont pas réels.
 
 ## Sync MALEX / Vincent / Codex
 
@@ -41,7 +44,7 @@ TypeScript ESM (exécuté par **tsx**, pas de build backend). Express 4 + better
 ```bash
 npm install
 npm run dev            # backend → http://localhost:8000  (seed: vincent / masterflow, role godmode)
-npm run dev:frontend   # frontend MALEX → http://localhost:5173
+npm run dev:frontend   # frontend MALEX → http://localhost:5174
 npm test               # vitest (apps/backend) — 13 tests
 npm run lint           # tsc --noEmit (backend)
 npm run seed           # re-seed idempotent

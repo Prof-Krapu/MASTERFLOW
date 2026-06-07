@@ -4,6 +4,39 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Audit Drive canon + verrouillage cohérence V1
+
+**Contexte.** MALEX demande un audit du MASTERFLOW canon sur Drive avant de continuer les
+opérations GitHub/frontend.
+
+### Lu côté Drive
+
+- `START_HERE_FOR_AI_AND_DEVS_MASTERFLOW.md`
+- `START_HERE_VINCENT_CLAUDE_UI_MASTERFLOW.md`
+- `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md`
+- `01_CORE/MASTERFLOW_ACTIVE_CONTRACT_INDEX.md`
+- contrats clés UI/permissions/Owner Ops/sync/runtime action surface
+
+### Verdict
+
+- Drive MASTERFLOW reste la source canon produit ; GitHub reste la source technique du code.
+- Le Drive décrit MasterFlow complet. La V1 GitHub doit rester en couches courtes : contrat,
+  endpoint, permission gate, UI surface et validation avant toute feature.
+- Factories/backflows existent dans le canon global mais restent **hors scope V1 backend/frontend**
+  dans cette version.
+- Godmode / Owner Ops est cohérent si gate strict `godmode`, jamais teacher/student/client, et
+  sans bypass audit/preflight.
+- Prochaine UI : traiter l'état actuel comme couche d'intégration/debug et évoluer vers une
+  Home Room contextuelle compacte, pas un dashboard permanent.
+
+### Patch documentaire
+
+- `CLAUDE.md` : clarification Drive canon vs V1 GitHub + port frontend `5174`.
+- `BACKEND_INTEGRATION_MAP.md` : retrait des mentions périmées PoC/seed/vulnérabilités/Owner Ops.
+- `FRONTEND_SCREEN_HANDOFF_HOME_ROOM.md` : handoff minimal avant couche UI suivante.
+
+---
+
 ## 2026-06-07 — Sync GitHub + Q6 tranchée : godmode étendu (confirmé humainement)
 
 **Contexte.** Sync depuis GitHub : `main` fast-forward sur `claude/gitlab-audit-suivi-6PjDS`

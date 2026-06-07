@@ -4,6 +4,11 @@ Statut : pré-code / coordination MALEX-Vincent
 Branche : `codex/frontend-masterflow`  
 Date : 2026-06-06
 
+> **Audit Drive canon 2026-06-07.** Le Drive MASTERFLOW reste la source canon produit. Cette
+> carte décrit uniquement le périmètre GitHub/V1 actionnable. Les engines/factories/backflows
+> présents dans le canon global ne deviennent pas des exigences V1 tant qu'ils n'ont pas contrat
+> backend, endpoint, permission gate, UI surface et validation humaine explicites.
+>
 > **Mise à jour 2026-06-06 (QCM) ; confirmée humainement par Vincent le 2026-06-07** (après un
 > aller-retour Owner Ops strict → godmode étendu, tranché par Vincent). La règle « cloisonnement
 > strict propriétaire » d'Owner Ops (§5, §7, §9) est **levée au profit du godmode** : en rôle
@@ -36,8 +41,9 @@ Date : 2026-06-06
 
 ### Frontend existant
 
-- `packages/poc-frontend` : PoC React/Vite, pas frontend final.
+- `apps/frontend` : frontend MALEX React/Vite, construit par couches.
 - `packages/shared` : contrat typé Zod, source commune backend/frontend.
+- `packages/poc-frontend` : retiré ; ne pas le réintroduire.
 
 ## 3. Tables existantes
 
@@ -117,10 +123,10 @@ Base REST : `/api/v1`
 - `list_available_actions` -> `GET /actions/available`
 - `execute_action` -> cycle action générique, exécution mockée
 
-### Partiellement supporté / mapping à clarifier
+### Aligné sur endpoints réels
 
-- `preflight_action` : le backend expose `POST /actions/:id/preflight`, alors que le seed annonce `POST /actions/preflight`.
-- `approve_validation_item` : le backend expose `POST /actions/:id/validate`, alors que le seed annonce `POST /validation/{item_id}/approve`.
+- `preflight_action` -> `POST /actions/{action_id}/preflight`.
+- `approve_validation_item` -> `POST /actions/{action_id}/validate`.
 
 ### Futur / endpoints absents au MVP
 
@@ -145,7 +151,8 @@ Hors scope V1 : les factories et backflows de bots extraits ne sont pas un objec
 - `visual_reference_boards` / `asset_source_refs` / `reference_status`.
 - `inventory_items` / `inventory_collections` / `collection_matches`.
 - `subjects` / `student_profiles` / `submission_records` / `correction_runs`.
-- `owner_ops_diagnostics` avec cloisonnement strict propriétaire.
+- `owner_ops_diagnostics` / `owner_ops_private_diagnostic` : futur, exposable en rôle
+  `godmode` uniquement quand le backend l'implémentera ; jamais teacher/student/client.
 - `feature_flags` ou `runtime_capabilities`.
 
 ## 8. Jobs/background queues
@@ -177,7 +184,8 @@ Toutes ces queues exigent preflight, statut, owner, logs, rollback/failure state
 - Action preflight/validation/execute minimal.
 - Validation inbox actions pending.
 - Resource truth strip/search.
-- Debug drawer `godmode` uniquement, sans Owner Ops privé.
+- Debug drawer `godmode` uniquement. Owner Ops privé reste absent tant que l'endpoint n'existe
+  pas ; quand il existera, gate strict `godmode`.
 
 À ne pas construire encore :
 
@@ -186,28 +194,28 @@ Toutes ces queues exigent preflight, statut, owner, logs, rollback/failure state
 - OCR ;
 - correction pipeline ;
 - dashboard SaaS permanent ;
-- Owner Ops diagnostics ;
+- Owner Ops diagnostics fonctionnels tant que le backend ne les expose pas ;
 - vraie queue background ;
 - routing page-par-page classique.
 
 ## 10. Risques
 
-- Le seed annonce des endpoints non implémentés : risque de faux UI si non marqué.
+- Les actions `future`/`out_of_scope` peuvent créer un faux sentiment de disponibilité si l'UI ne
+  les marque pas clairement.
 - `permission_runtime` MVP est permissif : ne pas surinterpréter comme modèle final.
 - Exécution d'action mockée : ne pas brancher d'effet réel derrière sans nouvelle PR dédiée.
 - Pas de `.env` prod : `JWT_SECRET` fallback dev uniquement.
-- `npm install` signale 5 vulnérabilités dont 1 critique : audit sécurité à planifier sans `npm audit fix --force` automatique.
+- Dernier état suivi : `npm audit` = 0 vulnérabilité après montée Vitest 4.1.8.
 - Backend non lancé sans accord Vincent.
 - Drive énorme : ne jamais scanner tout le canon au runtime UI.
 
 ## 11. Questions à remonter si on touche backend
 
-1. Le seed doit-il être aligné sur les endpoints existants ou inversement ?
-2. Faut-il créer une vraie `validation_inbox` séparée des actions ?
-3. Quelle forme officielle pour `user_runtime_loadout` ?
-4. Quels endpoints backend Vincent veut-il livrer avant le frontend final ?
-5. Quelle frontière exacte entre `godmode` visible et `owner_ops_private_diagnostic` invisible ?
-6. Les actions futures doivent-elles être masquées, disabled, ou visibles en mode debug seulement ?
+1. Faut-il créer une vraie `validation_inbox` séparée des actions en phase 2 ?
+2. Quelle forme officielle pour `user_runtime_loadout` après la V1 ?
+3. Quels endpoints backend Vincent veut-il livrer avant le frontend final ?
+4. Quels diagnostics Owner Ops exacts seront exposés au rôle `godmode`, avec quelles traces ?
+5. Les actions futures doivent-elles être masquées, disabled, ou visibles en mode debug seulement ?
 
 ## 12. Plan de PRs courtes recommandé
 
