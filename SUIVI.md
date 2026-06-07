@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 6 : sas d'entree utilisateur
+
+**Perimetre.** Ajouter l'entree runtime avant la Home Room, sans backend delta et sans ecriture canon.
+
+### Construit
+
+- Apres login, un utilisateur sans profil d'entree local passe par un sas court :
+  - intention du jour ;
+  - densite cognitive ;
+  - preference de presence/persona.
+- Le choix est persiste en `localStorage`, scope par `user.id`.
+- L'intention choisie ouvre directement le mode correspondant dans la Home Room.
+- Aucune action sensible, aucune ecriture backend, aucun secret.
+
+### Note backend
+
+La table `users` contient deja `preferences_json`, mais `UserSchema` / `CurrentContext` ne
+l'exposent pas encore. Cette couche prepare le futur contrat sans l'inventer cote frontend.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 5 : Home Room situationnelle
 
 **Perimetre.** Premier refactor UI depuis la doctrine MALEX, sans backend delta et sans action sensible.

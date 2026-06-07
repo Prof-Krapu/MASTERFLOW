@@ -146,6 +146,72 @@ h2 {
   max-width: 420px;
 }
 
+.entry-gate {
+  display: grid;
+  gap: 18px;
+}
+
+.entry-head h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+fieldset {
+  border: 0;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.entry-options {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.entry-options--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.entry-option {
+  background: #12151b;
+  border-color: var(--line);
+  color: var(--text);
+  display: grid;
+  gap: 3px;
+  min-height: 76px;
+  padding: 12px;
+  text-align: left;
+}
+
+.entry-option span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.entry-option--active {
+  border-color: rgba(88, 193, 137, 0.72);
+  color: var(--accent-strong);
+}
+
+.entry-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
 label {
   color: var(--muted);
   display: grid;
@@ -527,9 +593,16 @@ dd {
     grid-template-columns: 1fr;
   }
 
+  .entry-options,
+  .entry-options--three,
   .situation-grid,
   .object-deck {
     grid-template-columns: 1fr;
+  }
+
+  .entry-actions {
+    align-items: stretch;
+    display: grid;
   }
 
   dd {

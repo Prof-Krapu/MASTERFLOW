@@ -35,6 +35,15 @@ type DeckItem = {
   meta: string;
   status: string;
 };
+type EntryDensity = 'low' | 'medium' | 'high';
+type PersonaPresence = 'direct' | 'guided' | 'character';
+type EntryProfile = {
+  userId: string;
+  intent: WorkModeId;
+  density: EntryDensity;
+  presence: PersonaPresence;
+  completedAt: number;
+};
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
   live: 'live',
@@ -60,6 +69,18 @@ const WORK_MODES: WorkMode[] = [
 ];
 
 const DEFAULT_WORK_MODE: WorkMode = WORK_MODES[0] ?? {id: 'home', label: 'Home', signal: 'situation'};
+const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
+const ENTRY_INTENTS: WorkModeId[] = ['learning', 'teaching', 'story', 'project', 'inventory'];
+const ENTRY_DENSITIES: Array<{id: EntryDensity; label: string; signal: string}> = [
+  {id: 'low', label: 'Calme', signal: 'peu dense'},
+  {id: 'medium', label: 'Equilibre', signal: 'standard'},
+  {id: 'high', label: 'Dense', signal: 'compact'},
+];
+const PERSONA_PRESENCES: Array<{id: PersonaPresence; label: string; signal: string}> = [
+  {id: 'guided', label: 'Guide', signal: 'avec presence'},
+  {id: 'direct', label: 'Direct', signal: 'sans personnage'},
+  {id: 'character', label: 'Personnage', signal: 'canon visuel'},
+];
 
 function bucketActions(actions: ActionRegistryEntry[]): ActionBuckets {
   return actions.reduce<ActionBuckets>(
@@ -88,6 +109,37 @@ function canUseMode(mode: WorkMode, role: string | undefined): boolean {
   return role === 'godmode';
 }
 
+function entryStorageKey(userId: string): string {
+  return `${ENTRY_STORAGE_PREFIX}${userId}`;
+}
+
+function readEntryProfile(userId: string): EntryProfile | null {
+  try {
+    const raw = window.localStorage.getItem(entryStorageKey(userId));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<EntryProfile>;
+    const knownIntent = WORK_MODES.some((mode) => mode.id === parsed.intent);
+    const knownDensity = ENTRY_DENSITIES.some((density) => density.id === parsed.density);
+    const knownPresence = PERSONA_PRESENCES.some((presence) => presence.id === parsed.presence);
+    if (
+      parsed.userId === userId &&
+      knownIntent &&
+      knownDensity &&
+      knownPresence &&
+      typeof parsed.completedAt === 'number'
+    ) {
+      return parsed as EntryProfile;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function writeEntryProfile(profile: EntryProfile): void {
+  window.localStorage.setItem(entryStorageKey(profile.userId), JSON.stringify(profile));
+}
+
 function App(): ReactElement {
   const [auth, setAuth] = useState<AuthResponse | null>(null);
   const [context, setContext] = useState<CurrentContext | null>(null);
@@ -99,6 +151,10 @@ function App(): ReactElement {
   const [state, setState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [selectedMode, setSelectedMode] = useState<WorkModeId>('home');
+  const [entryIntent, setEntryIntent] = useState<WorkModeId>('learning');
+  const [entryDensity, setEntryDensity] = useState<EntryDensity>('medium');
+  const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
+  const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -106,6 +162,7 @@ function App(): ReactElement {
   const assistantTurnRef = useRef<string | null>(null);
 
   const isConnected = auth !== null && context !== null;
+  const showEntryGate = isConnected && context !== null && entryProfile?.userId !== context.user.id;
 
   const actionSummary = useMemo(() => {
     const count = actions.length;
@@ -226,6 +283,11 @@ function App(): ReactElement {
         getResources(token),
       ]);
       setContext(current);
+      const storedEntry = readEntryProfile(current.user.id);
+      setEntryProfile(storedEntry);
+      if (storedEntry) {
+        setSelectedMode(storedEntry.intent);
+      }
       setPersonas(nextPersonas);
       setActions(nextActions);
       setResources(nextResources);
@@ -265,6 +327,10 @@ function App(): ReactElement {
     setToken(null);
     setState('idle');
     setSelectedMode('home');
+    setEntryIntent('learning');
+    setEntryDensity('medium');
+    setEntryPresence('guided');
+    setEntryProfile(null);
     setWsState('idle');
     setChatInput('');
     setChatTurns([]);
@@ -287,12 +353,28 @@ function App(): ReactElement {
     [chatInput],
   );
 
+  const handleEntrySubmit = useCallback((event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    if (!context) return;
+
+    const profile: EntryProfile = {
+      userId: context.user.id,
+      intent: entryIntent,
+      density: entryDensity,
+      presence: entryPresence,
+      completedAt: Date.now(),
+    };
+    writeEntryProfile(profile);
+    setEntryProfile(profile);
+    setSelectedMode(entryIntent);
+  }, [context, entryDensity, entryIntent, entryPresence]);
+
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
   }, [isConnected]);
 
   useEffect(() => {
-    if (!auth || !context) return undefined;
+    if (!auth || !context || showEntryGate) return undefined;
 
     const socket = new WebSocket(wsUrl(context.room_instance.id, auth.token));
     wsRef.current = socket;
@@ -369,7 +451,7 @@ function App(): ReactElement {
     return () => {
       socket.close();
     };
-  }, [auth, context]);
+  }, [auth, context, showEntryGate]);
 
   return (
     <main className="shell">
@@ -409,6 +491,74 @@ function App(): ReactElement {
             {state === 'loading' ? 'Connexion...' : 'Se connecter'}
           </button>
           {error ? <p className="error">{error}</p> : null}
+        </form>
+      ) : showEntryGate && context ? (
+        <form className="panel entry-gate" onSubmit={handleEntrySubmit}>
+          <div className="entry-head">
+            <p className="eyebrow">{roomMode} / entree</p>
+            <h2>{context.user.display_name}</h2>
+          </div>
+
+          <fieldset>
+            <legend>Aujourd'hui</legend>
+            <div className="entry-options">
+              {ENTRY_INTENTS.map((intent) => {
+                const mode = WORK_MODES.find((candidate) => candidate.id === intent) ?? DEFAULT_WORK_MODE;
+                return (
+                  <button
+                    className={`entry-option${entryIntent === intent ? ' entry-option--active' : ''}`}
+                    key={intent}
+                    onClick={() => setEntryIntent(intent)}
+                    type="button"
+                  >
+                    <strong>{mode.label}</strong>
+                    <span>{mode.signal}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Densite</legend>
+            <div className="entry-options entry-options--three">
+              {ENTRY_DENSITIES.map((density) => (
+                <button
+                  className={`entry-option${entryDensity === density.id ? ' entry-option--active' : ''}`}
+                  key={density.id}
+                  onClick={() => setEntryDensity(density.id)}
+                  type="button"
+                >
+                  <strong>{density.label}</strong>
+                  <span>{density.signal}</span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Presence</legend>
+            <div className="entry-options entry-options--three">
+              {PERSONA_PRESENCES.map((presence) => (
+                <button
+                  className={`entry-option${entryPresence === presence.id ? ' entry-option--active' : ''}`}
+                  key={presence.id}
+                  onClick={() => setEntryPresence(presence.id)}
+                  type="button"
+                >
+                  <strong>{presence.label}</strong>
+                  <span>{presence.signal}</span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="entry-actions">
+            <button type="submit">Entrer</button>
+            <button className="secondary" onClick={handleLogout} type="button">
+              Deconnexion
+            </button>
+          </div>
         </form>
       ) : (
         <section className="workspace" aria-label="Contexte courant">
