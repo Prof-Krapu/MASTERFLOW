@@ -39,6 +39,9 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - Push `070688e` reçu : test IP directe. `tailscale ping 100.100.128.63` OK (22 ms), mais
   `http://100.100.128.63:8000/health` et `:5174` timeout ; demande host/bind/firewall ouverte
   dans `INBOX_VINCENT.md`.
+- Règle de sync renforcée : avant toute réponse MALEX sur état Vincent/backend/Tailscale,
+  Codex doit refaire un check distant (`git fetch origin` + dernier `origin/main`) pour éviter
+  les réponses caduques si Vincent pousse pendant le tour.
 
 ### Validation (état synchronisé, run réel)
 

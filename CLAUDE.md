@@ -15,6 +15,9 @@ MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), clie
 
 Avant toute reprise de travail, toute réponse de coordination ou toute modification qui touche backend, frontend, run local, permissions, endpoints, actions ou périmètre, vérifier systématiquement :
 
+0. `git fetch origin`, puis vérifier les derniers commits de `origin/main` et des branches de
+   sync avant de répondre à MALEX. Si Vincent vient de pousser une correction, lire les versions
+   distantes (`git show origin/main:<fichier>`) avant toute conclusion.
 1. `SUIVI.md`
 2. `SYNC_THREAD_MALEX_VINCENT.md`
 3. `INBOX_VINCENT.md`
@@ -26,6 +29,10 @@ réponse IA n'est jamais une validation humaine. Codex/Claude peut analyser l'im
 un patch minimal, mais aucune modification, exécution, permission, dépense, publication,
 déploiement ou changement de périmètre demandé par Vincent ne doit être appliqué sans validation
 humaine explicite de MALEX.
+
+Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, refaire un dernier
+check distant rapide (`git fetch origin` + lecture du dernier `origin/main`) pour éviter de
+répondre avec un état devenu caduc pendant le tour.
 
 ## Stack & commandes
 
