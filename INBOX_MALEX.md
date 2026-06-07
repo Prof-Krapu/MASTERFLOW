@@ -30,7 +30,7 @@ lancement backend par Vincent.
 
 ## 2026-06-06 — answered — Décisions backend (à appliquer côté frontend)
 
-De Vincent, suite à tes 6 questions *(Q6 corrigée par validation humaine le 2026-06-07)* :
+De Vincent, suite à tes 6 questions *(Q6 confirmée par validation humaine le 2026-06-07 : godmode étendu — voir `SYNC_THREAD_MALEX_VINCENT.md`)* :
 
 - **Registre** : champ `status` (`live` / `future` / `out_of_scope`) ajouté à chaque action,
   lisible via `GET /actions/available` et `GET /context/current`. Règle UI : n'afficher comme
@@ -40,14 +40,9 @@ De Vincent, suite à tes 6 questions *(Q6 corrigée par validation humaine le 20
 - **`user_runtime_loadout`** : hors V1, dériver les actions du registre + contexte.
 - **Validation inbox** : `GET /actions/pending` (teacher+) suffit en V1.
 - **Endpoints lourds** (`/da`, `/assets`, `/inventory`, `/subjects`) : `future`, verrouillés.
-- **Permissions** — **Owner Ops strict** *(validé humainement par Vincent le 2026-06-07 ;
-  annule le brouillon IA « godmode étendu »)* : `owner_ops_private_diagnostic` reste
-  **privé/propriétaire**, **jamais exposé dans l'UI, même en rôle `godmode`**. `godmode` =
-  surface console/diagnostic en **lecture** ; il **ne court-circuite pas** le pipeline de
-  validation (pas d'exécution d'action sensible via un bypass godmode-UI ; validation toujours
-  `teacher+` sur `POST /actions/:id/validate`). Rien de ces surfaces pour teacher/student.
-  Cloisonnement strict de la 1re carte **maintenu**. Backend : aucun code Owner Ops (hors V1) ;
-  le jour venu, derrière un **canal propriétaire hors UI standard**. Le « debug drawer godmode »
-  reste **sans Owner Ops privé** (cf. §9 `BACKEND_INTEGRATION_MAP.md`).
+- **Permissions** : **godmode étendu** — en rôle godmode, l'UI peut exécuter des actions ET
+  `owner_ops_private_diagnostic` est exposé. **Gated rôle godmode uniquement**, jamais pour
+  teacher/student. (Lève le cloisonnement strict Owner Ops de la première carte ; Owner Ops
+  pas encore implémenté backend.)
 - **Frontend** : `apps/frontend` est désormais le seul frontend (PoC `packages/poc-frontend`
   retiré). Il revient en priorité à MALEX.

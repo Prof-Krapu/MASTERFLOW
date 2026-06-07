@@ -4,31 +4,33 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-07 — Décision humaine Q6 : Owner Ops strict (annule « godmode étendu »)
+## 2026-06-07 — Sync GitHub + Q6 tranchée : godmode étendu (confirmé humainement)
 
 **Contexte.** Sync depuis GitHub : `main` fast-forward sur `claude/gitlab-audit-suivi-6PjDS`
 (frontend MALEX `apps/frontend`, infra sync, seed + champ `status`, PoC retiré, sécu vitest
-4.1.8 / `npm audit` 0 vuln). Les 2 commits `codex/frontend-masterflow` en plus (doc-only,
-« extended godmode ») écartés sans perte de code. La réponse Q6 portée par les branches
-(« godmode étendu ») était un **brouillon IA** ; Vincent la **corrige** (règle *« réponse IA ≠
-validation humaine »*). C'était **la question clé backend** posée par MALEX.
+4.1.8 / `npm audit` 0 vuln). Réponse à **la question clé backend** de MALEX (`VINCENT_BACKEND_SYNC_2026-06-06.md`, Q6).
 
-### Décision (validée humainement)
+### Aller-retour Q6 (tracé honnêtement)
 
-- **Q6 = Owner Ops strict.** `owner_ops_private_diagnostic` reste privé/propriétaire, **jamais
-  exposé dans l'UI**, même en `godmode`. `godmode` = console/diagnostic (lecture) ; **ne
-  court-circuite pas** la validation (`teacher+` sur `POST /actions/:id/validate`). Rien de ces
-  surfaces pour teacher/student. Cloisonnement strict de la 1re carte **maintenu**. Backend :
-  rien à coder (Owner Ops hors V1) → futur canal propriétaire hors UI standard. Cohérent avec
-  les invariants corpus (« GODMODE sees the console; USER sees the experience » ; permissions
-  jamais blendées/inférées).
-- Q1–Q5 confirmées et fondées sur le code réel : champ `status` (`ActionRegistryEntrySchema`) ;
-  seed aligné sur les endpoints réels (`/actions/:id/{preflight,validate,execute}`) ;
-  `user_runtime_loadout` hors V1 ; `GET /actions/pending` (teacher+) suffit ; endpoints lourds
-  `future`. Backflow/factories `out_of_scope`.
-- Docs corrigés : `CLAUDE.md`, `SYNC_THREAD_MALEX_VINCENT.md` (entrée datée + ancienne réponse
-  Q6 barrée), `INBOX_MALEX.md` (passée `answered`), `BACKEND_INTEGRATION_MAP.md` (note de tête).
-  Commit codex `401e037 "Validate extended godmode access"` **caduc**.
+1. Première validation humaine de Vincent : **Owner Ops strict** → commit `7322e61`, poussé.
+2. Découverte : `codex/frontend-masterflow` avait poussé du contenu non lu (demande Tailscale +
+   réassertion **godmode étendu** s'attribuant la validation de Vincent).
+3. Vincent **tranche à nouveau, en connaissance de cause : godmode étendu** (position MALEX/codex
+   retenue). → `git revert 7322e61` + sceau « confirmé humainement 2026-06-07 ».
+
+### Décision finale (validée humainement)
+
+- **Q6 = godmode étendu.** En rôle `godmode`, l'UI peut **exécuter des actions** ET
+  `owner_ops_private_diagnostic` est **exposé** (quand le backend l'implémentera). **Gate strict
+  `godmode`**, jamais teacher/student. Lève le cloisonnement strict Owner Ops de la 1re carte.
+  L'UI ne présente rien comme fonctionnel avant contrat + endpoint réels. Owner Ops pas encore
+  codé backend.
+- Q1–Q5 inchangées et confirmées (champ `status` ; seed aligné sur les endpoints réels ;
+  `user_runtime_loadout` hors V1 ; `GET /actions/pending` teacher+ ; endpoints lourds `future`).
+- **Tailscale** : accès tailnet **accordé** à MALEX (Serve, pas de Funnel/port public) ; entrée
+  de confirmation dans `SYNC_THREAD_MALEX_VINCENT.md` (hostname MagicDNS à compléter par Vincent).
+- Branches distantes `claude/*` et `codex/*` : **conservées** (pas de suppression, sur consigne
+  Vincent) ; codex porte des entrées doc à rebaser sur le `main` à jour.
 
 ### Validation (état synchronisé, run réel)
 
@@ -38,7 +40,6 @@ validation humaine »*). C'était **la question clé backend** posée par MALEX.
 | Backend Vitest (v4.1.8) | **13/13** |
 | Backend `tsc --noEmit` | 0 erreur |
 | Frontend MALEX `vite build` | OK · 30 modules / 198 KB |
-| Cohérence « godmode étendu » | 0 occurrence **active** (seul l'historique annoté/barré subsiste) |
 
 ---
 
@@ -65,8 +66,7 @@ initial → divergente de `main`. Intégration et réponses faites sur `claude/g
   lancement backend = acte humain de Vincent).
 - **Réponses validées par Vincent (QCM)** : Q1 = champ `status` seul ; Q2 = aligner le seed
   sur le réel ; Q3 = `user_runtime_loadout` hors V1 ; Q4 = `GET /actions/pending` suffit ;
-  Q5 = endpoints lourds plus tard (`future`) ; Q6 = **godmode étendu** *(brouillon — annulé le
-  2026-06-07, voir l'entrée en tête du journal : Owner Ops strict)*.
+  Q5 = endpoints lourds plus tard (`future`) ; Q6 = **godmode étendu** (cf. ci-dessous).
 - **Sécu** : montée `vitest` `^2.1.0` → `^4.1.8` (corrige l'advisory critique vitest `<4.1.0`
   + chaîne esbuild/vite dev-server, **dev-only**), puis `npm audit fix` non destructif →
   **`npm audit` = 0 vulnérabilité**. Aucun `npm audit fix --force`.
@@ -85,9 +85,9 @@ initial → divergente de `main`. Intégration et réponses faites sur `claude/g
 
 - `user_runtime_loadout`, validation inbox dédiée, endpoints `/da` `/assets` `/inventory`
   `/subjects` : **hors V1** (anti-scope). Backflow/factories : `out_of_scope`.
-- **godmode étendu** (brouillon IA du 2026-06-06) — ⚠️ **annulé le 2026-06-07** par validation
-  humaine de Vincent au profit d'**Owner Ops strict** (voir l'entrée en tête de ce journal).
-  Trace historique : l'ébauche disait « en godmode, l'UI exécute des actions + owner_ops exposé ».
+- **godmode étendu** (décision Vincent, QCM) : en rôle godmode l'UI peut exécuter des actions
+  **et** `owner_ops_private_diagnostic` est exposé — gated rôle godmode uniquement (jamais
+  teacher/student). Lève le cloisonnement strict Owner Ops de la 1re carte d'intégration.
 - Le contrat REST réel reste l'autorité ; on aligne les métadonnées descriptives du seed dessus.
 
 ---
