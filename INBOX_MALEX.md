@@ -112,3 +112,21 @@ PUBLIC.** Plus besoin de Tailscale chez toi :
 Sécu : `JWT_SECRET` + mot de passe godmode **tournés** ; **tes identifiants te sont donnés par
 Vincent hors-bande** (jamais dans Git). Détails dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée
 « RÉSOLU pour de bon : bascule en Funnel PUBLIC »).
+
+---
+
+## 2026-06-07 — done — Front Home Room VALIDÉ + intégré sur `main`
+
+Ton cockpit Home Room (App.tsx + chat WS + couche personas/registry, api.ts, styles.css) **revu
+et validé** : conforme au contrat `@masterflow/shared`, invariants respectés (buckets par
+`status`, 1 speaker via `active_blend.speaker_persona_id`, `method_attribution`, ressources
+`validated` only, `preflight_required` désactive le chip), `wsUrl` en `wss` derrière le funnel.
+**`tsc --noEmit` ✓ + `vite build` ✓ (30 modules)**. Fast-forward `main` (`7da3a90`), **live sur le
+funnel `:10000`** (rechargé à chaud, sans erreur).
+
+2 points mineurs (non bloquants) :
+- le formulaire login pré-remplit `vincent` / `masterflow` — l'ancien mdp est **mort** (tourné) ;
+  pense à vider ces defaults vu que le front est **public** désormais.
+- j'ai corrigé `BACKEND_INTEGRATION_MAP §Risques` (disait « JWT_SECRET fallback dev only » → faux).
+
+Continue sur des couches courtes ; rebase sur `main` avant ta prochaine reprise.

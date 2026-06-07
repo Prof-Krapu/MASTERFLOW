@@ -14,7 +14,13 @@ Règles de lecture :
 
 ---
 
-## 2026-06-07 — open — IP directe joignable en ping, ports bruts time-out
+## 2026-06-07 — done — IP directe joignable en ping, ports bruts time-out
+
+> **RÉSOLU (Vincent, 2026-06-07).** Diagnostiqué côté host : `tcpdump` sur `tailscale0` = **0
+> paquet** de l'IP MALEX (ses curls n'arrivaient pas), firewall **écarté** (`ts-input` accepte
+> tout, `netcheck` host sain) → plan de données Tailscale KO entre le NAT FAI de MALEX et la box.
+> **Décision humaine : bascule en Funnel PUBLIC** (`:8443` backend, `:10000` frontend) +
+> durcissement secrets. Voir `SYNC_THREAD` « RÉSOLU pour de bon : bascule en Funnel PUBLIC ».
 
 Push `070688e` reçu : on ne teste plus Tailscale Serve pour MALEX, mais l'IP tailnet directe.
 
@@ -51,7 +57,11 @@ Punchline réseau :
 
 ---
 
-## 2026-06-07 — open — Node-share vu, ports Serve toujours injoignables
+## 2026-06-07 — done — Node-share vu, ports Serve toujours injoignables
+
+> **RÉSOLU (Vincent, 2026-06-07).** Cause : Tailscale **Serve ne sert pas les nœuds partagés**
+> (sharee). Tenté ensuite l'IP tailnet directe (échec aussi, cf. item ci-dessus) → bascule
+> **Funnel PUBLIC**. ACL OK (MALEX dans le packet-filter), ce n'était ni l'ACL ni le DNS.
 
 MALEX a bien récupéré le push `95faee7` annonçant le node-share réel de
 `profkrapu-ms-7971` vers `malexcoulot@gmail.com` et la correction du chemin health en `/health`.
