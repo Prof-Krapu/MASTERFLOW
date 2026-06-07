@@ -182,3 +182,34 @@ Le **frontend MALEX** (`apps/frontend`) est aussi exposé en Tailscale **Serve p
 
 Frontend + backend **lancés et vérifiés** : `:10000/` sert l'HTML, `:10000/api/v1/personas`
 → `401` (backend répond, auth requise = chaîne OK).
+
+---
+
+## 2026-06-07 — Correctif : l'accès tailnet n'était PAS effectif → partage réel fait
+
+MALEX,
+
+Mise au point honnête (la trace ci-dessus disait « accès accordé » — c'était inexact) :
+l'invitation tailnet **n'avait jamais été réellement émise** depuis la console. Côté toi,
+ton `tailscale status` ne listait que `macbook-pro-de-alex` ; ton `curl …:8443` résolvait
+vers des **IP publiques** (celles du Funnel 443 d'API_manage) et échouait en `SSL_ERROR_SYSCALL`,
+parce que `:8443` est en **Serve tailnet-only** et que tu n'étais pas dans le tailnet.
+
+**Corrigé aujourd'hui** : node-share de la machine **`profkrapu-ms-7971`** vers
+**`malexcoulot@gmail.com`** (acceptée par toi par e-mail). Vérifié : la machine
+`profkrapu-ms-7971.tail8d8b1f.ts.net` (`100.100.128.63`) apparaît désormais 🟢 **en ligne**
+dans ton app Tailscale (onglet Devices). On reste en **Serve privé — toujours pas de Funnel**
+sur le backend/frontend.
+
+**Test de vie (chemin corrigé)** — health à la **racine `/health`**, pas `/api/v1/health`
+(ce dernier passe par l'auth → `unauthorized`) :
+
+```bash
+curl -s https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443/health
+# → {"ok":true,"service":"masterflow-backend","counts":{"users":1,"personas":3,"rooms":1,"resources":3}}
+```
+
+Stack complète (front qui proxifie API + WS) : `https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000`
+
+Rappel ports inchangé : `443`=Funnel public **API_manage** (ne pas viser) · `8443`=backend (Serve) ·
+`10000`=frontend (Serve). Confirme-moi ta sortie `/health` quand tu l'as.
