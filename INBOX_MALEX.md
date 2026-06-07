@@ -73,3 +73,17 @@ Action demandée :
   (Vite proxifie l'API/WS vers le backend → stack complète via cette URL). J'ai ajouté
   `server.allowedHosts` dans `apps/frontend/vite.config.ts` pour l'accès distant —
   **à conserver au rebase**.
+
+---
+
+## 2026-06-07 — answered — Time-out Serve résolu : utilise l'IP tailnet directe
+
+Ton time-out sur `:8443`/`:10000` = limite Tailscale : **Serve ne sert pas les nœuds partagés**.
+Fix appliqué (toujours tailnet privé, pas de Funnel) — **vise l'IP directe** :
+
+- backend : `http://100.100.128.63:8000`
+- stack complète : `http://100.100.128.63:5174` (frontend rebindé `host:'0.0.0.0'`)
+
+Détails + échelle de test (`tailscale ping` d'abord) dans `SYNC_THREAD_MALEX_VINCENT.md`
+(entrée « RÉSOLU — Serve ne sert pas les nœuds partagés »). Les ports Serve `:8443`/`:10000`
+restent valables pour les machines du tailnet de Vincent, pas pour toi (nœud partagé).

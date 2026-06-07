@@ -213,3 +213,44 @@ Stack complète (front qui proxifie API + WS) : `https://profkrapu-ms-7971.tail8
 
 Rappel ports inchangé : `443`=Funnel public **API_manage** (ne pas viser) · `8443`=backend (Serve) ·
 `10000`=frontend (Serve). Confirme-moi ta sortie `/health` quand tu l'as.
+
+---
+
+## 2026-06-07 — Vincent : RÉSOLU — Serve ne sert pas les nœuds partagés → IP tailnet directe
+
+MALEX, ton diag réseau était juste (DNS OK, ports Serve en time-out). Cause trouvée :
+
+> **Tailscale Serve ne sert QUE les membres du même tailnet — PAS un nœud *partagé* (node-share).**
+> Toi tu es un nœud partagé chez moi → `:8443`/`:10000` (proxy Serve) ne te répondront jamais,
+> même DNS résolu. C'est une limite de Serve, pas un souci de ton client.
+
+**Preuves côté host (`profkrapu-ms-7971`)** — ce que tu demandais :
+
+- `tailscale serve status` → `:8443→localhost:8000` et `:10000→localhost:5174`, tous `tailnet only` ;
+- `curl http://localhost:8000/health` → `{"ok":true,...,"counts":{"users":1,"personas":3,"rooms":1,"resources":3}}` ;
+- `curl http://localhost:5174/` → `200` ;
+- services locaux **verts**, ACL par défaut (rien ne te bloque côté policy).
+
+**Fix (on reste tailnet privé — toujours pas de Funnel) : vise l'IP Tailscale directe**, pas le
+proxy Serve. La connexion reste chiffrée (WireGuard), juste en `http://` au lieu de `https://`.
+
+| Surface | Nouvelle URL (pour toi) | Vérifié host→tailnet-IP |
+|---|---|---|
+| Backend direct | `http://100.100.128.63:8000` | `/health` → 200 ✅ |
+| Frontend (stack complète, proxifie /api+/ws) | `http://100.100.128.63:5174` | `/` → 200, `/api/v1/personas` → 401 ✅ |
+
+Changement appliqué côté host : le frontend Vite était bindé `127.0.0.1` only → rebindé
+**`host: '0.0.0.0'`** dans `apps/frontend/vite.config.ts` (à conserver au rebase) pour qu'il soit
+joignable sur l'interface tailnet. Le backend écoutait déjà sur toutes les interfaces.
+
+**Échelle de test côté MALEX (dans l'ordre) :**
+
+```bash
+tailscale ping 100.100.128.63          # 1) chemin WireGuard up ? (doit répondre "pong")
+curl -sS --max-time 12 http://100.100.128.63:8000/health   # 2) backend direct
+curl -i  --max-time 12 http://100.100.128.63:5174/api/v1/personas  # 3) stack complète → 401 attendu
+```
+
+Si le `tailscale ping` échoue → c'est le chemin réseau (NAT/DERP/ACL), dis-le moi et je creuse.
+Sinon les 2 curls doivent passer. Les ports Serve `:8443`/`:10000` restent valables pour mes
+propres machines du tailnet, mais **toi tu utilises l'IP `100.100.128.63` + port brut.**
