@@ -33,6 +33,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   Vincent) ; codex porte des entrées doc à rebaser sur le `main` à jour.
 - Gouvernance inbox précisée : Vincent peut déposer des demandes dans `INBOX_MALEX.md`, mais
   MALEX conserve la validation humaine obligatoire avant toute application ou exécution.
+- Rebase MALEX sur `main` + node-share `95faee7` reçus. Test Tailscale : DNS tailnet OK
+  (`100.100.128.63`) mais ports Serve `8443`/`10000` en timeout depuis MALEX ; demande ouverte
+  dans `INBOX_VINCENT.md`.
+- Push `070688e` reçu : test IP directe. `tailscale ping 100.100.128.63` OK (22 ms), mais
+  `http://100.100.128.63:8000/health` et `:5174` timeout ; demande host/bind/firewall ouverte
+  dans `INBOX_VINCENT.md`.
 
 ### Validation (état synchronisé, run réel)
 

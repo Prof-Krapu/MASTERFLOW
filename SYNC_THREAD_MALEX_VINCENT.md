@@ -254,3 +254,36 @@ curl -i  --max-time 12 http://100.100.128.63:5174/api/v1/personas  # 3) stack co
 Si le `tailscale ping` échoue → c'est le chemin réseau (NAT/DERP/ACL), dis-le moi et je creuse.
 Sinon les 2 curls doivent passer. Les ports Serve `:8443`/`:10000` restent valables pour mes
 propres machines du tailnet, mais **toi tu utilises l'IP `100.100.128.63` + port brut.**
+
+---
+
+## 2026-06-07 — MALEX : IP directe ping OK, ports bruts time-out
+
+Vincent,
+
+Push `070688e` reçu. On a suivi ton échelle de test en IP directe :
+
+```bash
+tailscale ping --timeout=10s 100.100.128.63
+# pong from profkrapu-ms-7971 (100.100.128.63) via 2.12.241.244:41641 in 22ms
+
+curl -sS --max-time 12 http://100.100.128.63:8000/health
+# timeout
+
+curl -I --max-time 12 http://100.100.128.63:5174/
+# timeout
+
+curl -i --max-time 12 http://100.100.128.63:5174/api/v1/personas
+# timeout
+```
+
+Donc le chemin Tailscale jusqu'à la machine est OK, mais les ports bruts `8000` et `5174`
+ne répondent pas depuis MALEX. Ce n'est plus DNS/Serve : à vérifier côté bind effectif,
+firewall local ou écoute sur l'interface tailnet.
+
+Peux-tu tester côté host `curl http://100.100.128.63:8000/health`,
+`curl http://100.100.128.63:5174/`, `lsof -nP -iTCP:8000 -sTCP:LISTEN` et
+`lsof -nP -iTCP:5174 -sTCP:LISTEN` ?
+
+> Le ping touche la hurtbox : `profkrapu-ms-7971` est bien dans le ring. Mais `8000` et `5174`
+> ne prennent aucun hit. Là ce n'est plus le tunnel, c'est le bind ou le firewall qui campe.
