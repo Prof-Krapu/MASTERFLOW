@@ -5,12 +5,13 @@ Date : 2026-06-07
 Source canon : Drive MASTERFLOW (`START_HERE_FOR_AI_AND_DEVS_MASTERFLOW.md`,
 `START_HERE_VINCENT_CLAUDE_UI_MASTERFLOW.md`,
 `MASTERFLOW_USAGE_LAYER_RESOLUTION_MAP.md`,
-`MASTERFLOW_RUNTIME_CONTROL_PANEL_AND_ACTION_SURFACE_CONTRACT.md`)
+`MASTERFLOW_RUNTIME_CONTROL_PANEL_AND_ACTION_SURFACE_CONTRACT.md`,
+`FRONTEND_UI_DOCTRINE.md`)
 
 ```yaml
 screen_handoff:
   screen_or_room: Home Room
-  purpose: Donner l'etat courant, le persona actif, les actions utiles et les validations sans transformer MasterFlow en dashboard permanent.
+  purpose: Montrer la situation active et les prochaines actions utiles, pas le catalogue des fonctionnalites.
   active_context: GET /api/v1/context/current
   features:
     - login/auth state
@@ -19,8 +20,10 @@ screen_handoff:
     - contextual actions depuis le registre
     - etat reseau et retry
   widgets:
-    - context card
-    - persona strip compact
+    - situation summary
+    - dynamic main widget
+    - mode rail compact
+    - object deck selon contexte
     - next best actions
     - source truth strip
     - validation/status strip si donnees disponibles
@@ -65,11 +68,13 @@ screen_handoff:
   onboarding_questions:
     - quel premier usage concret Home Room doit-elle optimiser ?
     - quelles actions live doivent rester visibles hors godmode ?
+    - quels modes doivent etre proposes apres le tunnel initial ?
   user_preferences:
     - densite compacte par defaut
     - debug visible seulement pour godmode
   canon_constraints:
     - pas de dashboard permanent geant
+    - pas de catalogue brut de fonctionnalites
     - chat compactable
     - widgets seulement utiles maintenant
     - actions sensibles via preflight/validation

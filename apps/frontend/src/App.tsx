@@ -63,8 +63,8 @@ function App(): ReactElement {
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
-  const [username, setUsername] = useState('vincent');
-  const [password, setPassword] = useState('masterflow');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [state, setState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [wsState, setWsState] = useState<WsState>('idle');

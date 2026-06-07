@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Synthese UI MALEX : situation avant fonctionnalites
+
+**Contexte.** MALEX fournit une synthese UI issue d'un debrief : le frontend fonctionne
+techniquement, mais ne doit pas devenir une interface deceptive ou un catalogue de boutons.
+
+### Doctrine actee
+
+- MasterFlow doit montrer la **situation**, pas les fonctionnalites disponibles.
+- Premiere connexion : tunnel unique type mini Akinator -> profil -> preferences -> avatar /
+  personnage canon si souhaite -> interface personnalisee.
+- Navigation par zoom : accueil -> mode -> room -> objet -> detail.
+- Les modes sont des univers : Teaching, Story, Project, Learning, Inventory, Admin/Godmode.
+- Le widget principal est dynamique, choisi par le contexte actif.
+- Les IA/engines doivent etre majoritairement invisibles.
+- Clic et chat pilotent tous les deux l'interface.
+
+### Patch
+
+- Ajout `FRONTEND_UI_DOCTRINE.md`.
+- Handoff Home Room recadre : situation summary, main widget dynamique, mode rail, object deck,
+  1-3 actions.
+- Login frontend : retrait du mot de passe pre-rempli obsolète.
+
+---
+
 ## 2026-06-07 — Accès MALEX : bascule Funnel PUBLIC + durcissement secrets + intégration front
 
 **Contexte.** Déblocage de l'accès distant de MALEX (toutes les voies privées Tailscale ont
