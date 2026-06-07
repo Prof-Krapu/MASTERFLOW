@@ -204,7 +204,7 @@ Toutes ces queues exigent preflight, statut, owner, logs, rollback/failure state
   les marque pas clairement.
 - `permission_runtime` MVP est permissif : ne pas surinterpréter comme modèle final.
 - Exécution d'action mockée : ne pas brancher d'effet réel derrière sans nouvelle PR dédiée.
-- Pas de `.env` prod : `JWT_SECRET` fallback dev uniquement.
+- **Backend exposé en Funnel PUBLIC (2026-06-07)** : `:8443` (backend) + `:10000` (frontend) ouverts sur internet (l'accès privé Tailscale échouait — NAT côté MALEX). Durcissement fait avant ouverture : `JWT_SECRET` **fort** + mot de passe **godmode tourné**, dans `apps/backend/.env` (gitignoré) — l'ancien fallback JWT codé en dur permettait de forger un token godmode. ⚠️ `POST /auth/register` reste **ouvert** (crée rôle `student`) : surface publique mineure à fermer si on verrouille.
 - Dernier état suivi : `npm audit` = 0 vulnérabilité après montée Vitest 4.1.8.
 - Backend non lancé sans accord Vincent.
 - Drive énorme : ne jamais scanner tout le canon au runtime UI.
