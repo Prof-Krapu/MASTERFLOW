@@ -4,6 +4,41 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Runtime public : smoke test reproductible
+
+**Périmètre :** réduire les tests manuels MALEX avant ouverture de l'interface.
+
+### Ajouté
+
+- Script `npm run smoke:public`.
+- Vérifie sans secret :
+  - backend public `/health` ;
+  - frontend public `:10000`.
+- Si `MASTERFLOW_USERNAME` et `MASTERFLOW_PASSWORD` sont fournis via l'environnement, vérifie aussi :
+  - login via proxy frontend ;
+  - `GET /context/current` ;
+  - `GET /personas` ;
+  - `GET /resources` ;
+  - WebSocket `ping -> pong`.
+
+### Règle sécurité
+
+Le script ne contient aucun identifiant et n'affiche jamais le token. Les secrets restent hors Git.
+
+### Validation 2026-06-07
+
+| Vérif | Résultat |
+|---|---|
+| Smoke public sans secret | OK (`/health` + frontend `:10000`) |
+| Smoke public authentifié | OK |
+| Login | 200 · rôle `godmode` |
+| `GET /context/current` | 200 · Home Room |
+| `GET /personas` | 200 · 3 personas |
+| `GET /resources` | 200 · 2 ressources validées |
+| WebSocket | `ping -> pong` |
+
+---
+
 ## 2026-06-07 — Frontend couche 4 : chat compact + WebSocket
 
 **Périmètre :** ajouter la surface chat Home Room sans action sensible, sans écriture canon et
