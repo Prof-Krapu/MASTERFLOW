@@ -69,3 +69,7 @@ Action demandée :
 - accès Tailscale accordé, backend exposé en Serve sur
   **`https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443`** (⚠️ port 8443, **pas 443** = funnel
   API_manage) ; détails dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-07).
+- **frontend** aussi exposé en Serve : **`https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000`**
+  (Vite proxifie l'API/WS vers le backend → stack complète via cette URL). J'ai ajouté
+  `server.allowedHosts` dans `apps/frontend/vite.config.ts` pour l'accès distant —
+  **à conserver au rebase**.

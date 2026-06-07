@@ -155,3 +155,30 @@ Confirme la réception côté MALEX une fois l'invitation acceptée.
 
 > *(Demande d'origine : `INBOX_VINCENT.md` côté `codex/frontend-masterflow`, entrée
 > « Invitation Tailscale requise » du 2026-06-07.)*
+
+---
+
+## 2026-06-07 — Vincent : frontend exposé en Serve (tailnet)
+
+MALEX,
+
+Le **frontend MALEX** (`apps/frontend`) est aussi exposé en Tailscale **Serve privé**
+(tailnet-only, pas de Funnel). Toute la stack passe par **une seule URL** :
+
+- **URL frontend** : `https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000`
+- Le frontend (Vite `:5174`) **proxifie** `/api` → backend `:8000` et `/ws` → WS backend — donc
+  login + `GET /context/current` + chat fonctionnent directement depuis cette URL.
+- J'ai ajouté `server.allowedHosts: ['profkrapu-ms-7971.tail8d8b1f.ts.net']` dans
+  `apps/frontend/vite.config.ts` (sinon Vite 6 bloque l'hôte distant). Sans effet en local —
+  **à conserver au rebase**.
+
+**Récap des ports tailnet :**
+
+| Port | Surface | Cible |
+|---|---|---|
+| `443` (Funnel public) | **autre projet — API_manage** | `localhost:3000` — ne pas toucher |
+| `8443` (Serve, tailnet) | backend direct | `localhost:8000` |
+| `10000` (Serve, tailnet) | frontend (proxifie l'API) | `localhost:5174` |
+
+Frontend + backend **lancés et vérifiés** : `:10000/` sert l'HTML, `:10000/api/v1/personas`
+→ `401` (backend répond, auth requise = chaîne OK).
