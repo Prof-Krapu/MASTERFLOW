@@ -1,15 +1,34 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {FormEvent, ReactElement} from 'react';
 
-import type {AuthResponse, CurrentContext} from '@masterflow/shared';
+import type {ActionRegistryEntry, AuthResponse, CurrentContext, Persona, RegistryStatus} from '@masterflow/shared';
 
-import {getCurrentContext, login, setToken} from './api.ts';
+import {getAvailableActions, getCurrentContext, getPersonas, login, setToken} from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
+type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
+
+const STATUS_LABEL: Record<RegistryStatus, string> = {
+  live: 'live',
+  future: 'a venir',
+  out_of_scope: 'masque',
+};
+
+function bucketActions(actions: ActionRegistryEntry[]): ActionBuckets {
+  return actions.reduce<ActionBuckets>(
+    (acc, action) => {
+      acc[action.status].push(action);
+      return acc;
+    },
+    {live: [], future: [], out_of_scope: []},
+  );
+}
 
 function App(): ReactElement {
   const [auth, setAuth] = useState<AuthResponse | null>(null);
   const [context, setContext] = useState<CurrentContext | null>(null);
+  const [personas, setPersonas] = useState<Persona[]>([]);
+  const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
   const [username, setUsername] = useState('vincent');
   const [password, setPassword] = useState('masterflow');
   const [state, setState] = useState<LoadState>('idle');
@@ -18,17 +37,34 @@ function App(): ReactElement {
   const isConnected = auth !== null && context !== null;
 
   const actionSummary = useMemo(() => {
-    if (!context) return '0 action';
-    const count = context.available_actions.length;
+    const count = actions.length;
     return count > 1 ? `${count} actions` : `${count} action`;
-  }, [context]);
+  }, [actions.length]);
+
+  const visiblePersonas = personas.length > 0 ? personas : (context?.personas ?? []);
+  const visibleActions = actions.length > 0 ? actions : (context?.available_actions ?? []);
+
+  const actionBuckets = useMemo(() => bucketActions(visibleActions), [visibleActions]);
+
+  const activePersonaId = context?.active_blend?.speaker_persona_id ?? null;
+
+  const activePersona = useMemo(() => {
+    if (!activePersonaId) return null;
+    return visiblePersonas.find((persona) => persona.id === activePersonaId) ?? null;
+  }, [activePersonaId, visiblePersonas]);
 
   const loadContext = useCallback(async (token: string): Promise<void> => {
     setState('loading');
     setError(null);
     try {
-      const current = await getCurrentContext(token);
+      const [current, nextPersonas, nextActions] = await Promise.all([
+        getCurrentContext(token),
+        getPersonas(token),
+        getAvailableActions(token),
+      ]);
       setContext(current);
+      setPersonas(nextPersonas);
+      setActions(nextActions);
       setState('ready');
     } catch (err) {
       setState('error');
@@ -56,6 +92,8 @@ function App(): ReactElement {
   const handleLogout = useCallback((): void => {
     setAuth(null);
     setContext(null);
+    setPersonas([]);
+    setActions([]);
     setToken(null);
     setState('idle');
     setError(null);
@@ -131,18 +169,95 @@ function App(): ReactElement {
                   <dt>Actions</dt>
                   <dd>{actionSummary}</dd>
                 </div>
+                <div>
+                  <dt>Porte-parole</dt>
+                  <dd>{activePersona?.name ?? 'persona simple'}</dd>
+                </div>
               </dl>
             ) : (
               <p className="muted">Contexte en attente.</p>
             )}
+            {error ? (
+              <div className="notice notice--error">
+                <strong>Backend indisponible</strong>
+                <span>{error}</span>
+                <button className="secondary" onClick={() => auth ? void loadContext(auth.token) : undefined} type="button">
+                  Reessayer
+                </button>
+              </div>
+            ) : null}
           </article>
 
           <article className="panel">
-            <h2>Prochaine couche</h2>
-            <p className="muted">
-              Shell connecte au contrat REST. Les widgets chat, personas, actions et ressources
-              arrivent un par un apres validation de cette base.
-            </p>
+            <h2>Réseau</h2>
+            <dl className="facts">
+              <div>
+                <dt>API</dt>
+                <dd>/api/v1</dd>
+              </div>
+              <div>
+                <dt>Mode distant</dt>
+                <dd>IP tailnet directe</dd>
+              </div>
+              <div>
+                <dt>Fallback</dt>
+                <dd>retry manuel</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article className="panel panel--wide">
+            <div className="panel-header">
+              <h2>Personas</h2>
+              <span className="counter">{visiblePersonas.length}</span>
+            </div>
+            {visiblePersonas.length > 0 ? (
+              <div className="persona-grid">
+                {visiblePersonas.map((persona) => (
+                  <section
+                    className={`persona-card${persona.id === activePersonaId ? ' persona-card--active' : ''}`}
+                    key={persona.id}
+                  >
+                    <div>
+                      <h3>{persona.name}</h3>
+                      <p>{persona.domain}</p>
+                    </div>
+                    <span>{persona.status}</span>
+                  </section>
+                ))}
+              </div>
+            ) : (
+              <p className="muted">Aucun persona charge.</p>
+            )}
+          </article>
+
+          <article className="panel panel--wide">
+            <div className="panel-header">
+              <h2>Actions</h2>
+              <span className="counter">{visibleActions.length}</span>
+            </div>
+            <div className="action-columns">
+              {(['live', 'future', 'out_of_scope'] as const).map((status) => (
+                <section className="action-column" key={status}>
+                  <div className="column-title">
+                    <h3>{STATUS_LABEL[status]}</h3>
+                    <span>{actionBuckets[status].length}</span>
+                  </div>
+                  <div className="action-list">
+                    {actionBuckets[status].map((action) => (
+                      <article className={`action-item action-item--${status}`} key={action.action_id}>
+                        <div>
+                          <strong>{action.label}</strong>
+                          <span>{action.action_id}</span>
+                        </div>
+                        <small>{action.risk_level}</small>
+                      </article>
+                    ))}
+                    {actionBuckets[status].length === 0 ? <p className="muted compact">Vide.</p> : null}
+                  </div>
+                </section>
+              ))}
+            </div>
           </article>
         </section>
       )}

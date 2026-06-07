@@ -54,6 +54,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Frontend couche 2 : personas, actions, états réseau
+
+**Périmètre :** avancer côté MALEX sans dépendre du backend distant encore bloqué sur les ports
+tailnet. Aucun backend delta, aucune action sensible déclenchée.
+
+### Construit
+
+- Client frontend enrichi avec `GET /personas` et `GET /actions/available`.
+- Home Room affiche maintenant :
+  - contexte courant ;
+  - personas disponibles ;
+  - porte-parole actif si un blend est présent ;
+  - registre d'actions groupé `live` / `future` / `out_of_scope` ;
+  - état réseau avec retry manuel.
+- Les actions `out_of_scope` restent masquées visuellement ; les actions `future` sont affichées
+  comme non fonctionnelles.
+
+### Note
+
+- Le test réel `login → context/personas/actions` attend toujours que `100.100.128.63:8000`
+  et `:5174` répondent depuis MALEX.
+
+---
+
 ## 2026-06-06 — Intégration MALEX : réconciliation, alignement seed, réponses de sync
 
 **Contexte.** MALEX a poussé `codex/frontend-masterflow` (6 commits) : workspace `apps/frontend`,

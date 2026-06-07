@@ -1,4 +1,4 @@
-import type {AuthResponse, CurrentContext} from '@masterflow/shared';
+import type {ActionRegistryEntry, AuthResponse, CurrentContext, Persona} from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
 
@@ -63,4 +63,12 @@ export async function login(username: string, password: string): Promise<AuthRes
 
 export async function getCurrentContext(token?: string | null): Promise<CurrentContext> {
   return request<CurrentContext>('/context/current', {method: 'GET'}, token);
+}
+
+export async function getPersonas(token?: string | null): Promise<Persona[]> {
+  return request<Persona[]>('/personas', {method: 'GET'}, token);
+}
+
+export async function getAvailableActions(token?: string | null): Promise<ActionRegistryEntry[]> {
+  return request<ActionRegistryEntry[]>('/actions/available', {method: 'GET'}, token);
 }

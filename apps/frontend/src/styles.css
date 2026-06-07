@@ -158,6 +158,10 @@ label {
   grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
 }
 
+.panel--wide {
+  grid-column: 1 / -1;
+}
+
 .facts {
   display: grid;
   gap: 10px;
@@ -188,8 +192,151 @@ dd {
   margin-bottom: 0;
 }
 
+.notice {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+}
+
+.notice--error {
+  border-color: rgba(255, 143, 143, 0.42);
+}
+
+.notice strong,
+.notice span {
+  display: block;
+}
+
+.counter {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  min-width: 40px;
+  padding: 4px 10px;
+  text-align: center;
+}
+
+.persona-grid,
+.action-columns {
+  display: grid;
+  gap: 12px;
+}
+
+.persona-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.persona-card,
+.action-item {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.persona-card {
+  display: grid;
+  gap: 14px;
+  min-height: 128px;
+  padding: 14px;
+}
+
+.persona-card--active {
+  border-color: rgba(88, 193, 137, 0.68);
+}
+
+.persona-card h3,
+.action-column h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.persona-card p {
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+
+.persona-card span {
+  align-self: end;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.action-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.action-column {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.column-title,
+.action-item {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.column-title {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.column-title span,
+.action-item small {
+  color: var(--muted);
+}
+
+.action-list {
+  display: grid;
+  gap: 8px;
+}
+
+.action-item {
+  padding: 10px;
+}
+
+.action-item--live {
+  border-color: rgba(88, 193, 137, 0.48);
+}
+
+.action-item--future {
+  opacity: 0.72;
+}
+
+.action-item--out_of_scope {
+  display: none;
+}
+
+.action-item strong,
+.action-item span {
+  display: block;
+}
+
+.action-item span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+.compact {
+  margin: 0;
+}
+
 @media (max-width: 720px) {
   .workspace,
+  .persona-grid,
+  .action-columns,
   .topbar,
   .panel-header,
   .facts div {
