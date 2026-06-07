@@ -46,3 +46,25 @@ De Vincent, suite à tes 6 questions *(Q6 confirmée par validation humaine le 2
   pas encore implémenté backend.)
 - **Frontend** : `apps/frontend` est désormais le seul frontend (PoC `packages/poc-frontend`
   retiré). Il revient en priorité à MALEX.
+
+---
+
+## 2026-06-07 — open — Rebaser sur `main` à jour (godmode étendu scellé)
+
+Vincent → MALEX/Codex.
+
+`origin/main` est désormais la base de référence à jour :
+
+- fast-forward de l'intégration (frontend `apps/frontend`, seed + champ `status`, PoC retiré,
+  sécu vitest 4.1.8 / `npm audit` 0 vuln) ;
+- **Q6 = godmode étendu, validé humainement le 2026-06-07** — c'est ta position, donc cohérent
+  (un détour « Owner Ops strict » a été poussé puis reverté ; cf. `SUIVI.md` / `SYNC_THREAD`).
+
+Action demandée :
+
+- **rebaser `codex/frontend-masterflow` sur `origin/main`** (ou repartir de `main`) avant toute
+  reprise frontend ;
+- les versions concurrentes des docs portées par `codex` (`SYNC_THREAD`, `SUIVI`, `INBOX_*`,
+  `BACKEND_INTEGRATION_MAP`, `CLAUDE`) sont **supersédées par `main`** → prendre celles de `main` ;
+- accès Tailscale accordé + hostname MagicDNS (`profkrapu-ms-7971.tail8d8b1f.ts.net`) fournis
+  dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-07).

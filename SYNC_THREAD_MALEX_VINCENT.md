@@ -141,8 +141,9 @@ Accès tailnet **accordé**. J'invite ton compte Tailscale au tailnet MasterFlow
 machine qui héberge le backend. On reste sur **Tailscale Serve** — **pas de Funnel, aucun port
 public**.
 
-- Hostname MagicDNS privé du backend : `<À COMPLÉTER PAR VINCENT>`
-- Backend exposé en local sur `:8000` (REST `/api/v1` + WS `/ws`).
+- Hostname MagicDNS privé du backend : `profkrapu-ms-7971.tail8d8b1f.ts.net`
+- Backend exposé en local sur `:8000` (REST `/api/v1` + WS `/ws`), atteignable via ce hostname
+  en Tailscale **Serve**.
 - Périmètre de test inchangé : `POST /auth/login` + `GET /context/current` uniquement ; le
   lancement effectif (`npm run dev`) reste mon acte — je dirai « clé tournée » ici.
 
