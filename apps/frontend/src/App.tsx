@@ -22,6 +22,19 @@ type ChatTurn = {
   speaker?: string;
 };
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
+type WorkModeId = 'home' | 'teaching' | 'story' | 'project' | 'learning' | 'inventory' | 'admin';
+type WorkMode = {
+  id: WorkModeId;
+  label: string;
+  signal: string;
+  requiredRole?: 'admin' | 'godmode';
+};
+type DeckItem = {
+  id: string;
+  label: string;
+  meta: string;
+  status: string;
+};
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
   live: 'live',
@@ -35,6 +48,18 @@ const ROLE_LABEL: Record<string, string> = {
   admin: 'admin',
   godmode: 'godmode',
 };
+
+const WORK_MODES: WorkMode[] = [
+  {id: 'home', label: 'Home', signal: 'situation'},
+  {id: 'teaching', label: 'Teaching', signal: 'classes'},
+  {id: 'story', label: 'Story', signal: 'histoires'},
+  {id: 'project', label: 'Project', signal: 'projets'},
+  {id: 'learning', label: 'Learning', signal: 'parcours'},
+  {id: 'inventory', label: 'Inventory', signal: 'ressources'},
+  {id: 'admin', label: 'Admin', signal: 'supervision', requiredRole: 'admin'},
+];
+
+const DEFAULT_WORK_MODE: WorkMode = WORK_MODES[0] ?? {id: 'home', label: 'Home', signal: 'situation'};
 
 function bucketActions(actions: ActionRegistryEntry[]): ActionBuckets {
   return actions.reduce<ActionBuckets>(
@@ -57,6 +82,12 @@ function nextId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function canUseMode(mode: WorkMode, role: string | undefined): boolean {
+  if (!mode.requiredRole) return true;
+  if (mode.requiredRole === 'admin') return role === 'admin' || role === 'godmode';
+  return role === 'godmode';
+}
+
 function App(): ReactElement {
   const [auth, setAuth] = useState<AuthResponse | null>(null);
   const [context, setContext] = useState<CurrentContext | null>(null);
@@ -67,6 +98,7 @@ function App(): ReactElement {
   const [password, setPassword] = useState('');
   const [state, setState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [selectedMode, setSelectedMode] = useState<WorkModeId>('home');
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -89,6 +121,11 @@ function App(): ReactElement {
   const lockedActions = actionBuckets.future.slice(0, 4);
   const isGodmode = context?.user.role === 'godmode';
   const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
+  const availableModes = useMemo(
+    () => WORK_MODES.filter((mode) => canUseMode(mode, context?.user.role)),
+    [context?.user.role],
+  );
+  const activeMode = availableModes.find((mode) => mode.id === selectedMode) ?? availableModes[0] ?? DEFAULT_WORK_MODE;
 
   const activePersonaId = context?.active_blend?.speaker_persona_id ?? null;
 
@@ -96,6 +133,87 @@ function App(): ReactElement {
     if (!activePersonaId) return null;
     return visiblePersonas.find((persona) => persona.id === activePersonaId) ?? null;
   }, [activePersonaId, visiblePersonas]);
+
+  const situationStats = useMemo(() => [
+    {label: 'Modes', value: availableModes.length.toString()},
+    {label: 'Sources', value: resources.length.toString()},
+    {label: 'Actions live', value: liveActions.length.toString()},
+    {label: 'Persona', value: activePersona?.name ?? visiblePersonas[0]?.name ?? 'simple'},
+  ], [activePersona?.name, availableModes.length, liveActions.length, resources.length, visiblePersonas]);
+
+  const modeDeck = useMemo<DeckItem[]>(() => {
+    if (activeMode.id === 'inventory') {
+      const inventoryItems = resources.slice(0, 6).map((resource) => ({
+        id: resource.id,
+        label: resource.title,
+        meta: resource.source,
+        status: resource.status,
+      }));
+      return inventoryItems.length > 0
+        ? inventoryItems
+        : [{id: 'empty-inventory', label: 'Inventaire', meta: 'source truth', status: 'vide'}];
+    }
+
+    if (activeMode.id === 'admin') {
+      return [
+        {id: 'live-actions', label: 'Actions live', meta: 'registre actif', status: String(actionBuckets.live.length)},
+        {id: 'future-actions', label: 'Actions futures', meta: 'verrouille', status: String(actionBuckets.future.length)},
+        {id: 'hidden-actions', label: 'Hors scope', meta: 'masque', status: String(actionBuckets.out_of_scope.length)},
+        {id: 'ws-state', label: 'WebSocket', meta: 'chat runtime', status: wsState},
+      ];
+    }
+
+    if (activeMode.id === 'teaching') {
+      return [
+        {id: 'classes-placeholder', label: 'Classes', meta: 'backend phase suivante', status: 'a brancher'},
+        {id: 'subjects-placeholder', label: 'Sujets', meta: 'subject compiler futur', status: 'future'},
+        {id: 'students-placeholder', label: 'Eleves', meta: 'profil + competences', status: 'future'},
+      ];
+    }
+
+    if (activeMode.id === 'story') {
+      return [
+        {id: 'stories-placeholder', label: 'Histoires', meta: 'MasterStory', status: 'future'},
+        {id: 'arcs-placeholder', label: 'Arcs', meta: 'reader graph', status: 'future'},
+        {id: 'scenes-placeholder', label: 'Scenes', meta: 'zoom narratif', status: 'future'},
+      ];
+    }
+
+    if (activeMode.id === 'project') {
+      return [
+        {id: 'active-project', label: context?.room.name ?? 'Projet courant', meta: 'room active', status: 'active'},
+        {id: 'timeline-placeholder', label: 'Timeline', meta: 'progression', status: 'future'},
+        {id: 'tasks-placeholder', label: 'Taches', meta: 'next actions', status: 'future'},
+      ];
+    }
+
+    if (activeMode.id === 'learning') {
+      const learningItems = resources.slice(0, 3).map((resource) => ({
+        id: resource.id,
+        label: resource.title,
+        meta: 'ressource validee',
+        status: 'pret',
+      }));
+      return learningItems.length > 0
+        ? learningItems
+        : [{id: 'learning-empty', label: 'Parcours', meta: 'ressources validees', status: 'a remplir'}];
+    }
+
+    return [
+      {id: 'room', label: context?.room.name ?? 'Home Room', meta: context?.room_instance.active_surface ?? 'workspace', status: 'active'},
+      {id: 'sources', label: 'Sources validees', meta: 'source truth', status: String(resources.length)},
+      {id: 'chat', label: 'Chat compact', meta: 'pilotage', status: wsState},
+    ];
+  }, [activeMode.id, actionBuckets.future.length, actionBuckets.live.length, actionBuckets.out_of_scope.length, context?.room.name, context?.room_instance.active_surface, resources, wsState]);
+
+  const mainSignal = useMemo(() => {
+    if (activeMode.id === 'inventory') return resources.length > 0 ? 'Ressources validees pretes a etre reutilisees.' : 'Aucune source validee chargee.';
+    if (activeMode.id === 'admin') return 'Supervision godmode active, sans Owner Ops fonctionnel expose.';
+    if (activeMode.id === 'teaching') return 'Mode Teaching pret, donnees classes/eleves a brancher en phase suivante.';
+    if (activeMode.id === 'story') return 'Mode Story pret, workbench narratif encore hors UI runtime.';
+    if (activeMode.id === 'learning') return resources.length > 0 ? 'Learning peut demarrer depuis les ressources validees.' : 'Learning attend des ressources validees.';
+    return liveActions.length > 0 ? `${liveActions.length} actions live disponibles dans ce contexte.` : 'Situation stable, aucune action live urgente.';
+  }, [activeMode.id, liveActions.length, resources.length]);
 
   const loadContext = useCallback(async (token: string): Promise<void> => {
     setState('loading');
@@ -146,6 +264,7 @@ function App(): ReactElement {
     setResources([]);
     setToken(null);
     setState('idle');
+    setSelectedMode('home');
     setWsState('idle');
     setChatInput('');
     setChatTurns([]);
@@ -293,12 +412,12 @@ function App(): ReactElement {
         </form>
       ) : (
         <section className="workspace" aria-label="Contexte courant">
-          <article className="panel room-hero">
+          <article className="panel situation-panel">
             {context ? (
               <>
                 <div className="room-title">
                   <div>
-                    <p className="eyebrow">{roomMode}</p>
+                    <p className="eyebrow">{roomMode} / {activeMode.signal}</p>
                     <h2>{context.room.name}</h2>
                   </div>
                   <button className="secondary" onClick={handleLogout} type="button">
@@ -310,17 +429,13 @@ function App(): ReactElement {
                   <span>{activePersona?.name ?? 'persona simple'}</span>
                   <span>{context.room_instance.active_surface}</span>
                 </div>
-                <div className="next-actions" aria-label="Actions utiles">
-                  {nextActions.length > 0 ? (
-                    nextActions.map((action) => (
-                      <button className="action-chip" disabled={action.preflight_required} key={action.action_id} type="button">
-                        <span>{action.label}</span>
-                        <small>{action.preflight_required ? 'preflight' : action.risk_level}</small>
-                      </button>
-                    ))
-                  ) : (
-                    <p className="muted compact">Aucune action live disponible.</p>
-                  )}
+                <div className="situation-grid" aria-label="Situation">
+                  {situationStats.map((stat) => (
+                    <div className="situation-stat" key={stat.label}>
+                      <span>{stat.label}</span>
+                      <strong>{stat.value}</strong>
+                    </div>
+                  ))}
                 </div>
               </>
             ) : (
@@ -337,7 +452,59 @@ function App(): ReactElement {
             ) : null}
           </article>
 
-          <article className="panel source-strip">
+          <nav className="panel mode-rail" aria-label="Modes MasterFlow">
+            {availableModes.map((mode) => (
+              <button
+                className={`mode-button${activeMode.id === mode.id ? ' mode-button--active' : ''}`}
+                key={mode.id}
+                onClick={() => setSelectedMode(mode.id)}
+                type="button"
+              >
+                <strong>{mode.label}</strong>
+                <span>{mode.signal}</span>
+              </button>
+            ))}
+          </nav>
+
+          <article className="panel panel--wide main-widget">
+            <div className="panel-header">
+              <h2>{activeMode.label}</h2>
+              <span className="counter">{activeMode.signal}</span>
+            </div>
+            <p className="main-signal">{mainSignal}</p>
+            <div className="next-actions" aria-label="Actions utiles">
+              {nextActions.length > 0 ? (
+                nextActions.map((action) => (
+                  <button className="action-chip" disabled={action.preflight_required} key={action.action_id} type="button">
+                    <span>{action.label}</span>
+                    <small>{action.preflight_required ? 'preflight' : action.risk_level}</small>
+                  </button>
+                ))
+              ) : (
+                <p className="muted compact">Aucune action live disponible.</p>
+              )}
+            </div>
+          </article>
+
+          <article className="panel panel--wide">
+            <div className="panel-header">
+              <h2>Objets</h2>
+              <span className="counter">{modeDeck.length}</span>
+            </div>
+            <div className="object-deck">
+              {modeDeck.map((item) => (
+                <article className="object-card" key={item.id}>
+                  <div>
+                    <strong>{item.label}</strong>
+                    <span>{item.meta}</span>
+                  </div>
+                  <small>{item.status}</small>
+                </article>
+              ))}
+            </div>
+          </article>
+
+          <article className="panel panel--wide source-strip">
             <div className="panel-header">
               <h2>Sources</h2>
               <span className="counter">{resources.length}</span>
@@ -353,28 +520,6 @@ function App(): ReactElement {
               </div>
             ) : (
               <p className="muted compact">Aucune source validee chargee.</p>
-            )}
-          </article>
-
-          <article className="panel panel--wide">
-            <div className="panel-header">
-              <h2>Personas</h2>
-              <span className="counter">{visiblePersonas.length}</span>
-            </div>
-            {visiblePersonas.length > 0 ? (
-              <div className="persona-strip">
-                {visiblePersonas.map((persona) => (
-                  <section
-                    className={`persona-pill${persona.id === activePersonaId ? ' persona-pill--active' : ''}`}
-                    key={persona.id}
-                  >
-                    <strong>{persona.name}</strong>
-                    <span>{persona.domain}</span>
-                  </section>
-                ))}
-              </div>
-            ) : (
-              <p className="muted">Aucun persona charge.</p>
             )}
           </article>
 
@@ -410,33 +555,24 @@ function App(): ReactElement {
             </form>
           </article>
 
-          <article className="panel panel--wide">
-            <div className="panel-header">
-              <h2>Actions verrouillees</h2>
-              <span className="counter">{lockedActions.length}</span>
-            </div>
-            <div className="locked-grid">
-              {lockedActions.length > 0 ? (
-                lockedActions.map((action) => (
-                  <article className="locked-item" key={action.action_id}>
-                    <div>
-                      <strong>{action.label}</strong>
-                      <span>{action.endpoint}</span>
-                    </div>
-                    <small>{STATUS_LABEL[action.status]}</small>
-                  </article>
-                ))
-              ) : (
-                <p className="muted compact">Aucune action future dans le registre.</p>
-              )}
-            </div>
-          </article>
-
           {isGodmode ? (
             <article className="panel panel--wide debug-panel">
               <div className="panel-header">
                 <h2>Debug</h2>
                 <span className="counter">{actionSummary}</span>
+              </div>
+              <div className="locked-grid">
+                {lockedActions.length > 0 ? (
+                  lockedActions.map((action) => (
+                    <article className="locked-item" key={action.action_id}>
+                      <div>
+                        <strong>{action.label}</strong>
+                        <span>{action.endpoint}</span>
+                      </div>
+                      <small>{STATUS_LABEL[action.status]}</small>
+                    </article>
+                  ))
+                ) : null}
               </div>
               <dl className="facts">
                 <div>

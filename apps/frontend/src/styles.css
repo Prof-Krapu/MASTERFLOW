@@ -221,14 +221,13 @@ dd {
   text-align: center;
 }
 
-.persona-strip,
 .locked-grid,
 .resource-list {
   display: grid;
   gap: 12px;
 }
 
-.room-hero {
+.situation-panel {
   display: grid;
   gap: 18px;
 }
@@ -266,6 +265,68 @@ dd {
   padding: 5px 10px;
 }
 
+.situation-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.situation-stat {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  min-height: 74px;
+  padding: 10px;
+}
+
+.situation-stat span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.situation-stat strong {
+  overflow-wrap: anywhere;
+}
+
+.mode-rail {
+  align-self: start;
+  display: grid;
+  gap: 8px;
+}
+
+.mode-button {
+  background: #12151b;
+  border-color: var(--line);
+  color: var(--text);
+  display: grid;
+  gap: 2px;
+  min-height: 54px;
+  text-align: left;
+}
+
+.mode-button span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mode-button--active {
+  border-color: rgba(88, 193, 137, 0.72);
+  color: var(--accent-strong);
+}
+
+.main-widget {
+  border-color: rgba(126, 183, 255, 0.38);
+}
+
+.main-signal {
+  color: var(--text);
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+
 .action-chip {
   align-items: center;
   background: #f4f2eb;
@@ -301,23 +362,40 @@ dd {
   overflow-wrap: anywhere;
 }
 
-.persona-pill {
+.object-deck {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.object-card {
   background: #12151b;
   border: 1px solid var(--line);
   border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 86px;
+  padding: 12px;
+}
+
+.object-card div {
   display: grid;
-  gap: 2px;
-  min-width: 180px;
-  padding: 10px 12px;
+  gap: 3px;
 }
 
-.persona-pill--active {
-  border-color: rgba(88, 193, 137, 0.72);
-}
-
-.persona-pill span {
+.object-card span {
   color: var(--muted);
   font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.object-card small {
+  color: var(--accent-strong);
+  font-weight: 700;
+  max-width: 88px;
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 
 .locked-item {
@@ -446,6 +524,11 @@ dd {
   }
 
   .chat-form {
+    grid-template-columns: 1fr;
+  }
+
+  .situation-grid,
+  .object-deck {
     grid-template-columns: 1fr;
   }
 

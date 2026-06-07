@@ -4,6 +4,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 5 : Home Room situationnelle
+
+**Perimetre.** Premier refactor UI depuis la doctrine MALEX, sans backend delta et sans action sensible.
+
+### Construit
+
+- Home Room recentree sur une situation lisible : modes disponibles, sources, actions live, persona.
+- Rail de modes : Home, Teaching, Story, Project, Learning, Inventory, Admin selon role.
+- Widget principal dynamique par mode, avec signal court et 1-3 actions utiles.
+- Object deck contextuel par mode au lieu d'un catalogue de personas/features.
+- Actions futures/verrouillees retirees de l'experience normale ; consultables seulement en godmode/debug.
+
+### Intention
+
+Cette couche reste volontairement sobre : elle pose la navigation canon `situation -> mode -> objet`
+avant d'ouvrir les rooms specialisees ou les flows d'onboarding.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+| Vite local `http://127.0.0.1:5174/` | HTTP 200 |
+
+Note : capture Playwright non realisee car `playwright` n'est pas installe dans le workspace.
+
+---
+
 ## 2026-06-08 — Synthese UI MALEX : situation avant fonctionnalites
 
 **Contexte.** MALEX fournit une synthese UI issue d'un debrief : le frontend fonctionne
