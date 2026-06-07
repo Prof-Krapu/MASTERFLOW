@@ -4,6 +4,61 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Accès MALEX : bascule Funnel PUBLIC + durcissement secrets + intégration front
+
+**Contexte.** Déblocage de l'accès distant de MALEX (toutes les voies privées Tailscale ont
+échoué), puis validation + intégration du frontend Home Room de MALEX sur `main`.
+
+### Diagnostic accès (voies privées épuisées)
+
+- **Serve ne sert pas les nœuds partagés** (sharee) → `:8443`/`:10000` timeout pour MALEX.
+- **IP tailnet directe** échoue aussi : `tailscale ping` OK mais TCP jamais établi ; `tcpdump`
+  host = **0 paquet** de l'IP MALEX sur `tailscale0`, 0 conntrack. **Firewall écarté** (`ts-input`
+  accepte tout le trafic tailscale, compteurs ; `netcheck` host sain). Cause = **plan de données
+  Tailscale KO entre le NAT FAI de MALEX et la box** (les machines qui marchaient étaient toutes
+  sur le LAN ; MALEX seul est distant, via DERP Paris).
+
+### Décision (validée humainement par Vincent)
+
+- **Exposer en Tailscale Funnel PUBLIC** : `:8443` (backend) + `:10000` (frontend). **`443` =
+  Funnel API_manage, intact.** + **partage du compte godmode** avec MALEX (le classifier auto
+  avait bloqué la génération de creds sans validation explicite → confirmée).
+
+### Durcissement sécu (obligatoire avant ouverture publique, fait)
+
+- `JWT_SECRET` **régénéré** : l'ancien fallback codé en dur (`dev-…-change-me`) permettait de
+  **forger un token godmode** — prouvé par forge HS256 (`/me` 200 avant, 401 après) puis fermé.
+- **Mot de passe godmode tourné** (défaut public `vincent/masterflow`).
+- Les deux dans `apps/backend/.env` (gitignoré, `dotenv` chargé ; ⚠️ `tsx watch` ne recharge pas
+  `.env` → **redémarrage backend requis**). Identifiants transmis **hors-bande** (jamais dans Git).
+- Risque résiduel noté : `POST /auth/register` ouvert (crée rôle `student`).
+- Nettoyage : 6 process backend orphelins (vieux `tsx` détachés) supprimés.
+
+### Intégration frontend MALEX (couches 2-4) — validé + mergé
+
+- Revue Home Room cockpit + chat WS + couche personas/registry (`App.tsx`, `api.ts`,
+  `styles.css`) : conforme `@masterflow/shared`, invariants OK (buckets `status`, **1 speaker**,
+  `method_attribution`, ressources `validated` only, `preflight_required` désactive le chip),
+  `wss` derrière le funnel. Fast-forward `main` ← `codex` (pas de divergence), **live sur le
+  funnel `:10000`** sans erreur. Note : login pré-remplit l'ancien mdp (mort) → à vider (public).
+
+### Validation (run réel)
+
+| Vérif | Résultat |
+|---|---|
+| Backend public `:8443/health` | 200 |
+| Frontend public `:10000/` | MasterFlow servi |
+| `:10000/api/v1/personas` (proxy) | 401 (backend joint) |
+| `443` API_manage | 200 (intact) |
+| Login godmode public (nouveau mdp) | 200 |
+| Token forgé **ancien** JWT secret → `/me` | 401 (rotation OK) |
+| Frontend `tsc --noEmit` + `vite build` | OK (30 modules) |
+
+Refs : `ee77878` (funnel + secrets), `7da3a90` (fix doc risques), `f14509d` (validation front),
+`b006df3` (clôture items inbox).
+
+---
+
 ## 2026-06-07 — Frontend couche 4 : chat compact + WebSocket
 
 **Périmètre :** ajouter la surface chat Home Room sans action sensible, sans écriture canon et
