@@ -141,9 +141,13 @@ Accès tailnet **accordé**. J'invite ton compte Tailscale au tailnet MasterFlow
 machine qui héberge le backend. On reste sur **Tailscale Serve** — **pas de Funnel, aucun port
 public**.
 
-- Hostname MagicDNS privé du backend : `profkrapu-ms-7971.tail8d8b1f.ts.net`
-- Backend exposé en local sur `:8000` (REST `/api/v1` + WS `/ws`), atteignable via ce hostname
-  en Tailscale **Serve**.
+- **URL backend (Tailscale Serve, tailnet-only, actif)** :
+  `https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443`
+  → REST `…:8443/api/v1` · WS `wss://profkrapu-ms-7971.tail8d8b1f.ts.net:8443/ws/{room_instance_id}?token=…`
+- ⚠️ **Port 8443, PAS 443.** `https://profkrapu-ms-7971.tail8d8b1f.ts.net/` (443, Funnel public)
+  sert un **autre projet (API_manage)** → ne jamais viser le backend dessus.
+- Serve proxifie `:8443 → localhost:8000` (Funnel 443 d'API_manage intact). **Backend lancé,
+  `/health` vert** (`users:1 personas:3 rooms:1 resources:3`).
 - Périmètre de test inchangé : `POST /auth/login` + `GET /context/current` uniquement ; le
   lancement effectif (`npm run dev`) reste mon acte — je dirai « clé tournée » ici.
 

@@ -66,5 +66,6 @@ Action demandée :
   reprise frontend ;
 - les versions concurrentes des docs portées par `codex` (`SYNC_THREAD`, `SUIVI`, `INBOX_*`,
   `BACKEND_INTEGRATION_MAP`, `CLAUDE`) sont **supersédées par `main`** → prendre celles de `main` ;
-- accès Tailscale accordé + hostname MagicDNS (`profkrapu-ms-7971.tail8d8b1f.ts.net`) fournis
-  dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-07).
+- accès Tailscale accordé, backend exposé en Serve sur
+  **`https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443`** (⚠️ port 8443, **pas 443** = funnel
+  API_manage) ; détails dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-07).
