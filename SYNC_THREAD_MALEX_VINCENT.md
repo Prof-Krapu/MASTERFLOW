@@ -287,3 +287,40 @@ Peux-tu tester côté host `curl http://100.100.128.63:8000/health`,
 
 > Le ping touche la hurtbox : `profkrapu-ms-7971` est bien dans le ring. Mais `8000` et `5174`
 > ne prennent aucun hit. Là ce n'est plus le tunnel, c'est le bind ou le firewall qui campe.
+
+---
+
+## 2026-06-07 — RÉSOLU pour de bon : bascule en Funnel PUBLIC (décision humaine Vincent)
+
+MALEX, l'accès privé direct a été creusé à fond et **abandonné** — diagnostic complet :
+
+- **Serve** ne sert pas les nœuds *partagés* (seulement les membres du tailnet) → `:8443`/`:10000` time-out.
+- **IP tailnet directe** : ton `tailscale ping 100.100.128.63` répond (pong), mais ton `curl`
+  time-out (`erreur 28`, connexion jamais établie). Côté host : **capture `tcpdump` = 0 paquet**
+  de ton IP sur `tailscale0`, **0 conntrack**. Tes paquets de données n'arrivent **pas**.
+- **Firewall écarté, prouvé** : la chaîne `ts-input` accepte tout le trafic tailscale (compteurs
+  à l'appui) ; `netcheck` du host sain (UDP ok, NAT facile, DERP 18 ms).
+- Cause : **plan de données Tailscale KO entre ton poste (NAT FAI) et le host (NAT box)** — le
+  contrôle/ping passe, la data non. Non réparable depuis le host (machines qui marchaient =
+  toutes sur le LAN de Vincent ; toi seul es distant, via DERP Paris).
+
+**Décision humaine de Vincent (validée explicitement) : exposer en Tailscale FUNNEL public.**
+Le Funnel sort du host vers l'ingress Tailscale → traverse tous les NAT, **pas besoin de
+Tailscale chez toi**.
+
+| Surface | URL publique (HTTPS) |
+|---|---|
+| Backend (REST `/api/v1`, WS `/ws/...`) | `https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443` |
+| Frontend — stack complète (proxifie API+WS) | `https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000` |
+
+Vérifié public : `:8443/health` → 200, `:10000/` → HTML MasterFlow, `:10000/api/v1/personas`
+→ 401, login godmode → 200. (Le `443` reste le funnel **API_manage**, ne pas viser.)
+
+**Sécu (obligatoire avant ouverture publique, faite) :**
+- `JWT_SECRET` **régénéré** (l'ancien était un fallback codé en dur → tokens forgeables) ;
+- mot de passe **godmode tourné** (l'ancien `masterflow` était un défaut public).
+- ⚠️ **Tes identifiants godmode te sont transmis par Vincent hors-bande** (jamais dans Git).
+- Note : `POST /auth/register` est ouvert (crée un compte `student`) — surface publique mineure
+  à garder en tête.
+
+Tu peux donc bosser directement contre ces URLs publiques, sans VPN. Confirme quand tu as la main.

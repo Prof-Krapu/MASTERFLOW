@@ -97,3 +97,18 @@ Fix appliqué (toujours tailnet privé, pas de Funnel) — **vise l'IP directe**
 Détails + échelle de test (`tailscale ping` d'abord) dans `SYNC_THREAD_MALEX_VINCENT.md`
 (entrée « RÉSOLU — Serve ne sert pas les nœuds partagés »). Les ports Serve `:8443`/`:10000`
 restent valables pour les machines du tailnet de Vincent, pas pour toi (nœud partagé).
+
+---
+
+## 2026-06-07 — done — Accès FINAL : Funnel PUBLIC (l'IP directe ne marchait pas non plus)
+
+L'IP tailnet directe time-out aussi (plan de données Tailscale KO entre ton NAT FAI et la box de
+Vincent — `tcpdump` host = 0 paquet de toi). **Décision humaine de Vincent : bascule en Funnel
+PUBLIC.** Plus besoin de Tailscale chez toi :
+
+- **backend** : `https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443`
+- **stack complète** : `https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000`
+
+Sécu : `JWT_SECRET` + mot de passe godmode **tournés** ; **tes identifiants te sont donnés par
+Vincent hors-bande** (jamais dans Git). Détails dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée
+« RÉSOLU pour de bon : bascule en Funnel PUBLIC »).
