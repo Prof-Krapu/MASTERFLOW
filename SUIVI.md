@@ -4,6 +4,40 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Frontend couche 4 : chat compact + WebSocket
+
+**Périmètre :** ajouter la surface chat Home Room sans action sensible, sans écriture canon et
+sans backend delta.
+
+### Construit
+
+- Client WebSocket frontend vers `/ws/{room_instance_id}?token=...`.
+- États de connexion : `idle`, `connecting`, `connected`, `closed`, `error`.
+- Support des messages backend existants :
+  - `chat_start` ;
+  - `chat_chunk` ;
+  - `chat_end` ;
+  - `pong` ;
+  - `error`.
+- Chat compact dans la Home Room :
+  - tours utilisateur ;
+  - streaming assistant ;
+  - attribution système courte si une méthode secondaire est prêtée ;
+  - formulaire désactivé tant que WS non connecté.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| Vite local `http://localhost:5174/` | HTTP 200 |
+
+Note : test WS réel en attente d'un backend joignable (`localhost:8000` ou tailnet
+`100.100.128.63:8000`).
+
+---
+
 ## 2026-06-07 — Frontend couche 3 : Home Room canon compacte
 
 **Périmètre :** recadrer l'écran connecté selon le handoff Home Room, sans backend delta et sans

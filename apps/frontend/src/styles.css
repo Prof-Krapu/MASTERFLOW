@@ -347,6 +347,79 @@ dd {
   border-color: rgba(240, 195, 107, 0.38);
 }
 
+.chat-panel {
+  border-color: rgba(88, 193, 137, 0.28);
+}
+
+.ws-badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  min-width: 92px;
+  padding: 4px 10px;
+  text-align: center;
+}
+
+.ws-badge--connected {
+  border-color: rgba(88, 193, 137, 0.6);
+  color: var(--accent-strong);
+}
+
+.ws-badge--error,
+.ws-badge--closed {
+  border-color: rgba(255, 143, 143, 0.48);
+  color: var(--danger);
+}
+
+.chat-log {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.chat-turn {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  max-width: min(680px, 100%);
+  padding: 10px 12px;
+}
+
+.chat-turn--user {
+  justify-self: end;
+  border-color: rgba(126, 183, 255, 0.38);
+}
+
+.chat-turn--assistant {
+  justify-self: start;
+  border-color: rgba(88, 193, 137, 0.38);
+}
+
+.chat-turn--system {
+  border-color: rgba(240, 195, 107, 0.3);
+  color: var(--muted);
+  justify-self: center;
+}
+
+.chat-turn strong {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chat-turn p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.chat-form {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
 
 .compact {
   margin: 0;
@@ -370,6 +443,10 @@ dd {
   .room-title {
     align-items: stretch;
     display: grid;
+  }
+
+  .chat-form {
+    grid-template-columns: 1fr;
   }
 
   dd {

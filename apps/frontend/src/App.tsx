@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import type {FormEvent, ReactElement} from 'react';
 
 import type {
@@ -8,11 +8,19 @@ import type {
   Persona,
   RegistryStatus,
   Resource,
+  WsServerMessage,
 } from '@masterflow/shared';
 
 import {getAvailableActions, getCurrentContext, getPersonas, getResources, login, setToken} from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
+type WsState = 'idle' | 'connecting' | 'connected' | 'closed' | 'error';
+type ChatTurn = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  speaker?: string;
+};
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
@@ -38,6 +46,17 @@ function bucketActions(actions: ActionRegistryEntry[]): ActionBuckets {
   );
 }
 
+function wsUrl(roomInstanceId: string, token: string): string {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const encodedRoom = encodeURIComponent(roomInstanceId);
+  const encodedToken = encodeURIComponent(token);
+  return `${protocol}//${window.location.host}/ws/${encodedRoom}?token=${encodedToken}`;
+}
+
+function nextId(prefix: string): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 function App(): ReactElement {
   const [auth, setAuth] = useState<AuthResponse | null>(null);
   const [context, setContext] = useState<CurrentContext | null>(null);
@@ -48,6 +67,11 @@ function App(): ReactElement {
   const [password, setPassword] = useState('masterflow');
   const [state, setState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [wsState, setWsState] = useState<WsState>('idle');
+  const [chatInput, setChatInput] = useState('');
+  const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
+  const assistantTurnRef = useRef<string | null>(null);
 
   const isConnected = auth !== null && context !== null;
 
@@ -112,6 +136,9 @@ function App(): ReactElement {
   );
 
   const handleLogout = useCallback((): void => {
+    wsRef.current?.close();
+    wsRef.current = null;
+    assistantTurnRef.current = null;
     setAuth(null);
     setContext(null);
     setPersonas([]);
@@ -119,12 +146,111 @@ function App(): ReactElement {
     setResources([]);
     setToken(null);
     setState('idle');
+    setWsState('idle');
+    setChatInput('');
+    setChatTurns([]);
     setError(null);
   }, []);
+
+  const handleChatSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>): void => {
+      event.preventDefault();
+      const content = chatInput.trim();
+      if (!content || wsRef.current?.readyState !== WebSocket.OPEN) return;
+
+      wsRef.current.send(JSON.stringify({type: 'chat', content}));
+      setChatTurns((current) => [
+        ...current,
+        {id: nextId('user'), role: 'user', content},
+      ]);
+      setChatInput('');
+    },
+    [chatInput],
+  );
 
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
   }, [isConnected]);
+
+  useEffect(() => {
+    if (!auth || !context) return undefined;
+
+    const socket = new WebSocket(wsUrl(context.room_instance.id, auth.token));
+    wsRef.current = socket;
+    setWsState('connecting');
+    setChatTurns([]);
+    assistantTurnRef.current = null;
+
+    socket.addEventListener('open', () => {
+      setWsState('connected');
+      socket.send(JSON.stringify({type: 'ping'}));
+    });
+
+    socket.addEventListener('close', () => {
+      setWsState((current) => (current === 'error' ? 'error' : 'closed'));
+      if (wsRef.current === socket) wsRef.current = null;
+    });
+
+    socket.addEventListener('error', () => {
+      setWsState('error');
+    });
+
+    socket.addEventListener('message', (event) => {
+      let message: WsServerMessage;
+      try {
+        message = JSON.parse(String(event.data)) as WsServerMessage;
+      } catch {
+        setChatTurns((current) => [
+          ...current,
+          {id: nextId('system'), role: 'system', content: 'Message WS illisible.'},
+        ]);
+        return;
+      }
+
+      if (message.type === 'pong') return;
+
+      if (message.type === 'chat_start') {
+        const id = nextId('assistant');
+        assistantTurnRef.current = id;
+        setChatTurns((current) => [
+          ...current,
+          {id, role: 'assistant', content: '', speaker: message.speaker},
+        ]);
+        return;
+      }
+
+      if (message.type === 'chat_chunk') {
+        const id = assistantTurnRef.current;
+        if (!id) return;
+        setChatTurns((current) => current.map((turn) => (
+          turn.id === id ? {...turn, content: `${turn.content}${message.content}`} : turn
+        )));
+        return;
+      }
+
+      if (message.type === 'chat_end') {
+        assistantTurnRef.current = null;
+        if (message.method_attribution) {
+          setChatTurns((current) => [
+            ...current,
+            {id: nextId('system'), role: 'system', content: message.method_attribution ?? ''},
+          ]);
+        }
+        return;
+      }
+
+      if (message.type === 'error') {
+        setChatTurns((current) => [
+          ...current,
+          {id: nextId('system'), role: 'system', content: message.message},
+        ]);
+      }
+    });
+
+    return () => {
+      socket.close();
+    };
+  }, [auth, context]);
 
   return (
     <main className="shell">
@@ -250,6 +376,38 @@ function App(): ReactElement {
             ) : (
               <p className="muted">Aucun persona charge.</p>
             )}
+          </article>
+
+          <article className="panel panel--wide chat-panel">
+            <div className="panel-header">
+              <h2>Chat</h2>
+              <span className={`ws-badge ws-badge--${wsState}`}>{wsState}</span>
+            </div>
+            <div className="chat-log" aria-live="polite">
+              {chatTurns.length > 0 ? (
+                chatTurns.map((turn) => (
+                  <article className={`chat-turn chat-turn--${turn.role}`} key={turn.id}>
+                    <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Systeme')}</strong>
+                    <p>{turn.content || '...'}</p>
+                  </article>
+                ))
+              ) : (
+                <p className="muted compact">Chat pret des que le WebSocket est connecte.</p>
+              )}
+            </div>
+            <form className="chat-form" onSubmit={handleChatSubmit}>
+              <input
+                aria-label="Message chat"
+                disabled={wsState !== 'connected'}
+                onChange={(event) => setChatInput(event.target.value)}
+                placeholder={wsState === 'connected' ? 'Message court...' : 'WebSocket indisponible'}
+                type="text"
+                value={chatInput}
+              />
+              <button disabled={wsState !== 'connected' || chatInput.trim().length === 0} type="submit">
+                Envoyer
+              </button>
+            </form>
           </article>
 
           <article className="panel panel--wide">
