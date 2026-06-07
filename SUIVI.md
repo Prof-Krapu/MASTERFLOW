@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-07 — Inbox MALEX : rebase main clôturé
+
+**Contexte.** Vérification après audit Drive canon avant reprise frontend.
+
+- `origin/main` est bien ancêtre de `codex/frontend-masterflow`.
+- La demande inbox « rebaser sur main à jour » est donc traitée, pas bloquante.
+- `INBOX_MALEX.md` passe l'entrée correspondante de `open` à `done`.
+- Prochaine étape : frontend couche 3, Home Room canon compacte.
+
+---
+
 ## 2026-06-07 — Audit Drive canon + verrouillage cohérence V1
 
 **Contexte.** MALEX demande un audit du MASTERFLOW canon sur Drive avant de continuer les

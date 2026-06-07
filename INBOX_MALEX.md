@@ -53,7 +53,7 @@ De Vincent, suite à tes 6 questions *(Q6 confirmée par validation humaine le 2
 
 ---
 
-## 2026-06-07 — open — Rebaser sur `main` à jour (godmode étendu scellé)
+## 2026-06-07 — done — Rebaser sur `main` à jour (godmode étendu scellé)
 
 Vincent → MALEX/Codex.
 
@@ -77,6 +77,12 @@ Action demandée :
   (Vite proxifie l'API/WS vers le backend → stack complète via cette URL). J'ai ajouté
   `server.allowedHosts` dans `apps/frontend/vite.config.ts` pour l'accès distant —
   **à conserver au rebase**.
+
+### Clôture MALEX/Codex — 2026-06-07
+
+`origin/main` est bien ancêtre de `codex/frontend-masterflow` et la branche contient les commits
+MALEX récents au-dessus de `070688e`. Les docs ont été réalignées avec le Drive canon et poussées
+dans `c49e862`. Action rebase considérée terminée ; continuer sur les couches frontend courtes.
 
 ---
 
