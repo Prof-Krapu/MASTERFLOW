@@ -5,6 +5,7 @@ import type {
   CreateAction,
   CurrentContext,
   Persona,
+  ProposeResource,
   Resource,
   SearchResourcesResponse,
   ValidationDecision,
@@ -116,4 +117,11 @@ export async function validateAction(
 export async function getResources(token?: string | null): Promise<Resource[]> {
   const response = await request<SearchResourcesResponse>('/resources', {method: 'GET'}, token);
   return response.results;
+}
+
+export async function proposeResource(body: ProposeResource, token?: string | null): Promise<Resource> {
+  return request<Resource>('/resources', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
 }

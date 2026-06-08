@@ -22,6 +22,7 @@ import {
   getResources,
   login,
   preflightAction,
+  proposeResource,
   setToken,
   validateAction,
 } from './api.ts';
@@ -65,6 +66,11 @@ type ActionRunState = {
 type ValidationRunState = {
   status: 'idle' | 'loading' | 'deciding' | 'ready' | 'error';
   message: string;
+};
+type ResourceProposalState = {
+  status: 'idle' | 'submitting' | 'candidate' | 'error';
+  message: string;
+  resource?: Resource;
 };
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
@@ -184,6 +190,13 @@ function App(): ReactElement {
   const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
   const [pendingActions, setPendingActions] = useState<Action[]>([]);
   const [validationRun, setValidationRun] = useState<ValidationRunState>({status: 'idle', message: 'Inbox non chargee.'});
+  const [resourceTitle, setResourceTitle] = useState('');
+  const [resourceUrl, setResourceUrl] = useState('');
+  const [resourceSubjects, setResourceSubjects] = useState('');
+  const [resourceProposal, setResourceProposal] = useState<ResourceProposalState>({
+    status: 'idle',
+    message: 'Aucune proposition en attente.',
+  });
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -364,6 +377,10 @@ function App(): ReactElement {
     setActionRun({status: 'idle', message: 'Aucune action lancee.'});
     setPendingActions([]);
     setValidationRun({status: 'idle', message: 'Inbox non chargee.'});
+    setResourceTitle('');
+    setResourceUrl('');
+    setResourceSubjects('');
+    setResourceProposal({status: 'idle', message: 'Aucune proposition en attente.'});
     setWsState('idle');
     setChatInput('');
     setChatTurns([]);
@@ -532,6 +549,47 @@ function App(): ReactElement {
       });
     }
   }, [auth, refreshPendingActions]);
+
+  const handleResourceProposal = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();
+    if (!auth) return;
+
+    const title = resourceTitle.trim();
+    const url = resourceUrl.trim();
+    const subjects = resourceSubjects
+      .split(',')
+      .map((subject) => subject.trim())
+      .filter(Boolean);
+
+    if (!title) {
+      setResourceProposal({status: 'error', message: 'Titre requis.'});
+      return;
+    }
+
+    setResourceProposal({status: 'submitting', message: 'Proposition en cours.'});
+    try {
+      const proposed = await proposeResource({
+        type: url ? 'link' : 'note',
+        title,
+        ...(url ? {url} : {}),
+        source: 'frontend_proposal',
+        subjects,
+      }, auth.token);
+      setResourceProposal({
+        status: 'candidate',
+        message: 'Ressource candidate creee. Elle reste hors canon avant validation.',
+        resource: proposed,
+      });
+      setResourceTitle('');
+      setResourceUrl('');
+      setResourceSubjects('');
+    } catch (err) {
+      setResourceProposal({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Proposition impossible.',
+      });
+    }
+  }, [auth, resourceSubjects, resourceTitle, resourceUrl]);
 
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
@@ -864,6 +922,37 @@ function App(): ReactElement {
             ) : (
               <p className="muted compact">Aucune source validee chargee.</p>
             )}
+            <form className="resource-form" onSubmit={handleResourceProposal}>
+              <input
+                aria-label="Titre de ressource"
+                onChange={(event) => setResourceTitle(event.target.value)}
+                placeholder="Proposer une source"
+                type="text"
+                value={resourceTitle}
+              />
+              <input
+                aria-label="URL de ressource"
+                onChange={(event) => setResourceUrl(event.target.value)}
+                placeholder="URL optionnelle"
+                type="url"
+                value={resourceUrl}
+              />
+              <input
+                aria-label="Sujets de ressource"
+                onChange={(event) => setResourceSubjects(event.target.value)}
+                placeholder="sujets, separes, par virgules"
+                type="text"
+                value={resourceSubjects}
+              />
+              <button disabled={resourceProposal.status === 'submitting'} type="submit">
+                Proposer
+              </button>
+            </form>
+            <div className={`resource-proposal resource-proposal--${resourceProposal.status}`} aria-live="polite">
+              <strong>{resourceProposal.status}</strong>
+              <span>{resourceProposal.message}</span>
+              {resourceProposal.resource?.id ? <small>{resourceProposal.resource.id}</small> : null}
+            </div>
           </article>
 
           {canValidate ? (

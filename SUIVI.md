@@ -4,6 +4,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 10 : proposition Resource Truth
+
+**Perimetre.** Permettre au front de proposer une source sans l'ajouter au canon affiche.
+
+### Construit
+
+- Client frontend `POST /resources`.
+- Formulaire compact dans le panneau `Sources` : titre, URL optionnelle, sujets.
+- Une proposition cree une ressource `candidate`.
+- La liste `Sources` continue d'afficher uniquement `GET /resources` par defaut, donc uniquement
+  les ressources `validated`.
+- Retour d'etat lisible avec id de candidate.
+
+### Invariant
+
+Une ressource candidate n'est jamais presentee comme source validee tant qu'un humain ne l'a pas
+promue cote backend.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 9 : execution explicite apres validation
 
 **Perimetre.** Fermer le cycle action cote UI sans transformer la validation humaine en
