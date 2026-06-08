@@ -2,6 +2,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import type {FormEvent, ReactElement} from 'react';
 
 import type {
+  Action,
   ActionRegistryEntry,
   AuthResponse,
   CurrentContext,
@@ -11,7 +12,17 @@ import type {
   WsServerMessage,
 } from '@masterflow/shared';
 
-import {getAvailableActions, getCurrentContext, getPersonas, getResources, login, setToken} from './api.ts';
+import {
+  createAction,
+  executeAction,
+  getAvailableActions,
+  getCurrentContext,
+  getPersonas,
+  getResources,
+  login,
+  preflightAction,
+  setToken,
+} from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type WsState = 'idle' | 'connecting' | 'connected' | 'closed' | 'error';
@@ -43,6 +54,11 @@ type EntryProfile = {
   density: EntryDensity;
   presence: PersonaPresence;
   completedAt: number;
+};
+type ActionRunState = {
+  status: 'idle' | 'creating' | 'preflight' | 'waiting_validation' | 'executing' | 'completed' | 'failed';
+  message: string;
+  action?: Action;
 };
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
@@ -155,6 +171,7 @@ function App(): ReactElement {
   const [entryDensity, setEntryDensity] = useState<EntryDensity>('medium');
   const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
   const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
+  const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -331,6 +348,7 @@ function App(): ReactElement {
     setEntryDensity('medium');
     setEntryPresence('guided');
     setEntryProfile(null);
+    setActionRun({status: 'idle', message: 'Aucune action lancee.'});
     setWsState('idle');
     setChatInput('');
     setChatTurns([]);
@@ -368,6 +386,68 @@ function App(): ReactElement {
     setEntryProfile(profile);
     setSelectedMode(entryIntent);
   }, [context, entryDensity, entryIntent, entryPresence]);
+
+  const handleActionClick = useCallback(async (entry: ActionRegistryEntry): Promise<void> => {
+    if (!auth || !context) return;
+
+    setActionRun({status: 'creating', message: `Creation : ${entry.label}`});
+    try {
+      const created = await createAction({
+        registry_id: entry.action_id,
+        intent: entry.label,
+        object_type: entry.ui_surface,
+        room_id: context.room.id,
+        payload: {
+          mode: activeMode.id,
+          room_instance_id: context.room_instance.id,
+          source: 'frontend_action_chip',
+        },
+      }, auth.token);
+
+      setActionRun({status: 'preflight', message: `Preflight : ${entry.label}`, action: created});
+      const flighted = await preflightAction(created.id, auth.token);
+
+      if (flighted.status === 'failed') {
+        setActionRun({
+          status: 'failed',
+          message: flighted.error ?? 'Preflight refuse par le backend.',
+          action: flighted,
+        });
+        return;
+      }
+
+      if (flighted.status === 'pending_validation') {
+        setActionRun({
+          status: 'waiting_validation',
+          message: `Validation requise (${flighted.preflight?.validator_role ?? 'teacher'}).`,
+          action: flighted,
+        });
+        return;
+      }
+
+      if (flighted.status !== 'approved') {
+        setActionRun({
+          status: 'failed',
+          message: `Cycle inattendu : ${flighted.status}.`,
+          action: flighted,
+        });
+        return;
+      }
+
+      setActionRun({status: 'executing', message: `Execution : ${entry.label}`, action: flighted});
+      const executed = await executeAction(flighted.id, auth.token);
+      setActionRun({
+        status: executed.status === 'completed' ? 'completed' : 'failed',
+        message: executed.status === 'completed' ? 'Action completee.' : (executed.error ?? `Status ${executed.status}.`),
+        action: executed,
+      });
+    } catch (err) {
+      setActionRun({
+        status: 'failed',
+        message: err instanceof Error ? err.message : 'Action impossible.',
+      });
+    }
+  }, [activeMode.id, auth, context]);
 
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
@@ -625,7 +705,13 @@ function App(): ReactElement {
             <div className="next-actions" aria-label="Actions utiles">
               {nextActions.length > 0 ? (
                 nextActions.map((action) => (
-                  <button className="action-chip" disabled={action.preflight_required} key={action.action_id} type="button">
+                  <button
+                    className="action-chip"
+                    disabled={actionRun.status === 'creating' || actionRun.status === 'preflight' || actionRun.status === 'executing'}
+                    key={action.action_id}
+                    onClick={() => void handleActionClick(action)}
+                    type="button"
+                  >
                     <span>{action.label}</span>
                     <small>{action.preflight_required ? 'preflight' : action.risk_level}</small>
                   </button>
@@ -633,6 +719,11 @@ function App(): ReactElement {
               ) : (
                 <p className="muted compact">Aucune action live disponible.</p>
               )}
+            </div>
+            <div className={`action-run action-run--${actionRun.status}`} aria-live="polite">
+              <strong>{actionRun.status}</strong>
+              <span>{actionRun.message}</span>
+              {actionRun.action?.id ? <small>{actionRun.action.id}</small> : null}
             </div>
           </article>
 

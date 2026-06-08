@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 7 : cycle actions live
+
+**Perimetre.** Brancher les chips d'actions live sur le contrat backend existant, sans action
+sensible directe.
+
+### Construit
+
+- Client frontend pour :
+  - `POST /actions` ;
+  - `POST /actions/:id/preflight` ;
+  - `POST /actions/:id/execute`.
+- Clic action = creation d'une action `draft`, puis preflight obligatoire.
+- Execution seulement si le backend renvoie `approved`.
+- Si le backend renvoie `pending_validation`, l'UI s'arrete et affiche le role validateur requis.
+- Retour d'etat lisible dans le widget principal : creation, preflight, attente validation,
+  execution, completed ou failed.
+
+### Invariant
+
+Aucun chip n'execute directement une action sensible. Le backend reste l'autorite du cycle.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 6 : sas d'entree utilisateur
 
 **Perimetre.** Ajouter l'entree runtime avant la Home Room, sans backend delta et sans ecriture canon.

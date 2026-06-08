@@ -1,6 +1,8 @@
 import type {
+  Action,
   ActionRegistryEntry,
   AuthResponse,
+  CreateAction,
   CurrentContext,
   Persona,
   Resource,
@@ -78,6 +80,21 @@ export async function getPersonas(token?: string | null): Promise<Persona[]> {
 
 export async function getAvailableActions(token?: string | null): Promise<ActionRegistryEntry[]> {
   return request<ActionRegistryEntry[]>('/actions/available', {method: 'GET'}, token);
+}
+
+export async function createAction(body: CreateAction, token?: string | null): Promise<Action> {
+  return request<Action>('/actions', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function preflightAction(actionId: string, token?: string | null): Promise<Action> {
+  return request<Action>(`/actions/${encodeURIComponent(actionId)}/preflight`, {method: 'POST'}, token);
+}
+
+export async function executeAction(actionId: string, token?: string | null): Promise<Action> {
+  return request<Action>(`/actions/${encodeURIComponent(actionId)}/execute`, {method: 'POST'}, token);
 }
 
 export async function getResources(token?: string | null): Promise<Resource[]> {

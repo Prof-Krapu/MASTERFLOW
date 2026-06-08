@@ -408,6 +408,41 @@ dd {
   padding-left: 10px;
 }
 
+.action-run {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 2px;
+  margin-top: 14px;
+  min-height: 70px;
+  padding: 10px 12px;
+}
+
+.action-run strong {
+  color: var(--accent-strong);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.action-run span,
+.action-run small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.action-run--waiting_validation {
+  border-color: rgba(240, 195, 107, 0.42);
+}
+
+.action-run--failed {
+  border-color: rgba(255, 143, 143, 0.48);
+}
+
+.action-run--completed {
+  border-color: rgba(88, 193, 137, 0.56);
+}
+
 .source-strip {
   border-color: rgba(126, 183, 255, 0.38);
 }
