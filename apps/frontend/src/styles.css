@@ -114,6 +114,11 @@ h2 {
   margin-bottom: 12px;
 }
 
+h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
 .status {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -575,6 +580,37 @@ dd {
   border-color: rgba(255, 143, 143, 0.48);
 }
 
+.resource-candidates {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.resource-candidate {
+  align-items: center;
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 74px;
+  padding: 10px 12px;
+}
+
+.resource-candidate div {
+  display: grid;
+  gap: 3px;
+}
+
+.resource-candidate span {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
 .object-deck {
   display: grid;
   gap: 12px;
@@ -755,6 +791,7 @@ dd {
 
   .validation-item,
   .validation-actions,
+  .resource-candidate,
   .action-run {
     align-items: stretch;
     display: grid;

@@ -25,6 +25,7 @@ import {
   proposeResource,
   setToken,
   validateAction,
+  validateResource,
 } from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
@@ -68,7 +69,7 @@ type ValidationRunState = {
   message: string;
 };
 type ResourceProposalState = {
-  status: 'idle' | 'submitting' | 'candidate' | 'error';
+  status: 'idle' | 'loading' | 'submitting' | 'candidate' | 'validating' | 'validated' | 'error';
   message: string;
   resource?: Resource;
 };
@@ -141,6 +142,10 @@ function canValidateActions(role: string | undefined): boolean {
   return role === 'teacher' || role === 'admin' || role === 'godmode';
 }
 
+function canReviewResources(role: string | undefined): boolean {
+  return role === 'admin' || role === 'godmode';
+}
+
 function entryStorageKey(userId: string): string {
   return `${ENTRY_STORAGE_PREFIX}${userId}`;
 }
@@ -178,6 +183,7 @@ function App(): ReactElement {
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [resourceCandidates, setResourceCandidates] = useState<Resource[]>([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [state, setState] = useState<LoadState>('idle');
@@ -220,6 +226,7 @@ function App(): ReactElement {
   const lockedActions = actionBuckets.future.slice(0, 4);
   const isGodmode = context?.user.role === 'godmode';
   const canValidate = canValidateActions(context?.user.role);
+  const canReviewResourceTruth = canReviewResources(context?.user.role);
   const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
   const availableModes = useMemo(
     () => WORK_MODES.filter((mode) => canUseMode(mode, context?.user.role)),
@@ -367,6 +374,7 @@ function App(): ReactElement {
     setPersonas([]);
     setActions([]);
     setResources([]);
+    setResourceCandidates([]);
     setToken(null);
     setState('idle');
     setSelectedMode('home');
@@ -441,6 +449,27 @@ function App(): ReactElement {
       });
     }
   }, [auth, canValidate]);
+
+  const refreshResources = useCallback(async (): Promise<void> => {
+    if (!auth) return;
+
+    try {
+      const nextResources = await getResources(auth.token);
+      setResources(nextResources);
+
+      if (canReviewResourceTruth) {
+        const allResources = await getResources(auth.token, true);
+        setResourceCandidates(allResources.filter((resource) => resource.status === 'candidate'));
+      } else {
+        setResourceCandidates([]);
+      }
+    } catch (err) {
+      setResourceProposal({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Ressources indisponibles.',
+      });
+    }
+  }, [auth, canReviewResourceTruth]);
 
   const runApprovedAction = useCallback(async (action: Action): Promise<void> => {
     if (!auth) return;
@@ -580,6 +609,9 @@ function App(): ReactElement {
         message: 'Ressource candidate creee. Elle reste hors canon avant validation.',
         resource: proposed,
       });
+      if (canReviewResourceTruth) {
+        await refreshResources();
+      }
       setResourceTitle('');
       setResourceUrl('');
       setResourceSubjects('');
@@ -589,7 +621,28 @@ function App(): ReactElement {
         message: err instanceof Error ? err.message : 'Proposition impossible.',
       });
     }
-  }, [auth, resourceSubjects, resourceTitle, resourceUrl]);
+  }, [auth, canReviewResourceTruth, refreshResources, resourceSubjects, resourceTitle, resourceUrl]);
+
+  const handleResourceValidation = useCallback(async (resource: Resource): Promise<void> => {
+    if (!auth) return;
+
+    setResourceProposal({status: 'validating', message: `Validation : ${resource.title}`, resource});
+    try {
+      const validated = await validateResource(resource.id, auth.token);
+      setResourceProposal({
+        status: 'validated',
+        message: 'Ressource promue au canon valide.',
+        resource: validated,
+      });
+      await refreshResources();
+    } catch (err) {
+      setResourceProposal({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Validation ressource impossible.',
+        resource,
+      });
+    }
+  }, [auth, refreshResources]);
 
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
@@ -599,6 +652,11 @@ function App(): ReactElement {
     if (!auth || !context || showEntryGate || !canValidate) return;
     void refreshPendingActions();
   }, [auth, canValidate, context, refreshPendingActions, showEntryGate]);
+
+  useEffect(() => {
+    if (!auth || !context || showEntryGate) return;
+    void refreshResources();
+  }, [auth, canReviewResourceTruth, context, refreshResources, showEntryGate]);
 
   useEffect(() => {
     if (!auth || !context || showEntryGate) return undefined;
@@ -953,6 +1011,35 @@ function App(): ReactElement {
               <span>{resourceProposal.message}</span>
               {resourceProposal.resource?.id ? <small>{resourceProposal.resource.id}</small> : null}
             </div>
+            {canReviewResourceTruth ? (
+              <div className="resource-candidates">
+                <div className="panel-header">
+                  <h3>Candidates</h3>
+                  <span className="counter">{resourceCandidates.length}</span>
+                </div>
+                {resourceCandidates.length > 0 ? (
+                  <div className="resource-list">
+                    {resourceCandidates.slice(0, 5).map((resource) => (
+                      <article className="resource-candidate" key={resource.id}>
+                        <div>
+                          <strong>{resource.title}</strong>
+                          <span>{resource.url ?? resource.source}</span>
+                        </div>
+                        <button
+                          disabled={resourceProposal.status === 'validating'}
+                          onClick={() => void handleResourceValidation(resource)}
+                          type="button"
+                        >
+                          Valider
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="muted compact">Aucune candidate ressource.</p>
+                )}
+              </div>
+            ) : null}
           </article>
 
           {canValidate ? (

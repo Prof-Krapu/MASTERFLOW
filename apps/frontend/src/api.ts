@@ -114,8 +114,9 @@ export async function validateAction(
   }, token);
 }
 
-export async function getResources(token?: string | null): Promise<Resource[]> {
-  const response = await request<SearchResourcesResponse>('/resources', {method: 'GET'}, token);
+export async function getResources(token?: string | null, includeAll = false): Promise<Resource[]> {
+  const query = includeAll ? '?include_all=1' : '';
+  const response = await request<SearchResourcesResponse>(`/resources${query}`, {method: 'GET'}, token);
   return response.results;
 }
 
@@ -124,4 +125,8 @@ export async function proposeResource(body: ProposeResource, token?: string | nu
     method: 'POST',
     body: JSON.stringify(body),
   }, token);
+}
+
+export async function validateResource(resourceId: string, token?: string | null): Promise<Resource> {
+  return request<Resource>(`/resources/${encodeURIComponent(resourceId)}/validate`, {method: 'POST'}, token);
 }

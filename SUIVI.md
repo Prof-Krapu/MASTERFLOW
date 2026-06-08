@@ -4,6 +4,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 11 : validation Resource Truth
+
+**Perimetre.** Boucler le cycle ressource candidate -> canon valide cote UI.
+
+### Construit
+
+- Client frontend `GET /resources?include_all=1` reserve admin/godmode.
+- Client frontend `POST /resources/:id/validate`.
+- Affichage separe des ressources candidates dans le panneau `Sources`, visible uniquement
+  admin/godmode.
+- Bouton `Valider` pour promouvoir une candidate au canon.
+- Refresh du canon `validated` apres validation.
+
+### Invariant
+
+Les candidates restent separees des sources validees ; seuls admin/godmode chargent la vue
+`include_all`.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 10 : proposition Resource Truth
 
 **Perimetre.** Permettre au front de proposer une source sans l'ajouter au canon affiche.
