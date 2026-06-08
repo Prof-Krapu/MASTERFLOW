@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 12 : sync room instance
+
+**Perimetre.** Persister le choix d'entree et le mode courant dans la room instance existante.
+
+### Construit
+
+- Client frontend `PUT /rooms/:id/instance`.
+- Le sas d'entree persiste :
+  - `active_surface` = intention choisie ;
+  - `cognitive_density` = densite choisie ;
+  - `widget_state.entry_profile`.
+- Le rail de modes persiste `active_surface` et `widget_state.active_mode`.
+- La Home Room affiche surface active, densite et etat de synchronisation.
+
+### Invariant
+
+Pas de nouveau backend : on consomme le contrat Room OS deja expose. Le localStorage reste un
+fallback d'entree, mais la room instance devient le runtime partage.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 11 : validation Resource Truth
 
 **Perimetre.** Boucler le cycle ressource candidate -> canon valide cote UI.

@@ -7,7 +7,9 @@ import type {
   Persona,
   ProposeResource,
   Resource,
+  RoomInstance,
   SearchResourcesResponse,
+  UpdateRoomInstance,
   ValidationDecision,
 } from '@masterflow/shared';
 
@@ -118,6 +120,17 @@ export async function getResources(token?: string | null, includeAll = false): P
   const query = includeAll ? '?include_all=1' : '';
   const response = await request<SearchResourcesResponse>(`/resources${query}`, {method: 'GET'}, token);
   return response.results;
+}
+
+export async function updateRoomInstance(
+  roomId: string,
+  body: UpdateRoomInstance,
+  token?: string | null,
+): Promise<RoomInstance> {
+  return request<RoomInstance>(`/rooms/${encodeURIComponent(roomId)}/instance`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  }, token);
 }
 
 export async function proposeResource(body: ProposeResource, token?: string | null): Promise<Resource> {

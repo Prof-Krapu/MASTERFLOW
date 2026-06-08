@@ -24,6 +24,7 @@ import {
   preflightAction,
   proposeResource,
   setToken,
+  updateRoomInstance,
   validateAction,
   validateResource,
 } from './api.ts';
@@ -72,6 +73,10 @@ type ResourceProposalState = {
   status: 'idle' | 'loading' | 'submitting' | 'candidate' | 'validating' | 'validated' | 'error';
   message: string;
   resource?: Resource;
+};
+type RoomSyncState = {
+  status: 'idle' | 'syncing' | 'synced' | 'error';
+  message: string;
 };
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
@@ -203,6 +208,7 @@ function App(): ReactElement {
     status: 'idle',
     message: 'Aucune proposition en attente.',
   });
+  const [roomSync, setRoomSync] = useState<RoomSyncState>({status: 'idle', message: 'Instance non synchronisee.'});
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -389,6 +395,7 @@ function App(): ReactElement {
     setResourceUrl('');
     setResourceSubjects('');
     setResourceProposal({status: 'idle', message: 'Aucune proposition en attente.'});
+    setRoomSync({status: 'idle', message: 'Instance non synchronisee.'});
     setWsState('idle');
     setChatInput('');
     setChatTurns([]);
@@ -411,6 +418,42 @@ function App(): ReactElement {
     [chatInput],
   );
 
+  const persistRoomInstance = useCallback(async (
+    mode: WorkModeId,
+    density?: EntryDensity,
+    profile?: EntryProfile,
+  ): Promise<void> => {
+    if (!auth || !context) return;
+
+    setRoomSync({status: 'syncing', message: 'Synchronisation room instance.'});
+    try {
+      const widgetState = context.room_instance.widget_state ?? {};
+      const nextInstance = await updateRoomInstance(context.room.id, {
+        active_surface: mode,
+        ...(density ? {cognitive_density: density} : {}),
+        widget_state: {
+          ...widgetState,
+          active_mode: mode,
+          ...(profile ? {
+            entry_profile: {
+              intent: profile.intent,
+              density: profile.density,
+              presence: profile.presence,
+              completedAt: profile.completedAt,
+            },
+          } : {}),
+        },
+      }, auth.token);
+      setContext((current) => (current ? {...current, room_instance: nextInstance} : current));
+      setRoomSync({status: 'synced', message: 'Room instance synchronisee.'});
+    } catch (err) {
+      setRoomSync({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Synchronisation impossible.',
+      });
+    }
+  }, [auth, context]);
+
   const handleEntrySubmit = useCallback((event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     if (!context) return;
@@ -425,7 +468,13 @@ function App(): ReactElement {
     writeEntryProfile(profile);
     setEntryProfile(profile);
     setSelectedMode(entryIntent);
-  }, [context, entryDensity, entryIntent, entryPresence]);
+    void persistRoomInstance(entryIntent, entryDensity, profile);
+  }, [context, entryDensity, entryIntent, entryPresence, persistRoomInstance]);
+
+  const handleModeSelect = useCallback((mode: WorkModeId): void => {
+    setSelectedMode(mode);
+    void persistRoomInstance(mode);
+  }, [persistRoomInstance]);
 
   const refreshPendingActions = useCallback(async (): Promise<void> => {
     if (!auth || !canValidate) {
@@ -863,6 +912,11 @@ function App(): ReactElement {
                   <span>{context.user.display_name}</span>
                   <span>{activePersona?.name ?? 'persona simple'}</span>
                   <span>{context.room_instance.active_surface}</span>
+                  <span>{context.room_instance.cognitive_density}</span>
+                </div>
+                <div className={`room-sync room-sync--${roomSync.status}`} aria-live="polite">
+                  <strong>{roomSync.status}</strong>
+                  <span>{roomSync.message}</span>
                 </div>
                 <div className="situation-grid" aria-label="Situation">
                   {situationStats.map((stat) => (
@@ -892,7 +946,7 @@ function App(): ReactElement {
               <button
                 className={`mode-button${activeMode.id === mode.id ? ' mode-button--active' : ''}`}
                 key={mode.id}
-                onClick={() => setSelectedMode(mode.id)}
+                onClick={() => handleModeSelect(mode.id)}
                 type="button"
               >
                 <strong>{mode.label}</strong>
