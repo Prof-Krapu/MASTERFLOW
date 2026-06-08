@@ -4,6 +4,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 9 : execution explicite apres validation
+
+**Perimetre.** Fermer le cycle action cote UI sans transformer la validation humaine en
+execution automatique.
+
+### Construit
+
+- Extraction d'un handler d'execution pour action deja `approved`.
+- Les actions non sensibles continuent le cycle apres preflight `approved`.
+- Les actions sensibles approuvees depuis l'inbox affichent un bouton `Executer` distinct.
+- L'etat d'action garde le statut, le message et l'id de l'action courante.
+
+### Invariant
+
+Validation humaine et execution restent deux gestes separes pour les actions sensibles.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 8 : validation inbox
 
 **Perimetre.** Brancher la surface de validation V1 sur le contrat backend existant.

@@ -409,14 +409,21 @@ dd {
 }
 
 .action-run {
+  align-items: center;
   background: #12151b;
   border: 1px solid var(--line);
   border-radius: 8px;
   display: grid;
-  gap: 2px;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
   margin-top: 14px;
   min-height: 70px;
   padding: 10px 12px;
+}
+
+.action-run div {
+  display: grid;
+  gap: 2px;
 }
 
 .action-run strong {
@@ -708,7 +715,8 @@ dd {
   }
 
   .validation-item,
-  .validation-actions {
+  .validation-actions,
+  .action-run {
     align-items: stretch;
     display: grid;
     grid-template-columns: 1fr;

@@ -425,6 +425,26 @@ function App(): ReactElement {
     }
   }, [auth, canValidate]);
 
+  const runApprovedAction = useCallback(async (action: Action): Promise<void> => {
+    if (!auth) return;
+
+    setActionRun({status: 'executing', message: `Execution : ${action.intent}`, action});
+    try {
+      const executed = await executeAction(action.id, auth.token);
+      setActionRun({
+        status: executed.status === 'completed' ? 'completed' : 'failed',
+        message: executed.status === 'completed' ? 'Action completee.' : (executed.error ?? `Status ${executed.status}.`),
+        action: executed,
+      });
+    } catch (err) {
+      setActionRun({
+        status: 'failed',
+        message: err instanceof Error ? err.message : 'Execution impossible.',
+        action,
+      });
+    }
+  }, [auth]);
+
   const handleActionClick = useCallback(async (entry: ActionRegistryEntry): Promise<void> => {
     if (!auth || !context) return;
 
@@ -475,20 +495,14 @@ function App(): ReactElement {
         return;
       }
 
-      setActionRun({status: 'executing', message: `Execution : ${entry.label}`, action: flighted});
-      const executed = await executeAction(flighted.id, auth.token);
-      setActionRun({
-        status: executed.status === 'completed' ? 'completed' : 'failed',
-        message: executed.status === 'completed' ? 'Action completee.' : (executed.error ?? `Status ${executed.status}.`),
-        action: executed,
-      });
+      await runApprovedAction(flighted);
     } catch (err) {
       setActionRun({
         status: 'failed',
         message: err instanceof Error ? err.message : 'Action impossible.',
       });
     }
-  }, [activeMode.id, auth, canValidate, context, refreshPendingActions]);
+  }, [activeMode.id, auth, canValidate, context, refreshPendingActions, runApprovedAction]);
 
   const handleValidationDecision = useCallback(async (
     action: Action,
@@ -796,9 +810,22 @@ function App(): ReactElement {
               )}
             </div>
             <div className={`action-run action-run--${actionRun.status}`} aria-live="polite">
-              <strong>{actionRun.status}</strong>
-              <span>{actionRun.message}</span>
-              {actionRun.action?.id ? <small>{actionRun.action.id}</small> : null}
+              <div>
+                <strong>{actionRun.status}</strong>
+                <span>{actionRun.message}</span>
+                {actionRun.action?.id ? <small>{actionRun.action.id}</small> : null}
+              </div>
+              {actionRun.status === 'approved' && actionRun.action ? (
+                <button
+                  disabled={actionRun.action.status !== 'approved'}
+                  onClick={() => {
+                    if (actionRun.action) void runApprovedAction(actionRun.action);
+                  }}
+                  type="button"
+                >
+                  Executer
+                </button>
+              ) : null}
             </div>
           </article>
 
