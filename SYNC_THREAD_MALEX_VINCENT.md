@@ -23,6 +23,47 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-08 — MALEX/Codex : tranche frontend couches 5-12 prête à tester
+
+Vincent,
+
+Update MasterFlow côté MALEX/Codex : grosse tranche frontend poussée sur
+`codex/frontend-masterflow`.
+
+Dernier commit : `6207a5e Persist frontend room instance state`.
+
+Ce qui est branché :
+
+- Home Room situationnelle ;
+- sas d'entrée utilisateur ;
+- sync `PUT /rooms/:id/instance` : `active_surface`, `cognitive_density`,
+  `widget_state.entry_profile` / `active_mode` ;
+- cycle actions : create -> preflight -> execute si approved ;
+- validation inbox : `GET /actions/pending` + `POST /actions/:id/validate` ;
+- exécution explicite après validation, pas d'auto-run caché ;
+- Resource Truth : proposer candidate, afficher candidates admin/godmode, valider candidate ->
+  canon.
+
+Checks OK :
+
+- `npm run lint:frontend`
+- `npm run build:frontend`
+- `npm run smoke:public`
+
+À tester en run réel avec compte godmode :
+
+1. Login sur `:10000`.
+2. Passer le sas d'entrée.
+3. Vérifier que la Home Room affiche surface + densité + sync.
+4. Cliquer une action live et vérifier preflight/exécution ou attente validation.
+5. Tester inbox validation.
+6. Proposer une ressource candidate.
+7. Valider la ressource candidate et vérifier qu'elle apparaît ensuite dans les sources validées.
+
+Point important : pas de backend delta dans ces couches. On consomme les contrats existants.
+
+---
+
 ## 2026-06-06 — Demande feu vert backend
 
 Vincent,
