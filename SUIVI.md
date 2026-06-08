@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-08 — Frontend couche 8 : validation inbox
+
+**Perimetre.** Brancher la surface de validation V1 sur le contrat backend existant.
+
+### Construit
+
+- Client frontend pour :
+  - `GET /actions/pending` ;
+  - `POST /actions/:id/validate`.
+- Panneau `Validation` visible uniquement pour les roles `teacher`, `admin`, `godmode`.
+- Rafraichissement de l'inbox apres chargement, creation d'une action en attente, approbation
+  ou rejet.
+- Decisions explicites : `Approuver` / `Rejeter`, avec note UI courte.
+- Une action approuvee reste separee de l'execution : pas d'auto-run cache apres validation.
+
+### Invariant
+
+Les comptes sans role teacher+ ne chargent pas et ne voient pas l'inbox de validation.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `npm run smoke:public` | OK health/front public ; auth skip car secrets non fournis |
+
+---
+
 ## 2026-06-08 — Frontend couche 7 : cycle actions live
 
 **Perimetre.** Brancher les chips d'actions live sur le contrat backend existant, sans action

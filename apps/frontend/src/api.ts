@@ -7,6 +7,7 @@ import type {
   Persona,
   Resource,
   SearchResourcesResponse,
+  ValidationDecision,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -82,6 +83,10 @@ export async function getAvailableActions(token?: string | null): Promise<Action
   return request<ActionRegistryEntry[]>('/actions/available', {method: 'GET'}, token);
 }
 
+export async function getPendingActions(token?: string | null): Promise<Action[]> {
+  return request<Action[]>('/actions/pending', {method: 'GET'}, token);
+}
+
 export async function createAction(body: CreateAction, token?: string | null): Promise<Action> {
   return request<Action>('/actions', {
     method: 'POST',
@@ -95,6 +100,17 @@ export async function preflightAction(actionId: string, token?: string | null): 
 
 export async function executeAction(actionId: string, token?: string | null): Promise<Action> {
   return request<Action>(`/actions/${encodeURIComponent(actionId)}/execute`, {method: 'POST'}, token);
+}
+
+export async function validateAction(
+  actionId: string,
+  decision: ValidationDecision,
+  token?: string | null,
+): Promise<Action> {
+  return request<Action>(`/actions/${encodeURIComponent(actionId)}/validate`, {
+    method: 'POST',
+    body: JSON.stringify(decision),
+  }, token);
 }
 
 export async function getResources(token?: string | null): Promise<Resource[]> {

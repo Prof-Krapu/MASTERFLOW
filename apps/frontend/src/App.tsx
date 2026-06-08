@@ -17,11 +17,13 @@ import {
   executeAction,
   getAvailableActions,
   getCurrentContext,
+  getPendingActions,
   getPersonas,
   getResources,
   login,
   preflightAction,
   setToken,
+  validateAction,
 } from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
@@ -56,9 +58,13 @@ type EntryProfile = {
   completedAt: number;
 };
 type ActionRunState = {
-  status: 'idle' | 'creating' | 'preflight' | 'waiting_validation' | 'executing' | 'completed' | 'failed';
+  status: 'idle' | 'creating' | 'preflight' | 'waiting_validation' | 'approved' | 'executing' | 'completed' | 'failed';
   message: string;
   action?: Action;
+};
+type ValidationRunState = {
+  status: 'idle' | 'loading' | 'deciding' | 'ready' | 'error';
+  message: string;
 };
 
 const STATUS_LABEL: Record<RegistryStatus, string> = {
@@ -125,6 +131,10 @@ function canUseMode(mode: WorkMode, role: string | undefined): boolean {
   return role === 'godmode';
 }
 
+function canValidateActions(role: string | undefined): boolean {
+  return role === 'teacher' || role === 'admin' || role === 'godmode';
+}
+
 function entryStorageKey(userId: string): string {
   return `${ENTRY_STORAGE_PREFIX}${userId}`;
 }
@@ -172,6 +182,8 @@ function App(): ReactElement {
   const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
   const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
   const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
+  const [pendingActions, setPendingActions] = useState<Action[]>([]);
+  const [validationRun, setValidationRun] = useState<ValidationRunState>({status: 'idle', message: 'Inbox non chargee.'});
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -194,6 +206,7 @@ function App(): ReactElement {
   const nextActions = liveActions.slice(0, 3);
   const lockedActions = actionBuckets.future.slice(0, 4);
   const isGodmode = context?.user.role === 'godmode';
+  const canValidate = canValidateActions(context?.user.role);
   const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
   const availableModes = useMemo(
     () => WORK_MODES.filter((mode) => canUseMode(mode, context?.user.role)),
@@ -349,6 +362,8 @@ function App(): ReactElement {
     setEntryPresence('guided');
     setEntryProfile(null);
     setActionRun({status: 'idle', message: 'Aucune action lancee.'});
+    setPendingActions([]);
+    setValidationRun({status: 'idle', message: 'Inbox non chargee.'});
     setWsState('idle');
     setChatInput('');
     setChatTurns([]);
@@ -387,6 +402,29 @@ function App(): ReactElement {
     setSelectedMode(entryIntent);
   }, [context, entryDensity, entryIntent, entryPresence]);
 
+  const refreshPendingActions = useCallback(async (): Promise<void> => {
+    if (!auth || !canValidate) {
+      setPendingActions([]);
+      setValidationRun({status: 'idle', message: 'Inbox reservee aux roles teacher+.'});
+      return;
+    }
+
+    setValidationRun({status: 'loading', message: 'Chargement validations.'});
+    try {
+      const pending = await getPendingActions(auth.token);
+      setPendingActions(pending);
+      setValidationRun({
+        status: 'ready',
+        message: pending.length > 0 ? `${pending.length} validation(s) en attente.` : 'Aucune validation en attente.',
+      });
+    } catch (err) {
+      setValidationRun({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Inbox indisponible.',
+      });
+    }
+  }, [auth, canValidate]);
+
   const handleActionClick = useCallback(async (entry: ActionRegistryEntry): Promise<void> => {
     if (!auth || !context) return;
 
@@ -422,6 +460,9 @@ function App(): ReactElement {
           message: `Validation requise (${flighted.preflight?.validator_role ?? 'teacher'}).`,
           action: flighted,
         });
+        if (canValidate) {
+          await refreshPendingActions();
+        }
         return;
       }
 
@@ -447,11 +488,45 @@ function App(): ReactElement {
         message: err instanceof Error ? err.message : 'Action impossible.',
       });
     }
-  }, [activeMode.id, auth, context]);
+  }, [activeMode.id, auth, canValidate, context, refreshPendingActions]);
+
+  const handleValidationDecision = useCallback(async (
+    action: Action,
+    decision: 'approved' | 'rejected',
+  ): Promise<void> => {
+    if (!auth) return;
+
+    setValidationRun({
+      status: 'deciding',
+      message: decision === 'approved' ? 'Approbation en cours.' : 'Rejet en cours.',
+    });
+    try {
+      const decided = await validateAction(action.id, {
+        decision,
+        note: decision === 'approved' ? 'validation UI MasterFlow' : 'rejet UI MasterFlow',
+      }, auth.token);
+      setActionRun({
+        status: decided.status === 'approved' ? 'approved' : 'failed',
+        message: decided.status === 'approved' ? 'Action approuvee, execution separee requise.' : 'Action rejetee.',
+        action: decided,
+      });
+      await refreshPendingActions();
+    } catch (err) {
+      setValidationRun({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Decision impossible.',
+      });
+    }
+  }, [auth, refreshPendingActions]);
 
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
   }, [isConnected]);
+
+  useEffect(() => {
+    if (!auth || !context || showEntryGate || !canValidate) return;
+    void refreshPendingActions();
+  }, [auth, canValidate, context, refreshPendingActions, showEntryGate]);
 
   useEffect(() => {
     if (!auth || !context || showEntryGate) return undefined;
@@ -763,6 +838,51 @@ function App(): ReactElement {
               <p className="muted compact">Aucune source validee chargee.</p>
             )}
           </article>
+
+          {canValidate ? (
+            <article className="panel panel--wide validation-panel">
+              <div className="panel-header">
+                <h2>Validation</h2>
+                <span className="counter">{pendingActions.length}</span>
+              </div>
+              <div className={`validation-state validation-state--${validationRun.status}`} aria-live="polite">
+                <strong>{validationRun.status}</strong>
+                <span>{validationRun.message}</span>
+              </div>
+              <div className="validation-list">
+                {pendingActions.length > 0 ? (
+                  pendingActions.slice(0, 5).map((action) => (
+                    <article className="validation-item" key={action.id}>
+                      <div>
+                        <strong>{action.intent}</strong>
+                        <span>{action.object_type}</span>
+                        <small>{action.preflight?.risk_level ?? action.risk_level ?? 'risk unknown'}</small>
+                      </div>
+                      <div className="validation-actions">
+                        <button
+                          className="secondary"
+                          disabled={validationRun.status === 'deciding'}
+                          onClick={() => void handleValidationDecision(action, 'rejected')}
+                          type="button"
+                        >
+                          Rejeter
+                        </button>
+                        <button
+                          disabled={validationRun.status === 'deciding'}
+                          onClick={() => void handleValidationDecision(action, 'approved')}
+                          type="button"
+                        >
+                          Approuver
+                        </button>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <p className="muted compact">Aucune action en attente.</p>
+                )}
+              </div>
+            </article>
+          ) : null}
 
           <article className="panel panel--wide chat-panel">
             <div className="panel-header">

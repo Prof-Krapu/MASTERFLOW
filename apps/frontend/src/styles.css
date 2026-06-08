@@ -435,6 +435,11 @@ dd {
   border-color: rgba(240, 195, 107, 0.42);
 }
 
+.action-run--approved,
+.action-run--failed {
+  border-color: rgba(126, 183, 255, 0.44);
+}
+
 .action-run--failed {
   border-color: rgba(255, 143, 143, 0.48);
 }
@@ -445,6 +450,68 @@ dd {
 
 .source-strip {
   border-color: rgba(126, 183, 255, 0.38);
+}
+
+.validation-panel {
+  border-color: rgba(240, 195, 107, 0.38);
+}
+
+.validation-state {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 2px;
+  margin-bottom: 12px;
+  min-height: 58px;
+  padding: 10px 12px;
+}
+
+.validation-state strong {
+  color: var(--amber);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.validation-state span {
+  color: var(--muted);
+}
+
+.validation-state--error {
+  border-color: rgba(255, 143, 143, 0.48);
+}
+
+.validation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.validation-item {
+  align-items: center;
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 84px;
+  padding: 12px;
+}
+
+.validation-item div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.validation-item span,
+.validation-item small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.validation-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .resource-item {
@@ -638,6 +705,13 @@ dd {
   .entry-actions {
     align-items: stretch;
     display: grid;
+  }
+
+  .validation-item,
+  .validation-actions {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   dd {
