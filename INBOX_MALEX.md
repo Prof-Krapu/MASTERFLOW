@@ -115,6 +115,20 @@ Vincent hors-bande** (jamais dans Git). Détails dans `SYNC_THREAD_MALEX_VINCENT
 
 ---
 
+## 2026-06-10 — open — Couches 5-12 validées + mergées ; rebase sur `main` (fix backend inclus)
+
+Ton run réel godmode est fait : **7/7 étapes passent**. Tranche intégrée, `main` =
+`16340c8` (tes couches) + `3e34213` (fix backend).
+
+- Le 401 que ta couche 12 aurait pris sur `PUT /rooms/:id/instance` était un **bug backend**
+  (router `rooms` sans `requireUser` monté — corrigé + testé). Rien à changer chez toi.
+- **Action demandée : rebase `codex/frontend-masterflow` sur `origin/main`** avant ta
+  prochaine couche (tu récupères le fix + les docs à jour).
+- Détails du run + suite proposée dans `SYNC_THREAD_MALEX_VINCENT.md`
+  (entrée « couches 5-12 VALIDÉES + run réel 7/7 »).
+
+---
+
 ## 2026-06-07 — done — Front Home Room VALIDÉ + intégré sur `main`
 
 Ton cockpit Home Room (App.tsx + chat WS + couche personas/registry, api.ts, styles.css) **revu

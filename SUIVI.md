@@ -4,6 +4,55 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-10 — Couches 5-12 validées + run réel godmode + fix backend rooms
+
+**Périmètre.** Côté Vincent : revue + intégration de la tranche frontend couches 5-12 de MALEX
+(`16340c8`), exécution du run réel godmode demandé, et correction d'un bug backend découvert
+pendant ce run.
+
+### Revue & intégration
+
+- Revue complète `App.tsx` (1221 lignes), `api.ts`, `styles.css`, `smoke-public-runtime.mjs`,
+  `FRONTEND_UI_DOCTRINE.md` : conforme au contrat `@masterflow/shared` et aux invariants
+  (cycle create → preflight → validation → exécution **explicite et séparée**, inbox gated
+  teacher+, candidates ressources gated admin/godmode, sources par défaut = `validated` only,
+  1 speaker via `message.speaker`, debug godmode only, **pré-remplissage login retiré** —
+  point sécu de la dernière revue traité par MALEX).
+- Fast-forward `main` → `16340c8`, live sur le funnel `:10000`.
+- Checks : backend vitest **16/16**, `tsc` backend + frontend 0 erreur, `vite build` OK,
+  `npm run smoke:public` **7/7 OK** avec credentials (login godmode, context, personas,
+  resources, WebSocket pong à travers le funnel).
+
+### Bug backend trouvé et corrigé (`3e34213`)
+
+Le run réel a révélé que le router `rooms` supposait `requireUser` « monté en amont » alors
+qu'`index.ts` ne le montait pas :
+
+- `GET /rooms` répondait **sans authentification** sur le funnel public (fuite) ;
+- `GET/PUT /rooms/:id/instance` renvoyaient **401 même avec un token valide** (`req.user`
+  jamais posé) → la couche 12 de MALEX (sync room instance) ne pouvait pas fonctionner.
+
+Fix : `router.use(requireUser)` dans le router lui-même (pattern des autres routers) + nouveau
+test HTTP éphémère `rooms_auth.test.ts` (401 sans token sur les 4 routes, cycle PUT/GET
+instance avec token). Vérifié en live : `GET /rooms` sans auth → 401, `PUT instance` → 200.
+
+### Run réel godmode (les 7 étapes demandées par MALEX) — tout passe
+
+| Étape | Résultat |
+|---|---|
+| 1. Login `:10000` | 200, rôle godmode |
+| 2. Sas d'entrée → `PUT instance` | 200 après fix ; surface/densité/`entry_profile` persistés et relus |
+| 3. Home Room surface + densité + sync | `learning`/`low`/`active_mode` confirmés en relecture |
+| 4. Action live → preflight | non-sensible auto-`approved` ; sensible (`approve_validation_item`) → `pending_validation`, `execute` avant validation refusé **423** |
+| 5. Inbox validation | 1 item pending → `approved` via `POST validate`, exécution séparée → `completed` |
+| 6. Proposer ressource candidate | 201 `candidate`, invisible liste par défaut, visible `include_all` (godmode) |
+| 7. Valider candidate | `validated`, apparaît ensuite dans les sources par défaut |
+
+Note : la ressource de test « Test run réel couches 5-12 » reste dans le runtime (BDD vivante,
+pas le canon Drive) comme trace visible du run.
+
+---
+
 ## 2026-06-08 — Frontend couche 12 : sync room instance
 
 **Perimetre.** Persister le choix d'entree et le mode courant dans la room instance existante.

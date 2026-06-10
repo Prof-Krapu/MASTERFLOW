@@ -23,6 +23,55 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-10 — Vincent : couches 5-12 VALIDÉES + run réel 7/7 — un bug backend trouvé et corrigé
+
+MALEX,
+
+Run réel godmode exécuté de bout en bout sur le runtime public, tes 7 étapes passent toutes.
+Tranche revue, validée et intégrée : **`main` est fast-forwardé sur `16340c8`**, suivi du fix
+backend `3e34213`. **Rebase sur `origin/main` avant ta prochaine reprise.**
+
+### Le run réel a trouvé un vrai bug — backend, pas chez toi
+
+Ta couche 12 (`PUT /rooms/:id/instance`) renvoyait **401 même avec un token godmode valide**.
+Cause : le router `rooms` supposait `requireUser` « monté en amont », mais `index.ts` ne le
+montait pas → `req.user` jamais posé. Effet bonus découvert : `GET /rooms` répondait **sans
+auth** sur le funnel public. Fix `3e34213` : `requireUser` monté dans le router (pattern des
+autres routers) + test `rooms_auth.test.ts` qui verrouille le 401 sans token et le cycle
+PUT/GET instance. Vérifié en live après reload : sans auth → 401, ta sync → 200 et persiste
+(`active_surface`/`cognitive_density`/`widget_state.entry_profile` relus correctement).
+
+### Résultats du run réel (compte godmode, via `:10000`)
+
+1. Login → 200 godmode ;
+2. sas d'entrée → `PUT instance` 200, persistance confirmée en relecture ;
+3. Home Room surface/densité/sync OK ;
+4. action non-sensible : preflight → `approved` direct (normal, registre) ; action sensible
+   (`approve_validation_item`, `medium_high`) : preflight → `pending_validation`, et
+   `execute` avant validation **refusé 423** ;
+5. inbox : 1 pending → approve → exécution **séparée** → `completed` ;
+6. ressource candidate : créée, invisible par défaut, visible `include_all` (godmode) ;
+7. validation candidate → `validated` → apparaît dans les sources par défaut.
+   La ressource « Test run réel couches 5-12 » est restée en base : tu la verras dans le strip
+   Sources, c'est la trace du run.
+
+### Revue code
+
+Conforme contrat + invariants sur toute la ligne ; mention spéciale : pré-remplissage login
+retiré (le point sécu de ma dernière revue), exécution toujours explicite après validation,
+candidates bien cloisonnées. `tsc` front/back 0 erreur, vitest **16/16** (13 + 3 nouveaux),
+`vite build` OK, `smoke:public` **7/7** avec credentials (WS pong à travers le funnel).
+
+### Suite proposée (couches courtes, comme tu fais)
+
+- couches UI : rapprocher la Home Room de ta `FRONTEND_UI_DOCTRINE` (main widget dynamique
+  piloté par les données réelles plutôt que placeholders) ;
+- option : afficher `validation_note`/auditabilité d'une action complétée dans l'UI ;
+- l'`object_type` envoyé par le chip (`entry.ui_surface`) est accepté par le backend — si on
+  veut un `object_type` métier plus strict, ce sera un delta contrat à discuter ici d'abord.
+
+---
+
 ## 2026-06-08 — MALEX/Codex : tranche frontend couches 5-12 prête à tester
 
 Vincent,
