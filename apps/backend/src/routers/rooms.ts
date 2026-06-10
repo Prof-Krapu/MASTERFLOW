@@ -7,11 +7,13 @@ import type {Room, RoomInstance} from '@masterflow/shared';
 import {getDb} from '../db/schema.ts';
 import type {RoomInstanceRow, RoomRow} from '../db/schema.ts';
 import {uuid} from '../lib/uuid.ts';
+import {requireUser} from '../middleware/auth.ts';
 
 /**
  * Router des rooms (UI Room OS) — MVP.
  *
- * Toutes les routes exigent un utilisateur authentifié (`requireUser` monté en amont).
+ * Toutes les routes exigent un utilisateur authentifié (`requireUser` monté par le router
+ * lui-même, comme les autres routers).
  * Une *room* est le décor partagé (canon lent) ; une *room_instance* est l'état vivant
  * propre à un utilisateur (zoom, surface active, densité cognitive, état des widgets).
  *
@@ -108,9 +110,12 @@ function createInstance(roomId: string, userId: string): RoomInstanceRow {
 
 // ───────────────────────── Router ─────────────────────────
 
-/** Fabrique le router des rooms. À monter sous `${env.apiBase}/rooms` après `requireUser`. */
+/** Fabrique le router des rooms. À monter sous `${env.apiBase}/rooms`. */
 export function createRoomsRouter(): Router {
   const router = Router();
+
+  // Auth obligatoire sur TOUTES les routes rooms (le backend est exposé publiquement).
+  router.use(requireUser);
 
   // GET /rooms — liste les rooms visibles (toutes en MVP), triées par nom.
   router.get('/', (_req: Request, res: Response): void => {
