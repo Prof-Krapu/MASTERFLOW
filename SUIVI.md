@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Pack specs fondations post-audit
+
+**Livrable MALEX/Codex.** Deroulement de la chaine de specs et recettes priorisees apres audit :
+
+- `RECETTE_AUTONOMY_STEP1_SHELL.md` ;
+- `SPEC_CAPABILITY_REGISTRY.md` ;
+- `SPEC_STATUS_TAXONOMY.md` ;
+- `SPEC_PROJECT_SCOPE_OWNERSHIP.md` ;
+- `SPEC_TEMPLATE_SCHEMA_REGISTRY.md` ;
+- `RECETTE_RAG_PERMISSIONNE.md` ;
+- `SPEC_JOBS_QUEUES_RUNNERS.md` ;
+- `SPEC_WORKFLOW_OBSERVABILITY.md` ;
+- `PLAN_PRS_FONDATIONS_MASTERFLOW.md`.
+
+Objectif : donner a Vincent une sequence backend claire et testable avant implementation large.
+
+---
+
 ## 2026-06-13 — Spec autonomie encadree step 1
 
 **Livrable MALEX/Codex.** Ajout de `SPEC_AUTONOMY_STEP1_SHELL.md`.

@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : pack specs fondations post-audit
+
+Vincent,
+
+J'ai deroule le pack de cadrage complet pour les fondations post-audit : recette autonomie,
+capability registry, taxonomie statuts, project/scope, template registry, recette RAG, jobs,
+observabilite workflow et plan de PRs.
+
+Le fichier d'ordre est `PLAN_PRS_FONDATIONS_MASTERFLOW.md`. Utilise-le comme proposition de
+roadmap, pas comme ordre aveugle : challenge les dependances et renvoie le diff backend exact
+PR par PR.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : spec autonomy_step1_shell
 
 Vincent,

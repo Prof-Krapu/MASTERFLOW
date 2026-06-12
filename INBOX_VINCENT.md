@@ -14,6 +14,25 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Pack specs fondations post-audit
+
+MALEX/Codex a deroule les specs/recettes suivantes pour cadrer les prochaines PRs :
+
+- `RECETTE_AUTONOMY_STEP1_SHELL.md` ;
+- `SPEC_CAPABILITY_REGISTRY.md` ;
+- `SPEC_STATUS_TAXONOMY.md` ;
+- `SPEC_PROJECT_SCOPE_OWNERSHIP.md` ;
+- `SPEC_TEMPLATE_SCHEMA_REGISTRY.md` ;
+- `RECETTE_RAG_PERMISSIONNE.md` ;
+- `SPEC_JOBS_QUEUES_RUNNERS.md` ;
+- `SPEC_WORKFLOW_OBSERVABILITY.md` ;
+- `PLAN_PRS_FONDATIONS_MASTERFLOW.md`.
+
+Action demandee : challenger l'ordre, signaler les conflits backend, puis proposer les PRs
+courtes correspondantes. Ne pas tout implementer d'un bloc.
+
+---
+
 ## 2026-06-13 — open — Spec PR autonomy_step1_shell
 
 La specification de la premiere couche d'autonomie encadree est disponible :
