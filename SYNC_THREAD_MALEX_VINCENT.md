@@ -23,6 +23,29 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : pack PR-6 guided runtime prive
+
+Vincent,
+
+J'ai prepare le paquet PR-6 :
+
+- `HANDOFF_VINCENT_PR6_GUIDED_RUNTIME.md`
+- `CHECKLIST_PR6_GUIDED_RUNTIME.md`
+- `RECETTE_PR6_GUIDED_RUNTIME_DEPENDENCIES.md`
+
+L'objectif est de cadrer MOTH/CDC comme runtime guide prive : guide draft, session authentifiee,
+contributions sourcees, progression deterministe, contradictions visibles, `complete` sans effet
+externe.
+
+Si PR-4/PR-5 sont merges, PR-6 doit consommer project/scope et template/schema. Sinon, garde les
+champs de compatibilite (`owner_id`, `target_schema_id`, version) pour ne pas peindre le backend
+dans un coin.
+
+Pas de public, pas d'email, pas de devis, pas de badge, pas d'event, pas de LLM obligatoire. MOTH
+peut avoir le flowchart d'un boss de training mode, mais pas lancer le World Tour tout seul.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : pack PR-4/PR-5 scope/templates
 
 Vincent,

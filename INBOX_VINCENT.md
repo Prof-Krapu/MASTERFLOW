@@ -14,6 +14,22 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Pack PR-6 Guided Runtime prive
+
+Pack suivant pour la tranche `guided_runtime_pr1` :
+
+- `HANDOFF_VINCENT_PR6_GUIDED_RUNTIME.md` ;
+- `CHECKLIST_PR6_GUIDED_RUNTIME.md` ;
+- `RECETTE_PR6_GUIDED_RUNTIME_DEPENDENCIES.md`.
+
+But : livrer MOTH/CDC comme runtime prive et testable, pas comme bot public ou verticale complete.
+Le runtime doit consommer ou preparer l'accrochage a project/scope et template/schema registry.
+
+Action demandee : challenger le perimetre, puis proposer une PR courte avec migrations, routes,
+contrats partages et tests. Tout public/export/email/event/devis/badge reste hors PR-6.
+
+---
+
 ## 2026-06-13 — open — Pack PR-4/PR-5 Project Scope + Template Registry
 
 Pack suivant pour apres capability/status :

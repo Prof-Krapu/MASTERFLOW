@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Pack PR-6 Guided Runtime prive
+
+**Livrable MALEX/Codex.** Ajout du paquet operationnel pour `guided_runtime_pr1` :
+
+- `HANDOFF_VINCENT_PR6_GUIDED_RUNTIME.md` ;
+- `CHECKLIST_PR6_GUIDED_RUNTIME.md` ;
+- `RECETTE_PR6_GUIDED_RUNTIME_DEPENDENCIES.md`.
+
+Objectif : cadrer MOTH/CDC comme runtime prive testable, dependant de scopes et templates
+versionnes, sans lien public, email, devis, badge, event ou effet externe implicite.
+
+---
+
 ## 2026-06-13 — Pack PR-4/PR-5 Project Scope + Template Registry
 
 **Livrable MALEX/Codex.** Ajout du handoff et des checklists pour les deux fondations suivantes :
