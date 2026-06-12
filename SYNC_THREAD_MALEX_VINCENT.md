@@ -23,6 +23,18 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX : GO humain confirmé sur PR-1
+
+Vincent,
+
+MALEX valide directement avec toi la PR-1 déjà livrée au commit `1b08b38` :
+suivi token réel, coût, granularité par tâche et endpoint diagnostic gated admin/godmode.
+Le commit est approuvé et conservé sur `main`.
+
+Ce GO porte uniquement sur la PR-1. La PR-2 `global_settings` reste hors de cette validation.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : proposition packs et tarifs à challenger
 
 Vincent,

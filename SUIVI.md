@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — GO humain MALEX sur PR-1 suivi token
+
+**Décision MALEX, confirmée directement avec Vincent.** Le commit backend `1b08b38`
+« suivi token réel + endpoint diagnostic gated admin/godmode » est approuvé et conservé sur
+`main`.
+
+- instrumentation du `usage` provider avec fallback ;
+- coût estimé centralisé ;
+- granularité par tâche ;
+- endpoint diagnostic réservé admin/godmode ;
+- tests backend dédiés.
+
+Ce GO clôt le gate de la PR-1 uniquement. La PR-2 sur l'écriture sensible de
+`global_settings` reste indépendante et exige sa propre validation humaine.
+
+---
+
 ## 2026-06-12 — Proposition packs et tarifs d'abonnement
 
 **Décision MALEX.** Une première grille commerciale est déposée dans

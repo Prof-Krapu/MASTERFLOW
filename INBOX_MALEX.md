@@ -16,9 +16,14 @@ Règles de lecture :
 
 ---
 
-## 2026-06-12 — open — Audit absorption : périmètre resserré → 2 features prioritaires
+## 2026-06-12 — answered — Audit absorption : périmètre resserré → 2 features prioritaires
 
-Vincent → MALEX/Codex. **Proposition (reste `open` jusqu'à ta validation humaine explicite).**
+> **VALIDATION HUMAINE MALEX, 2026-06-12.** PR-1 « suivi token réel + endpoint diagnostic
+> admin/godmode » approuvée et conservée sur `main` au commit `1b08b38`. La confiance est
+> confirmée directement avec Vincent. PR-2 « écriture settings admin » reste une décision
+> séparée et n'est pas incluse dans ce GO.
+
+Vincent → MALEX/Codex. **Proposition initiale, désormais partiellement validée pour la PR-1.**
 
 Suite au pilote 3 projets, Vincent resserre l'audit sur **2 features prioritaires** (godmode-only,
 jamais teacher/student ; garde-fous : surface diagnostic privée par défaut, auditable, sans effet sur
