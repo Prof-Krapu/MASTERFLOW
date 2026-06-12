@@ -80,7 +80,7 @@ Source : `API_manage/CLAUDE.md`.
 | M1 | Auth multi-utilisateurs (login, sessions, `requireUser`) | `permission_runtime` | **KEEP_AS_IS** (déjà couvert par l'auth JWT de `main`) | OK | faible |
 | M2 | Storage REST `/api/v1/storage/:app/:key` + allowlist `ADMIN_CONTROLLED_KEYS` : `global_settings` (admin-only write / read-all) vs `user_storage` (privé par user) | `permission_runtime` | **IMPROVE_EXISTING_OWNER** | PATCH_EXISTING_OWNER | faible |
 | M3 | Landing publique + reverse-proxy `/app/{pc,fr,nl}` gatés `requireUser` | `ui_room_os` | **SKIP_OR_QUARANTINE** (anti-scope : page routing + dashboard SaaS permanent) | QUARANTINE | faible |
-| M4 | Panneau admin : clé API partagée, **invitations**, **monitoring token usage** | `permission_runtime` + owner audit | **ADD_MISSING_CAPABILITY** | FUTURE_READY | moyen |
+| M4 | Panneau admin : clé API partagée, **invitations**, **monitoring token usage** | `permission_runtime` + owner audit | **ADD** (invitations) / **IMPROVE_EXISTING_OWNER** (token, cf. Vérifs `main`) | FUTURE_READY | moyen |
 | M5 | Orchestration systemd (4 services + funnel, **persistants au reboot**) | RUNTIME_ORCHESTRATION (ops) | **IMPROVE_EXISTING_OWNER** | AUDIT_ONLY | faible |
 | M6 | better-sqlite3 + migrations idempotentes au boot | BDD | **KEEP_AS_IS** | OK | faible |
 
@@ -165,6 +165,23 @@ Source : `vibe/CLAUDE.md`.
 
 PR-A→E sont **faible risque / fort alignement**. PR-F et tout ce qui touche `classes/élèves` (C11), multi-user (V3)
 ou le passage Phase 2 restent **`BLOCKED_BY_HUMAN_VALIDATION`** (périmètre).
+
+---
+
+## Vérifs contre `main` (2026-06-12) — périmètre resserré Vincent (2 features prioritaires)
+
+Décision Vincent : resserrer sur **(1) console admin API_manage** et **(2) suivi token**. Vérification du
+code réel de `apps/backend` (au lieu de supposer) → deux tables sont **déjà scaffoldées**, ce qui reclasse
+la feature #2.
+
+| Feature | Réalité dans `main` (source) | Reclassement |
+|---|---|---|
+| **#1 — settings globaux admin** | Table `global_settings (app, key, value_json, updated_at, updated_by)` **existe** (`apps/backend/src/db/schema.ts:169-176`) mais **aucun routeur ne la lit/écrit** (routers : auth, context, personas, resources, rooms, actions, ws). | **Ardoise vierge.** La contrainte « l'écriture des settings globaux doit transiter par le **cycle d'action sensible** (preflight → validation → audit), pas un PUT direct » tient **sans rien à défaire** : il n'existe aucun chemin d'écriture à corriger, seulement à câbler correctement le jour de l'absorption. |
+| **#2 — suivi token** | Table `token_events (user_id, ts, model, task, prompt_tokens, completion_tokens, cost_eur, persona_id, room_instance_id)` **existe** (`schema.ts:178-189`) **et est écrite à chaque génération** (`services/llm.ts:54-84`, best-effort). MAIS : tokens **estimés** (`~mots×1.3`, `estimateTokens`), `task` **figé** à `'chat'` (`TOKEN_TASK`), `cost_eur=0`, **`usage` réel du provider non consommé** (`llm.ts:43` : « non géré ici, on reste sur l'estimation »), et **aucun endpoint de lecture** (projection godmode/admin absente). | **`ADD_MISSING_CAPABILITY` → `IMPROVE_EXISTING_OWNER`.** Le squelette (table + log par appel, déjà rattaché user/persona/room) existe. Ce qui manque réellement : (a) consommer le `usage` réel du provider au lieu d'estimer ; (b) granularité **par tâche** (OCR/barème/correction/synthèse, comme `API_corrector`) au lieu de `'chat'` figé ; (c) calcul `cost_eur` ; (d) **endpoint gated** de lecture projeté dans le runtime godmode/admin (Q6). |
+
+**Impact sur le plan de PRs** : la PR « suivi token » n'est plus une création d'owner mais un **patch du
+service `llm` + un endpoint de lecture gated** (plus petit, plus sûr). La PR « settings admin » reste un
+**câblage neuf** sur table existante, obligatoirement derrière le cycle d'action sensible.
 
 ---
 

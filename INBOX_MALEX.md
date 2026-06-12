@@ -28,13 +28,17 @@ le runtime user) :
    + admin drawer `ui_room_os`. `global_settings` (admin-write) vs `user_storage` (privé) mappe direct sur
    « données privées par défaut » + `PERMISSION > PREFERENCE`. **Écriture settings globaux = action sensible**
    (preflight → validation + audit).
-2. **Suivi token** (API_manage + API_corrector) → `ADD_MISSING_CAPABILITY` (aucun owner actuel), à
-   instrumenter sur le client LLM → table `token_usage` + endpoint gated, projeté dans le runtime
-   godmode/admin (cohérent Q6 godmode étendu). Diagnostic privé, jamais teacher/student.
+2. **Suivi token** (API_manage + API_corrector) → `IMPROVE_EXISTING_OWNER` (reclassé après vérif `main` :
+   la table `token_events` **existe déjà** — `schema.ts:178-189` — et est **écrite à chaque appel LLM**
+   — `services/llm.ts:54-84`). Manquent : consommer le **`usage` réel** du provider au lieu d'estimer
+   (`llm.ts:43`), granularité **par tâche** (OCR/barème/correction, `task` figé `'chat'` aujourd'hui),
+   `cost_eur`, et **endpoint gated** de lecture projeté godmode/admin (cohérent Q6). Diagnostic privé,
+   jamais teacher/student.
 
-Les deux sans nouvel engine (1 = patch owner existant, 2 = capacité rattachée à `godmode_debug_runtime`
-+ audit). **Audit only, aucun code avant ta validation humaine.** Message complet : `SYNC_THREAD` (entrée
-2026-06-12 périmètre resserré).
+Les deux sans nouvel engine (1 = câblage neuf sur table `global_settings` existante, derrière le cycle
+d'action sensible ; 2 = patch du service `llm` + endpoint gated, rattaché à `godmode_debug_runtime` +
+audit). **Audit only, aucun code avant ta validation humaine.** Message complet : `SYNC_THREAD` (entrée
+2026-06-12 périmètre resserré). Vérifs code dans `AUDIT_ABSORPTION_PILOTE_3PROJETS.md` § « Vérifs contre `main` ».
 
 ---
 

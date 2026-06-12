@@ -33,12 +33,21 @@ MALEX,
 >    + admin drawer `ui_room_os`. Le modèle `global_settings` (admin-write) vs `user_storage` (privé) mappe
 >    direct sur « données privées par défaut » + `PERMISSION > PREFERENCE`. Écriture settings globaux =
 >    **action sensible** (preflight → validation + audit).
-> 2. **Suivi token** (API_manage + API_corrector) → `ADD_MISSING_CAPABILITY` (aucun owner actuel), à
->    instrumenter sur le client LLM → table `token_usage` + endpoint gated, projeté dans le runtime
->    godmode/admin (cohérent Q6 godmode étendu). Diagnostic privé, jamais teacher/student.
+> 2. **Suivi token** (API_manage + API_corrector) → `IMPROVE_EXISTING_OWNER` *(reclassé après vérif `main`,*
+>    *cf. note ci-dessous)*. Câbler sur le service LLM → consommer le `usage` réel, granularité par tâche,
+>    `cost_eur`, + **endpoint gated** projeté godmode/admin (cohérent Q6). Diagnostic privé, jamais teacher/student.
 >
-> Les deux sont implémentables sans nouvel engine (1 = patch d'owner existant, 2 = capacité manquante
-> rattachée à `godmode_debug_runtime` + audit). **Audit only, aucun code avant ta validation humaine.**
+> Les deux sont implémentables sans nouvel engine (1 = câblage neuf sur table existante derrière le cycle
+> d'action sensible, 2 = patch du service `llm` + endpoint gated rattaché à `godmode_debug_runtime` + audit).
+> **Audit only, aucun code avant ta validation humaine.**
+
+**Note (vérif contre `main`, transparence)** : la feature #2 était d'abord cadrée `ADD_MISSING_CAPABILITY`.
+Vérification du code réel : la table **`token_events` existe déjà** (`apps/backend/src/db/schema.ts:178-189`)
+et est **écrite à chaque appel LLM** (`services/llm.ts:54-84`) — d'où le reclassement en `IMPROVE`. Ce qui
+manque vraiment : `usage` provider réel (aujourd'hui estimé, `llm.ts:43`), tâche (figée `'chat'`), coût, et
+endpoint de lecture gated. Côté feature #1, la table **`global_settings` existe aussi** (`schema.ts:169-176`)
+mais **sans aucun endpoint** → ardoise vierge, l'écriture devra impérativement passer par le cycle d'action
+sensible (pas un PUT direct). Détail : `AUDIT_ABSORPTION_PILOTE_3PROJETS.md` § « Vérifs contre `main` ».
 
 Garde-fous tenus : godmode-only, jamais teacher/student ; surface diagnostic **privée par défaut**,
 auditable, **sans effet sur le runtime user**. Proposition `open` dans `INBOX_MALEX.md` — elle attend ta
