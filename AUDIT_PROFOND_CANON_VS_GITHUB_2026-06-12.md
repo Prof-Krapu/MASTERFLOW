@@ -5,6 +5,11 @@ Canon audite : Drive `MASTERFLOW`
 Code audite : branche `codex/frontend-masterflow` au commit `c57e938`  
 Reference distante : `origin/main` au commit `1b08b38`
 
+> **Portee corrigee :** ce rapport audite le noyau actif et ses 19 owners prioritaires. Il ne
+> constitue pas l'audit exhaustif de tout le corpus MasterFlow. Pour la couverture globale des
+> apps, engines, contrats, personas, widgets, datasets, evenements et artefacts secondaires, voir
+> `AUDIT_MASTERFLOW_COMPLET_CANON_VS_GITHUB_2026-06-12.md`.
+
 ## 1. Verdict
 
 Non, la quasi-totalite de MasterFlow canon n'est pas implantee dans GitHub.

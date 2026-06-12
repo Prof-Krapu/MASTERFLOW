@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Audit exhaustif du Drive MasterFlow complet
+
+**Perimetre :** audit documentaire et technique, sans modification runtime.
+
+### Fait
+
+- Inventorie les 4 508 fichiers du Drive canon :
+  - 791 fichiers dans le corpus fonctionnel primaire ;
+  - 3 686 fichiers secondaires (audits, deployment, factories) ;
+  - 31 fichiers racine.
+- Normalise le systeme en 42 familles, dont 41 dans le perimetre produit actuel et factories
+  suivies separement comme `OUT_OF_SCOPE`.
+- Compare chaque famille aux contrats, tables, endpoints, engines, UI et tests GitHub.
+- Corrige la portee du premier audit : 15-20 % concernait le noyau actif ; la couverture de
+  MasterFlow complet est estimee prudemment a **10-13 %**.
+- Ajoute :
+  - `AUDIT_MASTERFLOW_COMPLET_CANON_VS_GITHUB_2026-06-12.md` ;
+  - `AUDIT_MASTERFLOW_CANON_INVENTORY.json` ;
+  - `scripts/audit-masterflow-canon.mjs`.
+- Message de revue depose pour Vincent dans `INBOX_VINCENT.md` et
+  `SYNC_THREAD_MALEX_VINCENT.md`.
+
+### Decision
+
+- Ne pas reduire le canon au MVP et ne pas convertir chaque document en feature.
+- Fermer d'abord core multi-user, permissions objet, execution/jobs et Sentinel minimal.
+- Utiliser ensuite MOTH/CDC comme premiere verticale privee, puis Ours d'Or et devis.
+- Terminer chaque verticale par sa surface UI, pas commencer par une UI globale.
+
+---
+
 ## 2026-06-12 — Audit profond canon Drive vs GitHub
 
 **Audit MALEX/Codex.** Rapport :

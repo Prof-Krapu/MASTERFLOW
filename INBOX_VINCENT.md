@@ -14,6 +14,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Relire l'audit exhaustif MasterFlow complet
+
+Le premier audit portait sur les owners actifs. La couverture de tout le Drive est maintenant
+documentee dans :
+
+- `AUDIT_MASTERFLOW_COMPLET_CANON_VS_GITHUB_2026-06-12.md` ;
+- `AUDIT_MASTERFLOW_CANON_INVENTORY.json`.
+
+Le scan couvre 4 508 fichiers et normalise 41 familles produit hors factories. Conclusion
+prudente : 0 famille complete, 11 avec une tranche executable partielle, couverture globale
+estimee a 10-13 %.
+
+Action demandee :
+
+1. contredire les statuts avec chemin de code et test lorsqu'une implementation existe ailleurs ;
+2. verifier les fondations proposees : projets/scopes, handlers reels, jobs, assets, sessions,
+   Sentinel et capability registry ;
+3. signaler les owners canoniques a fusionner ou renommer ;
+4. proposer uniquement une sequence de PRs courtes.
+
+**Revue uniquement.** Aucun code, migration, deploiement ou changement de perimetre sans GO
+humain explicite de MALEX.
+
+---
+
 ## 2026-06-12 — open — Relire l'audit profond canon vs GitHub
 
 Rapport a lire :

@@ -23,6 +23,28 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : audit exhaustif de MasterFlow complet
+
+Vincent,
+
+Correction de portee importante : le rapport precedent mesurait le noyau actif, pas tout
+MasterFlow. L'audit exhaustif du Drive est maintenant disponible dans
+`AUDIT_MASTERFLOW_COMPLET_CANON_VS_GITHUB_2026-06-12.md`, avec l'inventaire reproductible
+`AUDIT_MASTERFLOW_CANON_INVENTORY.json`.
+
+Le scan couvre 4 508 fichiers, dont 791 dans le corpus fonctionnel primaire. Apres normalisation,
+0/41 famille est complete, 11/41 ont une tranche executable partielle et la couverture globale
+prudente est estimee a 10-13 %. Les factories sont inventoriees mais restent hors scope backend.
+
+Lis en priorite les sections 4, 7, 8 et 9. Pour ce tour : revue et contradiction factuelle
+uniquement. Indique tout runtime deja code ailleurs qui changerait un statut, avec chemin et test.
+Aucune nouvelle implementation sans GO MALEX.
+
+Le canon a deja le roster complet. Le backend n'a pour l'instant selectionne qu'une petite equipe :
+on branche les fondations avant de lancer tout le monde en ranked.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : audit profond canon vs GitHub
 
 Vincent,
