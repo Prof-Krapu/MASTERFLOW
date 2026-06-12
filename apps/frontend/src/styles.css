@@ -28,7 +28,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -53,7 +54,8 @@ button:disabled {
   color: var(--text);
 }
 
-input {
+input,
+textarea {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -62,7 +64,8 @@ input {
   padding: 10px 12px;
 }
 
-input:focus {
+input:focus,
+textarea:focus {
   border-color: var(--accent-strong);
   outline: 2px solid rgba(88, 193, 137, 0.22);
 }
@@ -530,7 +533,7 @@ dd {
   border-radius: 8px;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px) auto;
   min-height: 84px;
   padding: 12px;
 }
@@ -672,6 +675,168 @@ dd {
   text-align: right;
 }
 
+.action-audit {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.audit-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.audit-step {
+  align-items: center;
+  color: var(--muted);
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  min-width: 0;
+  position: relative;
+  text-align: center;
+}
+
+.audit-step::before {
+  background: var(--line);
+  content: '';
+  height: 1px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 5px;
+}
+
+.audit-step:first-child::before {
+  left: 50%;
+}
+
+.audit-step:last-child::before {
+  right: 50%;
+}
+
+.audit-step > span {
+  background: #12151b;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  height: 11px;
+  position: relative;
+  width: 11px;
+  z-index: 1;
+}
+
+.audit-step--done,
+.audit-step--current {
+  color: var(--text);
+}
+
+.audit-step--done > span,
+.audit-step--current > span {
+  border-color: var(--accent-strong);
+}
+
+.audit-step--current > span {
+  background: var(--accent-strong);
+}
+
+.audit-step--skipped {
+  opacity: 0.58;
+}
+
+.audit-step--failed {
+  color: var(--danger);
+}
+
+.audit-step--failed > span {
+  border-color: var(--danger);
+}
+
+.audit-details {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.audit-details div {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.audit-details dt,
+.validation-note span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.audit-details dd {
+  font-size: 12px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.audit-note {
+  background: #12151b;
+  border-left: 3px solid var(--accent-strong);
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 8px 10px;
+}
+
+.audit-note--warning {
+  border-left-color: var(--amber);
+}
+
+.audit-note--error {
+  border-left-color: var(--danger);
+}
+
+.audit-note span {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.audit-result summary {
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.audit-result pre {
+  background: #0c0f14;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 11px;
+  margin: 8px 0 0;
+  max-height: 180px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.validation-note {
+  display: grid;
+  gap: 5px;
+  min-width: min(300px, 100%);
+}
+
+.validation-note textarea {
+  min-height: 54px;
+  resize: vertical;
+}
+
 .locked-item {
   background: #12151b;
   border: 1px solid var(--line);
@@ -778,6 +943,10 @@ dd {
 }
 
 @media (max-width: 720px) {
+  .audit-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .workspace,
   .topbar,
   .panel-header,

@@ -28,6 +28,7 @@ import {
   validateAction,
   validateResource,
 } from './api.ts';
+import {ActionAudit} from './action-audit.tsx';
 import {
   buildModeView,
   canUseMode,
@@ -177,6 +178,7 @@ function App(): ReactElement {
   const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
   const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
   const [pendingActions, setPendingActions] = useState<Action[]>([]);
+  const [validationNotes, setValidationNotes] = useState<Record<string, string>>({});
   const [validationRun, setValidationRun] = useState<ValidationRunState>({status: 'idle', message: 'Inbox non chargee.'});
   const [resourceTitle, setResourceTitle] = useState('');
   const [resourceUrl, setResourceUrl] = useState('');
@@ -527,6 +529,7 @@ function App(): ReactElement {
   const handleValidationDecision = useCallback(async (
     action: Action,
     decision: 'approved' | 'rejected',
+    note?: string,
   ): Promise<void> => {
     if (!auth) return;
 
@@ -537,12 +540,17 @@ function App(): ReactElement {
     try {
       const decided = await validateAction(action.id, {
         decision,
-        note: decision === 'approved' ? 'validation UI MasterFlow' : 'rejet UI MasterFlow',
+        ...(note?.trim() ? {note: note.trim()} : {}),
       }, auth.token);
       setActionRun({
         status: decided.status === 'approved' ? 'approved' : 'failed',
         message: decided.status === 'approved' ? 'Action approuvee, execution separee requise.' : 'Action rejetee.',
         action: decided,
+      });
+      setValidationNotes((current) => {
+        const next = {...current};
+        delete next[action.id];
+        return next;
       });
       await refreshPendingActions();
     } catch (err) {
@@ -922,6 +930,7 @@ function App(): ReactElement {
                 </button>
               ) : null}
             </div>
+            {actionRun.action ? <ActionAudit action={actionRun.action} /> : null}
           </article>
 
           <article className="panel panel--wide">
@@ -1040,18 +1049,29 @@ function App(): ReactElement {
                         <span>{action.object_type}</span>
                         <small>{action.preflight?.risk_level ?? action.risk_level ?? 'risk unknown'}</small>
                       </div>
+                      <label className="validation-note">
+                        <span>Note de decision</span>
+                        <textarea
+                          onChange={(event) => setValidationNotes((current) => ({
+                            ...current,
+                            [action.id]: event.target.value,
+                          }))}
+                          rows={2}
+                          value={validationNotes[action.id] ?? ''}
+                        />
+                      </label>
                       <div className="validation-actions">
                         <button
                           className="secondary"
                           disabled={validationRun.status === 'deciding'}
-                          onClick={() => void handleValidationDecision(action, 'rejected')}
+                          onClick={() => void handleValidationDecision(action, 'rejected', validationNotes[action.id])}
                           type="button"
                         >
                           Rejeter
                         </button>
                         <button
                           disabled={validationRun.status === 'deciding'}
-                          onClick={() => void handleValidationDecision(action, 'approved')}
+                          onClick={() => void handleValidationDecision(action, 'approved', validationNotes[action.id])}
                           type="button"
                         >
                           Approuver

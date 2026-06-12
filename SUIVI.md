@@ -4,6 +4,49 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Frontend couche 14 : auditabilite des actions
+
+**Perimetre.** Rendre le cycle d'action et ses decisions lisibles depuis les donnees deja
+retournees par le backend, sans nouveau contrat ni modification backend.
+
+### Construit
+
+- Ajout d'un composant `ActionAudit` isole du widget principal.
+- Trace visuelle du cycle reel :
+  - creation ;
+  - preflight ;
+  - validation, ou etape explicitement non requise ;
+  - execution ;
+  - resultat.
+- Affichage des champs contractuels disponibles : risque, permission check, validateur,
+  timestamp de mise a jour, note de validation, warnings, erreur backend et resultat technique
+  repliable.
+- Ajout d'une note libre dans l'inbox avant approbation ou rejet. Une note vide reste vide :
+  aucun commentaire automatique n'est invente par l'UI.
+- Distinction visuelle entre rejet humain, echec de preflight et echec d'execution.
+
+### Invariant
+
+Validation et execution restent deux gestes separes. L'UI ne reconstruit pas un audit log :
+elle affiche uniquement l'etat courant et les metadonnees presentes dans le contrat `Action`.
+
+### Validation
+
+| Verif | Resultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK, 32 modules |
+| `npm test` | OK, backend 16/16 |
+| `git diff --check` | OK |
+| Browser local mobile 390 px | aucun debordement, aucune erreur console |
+
+### Run restant
+
+Le panneau authentifie doit etre confirme sur le runtime public apres integration par Vincent,
+le backend restant human-in-the-loop.
+
+---
+
 ## 2026-06-12 — Revue + intégration couche 13 (côté Vincent)
 
 **Périmètre.** Revue et intégration de la couche 13 frontend de MALEX (modes fondés sur le
