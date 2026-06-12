@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Fondations post-audit a mettre en place
+
+**Livrable MALEX/Codex.** Ajout de `MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md` dans Git et
+miroir prevu dans le Drive canon `01_CORE`.
+
+Objectif : transformer les failles evidentes de l'audit complet en fondations transversales :
+
+- Capability Registry reel ;
+- statuts canon/runtime normalises ;
+- Project / Scope / Ownership ;
+- RAG local permissionne + Resource Truth ;
+- jobs/queues/runners ;
+- Template / Schema Registry ;
+- Tool / Connector Gateway ;
+- observabilite workflow ;
+- recettes d'acceptation systematiques ;
+- validation graduee.
+
+Priorite : mettre ces multiplicateurs en place avant d'empiler des features isolees ou une UI
+finale.
+
+---
+
 ## 2026-06-12 — Recette UI post-PR-1 Guided Runtime
 
 **Livrable MALEX/Codex.** Ajout de `RECETTE_UI_PR1_GUIDED_RUNTIME.md` pour cadrer la future

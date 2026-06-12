@@ -23,6 +23,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : fondations post-audit
+
+Vincent,
+
+On a transforme l'audit complet en document de fondations :
+`MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md`.
+
+Le point important : il ne faut pas empiler les features. Les multiplicateurs a poser sont
+Capability Registry, statuts normalises, project/scope/ownership, RAG permissionne, jobs,
+template registry, tool gateway, observabilite workflow et recettes systematiques.
+
+Utilise-le pour proposer l'ordre de PRs courtes cote backend. Le but est que MOTH/CDC, Ours d'Or,
+devis, DA, assets et correction consomment les memes fondations au lieu de creer des chemins
+paralleles.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : recette UI post-PR-1 Guided Runtime
 
 Vincent,

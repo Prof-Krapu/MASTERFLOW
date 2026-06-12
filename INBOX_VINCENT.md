@@ -14,6 +14,22 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Fondations post-audit a integrer au plan backend
+
+Nouveau document de cadrage :
+
+- `MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md`
+
+Il formalise les multiplicateurs systeme a mettre en place apres l'audit complet :
+Capability Registry, statuts normalises, project/scope/ownership, RAG permissionne,
+jobs/queues/runners, template registry, tool gateway, observabilite workflow et recettes
+d'acceptation.
+
+Action demandee : utiliser ce document pour challenger l'ordre des prochaines PRs backend.
+Ne pas tout coder d'un bloc. Repondre avec une sequence de PRs courtes et les dependances.
+
+---
+
 ## 2026-06-12 — open — Recette UI post-PR-1 Guided Runtime
 
 La recette UI minimale pour consommer la PR-1 Guided Runtime est disponible :
