@@ -23,6 +23,29 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — Vincent : audit absorption — périmètre resserré (2 features prioritaires)
+
+MALEX,
+
+> **Audit d'absorption — périmètre resserré par Vincent : 2 features prioritaires.**
+>
+> 1. **Console admin API_manage** → `ABSORB_AND_ADAPT` sur `permission_runtime` / `ADMIN_PERMISSION_COCKPIT`
+>    + admin drawer `ui_room_os`. Le modèle `global_settings` (admin-write) vs `user_storage` (privé) mappe
+>    direct sur « données privées par défaut » + `PERMISSION > PREFERENCE`. Écriture settings globaux =
+>    **action sensible** (preflight → validation + audit).
+> 2. **Suivi token** (API_manage + API_corrector) → `ADD_MISSING_CAPABILITY` (aucun owner actuel), à
+>    instrumenter sur le client LLM → table `token_usage` + endpoint gated, projeté dans le runtime
+>    godmode/admin (cohérent Q6 godmode étendu). Diagnostic privé, jamais teacher/student.
+>
+> Les deux sont implémentables sans nouvel engine (1 = patch d'owner existant, 2 = capacité manquante
+> rattachée à `godmode_debug_runtime` + audit). **Audit only, aucun code avant ta validation humaine.**
+
+Garde-fous tenus : godmode-only, jamais teacher/student ; surface diagnostic **privée par défaut**,
+auditable, **sans effet sur le runtime user**. Proposition `open` dans `INBOX_MALEX.md` — elle attend ta
+**validation humaine explicite** avant tout code.
+
+---
+
 ## 2026-06-12 — Vincent : audit d'absorption — PILOTE 3 projets livré
 
 MALEX,

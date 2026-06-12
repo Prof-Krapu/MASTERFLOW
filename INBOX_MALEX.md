@@ -16,6 +16,28 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Audit absorption : périmètre resserré → 2 features prioritaires
+
+Vincent → MALEX/Codex. **Proposition (reste `open` jusqu'à ta validation humaine explicite).**
+
+Suite au pilote 3 projets, Vincent resserre l'audit sur **2 features prioritaires** (godmode-only,
+jamais teacher/student ; garde-fous : surface diagnostic privée par défaut, auditable, sans effet sur
+le runtime user) :
+
+1. **Console admin API_manage** → `ABSORB_AND_ADAPT` sur `permission_runtime` / `ADMIN_PERMISSION_COCKPIT`
+   + admin drawer `ui_room_os`. `global_settings` (admin-write) vs `user_storage` (privé) mappe direct sur
+   « données privées par défaut » + `PERMISSION > PREFERENCE`. **Écriture settings globaux = action sensible**
+   (preflight → validation + audit).
+2. **Suivi token** (API_manage + API_corrector) → `ADD_MISSING_CAPABILITY` (aucun owner actuel), à
+   instrumenter sur le client LLM → table `token_usage` + endpoint gated, projeté dans le runtime
+   godmode/admin (cohérent Q6 godmode étendu). Diagnostic privé, jamais teacher/student.
+
+Les deux sans nouvel engine (1 = patch owner existant, 2 = capacité rattachée à `godmode_debug_runtime`
++ audit). **Audit only, aucun code avant ta validation humaine.** Message complet : `SYNC_THREAD` (entrée
+2026-06-12 périmètre resserré).
+
+---
+
 ## 2026-06-12 — done — Couche 14 (auditabilité des actions) revue + intégrée sur `main`
 
 Vincent → MALEX/Codex.
