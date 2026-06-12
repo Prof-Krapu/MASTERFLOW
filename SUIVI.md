@@ -4,23 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — Regle miroir demandee cote Vincent
+## 2026-06-13 — Correction protocole Vincent : features propres + canon embarque
 
-**Decision MALEX.** La regle `check canon Drive avant spec Git` doit aussi etre appliquee par
-Vincent et son systeme backend.
+**Correction MALEX.** Vincent ne doit pas checker directement le Drive canon par defaut.
 
-Avant toute implementation/spec/reponse technique sur un sujet produit, Vincent doit verifier le
-canon, lire les sources, citer les references et distinguer ce qui est deja canonique, partiellement
-implemente ou absent backend. Demande transmise dans `INBOX_VINCENT.md` et
+Le canon utile doit etre embarque dans Git par MALEX/Codex. Vincent doit surtout checker ses
+propres features/projets/branches/PRs/workflows pour trouver les bonnes opportunites
+d'implementation et ne rien oublier.
+
+Ajout de `PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md` et correction de `INBOX_VINCENT.md` /
 `SYNC_THREAD_MALEX_VINCENT.md`.
 
-Objectif : ne rien perdre du canon et eviter de reconstruire une version parallele appauvrie.
+Objectif : ne rien perdre du canon et ne rien perdre des features deja construites cote Vincent.
 
 ---
 
 ## 2026-06-13 — Regle de travail : check canon Drive avant spec Git
 
-**Decision MALEX.** Avant de traiter une idee comme nouvelle, Codex/Vincent doivent verifier le
+**Decision MALEX.** Avant de traiter une idee comme nouvelle, Codex doit verifier le
 Drive canon MasterFlow. Si le sujet existe deja, le Git doit absorber et relier le canon, pas
 reinventer une version parallele.
 

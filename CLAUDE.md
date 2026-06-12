@@ -54,6 +54,12 @@ Procédure minimale :
 Règle : pas de spec Git hors-sol. Si une idée existe déjà dans le canon, le livrable Git doit
 l'absorber, la relier aux contrats backend et signaler les écarts d'implémentation.
 
+Pour Vincent, ne pas transférer la charge brute du Drive canon par défaut. Si une référence canon
+est nécessaire côté backend, l'embarquer dans Git sous forme de spec/handoff/checklist. Vincent
+doit surtout comparer ces sources Git avec ses propres features/projets/PRs pour repérer les
+opportunités d'implémentation, les doublons et les écarts. Voir
+`PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md`.
+
 **Délégation à des agents assistants (tokens épuisés).** Quand Claude Code n'a plus de tokens pour
 des tâches de code **basiques**, il peut déposer des tâches bornées dans `INBOX_ASSISTANT.md`
 (protocole complet : `assistant.md`). Des LLM tiers (via opencode : `ollama/mistral-agent`,

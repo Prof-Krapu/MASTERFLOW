@@ -14,26 +14,25 @@ Règles de lecture :
 
 ---
 
-## 2026-06-13 — open — Regle miroir : check canon Drive obligatoire cote Vincent
+## 2026-06-13 — open — Correction : check features Vincent + canon embarque Git
 
-MALEX demande que le systeme Vincent applique la meme regle que Codex :
+Correction MALEX : Vincent ne doit pas checker directement le Drive canon par defaut.
 
-Avant toute spec backend, implementation de feature, arbitrage de perimetre ou reponse technique
-sur un sujet produit/conceptuel, verifier le Drive canon MasterFlow.
+Le protocole correct est documente ici :
 
-Procedure minimale attendue :
+- `PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md`.
 
-1. chercher dans le Drive canon avec termes metier et synonymes ;
-2. lire les fichiers sources trouves, pas seulement les noms ;
-3. citer les references canon dans la PR, le handoff ou la reponse ;
-4. distinguer `deja canonique`, `partiellement implemente`, `absent backend` ;
-5. ne jamais reimplementer en parallele une logique deja canonique.
+Regle :
 
-Sujets particulierement concernes : personas, MasterStory, pedagogie, bots, RAG, jobs, DA/assets,
-Ours d'Or, devis, correction, cours, UI.
+1. Codex/MALEX embarque le canon utile dans Git ;
+2. Vincent checke les specs/handoffs Git ;
+3. Vincent checke surtout ses propres features/projets/PRs/workflows deja crees ;
+4. Vincent mappe les opportunites vers owners, engines, contrats, tables, endpoints, permissions,
+   gates, UI et tests ;
+5. si une reference canon manque, Vincent le signale et Codex/MALEX l'importe dans Git.
 
-But : ne rien perdre du canon et eviter de travailler dans le vide. Exemple recent : le modele
-persona principal + sous-personas contextuels existait deja dans MasterFlow canon.
+Action demandee : avant chaque PR d'absorption ou de fondation, verifier aussi les features
+Vincent existantes pour ne rien oublier et ne pas recoder une version appauvrie.
 
 ---
 
@@ -551,16 +550,20 @@ humaine MALEX.
 
 MALEX valide le lancement d'un **audit comparatif sans implementation**.
 
+**Correction 2026-06-13 :** la demande ci-dessous est conservee comme historique, mais la lecture
+directe du Drive canon par Vincent n'est plus la charge par defaut. Utiliser maintenant
+`PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md` : Git embarque le canon utile, Vincent checke ses
+propres features/projets/PRs/workflows et signale les besoins de canon manquant.
+
 Contexte : tes projets contiennent deja beaucoup de workflows et de features potentiellement
 utiles. Avant de poursuivre l'integration, ton systeme doit les comparer au MasterFlow canon pour
 eviter doublons, incompatibilites, permissions contournees ou features tardivement recodees.
 
 Action demandee :
 
-1. Lire en premier, dans le Drive canon :
-   `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md`.
-2. Charger ensuite les index/owners indiques dans l'entree du `SUIVI.md` du 2026-06-12, sans
-   scan aveugle du Drive.
+1. Lire en premier les sources Git de coordination et d'absorption.
+2. Utiliser les references canon deja embarquees dans Git ; demander un import canon si une
+   source manque.
 3. Inventorier les workflows reels de tes projets.
 4. Mapper chaque workflow vers :
    owner MasterFlow, engine, contrats actifs, donnees/BDD, endpoints/toolcalls, permissions,

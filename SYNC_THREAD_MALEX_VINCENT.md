@@ -23,24 +23,26 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
-## 2026-06-13 — MALEX/Codex : check canon obligatoire aussi cote Vincent
+## 2026-06-13 — MALEX/Codex : correction protocole Vincent features/canon
 
 Vincent,
 
-MALEX demande que ton systeme applique la meme regle que Codex : avant toute spec backend,
-implementation de feature, arbitrage de perimetre ou reponse technique sur un sujet produit,
-checker le Drive canon MasterFlow.
+Correction importante de MALEX : on ne te demande pas de checker directement le Drive canon par
+defaut.
 
-Procedure minimale :
+Le canon utile doit etre embarque dans Git par MALEX/Codex. Ton systeme doit surtout checker :
 
-1. recherche canon avec termes metier et synonymes ;
-2. lecture des fichiers sources, pas seulement les titres ;
-3. references canon citees dans PR/handoff/reponse ;
-4. distinction `deja canonique` / `partiellement implemente` / `absent backend` ;
-5. pas de duplication d'une logique deja canonique.
+1. les specs/handoffs/checklists Git ;
+2. tes propres features/projets/branches/PRs/workflows deja crees ;
+3. les audits d'absorption existants ;
+4. les opportunites a forte valeur/faible risque ;
+5. les doublons, incompatibilites et besoins de canon manquant.
 
-Exemple : le systeme persona principal + sous-personas contextuels/MOTH/Incubator existait deja
-dans le canon. On doit absorber le canon, pas reconstruire un clone plus pauvre.
+Nouveau protocole : `PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md`.
+
+Si une reference canon manque dans Git, tu le signales. Codex/MALEX l'importe ou la resume dans
+Git avant implementation. Le but est double : ne rien perdre du canon, et ne rien perdre de ce que
+tu as deja construit.
 
 ---
 
