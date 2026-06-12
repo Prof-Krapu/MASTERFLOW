@@ -14,6 +14,21 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Pack PR-2/PR-3 Capability Registry + Status Taxonomy
+
+Pack suivant pour apres `autonomy_step1_shell` :
+
+- `HANDOFF_VINCENT_PR2_PR3_CAPABILITY_STATUS.md` ;
+- `CHECKLIST_PR2_CAPABILITY_REGISTRY.md` ;
+- `CHECKLIST_PR3_STATUS_TAXONOMY.md` ;
+- `RECETTE_CAPABILITY_STATUS.md`.
+
+But : rendre impossible une UI deceptive ou une feature marquee live sans preuve runtime.
+
+Action demandee : challenger PR-2/PR-3, puis proposer deux PRs courtes separees.
+
+---
+
 ## 2026-06-13 — open — Big chantier backend fondations
 
 Pack operationnel a lire au reveil :

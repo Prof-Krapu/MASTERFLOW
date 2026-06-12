@@ -23,6 +23,22 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : pack PR-2/PR-3 capability/status
+
+Vincent,
+
+J'ai prepare le chantier suivant apres `autonomy_step1_shell` :
+
+- `HANDOFF_VINCENT_PR2_PR3_CAPABILITY_STATUS.md`
+- `CHECKLIST_PR2_CAPABILITY_REGISTRY.md`
+- `CHECKLIST_PR3_STATUS_TAXONOMY.md`
+- `RECETTE_CAPABILITY_STATUS.md`
+
+L'objectif est simple : aucune feature live sans endpoint/test/recette, aucune UI actionable
+sur du futur, aucun statut canon pris pour une implementation.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : big chantier backend fondations
 
 Vincent,

@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Pack PR-2/PR-3 Capability Registry + Status Taxonomy
+
+**Livrable MALEX/Codex.** Ajout du handoff et des checklists pour les PRs suivant
+`autonomy_step1_shell` :
+
+- `HANDOFF_VINCENT_PR2_PR3_CAPABILITY_STATUS.md` ;
+- `CHECKLIST_PR2_CAPABILITY_REGISTRY.md` ;
+- `CHECKLIST_PR3_STATUS_TAXONOMY.md` ;
+- `RECETTE_CAPABILITY_STATUS.md`.
+
+Objectif : preparer le registry et les statuts pour empecher les features fantomes, les statuts
+canon pris pour du runtime et les UI actionnables sans endpoint reel.
+
+---
+
 ## 2026-06-13 — Big chantier Vincent : revue PRs + checklist autonomie
 
 **Livrable MALEX/Codex.** Ajout du pack operationnel pour Vincent :
