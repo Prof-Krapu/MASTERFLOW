@@ -23,6 +23,28 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : pack PR-7 RAG permissionne
+
+Vincent,
+
+J'ai prepare le paquet PR-7 :
+
+- `HANDOFF_VINCENT_PR7_RAG_PERMISSIONNE.md`
+- `CHECKLIST_PR7_RAG_PERMISSIONNE.md`
+- `RECETTE_PR7_RAG_PERMISSIONNE_DETAILLEE.md`
+
+Objectif : un RAG qui retrouve des sources autorisees, construit des context packs cites et
+refuse proprement quand la source manque. Permission avant retrieval, statut/trust avant
+contexte, revoke pris en compte.
+
+Pas d'index massif du Drive, pas de secrets, pas de reponse non citee, pas de diagnostic visible
+hors admin/godmode. Si PR-8 jobs n'est pas encore la, garde un reindex borne ou un statut
+compatible.
+
+Le RAG n'est pas le lore omniscient : c'est le frame data. S'il n'a pas la source, il bloque.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : pack PR-6 guided runtime prive
 
 Vincent,

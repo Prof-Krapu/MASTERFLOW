@@ -14,6 +14,22 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Pack PR-7 RAG permissionne
+
+Pack suivant pour `rag_capability_shell` :
+
+- `HANDOFF_VINCENT_PR7_RAG_PERMISSIONNE.md` ;
+- `CHECKLIST_PR7_RAG_PERMISSIONNE.md` ;
+- `RECETTE_PR7_RAG_PERMISSIONNE_DETAILLEE.md`.
+
+But : fournir un retrieval permissionne, cite, revoke-aware, sans index massif ni fuite de
+metadata. Le RAG doit servir Resource Truth, pas le remplacer.
+
+Action demandee : challenger les tables/routes/tests, puis proposer une PR courte. Si la queue
+jobs n'est pas encore prete, garder le reindex borne et compatible avec PR-8.
+
+---
+
 ## 2026-06-13 — open — Pack PR-6 Guided Runtime prive
 
 Pack suivant pour la tranche `guided_runtime_pr1` :

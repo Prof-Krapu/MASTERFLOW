@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Pack PR-7 RAG permissionne
+
+**Livrable MALEX/Codex.** Ajout du paquet operationnel pour `rag_capability_shell` :
+
+- `HANDOFF_VINCENT_PR7_RAG_PERMISSIONNE.md` ;
+- `CHECKLIST_PR7_RAG_PERMISSIONNE.md` ;
+- `RECETTE_PR7_RAG_PERMISSIONNE_DETAILLEE.md`.
+
+Objectif : poser un RAG permissionne, cite et revoke-aware, qui aide MasterFlow a retrouver des
+sources sans devenir une autorite ni fuiter des ressources hors scope.
+
+---
+
 ## 2026-06-13 — Pack PR-6 Guided Runtime prive
 
 **Livrable MALEX/Codex.** Ajout du paquet operationnel pour `guided_runtime_pr1` :
