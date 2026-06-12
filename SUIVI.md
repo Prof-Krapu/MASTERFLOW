@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — PR-0 Bot Studio / Guided Runtime
+
+**Decision MALEX.** L'audit global du Drive canon est transforme en specification d'assemblage :
+`SPEC_BOT_STUDIO_GUIDED_RUNTIME.md`.
+
+Le Bot Studio n'est pas un nouvel engine. Il compose `GUIDANCE_ENGINE`, personas fonctionnelle
+et lore, engine metier, UI manifest, permissions, cycle d'action, Resource Truth, analytics et
+opportunity detector.
+
+La spec couvre :
+
+- guides conversationnels versionnes ;
+- sessions privees, classe, invitees ou publiques ;
+- contributions sourcees et contradictions ;
+- manifestes de deploiement des bots ;
+- permissions, consentements, preflight et validation ;
+- cas MOTH/CDC, Ours d'Or, devis et creation guidee d'un bot ;
+- plan de PRs progressives et tests minimum.
+
+### Gate
+
+- Ce commit est une PR-0 documentaire, sans code ni migration.
+- La premiere implementation proposee reste privee et authentifiee, sans LLM obligatoire.
+- Vincent doit auditer le mapping, repondre aux questions ouvertes et proposer le diff exact
+  de PR-1.
+- Acces public, email, devis, assets et analytics godmode exigent chacun un GO MALEX separe.
+
+---
+
 ## 2026-06-12 — Dimensionnement propose pour le runtime Local RAG BGE
 
 **Information transmise a Vincent.** Palier de depart recommande :

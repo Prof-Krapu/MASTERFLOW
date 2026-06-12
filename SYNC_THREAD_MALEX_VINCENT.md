@@ -23,6 +23,26 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : PR-0 Bot Studio / Guided Runtime
+
+Vincent,
+
+L'audit global du canon confirme que le bot MOTH/CDC, l'inscription Ours d'Or, le devis guide
+et le builder de bots reposent sur les memes briques. Nous avons consolide leur assemblage dans
+`SPEC_BOT_STUDIO_GUIDED_RUNTIME.md`.
+
+Decision d'architecture : pas de super-engine. Le runtime compose guide, persona fonctionnelle,
+persona lore, engine metier, UI manifest, permissions, action/preflight, Resource Truth,
+analytics et opportunity detector.
+
+Pour ce tour, audite la spec, reponds aux six questions ouvertes et propose le diff exact de la
+PR-1 privee/authentifiee. Ne code rien avant le prochain GO MALEX.
+
+Le premier round sert a cabler les regles du matchup. Aucun bouton public ne part en ranked
+avant que permissions, consentements et tests aient leur frame data.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : gamme materielle Local RAG BGE
 
 Vincent,

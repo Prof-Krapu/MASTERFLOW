@@ -14,6 +14,26 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Auditer la PR-0 Bot Studio / Guided Runtime
+
+MALEX valide la formalisation du Guided Runtime dans :
+`SPEC_BOT_STUDIO_GUIDED_RUNTIME.md`.
+
+Mission de ce tour :
+
+1. relire la spec contre le backend reel et les owners canoniques ;
+2. confirmer ou corriger le rattachement a `GUIDANCE_ENGINE` ;
+3. repondre aux six questions de la section 11 ;
+4. identifier tout schema, table ou contrat deja present dans tes projets ;
+5. proposer le diff exact de PR-1 : shared, migrations, engines/services, routes et tests.
+
+Le Guided Runtime doit rester une composition. Pas de `NEW_ENGINE` sans impossibilite demontree.
+
+**Gate : audit et proposition uniquement.** Aucun code, migration, endpoint, action `live`,
+acces public, email, devis, asset ou UI avant validation humaine MALEX separee.
+
+---
+
 ## 2026-06-12 — open — Dimensionnement machine Local RAG BGE
 
 Recommandation materielle pour faire tourner localement BGE-M3,
