@@ -28,6 +28,13 @@ import {
   validateAction,
   validateResource,
 } from './api.ts';
+import {
+  buildModeView,
+  canUseMode,
+  DEFAULT_WORK_MODE,
+  WORK_MODES,
+} from './mode-runtime.ts';
+import type {WorkModeId} from './mode-runtime.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type WsState = 'idle' | 'connecting' | 'connected' | 'closed' | 'error';
@@ -38,19 +45,6 @@ type ChatTurn = {
   speaker?: string;
 };
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
-type WorkModeId = 'home' | 'teaching' | 'story' | 'project' | 'learning' | 'inventory' | 'admin';
-type WorkMode = {
-  id: WorkModeId;
-  label: string;
-  signal: string;
-  requiredRole?: 'admin' | 'godmode';
-};
-type DeckItem = {
-  id: string;
-  label: string;
-  meta: string;
-  status: string;
-};
 type EntryDensity = 'low' | 'medium' | 'high';
 type PersonaPresence = 'direct' | 'guided' | 'character';
 type EntryProfile = {
@@ -92,17 +86,6 @@ const ROLE_LABEL: Record<string, string> = {
   godmode: 'godmode',
 };
 
-const WORK_MODES: WorkMode[] = [
-  {id: 'home', label: 'Home', signal: 'situation'},
-  {id: 'teaching', label: 'Teaching', signal: 'classes'},
-  {id: 'story', label: 'Story', signal: 'histoires'},
-  {id: 'project', label: 'Project', signal: 'projets'},
-  {id: 'learning', label: 'Learning', signal: 'parcours'},
-  {id: 'inventory', label: 'Inventory', signal: 'ressources'},
-  {id: 'admin', label: 'Admin', signal: 'supervision', requiredRole: 'admin'},
-];
-
-const DEFAULT_WORK_MODE: WorkMode = WORK_MODES[0] ?? {id: 'home', label: 'Home', signal: 'situation'};
 const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
 const ENTRY_INTENTS: WorkModeId[] = ['learning', 'teaching', 'story', 'project', 'inventory'];
 const ENTRY_DENSITIES: Array<{id: EntryDensity; label: string; signal: string}> = [
@@ -135,12 +118,6 @@ function wsUrl(roomInstanceId: string, token: string): string {
 
 function nextId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
-
-function canUseMode(mode: WorkMode, role: string | undefined): boolean {
-  if (!mode.requiredRole) return true;
-  if (mode.requiredRole === 'admin') return role === 'admin' || role === 'godmode';
-  return role === 'godmode';
 }
 
 function canValidateActions(role: string | undefined): boolean {
@@ -254,79 +231,27 @@ function App(): ReactElement {
     {label: 'Persona', value: activePersona?.name ?? visiblePersonas[0]?.name ?? 'simple'},
   ], [activePersona?.name, availableModes.length, liveActions.length, resources.length, visiblePersonas]);
 
-  const modeDeck = useMemo<DeckItem[]>(() => {
-    if (activeMode.id === 'inventory') {
-      const inventoryItems = resources.slice(0, 6).map((resource) => ({
-        id: resource.id,
-        label: resource.title,
-        meta: resource.source,
-        status: resource.status,
-      }));
-      return inventoryItems.length > 0
-        ? inventoryItems
-        : [{id: 'empty-inventory', label: 'Inventaire', meta: 'source truth', status: 'vide'}];
-    }
-
-    if (activeMode.id === 'admin') {
-      return [
-        {id: 'live-actions', label: 'Actions live', meta: 'registre actif', status: String(actionBuckets.live.length)},
-        {id: 'future-actions', label: 'Actions futures', meta: 'verrouille', status: String(actionBuckets.future.length)},
-        {id: 'hidden-actions', label: 'Hors scope', meta: 'masque', status: String(actionBuckets.out_of_scope.length)},
-        {id: 'ws-state', label: 'WebSocket', meta: 'chat runtime', status: wsState},
-      ];
-    }
-
-    if (activeMode.id === 'teaching') {
-      return [
-        {id: 'classes-placeholder', label: 'Classes', meta: 'backend phase suivante', status: 'a brancher'},
-        {id: 'subjects-placeholder', label: 'Sujets', meta: 'subject compiler futur', status: 'future'},
-        {id: 'students-placeholder', label: 'Eleves', meta: 'profil + competences', status: 'future'},
-      ];
-    }
-
-    if (activeMode.id === 'story') {
-      return [
-        {id: 'stories-placeholder', label: 'Histoires', meta: 'MasterStory', status: 'future'},
-        {id: 'arcs-placeholder', label: 'Arcs', meta: 'reader graph', status: 'future'},
-        {id: 'scenes-placeholder', label: 'Scenes', meta: 'zoom narratif', status: 'future'},
-      ];
-    }
-
-    if (activeMode.id === 'project') {
-      return [
-        {id: 'active-project', label: context?.room.name ?? 'Projet courant', meta: 'room active', status: 'active'},
-        {id: 'timeline-placeholder', label: 'Timeline', meta: 'progression', status: 'future'},
-        {id: 'tasks-placeholder', label: 'Taches', meta: 'next actions', status: 'future'},
-      ];
-    }
-
-    if (activeMode.id === 'learning') {
-      const learningItems = resources.slice(0, 3).map((resource) => ({
-        id: resource.id,
-        label: resource.title,
-        meta: 'ressource validee',
-        status: 'pret',
-      }));
-      return learningItems.length > 0
-        ? learningItems
-        : [{id: 'learning-empty', label: 'Parcours', meta: 'ressources validees', status: 'a remplir'}];
-    }
-
-    return [
-      {id: 'room', label: context?.room.name ?? 'Home Room', meta: context?.room_instance.active_surface ?? 'workspace', status: 'active'},
-      {id: 'sources', label: 'Sources validees', meta: 'source truth', status: String(resources.length)},
-      {id: 'chat', label: 'Chat compact', meta: 'pilotage', status: wsState},
-    ];
-  }, [activeMode.id, actionBuckets.future.length, actionBuckets.live.length, actionBuckets.out_of_scope.length, context?.room.name, context?.room_instance.active_surface, resources, wsState]);
-
-  const mainSignal = useMemo(() => {
-    if (activeMode.id === 'inventory') return resources.length > 0 ? 'Ressources validees pretes a etre reutilisees.' : 'Aucune source validee chargee.';
-    if (activeMode.id === 'admin') return 'Supervision godmode active, sans Owner Ops fonctionnel expose.';
-    if (activeMode.id === 'teaching') return 'Mode Teaching pret, donnees classes/eleves a brancher en phase suivante.';
-    if (activeMode.id === 'story') return 'Mode Story pret, workbench narratif encore hors UI runtime.';
-    if (activeMode.id === 'learning') return resources.length > 0 ? 'Learning peut demarrer depuis les ressources validees.' : 'Learning attend des ressources validees.';
-    return liveActions.length > 0 ? `${liveActions.length} actions live disponibles dans ce contexte.` : 'Situation stable, aucune action live urgente.';
-  }, [activeMode.id, liveActions.length, resources.length]);
+  const modeView = useMemo(() => buildModeView({
+    mode: activeMode,
+    context,
+    resources,
+    resourceCandidates,
+    liveActions,
+    futureActionCount: actionBuckets.future.length,
+    hiddenActionCount: actionBuckets.out_of_scope.length,
+    pendingActions,
+    wsState,
+  }), [
+    activeMode,
+    actionBuckets.future.length,
+    actionBuckets.out_of_scope.length,
+    context,
+    liveActions,
+    pendingActions,
+    resourceCandidates,
+    resources,
+    wsState,
+  ]);
 
   const loadContext = useCallback(async (token: string): Promise<void> => {
     setState('loading');
@@ -960,7 +885,7 @@ function App(): ReactElement {
               <h2>{activeMode.label}</h2>
               <span className="counter">{activeMode.signal}</span>
             </div>
-            <p className="main-signal">{mainSignal}</p>
+            <p className="main-signal">{modeView.signal}</p>
             <div className="next-actions" aria-label="Actions utiles">
               {nextActions.length > 0 ? (
                 nextActions.map((action) => (
@@ -1002,10 +927,10 @@ function App(): ReactElement {
           <article className="panel panel--wide">
             <div className="panel-header">
               <h2>Objets</h2>
-              <span className="counter">{modeDeck.length}</span>
+              <span className="counter">{modeView.deck.length}</span>
             </div>
             <div className="object-deck">
-              {modeDeck.map((item) => (
+              {modeView.deck.map((item) => (
                 <article className="object-card" key={item.id}>
                   <div>
                     <strong>{item.label}</strong>

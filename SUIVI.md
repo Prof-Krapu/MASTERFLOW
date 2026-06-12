@@ -4,6 +4,41 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Frontend couche 13 : modes fondes sur le runtime reel
+
+**Perimetre.** Retirer les objets d'interface prospectifs des modes et isoler leur mapping,
+sans modification backend ni nouveau contrat.
+
+### Construit
+
+- Extraction de la definition des modes et de leur projection dans `apps/frontend/src/mode-runtime.ts`.
+- Les cartes de mode proviennent uniquement du contexte reel :
+  - room instance ;
+  - ressources validees ;
+  - registre d'actions live ;
+  - validations en attente ;
+  - candidates Resource Truth, reservees admin/godmode ;
+  - etat WebSocket.
+- Suppression des objets fictifs affiches comme s'ils existaient deja : classes, eleves,
+  sujets compiles, histoires, arcs, scenes, timeline et taches.
+- Les modes Teaching et Story signalent explicitement l'absence d'objets metier backend au lieu
+  de simuler une fonctionnalite.
+
+### Invariant
+
+L'interface ne presente comme disponible que ce que le runtime et les permissions exposent
+reellement. Aucun ajout backend, aucune donnee canon modifiee.
+
+### Validation
+
+| Verif | Resultat |
+|---|---|
+| `npm run lint:frontend` | OK |
+| `npm run build:frontend` | OK |
+| `git diff --check` | OK |
+
+---
+
 ## 2026-06-10 — Couches 5-12 validées + run réel godmode + fix backend rooms
 
 **Périmètre.** Côté Vincent : revue + intégration de la tranche frontend couches 5-12 de MALEX
