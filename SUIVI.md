@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Spec détaillée des 2 PRs prioritaires (audit-only)
+
+**Périmètre.** Spec des 2 features resserrées (suivi token, écriture settings admin), ancrée sur le code réel
+de `apps/backend`. **Aucun code appliqué** — proposition pour validation humaine MALEX.
+
+### Livré
+- `SPEC_PR_PRIORITAIRES.md` :
+  - **PR-1 suivi token** (`IMPROVE`) : (A) instrumentation `services/llm.ts` — `task` paramétrable,
+    `stream_options.include_usage` pour consommer le `usage` réel (fallback estimation), coût via
+    `llm_pricing.ts` ; (B) endpoint `GET /diagnostics/token-usage` **gated `requireRole('admin')`** (admin+
+    godmode), registre `view_token_usage`. Migration : aucune (table existe).
+  - **PR-2 écriture `global_settings`** (`ABSORB`) : action sensible `set_global_setting` (medium_high,
+    `validator_role: admin`), ajout additif `validator_role` au schéma registre, `validatorRoleFor` le lit,
+    dispatcher d'exécution réel (remplace le mock pour cette action) + allowlist `ADMIN_CONTROLLED_KEYS`,
+    secrets jamais en BDD. Cycle complet preflight→validation(admin)→execute, 423 maintenu.
+- Invariants tenus (validation humaine, privé par défaut, secrets hors BDD, contrat additif rétro-compatible).
+  Ordre : PR-1 d'abord (indépendante), PR-2 ensuite (dépend du contrat `validator_role`).
+
+### Gate
+Spec = proposition. **`BLOCKED_BY_HUMAN_VALIDATION`** : rien implémenté/mergé/migré avant GO MALEX.
+
+---
+
 ## 2026-06-12 — Audit d'absorption : PILOTE 3 projets livré (côté Vincent)
 
 **Périmètre.** Réponse au gate MALEX. Décision Vincent : pilote `API_corrector` + `API_manage` + `vibe`

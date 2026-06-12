@@ -40,6 +40,9 @@ d'action sensible ; 2 = patch du service `llm` + endpoint gated, rattaché à `g
 audit). **Audit only, aucun code avant ta validation humaine.** Message complet : `SYNC_THREAD` (entrée
 2026-06-12 périmètre resserré). Vérifs code dans `AUDIT_ABSORPTION_PILOTE_3PROJETS.md` § « Vérifs contre `main` ».
 
+**Spec détaillée prête (sans code) : `SPEC_PR_PRIORITAIRES.md`** — contrats, fichiers, permissions, tests et
+ordre des 2 PRs. Prête pour ta validation ; à ton GO seulement, je passe à l'implémentation (branche `claude/*`).
+
 ---
 
 ## 2026-06-12 — done — Couche 14 (auditabilité des actions) revue + intégrée sur `main`
