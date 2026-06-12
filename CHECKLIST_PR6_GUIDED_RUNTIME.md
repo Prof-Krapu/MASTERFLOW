@@ -126,10 +126,16 @@ POST /api/v1/guided-sessions/:id/complete
 ## Persona utilisateur et bot contextuel
 
 - conserver la separation entre persona personnel de l'utilisateur et guide contextuel ;
-- MOTH n'est disponible que si assigne a l'activite/session/classe ;
+- supporter la notion de persona contextuel assigne : prof, sujet, methode, jury ou expert ;
+- MOTH n'est disponible que si assigne a l'activite/session/classe, comme check CDC ;
+- Incubator peut suivre la meme logique pour Ours d'Or ;
 - une session doit savoir quel guide/bot contextuel la mene ;
+- une session peut exposer un `conversation_roster` borne ;
+- limiter les personas contextuels actifs a 2 ou 3 par defaut ;
+- chaque message doit indiquer la voix/persona qui parle si plusieurs personas sont actifs ;
 - le profil utilisateur peut referencer un persona personnel sans l'appliquer a toutes les
   activites ;
+- l'orchestrateur choisit les voix utiles ; tous les personas ne repondent pas a chaque tour ;
 - aucune assignation de persona ou bot ne modifie les permissions runtime.
 
 ## Gates validation graduee

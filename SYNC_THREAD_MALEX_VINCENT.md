@@ -23,6 +23,31 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : precision multi-personas pedagogiques
+
+Vincent,
+
+Precision importante sur la couche persona : on part sur une logique type RPG pedagogique.
+
+Correction importante : ce n'est pas une invention nouvelle. C'est deja present dans le canon
+MasterFlow via `PERSONAL_PERSONA_ASSIGNMENT_AND_CHATBOT_CONTRACT`,
+`CONDITIONAL_SUB_PERSONA_RUNTIME_AND_CLASS_INSTANCE_CONTRACT`, `PERSONA_RUNTIME_SYSTEM` et
+`CONVERSATION_SURFACE_AND_SPEAKER_ROUTING_CONTRACT`. Le message sert a le rendre explicite dans
+le backend Git.
+
+L'utilisateur garde son persona principal. Une activite peut ajouter des personas contextuels :
+persona du prof qui assigne le sujet, methode, jury, expert, contradicteur, MOTH en check CDC,
+Incubator en check Ours d'Or.
+
+Par defaut, 1 a 3 personas contextuels maximum. Un orchestrateur choisit les voix utiles ; tous
+les personas ne doivent pas parler a chaque tour. Chaque message doit identifier sa voix si
+plusieurs personas sont actifs.
+
+But : croiser methodes, graphs pedagogiques et ressources, pas creer un chat de carnaval. Et
+comme toujours : persona/bot/lore ne donne aucun droit.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : persona utilisateur + pack PR-8 jobs
 
 Vincent,

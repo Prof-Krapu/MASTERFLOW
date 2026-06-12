@@ -14,6 +14,28 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Precision multi-personas pedagogiques
+
+Precision MALEX a integrer a PR-6 / Guided Runtime :
+
+- cette logique est deja canonique dans MasterFlow, pas une feature nouvelle ;
+- sources : `PERSONAL_PERSONA_ASSIGNMENT_AND_CHATBOT_CONTRACT`,
+  `CONDITIONAL_SUB_PERSONA_RUNTIME_AND_CLASS_INSTANCE_CONTRACT`, `PERSONA_RUNTIME_SYSTEM`,
+  `CONVERSATION_SURFACE_AND_SPEAKER_ROUTING_CONTRACT` ;
+- l'utilisateur garde son persona principal ;
+- une activite peut ajouter des personas contextuels : prof, sujet, methode, jury, expert ;
+- MOTH sert surtout de check/friction/cadrage CDC quand il est assigne ;
+- Incubator peut jouer le meme role pour Ours d'Or ;
+- 1 a 3 personas contextuels maximum par defaut ;
+- un orchestrateur choisit les voix utiles ;
+- chaque message doit identifier sa voix si plusieurs personas sont actifs ;
+- aucune assignation persona/bot/lore ne donne de droit.
+
+Action demandee : prevoir les champs/contrats sans sur-implementer. Si PR-6 reste mono-guide,
+garder une extension compatible `conversation_roster` / `contextual_persona_assignments`.
+
+---
+
 ## 2026-06-13 — open — Decision persona utilisateur + pack PR-8 Jobs
 
 Decision a prendre en compte :

@@ -64,11 +64,25 @@ Decision MALEX 2026-06-13 : MOTH n'est pas le persona par defaut de tous les uti
 MasterFlow distingue :
 
 - persona utilisateur par defaut : compagnon personnel attache a l'utilisateur ;
+- persona contextuel assigne : prof, sujet, methode, jury, expert ou graphe pedagogique ;
 - bot/guide contextuel : intervenant assigne a une activite, classe, projet, event ou tunnel ;
 - persona lore : voix, vocabulaire et etats expressifs, sans permission.
 
 Chaque utilisateur peut avoir son persona dedie pour l'accompagnement general. MOTH intervient
 uniquement dans les contexts ou il est assigne, par exemple une classe ou une session CDC.
+
+Une activite peut activer plusieurs personas contextuels, en petit nombre, pour croiser les
+methodes et ressources pedagogiques :
+
+```text
+persona personnel principal
++ 1 a 3 personas contextuels maximum
++ guide/bot d'activite si assigne
+```
+
+Exemples : persona du prof qui assigne le sujet, persona methode, persona jury, MOTH en check CDC,
+Incubator en check Ours d'Or. Un orchestrateur choisit les voix utiles ; tous les personas ne
+doivent pas repondre a chaque tour.
 
 Invariant : l'assignation d'un persona ou d'un bot ne donne jamais de droits. Les droits restent
 decides par `permission_runtime`, membership, ownership, scope, action risk et gates.
@@ -102,6 +116,16 @@ functional_persona_id, lore_persona_id
 ui_manifest_json, analytics_policy_json, consent_policy_json
 version, created_at, updated_at
 ```
+
+Si le guide supporte plusieurs voix :
+
+```text
+conversation_roster_json
+moderation_rules_json
+max_contextual_personas
+```
+
+La valeur par defaut de `max_contextual_personas` doit rester basse, par exemple 2 ou 3.
 
 `status` : `draft | candidate | validated | archived`.
 

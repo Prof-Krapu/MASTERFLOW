@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Precision multi-personas type RPG pedagogique
+
+**Decision MALEX.** La decision persona/bots est precisee : l'utilisateur garde son persona
+principal, puis une activite peut ajouter des personas contextuels bornes, par exemple persona du
+prof, methode, jury, expert, MOTH pour check CDC ou Incubator pour Ours d'Or.
+
+Regle : 1 a 3 personas contextuels maximum par defaut, orchestration des tours de parole, voix
+identifiees, aucune elevation de droits par persona. Objectif : croiser methodes, graphs
+pedagogiques et ressources sans creer une conversation confuse.
+
+---
+
 ## 2026-06-13 — Persona utilisateur par defaut vs bots contextuels + pack PR-8 jobs
 
 **Decision MALEX.** Ajout de `DECISION_PERSONA_USER_ET_BOTS_CONTEXTUELS.md` et mise a jour de
