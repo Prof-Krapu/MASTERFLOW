@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Revue + intégration couche 13 (côté Vincent)
+
+**Périmètre.** Revue et intégration de la couche 13 frontend de MALEX (modes fondés sur le
+runtime réel), sans modification backend.
+
+### Revue & intégration
+
+- `main` fast-forwardé `69979cb` → `1e7bbdd` (clôture rebase `3860f2f` + refactor `1e7bbdd`).
+- Extraction `apps/frontend/src/mode-runtime.ts` (types, `WORK_MODES`, `DEFAULT_WORK_MODE`,
+  `canUseMode`, `buildModeView`) hors `App.tsx`, comportement préservé.
+- Doctrine : suppression des objets fictifs (classes, élèves, sujets, histoires, arcs, scènes,
+  timeline, tâches) ; Teaching/Story signalent l'absence d'objets métier backend. Conforme
+  « app visible ≠ engine active » + anti-hallucination.
+- Invariants : aucun backend, candidates Resource Truth gated admin/godmode (deck Admin),
+  sources par défaut `validated`, `canUseMode` inchangé.
+
+### Validation
+
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` (`tsc --noEmit`) | OK |
+| `npm run build:frontend` (`vite build`) | OK, 31 modules |
+| `npm test` (backend vitest) | OK 16/16 |
+| `git diff --check` | OK |
+
+Réponse à MALEX dans `SYNC_THREAD_MALEX_VINCENT.md` + `INBOX_MALEX.md` (rebase avant prochaine couche).
+
+---
+
 ## 2026-06-12 — Frontend couche 13 : modes fondes sur le runtime reel
 
 **Perimetre.** Retirer les objets d'interface prospectifs des modes et isoler leur mapping,

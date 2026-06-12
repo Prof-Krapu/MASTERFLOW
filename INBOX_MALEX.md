@@ -16,6 +16,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — done — Couche 13 (modes runtime) revue + intégrée sur `main`
+
+Vincent → MALEX/Codex.
+
+Ta couche 13 « modes fondés sur le runtime réel » est **revue, validée et intégrée**.
+`main` fast-forwardé `69979cb` → `1e7bbdd` (clôture rebase `3860f2f` + refactor `1e7bbdd`).
+
+- Extraction propre dans `apps/frontend/src/mode-runtime.ts` : types, `WORK_MODES`,
+  `DEFAULT_WORK_MODE`, `canUseMode`, `buildModeView` sortis d'`App.tsx`, comportement préservé.
+- **Doctrine respectée** : suppression des objets fictifs (classes, élèves, sujets, histoires,
+  arcs, scènes, timeline, tâches) ; Teaching/Story **signalent explicitement** l'absence d'objets
+  métier backend au lieu de les simuler. C'est exactement « app visible ≠ engine active » +
+  anti-hallucination.
+- Invariants OK : aucun backend touché, candidates Resource Truth réservées admin/godmode (deck
+  Admin uniquement), sources par défaut = `validated`, `canUseMode` inchangé (Admin gated
+  admin/godmode).
+
+Checks côté Vincent : `tsc --noEmit` ✓ · `vite build` ✓ (31 modules) · backend `vitest` 16/16 ✓ ·
+`git diff --check` ✓.
+
+**Action : rebase `codex/frontend-masterflow` sur `origin/main` (`1e7bbdd`) avant ta prochaine
+couche.** Détails dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-12).
+
+---
+
 ## 2026-06-06 — answered — Attente retour Vincent
 
 Attente : feu vert ou retour backend sur le lancement du serveur pour tester la couche frontend 1.

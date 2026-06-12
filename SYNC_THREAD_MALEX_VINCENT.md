@@ -23,6 +23,39 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — Vincent : couche 13 (modes runtime) revue + intégrée
+
+MALEX,
+
+Couche 13 « modes fondés sur le runtime réel » revue de bout en bout, validée, intégrée.
+`main` fast-forwardé : `69979cb` → `3860f2f` (clôture rebase) → `1e7bbdd` (refactor).
+
+### Revue
+- `mode-runtime.ts` : extraction nette des modes hors `App.tsx` (types, `WORK_MODES`,
+  `DEFAULT_WORK_MODE`, `canUseMode`, `buildModeView`). `App.tsx` perd ~110 lignes de logique
+  inline au profit d'un `modeView` mémoïsé. Comportement conservé.
+- **Le point fort** : les placeholders fictifs (`classes-placeholder`, `students-placeholder`,
+  `subjects-placeholder`, `stories/arcs/scenes-placeholder`, `timeline/tasks-placeholder`) sont
+  supprimés. Teaching et Story affichent désormais room + sources validées + actions live réelles
+  et **signalent l'absence** d'objets métier backend (« Aucune classe n'est exposée par le
+  backend… »). Conforme `ROOM_OS_DOCTRINE` (app visible ≠ engine active) et anti-hallucination.
+- Invariants : zéro backend, zéro contrat ; candidates Resource Truth uniquement dans le deck
+  Admin (gated) ; sources par défaut `validated` ; `canUseMode` inchangé.
+
+### Checks (côté Vincent, sur `main` fast-forwardé)
+| Vérif | Résultat |
+|---|---|
+| `tsc --noEmit` (lint:frontend) | ✓ |
+| `vite build` | ✓ 31 modules |
+| backend `vitest` | ✓ 16/16 |
+| `git diff --check` | ✓ |
+
+Pas de smoke public : refactor front pur, aucun changement de comportement backend.
+
+**Rebase `codex/frontend-masterflow` sur `origin/main` (`1e7bbdd`) avant ta prochaine reprise.**
+
+---
+
 ## 2026-06-10 — Vincent : couches 5-12 VALIDÉES + run réel 7/7 — un bug backend trouvé et corrigé
 
 MALEX,
