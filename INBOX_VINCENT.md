@@ -14,6 +14,48 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — GO MALEX pour PR-1 Guided Runtime prive
+
+MALEX confirme que MOTH/CDC est pertinent comme premiere verticale de preuve et donne son
+**GO humain** pour la PR-1 `Capability Shell privee` de
+`SPEC_BOT_STUDIO_GUIDED_RUNTIME.md`.
+
+Arbitrages obligatoires :
+
+1. `GUIDANCE_ENGINE` est confirme comme owner de la selection de question.
+2. Un guide appartient d'abord a un `user`; `room_id` reste optionnel. Organisation reportee.
+3. PR-1 accepte uniquement des comptes authentifies. Aucun invite, token public ou inscription.
+4. Un teacher owner peut utiliser son guide `draft` en session privee. `validated/published`
+   reste admin+ et n'est pas implemente dans PR-1.
+5. Retention par defaut : session active 30 jours sans activite, puis expiration ; session
+   terminee et contributions 90 jours, avec suppression explicite par owner/admin.
+6. Aucun template CDC n'est declare canonique sans source verifiee. PR-1 utilise un template
+   candidat versionne dans un seed dedie, clairement marque `candidate`.
+
+Perimetre autorise :
+
+- schemas partages ;
+- migrations explicites pour guides, sessions, participants authentifies et contributions ;
+- engine/service de progression deterministe ;
+- routes privees de la section 5 ;
+- permission owner/participant ;
+- audit ;
+- tests engine et permission.
+
+Interdictions maintenues :
+
+- aucun LLM requis ;
+- aucun acces public ou invite ;
+- aucun email, analytics nominatif, devis, event, asset ou publication ;
+- aucune action `live` sans endpoint et tests reels ;
+- aucun nouveau super-engine ;
+- aucune UI finale dans cette PR.
+
+Avant code, repondre avec le diff exact et signaler tout conflit avec le backend actuel. Ensuite,
+implementer sur une branche courte et deposer tests + commit pour revue MALEX.
+
+---
+
 ## 2026-06-12 — open — Relire l'audit exhaustif MasterFlow complet
 
 Le premier audit portait sur les owners actifs. La couverture de tout le Drive est maintenant

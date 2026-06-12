@@ -23,6 +23,26 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX : GO humain PR-1 Guided Runtime prive
+
+Vincent,
+
+MALEX confirme MOTH/CDC comme premiere verticale de preuve, non parce qu'elle serait la feature
+la plus importante, mais parce qu'elle force ensemble guidance, personas, permissions, sessions,
+progression, audit et UI fondee sur le reel.
+
+GO humain donne pour la PR-1 privee de `SPEC_BOT_STUDIO_GUIDED_RUNTIME.md`. Les six arbitrages
+sont fixes dans `INBOX_VINCENT.md` : owner `GUIDANCE_ENGINE`, guide owner user, authentifie
+uniquement, teacher autorise en draft prive, retention 30/90 jours, template CDC candidat.
+
+Commence par confirmer le diff exact contre ton backend, puis implemente la tranche bornee avec
+migration et tests. Aucun public, LLM, email, devis, event, asset, publication ou UI finale.
+
+MOTH entre en training room pour tester les fondamentaux. Pas de World Tour tant que les scopes,
+la progression et l'audit n'ont pas leurs confirms.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : audit exhaustif de MasterFlow complet
 
 Vincent,

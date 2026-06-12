@@ -1,6 +1,6 @@
 # SPEC — Bot Studio et Guided Runtime
 
-Statut : `PROPOSAL / PR-0 / BLOCKED_BY_IMPLEMENTATION_GO`
+Statut : `PR-1 PRIVATE CAPABILITY SHELL / GO MALEX 2026-06-12`
 
 Cette specification assemble des owners deja presents dans le canon MasterFlow. Elle ne cree
 pas de super-engine conversationnel et n'autorise encore aucune migration, route ou UI.
@@ -300,14 +300,16 @@ registry, tests engine et statut UI. Une feature sans endpoint reel reste `futur
 
 ## Gate
 
-GO MALEX de ce tour : produire et transmettre la PR-0.
+GO humain MALEX donne le 2026-06-12 pour la PR-1 privee, avec les arbitrages suivants :
 
-Avant code, Vincent doit :
+1. `GUIDANCE_ENGINE` porte la selection de question.
+2. Le guide appartient d'abord a un user ; la room est optionnelle.
+3. PR-1 est reservee aux comptes authentifies.
+4. Le teacher owner peut utiliser son guide draft en prive ; validation/publication reste admin+.
+5. Expiration apres 30 jours sans activite ; retention 90 jours apres cloture.
+6. Le premier template CDC reste un seed versionne `candidate`.
 
-1. verifier le mapping contre le backend et les contrats actifs ;
-2. repondre aux six questions ;
-3. signaler les owners ou tables deja prevus ailleurs ;
-4. proposer le diff exact de PR-1, migrations et tests compris.
-
-Aucun code backend, migration, registre d'action `live`, acces public, email, collecte marketing,
-devis, asset ou UI ne part sans validation humaine MALEX separee.
+Vincent doit confirmer le diff exact contre le backend avant implementation, puis livrer une
+branche courte avec migration et tests. Aucun registre `live` sans endpoint reel. Acces public,
+email, collecte marketing, devis, event, asset, publication et UI finale exigent toujours un GO
+humain MALEX separe.

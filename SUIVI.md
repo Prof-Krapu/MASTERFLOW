@@ -4,6 +4,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — GO PR-1 Guided Runtime prive
+
+**Decision humaine MALEX.** MOTH/CDC est retenu comme premiere verticale de preuve pour exercer
+plusieurs fondations MasterFlow, sans le confondre avec une priorite absolue du produit.
+
+Perimetre valide :
+
+- `GUIDANCE_ENGINE` owner de la prochaine question ;
+- guides owners par user, room optionnelle ;
+- sessions uniquement authentifiees ;
+- usage prive d'un guide draft par son teacher owner ;
+- retention 30 jours inactive / 90 jours apres cloture ;
+- premier template CDC versionne en `candidate` ;
+- contrats, migrations, progression deterministe, permissions, audit et tests.
+
+Restent interdits dans cette PR : public/invite, LLM obligatoire, email, event, devis, assets,
+publication, analytics nominatifs et UI finale.
+
+Demande transmise a Vincent dans `INBOX_VINCENT.md` et `SYNC_THREAD_MALEX_VINCENT.md`.
+
+---
+
 ## 2026-06-12 — Audit exhaustif du Drive MasterFlow complet
 
 **Perimetre :** audit documentaire et technique, sans modification runtime.
