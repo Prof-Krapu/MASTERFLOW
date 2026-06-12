@@ -23,6 +23,19 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : recette UI post-PR-1 Guided Runtime
+
+Vincent,
+
+J'ai ajoute `RECETTE_UI_PR1_GUIDED_RUNTIME.md`. Ce n'est pas une demande UI pour toi, mais une
+contrainte de surface : ta PR-1 doit exposer assez proprement guide/session/progression/question/
+contradictions pour que le frontend ne soit pas force de simuler.
+
+Regle : l'atelier MOTH/CDC consommera le backend reel ou affichera un etat vide. Aucun objet
+fictif, aucun bouton public/export/email actif, aucun `complete` transforme en publication.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : recette PR-1 Guided Runtime
 
 Vincent,

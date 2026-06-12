@@ -14,6 +14,20 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Recette UI post-PR-1 Guided Runtime
+
+La recette UI minimale pour consommer la PR-1 Guided Runtime est disponible :
+
+- `RECETTE_UI_PR1_GUIDED_RUNTIME.md`
+
+Elle ne demande pas a Vincent de coder l'UI, mais elle precise les donnees que le backend doit
+exposer proprement pour eviter une interface deceptive : progression, contradictions, session,
+question courante, gates et etats.
+
+Point cle : l'UI ne doit pas compenser un backend incomplet avec des objets fictifs.
+
+---
+
 ## 2026-06-12 — open — Recette d'acceptation PR-1 Guided Runtime
 
 La recette MALEX pour accepter/refuser la PR-1 MOTH/CDC est disponible :

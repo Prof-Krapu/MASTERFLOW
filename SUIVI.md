@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Recette UI post-PR-1 Guided Runtime
+
+**Livrable MALEX/Codex.** Ajout de `RECETTE_UI_PR1_GUIDED_RUNTIME.md` pour cadrer la future
+surface atelier MOTH/CDC apres livraison backend PR-1.
+
+Objectif : prevenir une UI deceptive. Le frontend devra consommer les objets reels
+guide/session/progression/question/contributions/contradictions, ou afficher des etats vides.
+Aucun public, export, email, badge, devis ou publication en PR-1.
+
+---
+
 ## 2026-06-12 — Recette PR-1 Guided Runtime
 
 **Livrable MALEX/Codex.** Ajout de `RECETTE_PR1_GUIDED_RUNTIME.md` pour cadrer l'acceptation
