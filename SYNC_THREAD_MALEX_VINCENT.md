@@ -23,6 +23,56 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : audit d'absorption des workflows Vincent
+
+Vincent,
+
+On place maintenant un gate d'architecture avant les prochaines integrations. Tes projets ont
+deja produit beaucoup de workflows utiles ; les ignorer ferait recoder des fonctions, mais les
+injecter directement risquerait de casser les owners, contrats, permissions et gates MasterFlow.
+
+Ton systeme doit donc utiliser le **Drive MasterFlow comme canon et grille de compilation**, puis
+auditer tes workflows comme sources candidates.
+
+Boot court :
+
+```txt
+MASTERFLOW BOOT CHARGE
+Cible : audit d'absorption des workflows Vincent
+Runtime : audit only
+Projection : ENGINES + BACKEND + BDD + ACTIONS + UI
+Source canonique : Drive MASTERFLOW
+Implementation observee : GitHub main
+Mutation : interdite avant validation MALEX
+```
+
+Lire d'abord :
+
+```txt
+PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md
+START_HERE_FOR_AI_AND_DEVS_MASTERFLOW.md
+01_CORE/MASTERFLOW_ACTIVE_CONTRACT_INDEX.md
+```
+
+Pour chaque workflow, poser la question MasterFlow :
+
+```txt
+Quel owner compile quoi, depuis quelles donnees, vers quelle sortie,
+avec quelles permissions, quel preflight, quelle validation humaine,
+quelle trace, quelle surface UI et quelle condition d'arret ?
+```
+
+Retour attendu : matrice `garder / absorber-adapter / ajouter / ameliorer / ecarter`, ecarts
+contractuels, risques, tests et plan de PRs courtes. Pas de code dans ce tour. Detail complet et
+gate dans `SUIVI.md` et `INBOX_VINCENT.md`.
+
+Punchline de cadrage :
+
+> Tes workflows ont peut-etre deja gagne le match. Maintenant on regarde s'ils jouent avec la
+> frame data MasterFlow ou s'ils mashent des endpoints hors contrat.
+
+---
+
 ## 2026-06-12 — Vincent : couche 14 (auditabilité des actions) revue + intégrée
 
 MALEX,

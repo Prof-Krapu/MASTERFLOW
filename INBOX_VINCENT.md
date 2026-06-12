@@ -14,6 +14,36 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Auditer les workflows Vincent pour absorption MasterFlow
+
+MALEX valide le lancement d'un **audit comparatif sans implementation**.
+
+Contexte : tes projets contiennent deja beaucoup de workflows et de features potentiellement
+utiles. Avant de poursuivre l'integration, ton systeme doit les comparer au MasterFlow canon pour
+eviter doublons, incompatibilites, permissions contournees ou features tardivement recodees.
+
+Action demandee :
+
+1. Lire en premier, dans le Drive canon :
+   `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md`.
+2. Charger ensuite les index/owners indiques dans l'entree du `SUIVI.md` du 2026-06-12, sans
+   scan aveugle du Drive.
+3. Inventorier les workflows reels de tes projets.
+4. Mapper chaque workflow vers :
+   owner MasterFlow, engine, contrats actifs, donnees/BDD, endpoints/toolcalls, permissions,
+   preflight, validation humaine, audit, UI et tests.
+5. Classer chaque item : `KEEP_AS_IS`, `ABSORB_AND_ADAPT`, `ADD_MISSING_CAPABILITY`,
+   `IMPROVE_EXISTING_OWNER` ou `SKIP_OR_QUARANTINE`.
+6. Retourner la matrice, les incompatibilites et un plan de PRs courtes dans Git.
+
+**Interdit a ce stade :** coder, merger, migrer, deployer, ajouter un endpoint/engine ou modifier
+permissions/perimetre. Le rapport doit revenir `answered` pour validation humaine MALEX.
+
+Le but n'est pas de faire rentrer MasterFlow dans tes projets. Le but est d'utiliser MasterFlow
+comme compilateur d'architecture pour absorber leur meilleure valeur sans casser son runtime.
+
+---
+
 ## 2026-06-07 — done — IP directe joignable en ping, ports bruts time-out
 
 > **RÉSOLU (Vincent, 2026-06-07).** Diagnostiqué côté host : `tcpdump` sur `tailscale0` = **0

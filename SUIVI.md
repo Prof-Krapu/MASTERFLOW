@@ -4,6 +4,80 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Gate strategique : audit d'absorption des workflows Vincent
+
+**Decision MALEX.** Avant toute nouvelle integration structurante, le systeme de Vincent doit
+comparer les workflows et features deja construits dans ses projets avec le MasterFlow canon.
+Le risque actuel n'est pas le manque de features, mais l'ajout tardif de briques utiles sous une
+forme incompatible, doublonnee ou mal gatee.
+
+### Autorites et ordre de lecture
+
+1. Canon produit : Drive `MASTERFLOW`.
+2. Point d'entree : `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md`.
+3. Resolution MasterFlow :
+   - `START_HERE_FOR_AI_AND_DEVS_MASTERFLOW.md` ;
+   - `01_CORE/MASTERFLOW_ACTIVE_CONTRACT_INDEX.md` ;
+   - `01_CORE/MASTERFLOW_ENGINE_CONTRACTS.md` ;
+   - `01_CORE/MASTERFLOW_SCOPE_AND_PERMISSION_MODEL.md` ;
+   - `04_ENGINES/MASTERFLOW_RUNTIME_WIRING_AND_INTER_SYSTEM_CONNECTION_MAP.md`.
+4. Implementation actuelle : GitHub `main`, `CLAUDE.md`, `packages/shared`, backend, frontend
+   et registre d'actions.
+5. Projets/workflows Vincent : sources candidates a inventorier et comparer, jamais nouvelle
+   autorite canonique implicite.
+
+### Methode obligatoire
+
+Pour chaque workflow ou feature Vincent :
+
+- decrire le besoin reel, les entrees, etats, sorties et condition d'arret ;
+- identifier l'owner MasterFlow existant et son type : APP, ENGINE, CONTRACT, DATASET, EVENT,
+  WIDGET ou AUDIT ;
+- relier engine, contrats actifs, donnees/BDD, endpoints/toolcalls, permissions, preflight,
+  validation humaine, traces, surface UI et tests ;
+- verifier les doublons semantiques et les incompatibilites ;
+- classer la proposition :
+  - `KEEP_AS_IS` : deja compatible et reutilisable ;
+  - `ABSORB_AND_ADAPT` : valeur utile, adaptation aux owners/contrats MasterFlow ;
+  - `ADD_MISSING_CAPABILITY` : besoin nouveau confirme, a mapper avant code ;
+  - `IMPROVE_EXISTING_OWNER` : meilleur pattern a injecter dans une brique existante ;
+  - `SKIP_OR_QUARANTINE` : redondant, trop couple, premature ou contraire aux invariants.
+
+Le verdict d'architecture doit aussi reprendre les statuts du protocole canonique :
+`OK`, `PATCH_EXISTING_OWNER`, `AUDIT_ONLY`, `FUTURE_READY`, `QUARANTINE` ou
+`BLOCKED_BY_HUMAN_VALIDATION`. `NEW_ENGINE` reste interdit sans impossibilite demontree.
+
+### Livrable attendu avant code
+
+Une matrice sourcee, un item par workflow :
+
+```txt
+Projet/source | workflow | valeur | owner MasterFlow | contrats | donnees
+permissions/preflight | UI | ecart actuel | decision | risque | tests | PR proposee
+```
+
+Puis :
+
+1. top des absorptions a forte valeur / faible risque ;
+2. incompatibilites bloquantes ;
+3. ameliorations MasterFlow suggerees par ses projets ;
+4. briques a ecarter ;
+5. plan de PRs courtes avec dependances et migrations explicites.
+
+### Gate
+
+- Audit et proposition seulement.
+- Aucun code, merge, migration, endpoint, permission, deploiement ou changement de perimetre
+  avant retour dans Git et validation humaine explicite de MALEX.
+- Ne pas scanner tout le Drive sans ciblage : utiliser les index actifs, retrouver l'owner,
+  puis charger seulement les contrats et engines necessaires.
+- Conserver les invariants : permission check, preflight sensible, validation humaine,
+  Resource Truth, donnees privees par defaut, UI non deceptive et auditabilite.
+
+Demande transmise dans `INBOX_VINCENT.md` et `SYNC_THREAD_MALEX_VINCENT.md`.
+
+---
+
 ## 2026-06-12 — Frontend couche 14 : auditabilite des actions
 
 **Perimetre.** Rendre le cycle d'action et ses decisions lisibles depuis les donnees deja
