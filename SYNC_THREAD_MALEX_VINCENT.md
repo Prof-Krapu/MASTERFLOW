@@ -23,6 +23,22 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : recette PR-1 Guided Runtime
+
+Vincent,
+
+Le banc d'essai de la PR-1 MOTH/CDC est pose dans `RECETTE_PR1_GUIDED_RUNTIME.md`.
+
+Il contient les payloads de reference, les scenarios A1-A12, les tests minimum et les criteres
+de refus immediat. Cette recette doit etre utilisee avant ton push : elle valide le runtime prive
+authentifie, pas une UI ni un bot public.
+
+Si ton implementation change un nom de route ou de champ, ajoute une table d'equivalence. Les
+garanties ne bougent pas : owner/participant, guide versionne, progression deterministe, audit,
+pas de publication ni d'export via `complete`.
+
+---
+
 ## 2026-06-12 — MALEX : validation graduee, pas double validation partout
 
 Vincent,

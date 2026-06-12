@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Recette PR-1 Guided Runtime
+
+**Livrable MALEX/Codex.** Ajout de `RECETTE_PR1_GUIDED_RUNTIME.md` pour cadrer l'acceptation
+de la premiere tranche MOTH/CDC.
+
+La recette couvre :
+
+- endpoints attendus ;
+- payloads de reference ;
+- scenarios A1-A12 ;
+- tests minimum ;
+- criteres de refus immediat ;
+- application de la validation graduee.
+
+Objectif : permettre a Vincent de livrer une PR-1 verifiable avant toute UI finale ou acces public.
+
+---
+
 ## 2026-06-12 — Validation graduee au lieu de double validation systematique
 
 **Decision MALEX/Vincent.** MasterFlow assouplit la validation : ne pas exiger une double

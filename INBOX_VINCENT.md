@@ -14,6 +14,24 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Recette d'acceptation PR-1 Guided Runtime
+
+La recette MALEX pour accepter/refuser la PR-1 MOTH/CDC est disponible :
+
+- `RECETTE_PR1_GUIDED_RUNTIME.md`
+
+Elle fixe les endpoints attendus, payloads de reference, scenarios A1-A12, tests minimum et
+criteres de refus immediat.
+
+Important : cette recette applique la validation graduee. Les operations privees/reversibles
+passent par permission, scope et audit ; publication, public, export, email, event, devis et
+asset restent hors PR-1 ou sous validation humaine.
+
+Utilise cette recette comme banc d'essai avant de deposer ton commit. Si tu changes un nom de
+route ou un champ, fournis une table d'equivalence et conserve les garanties.
+
+---
+
 ## 2026-06-12 — open — Assouplir la validation systematique
 
 MALEX valide le principe propose par Vincent : ne pas imposer une double validation humaine
