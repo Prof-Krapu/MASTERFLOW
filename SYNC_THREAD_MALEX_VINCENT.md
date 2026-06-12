@@ -23,6 +23,27 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : check canon obligatoire aussi cote Vincent
+
+Vincent,
+
+MALEX demande que ton systeme applique la meme regle que Codex : avant toute spec backend,
+implementation de feature, arbitrage de perimetre ou reponse technique sur un sujet produit,
+checker le Drive canon MasterFlow.
+
+Procedure minimale :
+
+1. recherche canon avec termes metier et synonymes ;
+2. lecture des fichiers sources, pas seulement les titres ;
+3. references canon citees dans PR/handoff/reponse ;
+4. distinction `deja canonique` / `partiellement implemente` / `absent backend` ;
+5. pas de duplication d'une logique deja canonique.
+
+Exemple : le systeme persona principal + sous-personas contextuels/MOTH/Incubator existait deja
+dans le canon. On doit absorber le canon, pas reconstruire un clone plus pauvre.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : precision multi-personas pedagogiques
 
 Vincent,

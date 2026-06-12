@@ -14,6 +14,29 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Regle miroir : check canon Drive obligatoire cote Vincent
+
+MALEX demande que le systeme Vincent applique la meme regle que Codex :
+
+Avant toute spec backend, implementation de feature, arbitrage de perimetre ou reponse technique
+sur un sujet produit/conceptuel, verifier le Drive canon MasterFlow.
+
+Procedure minimale attendue :
+
+1. chercher dans le Drive canon avec termes metier et synonymes ;
+2. lire les fichiers sources trouves, pas seulement les noms ;
+3. citer les references canon dans la PR, le handoff ou la reponse ;
+4. distinguer `deja canonique`, `partiellement implemente`, `absent backend` ;
+5. ne jamais reimplementer en parallele une logique deja canonique.
+
+Sujets particulierement concernes : personas, MasterStory, pedagogie, bots, RAG, jobs, DA/assets,
+Ours d'Or, devis, correction, cours, UI.
+
+But : ne rien perdre du canon et eviter de travailler dans le vide. Exemple recent : le modele
+persona principal + sous-personas contextuels existait deja dans MasterFlow canon.
+
+---
+
 ## 2026-06-13 — open — Precision multi-personas pedagogiques
 
 Precision MALEX a integrer a PR-6 / Guided Runtime :

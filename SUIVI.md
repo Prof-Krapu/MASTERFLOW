@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Regle miroir demandee cote Vincent
+
+**Decision MALEX.** La regle `check canon Drive avant spec Git` doit aussi etre appliquee par
+Vincent et son systeme backend.
+
+Avant toute implementation/spec/reponse technique sur un sujet produit, Vincent doit verifier le
+canon, lire les sources, citer les references et distinguer ce qui est deja canonique, partiellement
+implemente ou absent backend. Demande transmise dans `INBOX_VINCENT.md` et
+`SYNC_THREAD_MALEX_VINCENT.md`.
+
+Objectif : ne rien perdre du canon et eviter de reconstruire une version parallele appauvrie.
+
+---
+
 ## 2026-06-13 — Regle de travail : check canon Drive avant spec Git
 
 **Decision MALEX.** Avant de traiter une idee comme nouvelle, Codex/Vincent doivent verifier le
