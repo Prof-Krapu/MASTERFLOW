@@ -13,6 +13,11 @@ Corrector n'est pas supprime fonctionnellement : les fonctions utiles des projet
 doivent etre auditees puis absorbees dans le moteur de correction, les jobs, les rubriques,
 les controles qualite, les feedbacks et les exports.
 
+Cette absorption rend le systeme plus puissant : les capacites de correction deviennent
+transversales et utilisables par tout persona, cours, sujet, classe ou integration autorisee.
+Les composants OCR, scoring brouillon, calibration, feedback, controle qualite et export peuvent
+evoluer independamment, et chaque amelioration profite a toutes les surfaces MasterFlow.
+
 La modelisation de `corrector-001` comme persona primaire autonome est en revanche rejetee :
 elle confond voix, methode, moteur, permissions et souverainete pedagogique. Migration demandee :
 deprecation non destructive, retrait des nouveaux parcours, eventuel profil de methode, puis

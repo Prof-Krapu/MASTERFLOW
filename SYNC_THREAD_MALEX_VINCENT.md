@@ -1103,6 +1103,12 @@ La position est ferme mais ne jette pas ton travail :
 
 - tes features `API_corrector`, OCR, batch, calibration, feedback, exports et controles qualite
   doivent etre recuperees ;
+- le systeme obtenu est beaucoup plus puissant que Corrector isole : chaque capacite devient
+  composable, versionnee et reutilisable par tous les personas, cours, sujets, classes et futures
+  integrations autorises ;
+- ProfKrapu, le persona personnel d'un utilisateur ou un persona enseignant peut utiliser le meme
+  moteur de correction tout en gardant sa voix, sa relation et sa methode ;
+- toute amelioration du moteur profite a MasterFlow entier au lieu de rester bloquee dans un bot ;
 - elles doivent etre mappees puis absorbees dans l'architecture globale MasterFlow ;
 - tu as tort sur le choix de faire de Corrector un persona autonome pouvant etre primaire :
   un persona porte une voix ou prete une methode, il ne porte pas le moteur, le scoring, les

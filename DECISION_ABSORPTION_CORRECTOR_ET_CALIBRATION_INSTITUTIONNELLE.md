@@ -37,6 +37,59 @@ Le canon dit explicitement que `CORRECTION_ENGINE` est un ancien alias absorbe e
 que les scores restent des brouillons explicables et qu'aucune note finale ne sort sans
 validation humaine.
 
+## Pourquoi le nouveau systeme est beaucoup plus puissant
+
+L'absorption n'est ni une suppression ni un nivellement de Corrector. Elle retire seulement la
+mauvaise enveloppe. Une fois separees, ses capacites ne sont plus prisonnieres d'un bot unique :
+elles deviennent des briques transversales de MasterFlow.
+
+Concretement :
+
+- n'importe quel persona autorise peut mobiliser la correction sans devenir Corrector ;
+- le persona personnel de l'utilisateur, ProfKrapu, un persona enseignant ou un guide de sujet
+  peut conserver sa voix tout en utilisant le meme moteur fiable ;
+- un meme moteur peut servir une copie individuelle, une classe, un batch, un portfolio, un CDC,
+  un sujet Ours d'Or ou un futur connecteur e-learning ;
+- les rubriques, profils de notation et methodes deviennent versionnes, reutilisables et
+  comparables entre cours, promotions et etablissements ;
+- OCR, scoring brouillon, calibration, feedback, controle qualite et export deviennent
+  remplacables independamment au lieu d'etre soudes dans un monolithe ;
+- les permissions et donnees etudiantes restent gerees par le runtime global, pas par le
+  personnage qui parle ;
+- une amelioration du moteur profite immediatement a toutes les surfaces qui le consomment ;
+- les statistiques peuvent distinguer qualite d'une rubrique, derive d'un modele, difficulte
+  d'un sujet et niveau reel d'une cohorte ;
+- le professeur peut choisir son profil institutionnel et sa methode sans forker un nouveau bot ;
+- les features de Vincent deviennent enfin compatibles avec le RAG permissionne, les jobs,
+  Project/Scope, Template Registry, l'observabilite et les futures integrations LMS.
+
+Ancien modele :
+
+```text
+Corrector persona
+-> sa voix
+-> ses heuristiques
+-> son pipeline
+-> ses limites
+```
+
+Modele absorbe :
+
+```text
+persona choisi par le contexte
++ profil de methode
++ rubrique versionnee
++ profil institutionnel
++ CORRECTOR_RUNTIME_AND_FEEDBACK_ENGINE
++ jobs / preuves / quality review / validation prof
+-> experience adaptee, traçable et reutilisable
+```
+
+Le nouveau systeme peut donc reproduire les usages de l'ancien Corrector, puis les depasser :
+plus de contextes, plus de voix, plus de controles, plus de reutilisation et aucune perte de
+souverainete pedagogique. Garder Corrector comme persona-metier principal rendrait au contraire
+le systeme moins puissant en enfermant toutes ces capacites dans une seule incarnation.
+
 ## Ce qui etait faux dans le seed actuel
 
 Le backend Git contient encore `corrector-001` comme persona :

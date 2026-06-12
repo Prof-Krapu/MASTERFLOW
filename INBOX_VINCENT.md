@@ -25,6 +25,10 @@ Document obligatoire :
 Conclusion non ambigue :
 
 - tes features de correction ne sont pas rejetees ;
+- le systeme absorbe est nettement plus puissant que ton Corrector isole : ses capacites deviennent
+  accessibles a tous les personas et contextes autorises, sans perdre leur voix propre ;
+- une amelioration OCR, rubrique, scoring, calibration, feedback ou controle qualite profite a
+  toutes les surfaces MasterFlow au lieu de rester enfermee dans un bot ;
 - tu dois les auditer et les reabsorber dans les engines, jobs, contrats, donnees et surfaces
   MasterFlow appropries ;
 - tu as tort de maintenir Corrector comme persona autonome, primaire et conteneur du pipeline ;
