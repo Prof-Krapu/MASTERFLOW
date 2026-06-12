@@ -14,6 +14,38 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Assouplir la validation systematique
+
+MALEX valide le principe propose par Vincent : ne pas imposer une double validation humaine
+systematique partout.
+
+Nouvelle reference :
+
+- `POLITIQUE_VALIDATION_GRADUEE.md`
+
+Regle :
+
+```text
+permission_check toujours
+preflight selon action
+validation humaine selon risque / effet / scope
+validation renforcee seulement pour critique
+```
+
+Impact PR-1 Guided Runtime :
+
+- creer/modifier guide draft, session privee, contribution et progression interne : permission,
+  scope et audit suffisent ;
+- `complete` prive sans publication : preflight simple + audit ;
+- publication, public, email, event, devis, asset, export et settings globaux : validation
+  humaine conservee ;
+- critique / irreversible / couteux / donnees personnelles en masse : validation renforcee.
+
+Objectif : moins de friction, pas moins de securite. Ne pas confondre `validation_required=false`
+avec absence de permission ou absence d'audit.
+
+---
+
 ## 2026-06-12 — open — GO MALEX pour PR-1 Guided Runtime prive
 
 MALEX confirme que MOTH/CDC est pertinent comme premiere verticale de preuve et donne son

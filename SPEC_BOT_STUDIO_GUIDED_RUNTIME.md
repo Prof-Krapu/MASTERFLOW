@@ -189,8 +189,8 @@ testees.
 | Operation | Student | Teacher | Admin | Godmode | Gate |
 |---|---:|---:|---:|---:|---|
 | repondre dans une session autorisee | oui | oui | oui | oui | scope session |
-| creer un guide prive | non | oui | oui | oui | owner |
-| modifier un guide draft | non | owner | oui | oui | version |
+| creer un guide prive | non | oui | oui | oui | owner + audit |
+| modifier un guide draft | non | owner | oui | oui | version + audit |
 | valider/publier un guide | non | non | oui | oui | preflight + validation |
 | ouvrir une session classe | non | oui | oui | oui | scope classe/room |
 | ouvrir un lien public | non | non | oui | oui | preflight + politique donnees |
@@ -204,6 +204,11 @@ testees.
 Les donnees personnelles sont privees par defaut. Les analytics destinees a l'animateur doivent
 preferer les agregats. Aucun score cache de serieux, valeur humaine, employabilite ou qualite
 d'enseignant.
+
+La PR-1 applique la politique de validation graduee : pas de double validation systematique
+pour les drafts, sessions privees, contributions et progression interne. Validation humaine
+seulement pour publication, acces public, export, envoi externe, event, devis, asset ou mutation
+systeme sensible. Reference : `POLITIQUE_VALIDATION_GRADUEE.md`.
 
 ## 7. Comportement conversationnel
 
@@ -313,3 +318,7 @@ Vincent doit confirmer le diff exact contre le backend avant implementation, pui
 branche courte avec migration et tests. Aucun registre `live` sans endpoint reel. Acces public,
 email, collecte marketing, devis, event, asset, publication et UI finale exigent toujours un GO
 humain MALEX separe.
+
+Assouplissement valide : ne pas imposer une double validation humaine systematique dans PR-1.
+Les operations privees et reversibles passent par permission, scope et audit ; les operations
+sensibles ou externes restent hors PR-1 ou soumises a validation humaine.

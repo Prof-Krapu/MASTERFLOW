@@ -4,6 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Validation graduee au lieu de double validation systematique
+
+**Decision MALEX/Vincent.** MasterFlow assouplit la validation : ne pas exiger une double
+validation humaine systematique pour les operations bas risque, privees ou reversibles.
+
+Nouvelle reference : `POLITIQUE_VALIDATION_GRADUEE.md`.
+
+Regle :
+
+- permission check toujours ;
+- preflight selon l'action ;
+- audit des mutations ;
+- validation humaine pour actions sensibles ;
+- validation renforcee seulement pour actions critiques.
+
+Impact PR-1 Guided Runtime : drafts, sessions privees, contributions et progression interne
+passent par permission/scope/audit. Publication, public, email, event, devis, asset, export,
+settings globaux, suppression definitive ou cout eleve restent soumis a validation humaine.
+
+---
+
 ## 2026-06-12 — GO PR-1 Guided Runtime prive
 
 **Decision humaine MALEX.** MOTH/CDC est retenu comme premiere verticale de preuve pour exercer

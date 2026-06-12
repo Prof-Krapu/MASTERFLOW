@@ -80,7 +80,7 @@ Montage (`index.ts`) : `auth`/`context`/`rooms`/`resources` sous leur sous-chemi
 
 ## Invariants non négociables — et OÙ ils sont appliqués
 
-1. **Aucune action sensible sans validation humaine.** `action_engine.executeAction` lève si `status !== 'approved'` → router renvoie **423**. Une proposition IA n'est jamais une validation.
+1. **Aucune action sensible sans validation humaine, mais pas de double validation systematique.** Les actions bas risque peuvent passer avec permission, preflight eventuel et audit. Les actions sensibles exigent validation humaine ; les actions critiques peuvent exiger validation renforcee. Voir `POLITIQUE_VALIDATION_GRADUEE.md`.
 2. **Anti-hallucination (tolérance 0).** `resource_truth.searchResources` ne rend que `status='validated'` par défaut ; toute proposition entre en `candidate`.
 3. **1 porte-parole sémantique.** `persona_engine` : `blend.speaker_persona_id === primary.id` ; le secondaire ne prête que sa méthode, attribuée (« méthode inspirée de … »). Les permissions ne se blendent jamais.
 4. `PERMISSION > CONTEXT_LOCK > SAFETY > OBJECT_TYPE > MATURITY > PREFERENCE` (`permission_runtime` + `middleware/auth`).

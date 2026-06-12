@@ -23,6 +23,26 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX : validation graduee, pas double validation partout
+
+Vincent,
+
+MALEX valide ton point : la double validation systematique rendrait MasterFlow trop lourd. On
+adopte une politique graduee, documentee dans `POLITIQUE_VALIDATION_GRADUEE.md`.
+
+Principe : permission toujours, preflight selon l'action, validation humaine seulement quand le
+risque, l'effet externe, le scope ou l'irreversibilite le justifie. Les actions critiques gardent
+une validation renforcee.
+
+Pour PR-1 MOTH/CDC : drafts, sessions privees, contributions et progression interne ne doivent
+pas demander deux validations. Publication, public, email, event, devis, asset, export et settings
+globaux restent gates par validation humaine.
+
+Moins de menus de confirmation, plus de frame data propre. On garde le parry pour les vrais coups
+dangereux, pas pour marcher dans la room.
+
+---
+
 ## 2026-06-12 — MALEX : GO humain PR-1 Guided Runtime prive
 
 Vincent,
