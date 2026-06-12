@@ -1,0 +1,30 @@
+{
+  "capability": "local_rag",
+  "version": "0.1.0",
+  "status": "planned",
+  "ui_enabled": false,
+  "requires_role": "authenticated",
+  "debug_requires_role": "godmode",
+  "dependencies": [
+    "qdrant",
+    "BAAI/bge-m3",
+    "BAAI/bge-reranker-v2-m3"
+  ],
+  "fallback": "pinned_context_plus_exact_resource_truth",
+  "actions": [
+    "rag_health",
+    "rag_search",
+    "rag_index_upsert",
+    "rag_index_delete",
+    "compile_context_pack"
+  ],
+  "gates": [
+    "authentication",
+    "permission_scope",
+    "source_status",
+    "authority",
+    "sensitivity",
+    "token_budget",
+    "provenance"
+  ]
+}

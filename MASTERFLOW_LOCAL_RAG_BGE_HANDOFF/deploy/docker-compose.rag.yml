@@ -1,0 +1,26 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6333:6333"
+      - "127.0.0.1:6334:6334"
+    volumes:
+      - masterflow_qdrant_data:/qdrant/storage
+
+  # Implement the local embedding/reranking API in a dedicated PR.
+  # Keep it bound to localhost unless an authenticated internal network is used.
+  rag-service:
+    profiles: ["implementation-required"]
+    build:
+      context: ../service
+    restart: unless-stopped
+    env_file:
+      - .env.rag
+    ports:
+      - "127.0.0.1:8091:8091"
+    depends_on:
+      - qdrant
+
+volumes:
+  masterflow_qdrant_data:

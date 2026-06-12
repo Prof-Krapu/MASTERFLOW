@@ -14,6 +14,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Handoff prioritaire Local RAG BGE
+
+MALEX dépose le dossier complet `MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/`.
+
+**À lire en premier et intégralement :**
+
+`MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/00_START_HERE_VINCENT.md`
+
+Le pack propose un RAG local permissionné fondé sur BGE-M3, un reranker BGE et Qdrant,
+sans remplacer SQLite, le canon lisible, Resource Truth, les permissions ni les validations
+humaines.
+
+Mission de ce tour :
+
+1. auditer la compatibilité avec le backend réel et `CLAUDE.md` ;
+2. cartographier les fichiers, types, variables, migrations, endpoints et tests concernés ;
+3. comparer le contrat OpenAPI et le manifeste au registre d'actions réel ;
+4. proposer le diff exact de la PR-1 `Capability Shell` ;
+5. signaler toute contradiction ou dépendance risquée.
+
+**Gate : audit et proposition uniquement.** Aucun service, index, téléchargement de modèle,
+conteneur, endpoint, migration ou UI à implémenter avant validation humaine MALEX séparée.
+Répondre dans Git selon le format demandé par `PROMPT_RELANCE_CLAUDE_CODE.md`.
+
+---
+
 ## 2026-06-12 — open — Challenger la proposition packs et tarifs
 
 MALEX dépose `PROPOSITION_PACKS_ET_TARIFS_ABONNEMENT.md`.

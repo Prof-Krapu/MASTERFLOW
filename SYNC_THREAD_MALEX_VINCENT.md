@@ -23,6 +23,25 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : handoff prioritaire Local RAG BGE
+
+Vincent,
+
+MALEX dépose `MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/`. Commence impérativement par
+`00_START_HERE_VINCENT.md`, puis suis l'ordre de lecture indiqué.
+
+Le cap : retrieval local BGE-M3 + reranker BGE + Qdrant, sous orchestration MasterFlow.
+SQLite reste l'état vivant, le canon reste lisible, les permissions précèdent toute recherche,
+et un hit vectoriel ne devient jamais une vérité par lui-même.
+
+Pour ce tour, rends uniquement l'audit de compatibilité et la proposition exacte de PR-1
+`Capability Shell`, au format de `PROMPT_RELANCE_CLAUDE_CODE.md`. Aucun code, conteneur,
+modèle, endpoint, migration ou UI avant un GO humain séparé de MALEX.
+
+> Le RAG peut chercher le matchup. Il ne tient ni la manette, ni le règlement du tournoi.
+
+---
+
 ## 2026-06-12 — MALEX : GO humain sur PR-2 global settings
 
 Vincent,

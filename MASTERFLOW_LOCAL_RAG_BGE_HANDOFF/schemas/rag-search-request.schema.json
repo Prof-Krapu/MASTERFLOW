@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rag-search-request.schema.json",
+  "title": "MasterFlow RAG search request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["query", "domains", "permission_filter"],
+  "properties": {
+    "query": { "type": "string", "minLength": 1 },
+    "domains": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "resources",
+          "pedagogy",
+          "visual_da",
+          "narrative_lore",
+          "personas",
+          "projects",
+          "inventory",
+          "corrections",
+          "backend_docs"
+        ]
+      }
+    },
+    "permission_filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_scopes"],
+      "properties": {
+        "user_id": { "type": "string" },
+        "role": { "type": "string" },
+        "allowed_scopes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "owner_ids": { "type": "array", "items": { "type": "string" } },
+        "project_ids": { "type": "array", "items": { "type": "string" } },
+        "room_ids": { "type": "array", "items": { "type": "string" } },
+        "max_sensitivity": { "type": "string" }
+      }
+    },
+    "authority_allow": {
+      "type": "array",
+      "items": {
+        "enum": ["canonical", "validated", "candidate", "archive", "external"]
+      },
+      "default": ["canonical", "validated"]
+    },
+    "candidate_limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 },
+    "result_limit": { "type": "integer", "minimum": 1, "maximum": 20, "default": 6 },
+    "context_token_budget": {
+      "type": "integer",
+      "minimum": 500,
+      "maximum": 12000,
+      "default": 3500
+    },
+    "include_debug": { "type": "boolean", "default": false }
+  }
+}

@@ -4,6 +4,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Dépôt du handoff Local RAG BGE pour Vincent
+
+**Dépôt MALEX.** Le dossier `MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/` est transmis à Vincent
+comme spécification d'implémentation progressive d'une couche de retrieval locale et
+permissionnée.
+
+Contenu :
+
+- point d'entrée obligatoire `00_START_HERE_VINCENT.md` ;
+- architecture et limites de responsabilité ;
+- indexation, retrieval hybride et context packs ;
+- sécurité, permissions, révocation et audit ;
+- plan de cinq PRs progressives ;
+- contrat OpenAPI, schémas JSON, manifeste, compose et jeu d'évaluation.
+
+Contrôles avant dépôt : JSON/JSONL valides, YAML valides, aucun secret détecté.
+
+### Gate
+
+- Première étape : audit du repo et proposition exacte de la PR-1 `Capability Shell`.
+- Aucun code, modèle, Qdrant, indexation, migration, endpoint ou UI avant validation humaine.
+- Permissions avant retrieval ; chaque hit doit conserver une source lisible.
+- Le RAG reste dérivé, optionnel et non souverain.
+
+Demande transmise dans `INBOX_VINCENT.md` et le fil de synchronisation.
+
+---
+
 ## 2026-06-12 — GO humain MALEX sur PR-2 global settings
 
 **Décision MALEX.** Vincent peut implémenter la PR-2 décrite dans
