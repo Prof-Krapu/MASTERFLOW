@@ -1,5 +1,6 @@
 import {getDb} from '../db/schema.ts';
 import {env} from '../lib/env.ts';
+import {costFor} from './llm_pricing.ts';
 
 /**
  * Service LLM de MasterFlow — abstraction unique du modèle de langage.
@@ -32,10 +33,12 @@ export interface LLMStreamParams {
   userId?: string | null;
   personaId?: string | null;
   roomInstanceId?: string | null;
+  /** Tâche LLM (OCR, barème, correction, chat…). Inscrite dans `token_events`. */
+  task?: string;
 }
 
-/** Tâche déclarée dans `token_events` — fixe pour ce service de chat. */
-const TOKEN_TASK = 'chat';
+/** Tâche par défaut si l'appelant n'en déclare pas une. */
+const DEFAULT_TASK = 'chat';
 
 /**
  * Estimation grossière du nombre de tokens d'un texte (~ mots × 1.3).
@@ -53,8 +56,10 @@ function estimateTokens(text: string): number {
  */
 function logTokenEvent(input: {
   model: string;
+  task: string;
   promptTokens: number;
   completionTokens: number;
+  costEur: number;
   userId?: string | null;
   personaId?: string | null;
   roomInstanceId?: string | null;
@@ -70,10 +75,10 @@ function logTokenEvent(input: {
         input.userId ?? null,
         Date.now(),
         input.model,
-        TOKEN_TASK,
+        input.task,
         input.promptTokens,
         input.completionTokens,
-        0,
+        input.costEur,
         input.personaId ?? null,
         input.roomInstanceId ?? null,
       );
@@ -134,10 +139,14 @@ async function* streamMock(p: LLMStreamParams): AsyncGenerator<string> {
     yield tok;
   }
 
+  const promptTokens = estimatePromptTokens(p.messages);
+  const completionTokens = estimateTokens(emitted);
   logTokenEvent({
     model: 'mock',
-    promptTokens: estimatePromptTokens(p.messages),
-    completionTokens: estimateTokens(emitted),
+    task: p.task ?? DEFAULT_TASK,
+    promptTokens,
+    completionTokens,
+    costEur: costFor('mock', promptTokens, completionTokens),
     userId: p.userId,
     personaId: p.personaId,
     roomInstanceId: p.roomInstanceId,
@@ -163,6 +172,8 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
       model,
       messages: p.messages,
       stream: true,
+      // Demande au provider le décompte réel des tokens dans le chunk SSE final.
+      stream_options: {include_usage: true},
     }),
   });
 
@@ -175,6 +186,8 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
   const decoder = new TextDecoder();
   let buffer = '';
   let emitted = '';
+  // Décompte réel renvoyé par le provider (chunk SSE final via stream_options.include_usage).
+  let usage: {prompt_tokens?: number; completion_tokens?: number} | null = null;
 
   try {
     while (true) {
@@ -199,7 +212,10 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
         try {
           const parsed = JSON.parse(data) as {
             choices?: {delta?: {content?: string | null}}[];
+            usage?: {prompt_tokens?: number; completion_tokens?: number} | null;
           };
+          // Le chunk d'usage arrive en fin de flux (souvent avec `choices: []`).
+          if (parsed.usage) usage = parsed.usage;
           const delta = parsed.choices?.[0]?.delta?.content;
           if (delta) {
             emitted += delta;
@@ -214,10 +230,16 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
     reader.releaseLock();
   }
 
+  // Compteurs réels du provider si disponibles, sinon estimation (fallback).
+  const usedModel = model || env.llm.provider;
+  const promptTokens = usage?.prompt_tokens ?? estimatePromptTokens(p.messages);
+  const completionTokens = usage?.completion_tokens ?? estimateTokens(emitted);
   logTokenEvent({
-    model: model || env.llm.provider,
-    promptTokens: estimatePromptTokens(p.messages),
-    completionTokens: estimateTokens(emitted),
+    model: usedModel,
+    task: p.task ?? DEFAULT_TASK,
+    promptTokens,
+    completionTokens,
+    costEur: costFor(usedModel, promptTokens, completionTokens),
     userId: p.userId,
     personaId: p.personaId,
     roomInstanceId: p.roomInstanceId,

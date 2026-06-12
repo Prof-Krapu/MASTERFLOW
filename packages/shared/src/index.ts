@@ -226,6 +226,36 @@ export const ActionRegistryEntrySchema = z.object({
 });
 export type ActionRegistryEntry = z.infer<typeof ActionRegistryEntrySchema>;
 
+/**
+ * Diagnostic d'usage tokens — réponse de `GET /diagnostics/token-usage`
+ * (lecture gated admin/godmode). Schéma additif : aucun runtime existant n'en dépend.
+ */
+export const TokenUsageGroupBySchema = z.enum(['model', 'task', 'user', 'day']);
+export type TokenUsageGroupBy = z.infer<typeof TokenUsageGroupBySchema>;
+
+export const TokenUsageRowSchema = z.object({
+  group: z.string(),
+  prompt_tokens: z.number(),
+  completion_tokens: z.number(),
+  cost_eur: z.number(),
+  events: z.number(),
+});
+export type TokenUsageRow = z.infer<typeof TokenUsageRowSchema>;
+
+export const TokenUsageReportSchema = z.object({
+  group_by: TokenUsageGroupBySchema,
+  from: z.number(),
+  to: z.number(),
+  totals: z.object({
+    prompt_tokens: z.number(),
+    completion_tokens: z.number(),
+    cost_eur: z.number(),
+    events: z.number(),
+  }),
+  rows: z.array(TokenUsageRowSchema),
+});
+export type TokenUsageReport = z.infer<typeof TokenUsageReportSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);

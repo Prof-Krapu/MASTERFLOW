@@ -11,6 +11,7 @@ import {createRoomsRouter} from './routers/rooms.ts';
 import {createPersonasRouter} from './routers/personas.ts';
 import {createActionsRouter} from './routers/actions.ts';
 import {createResourcesRouter} from './routers/resources.ts';
+import {createDiagnosticsRouter} from './routers/diagnostics.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -55,9 +56,10 @@ async function main(): Promise<void> {
   app.use(`${api}/context`, createContextRouter());
   app.use(`${api}/rooms`, createRoomsRouter());
   app.use(`${api}/resources`, createResourcesRouter());
-  // Auto-préfixés (routes /personas… et /actions…) → racine de l'API.
+  // Auto-préfixés (routes /personas… /actions… /diagnostics…) → racine de l'API.
   app.use(api, createPersonasRouter());
   app.use(api, createActionsRouter());
+  app.use(api, createDiagnosticsRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

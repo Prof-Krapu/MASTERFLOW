@@ -120,6 +120,16 @@
       "validation_required": true,
       "ui_surface": "subject_compile_panel",
       "status": "future"
+    },
+    {
+      "action_id": "view_token_usage",
+      "label": "Voir l'usage des tokens",
+      "endpoint": "GET /diagnostics/token-usage",
+      "risk_level": "low",
+      "preflight_required": false,
+      "validation_required": false,
+      "ui_surface": "admin_diagnostics_panel",
+      "status": "live"
     }
   ]
 }
