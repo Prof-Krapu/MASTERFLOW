@@ -23,6 +23,32 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : proposition packs et tarifs à challenger
+
+Vincent,
+
+Une première hypothèse d'abonnements est déposée dans
+`PROPOSITION_PACKS_ET_TARIFS_ABONNEMENT.md`.
+
+Elle couvre Student, Student Pro, Teacher, Studio/Creator, School/Campus et White Label.
+Godmode/Owner Ops reste non commercialisable. La grille sépare volontairement :
+
+```txt
+pack commercial | rôle | permission | quota | validation humaine
+```
+
+Ta mission dans ce tour : challenger les coûts et limites avec les enseignements de tes projets
+et la future instrumentation `token_events`. Pas de billing à coder et aucun GO implicite sur
+tes deux PRs prioritaires.
+
+Retour attendu : coûts réalistes, marges, quotas, risques, simplifications et promesses à retirer
+tant qu'elles ne sont pas supportées par le backend.
+
+> On fixe d'abord le prix du round et le nombre de barres d'EX. On ne vend pas un infinite combo
+> avant d'avoir mesuré les tokens.
+
+---
+
 ## 2026-06-12 — Vincent : audit absorption — périmètre resserré (2 features prioritaires)
 
 MALEX,

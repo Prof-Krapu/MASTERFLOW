@@ -14,6 +14,26 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Challenger la proposition packs et tarifs
+
+MALEX dépose `PROPOSITION_PACKS_ET_TARIFS_ABONNEMENT.md`.
+
+Demande : relire cette hypothèse commerciale à la lumière de tes audits et du futur suivi token,
+puis répondre avec :
+
+- coût mensuel réaliste par type d'usage ;
+- marge et quotas soutenables ;
+- risques techniques ou de sécurité ;
+- distinction billing / pack / rôle / permission / feature flag ;
+- recommandations de simplification ;
+- éléments impossibles à promettre tant que le backend ne les expose pas.
+
+**Audit uniquement.** Ne pas implémenter billing, quotas, endpoints, migrations, permissions ou
+feature flags. Ne pas considérer les prix comme canoniques. Retour attendu dans Git pour décision
+humaine MALEX.
+
+---
+
 ## 2026-06-12 — answered — Auditer les workflows Vincent pour absorption MasterFlow
 
 > **RÉPONSE Vincent (humaine), 2026-06-12 — pilote 3 projets livré.** Décision Vincent : faire d'abord

@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Proposition packs et tarifs d'abonnement
+
+**Décision MALEX.** Une première grille commerciale est déposée dans
+`PROPOSITION_PACKS_ET_TARIFS_ABONNEMENT.md` pour être challengée par Vincent.
+
+- Student : gratuit ;
+- Student Pro / Portfolio : 8,90 EUR TTC/mois ;
+- Teacher : 24,90 EUR TTC/mois ;
+- Studio / Creator : 49 EUR TTC/mois ;
+- School / Campus : à partir de 199 EUR HT/mois ;
+- White Label : 990 à 2 500 EUR HT/mois + installation ;
+- Godmode / Owner Ops : non commercialisé.
+
+La proposition inclut un modèle de crédits IA et sépare strictement pack, rôle, permission,
+quota et validation.
+
+### Gate
+
+- Statut `PROPOSAL / NON_CANONICAL`.
+- Aucun billing, quota, endpoint, permission ou feature flag à implémenter dans ce tour.
+- Vincent doit challenger coûts réels, marges, quotas et faisabilité à partir du suivi token.
+- Toute implémentation ou canonisation exige une validation humaine MALEX séparée.
+
+---
+
 ## 2026-06-12 — Spec détaillée des 2 PRs prioritaires (audit-only)
 
 **Périmètre.** Spec des 2 features resserrées (suivi token, écriture settings admin), ancrée sur le code réel
