@@ -23,6 +23,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : autonomie encadree avant connecteurs
+
+Vincent,
+
+Correction importante du plan post-audit : les connecteurs/plugins ne sont pas la step 1.
+MALEX veut d'abord un systeme autonome encadre : observer, preparer, proposer, mais ne jamais
+executer une action sensible seul.
+
+`MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md` est mis a jour avec `F0 — Autonomie encadree
+step 1`, incluant `autonomy_runs`, `autonomy_findings`, `improvement_candidates` et
+`decision_queue`.
+
+Prochaine sequence proposee : autonomy shell, capability registry/statuts, scopes, templates,
+RAG permissionne, jobs, observabilite. Connecteurs puissants plus tard.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : fondations post-audit
 
 Vincent,

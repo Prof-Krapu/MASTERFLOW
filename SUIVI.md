@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Autonomie encadree step 1 avant connecteurs
+
+**Decision MALEX.** Correction du plan post-audit : les connecteurs/plugins ne sont pas un
+chantier step 1. La priorite devient un systeme autonome encadre capable d'observer, preparer et
+proposer sans executer d'action sensible.
+
+`MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md` est mis a jour :
+
+- ajout de `F0 — Autonomie encadree step 1` ;
+- objets proposes : `autonomy_runs`, `autonomy_findings`, `improvement_candidates`,
+  `decision_queue` ;
+- gateway connecteurs repoussee en phase ulterieure ;
+- ordre de PRs mis a jour avec `autonomy_step1_shell` en premier.
+
+---
+
 ## 2026-06-12 — Fondations post-audit a mettre en place
 
 **Livrable MALEX/Codex.** Ajout de `MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md` dans Git et
@@ -17,7 +33,8 @@ Objectif : transformer les failles evidentes de l'audit complet en fondations tr
 - RAG local permissionne + Resource Truth ;
 - jobs/queues/runners ;
 - Template / Schema Registry ;
-- Tool / Connector Gateway ;
+- autonomie encadree step 1 ;
+- Tool / Connector Gateway plus tard ;
 - observabilite workflow ;
 - recettes d'acceptation systematiques ;
 - validation graduee.

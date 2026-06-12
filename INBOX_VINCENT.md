@@ -14,6 +14,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Reprioriser : autonomie encadree avant connecteurs
+
+MALEX corrige la projection post-audit : les connecteurs/plugins ne sont pas step 1.
+
+Reference mise a jour :
+
+- `MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md`
+
+Nouvelle priorite :
+
+1. `autonomy_step1_shell` : observer, preparer, proposer ;
+2. capability registry + statuts ;
+3. project/scope/ownership ;
+4. template registry ;
+5. RAG permissionne ;
+6. jobs/queues ;
+7. observabilite workflow.
+
+Le systeme autonome step 1 ne doit jamais publier, envoyer, deployer ou modifier une ressource
+sensible seul. Il produit des findings, candidates et decisions a valider.
+
+Action demandee : tenir compte de cette priorisation dans la sequence de PRs backend.
+
+---
+
 ## 2026-06-12 — open — Fondations post-audit a integrer au plan backend
 
 Nouveau document de cadrage :
