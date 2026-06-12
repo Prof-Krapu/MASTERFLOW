@@ -14,6 +14,23 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Pack PR-4/PR-5 Project Scope + Template Registry
+
+Pack suivant pour apres capability/status :
+
+- `HANDOFF_VINCENT_PR4_PR5_SCOPE_TEMPLATES.md` ;
+- `CHECKLIST_PR4_PROJECT_SCOPE_OWNERSHIP.md` ;
+- `CHECKLIST_PR5_TEMPLATE_SCHEMA_REGISTRY.md` ;
+- `RECETTE_PROJECT_SCOPE_TEMPLATES.md`.
+
+But : poser ownership/scope puis templates versionnes, afin que MOTH/CDC, Ours d'Or, devis,
+event, DA/assets, correction et RAG ne recreent pas chacun leur permission/schema local.
+
+Action demandee : challenger les tables/routes/tests, puis proposer deux PRs courtes separees.
+PR-4 avant PR-5 est recommande, sauf contrainte backend explicite.
+
+---
+
 ## 2026-06-13 — open — Pack PR-2/PR-3 Capability Registry + Status Taxonomy
 
 Pack suivant pour apres `autonomy_step1_shell` :

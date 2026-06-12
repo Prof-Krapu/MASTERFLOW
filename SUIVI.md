@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Pack PR-4/PR-5 Project Scope + Template Registry
+
+**Livrable MALEX/Codex.** Ajout du handoff et des checklists pour les deux fondations suivantes :
+
+- `HANDOFF_VINCENT_PR4_PR5_SCOPE_TEMPLATES.md` ;
+- `CHECKLIST_PR4_PROJECT_SCOPE_OWNERSHIP.md` ;
+- `CHECKLIST_PR5_TEMPLATE_SCHEMA_REGISTRY.md` ;
+- `RECETTE_PROJECT_SCOPE_TEMPLATES.md`.
+
+Objectif : donner a Vincent un chantier court et testable pour poser ownership/scope puis
+templates versionnes, avant MOTH/CDC, Ours d'Or, devis, event, DA/assets ou RAG avance.
+
+---
+
 ## 2026-06-13 — Pack PR-2/PR-3 Capability Registry + Status Taxonomy
 
 **Livrable MALEX/Codex.** Ajout du handoff et des checklists pour les PRs suivant

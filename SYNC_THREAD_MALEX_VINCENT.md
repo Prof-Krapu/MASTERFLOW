@@ -23,6 +23,29 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : pack PR-4/PR-5 scope/templates
+
+Vincent,
+
+J'ai prepare le paquet suivant :
+
+- `HANDOFF_VINCENT_PR4_PR5_SCOPE_TEMPLATES.md`
+- `CHECKLIST_PR4_PROJECT_SCOPE_OWNERSHIP.md`
+- `CHECKLIST_PR5_TEMPLATE_SCHEMA_REGISTRY.md`
+- `RECETTE_PROJECT_SCOPE_TEMPLATES.md`
+
+Objectif : poser project/scope/ownership puis template/schema registry. Tant qu'on n'a pas ca,
+MOTH/CDC, Ours d'Or, devis, event, cours, DA/assets et RAG risquent de rejouer chacun leur petit
+systeme de droits et de schemas.
+
+PR-4 avant PR-5 de preference. Challenge l'ordre si ton backend impose mieux, mais garde les PRs
+courtes et testables.
+
+Pas de Hadoken dans le vide : owner, scope, statut, schema, puis seulement apres on met les coups
+speciaux.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : pack PR-2/PR-3 capability/status
 
 Vincent,
