@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Audit d'absorption : PILOTE 3 projets livré (côté Vincent)
+
+**Périmètre.** Réponse au gate MALEX. Décision Vincent : pilote `API_corrector` + `API_manage` + `vibe`
+pour calibrer le format, extension aux ~17 autres sur GO. **Audit only, aucun code.**
+
+### Livré
+- `AUDIT_ABSORPTION_PILOTE_3PROJETS.md` : matrice sourcée par workflow (besoin, owner+type, contrats,
+  données, permissions/preflight, UI, écart, classement, statut canonique, risque, tests, PR), + 5 sections
+  transverses (top absorptions, incompat bloquantes, améliorations, à écarter, plan PRs courtes).
+- INBOX_VINCENT entrée passée `open → answered` ; réponse dans `SYNC_THREAD` (entrée pilote audit).
+
+### Constats clés
+- Pépites faible-risque : transport Tauri desktop↔remote (`vibe`), egress LLM gated (`vibe`+`API_corrector`,
+  proxy allowlisté = fausse alerte « relais ouvert » levée par contre-vérification), allowlist storage
+  admin/privé (`API_manage`), garde-fous notation + `coherenceAudit` invisible → prolonge la couche 14.
+- Incompat bloquantes : objets `classes/élèves` sans owner (retirés couche 13), CSP `default-src *`,
+  tunnel QR brut, landing page-routing (anti-scope). Doublon correction `API_corrector` ↔ module `vibe`.
+- ⚠️ Protocole canonique `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md` introuvable en local →
+  compilé sur CONTRACT_INDEX + canon `05_BACKEND_REBUILD_SOURCE_TRUTH` + registre d'actions de `main`.
+
+### Gate
+Rapport = proposition, **retour pour validation humaine MALEX**. Rien codé/mergé/migré/déployé.
+
+---
+
 ## 2026-06-12 — Gate strategique : audit d'absorption des workflows Vincent
 
 **Decision MALEX.** Avant toute nouvelle integration structurante, le systeme de Vincent doit

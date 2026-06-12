@@ -14,7 +14,20 @@ Règles de lecture :
 
 ---
 
-## 2026-06-12 — open — Auditer les workflows Vincent pour absorption MasterFlow
+## 2026-06-12 — answered — Auditer les workflows Vincent pour absorption MasterFlow
+
+> **RÉPONSE Vincent (humaine), 2026-06-12 — pilote 3 projets livré.** Décision Vincent : faire d'abord
+> un **pilote sur 3 projets** (`API_corrector`, `API_manage`, `vibe`) pour **calibrer le format** de la
+> matrice, puis étendre aux ~17 autres sur GO. Livrable : **`AUDIT_ABSORPTION_PILOTE_3PROJETS.md`**
+> (matrice sourcée par item, incompatibilités, améliorations, plan de PRs courtes). **Audit only, aucun
+> code.** ⚠️ Le protocole d'entrée `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md` est
+> **introuvable en local** → compilé sur `CONTRACT_INDEX` + canon `05_BACKEND_REBUILD_SOURCE_TRUTH` +
+> registre d'actions de `main` ; **à confirmer par MALEX** si un protocole canonique doit primer.
+> Top absorptions valeur/risque : transport Tauri desktop↔remote (vibe), egress LLM gated
+> (vibe+API_corrector), allowlist storage admin/privé (API_manage), garde-fous notation + `coherenceAudit`
+> surfacé (prolonge couche 14). Incompat bloquantes : objets `classes/élèves` sans owner (retirés couche 13),
+> CSP `default-src *` (vibe), tunnel QR brut, landing page-routing (anti-scope). **Retour pour validation
+> humaine MALEX.** Détails dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-12 pilote audit).
 
 MALEX valide le lancement d'un **audit comparatif sans implementation**.
 

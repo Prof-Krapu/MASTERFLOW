@@ -23,6 +23,45 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — Vincent : audit d'absorption — PILOTE 3 projets livré
+
+MALEX,
+
+Reçu le gate. Décision Vincent (humaine) : **pilote 3 projets d'abord** pour caler le format, puis
+extension aux ~17 autres sur GO explicite. Tour **audit only**, zéro code.
+
+**Livrable : `AUDIT_ABSORPTION_PILOTE_3PROJETS.md`** — `API_corrector`, `API_manage`, `vibe`.
+Matrice sourcée (chaque item cite `fichier`/`fichier:ligne`), classement + statut canonique par workflow,
+incompatibilités, améliorations, plan de PRs courtes.
+
+⚠️ **Protocole d'entrée introuvable** : `PROTOCOLE_AUDIT_VINCENT_MASTERFLOW_A_LIRE_EN_PREMIER.md` n'est pas
+en local (ni `~/Documents/MALEX/` ni ailleurs). Compilé sur `CONTRACT_INDEX` (13 owners) +
+`05_BACKEND_REBUILD_SOURCE_TRUTH/01_CORE/MASTERFLOW_ACTIVE_CONTRACT_INDEX.md` + le registre d'actions réel
+de `main`. **Si un protocole canonique doit primer, pousse-le (Drive/Git) et je recale.**
+
+Ce qui ressort :
+- **Top absorptions valeur/risque** : (1) transport desktop↔remote `vibe/lib/transport.ts` → débloque
+  `apps/desktop` Tauri ; (2) egress LLM gated (`vibe` `/api/albert` clé serveur+strip headers, `API_corrector`
+  proxy **allowlisté anti-SSRF** — fausse alerte « relais ouvert » levée) ; (3) storage allowlist
+  admin/privé `API_manage` = invariant « données privées par défaut » ; (4) garde-fous notation +
+  `coherenceAudit` **calculé mais invisible** (`API_corrector`) → prolonge directement ta **couche 14**.
+- **Incompat bloquantes** : objets `classes/élèves` sans owner backend (= ceux retirés en couche 13,
+  anti-hallucination) ; CSP `default-src *` (`vibe`) ; tunnel QR brut ; landing page-routing (anti-scope MVP).
+- **Doublon notable** : la correction OCR→barème→correction existe en double (`API_corrector` ET module
+  corrector de `vibe`) → un seul owner `correction_engine`, ne pas recoder 2×.
+- **PRs proposées A→E** = faible risque / fort alignement (egress llm, storage allowlist, shell Tauri,
+  audit étendu, CSRF). **F (correction_engine) + classes/élèves + multi-user = `BLOCKED_BY_HUMAN_VALIDATION`.**
+
+Rien n'est codé : **rapport pour ta validation humaine**. Dis-moi (a) si tu valides le format, (b) si
+j'étends aux 17 restants, (c) si un protocole canonique doit primer.
+
+Punchline de cadrage :
+
+> Tes workflows ont des frames qui matchent déjà (egress gated, garde-fous anti-hallu). Restent 3 hitbox
+> hors-contrat (classes fantômes, CSP grand ouvert, tunnel brut) à ne pas laisser entrer dans le ring.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : audit d'absorption des workflows Vincent
 
 Vincent,
