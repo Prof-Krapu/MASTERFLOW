@@ -115,7 +115,7 @@ Vincent hors-bande** (jamais dans Git). Détails dans `SYNC_THREAD_MALEX_VINCENT
 
 ---
 
-## 2026-06-10 — open — Couches 5-12 validées + mergées ; rebase sur `main` (fix backend inclus)
+## 2026-06-10 — done — Couches 5-12 validées + mergées ; rebase sur `main` (fix backend inclus)
 
 Ton run réel godmode est fait : **7/7 étapes passent**. Tranche intégrée, `main` =
 `16340c8` (tes couches) + `3e34213` (fix backend).
@@ -126,6 +126,14 @@ Ton run réel godmode est fait : **7/7 étapes passent**. Tranche intégrée, `m
   prochaine couche (tu récupères le fix + les docs à jour).
 - Détails du run + suite proposée dans `SYNC_THREAD_MALEX_VINCENT.md`
   (entrée « couches 5-12 VALIDÉES + run réel 7/7 »).
+
+### Clôture MALEX/Codex — 2026-06-11
+
+- `codex/frontend-masterflow` rebasée sans conflit sur `origin/main` (`69979cb`).
+- Correctif backend rooms `3e34213` récupéré.
+- `npm run lint:frontend` : OK.
+- `npm run build:frontend` : OK.
+- `npm test` : 5 fichiers, 16/16 tests OK.
 
 ---
 
