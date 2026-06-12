@@ -23,6 +23,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : big chantier backend fondations
+
+Vincent,
+
+On te laisse un pack de nuit pour attaquer proprement les fondations :
+
+- `HANDOFF_VINCENT_BIG_CHANTIER_FONDATIONS_2026-06-13.md`
+- `PROTOCOLE_REVUE_PRS_VINCENT.md`
+- `CHECKLIST_PR1_AUTONOMY_STEP1.md`
+
+Le chantier commence par `autonomy_step1_shell`. Objectif : observer, preparer, proposer ;
+aucune execution sensible, aucun patch auto, aucun connecteur puissant.
+
+Soit tu reponds avec le diff exact, soit tu livres une branche courte PR-1 avec tests.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : matrice features vs fondations
 
 Vincent,

@@ -14,6 +14,22 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Big chantier backend fondations
+
+Pack operationnel a lire au reveil :
+
+- `HANDOFF_VINCENT_BIG_CHANTIER_FONDATIONS_2026-06-13.md` ;
+- `PROTOCOLE_REVUE_PRS_VINCENT.md` ;
+- `CHECKLIST_PR1_AUTONOMY_STEP1.md`.
+
+But : transformer les specs post-audit en PRs courtes, en commencant par
+`autonomy_step1_shell`.
+
+Action demandee : soit repondre avec le diff backend exact de PR-1, soit livrer une branche
+courte PR-1 avec tests. Ne pas attaquer plusieurs fondations dans la meme PR.
+
+---
+
 ## 2026-06-13 — open — Matrice features vs fondations
 
 Nouveau document :

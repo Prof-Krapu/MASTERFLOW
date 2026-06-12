@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Big chantier Vincent : revue PRs + checklist autonomie
+
+**Livrable MALEX/Codex.** Ajout du pack operationnel pour Vincent :
+
+- `HANDOFF_VINCENT_BIG_CHANTIER_FONDATIONS_2026-06-13.md` ;
+- `PROTOCOLE_REVUE_PRS_VINCENT.md` ;
+- `CHECKLIST_PR1_AUTONOMY_STEP1.md`.
+
+Objectif : permettre a Vincent de se reveiller avec un chantier backend complet, priorise et
+verifiable, en commencant par `autonomy_step1_shell`.
+
+---
+
 ## 2026-06-13 — Matrice features vs fondations
 
 **Livrable MALEX/Codex.** Ajout de `MATRICE_FEATURES_VS_FONDATIONS_MASTERFLOW.md`.
