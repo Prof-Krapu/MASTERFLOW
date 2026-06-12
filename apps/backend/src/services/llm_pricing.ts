@@ -50,6 +50,8 @@ function priceFor(model: string): Price | null {
 export function costFor(model: string, promptTokens: number, completionTokens: number): number {
   const p = priceFor(model);
   if (!p) return 0;
-  const eur = (promptTokens / 1000) * p.in + (completionTokens / 1000) * p.out;
+  const safePrompt = Number.isSafeInteger(promptTokens) && promptTokens >= 0 ? promptTokens : 0;
+  const safeCompletion = Number.isSafeInteger(completionTokens) && completionTokens >= 0 ? completionTokens : 0;
+  const eur = (safePrompt / 1000) * p.in + (safeCompletion / 1000) * p.out;
   return Math.round(eur * 1e6) / 1e6;
 }

@@ -197,7 +197,7 @@ function migrate(d: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_resources_status    ON resources(status);
     CREATE INDEX IF NOT EXISTS idx_token_events_ts      ON token_events(ts);
     CREATE INDEX IF NOT EXISTS idx_token_events_user    ON token_events(user_id);
-    CREATE INDEX IF NOT EXISTS idx_token_events_user   ON token_events(user_id, ts);
+    CREATE INDEX IF NOT EXISTS idx_token_events_user_ts ON token_events(user_id, ts);
     CREATE INDEX IF NOT EXISTS idx_revoked_expires     ON revoked_tokens(expires_at);
   `);
 }

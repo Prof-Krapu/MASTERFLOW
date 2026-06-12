@@ -43,7 +43,7 @@ const DEFAULT_TASK = 'chat';
 /**
  * Estimation grossière du nombre de tokens d'un texte (~ mots × 1.3).
  * Suffisant pour le suivi en dev / mode mock ; le vrai comptage vient du
- * provider quand il renvoie `usage` (non géré ici, on reste sur l'estimation).
+ * provider quand il renvoie un objet `usage` valide.
  */
 function estimateTokens(text: string): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
@@ -93,6 +93,11 @@ function estimatePromptTokens(messages: ChatMessage[]): number {
   let total = 0;
   for (const m of messages) total += estimateTokens(m.content);
   return total;
+}
+
+/** Accepte uniquement un compteur provider entier et positif, sinon conserve l'estimation. */
+function normalizeUsageCount(value: number | undefined, fallback: number): number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : fallback;
 }
 
 /**
@@ -232,8 +237,8 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
 
   // Compteurs réels du provider si disponibles, sinon estimation (fallback).
   const usedModel = model || env.llm.provider;
-  const promptTokens = usage?.prompt_tokens ?? estimatePromptTokens(p.messages);
-  const completionTokens = usage?.completion_tokens ?? estimateTokens(emitted);
+  const promptTokens = normalizeUsageCount(usage?.prompt_tokens, estimatePromptTokens(p.messages));
+  const completionTokens = normalizeUsageCount(usage?.completion_tokens, estimateTokens(emitted));
   logTokenEvent({
     model: usedModel,
     task: p.task ?? DEFAULT_TASK,

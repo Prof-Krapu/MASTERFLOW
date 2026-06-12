@@ -31,6 +31,14 @@ interface UsageRow {
   events: number;
 }
 
+/** Parse une borne epoch optionnelle sans accepter de valeur ambiguë ou négative. */
+function parseTimestamp(value: unknown, fallback: number): number | null {
+  if (value === undefined) return fallback;
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
 export function createDiagnosticsRouter(): Router {
   const router = Router();
   router.use(requireUser, requireRole('admin'));
@@ -42,10 +50,12 @@ export function createDiagnosticsRouter(): Router {
     const col = GROUP_COLUMNS[groupBy];
 
     const now = Date.now();
-    const from = Number(req.query.from);
-    const to = Number(req.query.to);
-    const fromTs = Number.isFinite(from) ? from : 0;
-    const toTs = Number.isFinite(to) ? to : now;
+    const fromTs = parseTimestamp(req.query.from, 0);
+    const toTs = parseTimestamp(req.query.to, now);
+    if (fromTs === null || toTs === null || fromTs > toTs) {
+      res.status(400).json({error: 'invalid_time_range'});
+      return;
+    }
 
     const rows = getDb()
       .prepare(

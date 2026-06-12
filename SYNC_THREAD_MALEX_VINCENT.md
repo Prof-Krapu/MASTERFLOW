@@ -23,6 +23,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : audit PR-1 token tracking
+
+Vincent,
+
+L'audit de `1b08b38` est termine. Le gate admin/godmode et la surface read-only sont bons.
+Nous avons corrige l'index composite ambigu, les periodes invalides et les compteurs provider
+corrompus, puis ajoute les tests de tarification.
+
+Rapport : `AUDIT_PR1_TOKEN_TRACKING.md`. Branche : `codex/frontend-masterflow`.
+Checks : backend 27/27, lint backend/frontend et build frontend OK.
+
+Point important : `cost_eur` reste une estimation d'observabilite. Ne pas l'utiliser pour
+billing ou calcul de marge avant versionnement des prix. Les streams interrompus restent un
+chantier de telemetrie separe.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : handoff prioritaire Local RAG BGE
 
 Vincent,

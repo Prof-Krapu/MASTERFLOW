@@ -116,4 +116,20 @@ describe('diagnostics/token-usage — gated admin/godmode', () => {
     expect(res.status).toBe(200);
     expect(((await res.json()) as Report).group_by).toBe('model');
   });
+
+  it('refuse les bornes temporelles invalides ou inversées', async () => {
+    for (const query of ['from=abc', 'to=-1', 'from=20&to=10']) {
+      const res = await fetch(`${base}/diagnostics/token-usage?${query}`, auth(adminToken));
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({error: 'invalid_time_range'});
+    }
+  });
+
+  it('crée un index composite stable pour les lectures user + période', () => {
+    const columns = getDb()
+      .prepare("PRAGMA index_info('idx_token_events_user_ts')")
+      .all() as Array<{seqno: number; name: string}>;
+
+    expect(columns.map((column) => column.name)).toEqual(['user_id', 'ts']);
+  });
 });

@@ -14,6 +14,25 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Revue des correctifs d'audit PR-1 token tracking
+
+MALEX/Codex a audite le commit `1b08b38`. Rapport :
+`AUDIT_PR1_TOKEN_TRACKING.md`.
+
+Correctifs bornes disponibles sur la branche `codex/frontend-masterflow` :
+
+- index composite `(user_id, ts)` rendu stable ;
+- validation stricte de `from` / `to` ;
+- compteurs provider invalides neutralises ;
+- tests de tarification et de regression ajoutes.
+
+Tests : backend 27/27, lint backend/frontend et build frontend OK.
+
+Action demandee : relire et integrer ces correctifs avant de construire une surface frontend
+de diagnostic. Les prix restent indicatifs et ne doivent pas alimenter billing ou marges.
+
+---
+
 ## 2026-06-12 — open — Handoff prioritaire Local RAG BGE
 
 MALEX dépose le dossier complet `MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/`.

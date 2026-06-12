@@ -4,6 +4,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Audit et durcissement PR-1 token tracking
+
+**Audit MALEX/Codex du commit `1b08b38`.** Le gate admin/godmode, la whitelist SQL,
+la lecture seule et le contrat partage sont conformes.
+
+Correctifs appliques :
+
+- index composite token par utilisateur et periode rendu deterministe ;
+- rejet des periodes invalides ou inversees ;
+- fallback local sur compteurs provider invalides ;
+- neutralisation des couts negatifs ;
+- couverture de test etendue a la tarification.
+
+Rapport complet : `AUDIT_PR1_TOKEN_TRACKING.md`.
+
+Validation : backend 27/27, lint backend/frontend, build frontend et `git diff --check` OK.
+
+Risques conserves et explicites : tarification indicative non exploitable pour billing ;
+appels provider echoues ou streams interrompus potentiellement absents de la telemetrie.
+
+---
+
 ## 2026-06-12 — Dépôt du handoff Local RAG BGE pour Vincent
 
 **Dépôt MALEX.** Le dossier `MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/` est transmis à Vincent
