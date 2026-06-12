@@ -37,6 +37,23 @@ Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, ref
 check distant rapide (`git fetch origin` + lecture du dernier `origin/main`) pour éviter de
 répondre avec un état devenu caduc pendant le tour.
 
+### Check canon obligatoire avant specs
+
+Avant de formaliser, prioriser ou spécifier une idée produit/conceptuelle dans le Git, vérifier
+systématiquement si le Drive canon a déjà traité le sujet. Cela vaut notamment pour personas,
+MasterStory, pédagogie, bots, RAG, jobs, DA/assets, Ours d'Or, devis, correction, cours et UI.
+
+Procédure minimale :
+
+1. rechercher dans le Drive canon avec `rg` sur les termes métier et synonymes ;
+2. lire les fichiers sources trouvés, pas seulement leurs noms ;
+3. citer les références canon dans la spec/handoff Git ;
+4. distinguer clairement `déjà canonique`, `partiellement implémenté`, `absent du backend` ;
+5. ne créer une spec nouvelle que si elle complète ou clarifie le canon, jamais comme doublon.
+
+Règle : pas de spec Git hors-sol. Si une idée existe déjà dans le canon, le livrable Git doit
+l'absorber, la relier aux contrats backend et signaler les écarts d'implémentation.
+
 **Délégation à des agents assistants (tokens épuisés).** Quand Claude Code n'a plus de tokens pour
 des tâches de code **basiques**, il peut déposer des tâches bornées dans `INBOX_ASSISTANT.md`
 (protocole complet : `assistant.md`). Des LLM tiers (via opencode : `ollama/mistral-agent`,

@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Regle de travail : check canon Drive avant spec Git
+
+**Decision MALEX.** Avant de traiter une idee comme nouvelle, Codex/Vincent doivent verifier le
+Drive canon MasterFlow. Si le sujet existe deja, le Git doit absorber et relier le canon, pas
+reinventer une version parallele.
+
+Ajout dans `CLAUDE.md` d'une procedure obligatoire :
+
+- recherche `rg` dans le Drive canon ;
+- lecture des fichiers sources ;
+- references canon citees dans les specs/handoffs ;
+- distinction `deja canonique` / `partiellement implemente` / `absent backend` ;
+- aucune spec Git hors-sol.
+
+Constat du check : le modele persona principal + personas contextuels + sous-personas conditionnels
+est bien canonique. MasterStory est aussi richement canonique, mais cote Git il reste surtout au
+stade capability candidate / audit absent, pas moteur backend livre.
+
+---
+
 ## 2026-06-13 — Precision multi-personas type RPG pedagogique
 
 **Decision MALEX.** La decision persona/bots est precisee : l'utilisateur garde son persona
