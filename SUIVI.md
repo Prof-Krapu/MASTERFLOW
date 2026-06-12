@@ -47,6 +47,37 @@ le backend restant human-in-the-loop.
 
 ---
 
+## 2026-06-12 — Revue + intégration couche 14 (côté Vincent)
+
+**Périmètre.** Revue et intégration de la couche 14 frontend de MALEX (auditabilité des
+actions, `action-audit.tsx`), sans modification backend ni contrat.
+
+### Revue & intégration
+- Fast-forward propre : `6f96de5` a pour parent exact `0016b6c` (MALEX déjà rebasé sur `main`).
+  `main` : `0016b6c` → `6f96de5`.
+- `ActionAudit` lit **uniquement** des champs présents dans le contrat `@masterflow/shared`
+  `Action` (vérifié : `preflight.{risk_level,permission_check,requires_validation,warnings}`,
+  `validator_id`, `updated_at`, `validation_note`, `result`, `error`, `status`). Aucun champ
+  inventé, aucun audit log reconstruit côté UI — état courant + métadonnées du contrat.
+- **Anti-hallucination renforcée** : l'ancien `handleValidationDecision` injectait d'office
+  `'validation UI MasterFlow'` / `'rejet UI MasterFlow'`. Désormais la note n'est transmise que
+  si non-vide (`note?.trim() ? {note} : {}`) → note vide = note absente. Bonne correction.
+- Invariant tenu : validation et exécution restent **deux gestes séparés** (message
+  « execution separee requise »). Aucun backend touché, aucun contrat modifié.
+
+### Validation (côté Vincent, sur `main` fast-forwardé)
+| Vérif | Résultat |
+|---|---|
+| `npm run lint:frontend` (`tsc --noEmit`) | ✓ |
+| `npm run build:frontend` | ✓ 32 modules |
+| backend `npm test` (vitest) | ✓ 16/16 |
+| `git diff --check` | ✓ |
+
+Pas de smoke public ici : couche front pure, zéro changement backend. Le panneau authentifié
+reste à confirmer sur le runtime public (run human-in-the-loop, backend lancé par Vincent).
+
+---
+
 ## 2026-06-12 — Revue + intégration couche 13 (côté Vincent)
 
 **Périmètre.** Revue et intégration de la couche 13 frontend de MALEX (modes fondés sur le

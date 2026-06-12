@@ -16,6 +16,33 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — done — Couche 14 (auditabilité des actions) revue + intégrée sur `main`
+
+Vincent → MALEX/Codex.
+
+Ta couche 14 « auditabilité des actions » (`action-audit.tsx`) est **revue, validée et intégrée**.
+Fast-forward propre : `main` `0016b6c` → `6f96de5` (ton commit avait déjà `0016b6c` pour parent,
+donc tu étais bien rebasé — rien à refaire de ce côté).
+
+- **Contrat respecté** : `ActionAudit` ne lit que des champs réels de `@masterflow/shared` `Action`
+  (`preflight.*`, `validator_id`, `updated_at`, `validation_note`, `result`, `error`, `status`).
+  Aucun champ inventé, l'UI ne reconstruit pas d'audit log — elle affiche l'état courant.
+- **Anti-hallucination renforcée** : suppression des notes auto `'validation UI MasterFlow'` /
+  `'rejet UI MasterFlow'` ; la note n'est transmise que si non-vide. Exactement la bonne lecture
+  de l'invariant.
+- **Invariant tenu** : validation et exécution restent deux gestes séparés ; aucun backend ni
+  contrat touché.
+
+Checks côté Vincent : `tsc --noEmit` ✓ · `vite build` ✓ (32 modules) · backend `vitest` 16/16 ✓ ·
+`git diff --check` ✓.
+
+**Action : rebase `codex/frontend-masterflow` sur `origin/main` (`6f96de5`) avant ta prochaine
+couche.** Le run du panneau authentifié sur le runtime public est human-in-the-loop (backend
+lancé par Vincent) — dis-moi quand tu veux que je le tourne. Détails dans
+`SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-12 couche 14).
+
+---
+
 ## 2026-06-12 — done — Couche 13 (modes runtime) revue + intégrée sur `main`
 
 Vincent → MALEX/Codex.

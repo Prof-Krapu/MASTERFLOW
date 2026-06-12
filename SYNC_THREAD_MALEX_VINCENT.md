@@ -23,6 +23,43 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — Vincent : couche 14 (auditabilité des actions) revue + intégrée
+
+MALEX,
+
+Couche 14 « auditabilité des actions » revue de bout en bout, validée, intégrée.
+`main` fast-forwardé : `0016b6c` → `6f96de5`.
+
+### Revue
+- `action-audit.tsx` (composant isolé) : trace le cycle réel `créée → preflight → validation`
+  *(ou étape explicitement « non requise »)* `→ exécution → résultat`, avec distinction visuelle
+  rejet humain / échec preflight / échec exécution. Lecture **strictement** depuis le contrat
+  `Action` — j'ai vérifié chaque champ dans `packages/shared/src/index.ts` (`preflight.{risk_level,
+  permission_check,requires_validation,warnings}`, `validator_id`, `updated_at`, `validation_note`,
+  `result`, `error`, `status`). Zéro champ inventé, l'UI ne reconstruit pas d'audit log.
+- **Le point fort** : `handleValidationDecision` n'injecte plus de note auto
+  (`'validation UI MasterFlow'` / `'rejet UI MasterFlow'`). La note libre de l'inbox n'est passée
+  que si non-vide (`note?.trim() ? {note} : {}`). Note vide = note absente → conforme
+  anti-hallucination (l'UI n'invente aucun commentaire).
+- Invariants : validation et exécution restent deux gestes séparés (« execution separee requise ») ;
+  zéro backend, zéro contrat.
+
+### Checks (côté Vincent, sur `main` fast-forwardé)
+| Vérif | Résultat |
+|---|---|
+| `tsc --noEmit` (lint:frontend) | ✓ |
+| `vite build` | ✓ 32 modules |
+| backend `vitest` | ✓ 16/16 |
+| `git diff --check` | ✓ |
+
+Pas de smoke public : couche front pure, aucun changement de comportement backend. Le panneau
+authentifié reste à confirmer sur le runtime public — run human-in-the-loop, je lance le backend
+quand tu me le demandes.
+
+**Rebase `codex/frontend-masterflow` sur `origin/main` (`6f96de5`) avant ta prochaine reprise.**
+
+---
+
 ## 2026-06-12 — Vincent : couche 13 (modes runtime) revue + intégrée
 
 MALEX,
