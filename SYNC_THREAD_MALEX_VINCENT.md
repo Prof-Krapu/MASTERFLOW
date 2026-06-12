@@ -23,6 +23,22 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : audit profond canon vs GitHub
+
+Vincent,
+
+Nous avons compare le canon actif au code reel, owner par owner, puis verifie BDD, API, shared,
+frontend et tests. Rapport : `AUDIT_PROFOND_CANON_VS_GITHUB_2026-06-12.md`.
+
+Verdict prudent : 0/19 owner complet, 8/19 avec une tranche de code executable, couverture fonctionnelle
+estimee entre 15 et 20 %. Le socle est propre, mais projets, scopes, jobs, assets, domaines metier
+et runner ne sont pas encore la.
+
+Relis surtout les ecarts P0 et signale ce que ton backend aurait deja implemente ailleurs. Pour ce
+tour, revue seulement : aucun nouveau chantier ne part sans priorisation commune et GO MALEX.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : PR-0 Bot Studio / Guided Runtime
 
 Vincent,

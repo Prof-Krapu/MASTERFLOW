@@ -4,6 +4,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Audit profond canon Drive vs GitHub
+
+**Audit MALEX/Codex.** Rapport :
+`AUDIT_PROFOND_CANON_VS_GITHUB_2026-06-12.md`.
+
+L'audit compare l'index canonique des owners actifs, les grands contrats transversaux, les
+objets BDD, les endpoints, les schemas partages, le frontend et les tests.
+
+Conclusion :
+
+- aucun des 19 owners actifs de l'index JSON n'est implemente a profondeur canonique ;
+- 8 possedent une tranche de code executable identifiable ;
+- la couverture brute par presence d'une tranche de code est d'environ 42 % ;
+- la couverture fonctionnelle ponderee est estimee entre 15 et 20 % ;
+- le socle auth/rooms/personas/actions/resources est coherent, mais les domaines metier,
+  jobs, projets, assets, scopes et runners restent majoritairement absents.
+
+Priorite recommandee : fermer scopes/ownership/privacy, projects, jobs et dispatcher d'actions,
+puis utiliser le pilote MOTH/CDC comme premiere verticale multi-owner.
+
+Validation technique du baseline : backend 27/27, lint backend/frontend et build frontend OK.
+
+---
+
 ## 2026-06-12 — PR-0 Bot Studio / Guided Runtime
 
 **Decision MALEX.** L'audit global du Drive canon est transforme en specification d'assemblage :

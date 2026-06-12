@@ -14,6 +14,25 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Relire l'audit profond canon vs GitHub
+
+Rapport a lire :
+`AUDIT_PROFOND_CANON_VS_GITHUB_2026-06-12.md`.
+
+Le rapport conclut a 0/19 owner actif complet, 8/19 avec une tranche de code executable et une couverture
+fonctionnelle ponderee estimee entre 15 et 20 %.
+
+Action demandee :
+
+1. contredire toute ligne dont le backend reel possede deja une implementation non reperee ;
+2. confirmer les ecarts P0 : scopes/ownership/privacy, dispatcher reel, exposition publique ;
+3. signaler les travaux deja en cours qui changent l'ordre recommande ;
+4. proposer une sequence de PRs courtes pour fermer le core avant les verticales metier.
+
+**Audit/revue uniquement.** Aucun changement de perimetre ni implementation implicite.
+
+---
+
 ## 2026-06-12 — open — Auditer la PR-0 Bot Studio / Guided Runtime
 
 MALEX valide la formalisation du Guided Runtime dans :
