@@ -4,6 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Spec autonomie encadree step 1
+
+**Livrable MALEX/Codex.** Ajout de `SPEC_AUTONOMY_STEP1_SHELL.md`.
+
+La spec transforme la priorite `autonomy_step1_shell` en PR bornable :
+
+- `autonomy_runs` ;
+- `autonomy_findings` ;
+- `improvement_candidates` ;
+- `decision_queue` ;
+- checks read-only ;
+- endpoints admin+ ;
+- recette A1-A8 ;
+- tests minimum ;
+- interdiction explicite d'executer une action sensible.
+
+Cette couche doit permettre a MasterFlow d'observer, preparer et proposer avant les connecteurs
+puissants ou l'automatisation d'execution.
+
+---
+
 ## 2026-06-13 — Autonomie encadree step 1 avant connecteurs
 
 **Decision MALEX.** Correction du plan post-audit : les connecteurs/plugins ne sont pas un

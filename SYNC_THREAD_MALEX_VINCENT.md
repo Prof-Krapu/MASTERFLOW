@@ -23,6 +23,22 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : spec autonomy_step1_shell
+
+Vincent,
+
+J'ai pose `SPEC_AUTONOMY_STEP1_SHELL.md`. C'est la premiere brique autonome, volontairement
+bornee : runs, findings, improvement candidates et decision queue.
+
+Elle doit lire et diagnostiquer, pas agir. Les checks PR-1 restent read-only sur sync, inbox,
+recettes, registry et coherence canon/Git. Aucun connecteur puissant, aucun patch auto, aucun
+secret, aucune execution sensible.
+
+Retour attendu : diff backend exact, migrations, routes admin+, tests et tout conflit avec ton
+plan de PRs.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : autonomie encadree avant connecteurs
 
 Vincent,

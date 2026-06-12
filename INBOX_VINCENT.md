@@ -14,6 +14,33 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Spec PR autonomy_step1_shell
+
+La specification de la premiere couche d'autonomie encadree est disponible :
+
+- `SPEC_AUTONOMY_STEP1_SHELL.md`
+
+But : observer, preparer, proposer. Pas executer.
+
+Perimetre propose :
+
+- `autonomy_runs` ;
+- `autonomy_findings` ;
+- `improvement_candidates` ;
+- `decision_queue` ;
+- checks read-only sur sync, inbox, recettes, registry et coherence canon/Git ;
+- endpoints admin+ ;
+- audit ;
+- tests.
+
+Interdit en PR-1 : publication, export, email, deploy, tool externe puissant, modification Drive,
+modification Git, execution sensible ou exposition de secrets.
+
+Action demandee : challenger le diff backend exact et proposer une PR courte compatible avec
+les gates MasterFlow.
+
+---
+
 ## 2026-06-13 — open — Reprioriser : autonomie encadree avant connecteurs
 
 MALEX corrige la projection post-audit : les connecteurs/plugins ne sont pas step 1.
