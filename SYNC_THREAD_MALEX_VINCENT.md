@@ -23,6 +23,28 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX/Codex : gamme materielle Local RAG BGE
+
+Vincent,
+
+Pour BGE-M3 + `bge-reranker-v2-m3` + Qdrant, notre palier conseille est :
+
+```text
+RTX 4060 Ti 16 Go
+CPU 8-12 coeurs
+64 Go RAM
+NVMe 1-2 To
+```
+
+CPU 8 coeurs / 32 Go RAM suffit pour un PoC lent. Une RTX 4070 Ti Super ou 4080
+16 Go apporte davantage de confort ; RTX 4090 24 Go + 128 Go RAM vise la charge lourde.
+Une carte 8 Go est trop serree hors petits batchs et chargement sequentiel.
+
+Demarrage prudent : chunks 512-1024 tokens, batch 4-8, 20 candidats puis reranking vers 6.
+Le choix final doit suivre un benchmark du corpus pilote, pas la seule fiche technique.
+
+---
+
 ## 2026-06-12 — MALEX/Codex : audit PR-1 token tracking
 
 Vincent,

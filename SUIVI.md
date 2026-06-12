@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — Dimensionnement propose pour le runtime Local RAG BGE
+
+**Information transmise a Vincent.** Palier de depart recommande :
+
+```text
+RTX 4060 Ti 16 Go + CPU 8-12 coeurs + 64 Go RAM + NVMe 1-2 To
+```
+
+Le CPU seul reste possible pour un PoC, tandis qu'une RTX 4090 24 Go et 128 Go RAM
+correspondent plutot a une charge lourde ou multi-utilisateur.
+
+Cette recommandation n'est pas une decision d'achat. Le choix final dependra d'un benchmark
+sur le corpus pilote : latence, debit, consommation VRAM/RAM et volume Qdrant.
+
+---
+
 ## 2026-06-12 — Audit et durcissement PR-1 token tracking
 
 **Audit MALEX/Codex du commit `1b08b38`.** Le gate admin/godmode, la whitelist SQL,

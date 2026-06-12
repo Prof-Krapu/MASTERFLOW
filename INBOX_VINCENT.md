@@ -14,6 +14,44 @@ Règles de lecture :
 
 ---
 
+## 2026-06-12 — open — Dimensionnement machine Local RAG BGE
+
+Recommandation materielle pour faire tourner localement BGE-M3,
+`bge-reranker-v2-m3` et Qdrant :
+
+| Palier | CPU | Memoire | GPU | Stockage |
+|---|---:|---:|---|---|
+| PoC minimal | 8 coeurs | 32 Go | CPU seul | NVMe 500 Go+ |
+| Equilibre recommande | 8-12 coeurs | 64 Go | RTX 4060 Ti 16 Go | NVMe 1-2 To |
+| Confort | 12-16 coeurs | 64 Go | RTX 4070 Ti Super / 4080 16 Go | NVMe 2 To |
+| Charge lourde | 16 coeurs+ | 128 Go | RTX 4090 24 Go | NVMe 2 To+ |
+
+Apple Silicon M2/M3/M4 Pro ou Max avec 24-36 Go de memoire unifiee convient au
+developpement. Pour un serveur Linux stable et reproductible, NVIDIA/CUDA reste preferable.
+
+Choix de depart conseille pour MasterFlow :
+
+```text
+RTX 4060 Ti 16 Go + 64 Go RAM + NVMe 1 a 2 To
+```
+
+Eviter 8 Go de VRAM sauf PoC contraint : petits batchs et chargement sequentiel obligatoire.
+Commencer avec des chunks de 512-1024 tokens, batch 4-8, retrieval de 20 candidats puis
+reranking vers 6 resultats. Ne pas utiliser les 8192 tokens maximaux par defaut.
+
+Ordres de grandeur Qdrant pour des vecteurs denses 1024 dimensions, hors payloads :
+
+- 100 000 vecteurs : environ 0,6 Go RAM ;
+- 1 million de vecteurs : environ 5,7 Go RAM.
+
+Ces valeurs sont des estimations de capacite, pas un GO d'achat. Avant choix final, benchmarker
+le corpus pilote, la latence p50/p95, le debit d'indexation et le pic VRAM/RAM.
+
+Sources : model cards officielles BGE-M3 et reranker v2-m3, documentation Qdrant Capacity
+Planning.
+
+---
+
 ## 2026-06-12 — open — Revue des correctifs d'audit PR-1 token tracking
 
 MALEX/Codex a audite le commit `1b08b38`. Rapport :
