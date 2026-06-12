@@ -20,10 +20,14 @@ Règles de lecture :
 
 > **VALIDATION HUMAINE MALEX, 2026-06-12.** PR-1 « suivi token réel + endpoint diagnostic
 > admin/godmode » approuvée et conservée sur `main` au commit `1b08b38`. La confiance est
-> confirmée directement avec Vincent. PR-2 « écriture settings admin » reste une décision
-> séparée et n'est pas incluse dans ce GO.
+> confirmée directement avec Vincent.
+>
+> **GO HUMAIN MALEX, 2026-06-12.** PR-2 « écriture settings admin » validée pour
+> implémentation selon `SPEC_PR_PRIORITAIRES.md` : action sensible `set_global_setting`,
+> permission check, preflight, validation admin, allowlist stricte, secrets hors BDD, audit
+> et tests. Aucun élargissement de périmètre implicite.
 
-Vincent → MALEX/Codex. **Proposition initiale, désormais partiellement validée pour la PR-1.**
+Vincent → MALEX/Codex. **Proposition initiale, désormais validée pour les PR-1 et PR-2.**
 
 Suite au pilote 3 projets, Vincent resserre l'audit sur **2 features prioritaires** (godmode-only,
 jamais teacher/student ; garde-fous : surface diagnostic privée par défaut, auditable, sans effet sur

@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-12 — MALEX : GO humain sur PR-2 global settings
+
+Vincent,
+
+MALEX valide l'implémentation de la PR-2 selon `SPEC_PR_PRIORITAIRES.md`.
+
+Périmètre : `set_global_setting` comme action sensible, permission check, preflight,
+validation humaine admin, allowlist des clés, secrets hors BDD, audit et tests du cycle
+complet. Pas de nouvel engine, de billing, d'élargissement des rôles ni de refactor global.
+
+Dépose le résultat dans Git pour revue avant de construire la surface frontend associée.
+
+---
+
 ## 2026-06-12 — MALEX : GO humain confirmé sur PR-1
 
 Vincent,
@@ -31,7 +45,8 @@ MALEX valide directement avec toi la PR-1 déjà livrée au commit `1b08b38` :
 suivi token réel, coût, granularité par tâche et endpoint diagnostic gated admin/godmode.
 Le commit est approuvé et conservé sur `main`.
 
-Ce GO porte uniquement sur la PR-1. La PR-2 `global_settings` reste hors de cette validation.
+Ce message porte uniquement sur la PR-1 ; la PR-2 dispose désormais de son GO humain séparé
+dans l'entrée ci-dessus.
 
 ---
 

@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-12 — GO humain MALEX sur PR-2 global settings
+
+**Décision MALEX.** Vincent peut implémenter la PR-2 décrite dans
+`SPEC_PR_PRIORITAIRES.md`.
+
+Périmètre validé :
+
+- action sensible `set_global_setting` ;
+- passage obligatoire par permission check et preflight ;
+- validation humaine admin avant exécution ;
+- allowlist explicite des clés administrables ;
+- secrets interdits dans `global_settings` ;
+- audit et erreurs lisibles ;
+- tests du cycle preflight, validation et exécution.
+
+Pas de nouvel engine, pas de billing, pas d'extension des rôles et pas de refactor global.
+Le résultat doit revenir dans Git pour revue avant toute surface frontend associée.
+
+---
+
 ## 2026-06-12 — GO humain MALEX sur PR-1 suivi token
 
 **Décision MALEX, confirmée directement avec Vincent.** Le commit backend `1b08b38`
@@ -16,8 +36,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - endpoint diagnostic réservé admin/godmode ;
 - tests backend dédiés.
 
-Ce GO clôt le gate de la PR-1 uniquement. La PR-2 sur l'écriture sensible de
-`global_settings` reste indépendante et exige sa propre validation humaine.
+Ce GO clôt le gate de la PR-1. La PR-2 sur l'écriture sensible de `global_settings` a reçu
+son GO humain séparé dans l'entrée ci-dessus.
 
 ---
 
