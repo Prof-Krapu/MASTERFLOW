@@ -23,6 +23,28 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : persona utilisateur + pack PR-8 jobs
+
+Vincent,
+
+Decision MALEX a integrer : `DECISION_PERSONA_USER_ET_BOTS_CONTEXTUELS.md`.
+
+MOTH n'est pas le persona par defaut de tous les users. Chaque utilisateur peut avoir son persona
+personnel pour l'accompagnement general ; MOTH et les autres bots sont des guides contextuels
+assignes a une activite, classe, projet, event ou tunnel. Persona, bot et lore ne donnent jamais
+de droits : permission_runtime reste le seul arbitre.
+
+J'ai aussi prepare PR-8 :
+
+- `HANDOFF_VINCENT_PR8_JOBS_QUEUES_RUNNERS.md`
+- `CHECKLIST_PR8_JOBS_QUEUES_RUNNERS.md`
+- `RECETTE_PR8_JOBS_QUEUES_RUNNERS.md`
+
+But : jobs owner/scope, progress, cancel/retry, audit et gates. Pas de runner appele directement
+depuis l'UI, pas de payload secret, pas de bouton magique qui lance un Tatsumaki en prod.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : pack PR-7 RAG permissionne
 
 Vincent,

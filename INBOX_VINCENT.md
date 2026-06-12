@@ -14,6 +14,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Decision persona utilisateur + pack PR-8 Jobs
+
+Decision a prendre en compte :
+
+- `DECISION_PERSONA_USER_ET_BOTS_CONTEXTUELS.md`.
+
+MOTH n'est pas le persona par defaut de tous les utilisateurs. Chaque user peut avoir un persona
+personnel ; MOTH et les autres bots sont des guides contextuels assignes a une activite, classe,
+projet, event ou tunnel. Aucun persona/bot/lore ne donne de droits.
+
+Pack suivant pour `jobs_shell` :
+
+- `HANDOFF_VINCENT_PR8_JOBS_QUEUES_RUNNERS.md` ;
+- `CHECKLIST_PR8_JOBS_QUEUES_RUNNERS.md` ;
+- `RECETTE_PR8_JOBS_QUEUES_RUNNERS.md`.
+
+Action demandee : challenger la separation persona/bot dans PR-6 si besoin, puis proposer une PR-8
+courte pour jobs, events, progress, cancel/retry et gates.
+
+---
+
 ## 2026-06-13 — open — Pack PR-7 RAG permissionne
 
 Pack suivant pour `rag_capability_shell` :

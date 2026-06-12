@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Persona utilisateur par defaut vs bots contextuels + pack PR-8 jobs
+
+**Decision MALEX.** Ajout de `DECISION_PERSONA_USER_ET_BOTS_CONTEXTUELS.md` et mise a jour de
+la spec Guided Runtime : MOTH n'est pas le persona par defaut de tous les utilisateurs. Chaque
+user peut avoir son persona personnel ; MOTH et les autres bots sont des guides contextuels
+assignes a une activite, classe, projet, event ou tunnel.
+
+**Livrable MALEX/Codex.** Ajout du paquet operationnel pour `jobs_shell` :
+
+- `HANDOFF_VINCENT_PR8_JOBS_QUEUES_RUNNERS.md` ;
+- `CHECKLIST_PR8_JOBS_QUEUES_RUNNERS.md` ;
+- `RECETTE_PR8_JOBS_QUEUES_RUNNERS.md`.
+
+Objectif : encadrer les operations longues via jobs owner/scope, progress, cancel/retry, audit et
+gates, sans runner brut appele depuis l'UI.
+
+---
+
 ## 2026-06-13 — Pack PR-7 RAG permissionne
 
 **Livrable MALEX/Codex.** Ajout du paquet operationnel pour `rag_capability_shell` :

@@ -57,6 +57,22 @@ Separation obligatoire :
 Un persona ne donne jamais de droit. Un guide ne calcule jamais un prix et ne publie jamais
 un contenu. Un LLM peut proposer une formulation, pas modifier seul l'objet structure.
 
+## 2.1 Persona utilisateur vs bot contextuel
+
+Decision MALEX 2026-06-13 : MOTH n'est pas le persona par defaut de tous les utilisateurs.
+
+MasterFlow distingue :
+
+- persona utilisateur par defaut : compagnon personnel attache a l'utilisateur ;
+- bot/guide contextuel : intervenant assigne a une activite, classe, projet, event ou tunnel ;
+- persona lore : voix, vocabulaire et etats expressifs, sans permission.
+
+Chaque utilisateur peut avoir son persona dedie pour l'accompagnement general. MOTH intervient
+uniquement dans les contexts ou il est assigne, par exemple une classe ou une session CDC.
+
+Invariant : l'assignation d'un persona ou d'un bot ne donne jamais de droits. Les droits restent
+decides par `permission_runtime`, membership, ownership, scope, action risk et gates.
+
 ## 3. Sources canoniques principales
 
 - `04_ENGINES/GUIDANCE_ENGINE.md`
