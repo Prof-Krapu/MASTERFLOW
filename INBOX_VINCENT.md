@@ -14,6 +14,39 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Decision finale : Corrector absorbe, features a recuperer
+
+**Decision humaine MALEX. A lire avant tout nouveau travail lie a Corrector/API_corrector.**
+
+Document obligatoire :
+
+- `DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`.
+
+Conclusion non ambigue :
+
+- tes features de correction ne sont pas rejetees ;
+- tu dois les auditer et les reabsorber dans les engines, jobs, contrats, donnees et surfaces
+  MasterFlow appropries ;
+- tu as tort de maintenir Corrector comme persona autonome, primaire et conteneur du pipeline ;
+- la correction est une capacite metier gouvernee par
+  `CORRECTOR_RUNTIME_AND_FEEDBACK_ENGINE`, avec validation professeur ;
+- `corrector-001` doit etre deprecie sans destruction, ou transforme plus tard en profil de
+  methode optionnel ;
+- la moyenne 13-14 de MALEX est un referentiel institutionnel, pas une courbe arbitraire ;
+- remplacer le lissage automatique par un diagnostic de cohorte, une proposition bornee et une
+  validation professeur, en conservant note brute, delta et note finale.
+
+Action demandee :
+
+1. scanner tes projets/features/PRs `API_corrector` ;
+2. rendre la matrice d'absorption demandee dans le document ;
+3. proposer PR-C0 puis PR-C1, sans exposer de pipeline fictif comme `live` ;
+4. repondre dans `SYNC_THREAD_MALEX_VINCENT.md`.
+
+Tu peux challenger l'implementation. La decision engine/persona est tranchee.
+
+---
+
 ## 2026-06-13 — open — Correction : check features Vincent + canon embarque Git
 
 Correction MALEX : Vincent ne doit pas checker directement le Drive canon par defaut.

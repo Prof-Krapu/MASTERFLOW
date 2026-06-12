@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Decision Corrector : absorption fonctionnelle, persona deprecie
+
+**Decision MALEX.** Ajout de
+`DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`.
+
+Corrector n'est pas supprime fonctionnellement : les fonctions utiles des projets Vincent
+doivent etre auditees puis absorbees dans le moteur de correction, les jobs, les rubriques,
+les controles qualite, les feedbacks et les exports.
+
+La modelisation de `corrector-001` comme persona primaire autonome est en revanche rejetee :
+elle confond voix, methode, moteur, permissions et souverainete pedagogique. Migration demandee :
+deprecation non destructive, retrait des nouveaux parcours, eventuel profil de methode, puis
+adaptateur pour les references historiques.
+
+La `moyenne_cible` est clarifiee comme referentiel institutionnel de MALEX :
+
+- moins de 10 = minimum non atteint ;
+- 13-14 = niveau normalement attendu ;
+- notes superieures = niveaux forts ou exceptionnels.
+
+Le lissage automatique doit devenir une calibration explicable :
+`raw_score -> institutional_grading_profile -> cohort diagnostic -> teacher validation ->
+final_score`. La plage 13-14 reste une zone de coherence, jamais une moyenne forcee.
+
+Vincent doit repondre avec un audit de ses features Corrector et proposer PR-C0/PR-C1 avant toute
+implementation large.
+
+---
+
 ## 2026-06-13 — Correction protocole Vincent : features propres + canon embarque
 
 **Correction MALEX.** Vincent ne doit pas checker directement le Drive canon par defaut.

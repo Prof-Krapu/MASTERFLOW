@@ -32,7 +32,7 @@ une verticale sans voir les dependances qui la rendent fiable, testable et non d
 | Ours d'Or info/inscription | bot event public + qualification | F1, F2, F3, F4, F6, F7, F8, F9 + consentements | public/email/event absents | recette event public à produire |
 | Devis guidé | filtre client + estimation | F1, F2, F3, F4, F6, F7, F8, F9 + price/quote engine | price sources et quote workflow absents | recette quote intake à produire |
 | DA/assets | production visuelle contrôlée | F1, F2, F3, F5, F6, F7, F8, F9 | asset manifests/jobs/review absents | recette asset manifest/render à produire |
-| Correction pédagogique | submissions, feedback, suivi | F1, F2, F3, F5, F6, F7, F8, F9 | projects/submissions/rubrics absents | recette correction à produire |
+| Correction pédagogique | submissions, rubriques, feedback, calibration institutionnelle, suivi | F1, F2, F3, F5, F6, F7, F8, F9 | projects/submissions/rubrics absents ; `corrector-001` confond persona et moteur | appliquer `DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`, puis PR-C0/PR-C1 |
 | Cours / classe | usage pédagogique structuré | F1, F2, F3, F4, F6, F7, F8, F9 | classes/courses/signals absents | recette course/session à produire |
 | RAG canon/ressources | retrieval fiable du canon | F1, F2, F3, F4, F5, F7, F8, F9 | scopes, index, context packs absents | `RECETTE_RAG_PERMISSIONNE.md` |
 | Jobs/exports | traitements longs sûrs | F1, F2, F3, F5, F7, F8, F9 | jobs/events/runners absents | `SPEC_JOBS_QUEUES_RUNNERS.md` |
@@ -112,4 +112,3 @@ recette UI prête
 validation graduée définie
 tests minimum écrits
 ```
-

@@ -1091,3 +1091,41 @@ Vérifié public : `:8443/health` → 200, `:10000/` → HTML MasterFlow, `:1000
   à garder en tête.
 
 Tu peux donc bosser directement contre ces URLs publiques, sans VPN. Confirme quand tu as la main.
+# 2026-06-13 — MALEX vers Vincent : decision finale Corrector
+
+Vincent,
+
+MALEX a tranche le point Corrector. Lis en priorite :
+
+`DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`
+
+La position est ferme mais ne jette pas ton travail :
+
+- tes features `API_corrector`, OCR, batch, calibration, feedback, exports et controles qualite
+  doivent etre recuperees ;
+- elles doivent etre mappees puis absorbees dans l'architecture globale MasterFlow ;
+- tu as tort sur le choix de faire de Corrector un persona autonome pouvant etre primaire :
+  un persona porte une voix ou prete une methode, il ne porte pas le moteur, le scoring, les
+  permissions, les jobs ni l'autorite pedagogique ;
+- `corrector-001` doit donc etre deprecie proprement ou migre vers un profil de methode, sans
+  suppression destructive des references historiques ;
+- la correction appartient au pipeline canonique
+  `CORRECTOR_APP -> CORRECTOR_RUNTIME_AND_FEEDBACK_ENGINE -> jobs/review -> validation prof`.
+
+Precision importante de MALEX : la moyenne de classe attendue entre 13 et 14 correspond au
+referentiel de notation de son ecole. Ce n'est pas une fabrication arbitraire de moyenne.
+Cependant, le decalage automatique de toutes les notes doit etre remplace par un profil
+institutionnel versionne, un diagnostic de cohorte et une validation prof explicite. Le systeme
+conserve `raw_score`, `calibration_delta` et `final_score`.
+
+Reponse attendue :
+
+1. audit de tes propres features/projets Corrector ;
+2. matrice KEEP/ABSORB/REPLACE/DEPRECATE ;
+3. proposition PR-C0 deprecation/migration ;
+4. proposition PR-C1 contrats et objets ;
+5. risques ou dependances manquantes.
+
+Tu peux challenger le detail technique. La decision engine/persona n'est plus ouverte.
+
+---
