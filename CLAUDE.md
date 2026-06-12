@@ -37,6 +37,15 @@ Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, ref
 check distant rapide (`git fetch origin` + lecture du dernier `origin/main`) pour éviter de
 répondre avec un état devenu caduc pendant le tour.
 
+**Délégation à des agents assistants (tokens épuisés).** Quand Claude Code n'a plus de tokens pour
+des tâches de code **basiques**, il peut déposer des tâches bornées dans `INBOX_ASSISTANT.md`
+(protocole complet : `assistant.md`). Des LLM tiers (via opencode : `ollama/mistral-agent`,
+`zai-coding-plan/glm-4.6v`…) les traitent sur une branche `assistant/*`, lancent `npm test` +
+`npm run lint`, et répondent **signés**. Leur réponse `done` **n'est jamais une validation** :
+Claude/Vincent relisent et mergent la branche. Ne **jamais** déléguer ce qui touche `engines/*`,
+`middleware/auth.ts`, `seeds/*.json`, permissions/rôles, secrets, contrat `packages/shared` ou
+périmètre — ces tâches restent `blocked` et reviennent à Claude/Vincent.
+
 ## Stack & commandes
 
 TypeScript ESM (exécuté par **tsx**, pas de build backend). Express 4 + better-sqlite3 + `ws` + JWT (`jsonwebtoken`/`bcryptjs`) + Zod. Frontend MALEX (`apps/frontend`) : React 19 + Vite 6.
