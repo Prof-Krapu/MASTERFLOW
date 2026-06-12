@@ -14,6 +14,20 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Matrice features vs fondations
+
+Nouveau document :
+
+- `MATRICE_FEATURES_VS_FONDATIONS_MASTERFLOW.md`
+
+Il relie les cas d'usage MasterFlow aux fondations techniques requises : autonomie, registry,
+statuts, scopes, templates, RAG, jobs, observabilite, recettes et validation graduee.
+
+Action demandee : utiliser cette matrice pour challenger l'ordre produit/backend. Signaler toute
+dependance manquante ou verticale qui devrait remonter/descendre.
+
+---
+
 ## 2026-06-13 — open — Pack specs fondations post-audit
 
 MALEX/Codex a deroule les specs/recettes suivantes pour cadrer les prochaines PRs :

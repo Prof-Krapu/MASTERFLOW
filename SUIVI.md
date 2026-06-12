@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Matrice features vs fondations
+
+**Livrable MALEX/Codex.** Ajout de `MATRICE_FEATURES_VS_FONDATIONS_MASTERFLOW.md`.
+
+La matrice relie les verticales produit aux fondations techniques :
+
+- autonomie step 1 ;
+- capability registry ;
+- MOTH/CDC ;
+- Ours d'Or ;
+- devis ;
+- DA/assets ;
+- correction ;
+- cours/classe ;
+- RAG ;
+- jobs ;
+- observabilite ;
+- MasterStory ;
+- HelpLab ;
+- marketplace et connecteurs repousses.
+
+Objectif : prioriser les features selon leurs dependances reelles, pas selon leur attrait immediat.
+
+---
+
 ## 2026-06-13 — Pack specs fondations post-audit
 
 **Livrable MALEX/Codex.** Deroulement de la chaine de specs et recettes priorisees apres audit :

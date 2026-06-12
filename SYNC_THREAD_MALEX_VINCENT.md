@@ -23,6 +23,19 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex : matrice features vs fondations
+
+Vincent,
+
+J'ai ajoute `MATRICE_FEATURES_VS_FONDATIONS_MASTERFLOW.md`. Elle relie les verticales produit
+aux fondations backend : autonomie, registry, statuts, scopes, templates, RAG, jobs,
+observabilite et recettes.
+
+But : eviter de lancer Ours d'Or, devis, DA/assets ou correction avant les dependances qui les
+rendent sûrs et testables. Challenge l'ordre si ton backend a deja certaines briques.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : pack specs fondations post-audit
 
 Vincent,
