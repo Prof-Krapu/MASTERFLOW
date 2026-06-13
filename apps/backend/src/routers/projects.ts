@@ -1,14 +1,20 @@
 import {Router} from 'express';
 import type {Request, Response} from 'express';
 
-import {AddProjectMemberRequestSchema, CreateProjectRequestSchema} from '@masterflow/shared';
+import {
+  AddProjectMemberRequestSchema,
+  AttachProjectResourceRequestSchema,
+  CreateProjectRequestSchema,
+} from '@masterflow/shared';
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
   addProjectMember,
+  attachResourceScope,
   createProject,
   getProject,
   listProjectMembers,
+  listProjectResources,
   listProjects,
 } from '../services/projects.ts';
 
@@ -24,7 +30,12 @@ function routeError(res: Response, error: unknown): void {
     res.status(403).json({error: message});
     return;
   }
-  if (message === 'project_not_found' || message === 'project_member_user_not_found') {
+  if (
+    message === 'project_not_found' ||
+    message === 'project_member_user_not_found' ||
+    message === 'resource_not_found' ||
+    message === 'resource_scope_not_found'
+  ) {
     res.status(404).json({error: message});
     return;
   }
@@ -92,6 +103,46 @@ export function createProjectsRouter(): Router {
     }
     try {
       res.status(201).json(addProjectMember(actor(req), projectId, parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  // Ressources partagées du projet : lisibles par tout membre (cœur du multi-utilisateur).
+  router.get('/projects/:id/resources', (req: Request, res: Response): void => {
+    const projectId = req.params.id;
+    if (!projectId) {
+      res.status(404).json({error: 'project_not_found'});
+      return;
+    }
+    try {
+      res.json(listProjectResources(actor(req), projectId));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  // Rattacher une ressource au projet (owner/admin du projet ou admin global).
+  router.post('/projects/:id/resources', (req: Request, res: Response): void => {
+    const projectId = req.params.id;
+    if (!projectId) {
+      res.status(404).json({error: 'project_not_found'});
+      return;
+    }
+    const parsed = AttachProjectResourceRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      const scope = attachResourceScope(actor(req), {
+        resource_id: parsed.data.resource_id,
+        scope_type: 'project',
+        scope_id: projectId,
+        access_level: parsed.data.access_level,
+        created_at: Date.now(),
+      });
+      res.status(201).json(scope);
     } catch (error) {
       routeError(res, error);
     }

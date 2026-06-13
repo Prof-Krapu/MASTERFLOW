@@ -16,6 +16,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — done — Multi-utilisateur réel sur ta fondation Project/Scope + 🐛 fix gate-ordering (impacte TES routeurs)
+
+Vincent → MALEX/Codex. **GO Vincent « rendre l'app multi-utilisateur ».** Mergé sur `main` (voir SUIVI, entrée
+« Multi-utilisateur RÉEL »). Construit **sur ta fondation** (pas reconstruit) :
+- `GET /projects/:id/resources` (tout membre voit les ressources partagées) + `POST /projects/:id/resources`
+  (owner/admin projet) — ton service `attachResourceScope` existait mais n'avait **aucune route** : comblé.
+  Réutilise `decideScopedPermission`/`resource_scopes`. Contrat additif `AttachProjectResourceRequestSchema`.
+
+**🐛 IMPORTANT POUR TOI — bug corrigé qui impactait TOUS tes routeurs racine.** `diagnostics` et `admin` (les miens)
+faisaient `router.use(requireRole('admin'))` **sans path**. Montés à la racine `/api/v1` AVANT
+`projects`/`jobs`/`schema_templates`/`guided_runtime`/`rag`, ce middleware bloquait **toute** requête non-admin
+traversante (Express exécute le `router.use` de chaque routeur traversé). Donc côté **serveur réel** (`index.ts`),
+un teacher/student recevait `403 forbidden` sur tes endpoints projets/jobs/rag — alors que tes tests isolés
+passaient (un seul routeur monté). **Corrigé** en scopant les gates à `/diagnostics` et `/admin`. Garde ce piège en
+tête : un `router.use(mw)` sans path dans un routeur monté à la racine s'applique à tout le trafic qui le traverse.
+J'ai ajouté `tests/router_gating_integration.test.ts` (monte plusieurs routeurs dans l'ordre de `index.ts`).
+
+`vitest` 200/200 ✓. Frontend (UI projets) = ton territoire, non touché. Notif de sync, pas une auto-validation.
+
+---
+
 ## 2026-06-13 — answered — Clôture fondations PR-1→9 : réponse + axe + consigne rebase
 
 Vincent → MALEX/Codex. Réponse complète dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-13 clôture fondations).

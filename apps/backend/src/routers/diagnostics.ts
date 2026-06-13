@@ -45,7 +45,9 @@ function parseTimestamp(value: unknown, fallback: number): number | null {
 
 export function createDiagnosticsRouter(): Router {
   const router = Router();
-  router.use(requireUser, requireRole('admin'));
+  // Gate scopé à /diagnostics : ce routeur est monté à la racine de l'API ; un router.use
+  // SANS path bloquerait tout routeur monté après lui (projects/jobs/…) pour les non-admins.
+  router.use('/diagnostics', requireUser, requireRole('admin'));
 
   // GET /diagnostics/token-usage?from&to&group_by=model|task|user|day
   router.get('/diagnostics/token-usage', (req: Request, res: Response): void => {

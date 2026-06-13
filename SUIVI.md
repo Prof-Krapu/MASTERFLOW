@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Multi-utilisateur RÉEL : partage de ressources par projet + fix gate-ordering — LIVRÉE
+
+**GO Vincent (« rendre l'application multi-utilisateur »).** Construit SUR la fondation Project/Scope de Codex
+(pas reconstruit) : l'accès vient de l'appartenance au projet, plus de `owner = teacher`.
+
+### Livré
+- **`packages/shared`** : `AttachProjectResourceRequestSchema {resource_id, access_level}` (additif).
+- **`services/projects.ts`** : `listProjectResources(actor, projectId)` — lisible par **tout membre** (join
+  `resources` ↔ `resource_scopes`). Réutilise `attachResourceScope`/`decideScopedPermission` existants.
+- **`routers/projects.ts`** : `GET /projects/:id/resources` (membres) + `POST /projects/:id/resources`
+  (owner/admin projet ; le service `attachResourceScope` existait mais **n'avait aucune route** — comblé).
+- **🐛 FIX gate-ordering (régression latente exposée par le merge)** : `diagnostics` et `admin` faisaient
+  `router.use(requireRole('admin'))` **sans path**. Montés à la racine `/api/v1` AVANT les routeurs de Codex
+  (`projects`/`jobs`/`schema_templates`/`guided_runtime`/`rag`), ce gate bloquait **toute** requête non-admin
+  traversante → un teacher recevait `403 forbidden` sur `POST /projects`. Corrigé en scopant les gates à
+  `/diagnostics` et `/admin`. **Tous les routeurs verticaux de Codex étaient impactés** côté serveur réel.
+
+### Tests `vitest` **200/200** ✓ (+5 : `project_resources_sharing` ×3, `router_gating_integration` ×2 —
+ce dernier monte diagnostics+admin+projects dans l'ordre de `index.ts`, ce que les tests isolés ne faisaient pas) ·
+`tsc` back+front ✓ · `vite build` ✓.
+Smoke runtime ✓ : teacher crée projet+ressource, ajoute un élève membre, rattache la ressource → **l'élève (autre
+utilisateur) voit la ressource partagée** ; non-membre 404 ; membre non-admin attach 403 ; gates admin toujours 403
+pour student.
+
+### Invariants / périmètre
+- Accès par membership + scope explicite (`PERMISSION > PREFERENCE` respecté). Audit `resource.scope_attached`.
+- Rien de cassé : les surfaces admin (token-usage, /admin/*) restent gated admin/godmode.
+- Frontend (UI projets) = territoire MALEX, non touché ici.
+
+---
+
 ## 2026-06-13 — INTÉGRATION : merge `codex/frontend-masterflow` → `main` (fondations PR-1→9 + PR-3 admin) — LIVRÉE
 
 **GO Vincent (« intègre tout sur main »).** Plutôt que reconstruire Project/Scope (déjà codé par Codex), on

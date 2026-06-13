@@ -3,6 +3,7 @@ import {
   CreateProjectRequestSchema,
   ProjectMemberSchema,
   ProjectSchema,
+  ResourceSchema,
   ROLE_RANK,
   ResourceScopeSchema,
   ScopedPermissionDecisionSchema,
@@ -11,6 +12,7 @@ import {
   type Project,
   type ProjectMember,
   type ProjectMemberRole,
+  type Resource,
   type ResourceScope,
   type ScopedPermissionDecision,
 } from '@masterflow/shared';
@@ -19,6 +21,7 @@ import {
   getDb,
   type ProjectMemberRow,
   type ProjectRow,
+  type ResourceRow,
   type ResourceScopeRow,
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
@@ -213,6 +216,35 @@ export function attachResourceScope(actor: AuthUser, input: ResourceScope): Reso
     },
   });
   return getResourceScopeOrThrow(scope.resource_id, scope.scope_id);
+}
+
+/**
+ * Liste les ressources partagées dans un projet (via `resource_scopes`). Lisible par
+ * TOUT membre du projet (pas seulement l'owner) — c'est le cœur du multi-utilisateur :
+ * l'accès vient de l'appartenance au projet, plus de `owner = teacher`.
+ */
+export function listProjectResources(actor: AuthUser, projectId: string): Resource[] {
+  if (!getProjectRow(projectId)) throw new Error('project_not_found');
+  assertCanReadProject(actor, projectId);
+  const rows = getDb()
+    .prepare(
+      `SELECT r.* FROM resources r
+         INNER JOIN resource_scopes rs ON rs.resource_id = r.id
+        WHERE rs.scope_type = 'project' AND rs.scope_id = ?
+        ORDER BY r.created_at DESC`,
+    )
+    .all(projectId) as ResourceRow[];
+  return rows.map((row) =>
+    ResourceSchema.parse({
+      id: row.id,
+      type: row.type,
+      title: row.title,
+      url: row.url,
+      source: row.source,
+      status: row.status,
+      subjects: row.subjects_json ? JSON.parse(row.subjects_json) : null,
+    }),
+  );
 }
 
 export function decideScopedPermission(input: {

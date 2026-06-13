@@ -104,6 +104,17 @@ export const AddProjectMemberRequestSchema = z.object({
 });
 export type AddProjectMemberRequest = z.infer<typeof AddProjectMemberRequestSchema>;
 
+/**
+ * Rattacher une ressource (déjà existante) au scope d'un projet, pour la partager
+ * entre ses membres. `scope_type`/`scope_id`/`created_at` sont posés côté backend
+ * (scope_id = id du projet de la route). Le client ne fournit que la ressource et le droit.
+ */
+export const AttachProjectResourceRequestSchema = z.object({
+  resource_id: z.string().min(1),
+  access_level: z.enum(['read', 'write', 'admin']).default('read'),
+});
+export type AttachProjectResourceRequest = z.infer<typeof AttachProjectResourceRequestSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

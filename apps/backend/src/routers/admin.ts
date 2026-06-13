@@ -31,7 +31,9 @@ function authUser(req: Request): AuthUser {
 
 export function createAdminRouter(): Router {
   const router = Router();
-  router.use(requireUser, requireRole('admin'));
+  // Gate scopé à /admin : ce routeur est monté à la racine de l'API ; un router.use SANS
+  // path bloquerait tout routeur monté après lui (projects/jobs/…) pour les non-admins.
+  router.use('/admin', requireUser, requireRole('admin'));
 
   // ── Comptes utilisateurs ─────────────────────────────────────────
   router.get('/admin/users', (_req: Request, res: Response): void => {
