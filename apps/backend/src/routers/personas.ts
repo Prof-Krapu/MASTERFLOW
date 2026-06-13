@@ -11,6 +11,7 @@ import {
   createBlend,
   getPersona,
   listPersonas,
+  requireSelectablePersona,
   stopBlend,
   updateBlend,
 } from '../engines/persona_engine.ts';
@@ -141,9 +142,17 @@ export function createPersonasRouter(): Router {
       return;
     }
 
-    const persona = getPersona(req.params.id ?? '');
-    if (!persona) {
+    const personaId = req.params.id ?? '';
+    const existingPersona = getPersona(personaId);
+    if (!existingPersona) {
       res.status(404).json({error: 'persona_not_found'});
+      return;
+    }
+    let persona;
+    try {
+      persona = requireSelectablePersona(personaId);
+    } catch {
+      res.status(409).json({error: 'persona_deprecated'});
       return;
     }
 

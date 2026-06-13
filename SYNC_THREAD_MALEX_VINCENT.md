@@ -23,6 +23,17 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C0 appliquée
+
+Corrector est désormais déprécié sans destruction. Il reste lisible pour les références et
+blends historiques, mais n'est plus sélectionnable, activable ou utilisable dans un nouveau
+blend. Voir `SPEC_PR_C0_DEPRECATION_NON_DESTRUCTIVE_CORRECTOR.md`.
+
+La prochaine contribution attendue côté Vincent est le mapping concret de ses objets vers PR-C1 :
+rubriques, profils institutionnels, batches et manifests, sans dépendance au persona historique.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-CB2 prête à challenger
 
 Le runner LLM applique désormais le profil validé de chaque tâche et bloque tout egress hors

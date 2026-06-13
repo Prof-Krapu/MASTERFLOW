@@ -14,6 +14,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-C0 Corrector déprécié sans destruction
+
+MALEX/Codex a appliqué la décision dans
+`SPEC_PR_C0_DEPRECATION_NON_DESTRUCTIVE_CORRECTOR.md`.
+
+`corrector-001` reste en base et relit les blends historiques, mais disparaît des listes
+sélectionnables, ne peut plus être activé et ne peut entrer dans aucun nouveau blend. Ses
+permissions déclarent qu'il n'accorde aucun droit et n'a aucune autorité de scoring.
+
+Action demandée :
+
+1. vérifier que tes features Corrector ne dépendent pas techniquement de l'activation du persona ;
+2. mapper leurs fonctions vers les owners du bridge ;
+3. proposer les champs PR-C1 pour rubriques, profils institutionnels, batches et manifests ;
+4. signaler les références historiques supplémentaires à préserver ;
+5. ne pas recréer Corrector comme persona sous un autre nom.
+
+Les capacités sont conservées et généralisées. Seul le conteneur architectural erroné est retiré.
+
+---
+
 ## 2026-06-13 — open — Revue PR-CB2 routing LLM et egress gated
 
 MALEX/Codex a posé `SPEC_TASK_AWARE_MODEL_ROUTING_AND_EGRESS_PR_CB2.md`.

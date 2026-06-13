@@ -90,7 +90,7 @@ LLM en mode `mock` par défaut (aucune clé). Provider réel via `apps/backend/.
 | Fichier | Responsabilité (1 fichier = 1 responsabilité) |
 |---|---|
 | `db/schema.ts` | SQLite singleton (WAL+FK), migrations idempotentes, types de rangées. `MASTERFLOW_DB_PATH` override (`:memory:` en test). |
-| `db/seed.ts` | `seedAll()` idempotent : godmode `vincent`, 3 personas (`masterflex-001`/`profkrapu-001`/`corrector-001`), room Home, ressources. |
+| `db/seed.ts` | `seedAll()` idempotent : godmode `vincent`, 2 personas actifs (`masterflex-001`/`profkrapu-001`), `corrector-001` déprécié en lecture historique, room Home, ressources. |
 | `lib/{env,uuid,audit}.ts` | config env, uuid, `audit()` (trace immuable). |
 | `services/llm.ts` | `streamChat`/`chat` — mock ou OpenAI-compat SSE. **Ne fait que proposer du texte.** |
 | `engines/*` | **Autorité métier.** `action_registry`, `permission_runtime`, `action_engine`, `persona_engine`, `resource_truth`. |

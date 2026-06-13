@@ -85,6 +85,18 @@ Référence :
 - `SPEC_TASK_AWARE_MODEL_ROUTING_AND_EGRESS_PR_CB2.md`
 - `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md`
 
+### PR-C0 — `deprecate_corrector_persona`
+
+Dépréciation non destructive de `corrector-001`.
+
+Etat : Corrector est masqué des nouveaux parcours, non activable et interdit dans les nouveaux
+blends. Sa rangée, ses configurations et les blends historiques restent lisibles.
+
+Référence :
+
+- `SPEC_PR_C0_DEPRECATION_NON_DESTRUCTIVE_CORRECTOR.md`
+- `DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`
+
 ## Regle de sequencing
 
 Chaque PR doit livrer :

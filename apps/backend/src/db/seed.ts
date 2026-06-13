@@ -7,9 +7,9 @@ import {getDb, type PersonaRow, type RoomRow, type UserRow} from './schema.ts';
 /**
  * Seed idempotent du runtime MasterFlow.
  *
- * Crée (si absents) : le compte godmode, les 3 personas du MVP (MasterFlex,
- * ProfKrapu, Corrector), une room Home, et quelques ressources de démonstration
- * pour l'anti-hallucination (2 validées + 1 candidate).
+ * Crée (si absents) : le compte godmode, les personas actifs MasterFlex et
+ * ProfKrapu, l'enregistrement historique déprécié Corrector, une room Home, et
+ * quelques ressources de démonstration pour l'anti-hallucination.
  *
  * Appelé au boot d'Express (cheap : ne hashe le mot de passe que s'il crée le user)
  * et exécutable seul via `npm run seed`.
@@ -38,6 +38,7 @@ const PERSONA_SEEDS = [
       color_palette: {core: '#6B2D5B', glow: '#FF6B00', accent: '#39FF14'},
     },
     permissions: {can_blend: true, can_lend_method: true, can_be_primary: true},
+    status: 'active',
   },
   {
     id: 'profkrapu-001',
@@ -58,6 +59,7 @@ const PERSONA_SEEDS = [
       color_palette: {core: '#2E1B15', glow: '#39FF14', accent: '#7FFF00'},
     },
     permissions: {can_blend: true, can_lend_method: true, can_be_primary: true},
+    status: 'active',
   },
   {
     id: 'corrector-001',
@@ -78,7 +80,15 @@ const PERSONA_SEEDS = [
       silhouette: 'lame chitineuse',
       color_palette: {core: '#8B1E1E', glow: '#A83232', accent: '#D4C5B9'},
     },
-    permissions: {can_blend: true, can_lend_method: true, can_be_primary: true},
+    permissions: {
+      can_blend: false,
+      can_lend_method: false,
+      can_be_primary: false,
+      historical_read_only: true,
+      grants_permissions: false,
+      scoring_authority: false,
+    },
+    status: 'deprecated',
   },
 ] as const;
 
@@ -142,7 +152,7 @@ export async function seedAll(): Promise<{users: number; personas: number; rooms
   const insertPersona = db.prepare(
     `INSERT OR IGNORE INTO personas
        (id, name, owner_type, domain, status, voice_config_json, method_config_json, visual_config_json, permissions_json, created_at)
-     VALUES (?, ?, ?, ?, 'active', ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   for (const p of PERSONA_SEEDS) {
     const res = insertPersona.run(
@@ -150,6 +160,7 @@ export async function seedAll(): Promise<{users: number; personas: number; rooms
       p.name,
       p.owner_type,
       p.domain,
+      p.status,
       JSON.stringify(p.voice_config),
       JSON.stringify(p.method_config),
       JSON.stringify(p.visual_config),
@@ -157,6 +168,17 @@ export async function seedAll(): Promise<{users: number; personas: number; rooms
       now,
     );
     if (res.changes > 0) createdPersonas++;
+  }
+
+  // Migration PR-C0 : conserve la rangée et les FK historiques, mais retire
+  // Corrector des nouveaux parcours même sur une base déjà seedée.
+  const corrector = PERSONA_SEEDS.find((persona) => persona.id === 'corrector-001');
+  if (corrector) {
+    db.prepare(
+      `UPDATE personas
+       SET status = 'deprecated', permissions_json = ?
+       WHERE id = 'corrector-001'`,
+    ).run(JSON.stringify(corrector.permissions));
   }
 
   // ── Room Home (widgets dérivés du recipe `project`) ──────────────

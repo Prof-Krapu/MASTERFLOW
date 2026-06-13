@@ -357,7 +357,7 @@ export interface PersonaRow {
   name: string;
   owner_type: string;
   domain: string;
-  status: string;
+  status: 'active' | 'deprecated';
   voice_config_json: string | null;
   method_config_json: string | null;
   visual_config_json: string | null;

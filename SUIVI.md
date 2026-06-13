@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C0 Corrector déprécié sans destruction
+
+**Livrable MALEX/Codex.** Application runtime de la décision d'absorption de Corrector.
+
+Ajouts :
+
+- statut partagé de persona borné à `active | deprecated` ;
+- migration seed de `corrector-001` vers `deprecated`, y compris sur base existante ;
+- permissions historiques explicitement non autoritaires ;
+- listes et contexte limités aux personas actifs ;
+- activation et nouveaux blends Corrector refusés ;
+- détail et blends historiques toujours relisibles ;
+- tests moteur et HTTP de non-régression.
+
+Cette migration ne retire aucune capacité de correction. OCR, scoring, calibration, feedback,
+contrôle qualité et exports doivent être absorbés dans leurs engines et contrats canoniques.
+Corrector cesse seulement d'être un persona métier souverain.
+
+Vincent doit maintenant préparer PR-C1 à partir de ses features existantes : rubriques, profils
+institutionnels, batches, submissions et manifests, sans recréer un persona Corrector.
+
+---
+
 ## 2026-06-13 — PR-CB2 routage LLM par tâche et egress gated
 
 **Livrable MALEX/Codex.** Le runner LLM ne route plus un provider externe sur la seule base de

@@ -93,12 +93,15 @@ export type UpdateRoomInstance = z.infer<typeof UpdateRoomInstanceSchema>;
 
 // ───────────────────────── Personas & chimères ─────────────────────────
 
+export const PersonaStatusSchema = z.enum(['active', 'deprecated']);
+export type PersonaStatus = z.infer<typeof PersonaStatusSchema>;
+
 export const PersonaSchema = z.object({
   id: z.string(),
   name: z.string(),
   owner_type: z.string(),
   domain: z.string(),
-  status: z.string(),
+  status: PersonaStatusSchema,
   voice_config: z.record(z.unknown()).nullable(),
   method_config: z.record(z.unknown()).nullable(),
   visual_config: z.record(z.unknown()).nullable(),
