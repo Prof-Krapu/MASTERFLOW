@@ -28,6 +28,29 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : handoff final Queue Inventory
+
+`SYNC_PROOF` pre-handoff :
+
+- `local_branch`: `codex/frontend-masterflow`
+- `local_head`: `c3cf55a`
+- `origin/codex/frontend-masterflow`: `c3cf55a`
+- `origin_main`: `141ab6864ac5bbe5fe4c8b846c0702a55d2d1e1b`
+- `github_main`: `141ab6864ac5bbe5fe4c8b846c0702a55d2d1e1b`
+- `head_vs_origin_main`: `15/0`
+- fichiers lus : `CLAUDE.md`, `SUIVI.md`, ce fil, les deux inbox, matrice et canon Drive
+- conclusion : branche publiee et sans retard entrant ; queue prete a revue/integration
+
+Handoff :
+
+`HANDOFF_VINCENT_INVENTORY_QUEUE_2026-06-13.md`
+
+La chaine est couverte de `ocr_prepare needs_review` jusqu'a l'invalidation RAG apres archive.
+Merci de raccorder tes runners au contrat existant et de signaler toute collision avant merge.
+Pas de merge `main` effectue cote MALEX/Codex.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : audit cloture canon/GitHub et CTX pousse
 
 SYNC_PROOF : `codex/frontend-masterflow` = `875a790`, `origin/main` = `141ab68`, delta branche

@@ -138,14 +138,18 @@ Cycle d'action : `draft → preflight → pending_validation → approved → ex
 
 ## Anti-scope (NE PAS construire dans le MVP)
 
-Multi-room, pipeline de correction, ComfyUI/rendu image, factories, OCR, dashboard SaaS permanent, routing page-par-page, auto-correction sans enseignant. Ce sont les phases 2+ des specs.
+Multi-room avance, ComfyUI/rendu image, factories, OCR/vision reel, embeddings BGE/Qdrant reels,
+dashboard SaaS permanent, routing page-par-page, auto-correction sans enseignant et UI Inventory
+finale. Les fondations Inventory et le pont OCR-candidate sont actifs ; les runners lourds et
+l'interface finale restent des phases ulterieures.
 
 ## État
 
 MVP backend **livré et validé** (`tsc` 0 erreur, vitest **4.1.8** 13/13, **`npm audit` 0 vulnérabilité**, streaming WS + invariants prouvés en run réel). Frontend MALEX (`apps/frontend`) : shell couche 1 (login + `GET /context/current`), avance par couches. PoC retiré. Registre d'actions : champ `status` (`live`/`future`/`out_of_scope`) + `endpoint` alignés sur le réel.
 
-**Décisions de périmètre actées.** Les endpoints lourds (`/da`, `/assets`, `/inventory`,
-`/subjects`) restent hors V1 et backflow/factories restent `out_of_scope`. Le
+**Décisions de périmètre actées.** Les endpoints lourds (`/da`, `/assets`, `/subjects`) restent
+hors V1 et backflow/factories restent `out_of_scope`. Inventory dispose maintenant d'une
+fondation backend V1 permissionnee ; cela n'active ni OCR/vision reel, ni BGE/Qdrant, ni UI finale. Le
 `user_runtime_loadout`, initialement reporte, est désormais une fondation runtime minimale :
 il filtre actions, personas, modes et capacités verrouillées depuis les permissions et la Room.
 **Godmode étendu** reste valable pour les capacités explicitement autorisées, mais ne traverse

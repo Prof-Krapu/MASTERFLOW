@@ -4,7 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — PR-INV-8 Inventory End-to-End Recipe — PRET A PUSH
+## 2026-06-13 — Queue Inventory backend — TERMINEE
+
+Queue livree sur `codex/frontend-masterflow`, sans merge `main`, sans runner OCR/BGE reel et sans
+UI finale.
+
+Commits fonctionnels :
+
+- `d181767` Inventory Core ;
+- `c1e3486` OCR -> candidates ;
+- `3504dfc` projection Inventory RAG ;
+- `2368f83` Collection Graph ;
+- `ecf54b2` Search / Project Needs ;
+- `f97878d` bridge Room / Inventory Context ;
+- `30df43f` diagnostics prives ;
+- `c3cf55a` recette end-to-end.
+
+Handoff : `HANDOFF_VINCENT_INVENTORY_QUEUE_2026-06-13.md`.
+
+Etat final recette : backend **251/251**, backend/frontend TypeScript OK, frontend build OK,
+`git diff --check` OK. Branche distante synchronisee ; `origin/main` est ancetre de la branche
+au moment du handoff.
+
+---
+
+## 2026-06-13 — PR-INV-8 Inventory End-to-End Recipe — POUSSEE
 
 Recette de non-regression assemblee sur les vrais services backend :
 

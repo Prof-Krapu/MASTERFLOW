@@ -22,7 +22,26 @@ Règles de lecture :
 
 ---
 
-## 2026-06-13 — open — PR-INV-8 Recette Inventory end-to-end prete
+## 2026-06-13 — open — HANDOFF CONSOLIDE Inventory a relire
+
+Lis en premier :
+
+`HANDOFF_VINCENT_INVENTORY_QUEUE_2026-06-13.md`
+
+La queue complete est poussee sur `codex/frontend-masterflow`. Au check pre-handoff :
+
+- branche `15/0` devant `origin/main` ;
+- aucun commit distant manquant sur la branche ;
+- backend **251/251** ;
+- aucun merge `main`, runner OCR/BGE reel ou UI finale.
+
+Action attendue : comparer tes runners OCR/BGE et tes anciennes features avec les contrats livres,
+puis integrer sans table, permission ou contexte parallele. Le test
+`inventory_end_to_end.test.ts` est le contrat de non-regression.
+
+---
+
+## 2026-06-13 — open — PR-INV-8 Recette Inventory end-to-end poussee
 
 La recette traverse maintenant :
 

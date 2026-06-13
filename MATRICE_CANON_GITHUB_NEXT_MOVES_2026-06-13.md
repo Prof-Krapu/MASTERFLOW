@@ -11,25 +11,24 @@ contrats transversaux avant les verticales visibles.
 
 | Canon Drive | GitHub actuel | Gap exploitable | Prochaine PR courte |
 |---|---|---|---|
-| Contexte progressif T0-T5 | `context_compiler`, `runtime_loadout`, checkpoints, memory cards sur branche Codex | Revue Vincent + merge propre ; bridges avances pas encore generalises | CTX-MERGE-1 |
-| RAG derive cite | RAG lexical permissionne + coordination + champs purpose/tier | Filtres transversaux, budgets, policies, provenance applicative | PR-RAG-1 |
-| Resource Truth | ressources validees + scopes projet | Inventory reel et candidats OCR non structures | PR-INV-1 |
-| OCR comme extraction candidate | jobs OCR correction/morphologie | adapter Inventory et cycle candidat -> validation -> index | PR-INV-2 |
-| Rooms comme surfaces contextualisees | room_instances + checkpoints | activation progressive, maturity, resume UI et bridges | PR-ROOM-1 |
+| Contexte progressif T0-T5 | `context_compiler`, loadout, checkpoints, memory cards + bridge Inventory | Revue Vincent + integration sur `main` | INV-INTEGRATION-1 |
+| RAG derive cite | filtres transversaux, budgets, policies, provenance + projection Inventory | embeddings/retrieval reels sans changer le contrat | PR-RUNNER-1 |
+| Resource Truth / Inventory | core, collections, recherche, besoins, diagnostics et recette E2E | mouvements, reservations et disponibilite fraiche restent absents | PR-STOCK-1 plus tard |
+| OCR comme extraction candidate | job `ocr_prepare` -> candidates Inventory, validation explicite | brancher le runner OCR reel sur le contrat existant | PR-RUNNER-1 |
+| Rooms comme surfaces contextualisees | references Inventory validees chargees sur signal explicite | consommation UI et activation progressive | PR-INVENTORY-UI-1 |
 | MasterStory / canon narratif | seeds room/story et mode front | artifact registry, spoiler policy, narrative retrieval | PR-STORY-1 |
 | Teamspaces et bridges | Project/Scope + memberships | objets de bridge explicites inter-projets | PR-BRIDGE-1 |
 | UI finale | PoC admin/front + context card | ergonomie non finale ; ne doit pas porter la logique metier | PR-UI apres contrats |
 
 ## Ordre recommande
 
-1. **CTX-MERGE-1** : Vincent relit `875a790`, signale collisions, merge ou patch court.
-2. **PR-RAG-1** : contrat transversal RAG avec filtres, budget, provenance, policies.
-3. **PR-INV-1** : Inventory Core sans OCR complet.
-4. **PR-INV-2** : OCR -> candidats Inventory.
-5. **PR-ROOM-1** : checkpoints/context packs consommes par les Rooms.
-6. **PR-STORY-1** : registre d'artefacts MasterStory.
-7. **PR-RUNNER-1** : BGE/Qdrant comme runner derive, seulement apres contrats.
-8. **PR-UI-1** : vraie UI quand le runtime est stable.
+1. **INV-INTEGRATION-1** : Vincent relit le handoff Inventory et integre la branche sans
+   reconstruire de contrats paralleles.
+2. **PR-RUNNER-1** : raccorder OCR reel et BGE/Qdrant aux jobs/projections existants.
+3. **PR-INVENTORY-UI-1** : construire la surface de validation/recherche sur les endpoints reels.
+4. **PR-STORY-1** : registre d'artefacts MasterStory et inventaire diegetique separe.
+5. **PR-BRIDGE-1** : bridges inter-projets explicites seulement apres les scopes locaux.
+6. **PR-UI-1** : UI globale quand les verticales runtime sont stabilisees.
 
 ## Garde-fou
 
