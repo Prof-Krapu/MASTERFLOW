@@ -22,7 +22,18 @@ Règles de lecture :
 
 ---
 
-## 2026-06-13 — open — PR-INV-7 Inventory Observability pret
+## 2026-06-13 — open — PR-INV-8 Recette Inventory end-to-end prete
+
+La recette traverse maintenant :
+
+`OCR needs_review -> candidate -> validation -> RAG -> search/room context -> archive -> stale`.
+
+Elle prouve aussi l'isolation membre/outsider et les evenements d'audit attendus. Utilise ce test
+comme contrat de non-regression lors du raccord de tes runners OCR/BGE.
+
+---
+
+## 2026-06-13 — open — PR-INV-7 Inventory Observability pousse
 
 Surface owner ops ajoutee : `GET /diagnostics/inventory`.
 

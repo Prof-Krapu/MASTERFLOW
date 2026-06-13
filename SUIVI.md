@@ -4,7 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — PR-INV-7 Inventory Observability — PRET A PUSH
+## 2026-06-13 — PR-INV-8 Inventory End-to-End Recipe — PRET A PUSH
+
+Recette de non-regression assemblee sur les vrais services backend :
+
+1. job OCR avec preflight/consentement ;
+2. sortie runner en `needs_review` ;
+3. ingestion comme candidat Inventory ;
+4. invisibilite candidat pour membre et outsider ;
+5. validation humaine puis indexation RAG explicite ;
+6. recherche membre sans garantie de disponibilite ;
+7. compilation room avec references Inventory + citation RAG ;
+8. archive -> projection et context pack stale ;
+9. retrait des recherches/contextes ;
+10. verification des traces d'audit structurantes.
+
+Recette : E2E **1/1**, backend complet **251/251**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
+## 2026-06-13 — PR-INV-7 Inventory Observability — POUSSEE
 
 - `GET /diagnostics/inventory`, reserve `admin/godmode` ;
 - compteurs globaux items, collections, matches, besoins et projections RAG ;
