@@ -11,6 +11,7 @@ import {
   reviewCorrectionExportPreview,
   reviewFeedbackDraft,
 } from '../src/services/feedback_exports.ts';
+import {addProjectMember, createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {
   id: 'teacher-feedback-export',
@@ -33,6 +34,7 @@ const student: AuthUser = {
   role: 'student',
 };
 const now = Date.now();
+let feedbackProjectId = '';
 
 const feedbackInput = {
   feedback_id: 'feedback-export-valid',
@@ -91,6 +93,9 @@ beforeAll(async () => {
   for (const actor of [teacher, otherTeacher, admin, student]) {
     insertUser.run(actor.id, actor.username, actor.username, actor.role, now, now);
   }
+  const project = createProject(teacher, {name: 'Projet feedback export bridge'});
+  feedbackProjectId = project.project_id;
+  addProjectMember(teacher, feedbackProjectId, {user_id: otherTeacher.id, role: 'editor'});
   db.prepare(
     `INSERT INTO evidence_events
        (id, source_type, adapter_id, owner_id, project_scope, target_refs_json,
@@ -186,6 +191,52 @@ beforeAll(async () => {
              'global', 13, 20, '["evidence-feedback-export"]',
              0.85, 'candidate', ?)`,
   ).run(now);
+
+  db.prepare(
+    `INSERT INTO evidence_events
+       (id, source_type, adapter_id, owner_id, project_id, project_scope, target_refs_json,
+        payload_ref, extraction_confidence, privacy_level, occurred_at, status, created_at)
+     VALUES ('evidence-feedback-project', 'teacher_note', 'teacher-note-v1', ?, ?, ?,
+             '["submission-feedback-project"]', 'storage://private/project-feedback-evidence',
+             0.9, 'private', ?, 'candidate', ?)`,
+  ).run(otherTeacher.id, feedbackProjectId, feedbackProjectId, now, now);
+  db.prepare(
+    `INSERT INTO correction_batches
+       (id, owner_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        status, submission_count, created_at, updated_at)
+     VALUES ('batch-feedback-project', ?, ?, ?, 'rubric-feedback-export-v1',
+             'grading-feedback-export-v1', 'review', 1, ?, ?)`,
+  ).run(teacher.id, feedbackProjectId, feedbackProjectId, now, now);
+  db.prepare(
+    `INSERT INTO submissions
+       (id, batch_id, owner_id, project_id, project_scope, source_evidence_ref,
+        identity_status, status, privacy_level, created_at, updated_at)
+     VALUES ('submission-feedback-project', 'batch-feedback-project', ?, ?, ?,
+             'evidence-feedback-project', 'confirmed', 'review', 'private', ?, ?)`,
+  ).run(teacher.id, feedbackProjectId, feedbackProjectId, now, now);
+  db.prepare(
+    `INSERT INTO pre_correction_manifests
+       (id, batch_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        submission_refs_json, workflow_version, status, created_by,
+        validation_ref, created_at)
+     VALUES ('manifest-feedback-project', 'batch-feedback-project', ?, ?,
+             'rubric-feedback-export-v1', 'grading-feedback-export-v1',
+             '["submission-feedback-project"]', 'workflow-project-v1', 'validated', ?,
+             'validation-feedback-project', ?)`,
+  ).run(feedbackProjectId, feedbackProjectId, teacher.id, now);
+  db.prepare(
+    `INSERT INTO pre_correction_runs
+       (id, manifest_id, batch_id, submission_id, owner_id, project_id, project_scope,
+        rubric_version_id, grading_profile_id, analysis_type, evidence_snapshot_ref,
+        method_version, criterion_score_refs_json, review_reasons_json,
+        status, created_at, updated_at)
+     VALUES ('run-feedback-project', 'manifest-feedback-project',
+             'batch-feedback-project', 'submission-feedback-project', ?, ?, ?,
+             'rubric-feedback-export-v1', 'grading-feedback-export-v1', 'rubric_scoring',
+             'storage://private/snapshots/feedback-project', 'criterion-analysis-v1',
+             '["score-feedback-project"]', '["teacher_validation_required"]',
+             'needs_review', ?, ?)`,
+  ).run(teacher.id, feedbackProjectId, feedbackProjectId, now, now);
 });
 
 describe('PR-C5 — service feedback et exports supervisés', () => {
@@ -245,6 +296,86 @@ describe('PR-C5 — service feedback et exports supervisés', () => {
     expect(getCorrectionExportPreview(admin, approvedExport.export_id)).toEqual(approvedExport);
   });
 
+  it('permet la préparation projet par un éditeur mais réserve les validations à l owner', () => {
+    const projectFeedback = {
+      ...feedbackInput,
+      feedback_id: 'feedback-project-valid',
+      run_id: 'run-feedback-project',
+      submission_id: 'submission-feedback-project',
+      project_id: feedbackProjectId,
+      project_scope: feedbackProjectId,
+      evidence_refs: ['evidence-feedback-project'],
+    };
+    const draft = recordFeedbackDraft(otherTeacher, projectFeedback);
+    expect(draft).toMatchObject({
+      project_id: feedbackProjectId,
+      owner_id: teacher.id,
+      status: 'needs_teacher_validation',
+    });
+    expect(getFeedbackDraft(otherTeacher, draft.feedback_id)).toEqual(draft);
+    expect(() =>
+      reviewFeedbackDraft(
+        otherTeacher,
+        draft.feedback_id,
+        'approved',
+        'feedback-project-editor-validation',
+      ),
+    ).toThrow('teacher_validation_owner_required');
+
+    const approvedFeedback = reviewFeedbackDraft(
+      teacher,
+      draft.feedback_id,
+      'approved',
+      'feedback-project-owner-validation',
+    );
+    const projectExport = {
+      ...exportInput,
+      export_id: 'correction-export-project-valid',
+      batch_id: 'batch-feedback-project',
+      project_id: feedbackProjectId,
+      project_scope: feedbackProjectId,
+      source_feedback_refs: [approvedFeedback.feedback_id],
+      source_run_refs: ['run-feedback-project'],
+      preview_ref: 'storage://private/export-previews/correction-export-project-valid.xlsx',
+    };
+    const preview = recordCorrectionExportPreview(otherTeacher, projectExport);
+    expect(preview).toMatchObject({
+      project_id: feedbackProjectId,
+      status: 'needs_teacher_validation',
+      publication_allowed: false,
+    });
+    expect(() =>
+      reviewCorrectionExportPreview(
+        otherTeacher,
+        preview.export_id,
+        'approved_for_export',
+        'export-project-editor-validation',
+      ),
+    ).toThrow('export_validation_owner_required');
+    expect(
+      reviewCorrectionExportPreview(
+        teacher,
+        preview.export_id,
+        'approved_for_export',
+        'export-project-owner-validation',
+      ),
+    ).toMatchObject({status: 'approved_for_export', project_id: feedbackProjectId});
+
+    expect(() =>
+      recordFeedbackDraft(admin, {
+        ...projectFeedback,
+        feedback_id: 'feedback-project-admin-denied',
+      }),
+    ).toThrow('feedback_owner_required');
+    expect(() =>
+      recordFeedbackDraft(otherTeacher, {
+        ...projectFeedback,
+        feedback_id: 'feedback-project-scope-mismatch',
+        project_scope: 'legacy-free-text',
+      }),
+    ).toThrow('project_scope_mismatch');
+  });
+
   it('ne crée aucun job, fichier final ou publication implicitement', () => {
     const jobs = getDb()
       .prepare("SELECT id FROM jobs WHERE type = 'export_prepare'")
@@ -267,7 +398,7 @@ describe('PR-C5 — service feedback et exports supervisés', () => {
          )`,
       )
       .all() as Array<{detail_json: string}>;
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(8);
     for (const row of rows) {
       expect(row.detail_json).not.toContain('storage://private');
       expect(row.detail_json).not.toContain('evidence-feedback-export');

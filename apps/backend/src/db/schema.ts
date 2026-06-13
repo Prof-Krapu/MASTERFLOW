@@ -683,6 +683,7 @@ function migrate(d: Database.Database): void {
       run_id                  TEXT NOT NULL REFERENCES pre_correction_runs(id) ON DELETE CASCADE,
       submission_id           TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
       owner_id                TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id              TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope           TEXT NOT NULL,
       method_version          TEXT NOT NULL,
       model_profile_ref       TEXT REFERENCES task_model_profiles(id),
@@ -718,6 +719,7 @@ function migrate(d: Database.Database): void {
       id                      TEXT PRIMARY KEY,
       batch_id                TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
       owner_id                TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id              TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope           TEXT NOT NULL,
       format                  TEXT NOT NULL CHECK (format IN ('csv','xlsx','pdf','report')),
       target                  TEXT NOT NULL
@@ -945,6 +947,8 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'submissions', 'project_id', 'TEXT');
   ensureColumn(d, 'pre_correction_manifests', 'project_id', 'TEXT');
   ensureColumn(d, 'pre_correction_runs', 'project_id', 'TEXT');
+  ensureColumn(d, 'feedback_drafts', 'project_id', 'TEXT');
+  ensureColumn(d, 'correction_export_previews', 'project_id', 'TEXT');
   d.exec(`
     CREATE INDEX IF NOT EXISTS idx_jobs_claimable
       ON jobs(status, type, updated_at, lease_expires_at);
@@ -966,6 +970,10 @@ function migrate(d: Database.Database): void {
       ON pre_correction_manifests(project_id, status, created_at);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_project
       ON pre_correction_runs(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_feedback_drafts_project
+      ON feedback_drafts(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_correction_export_previews_project
+      ON correction_export_previews(project_id, status, updated_at);
   `);
 }
 
@@ -1388,6 +1396,7 @@ export interface FeedbackDraftRow {
   run_id: string;
   submission_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   method_version: string;
   model_profile_ref: string | null;
@@ -1412,6 +1421,7 @@ export interface CorrectionExportPreviewRow {
   id: string;
   batch_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   format: 'csv' | 'xlsx' | 'pdf' | 'report';
   target: 'teacher_download' | 'manual_injection';

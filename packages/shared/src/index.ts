@@ -1021,6 +1021,7 @@ export const FeedbackDraftSchema = z
     run_id: z.string().min(1),
     submission_id: z.string().min(1),
     owner_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     method_version: z.string().min(1),
     model_profile_ref: z.string().min(1).nullable(),
@@ -1074,6 +1075,7 @@ export const CorrectionExportPreviewSchema = z
     export_id: z.string().min(1),
     batch_id: z.string().min(1),
     owner_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     format: CorrectionExportFormatSchema,
     target: z.enum(['teacher_download', 'manual_injection']),
@@ -1219,6 +1221,7 @@ export type CorrectionPrepareRequest = z.infer<typeof CorrectionPrepareRequestSc
 
 export const ExportPrepareRequestSchema = z.object({
   owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable().optional(),
   project_scope: z.string().min(1),
   batch_id: z.string().min(1),
   export_preview_ref: z.string().min(1),

@@ -14,6 +14,33 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Bridge Project/Scope feedback et export livre
+
+MALEX/Codex a termine le bridge projet jusqu'au job `export_prepare`.
+
+Regle active pour une nouvelle chaine projet :
+
+- feedback, preview et requete export portent le meme `project_id` que run, batch et preuves ;
+- `project_scope === project_id` pendant la transition ;
+- un teacher membre `editor+` peut preparer le feedback, la preview et le job ;
+- seul l'owner professeur valide le feedback puis approuve la preview ;
+- admin/godmode supervisent mais ne remplacent pas cette autorite pedagogique ;
+- le job export reste prive, par references uniquement, sans contenu de stockage dans le payload ;
+- les objets legacy sans `project_id` restent owner-only.
+
+Action demandee :
+
+1. transmettre `project_id` dans tes futurs feedbacks, previews et handoffs export ;
+2. ne jamais reconstruire le projet depuis un scope texte ou le nom d'une classe ;
+3. conserver les deux decisions distinctes : contenu pedagogique puis package/destination ;
+4. brancher un renderer uniquement derriere `export_prepare` approuve ;
+5. le renderer doit produire un fichier prive en review, jamais publier ou envoyer directement.
+
+Version courte : le team combo est autorise pour preparer le coup, mais seul l'owner confirme le
+hit et la destination. Aucun auto-publish en wake-up reversal.
+
+---
+
 ## 2026-06-13 — open — Bridge Project/Scope applique a la preparation de correction
 
 MALEX/Codex a prolonge le bridge des preuves vers la chaine de correction.

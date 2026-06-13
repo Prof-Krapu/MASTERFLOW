@@ -65,6 +65,7 @@ interface ExportPreviewRow {
   id: string;
   batch_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   format: string;
   target: string;
@@ -109,8 +110,13 @@ function toEvent(row: JobEventRow): JobEvent {
 
 function canReadJob(actor: AuthUser, row: JobRow): boolean {
   if (actor.id === row.owner_id || ROLE_RANK[actor.role] >= ROLE_RANK.admin) return true;
-  if (row.type !== 'correction_prepare') return false;
-  const payload = JSON.parse(row.payload_json) as {project_id?: unknown};
+  if (row.type !== 'correction_prepare' && row.type !== 'export_prepare') return false;
+  let payload: {project_id?: unknown};
+  try {
+    payload = JSON.parse(row.payload_json) as {project_id?: unknown};
+  } catch {
+    return false;
+  }
   if (typeof payload.project_id !== 'string') return false;
   return decideScopedPermission({
     actor,
@@ -347,17 +353,32 @@ export function createCorrectionPrepareJob(actor: AuthUser, input: CorrectionPre
 
 export function createExportPrepareJob(actor: AuthUser, input: ExportPrepareRequest): Job {
   const request = ExportPrepareRequestSchema.parse(input);
-  assertTeacherOwner(actor, request.owner_id);
+  if (request.project_id) {
+    if (ROLE_RANK[actor.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
+    if (request.project_scope !== request.project_id) throw new Error('project_scope_mismatch');
+    if (actor.id !== request.owner_id && ROLE_RANK[actor.role] >= ROLE_RANK.admin) {
+      throw new Error('job_owner_required');
+    }
+    const decision = decideScopedPermission({
+      actor,
+      projectId: request.project_id,
+      minimumProjectRole: 'editor',
+    });
+    if (!decision.allowed) throw new Error('scope_denied');
+  } else {
+    assertTeacherOwner(actor, request.owner_id);
+  }
 
   const db = getDb();
   const preview = db
     .prepare(
-      `SELECT id, batch_id, owner_id, project_scope, format, target, status, validation_ref
+      `SELECT id, batch_id, owner_id, project_id, project_scope, format, target, status,
+              validation_ref
        FROM correction_export_previews WHERE id = ?`,
     )
     .get(request.export_preview_ref) as ExportPreviewRow | undefined;
   const batch = db
-    .prepare('SELECT id, owner_id, project_scope FROM correction_batches WHERE id = ?')
+    .prepare('SELECT id, owner_id, project_id, project_scope FROM correction_batches WHERE id = ?')
     .get(request.batch_id) as BatchRow | undefined;
   if (!preview || !batch) throw new Error('export_prepare_reference_not_found');
   if (preview.status !== 'approved_for_export' || !preview.validation_ref) {
@@ -372,6 +393,14 @@ export function createExportPrepareJob(actor: AuthUser, input: ExportPrepareRequ
     batch.owner_id === request.owner_id,
     batch.project_scope === request.project_scope,
   ];
+  if (request.project_id) {
+    alignedRefs.push(
+      preview.project_id === request.project_id,
+      batch.project_id === request.project_id,
+    );
+  } else {
+    alignedRefs.push(preview.project_id === null, batch.project_id === null);
+  }
   if (alignedRefs.some((isAligned) => !isAligned)) {
     throw new Error('export_prepare_context_mismatch');
   }

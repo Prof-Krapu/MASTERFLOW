@@ -137,6 +137,27 @@ beforeAll(async () => {
   ).run(correctionProjectId, correctionProjectId, teacher.id, now);
   db.prepare(
     `INSERT INTO correction_export_previews
+       (id, batch_id, owner_id, project_id, project_scope, format, target,
+        source_feedback_refs_json, source_run_refs_json, preview_ref,
+        schema_version, contains_private_data, publication_allowed,
+        human_validation_required, status, validator_id, validation_ref,
+        created_at, updated_at)
+     VALUES ('export-preview-job-project-approved', 'batch-job-correction-project', ?,
+             ?, ?, 'xlsx', 'teacher_download', '["feedback-job-project-approved"]',
+             '["run-job-project-approved"]',
+             'storage://private/export-previews/job-project-approved.xlsx',
+             'correction-export-v1', 1, 0, 1, 'approved_for_export', ?,
+             'validation-export-job-project-approved', ?, ?)`,
+  ).run(
+    teacher.id,
+    correctionProjectId,
+    correctionProjectId,
+    teacher.id,
+    now,
+    now,
+  );
+  db.prepare(
+    `INSERT INTO correction_export_previews
        (id, batch_id, owner_id, project_scope, format, target,
         source_feedback_refs_json, source_run_refs_json, preview_ref,
         schema_version, contains_private_data, publication_allowed,
@@ -291,6 +312,39 @@ describe('PR-C6 — handoffs jobs correction/export', () => {
         source_kind: 'approved_correction_export_preview',
       }),
     ).toThrow('export_preview_not_approved');
+  });
+
+  it('autorise un éditeur projet à préparer le job export déjà approuvé par l owner', () => {
+    const job = createExportPrepareJob(otherTeacher, {
+      owner_id: teacher.id,
+      project_id: correctionProjectId,
+      project_scope: correctionProjectId,
+      batch_id: 'batch-job-correction-project',
+      export_preview_ref: 'export-preview-job-project-approved',
+      preflight_ref: 'preflight-export-job-project',
+      validation_ref: 'validation-export-job-project-approved',
+      source_kind: 'approved_correction_export_preview',
+    });
+
+    expect(job.payload).toMatchObject({
+      project_id: correctionProjectId,
+      project_scope: correctionProjectId,
+      export_preview_ref: 'export-preview-job-project-approved',
+    });
+    expect(listJobs(otherTeacher).map((item) => item.job_id)).toContain(job.job_id);
+    expect(listJobs(student).map((item) => item.job_id)).not.toContain(job.job_id);
+    expect(() =>
+      createExportPrepareJob(admin, {
+        owner_id: teacher.id,
+        project_id: correctionProjectId,
+        project_scope: correctionProjectId,
+        batch_id: 'batch-job-correction-project',
+        export_preview_ref: 'export-preview-job-project-approved',
+        preflight_ref: 'preflight-export-job-project-admin',
+        validation_ref: 'validation-export-job-project-approved',
+        source_kind: 'approved_correction_export_preview',
+      }),
+    ).toThrow('job_owner_required');
   });
 
   it('refuse les refs de validation incohérentes', () => {

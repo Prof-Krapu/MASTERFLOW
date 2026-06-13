@@ -4,6 +4,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Bridge Project/Scope des feedbacks et exports
+
+**Livrable MALEX/Codex.** Troisieme tranche de migration progressive vers les vrais projets,
+jusqu'au handoff `export_prepare`.
+
+Ajouts :
+
+- `project_id` nullable dans `FeedbackDraft`, `CorrectionExportPreview` et
+  `ExportPrepareRequest` ;
+- colonnes et index projet idempotents sur feedbacks et previews ;
+- feedback projet aligne sur son run et ses preuves ;
+- preview projet alignee sur son batch, ses feedbacks approuves et ses runs sources ;
+- preparation et lecture des brouillons limitees aux membres `editor+` ;
+- un teacher editeur peut preparer feedback, preview et job export pour l'owner du projet ;
+- validation pedagogique du feedback et approbation de la preview toujours reservees a l'owner ;
+- admin/godmode restent en supervision lecture et ne valident pas a la place du professeur ;
+- job `export_prepare` projet lisible par les editeurs du projet, invisible aux non-membres ;
+- fallback legacy sans `project_id` conserve en owner-only ;
+- aucune publication, livraison externe, note finale ou rendu automatique ajoute.
+
+Verification :
+
+- `npm test` : 37 fichiers / 157 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Bridge Project/Scope de la chaine de correction
 
 **Livrable MALEX/Codex.** Deuxieme migration progressive des scopes libres vers un vrai

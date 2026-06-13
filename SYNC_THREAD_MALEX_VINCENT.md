@@ -23,6 +23,21 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope feedback/export
+
+Le bridge projet couvre maintenant `FeedbackDraft`, `CorrectionExportPreview` et
+`export_prepare`.
+
+Les teachers `editor+` du projet peuvent preparer et relire les brouillons, mais l'owner reste
+le seul a valider le contenu pedagogique puis le package d'export. Admin/godmode gardent la
+supervision sans se substituer a cette validation.
+
+Merci de faire porter le meme `project_id` par tes futurs objets et de raccorder le renderer
+uniquement derriere le job approuve. Le resultat doit rester prive et en review ; publication,
+envoi et LMS restent hors de cette passe.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope correction
 
 Le bridge Project/Scope couvre maintenant rubriques, profils institutionnels, batches,

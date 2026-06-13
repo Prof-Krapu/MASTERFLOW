@@ -1,6 +1,6 @@
 # SPEC — PR-C5 Feedback student-safe et previews d'export
 
-Statut : `FOUNDATION IMPLEMENTED / INTERNAL ONLY / NO PUBLICATION / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / PROJECT BRIDGE / INTERNAL ONLY / NO PUBLICATION / 2026-06-13`
 
 ## Objectif
 
@@ -61,7 +61,8 @@ Elle ne crée aucun job, fichier final, lien de livraison ou publication.
 
 ## Autorité
 
-- teacher owner : création et décisions ;
+- teacher owner : décisions pédagogiques et approbation export ;
+- teacher membre `editor+` : préparation et lecture dans un projet réel ;
 - admin/godmode : supervision en lecture ;
 - admin/godmode ne remplace pas la validation pédagogique de l'owner ;
 - aucune route publique ;
@@ -70,6 +71,10 @@ Elle ne crée aucun job, fichier final, lien de livraison ou publication.
 Les validations feedback et export portent sur deux objets différents. Elles ne constituent pas
 une double validation répétitive : l'une approuve le contenu pédagogique, l'autre le package et
 sa destination.
+
+Pour une chaine projet, feedback, preview, run, batch et preuves portent le meme `project_id`.
+Pendant la transition, `project_scope` lui est identique. Les objets legacy sans `project_id`
+restent owner-only.
 
 ## Hors scope
 

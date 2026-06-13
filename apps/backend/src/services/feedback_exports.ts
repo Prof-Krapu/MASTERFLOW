@@ -13,12 +13,14 @@ import {
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 interface RunRow {
   id: string;
   batch_id: string;
   submission_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   status: string;
 }
@@ -26,6 +28,7 @@ interface RunRow {
 interface BatchRow {
   id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
 }
 
@@ -37,12 +40,55 @@ function assertTeacherOwnership(actor: AuthUser, ownerId: string): void {
   if (actor.role === 'teacher' && actor.id !== ownerId) throw new Error('scope_denied');
 }
 
+function assertProjectBridge(projectScope: string, projectId: string | null | undefined): void {
+  if (projectId && projectScope !== projectId) throw new Error('project_scope_mismatch');
+}
+
+function assertProjectEditor(actor: AuthUser, projectId: string): void {
+  const decision = decideScopedPermission({
+    actor,
+    projectId,
+    minimumProjectRole: 'editor',
+  });
+  if (!decision.allowed) throw new Error('scope_denied');
+}
+
+function assertDraftAccess(
+  actor: AuthUser,
+  ownerId: string,
+  projectId: string | null | undefined,
+  ownerError: 'feedback_owner_required' | 'export_owner_required',
+): void {
+  if (!projectId) {
+    assertTeacherOwnership(actor, ownerId);
+    if (actor.id !== ownerId) throw new Error(ownerError);
+    return;
+  }
+  if (actor.id !== ownerId && ROLE_RANK[actor.role] >= ROLE_RANK.admin) {
+    throw new Error(ownerError);
+  }
+  assertProjectEditor(actor, projectId);
+}
+
+function assertSensitiveRead(
+  actor: AuthUser,
+  ownerId: string,
+  projectId: string | null | undefined,
+): void {
+  if (projectId) {
+    assertProjectEditor(actor, projectId);
+    return;
+  }
+  assertTeacherOwnership(actor, ownerId);
+}
+
 function toFeedbackDTO(row: FeedbackDraftRow): FeedbackDraft {
   return FeedbackDraftSchema.parse({
     feedback_id: row.id,
     run_id: row.run_id,
     submission_id: row.submission_id,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     project_scope: row.project_scope,
     method_version: row.method_version,
     model_profile_ref: row.model_profile_ref,
@@ -69,6 +115,7 @@ function toExportDTO(row: CorrectionExportPreviewRow): CorrectionExportPreview {
     export_id: row.id,
     batch_id: row.batch_id,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     project_scope: row.project_scope,
     format: row.format,
     target: row.target,
@@ -90,15 +137,15 @@ function toExportDTO(row: CorrectionExportPreviewRow): CorrectionExportPreview {
 export function recordFeedbackDraft(actor: AuthUser, input: FeedbackDraft): FeedbackDraft {
   requireTeacher(actor);
   const feedback = FeedbackDraftSchema.parse(input);
-  assertTeacherOwnership(actor, feedback.owner_id);
-  if (actor.id !== feedback.owner_id) throw new Error('feedback_owner_required');
+  assertProjectBridge(feedback.project_scope, feedback.project_id);
+  assertDraftAccess(actor, feedback.owner_id, feedback.project_id, 'feedback_owner_required');
   if (feedback.status !== 'needs_teacher_validation') {
     throw new Error('feedback_draft_must_need_validation');
   }
 
   const run = getDb()
     .prepare(
-      `SELECT id, batch_id, submission_id, owner_id, project_scope, status
+      `SELECT id, batch_id, submission_id, owner_id, project_id, project_scope, status
        FROM pre_correction_runs WHERE id = ?`,
     )
     .get(feedback.run_id) as RunRow | undefined;
@@ -107,23 +154,24 @@ export function recordFeedbackDraft(actor: AuthUser, input: FeedbackDraft): Feed
     run.submission_id !== feedback.submission_id ||
     run.owner_id !== feedback.owner_id ||
     run.project_scope !== feedback.project_scope ||
+    (feedback.project_id ? run.project_id !== feedback.project_id : run.project_id !== null) ||
     run.status !== 'needs_review'
   ) {
     throw new Error('feedback_context_mismatch');
   }
-  assertEvidenceRefs(actor, feedback.project_scope, feedback.evidence_refs);
+  assertEvidenceRefs(actor, feedback.project_scope, feedback.evidence_refs, feedback.project_id);
   assertFeedbackModelProfile(feedback.model_profile_ref);
 
   getDb()
     .prepare(
       `INSERT INTO feedback_drafts
-         (id, run_id, submission_id, owner_id, project_scope, method_version,
+         (id, run_id, submission_id, owner_id, project_id, project_scope, method_version,
           model_profile_ref, observed_strength_ref, observed_issue_ref,
           evidence_refs_json, impact_on_work_ref,
           pedagogical_axis_ref, next_action_ref, validation_criterion_ref,
           tone_level, evaluation_alignment, teacher_validation_required, status,
           validator_id, validation_ref, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1,
                'needs_teacher_validation', NULL, NULL, ?, ?)`,
     )
     .run(
@@ -131,6 +179,7 @@ export function recordFeedbackDraft(actor: AuthUser, input: FeedbackDraft): Feed
       feedback.run_id,
       feedback.submission_id,
       feedback.owner_id,
+      feedback.project_id ?? null,
       feedback.project_scope,
       feedback.method_version,
       feedback.model_profile_ref,
@@ -195,7 +244,7 @@ export function getFeedbackDraft(actor: AuthUser, feedbackId: string): FeedbackD
     | FeedbackDraftRow
     | undefined;
   if (!row) throw new Error('feedback_draft_not_found');
-  assertTeacherOwnership(actor, row.owner_id);
+  assertSensitiveRead(actor, row.owner_id, row.project_id);
   return toFeedbackDTO(row);
 }
 
@@ -205,17 +254,21 @@ export function recordCorrectionExportPreview(
 ): CorrectionExportPreview {
   requireTeacher(actor);
   const preview = CorrectionExportPreviewSchema.parse(input);
-  assertTeacherOwnership(actor, preview.owner_id);
-  if (actor.id !== preview.owner_id) throw new Error('export_owner_required');
+  assertProjectBridge(preview.project_scope, preview.project_id);
+  assertDraftAccess(actor, preview.owner_id, preview.project_id, 'export_owner_required');
   if (preview.status !== 'needs_teacher_validation') {
     throw new Error('export_preview_must_need_validation');
   }
 
   const batch = getDb()
-    .prepare('SELECT id, owner_id, project_scope FROM correction_batches WHERE id = ?')
+    .prepare('SELECT id, owner_id, project_id, project_scope FROM correction_batches WHERE id = ?')
     .get(preview.batch_id) as BatchRow | undefined;
   if (!batch) throw new Error('correction_batch_not_found');
-  if (batch.owner_id !== preview.owner_id || batch.project_scope !== preview.project_scope) {
+  if (
+    batch.owner_id !== preview.owner_id ||
+    batch.project_scope !== preview.project_scope ||
+    (preview.project_id ? batch.project_id !== preview.project_id : batch.project_id !== null)
+  ) {
     throw new Error('export_scope_mismatch');
   }
   assertApprovedFeedbackSources(preview);
@@ -223,18 +276,19 @@ export function recordCorrectionExportPreview(
   getDb()
     .prepare(
       `INSERT INTO correction_export_previews
-         (id, batch_id, owner_id, project_scope, format, target,
+         (id, batch_id, owner_id, project_id, project_scope, format, target,
           source_feedback_refs_json, source_run_refs_json, preview_ref,
           schema_version, contains_private_data, publication_allowed,
           human_validation_required, status, validator_id, validation_ref,
           created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 1,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 1,
                'needs_teacher_validation', NULL, NULL, ?, ?)`,
     )
     .run(
       preview.export_id,
       preview.batch_id,
       preview.owner_id,
+      preview.project_id ?? null,
       preview.project_scope,
       preview.format,
       preview.target,
@@ -299,7 +353,7 @@ export function getCorrectionExportPreview(
     .prepare('SELECT * FROM correction_export_previews WHERE id = ?')
     .get(exportId) as CorrectionExportPreviewRow | undefined;
   if (!row) throw new Error('export_preview_not_found');
-  assertTeacherOwnership(actor, row.owner_id);
+  assertSensitiveRead(actor, row.owner_id, row.project_id);
   return toExportDTO(row);
 }
 
@@ -307,16 +361,18 @@ function assertEvidenceRefs(
   actor: AuthUser,
   projectScope: string,
   evidenceRefs: string[],
+  projectId?: string | null,
 ): void {
   const placeholders = evidenceRefs.map(() => '?').join(',');
   const rows = getDb()
     .prepare(
-      `SELECT id, owner_id, project_scope, status FROM evidence_events
+      `SELECT id, owner_id, project_id, project_scope, status FROM evidence_events
        WHERE id IN (${placeholders})`,
     )
     .all(...evidenceRefs) as Array<{
     id: string;
     owner_id: string;
+    project_id: string | null;
     project_scope: string;
     status: string;
   }>;
@@ -331,7 +387,10 @@ function assertEvidenceRefs(
   ) {
     throw new Error('evidence_not_usable');
   }
-  if (actor.role === 'teacher' && rows.some((row) => row.owner_id !== actor.id)) {
+  if (projectId && rows.some((row) => row.project_id !== projectId)) {
+    throw new Error('evidence_not_usable');
+  }
+  if (!projectId && actor.role === 'teacher' && rows.some((row) => row.owner_id !== actor.id)) {
     throw new Error('scope_denied');
   }
 }
@@ -340,13 +399,14 @@ function assertApprovedFeedbackSources(preview: CorrectionExportPreview): void {
   const placeholders = preview.source_feedback_refs.map(() => '?').join(',');
   const rows = getDb()
     .prepare(
-      `SELECT id, run_id, owner_id, project_scope, status FROM feedback_drafts
+      `SELECT id, run_id, owner_id, project_id, project_scope, status FROM feedback_drafts
        WHERE id IN (${placeholders})`,
     )
     .all(...preview.source_feedback_refs) as Array<{
     id: string;
     run_id: string;
     owner_id: string;
+    project_id: string | null;
     project_scope: string;
     status: string;
   }>;
@@ -358,6 +418,7 @@ function assertApprovedFeedbackSources(preview: CorrectionExportPreview): void {
       (row) =>
         row.owner_id !== preview.owner_id ||
         row.project_scope !== preview.project_scope ||
+        (preview.project_id ? row.project_id !== preview.project_id : row.project_id !== null) ||
         row.status !== 'approved',
     )
   ) {
@@ -376,13 +437,14 @@ function assertApprovedFeedbackSources(preview: CorrectionExportPreview): void {
   const runPlaceholders = preview.source_run_refs.map(() => '?').join(',');
   const runs = getDb()
     .prepare(
-      `SELECT id, batch_id, owner_id, project_scope FROM pre_correction_runs
+      `SELECT id, batch_id, owner_id, project_id, project_scope FROM pre_correction_runs
        WHERE id IN (${runPlaceholders})`,
     )
     .all(...preview.source_run_refs) as Array<{
     id: string;
     batch_id: string;
     owner_id: string;
+    project_id: string | null;
     project_scope: string;
   }>;
   if (
@@ -391,7 +453,8 @@ function assertApprovedFeedbackSources(preview: CorrectionExportPreview): void {
       (run) =>
         run.batch_id !== preview.batch_id ||
         run.owner_id !== preview.owner_id ||
-        run.project_scope !== preview.project_scope,
+        run.project_scope !== preview.project_scope ||
+        (preview.project_id ? run.project_id !== preview.project_id : run.project_id !== null),
     )
   ) {
     throw new Error('export_run_scope_mismatch');

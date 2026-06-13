@@ -1,6 +1,6 @@
 # SPEC — PR-C6 Handoffs jobs correction/export
 
-Statut : `FOUNDATION IMPLEMENTED / INTERNAL ONLY / NO RUNNER / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / PROJECT BRIDGE / INTERNAL ONLY / NO RUNNER / 2026-06-13`
 
 ## Objectif
 
@@ -49,7 +49,9 @@ score final n'est copié dans la queue.
 
 Le job `export_prepare` exige :
 
-- owner professeur exact ;
+- owner professeur exact dans les references ;
+- owner ou teacher membre `editor+` pour preparer un job rattache a un vrai projet ;
+- `project_id` identique au batch et a la preview en mode projet ;
 - preview d'export existante ;
 - preview `approved_for_export` avec `validation_ref` ;
 - batch, owner et scope alignés ;
@@ -61,7 +63,8 @@ preview, le format et la cible déjà validés.
 
 ## Autorité
 
-- teacher owner : peut créer les intentions ;
+- teacher owner : peut créer les intentions legacy et projet ;
+- teacher membre `editor+` : peut preparer les intentions projet deja validees ;
 - admin/godmode : supervision en lecture via les endpoints jobs existants ;
 - admin/godmode ne crée pas ces jobs à la place du propriétaire ;
 - student/random user : refus ;
