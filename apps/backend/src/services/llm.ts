@@ -1,6 +1,7 @@
 import {getDb} from '../db/schema.ts';
 import {env} from '../lib/env.ts';
 import {costFor} from './llm_pricing.ts';
+import {resolveLLMRoute, type ResolvedLLMRoute} from './llm_routing.ts';
 
 /**
  * Service LLM de MasterFlow — abstraction unique du modèle de langage.
@@ -43,7 +44,7 @@ const DEFAULT_TASK = 'chat';
 /**
  * Estimation grossière du nombre de tokens d'un texte (~ mots × 1.3).
  * Suffisant pour le suivi en dev / mode mock ; le vrai comptage vient du
- * provider quand il renvoie `usage` (non géré ici, on reste sur l'estimation).
+ * provider quand il renvoie un objet `usage` valide.
  */
 function estimateTokens(text: string): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
@@ -93,6 +94,11 @@ function estimatePromptTokens(messages: ChatMessage[]): number {
   let total = 0;
   for (const m of messages) total += estimateTokens(m.content);
   return total;
+}
+
+/** Accepte uniquement un compteur provider entier et positif, sinon conserve l'estimation. */
+function normalizeUsageCount(value: number | undefined, fallback: number): number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : fallback;
 }
 
 /**
@@ -158,8 +164,12 @@ async function* streamMock(p: LLMStreamParams): AsyncGenerator<string> {
  * `stream: true`, parsing du flux SSE : chaque ligne `data: {…}` contient un
  * `choices[0].delta.content` à émettre. `data: [DONE]` termine le flux.
  */
-async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
-  const {baseUrl, apiKey, model} = env.llm;
+async function* streamOpenAICompat(
+  p: LLMStreamParams,
+  route: ResolvedLLMRoute,
+): AsyncGenerator<string> {
+  const {baseUrl, apiKey, model} = route;
+  if (!baseUrl || !apiKey) throw new Error('llm_route_incomplete_provider_config');
   const url = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
 
   const res = await fetch(url, {
@@ -231,9 +241,9 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
   }
 
   // Compteurs réels du provider si disponibles, sinon estimation (fallback).
-  const usedModel = model || env.llm.provider;
-  const promptTokens = usage?.prompt_tokens ?? estimatePromptTokens(p.messages);
-  const completionTokens = usage?.completion_tokens ?? estimateTokens(emitted);
+  const usedModel = model || route.provider;
+  const promptTokens = normalizeUsageCount(usage?.prompt_tokens, estimatePromptTokens(p.messages));
+  const completionTokens = normalizeUsageCount(usage?.completion_tokens, estimateTokens(emitted));
   logTokenEvent({
     model: usedModel,
     task: p.task ?? DEFAULT_TASK,
@@ -251,11 +261,12 @@ async function* streamOpenAICompat(p: LLMStreamParams): AsyncGenerator<string> {
  * Aiguille vers le mock (défaut) ou le provider OpenAI-compatible.
  */
 export async function* streamChat(p: LLMStreamParams): AsyncGenerator<string> {
-  if (env.llm.provider === 'mock') {
+  const route = resolveLLMRoute(p.task ?? DEFAULT_TASK, env.llm);
+  if (route.provider === 'mock') {
     yield* streamMock(p);
     return;
   }
-  yield* streamOpenAICompat(p);
+  yield* streamOpenAICompat(p, route);
 }
 
 /**

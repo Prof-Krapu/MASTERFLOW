@@ -48,27 +48,48 @@ beforeAll(async () => {
 });
 
 describe('persona blend — chimère ProfKrapu × Corrector', () => {
-  it('expose les 3 personas du MVP', () => {
+  it('retire Corrector des personas sélectionnables sans supprimer sa rangée', () => {
     const personas = listPersonas();
     const ids = personas.map((p) => p.id);
     expect(ids).toContain('profkrapu-001');
-    expect(ids).toContain('corrector-001');
+    expect(ids).not.toContain('corrector-001');
+    expect(getPersona('corrector-001')?.status).toBe('deprecated');
   });
 
-  it('1 seul porte-parole (le primaire) + méthode attribuée au secondaire', () => {
-    const blend = createBlend({
-      room_instance_id: roomInstanceId,
-      primary_persona_id: 'profkrapu-001',
-      secondary_persona_id: 'corrector-001',
-      blend_weights: {voice: 0.7, method: 0.3},
-      active_layers: ['voice', 'method_signature'],
-    });
+  it('interdit Corrector dans un nouveau blend', () => {
+    expect(() =>
+      createBlend({
+        room_instance_id: roomInstanceId,
+        primary_persona_id: 'profkrapu-001',
+        secondary_persona_id: 'corrector-001',
+        blend_weights: {voice: 0.7, method: 0.3},
+        active_layers: ['voice', 'method_signature'],
+      }),
+    ).toThrow('Persona déprécié');
+  });
 
-    // INVARIANT : porte-parole unique = le persona primaire.
-    expect(blend.speaker_persona_id).toBe('profkrapu-001');
+  it('relit un blend historique sans réactiver Corrector', () => {
+    const now = Date.now();
+    getDb()
+      .prepare(
+        `INSERT INTO persona_blends
+           (id, room_instance_id, primary_persona_id, secondary_persona_id,
+            blend_weights_json, active_layers_json, is_active, created_at, updated_at)
+         VALUES (?, ?, 'profkrapu-001', 'corrector-001', ?, ?, 1, ?, ?)`,
+      )
+      .run(
+        'historical-corrector-blend',
+        roomInstanceId,
+        JSON.stringify({voice: 0.7, method: 0.3}),
+        JSON.stringify(['voice', 'method_signature']),
+        now,
+        now,
+      );
 
-    // La méthode empruntée est explicitement attribuée au secondaire.
-    const overlay = blend.hybrid_voice_config['method_overlay'] as
+    const blend = getActiveBlend(roomInstanceId);
+    expect(blend?.speaker_persona_id).toBe('profkrapu-001');
+    expect(blend?.secondary_persona?.status).toBe('deprecated');
+    const overlay = blend?.hybrid_voice_config['method_overlay'] as
       | {attribution?: unknown}
       | undefined;
     expect(overlay?.attribution).toBe('méthode inspirée de Corrector');

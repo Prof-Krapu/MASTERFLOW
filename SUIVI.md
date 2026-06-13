@@ -4,6 +4,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — INTÉGRATION : merge `codex/frontend-masterflow` → `main` (fondations PR-1→9 + PR-3 admin) — LIVRÉE
+
+**GO Vincent (« intègre tout sur main »).** Plutôt que reconstruire Project/Scope (déjà codé par Codex), on
+fusionne sa branche fondations dans `main`. Le merge porte les deux mondes : mon **PR-3 admin `API_manage`**
+(invitations, `set_user_role`, monitoring, register invite-only, vite 8/0-vuln) + les **fondations PR-1→9** de
+Codex (projects/scopes/ownership, jobs/runners, schema templates, guided runtime, RAG shell, workflow
+observability, dépréciation non destructive de Corrector).
+
+### Conflits résolus (6, tous additifs — les deux côtés conservés)
+- `apps/backend/src/db/schema.ts` : tables `invitations` **et** `projects`/`project_members`/`ownership_edges`/
+  `resource_scopes`/`rag_*`/… coexistent ; types `InvitationRow` + tous les Row de Codex.
+- `apps/backend/src/db/seed.ts` : `seedDemoUsage` (token_events démo) **et** `SCHEMA_TEMPLATE_SEEDS` ; signature
+  `seedAll` étendue (`schemaTemplates`).
+- `apps/backend/src/index.ts` : montage de tous les routeurs (admin + jobs/projects/schema_templates/
+  guided_runtime/rag).
+- `SUIVI.md` / `INBOX_MALEX.md` / `SYNC_THREAD_MALEX_VINCENT.md` : journaux unionés (entrées des deux côtés).
+- `packages/shared/src/index.ts` : auto-mergé proprement (contrats additifs des deux côtés).
+
+### Vérifs (arbre intégré)
+`vitest` **185/185** ✓ (40 fichiers : 55 Claude + 130 Codex) · `tsc --noEmit` back ✓ · `tsc` front ✓ ·
+`vite build` ✓ (rolldown) · `npm audit` **0 vuln**.
+
+### Invariants / périmètre
+- Rien de nouveau n'est « live » en UI (les fondations PR-1→7 restent specs ; PR-8/9 backend gated admin/godmode).
+- `corrector-001` reste en base `status=deprecated` (non destructif). `POST /register` reste invite-only.
+- Prochain chantier réel ouvert : **Project/Scope réel** (memberships/scopes explicites) — à construire sur ces
+  fondations, pas re-créé.
+
+---
+
 ## 2026-06-13 — Coordination : réponse à la clôture fondations PR-1→9 de Codex (axe + consigne rebase)
 
 **Contexte.** Codex/Malex a livré sur `origin/codex/frontend-masterflow` (non mergée) un chantier « Fondations
@@ -124,6 +154,1321 @@ Smoke runtime (DB jetable) ✓ : login godmode, GET users, création/redemption 
 - Écriture settings = action sensible, gate double : validation admin + assert admin à l'exécution.
 - Secrets jamais en BDD ; `global_settings` = config non-secrète uniquement.
 - Contrat additif rétro-compatible.
+## 2026-06-13 — Bridge Project/Scope des deltas professeur
+
+**Livrable MALEX/Codex.** Fermeture du dernier scope pedagogique encore porte uniquement par une
+reference texte.
+
+Ajouts :
+
+- `project_id` nullable dans `TeacherDecisionDelta` ;
+- colonne et index projet idempotents sur `teacher_decision_deltas` ;
+- delta projet reserve au professeur auteur, membre `editor+` du projet ;
+- `context_refs[0] === project_id` pour rendre le contexte canonique non ambigu ;
+- admin/godmode limites a la supervision : aucune signature a la place du professeur ;
+- fallback legacy sans `project_id` conserve pour les deltas historiques ;
+- aucun enrichissement, score ou changement de methode applique automatiquement.
+
+Verification :
+
+- `npm test` : 37 fichiers / 161 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — Bridge Project/Scope du handoff OCR
+
+**Livrable MALEX/Codex.** Rattachement des intentions `ocr_prepare` aux vrais projets, avec
+separation explicite entre copies pedagogiques et references morphologiques personnelles.
+
+Ajouts :
+
+- `project_id` nullable dans `OcrPrepareRequest` ;
+- `project_scope === project_id` pour les nouvelles intentions OCR projet ;
+- OCR copie projet limite aux teachers membres `editor+` ;
+- manifest de pre-correction existant, valide, du meme projet et du meme owner ;
+- `validation_ref` du job obligatoirement identique a celle du manifest ;
+- jobs de copie projet visibles aux editeurs du projet ;
+- OCR morphologique projet reserve a l'utilisateur owner avec consentement et membership ;
+- job morphologique invisible aux autres membres du projet, y compris teachers editeurs ;
+- fallback legacy sans `project_id` conserve ;
+- aucun upload, OCR reel, extraction, promotion canon ou runner ajoute.
+
+Verification :
+
+- `npm test` : 37 fichiers / 160 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — Bridge Project/Scope calibration et revue qualite
+
+**Livrable MALEX/Codex.** Rattachement du diagnostic de cohorte au vrai projet, sans ajouter
+d'application automatique du delta.
+
+Ajouts :
+
+- `project_id` nullable dans `CohortCalibrationReview` ;
+- colonne et index projet idempotents sur `cohort_calibration_reviews` ;
+- batch, profil institutionnel et runs sources obligatoirement alignes sur le meme projet ;
+- `project_scope === project_id` pour les nouveaux diagnostics projet ;
+- creation et lecture accessibles aux membres `editor+` du projet ;
+- items de controle qualite heritent du projet par leur review, sans duplication de scope ;
+- fallback legacy sans `project_id` conserve avec les permissions historiques ;
+- tests de diagnostic cree par un editeur, lecture owner/editor, mismatch et immutabilite des
+  scores ;
+- aucun delta applique, aucune note finale, aucun profilage durable et aucune validation
+  automatique.
+
+Verification :
+
+- `npm test` : 37 fichiers / 158 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — Bridge Project/Scope des feedbacks et exports
+
+**Livrable MALEX/Codex.** Troisieme tranche de migration progressive vers les vrais projets,
+jusqu'au handoff `export_prepare`.
+
+Ajouts :
+
+- `project_id` nullable dans `FeedbackDraft`, `CorrectionExportPreview` et
+  `ExportPrepareRequest` ;
+- colonnes et index projet idempotents sur feedbacks et previews ;
+- feedback projet aligne sur son run et ses preuves ;
+- preview projet alignee sur son batch, ses feedbacks approuves et ses runs sources ;
+- preparation et lecture des brouillons limitees aux membres `editor+` ;
+- un teacher editeur peut preparer feedback, preview et job export pour l'owner du projet ;
+- validation pedagogique du feedback et approbation de la preview toujours reservees a l'owner ;
+- admin/godmode restent en supervision lecture et ne valident pas a la place du professeur ;
+- job `export_prepare` projet lisible par les editeurs du projet, invisible aux non-membres ;
+- fallback legacy sans `project_id` conserve en owner-only ;
+- aucune publication, livraison externe, note finale ou rendu automatique ajoute.
+
+Verification :
+
+- `npm test` : 37 fichiers / 157 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — Bridge Project/Scope de la chaine de correction
+
+**Livrable MALEX/Codex.** Deuxieme migration progressive des scopes libres vers un vrai
+`project_id`, cette fois sur les objets de reference et de preparation de correction.
+
+Ajouts :
+
+- `project_id` nullable dans les contrats rubriques, profils institutionnels, batches,
+  submissions, manifests, runs de pre-correction et requetes `correction_prepare` ;
+- colonnes et index projet idempotents sur toute cette chaine ;
+- nouveaux runs projet : `project_scope` doit egaler `project_id` ;
+- manifest, batch, submission, rubrique, profil et preuves doivent tous viser ce meme projet ;
+- ecriture et lecture d'un run projet exige membership `editor+` ;
+- preuves multi-auteurs autorisees seulement lorsqu'elles appartiennent toutes au meme projet ;
+- un editeur projet peut preparer et relire le job `correction_prepare` du projet ;
+- anciens objets sans `project_id` conserves avec les gates owner-only historiques ;
+- aucune note finale, validation automatique, publication ou export ajoute.
+
+Cette passe ne migre pas encore les feedbacks et previews/exports. Ils restent owner/scope legacy
+jusqu'a une tranche dediee avec leurs propres tests de confidentialite et validation.
+
+Verification :
+
+- `npm test` : 37 fichiers / 155 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — Consolidation Project/Scope vers Evidence et signaux
+
+**Livrable MALEX/Codex.** Premier remplacement progressif des `project_scope` libres par un
+`project_id` reel, sans casser les donnees et tests legacy.
+
+Ajouts :
+
+- `project_id` nullable dans `EvidenceEvent` et `PedagogicalSignal` ;
+- colonnes/migrations idempotentes `project_id` sur `evidence_events` et
+  `pedagogical_signals` ;
+- index projet dedies ;
+- nouveaux objets projet : `project_scope` doit egaler `project_id` pendant la transition ;
+- ecriture preuve/signal projet exige membership `editor+` ;
+- lecture projet exige membership reel et peut agreger les preuves des owners membres ;
+- un signal projet peut citer plusieurs owners uniquement si toutes les preuves appartiennent
+  au meme `project_id` ;
+- objets legacy sans `project_id` conserves en mode teacher owner-only ;
+- tests membership, lecture projet, multi-owner et mismatch scope/id.
+
+Cette tranche ne migre pas encore les rubriques, batches, correction, feedback ou exports. Elle
+pose le pattern de migration retrocompatible qui pourra etre applique progressivement.
+
+Verification :
+
+- `npm test` : 37 fichiers / 153 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — PR-7 RAG permissionne
+
+**Livrable MALEX/Codex.** Shell RAG scope, cite, revoke-aware et branche sur Resource Truth et
+Jobs, sans pretendre livrer BGE/Qdrant.
+
+Ajouts :
+
+- contrats partages `RagResource`, `RagResourceChunk`, `RagContextPack`, `RagCitation`,
+  `RagQueryRequest/Response`, statuts et raisons de refus ;
+- tables `rag_resources`, `rag_resource_chunks`, `rag_context_packs`, `rag_query_events` ;
+- routes auth `POST /rag/query`, `GET/POST /rag/resources`,
+  `POST /rag/resources/:id/reindex`, `POST /rag/resources/:id/revoke`,
+  `GET /rag/context-packs/:id` ;
+- chaque manifeste RAG reference une ressource Resource Truth existante et herite de son statut ;
+- permission scope/owner avant retrieval et avant scoring ;
+- retrieval lexical borne pour valider le contrat sans moteur vectoriel fictif ;
+- seules les ressources `validated` et fiables alimentent les context packs ;
+- citations obligatoires avec source, statut, trust, scope, score et extrait court ;
+- query sans source fiable = refus explicite, sans reponse brodee ;
+- query stockee uniquement sous forme de hash ;
+- detection de secrets avant creation des chunks ;
+- revoke admin/godmode, chunks revoques et context packs existants marques `stale` ;
+- reindex raccorde au shell jobs par un job `rag_reindex`, chunks marques `stale` en attente ;
+- tests service + router.
+
+Le moteur local BGE-M3/reranker/Qdrant reste a raccorder par Vincent derriere le job
+`rag_reindex`. Le contrat de permission, provenance, citation et revocation est deja en place.
+
+Verification :
+
+- `npm test` : 37 fichiers / 152 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — PR-6 Guided Runtime prive
+
+**Livrable MALEX/Codex.** Premier runtime guide prive, testable sans LLM, branche sur
+Project/Scope et Template Registry.
+
+Ajouts :
+
+- contrats partages `ConversationGuide`, `GuidedSession`, `GuidedSessionParticipant`,
+  `GuidedContribution`, `GuidedProgress`, `GuidedQuestion`, `GuidedContradiction` ;
+- tables `conversation_guides`, `guided_sessions`, `guided_session_participants`,
+  `guided_contributions` ;
+- routes auth `GET/POST /guides`, `GET/PATCH /guides/:id`,
+  `POST /guided-sessions`, `GET /guided-sessions/:id`,
+  `POST /guided-sessions/:id/answers`, `/advance`, `/complete` ;
+- guides draft crees par teacher+, owner-prives et rattachables a un `project_id` ;
+- sessions privees qui figent `guide_version`, `target_schema_id` et `target_schema_version` ;
+- progression deterministe depuis les champs requis du template ;
+- contradictions conservees et visibles, sans ecrasement silencieux ;
+- participants de session distincts des lecteurs du guide brut ;
+- `complete` marque uniquement la session privee comme terminee, sans publication, email,
+  devis, inscription, export ou asset ;
+- audit creation/update guide, creation session, participant, answer, advance et complete ;
+- tests service + router.
+
+Cette couche rend possible MOTH/CDC en atelier prive. Elle ne livre pas encore de lien public,
+bot externe, inscription Ours d'Or, devis, badge, email, analytics nominatives ou UI finale.
+
+Verification :
+
+- `npm test` : 35 fichiers / 142 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — PR-5 Template / Schema Registry
+
+**Livrable MALEX/Codex.** Registre backend minimal des templates versionnes, candidats ou
+valides, sans moteur conversationnel ni marketplace.
+
+Ajouts :
+
+- contrats partages `SchemaTemplate`, `CreateSchemaTemplateRequest`, domaines et statuts ;
+- table `schema_templates` ;
+- seeds candidats non canoniques :
+  `cdc-template-candidate-v1`, `quote-intake-candidate-v1`,
+  `event-registration-candidate-v1`, `asset-manifest-candidate-v1` ;
+- service interne `listSchemaTemplates`, `getSchemaTemplate`, `createSchemaTemplate`,
+  `validateSchemaTemplate` ;
+- routes auth `GET /schema-templates`, `GET /schema-templates/:id`,
+  `POST /schema-templates`, `POST /schema-templates/:id/validate` ;
+- creation limitee teacher+ en statut `candidate` ;
+- validation limitee admin/godmode ;
+- templates owner-prives masques aux autres owners ;
+- templates `deprecated` et `archived` masques par defaut ;
+- validation basique : schema objet, `properties` non vide, `required_fields` coherents ;
+- doublon `domain/name/version/owner` refuse pour forcer une nouvelle version explicite ;
+- audit `schema_template.created` et `schema_template.validated` ;
+- tests service + router.
+
+Cette couche ne livre pas MOTH/CDC, devis, event ou asset pipeline : elle donne seulement le
+support versionne que ces verticales devront figer en session ou en objet consommateur.
+
+Verification :
+
+- `npm test` : 33 fichiers / 133 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — PR-4 Project/Scope reel
+
+**Livrable MALEX/Codex.** Socle projets prives, memberships et premiers scopes ressources.
+
+Ajouts :
+
+- contrats partages `Project`, `ProjectMember`, `OwnershipEdge`, `ResourceScope` et
+  `ScopedPermissionDecision` ;
+- tables `projects`, `project_members`, `ownership_edges`, `resource_scopes` ;
+- service interne `createProject`, `listProjects`, `getProject`, `addProjectMember`,
+  `listProjectMembers`, `attachResourceScope` et `decideScopedPermission` ;
+- routes auth `GET/POST /projects`, `GET /projects/:id`,
+  `GET/POST /projects/:id/members` ;
+- anti-enumeration : un non-membre recoit `project_not_found` ;
+- creation projet limitee teacher+ ;
+- memberships projet `viewer/participant/editor/admin/owner` ;
+- audit `project.created`, `project.member_upserted`, `resource.scope_attached` ;
+- tests service + router.
+
+Cette couche remplace le scope texte libre pour les prochains raccords : ressources, jobs,
+correction, MOTH/CDC et UI doivent se brancher sur un `project_id` reel quand la verticale
+travaille dans un contexte projet.
+
+Verification :
+
+- `npm test` : 31 fichiers / 122 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
+## 2026-06-13 — Clôture fondations PR-1 à PR-9
+
+**Livrable MALEX/Codex.** Rapport de clôture du plan fondations post-audit.
+
+Ajout :
+
+- `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md`.
+
+Clarification importante :
+
+- PR-1 à PR-7 sont cadrées par packs/specs/recettes et doivent rester non deceptive tant que
+  leurs runtimes réels ne sont pas livrés ;
+- PR-8 est backend-livrée et renforcée côté jobs/runners ;
+- PR-9 est backend-livrée côté workflow observability ;
+- les runners réels Vincent doivent maintenant se brancher par les gates PR-8/PR-C7→PR-C11 ;
+- toute prochaine verticale doit choisir explicitement entre Project/Scope réel, runner réel ou
+  Guided Runtime privé.
+
+Cette clôture évite de continuer à empiler des couches runner et remet le projet sur un choix
+produit clair avant UI finale.
+
+---
+
+## 2026-06-13 — PR-9 workflow observability
+
+**Livrable MALEX/Codex.** Observabilité workflow admin/godmode, sans payload brut ni action
+runtime.
+
+Ajouts :
+
+- `SPEC_WORKFLOW_OBSERVABILITY.md` passé en implemented ;
+- contrat partagé `WorkflowEvent` ;
+- table `workflow_events` ;
+- service interne `recordWorkflowEvent` ;
+- `getWorkflowDiagnostics` avec agrégats ;
+- `getWorkflowTrace` par workflow ;
+- routes `GET /diagnostics/workflows` et `GET /diagnostics/workflows/:id` ;
+- filtres période, capability et workflow type ;
+- métriques : workflows, events, completion rate, failed, blocked, validations, p50/p95,
+  coût nullable, tokens nullable, friction blockers ;
+- gate admin/godmode via router diagnostics existant ;
+- tests service + router.
+
+Cette passe termine le plan fondations PR-1→PR-9 côté socle. Elle observe les workflows ; elle
+ne lance aucun runner, ne publie rien, ne corrige rien et n'expose pas de contenu personnel brut.
+
+---
+
+## 2026-06-13 — PR-C11 gates famille/type runner
+
+**Livrable MALEX/Codex.** Cohérence stricte entre `runner_family` et types de jobs claimés.
+
+Ajouts :
+
+- `SPEC_PR_C11_RUNNER_FAMILY_GATES.md` ;
+- mapping interne `job_type -> runner_family` ;
+- `claimNextJob` refuse une famille incompatible ;
+- `claimNextJob` refuse les claims multi-types mélangeant plusieurs familles ;
+- erreur `runner_family_not_allowed` ;
+- tests mis à jour pour exiger `runner_family = asset` sur `asset_prepare` ;
+- test refusant un runner `ocr_multimodal` qui tente de claim `asset_prepare`.
+
+Mapping actif : OCR = `ocr_multimodal`, correction = `correction`, export = `export`, asset =
+`asset`, RAG = `rag`, resource revoke = `resource`. Cette couche évite qu'un runner spécialisé
+absorbe un job qui n'est pas de sa famille technique.
+
+---
+
+## 2026-06-13 — PR-C10 gates de claim runner
+
+**Livrable MALEX/Codex.** Le heartbeat runner devient obligatoire avant claim.
+
+Ajouts :
+
+- `SPEC_PR_C10_RUNNER_CLAIM_GATES.md` ;
+- `claimNextJob` refuse les runners inconnus ;
+- `claimNextJob` refuse `draining` et `offline` ;
+- `claimNextJob` refuse les heartbeats stale ;
+- `claimNextJob` refuse les types de jobs non déclarés par le runner ;
+- les tests PR-C8 exigent maintenant un heartbeat online avant claim ;
+- test dédié inconnu/draining/stale/mauvais type.
+
+Cette couche empêche un runner OCR de prendre un export, un runner en arrêt propre de reprendre
+du travail, ou un processus inconnu de consommer la queue. Aucun droit utilisateur n'est déduit
+du runner : il s'agit seulement d'un gate technique d'exécution.
+
+---
+
+## 2026-06-13 — PR-C9 heartbeats internes des runners
+
+**Livrable MALEX/Codex.** Observabilité interne des runners avant activation réelle, sans route
+publique.
+
+Ajouts :
+
+- `SPEC_PR_C9_RUNNER_HEARTBEATS.md` ;
+- contrat `RunnerHeartbeat` partagé ;
+- table `runner_heartbeats` ;
+- `recordRunnerHeartbeat(input)` ;
+- `getRunnerHeartbeat(runner_id)` ;
+- `listRunnerHeartbeats()` ;
+- `listClaimableRunnerHeartbeats(job_type, now?, stale_ms?)` ;
+- statuts `online`, `draining`, `offline` ;
+- filtrage des runners claimables par fraîcheur, statut et type de job ;
+- audit sobre sans host secret ni contenu métier ;
+- tests upsert, filtrage, secrets, colonnes et audit.
+
+Vincent doit faire battre ses runners avant claim : `online` pour prendre du travail, `draining`
+pour arrêter proprement sans nouveau job, `offline` pour maintenance. Les heartbeats ne créent
+aucun droit utilisateur et n'activent aucune route publique.
+
+---
+
+## 2026-06-13 — PR-C8 claim et lease internes des runners
+
+**Livrable MALEX/Codex.** Attribution sûre des jobs aux runners, sans broker externe, route
+publique ou polling SQL direct.
+
+Ajouts :
+
+- `SPEC_PR_C8_RUNNER_CLAIM_AND_LEASE.md` ;
+- colonnes nullable `runner_id`, `claimed_at`, `lease_expires_at` sur `jobs` ;
+- migration idempotente par `ALTER TABLE` si colonnes absentes ;
+- `claimNextJob(runner_id, types, lease_ms?)` ;
+- `extendJobLease(job_id, runner_id, lease_ms?)` ;
+- reprise d'un job `running` seulement si son lease est expiré ;
+- vérification optionnelle du `runner_id` sur progress/review/complete/fail ;
+- nettoyage du lease sur cancel, retry et finalisation ;
+- aucun nouvel event type pour rester compatible avec les contraintes SQLite existantes ;
+- tests claim, concurrence, expiration, extension, finalisation et mauvais runner.
+
+Vincent doit faire consommer ses runners par `claimNextJob`, prolonger le lease pendant les
+traitements longs, puis finaliser avec le même `runner_id`. Aucun runner ne doit scanner ou
+modifier `jobs` directement.
+
+---
+
+## 2026-06-13 — PR-C7 lifecycle interne des runners jobs
+
+**Livrable MALEX/Codex.** Transitions runner-only pour terminer proprement les jobs, sans route
+publique ni écriture directe table.
+
+Ajouts :
+
+- `SPEC_PR_C7_RUNNER_JOB_LIFECYCLE.md` ;
+- `markJobNeedsReview(job_id, result, review_reason)` ;
+- `completeJob(job_id, result)` ;
+- `failJob(job_id, error, detail?)` ;
+- statut finalisable limité à `queued/running` ;
+- progression finale forcée à `100` sur review/completion ;
+- events `job_needs_review`, `job_completed`, `job_failed` ;
+- audit sobre sans contenu privé ;
+- refus des payloads/resultats/détails contenant des libellés de secrets ;
+- tests runner lifecycle : review, complete, fail/retry, cancel et secrets.
+
+Vincent peut brancher ses runners sans écrire directement `jobs`/`job_events`. Pour OCR,
+correction et export sensibles, la sortie attendue reste `needs_review`, jamais une note finale
+ou une publication.
+
+---
+
+## 2026-06-13 — PR-C6 handoffs jobs correction/export
+
+**Livrable MALEX/Codex.** Sas interne entre objets validés et futurs runners correction/export,
+sans runner, sans route publique et sans publication.
+
+Ajouts :
+
+- `SPEC_PR_C6_CORRECTION_EXPORT_JOB_HANDOFFS.md` ;
+- contrats `CorrectionPrepareRequest` et `ExportPrepareRequest` ;
+- service `createCorrectionPrepareJob` depuis manifest pré-correction validé ;
+- service `createExportPrepareJob` depuis preview `approved_for_export` ;
+- création owner-only professeur, admin/godmode en supervision lecture seulement ;
+- alignement obligatoire owner/scope/batch/validation/workflow ;
+- jobs `correction_prepare` et `export_prepare` créés en `queued` ;
+- payloads réduits aux refs utiles, sans contenu privé ni `storage://private` pour export ;
+- tests de refus manifest draft, preview non approuvée, validation incohérente et owner mismatch.
+
+Cette couche donne à Vincent le point d'ancrage propre pour ses runners : ils doivent consommer
+ces jobs uniquement, avancer en progression monotone, puis sortir en `needs_review`. La correction
+ne crée toujours aucune note finale ; l'export ne publie toujours rien.
+
+---
+
+## 2026-06-13 — PR-C5 feedback student-safe et previews d'export
+
+**Livrable MALEX/Codex.** Cycle interne supervisé du feedback pédagogique à la preview privée,
+sans rendu final ni publication.
+
+Ajouts :
+
+- `SPEC_PR_C5_FEEDBACK_AND_EXPORT_PREVIEWS.md` ;
+- contrats stricts `FeedbackDraft` et `CorrectionExportPreview` ;
+- tables `feedback_drafts` et `correction_export_previews` ;
+- feedback structuré : force, problème, preuves, impact, axe, action et critère de progression ;
+- provenance par version de méthode et profil modèle `feedback_draft` validé optionnel ;
+- validation pédagogique réservée à l'owner professeur ;
+- formats preview `CSV`, `XLSX`, `PDF` et `report` ;
+- sources limitées aux feedbacks approuvés et aux runs exacts du batch ;
+- validation d'export distincte, réservée à l'owner ;
+- `publication_allowed = false` imposé par contrat et BDD ;
+- supervision admin/godmode en lecture et audits sans contenu privé.
+
+`approved_for_export` n'engendre aucun job, fichier final, lien de livraison ou publication.
+Vincent doit comparer les champs aux feedbacks et exports de ses phases P1–P4 et signaler les
+formats ou contrôles qualité réellement manquants avant raccord renderer.
+
+---
+
+## 2026-06-13 — PR-C4 calibration et contrôle qualité
+
+**Livrable MALEX/Codex.** Diagnostic interne de cohorte et échantillon de relecture, sans
+modification des scores.
+
+Ajouts :
+
+- `SPEC_PR_C4_CALIBRATION_AND_QUALITY_REVIEW.md` ;
+- contrats stricts `CohortCalibrationReview` et `QualityReviewItem` ;
+- tables `cohort_calibration_reviews` et `quality_review_items` ;
+- méthode versionnée `cohort-quality-review-v1` ;
+- statistiques brutes sur l'échelle du profil institutionnel ;
+- position sous/dans/au-dessus de la bande attendue ;
+- aucun delta si moins de trois copies ;
+- delta diagnostic borné vers le bord de bande, jamais appliqué ;
+- détection des franchissements de seuils protégés ;
+- échantillonnage des extrêmes, frontières, écarts statistiques et faibles confiances ;
+- permission teacher owner, supervision admin/godmode et audit agrégé.
+
+Aucune moyenne n'est forcée. Aucun score PR-C3 n'est modifié et aucune note finale, validation,
+étiquette étudiante, route publique ou UI n'est ajoutée. Vincent doit comparer l'échantillonnage
+et les métriques à ses contrôles qualité historiques avant tout raccord runner.
+
+---
+
+## 2026-06-13 — PR-C3 pré-correction explicable
+
+**Livrable MALEX/Codex.** Fondation interne du scoring brouillon par critère, sans runner ni
+note finale.
+
+Ajouts :
+
+- `SPEC_PR_C3_PRE_CORRECTION_EXPLICABLE.md` ;
+- contrats `PreCorrectionRunDraft` et `CriterionScoreDraft` stricts ;
+- tables `pre_correction_runs` et `criterion_score_drafts` ;
+- dépôt interne `recordPreCorrectionDraft` sans route publique ;
+- alignement obligatoire manifest/batch/copie/rubrique/profil/owner/scope ;
+- manifest et rubrique validés avant écriture ;
+- couverture exacte des critères de la rubrique ;
+- preuves utilisables et confiance bornée pour chaque proposition ;
+- éventuel profil modèle validé pour `criterion_analysis` ;
+- sortie forcée en `needs_review`, scores forcés en `candidate` ;
+- audit sans contenu pédagogique sensible.
+
+Aucun total, `final_score`, calibration, feedback, validation professeur, export ou règle de
+sujet codée en dur n'est livré. Vincent doit comparer ce contrat à son `scoring_trace` réel et
+signaler les métadonnées de provenance manquantes avant tout raccord runner.
+
+---
+
+## 2026-06-13 — PR-C2 ingestion OCR et jobs shell
+
+**Livrable MALEX/Codex.** Fondation observable pour les traitements OCR longs, sans runner réel.
+
+Ajouts :
+
+- `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md` ;
+- contrats `Job`, `JobEvent`, statuts/types et `OcrPrepareRequest` ;
+- tables `jobs` et `job_events` avec index owner/scope ;
+- création interne `ocr_prepare` pour copie ou référence morphologique ;
+- manifest obligatoire pour copie, consentement obligatoire pour morphologie ;
+- références `storage://` seulement et détection de payload secret ;
+- isolation owner, supervision admin/godmode ;
+- progression monotone, cancel/retry et historique ;
+- routes de suivi sans route générique de création ;
+- tests service et HTTP.
+
+Aucun upload, worker, watcher, OCR, score ou canon n'est livré. Le job `queued` représente une
+intention vérifiée en attente d'un runner. Vincent doit raccorder son OCR derrière ce service et
+terminer les extractions en `needs_review`.
+
+---
+
+## 2026-06-13 — PR-C1 objets de référence correction
+
+**Livrable MALEX/Codex.** Fondation versionnée de la correction, sans exécution.
+
+Ajouts :
+
+- `SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md` ;
+- `RubricTemplate` et `RubricVersion` avec cohérence poids/points ;
+- `InstitutionalGradingProfile` avec bandes bornées et validation professeur ;
+- `CorrectionBatch` ;
+- `SubmissionRecord` privé relié à une preuve ;
+- `PreCorrectionManifest` exigeant une validation pour tout état utilisable ;
+- six tables SQLite, index et tests.
+
+La zone 13–14 reste un repère institutionnel de cohérence et ne force aucune moyenne. Aucun
+score, feedback, export, route ou runner n'est ajouté. PR-C2 devra consommer ces références pour
+les jobs d'ingestion et ne jamais reprendre les heuristiques historiques en dur.
+
+Vincent doit comparer ses correction sheets et manifests P1–P4 aux contrats et répondre avec les
+champs manquants réellement nécessaires.
+
+---
+
+## 2026-06-13 — Décision : socle OCR Vincent absorbé et adapter morphologique déclaré
+
+**Décision MALEX.** Le protocole OCR multimodal de Vincent est conservé comme apport transversal.
+
+Architecture :
+
+```text
+runner ocr_multimodal commun
+-> adapters métier indépendants
+-> contrats, privacy, permissions et sorties séparés
+```
+
+Ajouts :
+
+- `DECISION_ABSORPTION_OCR_COMMUN_ET_ADAPTER_MORPHOLOGIQUE.md` ;
+- champ `runner_family` dans le registre ;
+- contrat de sortie et gates explicites par adapter ;
+- adapter `morphological-reference-v1` raccordé au canon Drive ;
+- classification `sensitive_private`, consentement et validation utilisateur obligatoires ;
+- tests prouvant que copies et morphologie partagent le runner sans partager leur contrat.
+
+Aucun OCR n'est activé. Vincent doit auditer et découpler son runner existant avant branchement.
+Le futur adapter morphologique produira des hints stylisés privés, jamais une identification,
+une biométrie ou un canon automatique.
+
+---
+
+## 2026-06-13 — PR-C0 Corrector déprécié sans destruction
+
+**Livrable MALEX/Codex.** Application runtime de la décision d'absorption de Corrector.
+
+Ajouts :
+
+- statut partagé de persona borné à `active | deprecated` ;
+- migration seed de `corrector-001` vers `deprecated`, y compris sur base existante ;
+- permissions historiques explicitement non autoritaires ;
+- listes et contexte limités aux personas actifs ;
+- activation et nouveaux blends Corrector refusés ;
+- détail et blends historiques toujours relisibles ;
+- tests moteur et HTTP de non-régression.
+
+Cette migration ne retire aucune capacité de correction. OCR, scoring, calibration, feedback,
+contrôle qualité et exports doivent être absorbés dans leurs engines et contrats canoniques.
+Corrector cesse seulement d'être un persona métier souverain.
+
+Vincent doit maintenant préparer PR-C1 à partir de ses features existantes : rubriques, profils
+institutionnels, batches, submissions et manifests, sans recréer un persona Corrector.
+
+---
+
+## 2026-06-13 — PR-CB2 routage LLM par tâche et egress gated
+
+**Livrable MALEX/Codex.** Le runner LLM ne route plus un provider externe sur la seule base de
+variables globales.
+
+Ajouts :
+
+- contrat partagé `LLMTaskSchema` ;
+- résolution d'un profil `task_model_profiles` validé et unique ;
+- vérification du provider autorisé et du fallback déclaré ;
+- blocage des configurations incomplètes ;
+- allowlist d'origines réseau `LLM_EGRESS_ALLOWLIST` ;
+- HTTPS obligatoire hors loopback, credentials/query/fragment interdits dans l'URL ;
+- respect de `privacy_mode=local_only` ;
+- branchement du gate avant tout `fetch` du runner ;
+- tests du mock, du profil validé, des refus provider/tâche et de l'anti-SSRF.
+
+Le mode mock reste sans réseau. Cette tranche ne prétend pas livrer un fallback multi-provider :
+une seule configuration serveur est active. Budgets coût/latence, timeout/retry, administration
+et validation sensible des profils restent à construire.
+
+Vincent doit challenger le gate contre ses implémentations `API_corrector` / `vibe`, sans ajouter
+de secret en BDD ni rendre un fallback fictivement disponible.
+
+---
+
+## 2026-06-13 — PR-CB1 adapter registry read-only
+
+**Livrable MALEX/Codex.** Ajout d'un registre statique et versionné pour les entrées pédagogiques
+OCR, WooClap, transcription et note professeur.
+
+Ajouts :
+
+- `SPEC_ADAPTER_REGISTRY_PR_CB1.md` ;
+- contrat partagé `AdapterRegistryEntrySchema` ;
+- seed `adapter_registry_seed.v1.json` ;
+- moteur de lecture filtré par rôle ;
+- gate défensif refusant tout adapter sans statut `live`, executor et UI `actionable` ;
+- tests des statuts, de la visibilité professeur/étudiant et de la non-exécution.
+
+Les adapters OCR, WooClap et transcription restent `shell/locked`. La note professeur est
+`partial/readonly` : le socle EvidenceEvent existe, mais aucune route ni surface de saisie n'est
+livrée. Aucune donnée pédagogique, aucun secret et aucun runner ne sont ajoutés.
+
+Vincent doit comparer ces déclarations à ses runners existants et signaler les écarts, sans
+activation avant Project/Scope, Jobs, stockage, permission/preflight, tests et recette.
+
+---
+
+## 2026-06-13 — Pont canon x features Vincent et terrain PR-CB0
+
+**Livrable MALEX/Codex.** Le canon pedagogique a ete recroise avec les fonctions deja construites
+dans `API_corrector`, `API_manage`, `vibe`, le pipeline Corrector local et les anciennes sources.
+
+Constat : les owners existaient deja dans MasterFlow. Les fonctions Vincent apportent surtout
+des implementations terrain et des adapters. Il ne faut creer aucun engine parallele.
+
+Ajouts :
+
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md` ;
+- `SPEC_PEDAGOGICAL_EVIDENCE_SIGNAL_AND_TEACHER_DELTA.md` ;
+- insertion de `PR-CB0` dans le plan de fondations.
+- premiere implementation additive PR-CB0 dans `packages/shared` :
+  `EvidenceEvent`, `PedagogicalSignal`, `TeacherDecisionDelta`, `TaskModelProfile` ;
+- tests de garde des preuves, confiances, deltas IA/humain et profils de tache.
+- migrations SQLite idempotentes des quatre objets, avec privacy privee par defaut, statuts
+  fermes, confiances bornees et separation obligatoire proposition IA / decision humaine ;
+- indexes scope/statut/date et tests de persistance, sans route publique.
+- depot interne permissionne : teacher limite a ses propres preuves/deltas, signaux obligatoirement
+  relies a des preuves accessibles, profils de modele reserves admin et forces en `draft` ;
+- audits `evidence.captured`, `signal.observed`, `teacher_delta.recorded` et
+  `model_profile.proposed`, sans payload pedagogique sensible dans les logs.
+
+Le terrain partage prepare :
+
+- evidence events normalises ;
+- signaux pedagogiques prudents ;
+- deltas entre proposition IA et decision professeur ;
+- profils de routing modele par tache ;
+- boucle d'amelioration sujet/rubrique/methode sous validation humaine.
+
+Cette fondation est reutilisable par correction, cours, WooClap, suivi, MOTH/CDC, Ours d'Or,
+devis et integration LMS. Elle reste `future` tant que routes, permissions, tests et recettes ne
+sont pas livres.
+
+---
+
+## 2026-06-13 — Decision Corrector : absorption fonctionnelle, persona deprecie
+
+**Decision MALEX.** Ajout de
+`DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`.
+
+Corrector n'est pas supprime fonctionnellement : les fonctions utiles des projets Vincent
+doivent etre auditees puis absorbees dans le moteur de correction, les jobs, les rubriques,
+les controles qualite, les feedbacks et les exports.
+
+Cette absorption rend le systeme plus puissant : les capacites de correction deviennent
+transversales et utilisables par tout persona, cours, sujet, classe ou integration autorisee.
+Les composants OCR, scoring brouillon, calibration, feedback, controle qualite et export peuvent
+evoluer independamment, et chaque amelioration profite a toutes les surfaces MasterFlow.
+
+La modelisation de `corrector-001` comme persona primaire autonome est en revanche rejetee :
+elle confond voix, methode, moteur, permissions et souverainete pedagogique. Migration demandee :
+deprecation non destructive, retrait des nouveaux parcours, eventuel profil de methode, puis
+adaptateur pour les references historiques.
+
+La `moyenne_cible` est clarifiee comme referentiel institutionnel de MALEX :
+
+- moins de 10 = minimum non atteint ;
+- 13-14 = niveau normalement attendu ;
+- notes superieures = niveaux forts ou exceptionnels.
+
+Le lissage automatique doit devenir une calibration explicable :
+`raw_score -> institutional_grading_profile -> cohort diagnostic -> teacher validation ->
+final_score`. La plage 13-14 reste une zone de coherence, jamais une moyenne forcee.
+
+Vincent doit repondre avec un audit de ses features Corrector et proposer PR-C0/PR-C1 avant toute
+implementation large.
+
+---
+
+## 2026-06-13 — Correction protocole Vincent : features propres + canon embarque
+
+**Correction MALEX.** Vincent ne doit pas checker directement le Drive canon par defaut.
+
+Le canon utile doit etre embarque dans Git par MALEX/Codex. Vincent doit surtout checker ses
+propres features/projets/branches/PRs/workflows pour trouver les bonnes opportunites
+d'implementation et ne rien oublier.
+
+Ajout de `PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md` et correction de `INBOX_VINCENT.md` /
+`SYNC_THREAD_MALEX_VINCENT.md`.
+
+Objectif : ne rien perdre du canon et ne rien perdre des features deja construites cote Vincent.
+
+---
+
+## 2026-06-13 — Regle de travail : check canon Drive avant spec Git
+
+**Decision MALEX.** Avant de traiter une idee comme nouvelle, Codex doit verifier le
+Drive canon MasterFlow. Si le sujet existe deja, le Git doit absorber et relier le canon, pas
+reinventer une version parallele.
+
+Ajout dans `CLAUDE.md` d'une procedure obligatoire :
+
+- recherche `rg` dans le Drive canon ;
+- lecture des fichiers sources ;
+- references canon citees dans les specs/handoffs ;
+- distinction `deja canonique` / `partiellement implemente` / `absent backend` ;
+- aucune spec Git hors-sol.
+
+Constat du check : le modele persona principal + personas contextuels + sous-personas conditionnels
+est bien canonique. MasterStory est aussi richement canonique, mais cote Git il reste surtout au
+stade capability candidate / audit absent, pas moteur backend livre.
+
+---
+
+## 2026-06-13 — Precision multi-personas type RPG pedagogique
+
+**Decision MALEX.** La decision persona/bots est precisee : l'utilisateur garde son persona
+principal, puis une activite peut ajouter des personas contextuels bornes, par exemple persona du
+prof, methode, jury, expert, MOTH pour check CDC ou Incubator pour Ours d'Or.
+
+Regle : 1 a 3 personas contextuels maximum par defaut, orchestration des tours de parole, voix
+identifiees, aucune elevation de droits par persona. Objectif : croiser methodes, graphs
+pedagogiques et ressources sans creer une conversation confuse.
+
+---
+
+## 2026-06-13 — Persona utilisateur par defaut vs bots contextuels + pack PR-8 jobs
+
+**Decision MALEX.** Ajout de `DECISION_PERSONA_USER_ET_BOTS_CONTEXTUELS.md` et mise a jour de
+la spec Guided Runtime : MOTH n'est pas le persona par defaut de tous les utilisateurs. Chaque
+user peut avoir son persona personnel ; MOTH et les autres bots sont des guides contextuels
+assignes a une activite, classe, projet, event ou tunnel.
+
+**Livrable MALEX/Codex.** Ajout du paquet operationnel pour `jobs_shell` :
+
+- `HANDOFF_VINCENT_PR8_JOBS_QUEUES_RUNNERS.md` ;
+- `CHECKLIST_PR8_JOBS_QUEUES_RUNNERS.md` ;
+- `RECETTE_PR8_JOBS_QUEUES_RUNNERS.md`.
+
+Objectif : encadrer les operations longues via jobs owner/scope, progress, cancel/retry, audit et
+gates, sans runner brut appele depuis l'UI.
+
+---
+
+## 2026-06-13 — Pack PR-7 RAG permissionne
+
+**Livrable MALEX/Codex.** Ajout du paquet operationnel pour `rag_capability_shell` :
+
+- `HANDOFF_VINCENT_PR7_RAG_PERMISSIONNE.md` ;
+- `CHECKLIST_PR7_RAG_PERMISSIONNE.md` ;
+- `RECETTE_PR7_RAG_PERMISSIONNE_DETAILLEE.md`.
+
+Objectif : poser un RAG permissionne, cite et revoke-aware, qui aide MasterFlow a retrouver des
+sources sans devenir une autorite ni fuiter des ressources hors scope.
+
+---
+
+## 2026-06-13 — Pack PR-6 Guided Runtime prive
+
+**Livrable MALEX/Codex.** Ajout du paquet operationnel pour `guided_runtime_pr1` :
+
+- `HANDOFF_VINCENT_PR6_GUIDED_RUNTIME.md` ;
+- `CHECKLIST_PR6_GUIDED_RUNTIME.md` ;
+- `RECETTE_PR6_GUIDED_RUNTIME_DEPENDENCIES.md`.
+
+Objectif : cadrer MOTH/CDC comme runtime prive testable, dependant de scopes et templates
+versionnes, sans lien public, email, devis, badge, event ou effet externe implicite.
+
+---
+
+## 2026-06-13 — Pack PR-4/PR-5 Project Scope + Template Registry
+
+**Livrable MALEX/Codex.** Ajout du handoff et des checklists pour les deux fondations suivantes :
+
+- `HANDOFF_VINCENT_PR4_PR5_SCOPE_TEMPLATES.md` ;
+- `CHECKLIST_PR4_PROJECT_SCOPE_OWNERSHIP.md` ;
+- `CHECKLIST_PR5_TEMPLATE_SCHEMA_REGISTRY.md` ;
+- `RECETTE_PROJECT_SCOPE_TEMPLATES.md`.
+
+Objectif : donner a Vincent un chantier court et testable pour poser ownership/scope puis
+templates versionnes, avant MOTH/CDC, Ours d'Or, devis, event, DA/assets ou RAG avance.
+
+---
+
+## 2026-06-13 — Pack PR-2/PR-3 Capability Registry + Status Taxonomy
+
+**Livrable MALEX/Codex.** Ajout du handoff et des checklists pour les PRs suivant
+`autonomy_step1_shell` :
+
+- `HANDOFF_VINCENT_PR2_PR3_CAPABILITY_STATUS.md` ;
+- `CHECKLIST_PR2_CAPABILITY_REGISTRY.md` ;
+- `CHECKLIST_PR3_STATUS_TAXONOMY.md` ;
+- `RECETTE_CAPABILITY_STATUS.md`.
+
+Objectif : preparer le registry et les statuts pour empecher les features fantomes, les statuts
+canon pris pour du runtime et les UI actionnables sans endpoint reel.
+
+---
+
+## 2026-06-13 — Big chantier Vincent : revue PRs + checklist autonomie
+
+**Livrable MALEX/Codex.** Ajout du pack operationnel pour Vincent :
+
+- `HANDOFF_VINCENT_BIG_CHANTIER_FONDATIONS_2026-06-13.md` ;
+- `PROTOCOLE_REVUE_PRS_VINCENT.md` ;
+- `CHECKLIST_PR1_AUTONOMY_STEP1.md`.
+
+Objectif : permettre a Vincent de se reveiller avec un chantier backend complet, priorise et
+verifiable, en commencant par `autonomy_step1_shell`.
+
+---
+
+## 2026-06-13 — Matrice features vs fondations
+
+**Livrable MALEX/Codex.** Ajout de `MATRICE_FEATURES_VS_FONDATIONS_MASTERFLOW.md`.
+
+La matrice relie les verticales produit aux fondations techniques :
+
+- autonomie step 1 ;
+- capability registry ;
+- MOTH/CDC ;
+- Ours d'Or ;
+- devis ;
+- DA/assets ;
+- correction ;
+- cours/classe ;
+- RAG ;
+- jobs ;
+- observabilite ;
+- MasterStory ;
+- HelpLab ;
+- marketplace et connecteurs repousses.
+
+Objectif : prioriser les features selon leurs dependances reelles, pas selon leur attrait immediat.
+
+---
+
+## 2026-06-13 — Pack specs fondations post-audit
+
+**Livrable MALEX/Codex.** Deroulement de la chaine de specs et recettes priorisees apres audit :
+
+- `RECETTE_AUTONOMY_STEP1_SHELL.md` ;
+- `SPEC_CAPABILITY_REGISTRY.md` ;
+- `SPEC_STATUS_TAXONOMY.md` ;
+- `SPEC_PROJECT_SCOPE_OWNERSHIP.md` ;
+- `SPEC_TEMPLATE_SCHEMA_REGISTRY.md` ;
+- `RECETTE_RAG_PERMISSIONNE.md` ;
+- `SPEC_JOBS_QUEUES_RUNNERS.md` ;
+- `SPEC_WORKFLOW_OBSERVABILITY.md` ;
+- `PLAN_PRS_FONDATIONS_MASTERFLOW.md`.
+
+Objectif : donner a Vincent une sequence backend claire et testable avant implementation large.
+
+---
+
+## 2026-06-13 — Spec autonomie encadree step 1
+
+**Livrable MALEX/Codex.** Ajout de `SPEC_AUTONOMY_STEP1_SHELL.md`.
+
+La spec transforme la priorite `autonomy_step1_shell` en PR bornable :
+
+- `autonomy_runs` ;
+- `autonomy_findings` ;
+- `improvement_candidates` ;
+- `decision_queue` ;
+- checks read-only ;
+- endpoints admin+ ;
+- recette A1-A8 ;
+- tests minimum ;
+- interdiction explicite d'executer une action sensible.
+
+Cette couche doit permettre a MasterFlow d'observer, preparer et proposer avant les connecteurs
+puissants ou l'automatisation d'execution.
+
+---
+
+## 2026-06-13 — Autonomie encadree step 1 avant connecteurs
+
+**Decision MALEX.** Correction du plan post-audit : les connecteurs/plugins ne sont pas un
+chantier step 1. La priorite devient un systeme autonome encadre capable d'observer, preparer et
+proposer sans executer d'action sensible.
+
+`MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md` est mis a jour :
+
+- ajout de `F0 — Autonomie encadree step 1` ;
+- objets proposes : `autonomy_runs`, `autonomy_findings`, `improvement_candidates`,
+  `decision_queue` ;
+- gateway connecteurs repoussee en phase ulterieure ;
+- ordre de PRs mis a jour avec `autonomy_step1_shell` en premier.
+
+---
+
+## 2026-06-12 — Fondations post-audit a mettre en place
+
+**Livrable MALEX/Codex.** Ajout de `MASTERFLOW_POST_AUDIT_FOUNDATION_UPGRADES.md` dans Git et
+miroir prevu dans le Drive canon `01_CORE`.
+
+Objectif : transformer les failles evidentes de l'audit complet en fondations transversales :
+
+- Capability Registry reel ;
+- statuts canon/runtime normalises ;
+- Project / Scope / Ownership ;
+- RAG local permissionne + Resource Truth ;
+- jobs/queues/runners ;
+- Template / Schema Registry ;
+- autonomie encadree step 1 ;
+- Tool / Connector Gateway plus tard ;
+- observabilite workflow ;
+- recettes d'acceptation systematiques ;
+- validation graduee.
+
+Priorite : mettre ces multiplicateurs en place avant d'empiler des features isolees ou une UI
+finale.
+
+---
+
+## 2026-06-12 — Recette UI post-PR-1 Guided Runtime
+
+**Livrable MALEX/Codex.** Ajout de `RECETTE_UI_PR1_GUIDED_RUNTIME.md` pour cadrer la future
+surface atelier MOTH/CDC apres livraison backend PR-1.
+
+Objectif : prevenir une UI deceptive. Le frontend devra consommer les objets reels
+guide/session/progression/question/contributions/contradictions, ou afficher des etats vides.
+Aucun public, export, email, badge, devis ou publication en PR-1.
+
+---
+
+## 2026-06-12 — Recette PR-1 Guided Runtime
+
+**Livrable MALEX/Codex.** Ajout de `RECETTE_PR1_GUIDED_RUNTIME.md` pour cadrer l'acceptation
+de la premiere tranche MOTH/CDC.
+
+La recette couvre :
+
+- endpoints attendus ;
+- payloads de reference ;
+- scenarios A1-A12 ;
+- tests minimum ;
+- criteres de refus immediat ;
+- application de la validation graduee.
+
+Objectif : permettre a Vincent de livrer une PR-1 verifiable avant toute UI finale ou acces public.
+
+---
+
+## 2026-06-12 — Validation graduee au lieu de double validation systematique
+
+**Decision MALEX/Vincent.** MasterFlow assouplit la validation : ne pas exiger une double
+validation humaine systematique pour les operations bas risque, privees ou reversibles.
+
+Nouvelle reference : `POLITIQUE_VALIDATION_GRADUEE.md`.
+
+Regle :
+
+- permission check toujours ;
+- preflight selon l'action ;
+- audit des mutations ;
+- validation humaine pour actions sensibles ;
+- validation renforcee seulement pour actions critiques.
+
+Impact PR-1 Guided Runtime : drafts, sessions privees, contributions et progression interne
+passent par permission/scope/audit. Publication, public, email, event, devis, asset, export,
+settings globaux, suppression definitive ou cout eleve restent soumis a validation humaine.
+
+---
+
+## 2026-06-12 — GO PR-1 Guided Runtime prive
+
+**Decision humaine MALEX.** MOTH/CDC est retenu comme premiere verticale de preuve pour exercer
+plusieurs fondations MasterFlow, sans le confondre avec une priorite absolue du produit.
+
+Perimetre valide :
+
+- `GUIDANCE_ENGINE` owner de la prochaine question ;
+- guides owners par user, room optionnelle ;
+- sessions uniquement authentifiees ;
+- usage prive d'un guide draft par son teacher owner ;
+- retention 30 jours inactive / 90 jours apres cloture ;
+- premier template CDC versionne en `candidate` ;
+- contrats, migrations, progression deterministe, permissions, audit et tests.
+
+Restent interdits dans cette PR : public/invite, LLM obligatoire, email, event, devis, assets,
+publication, analytics nominatifs et UI finale.
+
+Demande transmise a Vincent dans `INBOX_VINCENT.md` et `SYNC_THREAD_MALEX_VINCENT.md`.
+
+---
+
+## 2026-06-12 — Audit exhaustif du Drive MasterFlow complet
+
+**Perimetre :** audit documentaire et technique, sans modification runtime.
+
+### Fait
+
+- Inventorie les 4 508 fichiers du Drive canon :
+  - 791 fichiers dans le corpus fonctionnel primaire ;
+  - 3 686 fichiers secondaires (audits, deployment, factories) ;
+  - 31 fichiers racine.
+- Normalise le systeme en 42 familles, dont 41 dans le perimetre produit actuel et factories
+  suivies separement comme `OUT_OF_SCOPE`.
+- Compare chaque famille aux contrats, tables, endpoints, engines, UI et tests GitHub.
+- Corrige la portee du premier audit : 15-20 % concernait le noyau actif ; la couverture de
+  MasterFlow complet est estimee prudemment a **10-13 %**.
+- Ajoute :
+  - `AUDIT_MASTERFLOW_COMPLET_CANON_VS_GITHUB_2026-06-12.md` ;
+  - `AUDIT_MASTERFLOW_CANON_INVENTORY.json` ;
+  - `scripts/audit-masterflow-canon.mjs`.
+- Message de revue depose pour Vincent dans `INBOX_VINCENT.md` et
+  `SYNC_THREAD_MALEX_VINCENT.md`.
+
+### Decision
+
+- Ne pas reduire le canon au MVP et ne pas convertir chaque document en feature.
+- Fermer d'abord core multi-user, permissions objet, execution/jobs et Sentinel minimal.
+- Utiliser ensuite MOTH/CDC comme premiere verticale privee, puis Ours d'Or et devis.
+- Terminer chaque verticale par sa surface UI, pas commencer par une UI globale.
+
+---
+
+## 2026-06-12 — Audit profond canon Drive vs GitHub
+
+**Audit MALEX/Codex.** Rapport :
+`AUDIT_PROFOND_CANON_VS_GITHUB_2026-06-12.md`.
+
+L'audit compare l'index canonique des owners actifs, les grands contrats transversaux, les
+objets BDD, les endpoints, les schemas partages, le frontend et les tests.
+
+Conclusion :
+
+- aucun des 19 owners actifs de l'index JSON n'est implemente a profondeur canonique ;
+- 8 possedent une tranche de code executable identifiable ;
+- la couverture brute par presence d'une tranche de code est d'environ 42 % ;
+- la couverture fonctionnelle ponderee est estimee entre 15 et 20 % ;
+- le socle auth/rooms/personas/actions/resources est coherent, mais les domaines metier,
+  jobs, projets, assets, scopes et runners restent majoritairement absents.
+
+Priorite recommandee : fermer scopes/ownership/privacy, projects, jobs et dispatcher d'actions,
+puis utiliser le pilote MOTH/CDC comme premiere verticale multi-owner.
+
+Validation technique du baseline : backend 27/27, lint backend/frontend et build frontend OK.
+
+---
+
+## 2026-06-12 — PR-0 Bot Studio / Guided Runtime
+
+**Decision MALEX.** L'audit global du Drive canon est transforme en specification d'assemblage :
+`SPEC_BOT_STUDIO_GUIDED_RUNTIME.md`.
+
+Le Bot Studio n'est pas un nouvel engine. Il compose `GUIDANCE_ENGINE`, personas fonctionnelle
+et lore, engine metier, UI manifest, permissions, cycle d'action, Resource Truth, analytics et
+opportunity detector.
+
+La spec couvre :
+
+- guides conversationnels versionnes ;
+- sessions privees, classe, invitees ou publiques ;
+- contributions sourcees et contradictions ;
+- manifestes de deploiement des bots ;
+- permissions, consentements, preflight et validation ;
+- cas MOTH/CDC, Ours d'Or, devis et creation guidee d'un bot ;
+- plan de PRs progressives et tests minimum.
+
+### Gate
+
+- Ce commit est une PR-0 documentaire, sans code ni migration.
+- La premiere implementation proposee reste privee et authentifiee, sans LLM obligatoire.
+- Vincent doit auditer le mapping, repondre aux questions ouvertes et proposer le diff exact
+  de PR-1.
+- Acces public, email, devis, assets et analytics godmode exigent chacun un GO MALEX separe.
+
+---
+
+## 2026-06-12 — Dimensionnement propose pour le runtime Local RAG BGE
+
+**Information transmise a Vincent.** Palier de depart recommande :
+
+```text
+RTX 4060 Ti 16 Go + CPU 8-12 coeurs + 64 Go RAM + NVMe 1-2 To
+```
+
+Le CPU seul reste possible pour un PoC, tandis qu'une RTX 4090 24 Go et 128 Go RAM
+correspondent plutot a une charge lourde ou multi-utilisateur.
+
+Cette recommandation n'est pas une decision d'achat. Le choix final dependra d'un benchmark
+sur le corpus pilote : latence, debit, consommation VRAM/RAM et volume Qdrant.
+
+---
+
+## 2026-06-12 — Audit et durcissement PR-1 token tracking
+
+**Audit MALEX/Codex du commit `1b08b38`.** Le gate admin/godmode, la whitelist SQL,
+la lecture seule et le contrat partage sont conformes.
+
+Correctifs appliques :
+
+- index composite token par utilisateur et periode rendu deterministe ;
+- rejet des periodes invalides ou inversees ;
+- fallback local sur compteurs provider invalides ;
+- neutralisation des couts negatifs ;
+- couverture de test etendue a la tarification.
+
+Rapport complet : `AUDIT_PR1_TOKEN_TRACKING.md`.
+
+Validation : backend 27/27, lint backend/frontend, build frontend et `git diff --check` OK.
+
+Risques conserves et explicites : tarification indicative non exploitable pour billing ;
+appels provider echoues ou streams interrompus potentiellement absents de la telemetrie.
+
+---
+
+## 2026-06-12 — Dépôt du handoff Local RAG BGE pour Vincent
+
+**Dépôt MALEX.** Le dossier `MASTERFLOW_LOCAL_RAG_BGE_HANDOFF/` est transmis à Vincent
+comme spécification d'implémentation progressive d'une couche de retrieval locale et
+permissionnée.
+
+Contenu :
+
+- point d'entrée obligatoire `00_START_HERE_VINCENT.md` ;
+- architecture et limites de responsabilité ;
+- indexation, retrieval hybride et context packs ;
+- sécurité, permissions, révocation et audit ;
+- plan de cinq PRs progressives ;
+- contrat OpenAPI, schémas JSON, manifeste, compose et jeu d'évaluation.
+
+Contrôles avant dépôt : JSON/JSONL valides, YAML valides, aucun secret détecté.
+
+### Gate
+
+- Première étape : audit du repo et proposition exacte de la PR-1 `Capability Shell`.
+- Aucun code, modèle, Qdrant, indexation, migration, endpoint ou UI avant validation humaine.
+- Permissions avant retrieval ; chaque hit doit conserver une source lisible.
+- Le RAG reste dérivé, optionnel et non souverain.
+
+Demande transmise dans `INBOX_VINCENT.md` et le fil de synchronisation.
+
+---
+
+## 2026-06-12 — GO humain MALEX sur PR-2 global settings
+
+**Décision MALEX.** Vincent peut implémenter la PR-2 décrite dans
+`SPEC_PR_PRIORITAIRES.md`.
+
+Périmètre validé :
+
+- action sensible `set_global_setting` ;
+- passage obligatoire par permission check et preflight ;
+- validation humaine admin avant exécution ;
+- allowlist explicite des clés administrables ;
+- secrets interdits dans `global_settings` ;
+- audit et erreurs lisibles ;
+- tests du cycle preflight, validation et exécution.
+
+Pas de nouvel engine, pas de billing, pas d'extension des rôles et pas de refactor global.
+Le résultat doit revenir dans Git pour revue avant toute surface frontend associée.
+
+---
+
+## 2026-06-12 — GO humain MALEX sur PR-1 suivi token
+
+**Décision MALEX, confirmée directement avec Vincent.** Le commit backend `1b08b38`
+« suivi token réel + endpoint diagnostic gated admin/godmode » est approuvé et conservé sur
+`main`.
+
+- instrumentation du `usage` provider avec fallback ;
+- coût estimé centralisé ;
+- granularité par tâche ;
+- endpoint diagnostic réservé admin/godmode ;
+- tests backend dédiés.
+
+Ce GO clôt le gate de la PR-1. La PR-2 sur l'écriture sensible de `global_settings` a reçu
+son GO humain séparé dans l'entrée ci-dessus.
+
+---
+
+## 2026-06-12 — Proposition packs et tarifs d'abonnement
+
+**Décision MALEX.** Une première grille commerciale est déposée dans
+`PROPOSITION_PACKS_ET_TARIFS_ABONNEMENT.md` pour être challengée par Vincent.
+
+- Student : gratuit ;
+- Student Pro / Portfolio : 8,90 EUR TTC/mois ;
+- Teacher : 24,90 EUR TTC/mois ;
+- Studio / Creator : 49 EUR TTC/mois ;
+- School / Campus : à partir de 199 EUR HT/mois ;
+- White Label : 990 à 2 500 EUR HT/mois + installation ;
+- Godmode / Owner Ops : non commercialisé.
+
+La proposition inclut un modèle de crédits IA et sépare strictement pack, rôle, permission,
+quota et validation.
+
+### Gate
+
+- Statut `PROPOSAL / NON_CANONICAL`.
+- Aucun billing, quota, endpoint, permission ou feature flag à implémenter dans ce tour.
+- Vincent doit challenger coûts réels, marges, quotas et faisabilité à partir du suivi token.
+- Toute implémentation ou canonisation exige une validation humaine MALEX séparée.
 
 ---
 

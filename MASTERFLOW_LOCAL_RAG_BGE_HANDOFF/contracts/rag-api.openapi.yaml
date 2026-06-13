@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: MasterFlow Local RAG Service
+  version: 0.1.0
+servers:
+  - url: http://127.0.0.1:8091
+paths:
+  /health:
+    get:
+      operationId: ragHealth
+      responses:
+        "200":
+          description: Service and model status
+  /v1/documents/upsert:
+    post:
+      operationId: upsertRagDocuments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [documents]
+              properties:
+                documents:
+                  type: array
+                  items:
+                    $ref: "../schemas/rag-document.schema.json"
+      responses:
+        "202":
+          description: Indexing accepted
+  /v1/documents/delete:
+    post:
+      operationId: deleteRagDocuments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source_ids:
+                  type: array
+                  items: { type: string }
+                owner_id: { type: string }
+                project_id: { type: string }
+              minProperties: 1
+      responses:
+        "202":
+          description: Deletion accepted
+  /v1/search:
+    post:
+      operationId: searchRag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/rag-search-request.schema.json"
+      responses:
+        "200":
+          description: Permission-filtered and reranked fragments
+  /v1/index/stats:
+    get:
+      operationId: ragIndexStats
+      responses:
+        "200":
+          description: Collection and model statistics

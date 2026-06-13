@@ -2,6 +2,10 @@ import {Router, type Request, type Response} from 'express';
 
 import {getDb} from '../db/schema.ts';
 import {requireRole, requireUser} from '../middleware/auth.ts';
+import {
+  getWorkflowDiagnostics,
+  getWorkflowTrace,
+} from '../services/workflow_observability.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -31,6 +35,14 @@ interface UsageRow {
   events: number;
 }
 
+/** Parse une borne epoch optionnelle sans accepter de valeur ambiguë ou négative. */
+function parseTimestamp(value: unknown, fallback: number): number | null {
+  if (value === undefined) return fallback;
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
 export function createDiagnosticsRouter(): Router {
   const router = Router();
   router.use(requireUser, requireRole('admin'));
@@ -42,10 +54,12 @@ export function createDiagnosticsRouter(): Router {
     const col = GROUP_COLUMNS[groupBy];
 
     const now = Date.now();
-    const from = Number(req.query.from);
-    const to = Number(req.query.to);
-    const fromTs = Number.isFinite(from) ? from : 0;
-    const toTs = Number.isFinite(to) ? to : now;
+    const fromTs = parseTimestamp(req.query.from, 0);
+    const toTs = parseTimestamp(req.query.to, now);
+    if (fromTs === null || toTs === null || fromTs > toTs) {
+      res.status(400).json({error: 'invalid_time_range'});
+      return;
+    }
 
     const rows = getDb()
       .prepare(
@@ -82,5 +96,52 @@ export function createDiagnosticsRouter(): Router {
     res.json({group_by: groupBy, from: fromTs, to: toTs, totals, rows: normalized});
   });
 
+  // GET /diagnostics/workflows?from&to&capability_id&workflow_type
+  router.get('/diagnostics/workflows', (req: Request, res: Response): void => {
+    const now = Date.now();
+    const fromTs = parseTimestamp(req.query.from, 0);
+    const toTs = parseTimestamp(req.query.to, now);
+    if (fromTs === null || toTs === null || fromTs > toTs) {
+      res.status(400).json({error: 'invalid_time_range'});
+      return;
+    }
+
+    const capabilityId = parseOptionalFilter(req.query.capability_id);
+    const workflowType = parseOptionalFilter(req.query.workflow_type);
+    if (capabilityId === null || workflowType === null) {
+      res.status(400).json({error: 'invalid_workflow_filter'});
+      return;
+    }
+
+    res.json(
+      getWorkflowDiagnostics({
+        from: fromTs,
+        to: toTs,
+        capabilityId,
+        workflowType,
+      }),
+    );
+  });
+
+  // GET /diagnostics/workflows/:id
+  router.get('/diagnostics/workflows/:id', (req: Request, res: Response): void => {
+    try {
+      res.json({
+        workflow_id: req.params.id,
+        events: getWorkflowTrace(req.params.id ?? ''),
+      });
+    } catch {
+      res.status(404).json({error: 'workflow_not_found'});
+    }
+  });
+
   return router;
+}
+
+function parseOptionalFilter(value: unknown): string | undefined | null {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!/^[a-zA-Z0-9_.:-]+$/.test(trimmed)) return null;
+  return trimmed;
 }

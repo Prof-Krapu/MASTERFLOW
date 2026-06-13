@@ -42,16 +42,26 @@ export function toPersonaDTO(row: PersonaRow): Persona {
   };
 }
 
-/** Liste tous les personas, triés par nom. */
+/** Liste uniquement les personas sélectionnables dans les nouveaux parcours. */
 export function listPersonas(): Persona[] {
-  const rows = getDb().prepare('SELECT * FROM personas ORDER BY name').all() as PersonaRow[];
+  const rows = getDb()
+    .prepare("SELECT * FROM personas WHERE status = 'active' ORDER BY name")
+    .all() as PersonaRow[];
   return rows.map(toPersonaDTO);
 }
 
-/** Retourne le persona `id`, ou `null` s'il n'existe pas. */
+/** Retourne aussi les personas dépréciés afin de relire les références historiques. */
 export function getPersona(id: string): Persona | null {
   const row = getDb().prepare('SELECT * FROM personas WHERE id = ?').get(id) as PersonaRow | undefined;
   return row ? toPersonaDTO(row) : null;
+}
+
+/** Garde de création/activation : un persona déprécié n'est plus sélectionnable. */
+export function requireSelectablePersona(id: string): Persona {
+  const persona = getPersona(id);
+  if (!persona) throw new Error(`Persona introuvable : ${id}`);
+  if (persona.status !== 'active') throw new Error(`Persona déprécié : ${id}`);
+  return persona;
 }
 
 // ───────────────────────── Fusion (chimère) ─────────────────────────
@@ -143,10 +153,8 @@ function toBlendDTO(row: PersonaBlendRow): PersonaBlend {
 export function createBlend(req: BlendRequest): PersonaBlend {
   const db = getDb();
 
-  const primary = getPersona(req.primary_persona_id);
-  if (!primary) throw new Error(`Persona primaire introuvable : ${req.primary_persona_id}`);
-  const secondary = getPersona(req.secondary_persona_id);
-  if (!secondary) throw new Error(`Persona secondaire introuvable : ${req.secondary_persona_id}`);
+  const primary = requireSelectablePersona(req.primary_persona_id);
+  const secondary = requireSelectablePersona(req.secondary_persona_id);
 
   const now = Date.now();
 

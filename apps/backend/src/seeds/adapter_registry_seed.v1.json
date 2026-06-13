@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "adapters": [
+    {
+      "adapter_id": "ocr-submission-v1",
+      "label": "OCR de copie",
+      "kind": "ocr_submission",
+      "owner_engine": "resource_truth_engine",
+      "runner_family": "ocr_multimodal",
+      "input_types": ["application/pdf", "image/png", "image/jpeg"],
+      "output_source_type": "submission",
+      "output_contract": "EvidenceEvent",
+      "capabilities": ["extract_text", "preserve_source_reference", "report_confidence"],
+      "required_gates": ["permission_check", "preflight_action", "teacher_review"],
+      "data_classification": "sensitive_private",
+      "privacy_mode": "local_only",
+      "risk_level": "medium_high",
+      "minimum_role": "teacher",
+      "runtime_status": "shell",
+      "ui_status": "locked",
+      "executor_ref": null,
+      "feature_flag": "adapter_ocr_submission",
+      "limitations": [
+        "Aucun runner OCR n'est branche dans MasterFlow.",
+        "Toute extraction devra rester candidate jusqu'a validation humaine."
+      ]
+    },
+    {
+      "adapter_id": "morphological-reference-v1",
+      "label": "Référence morphologique privée",
+      "kind": "morphological_reference",
+      "owner_engine": "masterlab_engine",
+      "runner_family": "ocr_multimodal",
+      "input_types": ["image/png", "image/jpeg", "image/webp"],
+      "output_source_type": "morphological_reference",
+      "output_contract": "MorphologicalHintProfile",
+      "capabilities": [
+        "extract_stylized_visual_hints",
+        "report_confidence",
+        "preserve_private_source_reference",
+        "declare_visual_invariants"
+      ],
+      "required_gates": [
+        "permission_check",
+        "photo_ocr_consent_gate",
+        "no_sensitive_inference",
+        "user_validation"
+      ],
+      "data_classification": "sensitive_private",
+      "privacy_mode": "local_only",
+      "risk_level": "high",
+      "minimum_role": "student",
+      "runtime_status": "shell",
+      "ui_status": "locked",
+      "executor_ref": null,
+      "feature_flag": "adapter_morphological_reference",
+      "limitations": [
+        "Aucun upload photo ni runner morphologique n'est branche dans MasterFlow.",
+        "L'adapter produit des hints visuels prives, jamais une identification ou un profil biometrique.",
+        "La photo source ne devient ni canon, ni ressource publique, ni reference reutilisable sans permission."
+      ]
+    },
+    {
+      "adapter_id": "wooclap-import-v1",
+      "label": "Import WooClap",
+      "kind": "wooclap_import",
+      "owner_engine": "signal_engine",
+      "runner_family": null,
+      "input_types": ["text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+      "output_source_type": "wooclap",
+      "output_contract": "EvidenceEvent",
+      "capabilities": ["import_responses", "preserve_session_reference", "normalize_classroom_evidence"],
+      "required_gates": ["permission_check", "preflight_action", "teacher_review"],
+      "data_classification": "sensitive_private",
+      "privacy_mode": "local_only",
+      "risk_level": "medium_high",
+      "minimum_role": "teacher",
+      "runtime_status": "shell",
+      "ui_status": "locked",
+      "executor_ref": null,
+      "feature_flag": "adapter_wooclap_import",
+      "limitations": [
+        "Aucun parseur WooClap n'est branche dans MasterFlow.",
+        "Les reponses individuelles sont privees par defaut."
+      ]
+    },
+    {
+      "adapter_id": "transcript-import-v1",
+      "label": "Import de transcription",
+      "kind": "transcript_import",
+      "owner_engine": "signal_engine",
+      "runner_family": "transcription",
+      "input_types": ["text/plain", "text/vtt", "application/json"],
+      "output_source_type": "transcript",
+      "output_contract": "EvidenceEvent",
+      "capabilities": ["import_transcript", "preserve_timestamps", "normalize_conversation_evidence"],
+      "required_gates": ["permission_check", "consent_gate", "teacher_review"],
+      "data_classification": "sensitive_private",
+      "privacy_mode": "local_only",
+      "risk_level": "medium_high",
+      "minimum_role": "teacher",
+      "runtime_status": "shell",
+      "ui_status": "locked",
+      "executor_ref": null,
+      "feature_flag": "adapter_transcript_import",
+      "limitations": [
+        "Aucune transcription automatique n'est branchee.",
+        "Consentement et retention devront etre resolus avant activation."
+      ]
+    },
+    {
+      "adapter_id": "teacher-note-v1",
+      "label": "Note professeur",
+      "kind": "teacher_note",
+      "owner_engine": "pedagogical_adaptation_engine",
+      "runner_family": null,
+      "input_types": ["text/plain"],
+      "output_source_type": "teacher_note",
+      "output_contract": "EvidenceEvent",
+      "capabilities": ["capture_observation", "attach_context_reference"],
+      "required_gates": ["permission_check"],
+      "data_classification": "private",
+      "privacy_mode": "local_only",
+      "risk_level": "medium",
+      "minimum_role": "teacher",
+      "runtime_status": "partial",
+      "ui_status": "readonly",
+      "executor_ref": null,
+      "feature_flag": "adapter_teacher_note",
+      "limitations": [
+        "Le contrat de preuve existe mais aucune surface de saisie publique n'est livree.",
+        "Une note ne devient jamais automatiquement un signal valide."
+      ]
+    }
+  ]
+}

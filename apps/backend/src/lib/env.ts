@@ -9,6 +9,13 @@ import 'dotenv/config';
 
 const isProd = process.env.NODE_ENV === 'production';
 
+function readCsv(name: string): string[] {
+  return (process.env[name] ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 function readSecret(name: string, devFallback: string): string {
   const v = process.env[name];
   if (v && v.length > 0) return v;
@@ -38,5 +45,6 @@ export const env = {
     apiKey: process.env.LLM_API_KEY ?? '',
     baseUrl: process.env.LLM_BASE_URL ?? '',
     model: process.env.LLM_MODEL ?? '',
+    egressAllowlist: readCsv('LLM_EGRESS_ALLOWLIST'),
   },
 } as const;

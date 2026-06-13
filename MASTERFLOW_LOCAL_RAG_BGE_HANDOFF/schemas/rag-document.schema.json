@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rag-document.schema.json",
+  "title": "MasterFlow RAG document chunk",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "source_ref",
+    "source_hash",
+    "chunk_id",
+    "text",
+    "domain",
+    "authority",
+    "status",
+    "permission_scope",
+    "sensitivity",
+    "updated_at"
+  ],
+  "properties": {
+    "source_id": { "type": "string", "minLength": 1 },
+    "source_ref": { "type": "string", "minLength": 1 },
+    "source_hash": { "type": "string", "minLength": 8 },
+    "chunk_id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string" },
+    "text": { "type": "string", "minLength": 1 },
+    "domain": {
+      "enum": [
+        "resources",
+        "pedagogy",
+        "visual_da",
+        "narrative_lore",
+        "personas",
+        "projects",
+        "inventory",
+        "corrections",
+        "backend_docs"
+      ]
+    },
+    "source_type": { "type": "string" },
+    "authority": {
+      "enum": ["canonical", "validated", "candidate", "archive", "external"]
+    },
+    "status": {
+      "enum": ["active", "stale", "superseded", "quarantined", "deleted"]
+    },
+    "owner_id": { "type": ["string", "null"] },
+    "project_id": { "type": ["string", "null"] },
+    "room_id": { "type": ["string", "null"] },
+    "permission_scope": { "type": "array", "items": { "type": "string" } },
+    "sensitivity": {
+      "enum": ["public", "internal", "private", "restricted", "secret_forbidden"]
+    },
+    "language": { "type": "string", "default": "fr" },
+    "version": { "type": "string" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": ["string", "null"], "format": "date-time" },
+    "metadata": { "type": "object" }
+  }
+}

@@ -37,6 +37,29 @@ Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, ref
 check distant rapide (`git fetch origin` + lecture du dernier `origin/main`) pour éviter de
 répondre avec un état devenu caduc pendant le tour.
 
+### Check canon obligatoire avant specs
+
+Avant de formaliser, prioriser ou spécifier une idée produit/conceptuelle dans le Git, vérifier
+systématiquement si le Drive canon a déjà traité le sujet. Cela vaut notamment pour personas,
+MasterStory, pédagogie, bots, RAG, jobs, DA/assets, Ours d'Or, devis, correction, cours et UI.
+
+Procédure minimale :
+
+1. rechercher dans le Drive canon avec `rg` sur les termes métier et synonymes ;
+2. lire les fichiers sources trouvés, pas seulement leurs noms ;
+3. citer les références canon dans la spec/handoff Git ;
+4. distinguer clairement `déjà canonique`, `partiellement implémenté`, `absent du backend` ;
+5. ne créer une spec nouvelle que si elle complète ou clarifie le canon, jamais comme doublon.
+
+Règle : pas de spec Git hors-sol. Si une idée existe déjà dans le canon, le livrable Git doit
+l'absorber, la relier aux contrats backend et signaler les écarts d'implémentation.
+
+Pour Vincent, ne pas transférer la charge brute du Drive canon par défaut. Si une référence canon
+est nécessaire côté backend, l'embarquer dans Git sous forme de spec/handoff/checklist. Vincent
+doit surtout comparer ces sources Git avec ses propres features/projets/PRs pour repérer les
+opportunités d'implémentation, les doublons et les écarts. Voir
+`PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md`.
+
 **Délégation à des agents assistants (tokens épuisés).** Quand Claude Code n'a plus de tokens pour
 des tâches de code **basiques**, il peut déposer des tâches bornées dans `INBOX_ASSISTANT.md`
 (protocole complet : `assistant.md`). Des LLM tiers (via opencode : `ollama/mistral-agent`,
@@ -67,7 +90,7 @@ LLM en mode `mock` par défaut (aucune clé). Provider réel via `apps/backend/.
 | Fichier | Responsabilité (1 fichier = 1 responsabilité) |
 |---|---|
 | `db/schema.ts` | SQLite singleton (WAL+FK), migrations idempotentes, types de rangées. `MASTERFLOW_DB_PATH` override (`:memory:` en test). |
-| `db/seed.ts` | `seedAll()` idempotent : godmode `vincent`, 3 personas (`masterflex-001`/`profkrapu-001`/`corrector-001`), room Home, ressources. |
+| `db/seed.ts` | `seedAll()` idempotent : godmode `vincent`, 2 personas actifs (`masterflex-001`/`profkrapu-001`), `corrector-001` déprécié en lecture historique, room Home, ressources. |
 | `lib/{env,uuid,audit}.ts` | config env, uuid, `audit()` (trace immuable). |
 | `services/llm.ts` | `streamChat`/`chat` — mock ou OpenAI-compat SSE. **Ne fait que proposer du texte.** |
 | `engines/*` | **Autorité métier.** `action_registry`, `permission_runtime`, `action_engine`, `persona_engine`, `resource_truth`. |
@@ -80,7 +103,7 @@ Montage (`index.ts`) : `auth`/`context`/`rooms`/`resources` sous leur sous-chemi
 
 ## Invariants non négociables — et OÙ ils sont appliqués
 
-1. **Aucune action sensible sans validation humaine.** `action_engine.executeAction` lève si `status !== 'approved'` → router renvoie **423**. Une proposition IA n'est jamais une validation.
+1. **Aucune action sensible sans validation humaine, mais pas de double validation systematique.** Les actions bas risque peuvent passer avec permission, preflight eventuel et audit. Les actions sensibles exigent validation humaine ; les actions critiques peuvent exiger validation renforcee. Voir `POLITIQUE_VALIDATION_GRADUEE.md`.
 2. **Anti-hallucination (tolérance 0).** `resource_truth.searchResources` ne rend que `status='validated'` par défaut ; toute proposition entre en `candidate`.
 3. **1 porte-parole sémantique.** `persona_engine` : `blend.speaker_persona_id === primary.id` ; le secondaire ne prête que sa méthode, attribuée (« méthode inspirée de … »). Les permissions ne se blendent jamais.
 4. `PERMISSION > CONTEXT_LOCK > SAFETY > OBJECT_TYPE > MATURITY > PREFERENCE` (`permission_runtime` + `middleware/auth`).
