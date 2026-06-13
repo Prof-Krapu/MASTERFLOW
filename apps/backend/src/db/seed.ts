@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
+import type Database from 'better-sqlite3';
 
 import {env} from '../lib/env.ts';
 import {uuid} from '../lib/uuid.ts';
+import {costFor} from '../services/llm_pricing.ts';
 import {getDb, type PersonaRow, type RoomRow, type UserRow} from './schema.ts';
 
 /**
@@ -110,6 +112,66 @@ const RESOURCE_SEEDS = [
   },
 ];
 
+/**
+ * Seed de DÉMONSTRATION pour `token_events` — uniquement pour peupler la dataviz du PoC
+ * (monitoring usage/coût + vue `API_corrector`). Ne s'exécute QUE si la table est vide ET
+ * si `MASTERFLOW_SEED_DEMO_USAGE !== '0'`. Désactivable, non destructif, clairement « démo ».
+ *
+ * Les événements sont rattachés au compte godmode (FK `user_id`), répartis sur ~14 jours,
+ * avec plusieurs `task` (chat/correction/ocr/bareme) et `model`. Le coût est calculé via
+ * `costFor` (jamais inventé) ; `task='correction'` matérialise la consommation côté Corrector.
+ */
+function seedDemoUsage(db: Database.Database, godId: string): number {
+  // Jamais en test (assertions déterministes) ni si explicitement désactivé.
+  if (process.env.MASTERFLOW_SEED_DEMO_USAGE === '0' || process.env.NODE_ENV === 'test') return 0;
+  const existing = db.prepare('SELECT COUNT(*) AS n FROM token_events').get() as {n: number};
+  if (existing.n > 0) return 0;
+
+  const DAY = 86_400_000;
+  const now = Date.now();
+  const tasks = ['chat', 'correction', 'ocr', 'bareme'] as const;
+  const models = ['gpt-4o', 'gpt-4o-mini', 'mistral-small', 'mock'] as const;
+  const personas = ['profkrapu-001', 'corrector-001', 'masterflex-001'];
+
+  const insert = db.prepare(
+    `INSERT INTO token_events
+       (user_id, ts, model, task, prompt_tokens, completion_tokens, cost_eur, persona_id, room_instance_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
+  );
+
+  // ~3 événements/jour sur 14 jours, variés mais déterministes (pas de hasard).
+  let count = 0;
+  const tx = db.transaction(() => {
+    for (let d = 13; d >= 0; d--) {
+      const eventsToday = 2 + (d % 3); // 2..4
+      for (let k = 0; k < eventsToday; k++) {
+        const idx = d * 7 + k;
+        const task = tasks[idx % tasks.length]!;
+        const model = models[(idx >> 1) % models.length]!;
+        const promptTokens = 400 + ((idx * 137) % 1600);
+        const completionTokens = 150 + ((idx * 89) % 900);
+        const cost = costFor(model, promptTokens, completionTokens);
+        // Heure de la journée variée (pour étaler) ; rattaché à godmode.
+        const ts = now - d * DAY + ((idx * 3_600_000) % DAY);
+        insert.run(
+          godId,
+          ts,
+          model,
+          task,
+          promptTokens,
+          completionTokens,
+          cost,
+          personas[idx % personas.length]!,
+        );
+        count++;
+      }
+    }
+  });
+  tx();
+  if (count > 0) console.log(`[seed] token_events démo insérés : ${count} (désactiver via MASTERFLOW_SEED_DEMO_USAGE=0)`);
+  return count;
+}
+
 export async function seedAll(): Promise<{users: number; personas: number; rooms: number; resources: number}> {
   const db = getDb();
   const now = Date.now();
@@ -197,6 +259,9 @@ export async function seedAll(): Promise<{users: number; personas: number; rooms
     );
     if (res.changes > 0) createdResources++;
   }
+
+  // ── Démo usage tokens (PoC dataviz) — idempotent, désactivable ───
+  seedDemoUsage(db, god.id);
 
   return {users: createdUsers, personas: createdPersonas, rooms: createdRooms, resources: createdResources};
 }

@@ -29,6 +29,8 @@ import {
   validateResource,
 } from './api.ts';
 import {ActionAudit} from './action-audit.tsx';
+import {AdminConsole} from './admin-console.tsx';
+import {RegisterWithCode} from './register-form.tsx';
 import {
   buildModeView,
   canUseMode,
@@ -210,6 +212,7 @@ function App(): ReactElement {
   const nextActions = liveActions.slice(0, 3);
   const lockedActions = actionBuckets.future.slice(0, 4);
   const isGodmode = context?.user.role === 'godmode';
+  const canAdmin = context?.user.role === 'admin' || context?.user.role === 'godmode';
   const canValidate = canValidateActions(context?.user.role);
   const canReviewResourceTruth = canReviewResources(context?.user.role);
   const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
@@ -758,6 +761,12 @@ function App(): ReactElement {
             {state === 'loading' ? 'Connexion...' : 'Se connecter'}
           </button>
           {error ? <p className="error">{error}</p> : null}
+          <RegisterWithCode
+            onAuthed={(nextAuth) => {
+              setAuth(nextAuth);
+              void loadContext(nextAuth.token);
+            }}
+          />
         </form>
       ) : showEntryGate && context ? (
         <form className="panel entry-gate" onSubmit={handleEntrySubmit}>
@@ -1156,6 +1165,10 @@ function App(): ReactElement {
                 </div>
               </dl>
             </article>
+          ) : null}
+
+          {canAdmin && context && auth ? (
+            <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
           ) : null}
         </section>
       )}

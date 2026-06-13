@@ -6,7 +6,7 @@ import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {getRegistryEntry, riskLevelFor, isSensitive} from './action_registry.ts';
 import {checkPermission, validatorRoleFor, hasRole} from './permission_runtime.ts';
-import {ACTION_EXECUTORS} from './settings.ts';
+import {ACTION_EXECUTORS} from './executors.ts';
 
 /**
  * Moteur du cycle de vie des actions.

@@ -1,14 +1,19 @@
 import type {
   Action,
   ActionRegistryEntry,
+  AdminUser,
   AuthResponse,
   CreateAction,
+  CreateInvitation,
   CurrentContext,
+  Invitation,
   Persona,
   ProposeResource,
   Resource,
   RoomInstance,
   SearchResourcesResponse,
+  TokenUsageGroupBy,
+  TokenUsageReport,
   UpdateRoomInstance,
   ValidationDecision,
 } from '@masterflow/shared';
@@ -142,4 +147,44 @@ export async function proposeResource(body: ProposeResource, token?: string | nu
 
 export async function validateResource(resourceId: string, token?: string | null): Promise<Resource> {
   return request<Resource>(`/resources/${encodeURIComponent(resourceId)}/validate`, {method: 'POST'}, token);
+}
+
+// ───────────────────────── Administration (gated admin/godmode) ─────────────────────────
+
+export async function register(
+  body: {username: string; display_name: string; password: string; email?: string; invite_code: string},
+): Promise<AuthResponse> {
+  const auth = await request<AuthResponse>('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  setToken(auth.token);
+  return auth;
+}
+
+export async function getAdminUsers(token?: string | null): Promise<AdminUser[]> {
+  return request<AdminUser[]>('/admin/users', {method: 'GET'}, token);
+}
+
+export async function getInvitations(token?: string | null): Promise<Invitation[]> {
+  return request<Invitation[]>('/admin/invitations', {method: 'GET'}, token);
+}
+
+export async function createInvitation(body: CreateInvitation, token?: string | null): Promise<Invitation> {
+  return request<Invitation>('/admin/invitations', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+
+export async function revokeInvitation(code: string, token?: string | null): Promise<Invitation> {
+  return request<Invitation>(`/admin/invitations/${encodeURIComponent(code)}/revoke`, {method: 'POST'}, token);
+}
+
+export async function getTokenUsage(
+  groupBy: TokenUsageGroupBy,
+  token?: string | null,
+  range?: {from?: number; to?: number},
+): Promise<TokenUsageReport> {
+  const params = new URLSearchParams({group_by: groupBy});
+  if (range?.from !== undefined) params.set('from', String(range.from));
+  if (range?.to !== undefined) params.set('to', String(range.to));
+  return request<TokenUsageReport>(`/diagnostics/token-usage?${params.toString()}`, {method: 'GET'}, token);
 }

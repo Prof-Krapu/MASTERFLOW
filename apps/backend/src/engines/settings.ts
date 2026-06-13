@@ -67,11 +67,3 @@ export function executeSetGlobalSetting(
 
   return {app, key, previous, new: value};
 }
-
-/** Map des exécuteurs réels par `registry_id`. Défaut : résultat mocké MVP. */
-export const ACTION_EXECUTORS: Record<
-  string,
-  (user: AuthUser, action: Action) => Record<string, unknown>
-> = {
-  set_global_setting: executeSetGlobalSetting,
-};

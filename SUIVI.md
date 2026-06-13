@@ -4,6 +4,58 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-3 : admin API_manage (invitations + comptes/rôles) + monitoring usage/coût (API_corrector) — LIVRÉE (branche, GATE push)
+
+**Décision humaine Vincent : avancer sans le GO téléphonique de Malex.** Branche `claude/pr3-admin-manage`
+(pas encore poussée → décision push réservée à Vincent). Choix tranchés avec Vincent : (1) changement de rôle =
+**action sensible** (validator godmode) ; (2) inscription **sur invitation uniquement** (register ouvert fermé) ;
+(3) dataviz = **Recharts**.
+
+### Livré
+- **Backend — invitations (codes d'accès)** : table `invitations` (`db/schema.ts`), engine `engines/invitations.ts`
+  (create/list/revoke/redeem, code base32 CSPRNG, garde-fou **rôle ≤ rang du créateur**), router
+  `routers/admin.ts` (`GET /admin/users`, `GET|POST /admin/invitations`, `POST /admin/invitations/:code/revoke`,
+  gated `requireRole('admin')`).
+- **Backend — inscription sur invitation** : `POST /register` exige désormais un `invite_code` valide (sinon 403),
+  le rôle du compte = celui porté par le code (plus de 'student' codé en dur). ⚠️ **changement de comportement.**
+- **Backend — changement de rôle = action sensible** `set_user_role` (registre `high`, `validator_role: godmode`),
+  engine `engines/users_admin.ts` (`executeSetUserRole` + `listAdminUsers`), dispatcher recomposé dans
+  `engines/executors.ts` (`{set_global_setting, set_user_role}` ; `action_engine` importe d'ici). Garde-fous :
+  assert godmode à l'exécution, interdit de changer son propre rôle, interdit de rétrograder le dernier godmode.
+- **Backend — registre** : entrées `set_user_role` / `view_users` / `create_invitation` (status `live`).
+- **Backend — seed démo usage** : `token_events` de démonstration (~41, tâches chat/correction/ocr/bareme,
+  coût via `llm_pricing`) si table vide et `MASTERFLOW_SEED_DEMO_USAGE !== '0'` ; **jamais en test**.
+- **Contrat `packages/shared`** (additif) : `InvitationSchema`, `CreateInvitationSchema`, `AdminUserSchema`,
+  `SetUserRoleSchema`.
+- **Frontend PoC** (territoire MALEX) : `recharts` ajouté ; `admin-console.tsx` (invitations / comptes+rôles avec
+  flux d'action sensible déroulé à l'écran / monitoring Recharts : coût&tokens par jour, par modèle, par tâche,
+  par utilisateur) ; `register-form.tsx` (inscription sur code) ; `api.ts` (+5 fonctions) ; intégration minimale
+  `App.tsx` (`canAdmin`, montage gated `≥ admin`).
+
+### Tests `vitest` 55/55 ✓ (37 → +18 : `invitations.test.ts`, `users_admin.test.ts`) · `tsc --noEmit` backend ✓ ·
+`tsc --noEmit` frontend ✓ · `vite build` ✓ (607 modules — recharts).
+Smoke runtime (DB jetable) ✓ : login godmode, GET users, création/redemption de code, register 403 sans code /
+201 au rôle du code / 400 si épuisé, cycle `set_user_role` create→preflight(pending,godmode)→validate→execute
+(teacher→admin), gating student→403, dataviz peuplée.
+
+### Invariants tenus
+- Aucune action sensible sans validation humaine (`set_user_role` : `pending_validation` obligatoire, execute refuse
+  ≠ approved, validator godmode + assert à l'exécution).
+- Permissions jamais inférées ; codes capés au rang du créateur (admin ≠ code godmode).
+- Trace `audit_logs` : invitation_created/revoked, auth.register (+ code/rôle), changement de rôle.
+- Contrat additif rétro-compatible ; secrets hors BDD (inchangé).
+
+### ⚠️ Points d'attention
+- **`npm audit` : 3 high** dans la chaîne **dev** `esbuild`/`vite`/`@vitejs/plugin-react` (dev-server only),
+  **non introduites par recharts** ; correctif = `vite@8` (breaking) → hors périmètre PR-3, à arbitrer.
+- Bundle front 614 KB (recharts) > 500 KB : warning de chunk attendu pour un PoC.
+
+### Gate
+Branche locale, **non poussée**. Push `origin` = **décision Vincent** (règle multi-agents : commit d'agent ≠ validation).
+MALEX prévenu via `INBOX_MALEX.md` (notif, pas auto-validation).
+
+---
+
 ## 2026-06-13 — PR-2 : écriture global_settings via action sensible — LIVRÉE + intégrée sur `main`
 
 **GO Vincent reçu 2026-06-13.** Merge fast-forward `main` `1b08b38` → `7b32573`.

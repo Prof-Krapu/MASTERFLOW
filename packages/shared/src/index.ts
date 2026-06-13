@@ -56,6 +56,65 @@ export const AuthResponseSchema = z.object({
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 
+// ───────────────────────── Administration : invitations (codes d'accès) ─────────────────────────
+
+/**
+ * Invitation (code d'accès). L'inscription est sur invitation : redéemer un code
+ * crée un compte au rôle pré-assigné. Un code n'est émis que pour un rôle ≤ rang du
+ * créateur (garde-fou backend) ; valide tant que non révoqué, non expiré, `used_count < max_uses`.
+ */
+export const InvitationSchema = z.object({
+  code: z.string(),
+  role: RoleSchema,
+  created_by: z.string(),
+  max_uses: z.number().int().positive(),
+  used_count: z.number().int().nonnegative(),
+  note: z.string().nullable(),
+  expires_at: z.number().nullable(),
+  revoked_at: z.number().nullable(),
+  /** Dérivé côté backend : non révoqué, non expiré et usages restants. */
+  active: z.boolean(),
+  created_at: z.number(),
+});
+export type Invitation = z.infer<typeof InvitationSchema>;
+
+export const CreateInvitationSchema = z.object({
+  role: RoleSchema,
+  max_uses: z.number().int().positive().max(1000).default(1),
+  /** Durée de validité en jours (optionnelle). Absente = pas d'expiration. */
+  expires_in_days: z.number().int().positive().max(3650).optional(),
+  note: z.string().max(280).optional(),
+});
+export type CreateInvitation = z.infer<typeof CreateInvitationSchema>;
+
+// ───────────────────────── Administration : comptes utilisateurs ─────────────────────────
+
+/**
+ * DTO admin d'un utilisateur (lecture gated admin/godmode) — plus riche que `UserSchema`
+ * public : expose `active`, `created_at`, `last_login` pour la console d'administration.
+ */
+export const AdminUserSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  display_name: z.string(),
+  email: z.string().nullable(),
+  role: RoleSchema,
+  active: z.boolean(),
+  created_at: z.number(),
+  last_login: z.number().nullable(),
+});
+export type AdminUser = z.infer<typeof AdminUserSchema>;
+
+/**
+ * Payload de l'action sensible `set_user_role` (changement de rôle).
+ * Touche aux permissions → passe par le cycle d'action (validator_role = godmode).
+ */
+export const SetUserRoleSchema = z.object({
+  user_id: z.string().min(1),
+  role: RoleSchema,
+});
+export type SetUserRole = z.infer<typeof SetUserRoleSchema>;
+
 // ───────────────────────── Rooms ─────────────────────────
 
 export const ZoomLevelSchema = z.enum(['overview', 'workspace', 'task', 'detail', 'debug', 'audit']);

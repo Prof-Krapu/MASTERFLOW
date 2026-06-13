@@ -996,3 +996,117 @@ dd {
     text-align: left;
   }
 }
+
+/* ───────────────────────── Console d'administration (PoC) ───────────────────────── */
+.admin-section {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+.admin-section h3 {
+  margin: 0 0 0.5rem;
+  color: var(--accent-strong);
+}
+.admin-section h4,
+.admin-monitoring h4 {
+  margin: 0.75rem 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.admin-invite-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+.admin-invite-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: var(--muted);
+  gap: 0.2rem;
+}
+.admin-invite-form input,
+.admin-invite-form select {
+  min-width: 7rem;
+}
+.admin-code-banner {
+  margin: 0.5rem 0;
+  padding: 0.4rem 0.6rem;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.admin-code-banner code,
+.admin-table code {
+  color: var(--amber);
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.admin-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+.admin-muted {
+  color: var(--muted);
+}
+.admin-hint {
+  color: var(--blue);
+  font-size: 0.85rem;
+}
+.admin-flow {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+}
+.admin-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0.25rem;
+}
+.admin-card {
+  flex: 1 1 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.admin-card-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.admin-card strong {
+  font-size: 1.15rem;
+  color: var(--accent-strong);
+}
+.admin-charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 720px) {
+  .admin-charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+.register {
+  margin-top: 0.75rem;
+}

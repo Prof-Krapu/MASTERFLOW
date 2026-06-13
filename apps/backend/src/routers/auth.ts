@@ -14,6 +14,7 @@ import {getDb, type UserRow} from '../db/schema.ts';
 import {requireUser, signToken} from '../middleware/auth.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
+import {InvitationError, redeemInvitation} from '../engines/invitations.ts';
 
 /**
  * Router d'authentification — JWT stateless HS256.
@@ -26,6 +27,10 @@ import {uuid} from '../lib/uuid.ts';
  *
  * Doctrine : le rôle voyage dans le jeton mais l'autorité reste le backend.
  * Pattern bcrypt repris de API_manage/server/auth.ts (coût 12).
+ *
+ * Inscription SUR INVITATION : `POST /register` exige un `invite_code` valide. Le rôle
+ * du nouveau compte est celui porté par le code (jamais déduit du client). La surface
+ * publique est ainsi durcie — plus de création de compte « libre » (cf. funnel public).
  */
 
 /** Coût bcrypt — 12 reste rapide (~250ms) tout en résistant au bruteforce offline. */
@@ -61,11 +66,18 @@ export function createAuthRouter(): Router {
       res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
       return;
     }
-    const {username, display_name, password, email} = parsed.data;
+    const {username, display_name, password, email, invite_code} = parsed.data;
+
+    // Inscription sur invitation : un code valide est obligatoire.
+    if (!invite_code) {
+      res.status(403).json({error: 'invite_required'});
+      return;
+    }
 
     const db = getDb();
 
-    // Unicité username (et email si fourni) — la BDD garantit l'unicité, on devance pour un 409 propre.
+    // Unicité username (et email si fourni) — vérifiée AVANT de consommer le code,
+    // pour ne pas gâcher un usage sur une inscription qui échouerait de toute façon.
     const existing = db.prepare('SELECT 1 AS hit FROM users WHERE username = ?').get(username);
     if (existing) {
       res.status(409).json({error: 'username_taken'});
@@ -79,20 +91,33 @@ export function createAuthRouter(): Router {
       }
     }
 
+    // Consomme le code (atomique) → rôle pré-assigné. Code invalide/épuisé/expiré → 400.
+    let role: string;
+    try {
+      ({role} = redeemInvitation(invite_code));
+    } catch (e) {
+      if (e instanceof InvitationError) {
+        audit({event_type: 'auth.register_rejected', scope: 'auth', detail: {username, reason: e.reason}});
+        res.status(400).json({error: 'invalid_invite', reason: e.reason});
+        return;
+      }
+      throw e;
+    }
+
     const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
     const now = Date.now();
     const id = uuid();
 
     db.prepare(
       `INSERT INTO users (id, username, display_name, email, password_hash, role, active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 'student', 1, ?, ?)`,
-    ).run(id, username, display_name, email ?? null, passwordHash, now, now);
+       VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+    ).run(id, username, display_name, email ?? null, passwordHash, role, now, now);
 
     const row = db.prepare('SELECT * FROM users WHERE id = ?').get(id) as UserRow;
     const user = toUserDTO(row);
     const token = signToken({id: user.id, username: user.username, role: user.role});
 
-    audit({event_type: 'auth.register', user_id: user.id, scope: 'auth', detail: {username}});
+    audit({event_type: 'auth.register', user_id: user.id, scope: 'auth', detail: {username, role, code: invite_code}});
 
     const body: AuthResponse = {token, user};
     res.status(201).json(body);

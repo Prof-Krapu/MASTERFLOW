@@ -141,6 +141,37 @@
       "validator_role": "admin",
       "ui_surface": "admin_settings_cockpit",
       "status": "live"
+    },
+    {
+      "action_id": "set_user_role",
+      "label": "Changer le rôle d'un utilisateur",
+      "endpoint": "POST /actions/{action_id}/execute",
+      "risk_level": "high",
+      "preflight_required": true,
+      "validation_required": true,
+      "validator_role": "godmode",
+      "ui_surface": "admin_users_cockpit",
+      "status": "live"
+    },
+    {
+      "action_id": "view_users",
+      "label": "Voir les comptes utilisateurs",
+      "endpoint": "GET /admin/users",
+      "risk_level": "low",
+      "preflight_required": false,
+      "validation_required": false,
+      "ui_surface": "admin_users_cockpit",
+      "status": "live"
+    },
+    {
+      "action_id": "create_invitation",
+      "label": "Créer un code d'accès",
+      "endpoint": "POST /admin/invitations",
+      "risk_level": "medium",
+      "preflight_required": false,
+      "validation_required": false,
+      "ui_surface": "admin_invitations_cockpit",
+      "status": "live"
     }
   ]
 }

@@ -16,6 +16,40 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-3 livrée (branche) : admin API_manage + monitoring API_corrector
+
+Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation** (réponse IA ≠ validation humaine).
+**Vincent (humain) a tranché d'avancer sans son GO téléphonique** sur la suite de l'absorption admin. Livré sur
+branche **`claude/pr3-admin-manage`** (non poussée tant que Vincent ne donne pas le GO push).
+
+**Ce qui est fait (détail dans `SUIVI.md`, entrée 2026-06-13 PR-3) :**
+1. **Invitations / codes d'accès** : table `invitations` + `routers/admin.ts` (`GET /admin/users`,
+   `GET|POST /admin/invitations`, `…/:code/revoke`), gated admin/godmode. Code capé au rang du créateur.
+2. **Inscription sur invitation** — ⚠️ **CHANGEMENT DE COMPORTEMENT À CONNAÎTRE CÔTÉ FRONT** : `POST /register`
+   exige maintenant un `invite_code` valide (403 `invite_required` sinon) ; le rôle vient du code. Le register
+   « libre » (rôle student auto) est **fermé** → surface publique durcie (cohérent funnel public). Si ton UI a un
+   écran d'inscription ouvert, il faut le passer en « inscription par code » (un composant PoC `register-form.tsx`
+   montre le flux).
+3. **Changement de rôle = ACTION SENSIBLE** `set_user_role` (validator **godmode uniquement**). Un admin peut
+   *proposer* (l'action attend dans l'inbox de validation) ; **seul godmode valide+exécute**. Garde-fous : pas son
+   propre rôle, pas de rétrogradation du dernier godmode.
+4. **Monitoring usage/coût (API_corrector)** : pas de nouvel endpoint backend (réutilise `GET /diagnostics/token-usage`
+   PR-1, group_by day/model/task/user). La **dataviz** est côté front.
+
+**🟡 Périmètre frontend = TON territoire.** J'ai ajouté un **PoC** dans `apps/frontend` (`admin-console.tsx`,
+`register-form.tsx`, +5 fns `api.ts`, dépendance **recharts**, montage minimal dans `App.tsx` derrière `canAdmin`).
+C'est une **preuve de concept fonctionnelle** (le câblage/les invariants sont backend) : **à toi de la revoir,
+restyler, ou la refaire** selon ta direction UI. Rien d'imposé sur le rendu.
+
+**À ta connaissance / à arbitrer :**
+- `npm audit` = **3 high** dans la chaîne **dev** (`esbuild`/`vite`/`@vitejs/plugin-react`, dev-server only),
+  **pas** dues à recharts ; le fix = `vite@8` (breaking). Laissé hors PR-3.
+- Bundle front 614 KB (recharts) → warning de chunk attendu (PoC).
+
+**Statut `open`** : tu valides (ou corriges) à ta reprise ; le push `origin` reste la décision de Vincent.
+
+---
+
 ## 2026-06-12 — done — Audit absorption : périmètre resserré → 2 features prioritaires
 
 Vincent → MALEX/Codex. **Proposition (reste `open` jusqu'à ta validation humaine explicite).**

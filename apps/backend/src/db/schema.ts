@@ -67,6 +67,23 @@ function migrate(d: Database.Database): void {
       expires_at  INTEGER NOT NULL
     );
 
+    -- Codes d'accès (invitations). L'inscription est sur invitation : un code porte le
+    -- rôle pré-assigné. Le code n'est créé que pour un rôle ≤ rang du créateur (garde-fou
+    -- côté engine, pas DB). used_count < max_uses ET non révoqué ET non expiré = valide.
+    CREATE TABLE IF NOT EXISTS invitations (
+      code        TEXT PRIMARY KEY,
+      role        TEXT NOT NULL DEFAULT 'student'
+                    CHECK (role IN ('student','teacher','admin','godmode')),
+      created_by  TEXT NOT NULL REFERENCES users(id),
+      max_uses    INTEGER NOT NULL DEFAULT 1,
+      used_count  INTEGER NOT NULL DEFAULT 0,
+      note        TEXT,
+      expires_at  INTEGER,
+      revoked_at  INTEGER,
+      created_at  INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Rooms (UI Room OS) ──────────────────────────
     CREATE TABLE IF NOT EXISTS rooms (
       id          TEXT PRIMARY KEY,
@@ -189,6 +206,7 @@ function migrate(d: Database.Database): void {
     );
 
     -- ───────────────────────── Index ───────────────────────────────────────
+    CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
     CREATE INDEX IF NOT EXISTS idx_actions_status      ON actions(status);
@@ -219,6 +237,19 @@ export interface UserRow {
   created_at: number;
   updated_at: number;
   last_login: number | null;
+}
+
+export interface InvitationRow {
+  code: string;
+  role: Role;
+  created_by: string;
+  max_uses: number;
+  used_count: number;
+  note: string | null;
+  expires_at: number | null;
+  revoked_at: number | null;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface RoomRow {
