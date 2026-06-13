@@ -3,23 +3,35 @@ import {
   CreateInventoryItemRequestSchema,
   CreateCollectionMatchRequestSchema,
   CollectionMatchSchema,
+  CreateInventoryProjectNeedRequestSchema,
   IngestInventoryOcrCandidatesRequestSchema,
   InventoryCollectionSchema,
   InventoryItemSchema,
+  InventoryNeedMatchResultSchema,
+  InventoryProjectNeedSchema,
+  InventorySearchRequestSchema,
+  InventorySearchResultSchema,
   ListInventoryItemsRequestSchema,
   ResolveCollectionMatchRequestSchema,
+  MatchInventoryProjectNeedRequestSchema,
   SetCollectionCompletionRequestSchema,
   ROLE_RANK,
   type CreateInventoryCollectionRequest,
   type CreateInventoryItemRequest,
   type CreateCollectionMatchRequest,
   type CollectionMatch,
+  type CreateInventoryProjectNeedRequest,
   type InventoryCollection,
   type InventoryItem,
+  type InventoryNeedMatchResult,
+  type InventoryProjectNeed,
+  type InventorySearchRequest,
+  type InventorySearchResult,
   type IngestInventoryOcrCandidatesRequest,
   type ListInventoryItemsRequest,
   type ProjectMemberRole,
   type ResolveCollectionMatchRequest,
+  type MatchInventoryProjectNeedRequest,
   type SetCollectionCompletionRequest,
 } from '@masterflow/shared';
 
@@ -28,6 +40,7 @@ import {
   type CollectionMatchRow,
   type InventoryCollectionRow,
   type InventoryItemRow,
+  type InventoryProjectNeedRow,
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
@@ -69,6 +82,20 @@ function toCollectionMatch(row: CollectionMatchRow): CollectionMatch {
     match_status: row.match_status,
     confidence: row.confidence,
     source_ref: row.source_ref,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+}
+
+function toProjectNeed(row: InventoryProjectNeedRow): InventoryProjectNeed {
+  return InventoryProjectNeedSchema.parse({
+    need_id: row.id,
+    project_id: row.project_id,
+    owner_id: row.owner_id,
+    label: row.label,
+    quantity: row.quantity,
+    required_tags: JSON.parse(row.required_tags_json) as unknown,
+    status: row.status,
     created_at: row.created_at,
     updated_at: row.updated_at,
   });
@@ -384,6 +411,156 @@ function normalizedDuplicateKey(row: InventoryItemRow): string {
   return `${row.type}|${row.label.trim().toLocaleLowerCase('fr')}|${(row.creator_or_brand ?? '')
     .trim()
     .toLocaleLowerCase('fr')}`;
+}
+
+function searchTerms(value: string): string[] {
+  return [
+    ...new Set(
+      value
+        .toLocaleLowerCase('fr')
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter((term) => term.length >= 2),
+    ),
+  ];
+}
+
+function itemSearchScore(row: InventoryItemRow, terms: string[]): number {
+  if (terms.length === 0) return 0;
+  const haystack = [
+    row.label,
+    row.creator_or_brand ?? '',
+    row.type,
+    row.intent ?? '',
+    ...(JSON.parse(row.usage_tags_json) as string[]),
+  ]
+    .join(' ')
+    .toLocaleLowerCase('fr');
+  return terms.filter((term) => haystack.includes(term)).length / terms.length;
+}
+
+function availabilityState(row: InventoryItemRow): 'candidate_available' | 'unknown' {
+  return ['owned_confirmed', 'owned_declared', 'complete_declared'].includes(row.item_status)
+    ? 'candidate_available'
+    : 'unknown';
+}
+
+export function searchInventory(
+  actor: AuthUser,
+  input: InventorySearchRequest,
+): InventorySearchResult[] {
+  const request = InventorySearchRequestSchema.parse(input);
+  const projectId = request.project_id ?? null;
+  let rows: InventoryItemRow[];
+  if (projectId) {
+    if (!canReadProject(actor, projectId)) throw new Error('inventory_scope_denied');
+    rows = getDb()
+      .prepare(
+        `SELECT * FROM inventory_items
+         WHERE project_id = ? AND visibility_scope = 'project'
+           AND validation_status = 'validated'`,
+      )
+      .all(projectId) as InventoryItemRow[];
+  } else {
+    rows = getDb()
+      .prepare(
+        `SELECT * FROM inventory_items
+         WHERE owner_id = ? AND scope_type = 'user' AND validation_status = 'validated'`,
+      )
+      .all(actor.id) as InventoryItemRow[];
+  }
+  const terms = searchTerms(request.query);
+  return rows
+    .map((row) => ({row, score: itemSearchScore(row, terms)}))
+    .filter(({score}) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, request.limit)
+    .map(({row, score}) =>
+      InventorySearchResultSchema.parse({
+        item: toItem(row),
+        score,
+        availability_state: availabilityState(row),
+        availability_guaranteed: false,
+      }),
+    );
+}
+
+export function createInventoryProjectNeed(
+  actor: AuthUser,
+  input: CreateInventoryProjectNeedRequest,
+): InventoryProjectNeed {
+  const request = CreateInventoryProjectNeedRequestSchema.parse(input);
+  if (!canEditProject(actor, request.project_id)) throw new Error('inventory_scope_denied');
+  const id = uuid();
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `INSERT INTO inventory_project_needs
+         (id, project_id, owner_id, label, quantity, required_tags_json, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
+    )
+    .run(
+      id,
+      request.project_id,
+      actor.id,
+      request.label,
+      request.quantity,
+      JSON.stringify(request.required_tags),
+      now,
+      now,
+    );
+  audit({
+    event_type: 'inventory.project_need_created',
+    user_id: actor.id,
+    scope: request.project_id,
+    detail: {need_id: id, quantity: request.quantity},
+  });
+  return toProjectNeed(
+    getDb().prepare('SELECT * FROM inventory_project_needs WHERE id = ?').get(id) as InventoryProjectNeedRow,
+  );
+}
+
+export function matchInventoryProjectNeed(
+  actor: AuthUser,
+  needId: string,
+  input: MatchInventoryProjectNeedRequest,
+): InventoryNeedMatchResult {
+  const request = MatchInventoryProjectNeedRequestSchema.parse(input);
+  const row = getDb().prepare('SELECT * FROM inventory_project_needs WHERE id = ?').get(needId) as
+    | InventoryProjectNeedRow
+    | undefined;
+  if (!row || !canReadProject(actor, row.project_id)) {
+    throw new Error('inventory_need_not_found');
+  }
+  const need = toProjectNeed(row);
+  const query = [need.label, ...need.required_tags].join(' ');
+  const matches = searchInventory(actor, {
+    query,
+    project_id: need.project_id,
+    limit: request.limit,
+  });
+  const coverageState =
+    matches.some((match) => match.availability_state === 'candidate_available')
+      ? 'candidate_available'
+      : request.inventory_complete_declared
+        ? 'missing'
+        : 'unknown';
+  audit({
+    event_type: 'inventory.project_need_matched',
+    user_id: actor.id,
+    scope: need.project_id,
+    detail: {
+      need_id: need.need_id,
+      coverage_state: coverageState,
+      match_count: matches.length,
+      inventory_complete_declared: request.inventory_complete_declared,
+    },
+  });
+  return InventoryNeedMatchResultSchema.parse({
+    need,
+    coverage_state: coverageState,
+    availability_guaranteed: false,
+    matches,
+  });
 }
 
 export function findInventoryDuplicateCandidates(

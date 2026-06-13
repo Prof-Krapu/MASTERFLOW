@@ -2,9 +2,12 @@ import {Router, type Request, type Response} from 'express';
 
 import {
   CreateCollectionMatchRequestSchema,
+  CreateInventoryProjectNeedRequestSchema,
   CreateInventoryCollectionRequestSchema,
   CreateInventoryItemRequestSchema,
   IngestInventoryOcrCandidatesRequestSchema,
+  InventorySearchRequestSchema,
+  MatchInventoryProjectNeedRequestSchema,
   ResolveCollectionMatchRequestSchema,
   SetCollectionCompletionRequestSchema,
 } from '@masterflow/shared';
@@ -15,15 +18,18 @@ import {
   createCollectionMatch,
   createInventoryCollection,
   createInventoryItem,
+  createInventoryProjectNeed,
   getInventoryItem,
   findInventoryDuplicateCandidates,
   ingestInventoryOcrCandidates,
   indexInventoryItem,
   listInventoryItems,
+  matchInventoryProjectNeed,
   listInventoryCollections,
   listCollectionMatches,
   resolveCollectionMatch,
   setInventoryCollectionCompletion,
+  searchInventory,
   validateInventoryCollection,
   validateInventoryItem,
 } from '../services/inventory.ts';
@@ -44,6 +50,7 @@ function routeError(res: Response, error: unknown): void {
     message === 'inventory_item_not_found' ||
     message === 'inventory_collection_not_found' ||
     message === 'inventory_match_not_found' ||
+    message === 'inventory_need_not_found' ||
     message === 'project_not_found'
   ) {
     res.status(404).json({error: message});
@@ -85,6 +92,23 @@ export function createInventoryRouter(): Router {
             req.query.include_candidates === '1' || req.query.include_candidates === 'true',
         }),
       });
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.get('/inventory/search', (req: Request, res: Response): void => {
+    const parsed = InventorySearchRequestSchema.safeParse({
+      query: req.query.q,
+      project_id: typeof req.query.project_id === 'string' ? req.query.project_id : null,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+    });
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json({results: searchInventory(actor(req), parsed.data)});
     } catch (error) {
       routeError(res, error);
     }
@@ -253,6 +277,32 @@ export function createInventoryRouter(): Router {
     }
     try {
       res.status(201).json({results: ingestInventoryOcrCandidates(actor(req), parsed.data)});
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/project-needs', (req: Request, res: Response): void => {
+    const parsed = CreateInventoryProjectNeedRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.status(201).json(createInventoryProjectNeed(actor(req), parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/project-needs/:id/match', (req: Request, res: Response): void => {
+    const parsed = MatchInventoryProjectNeedRequestSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(matchInventoryProjectNeed(actor(req), req.params.id ?? '', parsed.data));
     } catch (error) {
       routeError(res, error);
     }

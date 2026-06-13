@@ -292,6 +292,60 @@ export type SetCollectionCompletionRequest = z.input<
   typeof SetCollectionCompletionRequestSchema
 >;
 
+export const InventorySearchRequestSchema = z.object({
+  query: z.string().min(2).max(240),
+  project_id: z.string().min(1).nullable().optional(),
+  limit: z.number().int().min(1).max(20).default(10),
+});
+export type InventorySearchRequest = z.input<typeof InventorySearchRequestSchema>;
+
+export const InventorySearchResultSchema = z.object({
+  item: InventoryItemSchema,
+  score: z.number().min(0).max(1),
+  availability_state: z.enum(['candidate_available', 'unknown']),
+  availability_guaranteed: z.literal(false),
+});
+export type InventorySearchResult = z.infer<typeof InventorySearchResultSchema>;
+
+export const InventoryProjectNeedSchema = z.object({
+  need_id: z.string().min(1),
+  project_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  label: z.string().min(1).max(240),
+  quantity: z.number().int().positive(),
+  required_tags: z.array(z.string().min(1).max(80)),
+  status: z.enum(['open', 'satisfied', 'abandoned']),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type InventoryProjectNeed = z.infer<typeof InventoryProjectNeedSchema>;
+
+export const CreateInventoryProjectNeedRequestSchema = z.object({
+  project_id: z.string().min(1),
+  label: z.string().min(1).max(240),
+  quantity: z.number().int().positive().default(1),
+  required_tags: z.array(z.string().min(1).max(80)).max(30).default([]),
+});
+export type CreateInventoryProjectNeedRequest = z.input<
+  typeof CreateInventoryProjectNeedRequestSchema
+>;
+
+export const MatchInventoryProjectNeedRequestSchema = z.object({
+  inventory_complete_declared: z.boolean().default(false),
+  limit: z.number().int().min(1).max(20).default(10),
+});
+export type MatchInventoryProjectNeedRequest = z.input<
+  typeof MatchInventoryProjectNeedRequestSchema
+>;
+
+export const InventoryNeedMatchResultSchema = z.object({
+  need: InventoryProjectNeedSchema,
+  coverage_state: z.enum(['candidate_available', 'missing', 'unknown']),
+  availability_guaranteed: z.literal(false),
+  matches: z.array(InventorySearchResultSchema),
+});
+export type InventoryNeedMatchResult = z.infer<typeof InventoryNeedMatchResultSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

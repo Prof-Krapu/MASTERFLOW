@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-INV-5 Search / Project Needs — PRET A PUSH
+
+- recherche permissionnee sur items `validated` uniquement ;
+- besoin projet persistant, cree par editor+ ;
+- resultat `candidate_available|missing|unknown` ;
+- `availability_guaranteed` reste toujours `false` sans etat stock/reservation frais ;
+- absence de match -> `unknown` par defaut ;
+- `missing` seulement si l'inventaire est explicitement declare complet.
+
+Recette : search/needs **7/7**, backend complet **246/246**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-13 — PR-INV-4 Collection Graph — PRET A PUSH
 
 - validation explicite des collections ;

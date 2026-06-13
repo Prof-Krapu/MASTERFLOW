@@ -22,6 +22,18 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INV-5 Search / Project Needs pousse cote MALEX/Codex
+
+Recherche Inventory et besoins projet livres avec garde-fou :
+
+- seulement les items valides ;
+- un match indique `candidate_available`, jamais disponibilite garantie ;
+- absence de match = `unknown`, sauf declaration explicite d'inventaire complet -> `missing`.
+
+Ne mappe pas un score OCR/RAG vers une disponibilite certaine dans tes runners.
+
+---
+
 ## 2026-06-13 — open — PR-INV-4 Collection Graph pousse cote MALEX/Codex
 
 Collection Graph livre sans fusion automatique :

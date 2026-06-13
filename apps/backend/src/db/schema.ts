@@ -193,6 +193,19 @@ function migrate(d: Database.Database): void {
       PRIMARY KEY (object_type, object_id, scope_type, scope_id)
     );
 
+    CREATE TABLE IF NOT EXISTS inventory_project_needs (
+      id             TEXT PRIMARY KEY,
+      project_id     TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      owner_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      label          TEXT NOT NULL,
+      quantity       INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+      required_tags_json TEXT NOT NULL DEFAULT '[]',
+      status         TEXT NOT NULL DEFAULT 'open'
+                       CHECK (status IN ('open','satisfied','abandoned')),
+      created_at     INTEGER NOT NULL,
+      updated_at     INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Rooms (UI Room OS) ──────────────────────────
     CREATE TABLE IF NOT EXISTS rooms (
       id          TEXT PRIMARY KEY,
@@ -1021,6 +1034,8 @@ function migrate(d: Database.Database): void {
       ON inventory_collections(owner_id, validation_status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_inventory_visibility_scope
       ON inventory_visibility(scope_type, scope_id, access_level);
+    CREATE INDEX IF NOT EXISTS idx_inventory_project_needs
+      ON inventory_project_needs(project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_rag_resources_scope
       ON rag_resources(scope_type, scope_id, status, trust_status);
     CREATE INDEX IF NOT EXISTS idx_rag_chunks_resource
@@ -1271,6 +1286,18 @@ export interface CollectionMatchRow {
   match_status: 'candidate' | 'confirmed' | 'rejected';
   confidence: number | null;
   source_ref: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface InventoryProjectNeedRow {
+  id: string;
+  project_id: string;
+  owner_id: string;
+  label: string;
+  quantity: number;
+  required_tags_json: string;
+  status: 'open' | 'satisfied' | 'abandoned';
   created_at: number;
   updated_at: number;
 }
