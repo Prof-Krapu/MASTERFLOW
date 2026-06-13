@@ -4,6 +4,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C8 claim et lease internes des runners
+
+**Livrable MALEX/Codex.** Attribution sûre des jobs aux runners, sans broker externe, route
+publique ou polling SQL direct.
+
+Ajouts :
+
+- `SPEC_PR_C8_RUNNER_CLAIM_AND_LEASE.md` ;
+- colonnes nullable `runner_id`, `claimed_at`, `lease_expires_at` sur `jobs` ;
+- migration idempotente par `ALTER TABLE` si colonnes absentes ;
+- `claimNextJob(runner_id, types, lease_ms?)` ;
+- `extendJobLease(job_id, runner_id, lease_ms?)` ;
+- reprise d'un job `running` seulement si son lease est expiré ;
+- vérification optionnelle du `runner_id` sur progress/review/complete/fail ;
+- nettoyage du lease sur cancel, retry et finalisation ;
+- aucun nouvel event type pour rester compatible avec les contraintes SQLite existantes ;
+- tests claim, concurrence, expiration, extension, finalisation et mauvais runner.
+
+Vincent doit faire consommer ses runners par `claimNextJob`, prolonger le lease pendant les
+traitements longs, puis finaliser avec le même `runner_id`. Aucun runner ne doit scanner ou
+modifier `jobs` directement.
+
+---
+
 ## 2026-06-13 — PR-C7 lifecycle interne des runners jobs
 
 **Livrable MALEX/Codex.** Transitions runner-only pour terminer proprement les jobs, sans route

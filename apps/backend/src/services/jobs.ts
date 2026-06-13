@@ -3,6 +3,7 @@ import {
   ExportPrepareRequestSchema,
   JobEventSchema,
   JobSchema,
+  JobTypeSchema,
   OcrPrepareRequestSchema,
   ROLE_RANK,
   type CorrectionPrepareRequest,
@@ -23,6 +24,8 @@ import type {AuthUser} from '../middleware/auth.ts';
 
 const CANCELLABLE = new Set<JobStatus>(['queued', 'running', 'needs_review']);
 const FINALIZABLE = new Set<JobStatus>(['queued', 'running']);
+const DEFAULT_LEASE_MS = 5 * 60 * 1000;
+const MAX_LEASE_MS = 60 * 60 * 1000;
 const SECRET_PATTERN =
   /(api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization)/i;
 
@@ -71,6 +74,9 @@ function toJob(row: JobRow): Job {
     started_at: row.started_at,
     completed_at: row.completed_at,
     cancelled_at: row.cancelled_at,
+    runner_id: row.runner_id,
+    claimed_at: row.claimed_at,
+    lease_expires_at: row.lease_expires_at,
   });
 }
 
@@ -96,6 +102,25 @@ function assertNoSecrets(payload: unknown): void {
 
 function assertFinalizable(row: JobRow): void {
   if (!FINALIZABLE.has(row.status as JobStatus)) throw new Error('job_not_finalizable');
+}
+
+function assertRunnerId(runnerId: string): void {
+  if (!runnerId.trim()) throw new Error('runner_id_required');
+}
+
+function assertLeaseMs(leaseMs: number): void {
+  if (!Number.isInteger(leaseMs) || leaseMs <= 0 || leaseMs > MAX_LEASE_MS) {
+    throw new Error('invalid_job_lease');
+  }
+}
+
+function assertRunnerLease(row: JobRow, runnerId: string | undefined, now = Date.now()): void {
+  if (!runnerId) return;
+  assertRunnerId(runnerId);
+  if (row.runner_id !== runnerId) throw new Error('job_lease_mismatch');
+  if (row.lease_expires_at !== null && row.lease_expires_at <= now) {
+    throw new Error('job_lease_expired');
+  }
 }
 
 function assertTeacherOwner(actor: AuthUser, ownerId: string): void {
@@ -304,13 +329,117 @@ export function listJobEvents(actor: AuthUser, jobId: string): JobEvent[] {
   return rows.map(toEvent);
 }
 
+export function claimNextJob(
+  runnerId: string,
+  types: JobType[],
+  leaseMs = DEFAULT_LEASE_MS,
+  now = Date.now(),
+): Job | null {
+  assertRunnerId(runnerId);
+  assertLeaseMs(leaseMs);
+  const jobTypes = [...new Set(types.map((type) => JobTypeSchema.parse(type)))];
+  if (jobTypes.length === 0) throw new Error('job_type_required');
+
+  const placeholders = jobTypes.map(() => '?').join(', ');
+  const db = getDb();
+  const claimed = db.transaction(() => {
+    const row = db
+      .prepare(
+        `SELECT * FROM jobs
+         WHERE type IN (${placeholders})
+           AND (
+             status = 'queued'
+             OR (status = 'running' AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?)
+           )
+         ORDER BY updated_at ASC, created_at ASC, rowid ASC
+         LIMIT 1`,
+      )
+      .get(...jobTypes, now) as JobRow | undefined;
+    if (!row) return null;
+
+    const leaseExpiresAt = now + leaseMs;
+    const result = db
+      .prepare(
+        `UPDATE jobs
+         SET status = 'running',
+             runner_id = ?,
+             claimed_at = ?,
+             lease_expires_at = ?,
+             started_at = COALESCE(started_at, ?),
+             updated_at = ?
+         WHERE id = ?
+           AND (
+             status = 'queued'
+             OR (status = 'running' AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?)
+           )`,
+      )
+      .run(runnerId, now, leaseExpiresAt, now, now, row.id, now);
+    if (result.changes !== 1) return null;
+
+    insertEvent(row.id, 'job_started', {
+      claim: true,
+      runner_id: runnerId,
+      lease_expires_at: leaseExpiresAt,
+      reclaimed: row.status === 'running',
+    });
+    audit({
+      event_type: 'job.claimed',
+      scope: row.scope_id,
+      detail: {
+        job_id: row.id,
+        type: row.type,
+        runner_id: runnerId,
+        reclaimed: row.status === 'running',
+      },
+    });
+    return db.prepare('SELECT * FROM jobs WHERE id = ?').get(row.id) as JobRow;
+  })();
+
+  return claimed ? toJob(claimed) : null;
+}
+
+export function extendJobLease(
+  jobId: string,
+  runnerId: string,
+  leaseMs = DEFAULT_LEASE_MS,
+  now = Date.now(),
+): Job {
+  assertRunnerId(runnerId);
+  assertLeaseMs(leaseMs);
+  const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
+  if (!row) throw new Error('job_not_found');
+  if (row.status !== 'running') throw new Error('job_not_leased');
+  assertRunnerLease(row, runnerId, now);
+
+  const leaseExpiresAt = now + leaseMs;
+  getDb()
+    .prepare(
+      `UPDATE jobs SET lease_expires_at = ?, updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(leaseExpiresAt, now, jobId);
+  insertEvent(jobId, 'job_progress', {
+    lease_extended: true,
+    runner_id: runnerId,
+    lease_expires_at: leaseExpiresAt,
+  });
+  audit({
+    event_type: 'job.lease_extended',
+    scope: row.scope_id,
+    detail: {job_id: jobId, type: row.type, runner_id: runnerId},
+  });
+  const updated = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow;
+  return toJob(updated);
+}
+
 export function cancelJob(actor: AuthUser, jobId: string): Job {
   const job = getJob(actor, jobId);
   if (!CANCELLABLE.has(job.status)) throw new Error('job_not_cancellable');
   const now = Date.now();
   getDb()
     .prepare(
-      `UPDATE jobs SET status = 'cancelled', cancelled_at = ?, updated_at = ?
+      `UPDATE jobs
+       SET status = 'cancelled', cancelled_at = ?, lease_expires_at = NULL, updated_at = ?
        WHERE id = ?`,
     )
     .run(now, now, jobId);
@@ -333,7 +462,8 @@ export function retryJob(actor: AuthUser, jobId: string): Job {
       `UPDATE jobs
        SET status = 'queued', progress = 0, error = NULL, result_json = NULL,
            retry_count = retry_count + 1, started_at = NULL, completed_at = NULL,
-           cancelled_at = NULL, updated_at = ?
+           cancelled_at = NULL, runner_id = NULL, claimed_at = NULL,
+           lease_expires_at = NULL, updated_at = ?
        WHERE id = ?`,
     )
     .run(now, jobId);
@@ -348,12 +478,13 @@ export function retryJob(actor: AuthUser, jobId: string): Job {
 }
 
 /** API interne runner-only : aucune route HTTP ne permet d'écrire la progression. */
-export function updateJobProgress(jobId: string, progress: number): void {
+export function updateJobProgress(jobId: string, progress: number, runnerId?: string): void {
   if (!Number.isInteger(progress) || progress < 0 || progress > 100) {
     throw new Error('invalid_job_progress');
   }
   const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
   if (!row) throw new Error('job_not_found');
+  assertRunnerLease(row, runnerId);
   if (progress < row.progress) throw new Error('job_progress_must_be_monotone');
   if (row.status !== 'queued' && row.status !== 'running') throw new Error('job_not_progressable');
 
@@ -378,11 +509,13 @@ export function markJobNeedsReview(
   jobId: string,
   result: Record<string, unknown>,
   reviewReason: string,
+  runnerId?: string,
 ): void {
   if (!reviewReason.trim()) throw new Error('review_reason_required');
   assertNoSecrets(result);
   const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
   if (!row) throw new Error('job_not_found');
+  assertRunnerLease(row, runnerId);
   assertFinalizable(row);
 
   const now = Date.now();
@@ -395,6 +528,7 @@ export function markJobNeedsReview(
            error = NULL,
            started_at = COALESCE(started_at, ?),
            completed_at = ?,
+           lease_expires_at = NULL,
            updated_at = ?
        WHERE id = ?`,
     )
@@ -411,10 +545,15 @@ export function markJobNeedsReview(
 }
 
 /** API interne runner-only : clôture seulement les jobs sans revue humaine supplémentaire. */
-export function completeJob(jobId: string, result: Record<string, unknown>): void {
+export function completeJob(
+  jobId: string,
+  result: Record<string, unknown>,
+  runnerId?: string,
+): void {
   assertNoSecrets(result);
   const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
   if (!row) throw new Error('job_not_found');
+  assertRunnerLease(row, runnerId);
   assertFinalizable(row);
 
   const now = Date.now();
@@ -427,6 +566,7 @@ export function completeJob(jobId: string, result: Record<string, unknown>): voi
            error = NULL,
            started_at = COALESCE(started_at, ?),
            completed_at = ?,
+           lease_expires_at = NULL,
            updated_at = ?
        WHERE id = ?`,
     )
@@ -447,11 +587,13 @@ export function failJob(
   jobId: string,
   error: string,
   detail?: Record<string, unknown>,
+  runnerId?: string,
 ): void {
   if (!error.trim()) throw new Error('job_error_required');
   assertNoSecrets({error, detail});
   const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
   if (!row) throw new Error('job_not_found');
+  assertRunnerLease(row, runnerId);
   assertFinalizable(row);
 
   const now = Date.now();
@@ -462,6 +604,7 @@ export function failJob(
            error = ?,
            started_at = COALESCE(started_at, ?),
            completed_at = ?,
+           lease_expires_at = NULL,
            updated_at = ?
        WHERE id = ?`,
     )

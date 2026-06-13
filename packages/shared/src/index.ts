@@ -884,6 +884,9 @@ export const JobSchema = z.object({
   started_at: z.number().int().nonnegative().nullable(),
   completed_at: z.number().int().nonnegative().nullable(),
   cancelled_at: z.number().int().nonnegative().nullable(),
+  runner_id: z.string().min(1).nullable(),
+  claimed_at: z.number().int().nonnegative().nullable(),
+  lease_expires_at: z.number().int().nonnegative().nullable(),
 });
 export type Job = z.infer<typeof JobSchema>;
 

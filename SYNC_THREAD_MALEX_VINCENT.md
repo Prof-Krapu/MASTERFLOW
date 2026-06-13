@@ -23,6 +23,21 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C8 claim/lease runners prête
+
+La couche `SPEC_PR_C8_RUNNER_CLAIM_AND_LEASE.md` ajoute l'attribution sûre des jobs :
+
+1. `claimNextJob(runner_id, types, lease_ms?)` ;
+2. `extendJobLease(job_id, runner_id, lease_ms?)` ;
+3. colonnes `runner_id`, `claimed_at`, `lease_expires_at` ;
+4. reprise d'un job `running` seulement si son lease est expiré.
+
+Merci de brancher tes runners sur ce flux : claim, progress avec le même `runner_id`, extension
+du lease si nécessaire, puis finalisation PR-C7. Pas de polling SQL direct, pas d'écriture table,
+pas de double consommation du même job.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C7 lifecycle runners prête
 
 La couche `SPEC_PR_C7_RUNNER_JOB_LIFECYCLE.md` ajoute les sorties internes runner-only :

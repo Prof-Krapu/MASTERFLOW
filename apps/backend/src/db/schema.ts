@@ -558,7 +558,10 @@ function migrate(d: Database.Database): void {
       updated_at    INTEGER NOT NULL,
       started_at    INTEGER,
       completed_at  INTEGER,
-      cancelled_at  INTEGER
+      cancelled_at  INTEGER,
+      runner_id     TEXT,
+      claimed_at    INTEGER,
+      lease_expires_at INTEGER
     );
 
     CREATE TABLE IF NOT EXISTS job_events (
@@ -633,6 +636,26 @@ function migrate(d: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_job_events_job
       ON job_events(job_id, created_at);
   `);
+
+  ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
+  ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
+  ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
+  d.exec(`
+    CREATE INDEX IF NOT EXISTS idx_jobs_claimable
+      ON jobs(status, type, updated_at, lease_expires_at);
+  `);
+}
+
+function ensureColumn(
+  d: Database.Database,
+  tableName: string,
+  columnName: string,
+  definition: string,
+): void {
+  const columns = d.prepare(`PRAGMA table_info('${tableName}')`).all() as Array<{name: string}>;
+  if (!columns.some((column) => column.name === columnName)) {
+    d.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
+  }
 }
 
 // ───────────────────────── Types de rangées ─────────────────────────
@@ -929,6 +952,9 @@ export interface JobRow {
   started_at: number | null;
   completed_at: number | null;
   cancelled_at: number | null;
+  runner_id: string | null;
+  claimed_at: number | null;
+  lease_expires_at: number | null;
 }
 
 export interface JobEventRow {

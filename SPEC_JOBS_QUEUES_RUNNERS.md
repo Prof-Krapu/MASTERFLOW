@@ -54,6 +54,7 @@ created_at
 - runner backend via services internes uniquement :
   `updateJobProgress`, `markJobNeedsReview`, `completeJob`, `failJob` ;
 - pas d'ecriture directe dans `jobs` / `job_events`.
+- consommation runner via `claimNextJob` puis lease actif ; pas de polling SQL direct.
 
 ## Lifecycle runner interne
 
@@ -66,6 +67,19 @@ queued -> running -> failed -> queued via retry
 `needs_review` est la sortie normale des traitements sensibles : OCR, correction, export,
 generation d'asset ou toute action contenant des donnees privees. `completed` est reserve aux
 jobs sans review humaine supplementaire ou aux futures etapes explicitement validees ailleurs.
+
+## Claim / lease
+
+Les runners prennent un job avec :
+
+```text
+claimNextJob(runner_id, types)
+```
+
+Le service ajoute `runner_id`, `claimed_at` et `lease_expires_at`. Un job `running` ne peut être
+repris que si son lease est expiré. Les traitements longs prolongent le bail avec
+`extendJobLease`. Les transitions de progression/finalisation doivent fournir le même
+`runner_id`.
 
 ## Endpoints PR-1
 

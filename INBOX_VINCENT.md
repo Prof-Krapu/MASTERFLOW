@@ -14,6 +14,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-C8 : claim/lease obligatoire avant runner
+
+MALEX/Codex a posé `SPEC_PR_C8_RUNNER_CLAIM_AND_LEASE.md`.
+
+Le backend possède maintenant :
+
+- `claimNextJob(runner_id, types, lease_ms?)` ;
+- `extendJobLease(job_id, runner_id, lease_ms?)` ;
+- colonnes jobs `runner_id`, `claimed_at`, `lease_expires_at` ;
+- reprise possible uniquement si le lease d'un job `running` est expiré ;
+- vérification du même `runner_id` sur progress/review/complete/fail si fourni.
+
+Action demandée :
+
+1. tes runners prennent un job via `claimNextJob`, jamais via `SELECT * FROM jobs` maison ;
+2. chaque runner utilise un `runner_id` stable et lisible ;
+3. traitement long = `extendJobLease` régulier ;
+4. finalisation = même `runner_id` que celui du claim ;
+5. pas d'écriture directe `jobs` / `job_events` ;
+6. si un runner tombe, un autre ne reprend qu'après expiration du lease.
+
+Traduction SF6 : tu ne bourres pas dans le neutral. Tu prends le tour avec un claim propre,
+tu gardes ton avantage avec le lease, et tu confirmes sans voler le round du voisin.
+
+---
+
 ## 2026-06-13 — open — PR-C7 : utiliser le lifecycle interne, pas SQL direct
 
 MALEX/Codex a posé `SPEC_PR_C7_RUNNER_JOB_LIFECYCLE.md`.
