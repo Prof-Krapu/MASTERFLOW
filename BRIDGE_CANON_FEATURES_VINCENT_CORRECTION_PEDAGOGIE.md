@@ -284,7 +284,8 @@ Ils completent les objets Corrector deja listes dans
 4. `PR-C0` : deprecation non destructive du persona Corrector.
 5. `PR-C1` : rubriques, profils institutionnels, batches et manifests. Contrats, migrations et
    gates de cohérence livrés ; aucun score ni runner.
-6. `PR-C2` : ingestion/jobs.
+6. `PR-C2` : ingestion/jobs. Shell jobs, création interne `ocr_prepare`, progress/cancel/retry et
+   gates adapter/preflight/manifest-consentement livrés ; runner OCR non branché.
 7. `PR-C3` : pre-correction explicable.
 8. `PR-C4` : calibration, quality review et signals.
 9. `PR-C5` : feedback et exports.

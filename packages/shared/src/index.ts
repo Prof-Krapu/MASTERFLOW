@@ -596,6 +596,97 @@ export const PreCorrectionManifestSchema = z
   );
 export type PreCorrectionManifest = z.infer<typeof PreCorrectionManifestSchema>;
 
+// ───────────────────────── Jobs / ingestion OCR PR-C2 ─────────────────────────
+
+export const JobStatusSchema = z.enum([
+  'queued',
+  'running',
+  'needs_review',
+  'completed',
+  'failed',
+  'cancelled',
+  'expired',
+]);
+export type JobStatus = z.infer<typeof JobStatusSchema>;
+
+export const JobTypeSchema = z.enum([
+  'rag_reindex',
+  'resource_revoke',
+  'export_prepare',
+  'asset_prepare',
+  'ocr_prepare',
+  'correction_prepare',
+]);
+export type JobType = z.infer<typeof JobTypeSchema>;
+
+export const JobSchema = z.object({
+  job_id: z.string().min(1),
+  type: JobTypeSchema,
+  status: JobStatusSchema,
+  owner_id: z.string().min(1),
+  scope_type: z.string().min(1),
+  scope_id: z.string().min(1),
+  risk_level: RiskLevelSchema,
+  payload: z.record(z.unknown()),
+  result: z.record(z.unknown()).nullable(),
+  error: z.string().nullable(),
+  progress: z.number().int().min(0).max(100),
+  retry_count: z.number().int().nonnegative(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+  started_at: z.number().int().nonnegative().nullable(),
+  completed_at: z.number().int().nonnegative().nullable(),
+  cancelled_at: z.number().int().nonnegative().nullable(),
+});
+export type Job = z.infer<typeof JobSchema>;
+
+export const JobEventSchema = z.object({
+  event_id: z.string().min(1),
+  job_id: z.string().min(1),
+  event_type: z.enum([
+    'job_queued',
+    'job_started',
+    'job_progress',
+    'job_needs_review',
+    'job_completed',
+    'job_failed',
+    'job_cancelled',
+    'job_retried',
+  ]),
+  detail: z.record(z.unknown()).nullable(),
+  created_at: z.number().int().nonnegative(),
+});
+export type JobEvent = z.infer<typeof JobEventSchema>;
+
+export const OcrPrepareRequestSchema = z
+  .object({
+    adapter_id: z.enum(['ocr-submission-v1', 'morphological-reference-v1']),
+    owner_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    source_ref: z.string().startsWith('storage://'),
+    preflight_ref: z.string().min(1),
+    manifest_ref: z.string().min(1).nullable(),
+    consent_ref: z.string().min(1).nullable(),
+    validation_ref: z.string().min(1).nullable(),
+  })
+  .superRefine((request, ctx) => {
+    if (request.adapter_id === 'ocr-submission-v1' && !request.manifest_ref) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'L’OCR de copie exige un manifest de pré-correction.',
+        path: ['manifest_ref'],
+      });
+    }
+    if (request.adapter_id === 'morphological-reference-v1' && !request.consent_ref) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'La référence morphologique exige un consentement explicite.',
+        path: ['consent_ref'],
+      });
+    }
+  });
+export type OcrPrepareRequest = z.infer<typeof OcrPrepareRequestSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);

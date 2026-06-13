@@ -381,6 +381,48 @@ function migrate(d: Database.Database): void {
       CHECK (status IN ('draft','rejected') OR validation_ref IS NOT NULL)
     );
 
+    -- ───────────────────────── Jobs / queues PR-C2 ────────────────────────
+    CREATE TABLE IF NOT EXISTS jobs (
+      id            TEXT PRIMARY KEY,
+      type          TEXT NOT NULL
+                      CHECK (type IN (
+                        'rag_reindex','resource_revoke','export_prepare',
+                        'asset_prepare','ocr_prepare','correction_prepare'
+                      )),
+      status        TEXT NOT NULL DEFAULT 'queued'
+                      CHECK (status IN (
+                        'queued','running','needs_review','completed',
+                        'failed','cancelled','expired'
+                      )),
+      owner_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      scope_type    TEXT NOT NULL,
+      scope_id      TEXT NOT NULL,
+      risk_level    TEXT NOT NULL
+                      CHECK (risk_level IN ('low','medium','medium_high','high','variable')),
+      payload_json  TEXT NOT NULL,
+      result_json   TEXT,
+      error         TEXT,
+      progress      INTEGER NOT NULL DEFAULT 0 CHECK (progress BETWEEN 0 AND 100),
+      retry_count   INTEGER NOT NULL DEFAULT 0 CHECK (retry_count >= 0),
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL,
+      started_at    INTEGER,
+      completed_at  INTEGER,
+      cancelled_at  INTEGER
+    );
+
+    CREATE TABLE IF NOT EXISTS job_events (
+      id          TEXT PRIMARY KEY,
+      job_id      TEXT NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+      event_type  TEXT NOT NULL
+                    CHECK (event_type IN (
+                      'job_queued','job_started','job_progress','job_needs_review',
+                      'job_completed','job_failed','job_cancelled','job_retried'
+                    )),
+      detail_json TEXT,
+      created_at  INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
@@ -418,6 +460,12 @@ function migrate(d: Database.Database): void {
       ON submissions(batch_id, status);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_batch
       ON pre_correction_manifests(batch_id, status);
+    CREATE INDEX IF NOT EXISTS idx_jobs_owner_status
+      ON jobs(owner_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_jobs_scope
+      ON jobs(scope_type, scope_id, status);
+    CREATE INDEX IF NOT EXISTS idx_job_events_job
+      ON job_events(job_id, created_at);
   `);
 }
 
@@ -585,4 +633,32 @@ export interface TaskModelProfileRow {
   created_at: number;
   updated_at: number;
   updated_by: string | null;
+}
+
+export interface JobRow {
+  id: string;
+  type: string;
+  status: string;
+  owner_id: string;
+  scope_type: string;
+  scope_id: string;
+  risk_level: string;
+  payload_json: string;
+  result_json: string | null;
+  error: string | null;
+  progress: number;
+  retry_count: number;
+  created_at: number;
+  updated_at: number;
+  started_at: number | null;
+  completed_at: number | null;
+  cancelled_at: number | null;
+}
+
+export interface JobEventRow {
+  id: string;
+  job_id: string;
+  event_type: string;
+  detail_json: string | null;
+  created_at: number;
 }

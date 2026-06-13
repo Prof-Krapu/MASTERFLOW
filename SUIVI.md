@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C2 ingestion OCR et jobs shell
+
+**Livrable MALEX/Codex.** Fondation observable pour les traitements OCR longs, sans runner réel.
+
+Ajouts :
+
+- `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md` ;
+- contrats `Job`, `JobEvent`, statuts/types et `OcrPrepareRequest` ;
+- tables `jobs` et `job_events` avec index owner/scope ;
+- création interne `ocr_prepare` pour copie ou référence morphologique ;
+- manifest obligatoire pour copie, consentement obligatoire pour morphologie ;
+- références `storage://` seulement et détection de payload secret ;
+- isolation owner, supervision admin/godmode ;
+- progression monotone, cancel/retry et historique ;
+- routes de suivi sans route générique de création ;
+- tests service et HTTP.
+
+Aucun upload, worker, watcher, OCR, score ou canon n'est livré. Le job `queued` représente une
+intention vérifiée en attente d'un runner. Vincent doit raccorder son OCR derrière ce service et
+terminer les extractions en `needs_review`.
+
+---
+
 ## 2026-06-13 — PR-C1 objets de référence correction
 
 **Livrable MALEX/Codex.** Fondation versionnée de la correction, sans exécution.

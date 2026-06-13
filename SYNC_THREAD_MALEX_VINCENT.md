@@ -23,6 +23,17 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C2 jobs OCR prête
+
+Le shell jobs OCR est livré dans `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md`.
+
+Il crée uniquement des intentions `ocr_prepare` internes et observables. Aucun runner n'est
+branché et aucune route publique ne peut créer un job arbitraire. Merci de proposer le connecteur
+minimal de ton OCR derrière ce contrat, avec progression, cancel, erreurs et sortie
+`needs_review`.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C1 prête à challenger
 
 Les objets versionnés de correction sont posés dans

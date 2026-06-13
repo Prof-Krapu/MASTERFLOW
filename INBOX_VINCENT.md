@@ -14,6 +14,33 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-C2 jobs OCR et raccord runner
+
+MALEX/Codex a posé `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md`.
+
+Le backend possède maintenant :
+
+- tables `jobs` et `job_events` ;
+- service interne `createOcrPrepareJob` ;
+- gates adapter, owner, scope, preflight et manifest/consentement ;
+- progression monotone ;
+- lecture owner/admin, events, cancel et retry ;
+- aucun endpoint générique de création ;
+- aucun runner OCR branché.
+
+Action demandée :
+
+1. comparer ce shell au cycle réel de ton OCR ;
+2. proposer le contrat runner minimal consommant un job `ocr_prepare` ;
+3. préciser chargement source privée, timeout, cancel, erreurs et sortie candidate ;
+4. publier la progression via le service interne, jamais directement depuis l'UI ;
+5. terminer en `needs_review`, pas en note finale ou canon validé.
+
+Ne pas ajouter l'upload public, le watcher dossier ou le bridge smartphone dans cette première
+connexion. Ils nécessitent storage/quarantaine/scopes dédiés.
+
+---
+
 ## 2026-06-13 — open — Revue PR-C1 objets de référence correction
 
 MALEX/Codex a posé `SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md`.

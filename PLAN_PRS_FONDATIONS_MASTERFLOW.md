@@ -109,6 +109,19 @@ Référence :
 - `SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md`
 - `DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`
 
+### PR-C2 — `ocr_ingestion_jobs_shell`
+
+Jobs owner/scope, événements, progression monotone, cancel/retry et création interne
+`ocr_prepare` derrière adapter, preflight et manifest/consentement.
+
+Etat : contrats, migrations, service interne, routes de suivi et tests livrés. Aucun upload ni
+runner OCR réel.
+
+Référence :
+
+- `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md`
+- `DECISION_ABSORPTION_OCR_COMMUN_ET_ADAPTER_MORPHOLOGIQUE.md`
+
 ## Regle de sequencing
 
 Chaque PR doit livrer :
