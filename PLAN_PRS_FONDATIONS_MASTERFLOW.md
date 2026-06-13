@@ -40,6 +40,23 @@ Jobs, events, progress, cancel/retry, logs.
 
 Diagnostics workflows, friction, latence, completion, cout nullable.
 
+### PR-CB0 — `pedagogical_evidence_signal_delta_contracts`
+
+Contrats partages et migrations pour evidence events, pedagogical signals, teacher decision
+deltas et task model profiles. Aucune correction, note ou adaptation automatique.
+
+Etat : contrats Zod et tests de garde initiaux livres sur la branche MALEX/Codex ; migrations,
+permissions internes et events restent a completer avec Vincent.
+
+Reference :
+
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md`
+- `SPEC_PEDAGOGICAL_EVIDENCE_SIGNAL_AND_TEACHER_DELTA.md`
+
+Cette PR prepare la correction, les capteurs de classe, le suivi, les cours et les futurs adapters
+sans exposer une verticale fictive. Elle peut etre developpee apres Project/Scope et Template
+Registry, ou en contrats seuls avant les routes runtime.
+
 ## Regle de sequencing
 
 Chaque PR doit livrer :
@@ -58,4 +75,3 @@ aucune UI deceptive
 
 Ces PRs ne remplacent pas MOTH/CDC. Elles evitent que MOTH/CDC, Ours d'Or, devis, DA, correction
 et assets creent chacun leur propre systeme parallele.
-

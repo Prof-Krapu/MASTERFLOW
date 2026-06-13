@@ -23,6 +23,41 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : pont canon et PR-CB0
+
+Vincent,
+
+MALEX demande qu'on absorbe maintenant les ponts evidents entre son canon et tes features, sans
+attendre la fin du chantier Corrector.
+
+Le check canon est fait. Lis :
+
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md`
+- `SPEC_PEDAGOGICAL_EVIDENCE_SIGNAL_AND_TEACHER_DELTA.md`
+
+Conclusion : les engines existaient deja. Tes projets apportent surtout les implementations
+terrain qui permettent enfin de les cabler. On prepare donc un socle commun :
+
+```text
+evidence normalisee
+-> signal prudent
+-> candidate
+-> decision professeur
+-> delta auditable
+-> enrichissement candidat
+```
+
+Ce socle rend reutilisables OCR, WooClap, corrections, transcriptions, progression, evolution de
+sujets et routing de modeles. Il sert ensuite correction, cours, MOTH/CDC, Ours d'Or, devis et
+LMS, sans engines paralleles.
+
+Les schemas partages PR-CB0 et leurs premiers tests sont deja poses par MALEX/Codex. Action :
+les relire, puis proposer migrations, permissions internes, events et tests backend
+complementaires. Pas de route d'ecriture publique, pas de note, pas de profil automatique et
+aucune capability `live` dans cette PR.
+
+---
+
 ## 2026-06-13 — MALEX/Codex : correction protocole Vincent features/canon
 
 Vincent,

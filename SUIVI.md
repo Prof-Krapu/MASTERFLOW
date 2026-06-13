@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Pont canon x features Vincent et terrain PR-CB0
+
+**Livrable MALEX/Codex.** Le canon pedagogique a ete recroise avec les fonctions deja construites
+dans `API_corrector`, `API_manage`, `vibe`, le pipeline Corrector local et les anciennes sources.
+
+Constat : les owners existaient deja dans MasterFlow. Les fonctions Vincent apportent surtout
+des implementations terrain et des adapters. Il ne faut creer aucun engine parallele.
+
+Ajouts :
+
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md` ;
+- `SPEC_PEDAGOGICAL_EVIDENCE_SIGNAL_AND_TEACHER_DELTA.md` ;
+- insertion de `PR-CB0` dans le plan de fondations.
+- premiere implementation additive PR-CB0 dans `packages/shared` :
+  `EvidenceEvent`, `PedagogicalSignal`, `TeacherDecisionDelta`, `TaskModelProfile` ;
+- tests de garde des preuves, confiances, deltas IA/humain et profils de tache.
+
+Le terrain partage prepare :
+
+- evidence events normalises ;
+- signaux pedagogiques prudents ;
+- deltas entre proposition IA et decision professeur ;
+- profils de routing modele par tache ;
+- boucle d'amelioration sujet/rubrique/methode sous validation humaine.
+
+Cette fondation est reutilisable par correction, cours, WooClap, suivi, MOTH/CDC, Ours d'Or,
+devis et integration LMS. Elle reste `future` tant que routes, permissions, tests et recettes ne
+sont pas livres.
+
+---
+
 ## 2026-06-13 — Decision Corrector : absorption fonctionnelle, persona deprecie
 
 **Decision MALEX.** Ajout de

@@ -14,6 +14,43 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Pont direct canon x features Vincent
+
+MALEX demande de ne plus traiter l'absorption Corrector comme une verticale isolee.
+
+Nouveaux documents obligatoires :
+
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md` ;
+- `SPEC_PEDAGOGICAL_EVIDENCE_SIGNAL_AND_TEACHER_DELTA.md`.
+
+Le check canon est fait. Les owners existaient deja : Corrector, Signal, Pedagogical Adaptation,
+Course Graph, Subject, Queue/Jobs, LLM Provider, Export et WooClap/Classroom.
+
+Tes modules apportent les implementations et patterns terrain qui manquaient : OCR, workflow
+P1-P4, coherence audit, edition/restauration, capteurs, progression, routage modele par tache,
+exports, egress gated et transport desktop.
+
+Action demandee :
+
+1. utiliser le bridge comme mapping de reference ;
+2. relire les contrats PR-CB0 deja poses dans `packages/shared/src/index.ts` et leurs tests dans
+   `apps/backend/tests/pedagogical_contracts.test.ts` ;
+3. proposer la suite PR-CB0 : migrations, permissions internes et events, sans routes publiques ;
+4. ne creer aucun nouvel engine ;
+5. conserver chaque proposition IA et decision prof comme objets distincts ;
+6. repondre avec les tables/tests complementaires et les incompatibilites eventuelles.
+
+Le gain cle est la boucle :
+
+```text
+evidence -> signal -> candidate -> decision prof -> delta -> enrichment candidate
+```
+
+Elle prepare correction, cours, suivi, MOTH/CDC, Ours d'Or, devis et futurs LMS avec les memes
+briques permissionnees.
+
+---
+
 ## 2026-06-13 — open — Decision finale : Corrector absorbe, features a recuperer
 
 **Decision humaine MALEX. A lire avant tout nouveau travail lie a Corrector/API_corrector.**

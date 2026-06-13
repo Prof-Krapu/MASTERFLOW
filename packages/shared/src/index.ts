@@ -256,6 +256,111 @@ export const TokenUsageReportSchema = z.object({
 });
 export type TokenUsageReport = z.infer<typeof TokenUsageReportSchema>;
 
+// ───────────────────────── Evidence & signaux pédagogiques ─────────────────────────
+
+export const EvidenceSourceTypeSchema = z.enum([
+  'submission',
+  'rubric',
+  'transcript',
+  'wooclap',
+  'survey',
+  'teacher_note',
+  'calendar',
+]);
+export type EvidenceSourceType = z.infer<typeof EvidenceSourceTypeSchema>;
+
+export const EvidenceEventSchema = z.object({
+  evidence_id: z.string().min(1),
+  source_type: EvidenceSourceTypeSchema,
+  adapter_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_scope: z.string().min(1),
+  target_refs: z.array(z.string().min(1)),
+  payload_ref: z.string().min(1),
+  extraction_confidence: z.number().min(0).max(1).nullable(),
+  privacy_level: z.enum(['private', 'restricted', 'shared']),
+  occurred_at: z.number().int().nonnegative(),
+  status: z.enum(['candidate', 'validated', 'rejected', 'archived']),
+});
+export type EvidenceEvent = z.infer<typeof EvidenceEventSchema>;
+
+export const PedagogicalSignalSchema = z.object({
+  signal_id: z.string().min(1),
+  signal_type: z.enum([
+    'progression',
+    'blockage',
+    'confusion',
+    'overload',
+    'method',
+    'subject_quality',
+    'drift',
+  ]),
+  level: z.enum(['individual', 'group', 'cohort', 'course', 'method', 'system']),
+  evidence_refs: z.array(z.string().min(1)).min(1),
+  recurrence: z.number().int().nonnegative(),
+  contradiction_refs: z.array(z.string().min(1)),
+  confidence: z.number().min(0).max(1).nullable(),
+  sensitivity: z.enum(['normal', 'sensitive', 'highly_sensitive']),
+  status: z.enum([
+    'observation',
+    'hypothesis',
+    'candidate_pattern',
+    'validated_alert',
+    'stale',
+    'archived',
+  ]),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type PedagogicalSignal = z.infer<typeof PedagogicalSignalSchema>;
+
+export const TeacherDecisionDeltaSchema = z
+  .object({
+    delta_id: z.string().min(1),
+    object_type: z.enum([
+      'criterion_score',
+      'feedback',
+      'rubric',
+      'calibration',
+      'subject',
+      'remediation',
+    ]),
+    object_ref: z.string().min(1),
+    ai_proposal_ref: z.string().min(1),
+    human_decision_ref: z.string().min(1),
+    changed_fields: z.array(z.string().min(1)).min(1),
+    reason_code: z.string().min(1).nullable(),
+    free_note_ref: z.string().min(1).nullable(),
+    teacher_id: z.string().min(1),
+    context_refs: z.array(z.string().min(1)),
+    created_at: z.number().int().nonnegative(),
+  })
+  .refine((delta) => delta.ai_proposal_ref !== delta.human_decision_ref, {
+    message: 'La proposition IA et la décision humaine doivent rester distinctes.',
+    path: ['human_decision_ref'],
+  });
+export type TeacherDecisionDelta = z.infer<typeof TeacherDecisionDeltaSchema>;
+
+export const TaskModelProfileSchema = z.object({
+  profile_id: z.string().min(1),
+  task: z.enum([
+    'ocr',
+    'rubric_extraction',
+    'criterion_analysis',
+    'feedback_draft',
+    'cohort_synthesis',
+    'subject_revision',
+    'chat',
+  ]),
+  allowed_providers: z.array(z.string().min(1)).min(1),
+  fallback_order: z.array(z.string().min(1)),
+  privacy_mode: z.enum(['local_only', 'approved_remote', 'hybrid']),
+  max_cost_eur: z.number().nonnegative().nullable(),
+  max_latency_ms: z.number().int().positive().nullable(),
+  status: z.enum(['draft', 'validated', 'disabled']),
+});
+export type TaskModelProfile = z.infer<typeof TaskModelProfileSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);
