@@ -24,6 +24,7 @@ import {
 
 import {
   getDb,
+  type InventoryItemRow,
   type RagContextPackRow,
   type RagResourceChunkRow,
   type RagResourceRow,
@@ -329,6 +330,187 @@ function markContextPacksStaleForResource(resourceId: string): number {
   const stale = getDb().prepare("UPDATE rag_context_packs SET status = 'stale' WHERE id = ?");
   staleIds.forEach((packId) => stale.run(packId));
   return staleIds.length;
+}
+
+function inventoryResourceId(itemId: string): string {
+  return `inventory-item:${itemId}`;
+}
+
+function inventoryItemChunk(row: InventoryItemRow): string {
+  const tags = JSON.parse(row.usage_tags_json) as string[];
+  return [
+    row.label,
+    row.creator_or_brand,
+    `type:${row.type}`,
+    `status:${row.item_status}`,
+    row.intent,
+    row.condition,
+    tags.length > 0 ? `tags:${tags.join(', ')}` : null,
+  ]
+    .filter((value): value is string => Boolean(value))
+    .join('\n');
+}
+
+export function indexInventoryItemRagResource(actor: AuthUser, itemId: string): RagResource {
+  const item = getDb().prepare('SELECT * FROM inventory_items WHERE id = ?').get(itemId) as
+    | InventoryItemRow
+    | undefined;
+  if (!item) throw new Error('inventory_item_not_found');
+  const canManage =
+    isAdmin(actor) ||
+    item.owner_id === actor.id ||
+    (item.project_id !== null &&
+      decideScopedPermission({
+        actor,
+        projectId: item.project_id,
+        minimumProjectRole: 'editor',
+      }).allowed);
+  if (!canManage) throw new Error('inventory_item_not_found');
+  if (item.validation_status !== 'validated') throw new Error('inventory_item_not_validated');
+  if (item.project_id && item.visibility_scope !== 'project') {
+    throw new Error('inventory_item_not_shareable');
+  }
+
+  const db = getDb();
+  const now = Date.now();
+  const sourceId = inventoryResourceId(item.id);
+  const scopeType = item.project_id ? 'project' : 'owner';
+  const scopeId = item.project_id ?? item.owner_id;
+  const excerpt = inventoryItemChunk(item);
+  const contentHash = hash(excerpt);
+
+  db.prepare(
+    `INSERT INTO resources (id, type, title, url, source, status, subjects_json, created_at)
+     VALUES (?, 'inventory_item', ?, ?, 'inventory_engine', 'validated', ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+       title = excluded.title,
+       url = excluded.url,
+       source = excluded.source,
+       status = 'validated',
+       subjects_json = excluded.subjects_json`,
+  ).run(
+    sourceId,
+    item.label,
+    `inventory://item/${item.id}`,
+    item.usage_tags_json,
+    now,
+  );
+
+  const existing = db
+    .prepare(
+      `SELECT * FROM rag_resources
+       WHERE resource_id = ? AND scope_type = ? AND scope_id = ?`,
+    )
+    .get(sourceId, scopeType, scopeId) as RagResourceRow | undefined;
+  const ragId = existing?.id ?? uuid();
+  const staleContextPackCount = existing ? markContextPacksStaleForResource(existing.id) : 0;
+  db.prepare(
+    `INSERT INTO rag_resources
+       (id, resource_id, owner_id, project_id, source_type, source_uri, title, status,
+        trust_status, scope_type, scope_id, content_hash, indexed_at, revoked_at,
+        created_at, updated_at)
+     VALUES (?, ?, ?, ?, 'inventory_item', ?, ?, 'validated', 'private_reference',
+             ?, ?, ?, ?, NULL, ?, ?)
+     ON CONFLICT(resource_id, scope_type, scope_id) DO UPDATE SET
+       owner_id = excluded.owner_id,
+       project_id = excluded.project_id,
+       source_uri = excluded.source_uri,
+       title = excluded.title,
+       status = 'validated',
+       trust_status = 'private_reference',
+       content_hash = excluded.content_hash,
+       indexed_at = excluded.indexed_at,
+       revoked_at = NULL,
+       updated_at = excluded.updated_at`,
+  ).run(
+    ragId,
+    sourceId,
+    item.owner_id,
+    item.project_id,
+    `inventory://item/${item.id}`,
+    item.label,
+    scopeType,
+    scopeId,
+    contentHash,
+    now,
+    now,
+    now,
+  );
+  const resource = db
+    .prepare(
+      `SELECT * FROM rag_resources
+       WHERE resource_id = ? AND scope_type = ? AND scope_id = ?`,
+    )
+    .get(sourceId, scopeType, scopeId) as RagResourceRow;
+  db.prepare('DELETE FROM rag_resource_chunks WHERE resource_id = ?').run(resource.id);
+  db.prepare(
+    `INSERT INTO rag_resource_chunks
+       (id, resource_id, chunk_index, content_excerpt, embedding_ref, token_count,
+        metadata_json, status, created_at, updated_at)
+     VALUES (?, ?, 0, ?, NULL, ?, ?, 'active', ?, ?)`,
+  ).run(
+    uuid(),
+    resource.id,
+    excerpt,
+    excerpt.split(/\s+/).length,
+    JSON.stringify({
+      inventory_item_id: item.id,
+      collection_id: item.collection_id,
+      project_id: item.project_id,
+      provenance: 'inventory_validated',
+    }),
+    now,
+    now,
+  );
+  audit({
+    event_type: 'rag.inventory_item_indexed',
+    user_id: actor.id,
+    scope: scopeId,
+    detail: {
+      inventory_item_id: item.id,
+      rag_resource_id: resource.id,
+      stale_context_pack_count: staleContextPackCount,
+    },
+  });
+  return toResource(resource);
+}
+
+export function invalidateInventoryItemRagResource(
+  actor: AuthUser,
+  itemId: string,
+  reason: 'archived' | 'changed',
+): number {
+  const sourceId = inventoryResourceId(itemId);
+  const resources = getDb()
+    .prepare('SELECT * FROM rag_resources WHERE resource_id = ?')
+    .all(sourceId) as RagResourceRow[];
+  const now = Date.now();
+  let staleCount = 0;
+  for (const resource of resources) {
+    staleCount += markContextPacksStaleForResource(resource.id);
+    getDb()
+      .prepare(
+        `UPDATE rag_resources
+         SET status = 'archived', indexed_at = NULL, updated_at = ?
+         WHERE id = ?`,
+      )
+      .run(now, resource.id);
+    getDb()
+      .prepare(
+        `UPDATE rag_resource_chunks SET status = 'stale', updated_at = ?
+         WHERE resource_id = ?`,
+      )
+      .run(now, resource.id);
+  }
+  if (resources.length > 0) {
+    audit({
+      event_type: 'rag.inventory_item_invalidated',
+      user_id: actor.id,
+      scope: resources[0]!.scope_id,
+      detail: {inventory_item_id: itemId, reason, stale_context_pack_count: staleCount},
+    });
+  }
+  return staleCount;
 }
 
 export function registerRagResource(

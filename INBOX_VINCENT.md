@@ -22,6 +22,20 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INV-3 Inventory RAG pousse cote MALEX/Codex
+
+Projection derivee livree :
+
+- indexation explicite seulement des `inventory_items` valides ;
+- source URI `inventory://item/:id` et metadata de provenance ;
+- owner/editor+ projet requis ;
+- archive Inventory invalide la projection et les context packs cites ;
+- aucun embedding BGE/Qdrant dans cette couche.
+
+Ton runner RAG doit consommer cette projection, jamais lire les candidates Inventory directement.
+
+---
+
 ## 2026-06-13 — open — Queue Inventory backend lancee cote MALEX/Codex
 
 GO humain MALEX recu pour une queue de commits bornes :

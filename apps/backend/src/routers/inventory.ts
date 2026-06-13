@@ -13,6 +13,7 @@ import {
   createInventoryItem,
   getInventoryItem,
   ingestInventoryOcrCandidates,
+  indexInventoryItem,
   listInventoryItems,
   validateInventoryItem,
 } from '../services/inventory.ts';
@@ -45,6 +46,13 @@ function routeError(res: Response, error: unknown): void {
     message === 'inventory_ocr_job_required' ||
     message === 'inventory_ocr_job_not_ready' ||
     message === 'inventory_ocr_adapter_not_supported'
+  ) {
+    res.status(409).json({error: message});
+    return;
+  }
+  if (
+    message === 'inventory_item_not_validated' ||
+    message === 'inventory_item_not_shareable'
   ) {
     res.status(409).json({error: message});
     return;
@@ -118,6 +126,19 @@ export function createInventoryRouter(): Router {
     }
     try {
       res.json(archiveInventoryItem(actor(req), id));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/items/:id/rag-index', (req: Request, res: Response): void => {
+    const id = req.params.id;
+    if (!id) {
+      res.status(404).json({error: 'inventory_item_not_found'});
+      return;
+    }
+    try {
+      res.status(201).json(indexInventoryItem(actor(req), id));
     } catch (error) {
       routeError(res, error);
     }

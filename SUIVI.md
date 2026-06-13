@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-INV-3 Inventory RAG — PRET A PUSH
+
+Projection RAG explicite des items Inventory valides :
+
+- `POST /inventory/items/:id/rag-index` ;
+- candidat refuse, item `validated` obligatoire ;
+- projection `resources` + `rag_resources` source `inventory_item` ;
+- provenance `inventory://item/:id`, metadata item/collection/projet ;
+- owner ou editor+ projet requis pour indexer ;
+- archive Inventory -> projection RAG `archived`, chunks `stale`, context packs cites `stale` ;
+- Inventory reste proprietaire de verite ; RAG reste derive.
+
+Recette : Inventory/RAG **17/17**, backend complet **241/241**, backend/frontend TypeScript OK,
+frontend build OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-13 — Queue Inventory backend — LANCEE
 
 **GO QUEUE humain MALEX recu.**

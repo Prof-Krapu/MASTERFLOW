@@ -25,6 +25,10 @@ import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
 import {getJob} from './jobs.ts';
+import {
+  indexInventoryItemRagResource,
+  invalidateInventoryItemRagResource,
+} from './rag.ts';
 
 const PROJECT_EDITOR: ProjectMemberRole = 'editor';
 
@@ -302,6 +306,7 @@ export function archiveInventoryItem(actor: AuthUser, id: string): InventoryItem
        WHERE id = ?`,
     )
     .run(now, now, id);
+  invalidateInventoryItemRagResource(actor, id, 'archived');
   audit({
     event_type: 'inventory.item_archived',
     user_id: actor.id,
@@ -309,6 +314,11 @@ export function archiveInventoryItem(actor: AuthUser, id: string): InventoryItem
     detail: {item_id: id, project_id: row.project_id},
   });
   return toItem(getItemRow(id)!);
+}
+
+export function indexInventoryItem(actor: AuthUser, id: string) {
+  getInventoryItem(actor, id);
+  return indexInventoryItemRagResource(actor, id);
 }
 
 export function ingestInventoryOcrCandidates(
