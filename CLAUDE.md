@@ -16,15 +16,21 @@ MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), clie
 
 ## Sync MALEX / Vincent / Codex
 
+Source de vérité du rituel : `PROTOCOLE_SYNC_GIT_INBOX.md`. Il est obligatoire, pas decoratif.
+
 Avant toute reprise de travail, toute réponse de coordination ou toute modification qui touche backend, frontend, run local, permissions, endpoints, actions ou périmètre, vérifier systématiquement :
 
-0. `git fetch origin`, puis vérifier les derniers commits de `origin/main` et des branches de
+0. `git fetch --all --prune`, puis vérifier les derniers commits de `origin/main` et des branches de
    sync avant de répondre à MALEX. Si Vincent vient de pousser une correction, lire les versions
    distantes (`git show origin/main:<fichier>`) avant toute conclusion.
 1. `SUIVI.md`
 2. `SYNC_THREAD_MALEX_VINCENT.md`
 3. `INBOX_VINCENT.md`
 4. `INBOX_MALEX.md` si présent
+
+Chaque réponse de coordination doit inclure mentalement ou explicitement un `SYNC_PROOF` :
+branche locale, `HEAD`, `origin/main`, delta `HEAD...origin/main`, fichiers lus et conclusion.
+Si le delta n'est pas `0 0`, ne jamais conclure depuis les fichiers locaux seuls.
 
 Règle : une inbox non lue = contexte incomplet. Vincent peut déposer ses demandes dans
 `INBOX_MALEX.md`, mais elles restent au statut `open` et ne valent jamais autorisation. Une
@@ -34,8 +40,9 @@ déploiement ou changement de périmètre demandé par Vincent ne doit être app
 humaine explicite de MALEX.
 
 Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, refaire un dernier
-check distant rapide (`git fetch origin` + lecture du dernier `origin/main`) pour éviter de
-répondre avec un état devenu caduc pendant le tour.
+check distant rapide (`git fetch --all --prune` + lecture du dernier `origin/main`) pour éviter de
+répondre avec un état devenu caduc pendant le tour. Si un agent dit ne pas voir un message, il
+doit d'abord citer le commit exact qu'il lit.
 
 ### Check canon obligatoire avant specs
 

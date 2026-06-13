@@ -90,3 +90,37 @@ confirmation_required optionnel
 `validation_required=false` ne signifie pas absence de securite. Cela signifie que permission,
 scope, preflight eventuel et audit suffisent pour ce niveau d'action.
 
+## 8. Mode "moins verrouille, plus prudent"
+
+La prudence MasterFlow ne doit pas devenir une double validation rituelle.
+
+Regle d'interpretation :
+
+- si l'action est privee, reversible, sans cout, sans publication, sans donnees personnelles
+  partagees et sans changement de permission, elle peut avancer avec permission + audit ;
+- si l'action prepare une sortie sensible mais ne l'applique pas, elle passe par preflight et
+  reste candidate ou `needs_review` ;
+- si l'action publie, exporte, envoie, facture, inscrit, change un role, change un setting global
+  ou touche un scope public, elle exige validation humaine ;
+- si l'action est irreversible, couteuse, massive, publique ou systemique, elle exige validation
+  renforcee ;
+- si une validation humaine vient deja d'etre donnee dans le meme flux, ne pas redemander une
+  deuxieme validation pour une etape purement technique equivalente : tracer la validation source
+  et executer l'etape bornee.
+
+Objectif : retirer les validations redondantes, pas retirer les gates. Un preflight utile doit
+expliquer le risque et la prochaine etape ; un preflight inutile ne doit pas bloquer un workflow
+bas risque.
+
+## 9. Synchronisation sans friction
+
+La coordination Git/inbox suit la meme logique :
+
+- `git fetch` + preuve de commit lu = obligatoire avant conclusion ;
+- relecture d'inbox = obligatoire avant decision structurante ;
+- validation humaine MALEX = obligatoire avant action demandee par Vincent qui modifie le code,
+  le perimetre, les permissions, le run ou le push ;
+- accusation "je ne vois rien" = impossible sans citer `local_head`, `origin_main` et fichiers lus ;
+- pas de validation humaine demandee pour une simple lecture, un diagnostic ou une proposition.
+
+Le systeme d'echange doit donc etre fluide pour lire et proposer, strict pour executer et publier.

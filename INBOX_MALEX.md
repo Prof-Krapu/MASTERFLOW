@@ -4,6 +4,8 @@ Objectif : point d'entrée court pour les demandes Vincent/Codex à traiter côt
 
 Règles de lecture :
 
+- appliquer `PROTOCOLE_SYNC_GIT_INBOX.md` avant toute lecture : `git fetch --all --prune`,
+  comparaison `HEAD...origin/main`, puis lecture des fichiers a jour ;
 - à checker systématiquement avant reprise frontend, décision de périmètre, validation humaine ou réponse de sync ;
 - traiter les entrées du haut vers le bas ;
 - une entrée peut être `open`, `answered`, `blocked` ou `done` ;
@@ -13,6 +15,8 @@ Règles de lecture :
 - sans cette validation, Codex/Claude peut analyser et préparer un patch, mais ne doit ni
   appliquer, ni exécuter, ni déployer, ni modifier les permissions ou le périmètre ;
 - si une entrée implique backend, frontend, run ou périmètre, répondre dans `SYNC_THREAD_MALEX_VINCENT.md` ou par commit Git explicite.
+- si un agent ne voit pas un message attendu, il doit citer `local_head`, `origin_main` et les
+  fichiers réellement lus avant de conclure.
 
 ---
 

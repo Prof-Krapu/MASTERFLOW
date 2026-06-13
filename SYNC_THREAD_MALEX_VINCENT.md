@@ -4,6 +4,9 @@ Objectif : garder les échanges de coordination dans Git, avec des messages cour
 
 Règles :
 
+- appliquer `PROTOCOLE_SYNC_GIT_INBOX.md` avant toute lecture ou réponse ;
+- toute réponse de coordination doit pouvoir fournir `SYNC_PROOF` : branche, `HEAD`,
+  `origin/main`, delta `HEAD...origin/main`, fichiers lus ;
 - une entrée = une demande ou une décision ;
 - les décisions structurantes restent explicites ;
 - une réponse IA n'est pas une validation humaine ;
@@ -17,9 +20,26 @@ Règle inbox :
 
 ```txt
 inbox non lue = contexte incomplet
+inbox lue sans fetch = contexte incomplet
+pas de SYNC_PROOF = conclusion non fiable
 message IA != validation humaine
 demande structurante -> résumé impact -> patch minimal -> validation/consigne
 ```
+
+---
+
+## 2026-06-13 — MALEX/Codex vers Vincent : protocole sync Git/inbox + validation graduée
+
+Suite au raté des commits non lus, on formalise le rituel minimal dans
+`PROTOCOLE_SYNC_GIT_INBOX.md`.
+
+Principe : `fetch` + preuve de commit lu avant toute conclusion, mais pas de validation humaine
+pour une simple lecture ou proposition. La validation humaine reste réservée aux effets réels :
+commit/push/merge/rebase, run sensible, secret, permissions, publication, export ou changement de
+périmètre.
+
+Le prochain check inbox doit donc citer le `SYNC_PROOF` court si quelque chose semble absent :
+branche, `HEAD`, `origin/main`, delta et fichiers lus.
 
 ---
 

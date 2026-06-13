@@ -35,6 +35,34 @@ pour student.
 
 ---
 
+## 2026-06-13 — Protocole anti-desynchronisation Git/inbox + validation graduée — LIVRÉ
+
+Objectif : éviter qu'un agent rate des commits déjà poussés en lisant une branche locale ou une
+inbox obsolète, tout en gardant un système d'échange moins verrouillé et plus prudent.
+
+Ajouts :
+
+- ajout de `PROTOCOLE_SYNC_GIT_INBOX.md` ;
+- référence obligatoire depuis `CLAUDE.md`, `SYNC_THREAD_MALEX_VINCENT.md`,
+  `INBOX_MALEX.md` et `INBOX_VINCENT.md` ;
+- rituel `git fetch --all --prune` + comparaison `HEAD...origin/main` avant lecture ;
+- bloc `SYNC_PROOF` attendu pour toute réponse de coordination ;
+- règle explicite : si un message semble absent, citer le commit lu avant toute conclusion.
+- clarification de `POLITIQUE_VALIDATION_GRADUEE.md` : moins de double validation, plus de
+  proportionnalite entre risque, effet, scope et gate ;
+- separation nette entre lecture/proposition fluide et execution/publication sous validation.
+
+Verification :
+
+- `npm ci --cache /private/tmp/masterflow-npm-cache` : 0 vulnérabilité ;
+- `npm test` : 42 fichiers / 190 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — INTÉGRATION : merge `codex/frontend-masterflow` → `main` (fondations PR-1→9 + PR-3 admin) — LIVRÉE
 
 **GO Vincent (« intègre tout sur main »).** Plutôt que reconstruire Project/Scope (déjà codé par Codex), on

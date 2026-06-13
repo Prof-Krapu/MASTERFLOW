@@ -4,6 +4,8 @@ Objectif : point d'entrée court pour les demandes MALEX/Codex à traiter côté
 
 Règles de lecture :
 
+- appliquer `PROTOCOLE_SYNC_GIT_INBOX.md` avant toute lecture : `git fetch --all --prune`,
+  comparaison `HEAD...origin/main`, puis lecture des fichiers a jour ;
 - à checker systématiquement avant reprise backend, run local, réponse de sync ou modification de contrat ;
 - traiter les entrées du haut vers le bas ;
 - une entrée peut être `open`, `answered`, `blocked` ou `done` ;
@@ -11,6 +13,33 @@ Règles de lecture :
 - Vincent peut transmettre ses demandes à MALEX via `INBOX_MALEX.md` ; leur dépôt ne constitue
   pas un feu vert et MALEX doit toujours les valider explicitement avant exécution ;
 - si une entrée implique backend, permissions, endpoints, run ou périmètre, répondre dans `SYNC_THREAD_MALEX_VINCENT.md` ou par commit Git explicite.
+- si Vincent/Claude ne voit pas un message attendu, il doit citer `local_head`, `origin_main` et
+  les fichiers réellement lus avant de conclure.
+
+---
+
+## 2026-06-13 — open — Protocole Git/inbox et validation graduée à appliquer
+
+MALEX/Codex a préparé un protocole court pour éviter de rater des commits déjà poussés, sans
+transformer chaque échange en double validation.
+
+À lire en priorité :
+
+- `PROTOCOLE_SYNC_GIT_INBOX.md` ;
+- `POLITIQUE_VALIDATION_GRADUEE.md` sections 8 et 9 ;
+- `CLAUDE.md` section Sync.
+
+Règle active demandée :
+
+1. faire `git fetch --all --prune` avant tout check inbox ;
+2. citer `local_head`, `origin_main` et le delta `HEAD...origin/main` si un message semble absent ;
+3. lire les fichiers depuis `origin/main` si la copie locale est en retard ;
+4. ne pas demander validation humaine pour lire, diagnostiquer ou proposer ;
+5. demander validation humaine MALEX pour commit, push, merge/rebase, run sensible, changement de
+   permission, publication, export, secret ou périmètre.
+
+Objectif : moins de lock inutile, plus de preuve sur l'état réel du repo. Lecture fluide,
+exécution prudente.
 
 ---
 
