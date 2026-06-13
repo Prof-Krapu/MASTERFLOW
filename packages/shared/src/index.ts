@@ -226,6 +226,82 @@ export const ActionRegistryEntrySchema = z.object({
 });
 export type ActionRegistryEntry = z.infer<typeof ActionRegistryEntrySchema>;
 
+// ───────────────────────── Registre des adapters ─────────────────────────
+
+export const AdapterKindSchema = z.enum([
+  'ocr_submission',
+  'wooclap_import',
+  'transcript_import',
+  'teacher_note',
+]);
+export type AdapterKind = z.infer<typeof AdapterKindSchema>;
+
+export const AdapterRuntimeStatusSchema = z.enum([
+  'shell',
+  'partial',
+  'live',
+  'deprecated',
+  'blocked',
+]);
+export type AdapterRuntimeStatus = z.infer<typeof AdapterRuntimeStatusSchema>;
+
+export const AdapterUiStatusSchema = z.enum([
+  'hidden',
+  'locked',
+  'readonly',
+  'actionable',
+  'admin_only',
+]);
+export type AdapterUiStatus = z.infer<typeof AdapterUiStatusSchema>;
+
+/**
+ * Déclaration d'un adapter d'entrée. Le registre décrit une capacité et ses
+ * garde-fous ; il ne constitue ni une permission d'usage ni un runner.
+ */
+export const AdapterRegistryEntrySchema = z
+  .object({
+    adapter_id: z.string().min(1),
+    label: z.string().min(1),
+    kind: AdapterKindSchema,
+    owner_engine: z.string().min(1),
+    input_types: z.array(z.string().min(1)).min(1),
+    output_source_type: z.enum([
+      'submission',
+      'rubric',
+      'transcript',
+      'wooclap',
+      'survey',
+      'teacher_note',
+      'calendar',
+    ]),
+    capabilities: z.array(z.string().min(1)).min(1),
+    privacy_mode: z.enum(['local_only', 'approved_remote', 'hybrid']),
+    risk_level: RiskLevelSchema,
+    minimum_role: RoleSchema,
+    runtime_status: AdapterRuntimeStatusSchema,
+    ui_status: AdapterUiStatusSchema,
+    executor_ref: z.string().min(1).nullable(),
+    feature_flag: z.string().min(1).nullable(),
+    limitations: z.array(z.string().min(1)),
+  })
+  .superRefine((entry, ctx) => {
+    if (entry.runtime_status === 'live' && !entry.executor_ref) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un adapter live doit déclarer un executor_ref.',
+        path: ['executor_ref'],
+      });
+    }
+    if (entry.ui_status === 'actionable' && entry.runtime_status !== 'live') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un adapter non live ne peut pas être actionable.',
+        path: ['ui_status'],
+      });
+    }
+  });
+export type AdapterRegistryEntry = z.infer<typeof AdapterRegistryEntrySchema>;
+
 /**
  * Diagnostic d'usage tokens — réponse de `GET /diagnostics/token-usage`
  * (lecture gated admin/godmode). Schéma additif : aucun runtime existant n'en dépend.

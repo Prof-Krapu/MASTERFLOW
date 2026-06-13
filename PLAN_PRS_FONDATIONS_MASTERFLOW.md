@@ -58,6 +58,20 @@ Cette PR prepare la correction, les capteurs de classe, le suivi, les cours et l
 sans exposer une verticale fictive. Elle peut etre developpee apres Project/Scope et Template
 Registry, ou en contrats seuls avant les routes runtime.
 
+### PR-CB1 — `pedagogical_adapter_registry_readonly`
+
+Registre statique et versionné des adapters OCR, WooClap, transcription et note professeur.
+
+Etat : contrat partagé, seed validé, lecture filtrée par rôle et tests livrés. Aucun adapter n'est
+`live`, aucun executor n'est branché et aucune route d'import n'est exposée.
+
+Référence :
+
+- `SPEC_ADAPTER_REGISTRY_PR_CB1.md`
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md`
+
+L'activation d'un adapter attend Project/Scope, Jobs, stockage, permission/preflight et recette.
+
 ## Regle de sequencing
 
 Chaque PR doit livrer :

@@ -14,6 +14,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-CB1 adapter registry read-only
+
+MALEX/Codex a posé `SPEC_ADAPTER_REGISTRY_PR_CB1.md`.
+
+Implémentation à relire :
+
+- `AdapterRegistryEntrySchema` dans `packages/shared/src/index.ts` ;
+- `apps/backend/src/seeds/adapter_registry_seed.v1.json` ;
+- `apps/backend/src/engines/adapter_registry.ts` ;
+- `apps/backend/tests/adapter_registry.test.ts`.
+
+OCR, WooClap et transcription sont `shell/locked`. La note professeur est
+`partial/readonly` car le contrat de preuve existe, mais aucune surface publique n'est livrée.
+Aucun executor n'est branché et le gate refuse toute exécution.
+
+Action demandée : comparer ce registre à tes runners/features existants et signaler, sans les
+activer, les capacités, contraintes MIME, privacy, jobs ou limites manquantes. Ne passer aucun
+adapter `live` avant Project/Scope, permission/preflight, stockage, tests et recette.
+
+---
+
 ## 2026-06-13 — open — Pont direct canon x features Vincent
 
 MALEX demande de ne plus traiter l'absorption Corrector comme une verticale isolee.

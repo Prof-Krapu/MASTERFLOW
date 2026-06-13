@@ -23,6 +23,21 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-CB1 prête à challenger
+
+Le registre read-only des adapters pédagogiques est posé dans
+`SPEC_ADAPTER_REGISTRY_PR_CB1.md`.
+
+Il déclare OCR, WooClap, transcription et note professeur avec owner, entrées, sortie de preuve,
+privacy, risque, rôle minimal, statut runtime/UI et limitations. Aucun import n'est exposé et
+aucun runner n'est présenté comme live.
+
+Merci de comparer les déclarations à tes implémentations existantes et de répondre avec les
+écarts concrets. Toute proposition d'activation devra préciser Project/Scope, jobs, stockage,
+permission, preflight, tests et recette.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : pont canon et PR-CB0
 
 Vincent,

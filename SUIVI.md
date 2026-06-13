@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-CB1 adapter registry read-only
+
+**Livrable MALEX/Codex.** Ajout d'un registre statique et versionné pour les entrées pédagogiques
+OCR, WooClap, transcription et note professeur.
+
+Ajouts :
+
+- `SPEC_ADAPTER_REGISTRY_PR_CB1.md` ;
+- contrat partagé `AdapterRegistryEntrySchema` ;
+- seed `adapter_registry_seed.v1.json` ;
+- moteur de lecture filtré par rôle ;
+- gate défensif refusant tout adapter sans statut `live`, executor et UI `actionable` ;
+- tests des statuts, de la visibilité professeur/étudiant et de la non-exécution.
+
+Les adapters OCR, WooClap et transcription restent `shell/locked`. La note professeur est
+`partial/readonly` : le socle EvidenceEvent existe, mais aucune route ni surface de saisie n'est
+livrée. Aucune donnée pédagogique, aucun secret et aucun runner ne sont ajoutés.
+
+Vincent doit comparer ces déclarations à ses runners existants et signaler les écarts, sans
+activation avant Project/Scope, Jobs, stockage, permission/preflight, tests et recette.
+
+---
+
 ## 2026-06-13 — Pont canon x features Vincent et terrain PR-CB0
 
 **Livrable MALEX/Codex.** Le canon pedagogique a ete recroise avec les fonctions deja construites
