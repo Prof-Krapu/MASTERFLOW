@@ -4,7 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — PR-INV-5 Search / Project Needs — PRET A PUSH
+## 2026-06-13 — PR-INV-6 Room / Inventory Context Bridge — PRET A PUSH
+
+- activation Inventory uniquement par room, surface, mode ou purpose explicite ;
+- chargement T2 de references `inventory_item` et `inventory_collection` validees ;
+- scopes personnels et projet strictement separes ;
+- candidats totalement absents de l'enveloppe et de sa trace ;
+- references Inventory prioritaires dans le budget avant les ressources generiques ;
+- context pack RAG enrichi avec `active_app`, `zoom_level`, `entity_refs` et sensibilite ;
+- aucun payload prive injecte : le compilateur transmet des IDs autorises, pas les libelles.
+
+Recette : context compiler **7/7**, backend complet **248/248**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
+## 2026-06-13 — PR-INV-5 Search / Project Needs — POUSSEE
 
 - recherche permissionnee sur items `validated` uniquement ;
 - besoin projet persistant, cree par editor+ ;
@@ -18,7 +33,7 @@ backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
 
 ---
 
-## 2026-06-13 — PR-INV-4 Collection Graph — PRET A PUSH
+## 2026-06-13 — PR-INV-4 Collection Graph — POUSSEE
 
 - validation explicite des collections ;
 - matches item -> collection en `candidate`, puis confirmation/rejet humain ;
@@ -32,7 +47,7 @@ backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
 
 ---
 
-## 2026-06-13 — PR-INV-3 Inventory RAG — PRET A PUSH
+## 2026-06-13 — PR-INV-3 Inventory RAG — POUSSEE
 
 Projection RAG explicite des items Inventory valides :
 

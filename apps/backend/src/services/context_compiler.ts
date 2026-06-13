@@ -23,6 +23,14 @@ import {listActiveMemoryCardRefs} from './memory_cards.ts';
 const MAX_REFS = 24;
 const MAX_CHARS = 4_000;
 const MAX_RUNTIME_TIER: ContextTier = 'T2';
+const INVENTORY_CONTEXT_PURPOSES = new Set([
+  'inventory',
+  'inventory_search',
+  'project_need',
+  'project_need_match',
+  'quote_estimation',
+  'resource_search',
+]);
 const TIER_RANK: Record<ContextTier, number> = {
   T0: 0,
   T1: 1,
@@ -68,6 +76,24 @@ function ensureInstance(actor: AuthUser, room: RoomRow): RoomInstanceRow {
 
 function refChars(ref: ContextReference): number {
   return JSON.stringify(ref).length;
+}
+
+function requestsInventoryContext(input: {
+  purpose: string;
+  room: RoomRow;
+  instance: RoomInstanceRow;
+  activeModes: string[];
+}): boolean {
+  const purpose = input.purpose.trim().toLocaleLowerCase('fr');
+  const purposeTokens = purpose.split(/[^\p{L}\p{N}]+/u);
+  return (
+    input.room.type === 'inventory' ||
+    input.instance.active_surface === 'inventory' ||
+    input.activeModes.includes('inventory') ||
+    INVENTORY_CONTEXT_PURPOSES.has(purpose) ||
+    purposeTokens.includes('inventory') ||
+    purposeTokens.includes('inventaire')
+  );
 }
 
 export function compileRuntimeContext(
@@ -155,6 +181,93 @@ export function compileRuntimeContext(
     : null;
   if (checkpointRef) candidates.push(checkpointRef);
 
+  const loadout = deriveUserRuntimeLoadout(actor, room, instance);
+  const inventoryContextActive =
+    TIER_RANK[grantedTier] >= TIER_RANK.T2 &&
+    requestsInventoryContext({
+      purpose: input.purpose,
+      room,
+      instance,
+      activeModes: loadout.active_mode_cycle,
+    });
+  if (inventoryContextActive) {
+    const inventoryScope = room.project_id
+      ? {
+          scopeType: 'project' as const,
+          scopeId: room.project_id,
+          itemRows: getDb()
+            .prepare(
+              `SELECT id
+                 FROM inventory_items
+                WHERE project_id = ?
+                  AND scope_type = 'project'
+                  AND visibility_scope = 'project'
+                  AND validation_status = 'validated'
+                ORDER BY updated_at DESC
+                LIMIT 8`,
+            )
+            .all(room.project_id) as Array<{id: string}>,
+          collectionRows: getDb()
+            .prepare(
+              `SELECT id
+                 FROM inventory_collections
+                WHERE project_id = ?
+                  AND scope_type = 'project'
+                  AND visibility_scope = 'project'
+                  AND validation_status = 'validated'
+                ORDER BY updated_at DESC
+                LIMIT 6`,
+            )
+            .all(room.project_id) as Array<{id: string}>,
+        }
+      : {
+          scopeType: 'user' as const,
+          scopeId: actor.id,
+          itemRows: getDb()
+            .prepare(
+              `SELECT id
+                 FROM inventory_items
+                WHERE owner_id = ?
+                  AND scope_type = 'user'
+                  AND validation_status = 'validated'
+                ORDER BY updated_at DESC
+                LIMIT 8`,
+            )
+            .all(actor.id) as Array<{id: string}>,
+          collectionRows: getDb()
+            .prepare(
+              `SELECT id
+                 FROM inventory_collections
+                WHERE owner_id = ?
+                  AND scope_type = 'user'
+                  AND validation_status = 'validated'
+                ORDER BY updated_at DESC
+                LIMIT 6`,
+            )
+            .all(actor.id) as Array<{id: string}>,
+        };
+    for (const item of inventoryScope.itemRows) {
+      candidates.push({
+        ref_type: 'inventory_item',
+        ref_id: item.id,
+        authority: 'authoritative',
+        source: 'inventory_registry',
+        scope_type: inventoryScope.scopeType,
+        scope_id: inventoryScope.scopeId,
+      });
+    }
+    for (const collection of inventoryScope.collectionRows) {
+      candidates.push({
+        ref_type: 'inventory_collection',
+        ref_id: collection.id,
+        authority: 'authoritative',
+        source: 'inventory_registry',
+        scope_type: inventoryScope.scopeType,
+        scope_id: inventoryScope.scopeId,
+      });
+    }
+  }
+
   if (room.project_id && TIER_RANK[grantedTier] >= TIER_RANK.T2) {
     const resources = getDb()
       .prepare(
@@ -213,7 +326,11 @@ export function compileRuntimeContext(
     usedChars += chars;
   }
 
-  const loadout = deriveUserRuntimeLoadout(actor, room, instance);
+  const inventoryEntityRefs = loaded
+    .filter(
+      (ref) => ref.ref_type === 'inventory_item' || ref.ref_type === 'inventory_collection',
+    )
+    .map((ref) => `${ref.ref_type}:${ref.ref_id}`);
   const ragResponse =
     input.rag_query && TIER_RANK[grantedTier] >= TIER_RANK.T2
       ? queryRag(actor, {
@@ -222,6 +339,10 @@ export function compileRuntimeContext(
           room_instance_id: instance.id,
           purpose: input.purpose,
           context_tier: grantedTier,
+          active_app: inventoryContextActive ? 'inventory' : null,
+          zoom_level: instance.zoom_level,
+          entity_refs: inventoryEntityRefs,
+          sensitivity: room.project_id ? 'internal' : 'private',
           limit: 5,
         })
       : null;

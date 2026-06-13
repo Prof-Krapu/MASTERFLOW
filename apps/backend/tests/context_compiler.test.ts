@@ -52,6 +52,28 @@ beforeAll(async () => {
        (resource_id, scope_type, scope_id, access_level, created_at)
      VALUES (?, 'project', 'ctx-project', 'read', ?), (?, 'project', 'ctx-project', 'read', ?)`,
   ).run('ctx-resource-valid', now, 'ctx-resource-candidate', now);
+
+  db.prepare(
+    `INSERT OR IGNORE INTO inventory_collections
+       (id, owner_id, project_id, scope_type, label, visibility_scope, validation_status,
+        completion_state, created_at, updated_at)
+     VALUES
+       ('ctx-collection-valid', ?, 'ctx-project', 'project', 'Validated collection',
+        'project', 'validated', 'unknown', ?, ?),
+       ('ctx-collection-candidate', ?, 'ctx-project', 'project', 'Private candidate collection',
+        'project', 'candidate', 'unknown', ?, ?)`,
+  ).run(owner.id, now, now, owner.id, now, now);
+  db.prepare(
+    `INSERT OR IGNORE INTO inventory_items
+       (id, owner_id, project_id, collection_id, scope_type, type, label, item_status,
+        validation_status, quantity, usage_tags_json, source_refs_json, visibility_scope,
+        created_at, updated_at)
+     VALUES
+       ('ctx-inventory-valid', ?, 'ctx-project', 'ctx-collection-valid', 'project', 'gear',
+        'Validated camera', 'owned_confirmed', 'validated', 1, '[]', '[]', 'project', ?, ?),
+       ('ctx-inventory-candidate', ?, 'ctx-project', NULL, 'project', 'gear',
+        'Private candidate camera', 'detected', 'candidate', 1, '[]', '[]', 'project', ?, ?)`,
+  ).run(owner.id, now, now, owner.id, now, now);
 });
 
 describe('context compiler T1/T2', () => {
@@ -129,5 +151,57 @@ describe('context compiler T1/T2', () => {
       expect.objectContaining({ref_type: 'rag_context_pack'}),
     );
     expect(envelope.trace.uncertainty).toContain('rag:no_reliable_source');
+  });
+
+  it('charge les references Inventory validees seulement dans un contexte explicite', () => {
+    const envelope = compileRuntimeContext(member, {
+      purpose: 'inventory_search',
+      requested_tier: 'T2',
+      room_id: 'ctx-room',
+      rag_query: 'camera',
+    });
+
+    expect(envelope.authoritative_facts).toContainEqual(
+      expect.objectContaining({
+        ref_type: 'inventory_item',
+        ref_id: 'ctx-inventory-valid',
+        scope_type: 'project',
+      }),
+    );
+    expect(envelope.authoritative_facts).toContainEqual(
+      expect.objectContaining({
+        ref_type: 'inventory_collection',
+        ref_id: 'ctx-collection-valid',
+      }),
+    );
+    expect(JSON.stringify(envelope)).not.toContain('ctx-inventory-candidate');
+    expect(JSON.stringify(envelope)).not.toContain('ctx-collection-candidate');
+
+    const pack = getDb()
+      .prepare('SELECT filters_json FROM rag_context_packs WHERE id = ?')
+      .get(envelope.rag_context_pack_ref?.ref_id) as {filters_json: string};
+    expect(JSON.parse(pack.filters_json)).toMatchObject({
+      active_app: 'inventory',
+      entity_refs: [
+        'inventory_item:ctx-inventory-valid',
+        'inventory_collection:ctx-collection-valid',
+      ],
+      sensitivity: 'internal',
+    });
+  });
+
+  it('ne charge pas Inventory dans une room projet sans signal explicite', () => {
+    const envelope = compileRuntimeContext(member, {
+      purpose: 'room_bootstrap',
+      requested_tier: 'T2',
+      room_id: 'ctx-room',
+    });
+
+    expect(envelope.authoritative_facts).not.toContainEqual(
+      expect.objectContaining({ref_type: 'inventory_item'}),
+    );
+    expect(envelope.authoritative_facts).not.toContainEqual(
+      expect.objectContaining({ref_type: 'inventory_collection'}),
+    );
   });
 });

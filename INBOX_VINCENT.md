@@ -22,6 +22,21 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INV-6 Room / Inventory Context Bridge pret
+
+Le `context_compiler` charge maintenant Inventory seulement avec un signal explicite :
+
+- room/surface/mode Inventory ou purpose Inventory ;
+- references validees uniquement, sans libelles ni payloads prives ;
+- scopes user/projet separes ;
+- candidats invisibles jusque dans la trace ;
+- filtres RAG `active_app`, `zoom_level`, `entity_refs`, sensibilite.
+
+Ton raccord BGE/Qdrant doit respecter ces filtres et ne jamais recharger directement les lignes
+Inventory candidates.
+
+---
+
 ## 2026-06-13 — open — PR-INV-5 Search / Project Needs pousse cote MALEX/Codex
 
 Recherche Inventory et besoins projet livres avec garde-fou :
