@@ -8,6 +8,7 @@ import {getDb} from '../db/schema.ts';
 import type {RoomInstanceRow, RoomRow} from '../db/schema.ts';
 import {uuid} from '../lib/uuid.ts';
 import {requireUser} from '../middleware/auth.ts';
+import {getAccessibleRoom, listAccessibleRooms} from '../services/room_access.ts';
 
 /**
  * Router des rooms (UI Room OS) — MVP.
@@ -35,6 +36,7 @@ function toRoomDTO(row: RoomRow): Room {
     name: row.name,
     type: row.type,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     context: parseJson(row.context_json),
     is_public: row.is_public === 1,
   };
@@ -61,11 +63,6 @@ function toRoomInstanceDTO(row: RoomInstanceRow): RoomInstance {
 }
 
 // ───────────────────────── Accès BDD ─────────────────────────
-
-/** Retourne la rangée `rooms` `id`, ou `undefined`. */
-function findRoom(roomId: string): RoomRow | undefined {
-  return getDb().prepare('SELECT * FROM rooms WHERE id = ?').get(roomId) as RoomRow | undefined;
-}
 
 /** Retourne l'instance de `roomId` pour `userId`, ou `undefined`. */
 function findInstance(roomId: string, userId: string): RoomInstanceRow | undefined {
@@ -117,10 +114,14 @@ export function createRoomsRouter(): Router {
   // Auth obligatoire sur TOUTES les routes rooms (le backend est exposé publiquement).
   router.use(requireUser);
 
-  // GET /rooms — liste les rooms visibles (toutes en MVP), triées par nom.
-  router.get('/', (_req: Request, res: Response): void => {
-    const rows = getDb().prepare('SELECT * FROM rooms ORDER BY name').all() as RoomRow[];
-    res.json(rows.map(toRoomDTO));
+  // GET /rooms — liste uniquement les rooms publiques, possédées ou accessibles par projet.
+  router.get('/', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    res.json(listAccessibleRooms(user).map(toRoomDTO));
   });
 
   // GET /rooms/:id — détail d'une room.
@@ -130,7 +131,8 @@ export function createRoomsRouter(): Router {
       res.status(404).json({error: 'room_not_found'});
       return;
     }
-    const room = findRoom(roomId);
+    const user = req.user;
+    const room = user ? getAccessibleRoom(user, roomId) : null;
     if (!room) {
       res.status(404).json({error: 'room_not_found'});
       return;
@@ -146,7 +148,7 @@ export function createRoomsRouter(): Router {
       return;
     }
     const roomId = req.params.id;
-    if (!roomId || !findRoom(roomId)) {
+    if (!roomId || !getAccessibleRoom(user, roomId)) {
       res.status(404).json({error: 'room_not_found'});
       return;
     }
@@ -162,7 +164,7 @@ export function createRoomsRouter(): Router {
       return;
     }
     const roomId = req.params.id;
-    if (!roomId || !findRoom(roomId)) {
+    if (!roomId || !getAccessibleRoom(user, roomId)) {
       res.status(404).json({error: 'room_not_found'});
       return;
     }

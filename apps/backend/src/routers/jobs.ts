@@ -48,7 +48,8 @@ export function createJobsRouter(): Router {
       res.json(cancelJob(actor(req), req.params.id ?? ''));
     } catch (error) {
       const reason = message(error);
-      res.status(reason === 'job_not_found' ? 404 : 409).json({error: reason});
+      const status = reason === 'job_not_found' ? 404 : reason === 'job_manage_denied' ? 403 : 409;
+      res.status(status).json({error: reason});
     }
   });
 
@@ -57,7 +58,8 @@ export function createJobsRouter(): Router {
       res.json(retryJob(actor(req), req.params.id ?? ''));
     } catch (error) {
       const reason = message(error);
-      res.status(reason === 'job_not_found' ? 404 : 409).json({error: reason});
+      const status = reason === 'job_not_found' ? 404 : reason === 'job_manage_denied' ? 403 : 409;
+      res.status(status).json({error: reason});
     }
   });
 

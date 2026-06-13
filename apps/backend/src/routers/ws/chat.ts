@@ -7,8 +7,9 @@ import {WsClientMessageSchema} from '@masterflow/shared';
 import {getDb} from '../../db/schema.ts';
 import type {RoomInstanceRow} from '../../db/schema.ts';
 import {audit} from '../../lib/audit.ts';
-import {verifyToken} from '../../middleware/auth.ts';
+import {authenticateToken} from '../../middleware/auth.ts';
 import {getActiveBlend, getPersona, listPersonas, methodAttribution} from '../../engines/persona_engine.ts';
+import {getOwnedAccessibleRoomInstance} from '../../services/room_access.ts';
 import {streamChat, type ChatMessage} from '../../services/llm.ts';
 
 /**
@@ -169,15 +170,20 @@ export function attachChatWs(server: Server): WebSocketServer {
     }
 
     const token = parseToken(req.url, req.headers);
-    const payload = token ? verifyToken(token) : null;
-    if (!payload) {
+    const authentication = token ? authenticateToken(token) : null;
+    if (!authentication?.ok) {
       socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+      socket.destroy();
+      return;
+    }
+    if (!getOwnedAccessibleRoomInstance(authentication.user, roomInstanceId)) {
+      socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       socket.destroy();
       return;
     }
 
     wss.handleUpgrade(req, socket, head, (ws) => {
-      const ctx: WsContext = {userId: payload.sub, roomInstanceId};
+      const ctx: WsContext = {userId: authentication.user.id, roomInstanceId};
       audit({event_type: 'ws.chat.open', user_id: ctx.userId, scope: roomInstanceId});
 
       ws.on('message', (raw) => {

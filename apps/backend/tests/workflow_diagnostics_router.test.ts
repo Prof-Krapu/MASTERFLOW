@@ -25,6 +25,27 @@ beforeAll(async () => {
                'workflow_router_owner', 'x', 'teacher', 1, ?, ?)`,
     )
     .run(now, now);
+  const insertActor = getDb().prepare(
+    `INSERT OR IGNORE INTO users
+       (id, username, display_name, password_hash, role, active, created_at, updated_at)
+     VALUES (?, ?, ?, 'x', ?, 1, ?, ?)`,
+  );
+  insertActor.run(
+    'workflow-router-admin',
+    'workflow-router-admin',
+    'Workflow Router Admin',
+    'admin',
+    now,
+    now,
+  );
+  insertActor.run(
+    'workflow-router-teacher',
+    'workflow-router-teacher',
+    'Workflow Router Teacher',
+    'teacher',
+    now,
+    now,
+  );
 
   adminToken = signToken({id: 'workflow-router-admin', username: 'workflow-router-admin', role: 'admin'});
   teacherToken = signToken({

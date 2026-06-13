@@ -4,6 +4,7 @@ import type {AuthUser} from '../src/middleware/auth.ts';
 import {
   createAction,
   executeAction,
+  getActionFor,
   listPending,
   preflightAction,
   validateAction,
@@ -41,6 +42,29 @@ beforeAll(async () => {
 });
 
 describe('action lifecycle — action sensible (approve_validation_item)', () => {
+  it('isole lecture et preflight au propriétaire', () => {
+    const created = createAction(god, {
+      registry_id: 'set_global_setting',
+      intent: 'set_global_setting',
+      object_type: 'global_setting',
+      payload: {},
+    });
+    expect(getActionFor(student, created.id)).toBeNull();
+    expect(() => preflightAction(student, created.id)).toThrow(/action_access_denied/);
+  });
+
+  it('refuse au preflight une action future ou hors scope', () => {
+    const created = createAction(god, {
+      registry_id: 'compile_da_context',
+      intent: 'compile_da_context',
+      object_type: 'da_context',
+      payload: {},
+    });
+    const flighted = preflightAction(god, created.id);
+    expect(flighted.status).toBe('failed');
+    expect(flighted.error).toBe('action_not_live:future');
+  });
+
   it('draft → pending_validation → approved → completed (chemin nominal)', () => {
     // ── Création : status 'draft', aucun effet.
     const created = createAction(god, {
@@ -61,17 +85,17 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     expect(() => executeAction(god, id)).toThrow();
 
     // ── L'action figure dans l'inbox de validation.
-    const pending = listPending();
+    const pending = listPending(god);
     expect(pending.some((a) => a.id === id)).toBe(true);
 
     // ── Validation humaine explicite → 'approved'.
     const approved = validateAction(god, id, {decision: 'approved'});
     expect(approved.status).toBe('approved');
 
-    // ── Exécution autorisée → 'completed' + résultat ok.
+    // ── Pas d'exécuteur réel : aucun faux succès.
     const completed = executeAction(god, id);
-    expect(completed.status).toBe('completed');
-    expect(completed.result?.ok).toBe(true);
+    expect(completed.status).toBe('failed');
+    expect(completed.error).toBe('not_implemented');
   });
 
   it('rejet : une action rejetée ne peut jamais s\'exécuter', () => {

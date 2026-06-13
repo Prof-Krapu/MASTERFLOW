@@ -11,8 +11,8 @@ import {uuid} from '../lib/uuid.ts';
  * Middleware d'authentification — JWT stateless HS256 + liste de révocation.
  *
  * Doctrine : les jetons ne sont pas stockés ; on ne persiste que les `jti` révoqués
- * (logout) jusqu'à expiration (table `revoked_tokens`). Le rôle voyage DANS le jeton,
- * mais l'autorité reste le backend : `requireRole` compare ROLE_RANK avant toute action.
+ * (logout) jusqu'à expiration (table `revoked_tokens`). Le rôle du JWT reste informatif :
+ * l'autorité effective est relue en BDD à chaque authentification REST ou WebSocket.
  *
  * Invariant produit : PERMISSION > PREFERENCE. Les permissions ne se blendent jamais.
  */
@@ -30,7 +30,18 @@ interface TokenPayload {
   username: string;
   role: Role;
   jti: string;
+  auth_version: number;
 }
+
+export type TokenAuthenticationError =
+  | 'invalid_token'
+  | 'token_revoked'
+  | 'user_inactive'
+  | 'session_invalidated';
+
+export type TokenAuthenticationResult =
+  | {ok: true; user: AuthUser; payload: TokenPayload}
+  | {ok: false; error: TokenAuthenticationError};
 
 /** Réponse d'erreur uniforme JSON. */
 function deny(res: Response, status: number, error: string): void {
@@ -41,8 +52,14 @@ function deny(res: Response, status: number, error: string): void {
  * Signe un JWT HS256 pour un utilisateur.
  * Génère un `jti` (uuid) révocable au logout, expire après `env.jwtExpiresIn`.
  */
-export function signToken(u: {id: string; username: string; role: Role}): string {
-  const payload = {sub: u.id, username: u.username, role: u.role, jti: uuid()};
+export function signToken(u: {id: string; username: string; role: Role; auth_version?: number}): string {
+  const payload = {
+    sub: u.id,
+    username: u.username,
+    role: u.role,
+    jti: uuid(),
+    auth_version: u.auth_version ?? 1,
+  };
   // `expiresIn` typé large par jsonwebtoken (ms.StringValue) ; env.jwtExpiresIn est une string ('30d').
   return jwt.sign(payload, env.jwtSecret, {
     algorithm: 'HS256',
@@ -58,17 +75,20 @@ export function verifyToken(token: string): TokenPayload | null {
   try {
     const decoded = jwt.verify(token, env.jwtSecret, {algorithms: ['HS256']});
     if (typeof decoded === 'string') return null;
-    const {sub, username, role, jti} = decoded as Record<string, unknown>;
+    const {sub, username, role, jti, auth_version} = decoded as Record<string, unknown>;
     if (
       typeof sub !== 'string' ||
       typeof username !== 'string' ||
       typeof jti !== 'string' ||
+      typeof auth_version !== 'number' ||
+      !Number.isInteger(auth_version) ||
+      auth_version < 1 ||
       typeof role !== 'string' ||
       !(role in ROLE_RANK)
     ) {
       return null;
     }
-    return {sub, username, role: role as Role, jti};
+    return {sub, username, role: role as Role, jti, auth_version};
   } catch {
     return null;
   }
@@ -80,6 +100,35 @@ function isRevoked(jti: string): boolean {
     | {hit: number}
     | undefined;
   return row !== undefined;
+}
+
+/**
+ * Résout l'identité effective d'un JWT.
+ *
+ * La signature seule ne donne aucun droit : révocation, statut actif, rôle et version
+ * de session sont vérifiés en BDD. Une mutation de rôle incrémente `auth_version` et
+ * invalide ainsi tous les jetons déjà émis pour le compte.
+ */
+export function authenticateToken(token: string): TokenAuthenticationResult {
+  const payload = verifyToken(token);
+  if (!payload) return {ok: false, error: 'invalid_token'};
+  if (isRevoked(payload.jti)) return {ok: false, error: 'token_revoked'};
+
+  const row = getDb()
+    .prepare('SELECT id, username, role, active, auth_version FROM users WHERE id = ?')
+    .get(payload.sub) as
+    | {id: string; username: string; role: Role; active: number; auth_version: number}
+    | undefined;
+  if (!row || row.active !== 1) return {ok: false, error: 'user_inactive'};
+  if (row.auth_version !== payload.auth_version) {
+    return {ok: false, error: 'session_invalidated'};
+  }
+
+  return {
+    ok: true,
+    user: {id: row.id, username: row.username, role: row.role},
+    payload,
+  };
 }
 
 /**
@@ -95,18 +144,13 @@ export const requireUser: RequestHandler = (req: Request, res: Response, next: N
   }
 
   const token = header.slice('Bearer '.length).trim();
-  const payload = verifyToken(token);
-  if (!payload) {
-    deny(res, 401, 'invalid_token');
+  const authentication = authenticateToken(token);
+  if (!authentication.ok) {
+    deny(res, 401, authentication.error);
     return;
   }
 
-  if (isRevoked(payload.jti)) {
-    deny(res, 401, 'token_revoked');
-    return;
-  }
-
-  req.user = {id: payload.sub, username: payload.username, role: payload.role};
+  req.user = authentication.user;
   next();
 };
 

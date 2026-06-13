@@ -33,6 +33,8 @@ export function toActionDTO(row: ActionRow): Action {
     registry_id: row.registry_id,
     intent: row.intent,
     object_type: row.object_type,
+    user_id: row.user_id,
+    project_id: row.project_id,
     status: row.status as Action['status'],
     engine: row.engine,
     risk_level: row.risk_level as Action['risk_level'],
@@ -57,12 +59,41 @@ export function getAction(id: string): Action | null {
   return row ? toActionDTO(row) : null;
 }
 
-/** Liste les actions en attente de validation humaine (inbox de validation). */
-export function listPending(): Action[] {
+function isGlobalAdmin(actor: AuthUser): boolean {
+  return actor.role === 'admin' || actor.role === 'godmode';
+}
+
+function hasProjectAccess(actor: AuthUser, projectId: string | null): boolean {
+  if (!projectId || isGlobalAdmin(actor)) return true;
+  return (
+    getDb()
+      .prepare('SELECT 1 AS hit FROM project_members WHERE project_id = ? AND user_id = ?')
+      .get(projectId, actor.id) !== undefined
+  );
+}
+
+function canReadAction(actor: AuthUser, row: ActionRow): boolean {
+  return row.user_id === actor.id || (isGlobalAdmin(actor) && hasProjectAccess(actor, row.project_id));
+}
+
+function canValidateAction(actor: AuthUser, action: Action): boolean {
+  const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
+  const requiredRole: Role = action.preflight?.validator_role ?? validatorRoleFor(entry) ?? 'teacher';
+  return hasRole(actor, requiredRole) && hasProjectAccess(actor, action.project_id);
+}
+
+/** Récupère une action seulement si l'acteur peut la lire. */
+export function getActionFor(actor: AuthUser, id: string): Action | null {
+  const row = getDb().prepare('SELECT * FROM actions WHERE id = ?').get(id) as ActionRow | undefined;
+  return row && canReadAction(actor, row) ? toActionDTO(row) : null;
+}
+
+/** Liste les actions que l'acteur peut réellement valider dans son scope. */
+export function listPending(actor: AuthUser): Action[] {
   const rows = getDb()
     .prepare("SELECT * FROM actions WHERE status = 'pending_validation' ORDER BY created_at ASC")
     .all() as ActionRow[];
-  return rows.map(toActionDTO);
+  return rows.map(toActionDTO).filter((action) => canValidateAction(actor, action));
 }
 
 // ───────────────────────── Helpers internes ─────────────────────────
@@ -94,11 +125,11 @@ export function createAction(user: AuthUser, body: CreateAction): Action {
   getDb()
     .prepare(
       `INSERT INTO actions
-         (id, registry_id, intent, object_type, status, user_id, room_id, engine,
+         (id, registry_id, intent, object_type, status, user_id, room_id, project_id, engine,
           risk_level, payload_json, preflight_json, validator_id, validation_note,
           result_json, error, created_at, updated_at)
        VALUES
-         (@id, @registry_id, @intent, @object_type, 'draft', @user_id, @room_id, @engine,
+         (@id, @registry_id, @intent, @object_type, 'draft', @user_id, @room_id, @project_id, @engine,
           @risk_level, @payload_json, NULL, NULL, NULL, NULL, NULL, @created_at, @updated_at)`,
     )
     .run({
@@ -108,6 +139,7 @@ export function createAction(user: AuthUser, body: CreateAction): Action {
       object_type: body.object_type,
       user_id: user.id,
       room_id: body.room_id ?? null,
+      project_id: body.project_id ?? null,
       engine: body.engine ?? null,
       risk_level: risk,
       payload_json: JSON.stringify(body.payload ?? {}),
@@ -140,6 +172,7 @@ export function createAction(user: AuthUser, body: CreateAction): Action {
 export function preflightAction(user: AuthUser, actionId: string): Action {
   const action = getAction(actionId);
   if (!action) throw new Error(`[action_engine] Action introuvable : ${actionId}`);
+  if (action.user_id !== user.id) throw new Error('[action_engine] action_access_denied');
 
   const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
   const perm = checkPermission(user, entry);
@@ -228,6 +261,9 @@ export function validateAction(
       `[action_engine] Action ${actionId} non validable : status '${action.status}' (attendu 'pending_validation').`,
     );
   }
+  if (!canValidateAction(validator, action)) {
+    throw new Error('[action_engine] validation_scope_denied');
+  }
 
   // Rôle validateur : priorité au preflight figé, sinon recalcul depuis le registre.
   const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
@@ -276,6 +312,9 @@ export function validateAction(
 export function executeAction(user: AuthUser, actionId: string): Action {
   const action = getAction(actionId);
   if (!action) throw new Error(`[action_engine] Action introuvable : ${actionId}`);
+  if (action.user_id !== user.id && action.validator_id !== user.id) {
+    throw new Error('[action_engine] action_access_denied');
+  }
 
   if (action.status !== 'approved') {
     audit({
@@ -302,21 +341,12 @@ export function executeAction(user: AuthUser, actionId: string): Action {
     scope: action.registry_id ?? action.intent,
   });
 
-  // Dispatcher : exécuteurs réels par registry_id ; défaut = résultat mocké MVP.
+  // Dispatcher : une action sans exécuteur réel échoue explicitement.
   let result: Record<string, unknown>;
   try {
     const executor = action.registry_id ? ACTION_EXECUTORS[action.registry_id] : undefined;
-    if (executor) {
-      result = executor(user, action);
-    } else {
-      result = {
-        ok: true,
-        executed_at: now,
-        intent: action.intent,
-        object_type: action.object_type,
-        note: 'résultat simulé (MVP — pas de runner réel)',
-      };
-    }
+    if (!executor) throw new Error('not_implemented');
+    result = executor(user, action);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     const failedAt = Date.now();

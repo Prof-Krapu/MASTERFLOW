@@ -83,7 +83,9 @@ export function executeSetUserRole(user: AuthUser, action: Action): Record<strin
   }
 
   const now = Date.now();
-  db.prepare('UPDATE users SET role = ?, updated_at = ? WHERE id = ?').run(role, now, user_id);
+  db.prepare(
+    'UPDATE users SET role = ?, auth_version = auth_version + 1, updated_at = ? WHERE id = ?',
+  ).run(role, now, user_id);
 
   return {user_id, previous, new: role, changed: true};
 }

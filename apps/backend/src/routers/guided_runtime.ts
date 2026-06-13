@@ -3,6 +3,7 @@ import {Router, type Request, type Response} from 'express';
 import {
   CreateGuideRequestSchema,
   CreateGuidedSessionRequestSchema,
+  AddGuidedParticipantRequestSchema,
   SubmitGuidedAnswerRequestSchema,
   UpdateGuideRequestSchema,
 } from '@masterflow/shared';
@@ -10,6 +11,7 @@ import {
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
   advanceGuidedSession,
+  addGuidedSessionParticipant,
   completeGuidedSession,
   createGuide,
   createGuidedSession,
@@ -18,6 +20,7 @@ import {
   listGuides,
   submitGuidedAnswer,
   updateGuide,
+  validateGuide,
 } from '../services/guided_runtime.ts';
 
 function actor(req: Request): AuthUser {
@@ -32,7 +35,9 @@ function routeError(res: Response, error: unknown): void {
     message === 'permission_denied' ||
     message === 'guided_participant_required' ||
     message === 'guided_session_not_active' ||
-    message === 'guided_session_incomplete'
+    message === 'guided_session_incomplete' ||
+    message === 'guided_consent_required' ||
+    message === 'guided_participant_scope_denied'
   ) {
     res.status(403).json({error: message});
     return;
@@ -53,7 +58,11 @@ function routeError(res: Response, error: unknown): void {
     message === 'guided_target_schema_invalid' ||
     message === 'guided_question_duplicate' ||
     message === 'guided_question_target_unknown' ||
-    message === 'guided_guide_not_editable'
+    message === 'guided_guide_not_editable' ||
+    message === 'guided_source_not_validated' ||
+    message === 'guided_preview_owner_required' ||
+    message === 'guided_answer_invalid' ||
+    message === 'guided_answer_schema_invalid'
   ) {
     res.status(400).json({error: message});
     return;
@@ -114,6 +123,19 @@ export function createGuidedRuntimeRouter(): Router {
     }
   });
 
+  router.post('/guides/:id/validate', (req: Request, res: Response): void => {
+    const guideId = req.params.id;
+    if (!guideId) {
+      res.status(404).json({error: 'guided_guide_not_found'});
+      return;
+    }
+    try {
+      res.json(validateGuide(actor(req), guideId));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
   router.post('/guided-sessions', (req: Request, res: Response): void => {
     const parsed = CreateGuidedSessionRequestSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -135,6 +157,32 @@ export function createGuidedRuntimeRouter(): Router {
     }
     try {
       res.json(getGuidedSession(actor(req), sessionId));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/guided-sessions/:id/participants', (req: Request, res: Response): void => {
+    const sessionId = req.params.id;
+    if (!sessionId) {
+      res.status(404).json({error: 'guided_session_not_found'});
+      return;
+    }
+    const parsed = AddGuidedParticipantRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.status(201).json(
+        addGuidedSessionParticipant(
+          actor(req),
+          sessionId,
+          parsed.data.user_id,
+          parsed.data.role,
+          parsed.data.consent,
+        ),
+      );
     } catch (error) {
       routeError(res, error);
     }

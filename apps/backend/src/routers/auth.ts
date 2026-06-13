@@ -115,7 +115,12 @@ export function createAuthRouter(): Router {
 
     const row = db.prepare('SELECT * FROM users WHERE id = ?').get(id) as UserRow;
     const user = toUserDTO(row);
-    const token = signToken({id: user.id, username: user.username, role: user.role});
+    const token = signToken({
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      auth_version: row.auth_version,
+    });
 
     audit({event_type: 'auth.register', user_id: user.id, scope: 'auth', detail: {username, role, code: invite_code}});
 
@@ -146,7 +151,12 @@ export function createAuthRouter(): Router {
     db.prepare('UPDATE users SET last_login = ?, updated_at = ? WHERE id = ?').run(now, now, row.id);
 
     const user = toUserDTO(row);
-    const token = signToken({id: user.id, username: user.username, role: user.role});
+    const token = signToken({
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      auth_version: row.auth_version,
+    });
 
     audit({event_type: 'auth.login', user_id: user.id, scope: 'auth', detail: {username}});
 

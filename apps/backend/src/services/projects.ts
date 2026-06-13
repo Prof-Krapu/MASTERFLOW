@@ -7,6 +7,7 @@ import {
   ROLE_RANK,
   ResourceScopeSchema,
   ScopedPermissionDecisionSchema,
+  TransferProjectOwnershipSchema,
   type AddProjectMemberRequest,
   type CreateProjectRequest,
   type Project,
@@ -15,6 +16,7 @@ import {
   type Resource,
   type ResourceScope,
   type ScopedPermissionDecision,
+  type TransferProjectOwnership,
 } from '@masterflow/shared';
 
 import {
@@ -155,6 +157,7 @@ export function addProjectMember(
 ): ProjectMember {
   const request = AddProjectMemberRequestSchema.parse(input);
   if (!getProjectRow(projectId)) throw new Error('project_not_found');
+  if (request.role === 'owner') throw new Error('project_owner_transfer_required');
   assertCanManageMembers(actor, projectId, request.role);
 
   const user = getDb().prepare('SELECT id FROM users WHERE id = ?').get(request.user_id) as
@@ -179,6 +182,55 @@ export function addProjectMember(
   return getMemberOrThrow(projectId, request.user_id);
 }
 
+export function transferProjectOwnership(
+  actor: AuthUser,
+  input: TransferProjectOwnership,
+): Project {
+  const request = TransferProjectOwnershipSchema.parse(input);
+  const project = getProjectRow(request.project_id);
+  if (!project) throw new Error('project_not_found');
+  if (project.owner_id !== actor.id && !isGlobalAdmin(actor)) {
+    throw new Error('project_owner_required');
+  }
+  if (project.owner_id === request.new_owner_id) return toProject(project);
+  const target = getDb()
+    .prepare('SELECT id, active FROM users WHERE id = ?')
+    .get(request.new_owner_id) as {id: string; active: number} | undefined;
+  if (!target || target.active !== 1) throw new Error('project_member_user_not_found');
+
+  const now = Date.now();
+  const db = getDb();
+  db.transaction(() => {
+    db.prepare('UPDATE projects SET owner_id = ?, updated_at = ? WHERE id = ?').run(
+      request.new_owner_id,
+      now,
+      request.project_id,
+    );
+    db.prepare(
+      `INSERT INTO project_members (project_id, user_id, role, created_at)
+       VALUES (?, ?, 'admin', ?)
+       ON CONFLICT(project_id, user_id) DO UPDATE SET role = 'admin'`,
+    ).run(request.project_id, project.owner_id, now);
+    db.prepare(
+      `INSERT INTO project_members (project_id, user_id, role, created_at)
+       VALUES (?, ?, 'owner', ?)
+       ON CONFLICT(project_id, user_id) DO UPDATE SET role = 'owner'`,
+    ).run(request.project_id, request.new_owner_id, now);
+  })();
+  audit({
+    event_type: 'project.ownership_transferred',
+    user_id: actor.id,
+    scope: request.project_id,
+    detail: {
+      project_id: request.project_id,
+      previous_owner_id: project.owner_id,
+      new_owner_id: request.new_owner_id,
+      override: actor.id !== project.owner_id,
+    },
+  });
+  return getProject(actor, request.project_id);
+}
+
 export function listProjectMembers(actor: AuthUser, projectId: string): ProjectMember[] {
   if (!getProjectRow(projectId)) throw new Error('project_not_found');
   assertCanReadProject(actor, projectId);
@@ -192,10 +244,11 @@ export function attachResourceScope(actor: AuthUser, input: ResourceScope): Reso
   const scope = ResourceScopeSchema.parse(input);
   if (!getProjectRow(scope.scope_id)) throw new Error('project_not_found');
   assertCanManageMembers(actor, scope.scope_id, 'admin');
-  const resource = getDb().prepare('SELECT id FROM resources WHERE id = ?').get(scope.resource_id) as
-    | {id: string}
+  const resource = getDb().prepare('SELECT id, status FROM resources WHERE id = ?').get(scope.resource_id) as
+    | {id: string; status: string}
     | undefined;
   if (!resource) throw new Error('resource_not_found');
+  if (resource.status !== 'validated') throw new Error('resource_not_validated');
 
   getDb()
     .prepare(
@@ -230,7 +283,7 @@ export function listProjectResources(actor: AuthUser, projectId: string): Resour
     .prepare(
       `SELECT r.* FROM resources r
          INNER JOIN resource_scopes rs ON rs.resource_id = r.id
-        WHERE rs.scope_type = 'project' AND rs.scope_id = ?
+        WHERE rs.scope_type = 'project' AND rs.scope_id = ? AND r.status = 'validated'
         ORDER BY r.created_at DESC`,
     )
     .all(projectId) as ResourceRow[];

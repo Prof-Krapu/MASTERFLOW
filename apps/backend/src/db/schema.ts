@@ -54,6 +54,7 @@ function migrate(d: Database.Database): void {
       scope_json        TEXT,
       preferences_json  TEXT,
       active        INTEGER NOT NULL DEFAULT 1,
+      auth_version  INTEGER NOT NULL DEFAULT 1,
       created_at    INTEGER NOT NULL,
       updated_at    INTEGER NOT NULL,
       last_login    INTEGER
@@ -123,6 +124,7 @@ function migrate(d: Database.Database): void {
       name        TEXT NOT NULL,
       type        TEXT NOT NULL DEFAULT 'home',
       owner_id    TEXT REFERENCES users(id),
+      project_id  TEXT REFERENCES projects(id) ON DELETE CASCADE,
       context_json TEXT,
       is_public   INTEGER NOT NULL DEFAULT 0,
       created_at  INTEGER NOT NULL,
@@ -179,6 +181,7 @@ function migrate(d: Database.Database): void {
       status          TEXT NOT NULL DEFAULT 'draft',
       user_id         TEXT NOT NULL REFERENCES users(id),
       room_id         TEXT REFERENCES rooms(id),
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
       engine          TEXT,
       risk_level      TEXT,
       payload_json    TEXT,
@@ -354,6 +357,9 @@ function migrate(d: Database.Database): void {
       current_question_id    TEXT,
       target_schema_id       TEXT NOT NULL REFERENCES schema_templates(id),
       target_schema_version  INTEGER NOT NULL CHECK (target_schema_version > 0),
+      guide_snapshot_json     TEXT,
+      schema_snapshot_json    TEXT,
+      consent_policy_json     TEXT NOT NULL DEFAULT '{}',
       progress_json          TEXT NOT NULL,
       structured_record_json TEXT NOT NULL DEFAULT '{}',
       expires_at             INTEGER,
@@ -956,6 +962,12 @@ function migrate(d: Database.Database): void {
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
+  ensureColumn(d, 'users', 'auth_version', 'INTEGER NOT NULL DEFAULT 1');
+  ensureColumn(d, 'rooms', 'project_id', 'TEXT REFERENCES projects(id) ON DELETE CASCADE');
+  ensureColumn(d, 'actions', 'project_id', 'TEXT REFERENCES projects(id) ON DELETE CASCADE');
+  ensureColumn(d, 'guided_sessions', 'guide_snapshot_json', 'TEXT');
+  ensureColumn(d, 'guided_sessions', 'schema_snapshot_json', 'TEXT');
+  ensureColumn(d, 'guided_sessions', 'consent_policy_json', "TEXT NOT NULL DEFAULT '{}'");
   ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
@@ -1029,6 +1041,7 @@ export interface UserRow {
   scope_json: string | null;
   preferences_json: string | null;
   active: number;
+  auth_version: number;
   created_at: number;
   updated_at: number;
   last_login: number | null;
@@ -1142,6 +1155,7 @@ export interface SchemaTemplateRow {
   status: 'candidate' | 'validated' | 'deprecated' | 'archived';
   version: number;
   owner_id: string | null;
+  project_id: string | null;
   schema_json: string;
   required_fields_json: string;
   validation_rules_json: string;
@@ -1185,6 +1199,9 @@ export interface GuidedSessionRow {
   current_question_id: string | null;
   target_schema_id: string;
   target_schema_version: number;
+  guide_snapshot_json: string | null;
+  schema_snapshot_json: string | null;
+  consent_policy_json: string;
   progress_json: string;
   structured_record_json: string;
   expires_at: number | null;
@@ -1221,6 +1238,7 @@ export interface RoomRow {
   name: string;
   type: string;
   owner_id: string | null;
+  project_id: string | null;
   context_json: string | null;
   is_public: number;
   created_at: number;
@@ -1272,6 +1290,7 @@ export interface ActionRow {
   status: string;
   user_id: string;
   room_id: string | null;
+  project_id: string | null;
   engine: string | null;
   risk_level: string | null;
   payload_json: string | null;

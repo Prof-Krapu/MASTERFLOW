@@ -58,9 +58,9 @@ function guideBody() {
     target_schema_id: 'cdc-template-candidate-v1',
     question_flow: [
       {question_id: 'q-context', prompt: 'Contexte ?', target_field: 'context', kind: 'text', required: true},
-      {question_id: 'q-objectives', prompt: 'Objectifs ?', target_field: 'objectives', kind: 'text', required: true},
+      {question_id: 'q-objectives', prompt: 'Objectifs ?', target_field: 'objectives', kind: 'multi_choice', required: true, options: ['cadrer']},
       {question_id: 'q-audience', prompt: 'Audience ?', target_field: 'audience', kind: 'text', required: true},
-      {question_id: 'q-deliverables', prompt: 'Livrables ?', target_field: 'deliverables', kind: 'text', required: true},
+      {question_id: 'q-deliverables', prompt: 'Livrables ?', target_field: 'deliverables', kind: 'multi_choice', required: true, options: ['cdc']},
     ],
     completion_rules: {complete_when_required_fields_done: true},
   });
@@ -102,7 +102,7 @@ describe('PR-6 — routes Guided Runtime prive', () => {
     const created = await fetch(`${base}/guided-sessions`, {
       method: 'POST',
       headers: {...auth(teacherToken), 'Content-Type': 'application/json'},
-      body: JSON.stringify({guide_id: guideId}),
+      body: JSON.stringify({guide_id: guideId, preview: true, consent: {accepted: true}}),
     });
     expect(created.status).toBe(201);
     const payload = (await created.json()) as {session_id: string; guide_version: number; access_mode: string};
@@ -116,6 +116,23 @@ describe('PR-6 — routes Guided Runtime prive', () => {
       body: JSON.stringify({question_id: 'q-context', value: 'hors session'}),
     });
     expect(refused.status).toBe(404);
+
+    const joined = await fetch(`${base}/guided-sessions/${sessionId}/participants`, {
+      method: 'POST',
+      headers: {...auth(teacherToken), 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user_id: student.id,
+        role: 'participant',
+        consent: {accepted: true},
+      }),
+    });
+    expect(joined.status).toBe(201);
+    const accepted = await fetch(`${base}/guided-sessions/${sessionId}/answers`, {
+      method: 'POST',
+      headers: {...auth(studentToken), 'Content-Type': 'application/json'},
+      body: JSON.stringify({question_id: 'q-context', value: 'atelier'}),
+    });
+    expect(accepted.status).toBe(201);
   });
 
   it('avance et complete sans effet externe', async () => {

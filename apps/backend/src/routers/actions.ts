@@ -9,7 +9,7 @@ import {listRegistry} from '../engines/action_registry.ts';
 import {
   createAction,
   executeAction,
-  getAction,
+  getActionFor,
   listPending,
   preflightAction,
   validateAction,
@@ -52,8 +52,8 @@ export function createActionsRouter(): Router {
   });
 
   // ───────────── Inbox de validation (avant /:id pour ne pas capter 'pending') ─────────────
-  router.get('/actions/pending', requireRole('teacher'), (_req: Request, res: Response): void => {
-    res.json(listPending());
+  router.get('/actions/pending', requireRole('teacher'), (req: Request, res: Response): void => {
+    res.json(listPending(authUser(req)));
   });
 
   // ───────────── Création (status 'draft') ─────────────
@@ -70,7 +70,7 @@ export function createActionsRouter(): Router {
   // ───────────── Preflight — calcule PreflightResult et avance le status ─────────────
   router.post('/actions/:id/preflight', (req: Request, res: Response): void => {
     const id = req.params.id;
-    if (!id || !getAction(id)) {
+    if (!id || !getActionFor(authUser(req), id)) {
       res.status(404).json({error: 'action_not_found'});
       return;
     }
@@ -81,7 +81,7 @@ export function createActionsRouter(): Router {
   // ───────────── Validation humaine (teacher+) ─────────────
   router.post('/actions/:id/validate', requireRole('teacher'), (req: Request, res: Response): void => {
     const id = req.params.id;
-    if (!id || !getAction(id)) {
+    if (!id) {
       res.status(404).json({error: 'action_not_found'});
       return;
     }
@@ -102,7 +102,7 @@ export function createActionsRouter(): Router {
   // ───────────── Exécution — REFUSÉE si status ≠ 'approved' (423 Locked) ─────────────
   router.post('/actions/:id/execute', (req: Request, res: Response): void => {
     const id = req.params.id;
-    const existing = id ? getAction(id) : null;
+    const existing = id ? getActionFor(authUser(req), id) : null;
     if (!existing) {
       res.status(404).json({error: 'action_not_found'});
       return;
@@ -119,7 +119,7 @@ export function createActionsRouter(): Router {
   // ───────────── Lecture d'une action (catch-all paramétré, en dernier) ─────────────
   router.get('/actions/:id', (req: Request, res: Response): void => {
     const id = req.params.id;
-    const action = id ? getAction(id) : null;
+    const action = id ? getActionFor(authUser(req), id) : null;
     if (!action) {
       res.status(404).json({error: 'action_not_found'});
       return;

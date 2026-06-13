@@ -149,6 +149,32 @@ function assertCanRead(actor: AuthUser, row: JobRow): void {
   if (!canReadJob(actor, row)) throw new Error('job_not_found');
 }
 
+function jobProjectId(row: JobRow): string | null {
+  try {
+    const payload = JSON.parse(row.payload_json) as {project_id?: unknown};
+    return typeof payload.project_id === 'string' ? payload.project_id : null;
+  } catch {
+    return null;
+  }
+}
+
+function assertCanManage(actor: AuthUser, row: JobRow): void {
+  assertCanRead(actor, row);
+  if (actor.id === row.owner_id || ROLE_RANK[actor.role] >= ROLE_RANK.admin) return;
+  const projectId = jobProjectId(row);
+  if (
+    projectId &&
+    decideScopedPermission({
+      actor,
+      projectId,
+      minimumProjectRole: 'admin',
+    }).allowed
+  ) {
+    return;
+  }
+  throw new Error('job_manage_denied');
+}
+
 function assertNoSecrets(payload: unknown): void {
   if (SECRET_PATTERN.test(JSON.stringify(payload))) throw new Error('job_payload_contains_secret');
 }
@@ -653,7 +679,10 @@ export function extendJobLease(
 }
 
 export function cancelJob(actor: AuthUser, jobId: string): Job {
-  const job = getJob(actor, jobId);
+  const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
+  if (!row) throw new Error('job_not_found');
+  assertCanManage(actor, row);
+  const job = toJob(row);
   if (!CANCELLABLE.has(job.status)) throw new Error('job_not_cancellable');
   const now = Date.now();
   getDb()
@@ -668,13 +697,16 @@ export function cancelJob(actor: AuthUser, jobId: string): Job {
     event_type: 'job.cancelled',
     user_id: actor.id,
     scope: job.scope_id,
-    detail: {job_id: jobId},
+    detail: {job_id: jobId, override: actor.id !== job.owner_id},
   });
   return getJob(actor, jobId);
 }
 
 export function retryJob(actor: AuthUser, jobId: string): Job {
-  const job = getJob(actor, jobId);
+  const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
+  if (!row) throw new Error('job_not_found');
+  assertCanManage(actor, row);
+  const job = toJob(row);
   if (job.status !== 'failed') throw new Error('job_not_retryable');
   const now = Date.now();
   getDb()
@@ -692,7 +724,11 @@ export function retryJob(actor: AuthUser, jobId: string): Job {
     event_type: 'job.retried',
     user_id: actor.id,
     scope: job.scope_id,
-    detail: {job_id: jobId, retry_count: job.retry_count + 1},
+    detail: {
+      job_id: jobId,
+      retry_count: job.retry_count + 1,
+      override: actor.id !== job.owner_id,
+    },
   });
   return getJob(actor, jobId);
 }

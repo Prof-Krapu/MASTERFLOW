@@ -3,7 +3,7 @@ import {beforeAll, describe, expect, it} from 'vitest';
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
-import {addProjectMember, createProject} from '../src/services/projects.ts';
+import {addProjectMember, attachResourceScope, createProject} from '../src/services/projects.ts';
 import {
   getRagContextPack,
   queryRag,
@@ -47,6 +47,13 @@ beforeAll(async () => {
     'validated',
     now,
   );
+  attachResourceScope(teacher, {
+    resource_id: 'resource-rag-validated',
+    scope_type: 'project',
+    scope_id: projectId,
+    access_level: 'read',
+    created_at: now,
+  });
   insertResource.run(
     'resource-rag-candidate',
     'Guide candidat non valide',
@@ -98,20 +105,16 @@ describe('PR-7 — service RAG permissionne', () => {
     expect(JSON.stringify(response)).not.toContain('Guide MasterFlow fiable');
   });
 
-  it('ne sert pas une candidate comme source fiable', () => {
-    registerRagResource(teacher, {
-      resource_id: 'resource-rag-candidate',
-      project_id: projectId,
-      source_type: 'markdown',
-      source_uri: 'storage://candidate/masterflow.md',
-      chunks: ['Information candidate spectaculaire jamais validee.'],
-    });
-    const response = queryRag(student, {
-      query: 'spectaculaire jamais validee',
-      project_id: projectId,
-    });
-    expect(response.refusal_reason).toBe('no_reliable_source');
-    expect(response.context_pack.citations).toEqual([]);
+  it("refuse d'indexer une candidate dans le scope projet", () => {
+    expect(() =>
+      registerRagResource(teacher, {
+        resource_id: 'resource-rag-candidate',
+        project_id: projectId,
+        source_type: 'markdown',
+        source_uri: 'storage://candidate/masterflow.md',
+        chunks: ['Information candidate spectaculaire jamais validee.'],
+      }),
+    ).toThrow('resource_not_validated');
   });
 
   it('refuse les secrets avant creation de chunk', () => {
@@ -152,6 +155,13 @@ describe('PR-7 — service RAG permissionne', () => {
                  'storage://verified/reindex.md', 'rag-test', 'validated', '[]', ?)`,
       )
       .run(Date.now());
+    attachResourceScope(teacher, {
+      resource_id: 'resource-rag-reindex',
+      scope_type: 'project',
+      scope_id: projectId,
+      access_level: 'read',
+      created_at: Date.now(),
+    });
     const resource = registerRagResource(teacher, {
       resource_id: 'resource-rag-reindex',
       project_id: projectId,

@@ -18,6 +18,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-HARD-1 à 7 avant intégration
+
+MALEX/Codex a implémenté localement les sept correctifs de
+`AUDIT_POST_PUSH_CANON_GAPS_2026-06-13.md`. Lire l'entrée correspondante en tête de `SUIVI.md`.
+
+Points de revue demandés à Vincent :
+
+1. migration additive `users.auth_version`, `rooms.project_id`, `actions.project_id` et snapshots
+   Guided Runtime;
+2. resolver auth unique REST/WS et invalidation des sessions après changement de rôle;
+3. isolation Rooms/instances owner-public-projet;
+4. gates owner/scope/status/executor des actions;
+5. Resource Truth obligatoire avant partage et RAG projet;
+6. snapshots/consentement/validation Guided Runtime;
+7. `canReadJob` distinct de `canManageJob`;
+8. transfert atomique owner projet via action sensible validée admin.
+
+Recette locale MALEX/Codex : backend `213/213`, TypeScript backend/frontend OK, build frontend
+OK, `git diff --check` OK.
+
+Ne pas reconstruire ces couches. Comparer avec les features Vincent, signaler les collisions ou
+améliorations utiles, puis proposer des patches courts. Prochaine fondation prévue après
+intégration : `PR-CTX-1 context_compiler`.
+
+---
+
 ## 2026-06-13 — open — Audit post-push canon à traiter avant nouvelles verticales
 
 Lire :

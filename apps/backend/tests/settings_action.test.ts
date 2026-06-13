@@ -116,9 +116,7 @@ describe('set_global_setting — cycle de vie & invariants', () => {
     preflightAction(god, created.id);
     validateAction(admin, created.id, {decision: 'approved'});
 
-    const result = executeAction(teacher, created.id);
-    expect(result.status).toBe('failed');
-    expect(result.error).toMatch(/admin/);
+    expect(() => executeAction(teacher, created.id)).toThrow(/action_access_denied/);
   });
 
   it('clé hors allowlist → failed (rejet exécuteur)', () => {

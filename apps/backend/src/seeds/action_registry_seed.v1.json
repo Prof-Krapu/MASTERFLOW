@@ -154,6 +154,17 @@
       "status": "live"
     },
     {
+      "action_id": "transfer_project_ownership",
+      "label": "Transférer la propriété d'un projet",
+      "endpoint": "POST /actions/{action_id}/execute",
+      "risk_level": "high",
+      "preflight_required": true,
+      "validation_required": true,
+      "validator_role": "admin",
+      "ui_surface": "project_members_cockpit",
+      "status": "live"
+    },
+    {
       "action_id": "view_users",
       "label": "Voir les comptes utilisateurs",
       "endpoint": "GET /admin/users",

@@ -296,6 +296,16 @@ export function registerRagResource(
     | ResourceRow
     | undefined;
   if (!source) throw new Error('resource_not_found');
+  if (request.project_id) {
+    if (source.status !== 'validated') throw new Error('resource_not_validated');
+    const scoped = getDb()
+      .prepare(
+        `SELECT 1 AS hit FROM resource_scopes
+         WHERE resource_id = ? AND scope_type = 'project' AND scope_id = ?`,
+      )
+      .get(source.id, request.project_id);
+    if (!scoped) throw new Error('resource_scope_not_found');
+  }
 
   const now = Date.now();
   const id = uuid();

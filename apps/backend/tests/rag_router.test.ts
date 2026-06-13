@@ -7,7 +7,7 @@ import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import {signToken, type AuthUser} from '../src/middleware/auth.ts';
 import {createRagRouter} from '../src/routers/rag.ts';
-import {addProjectMember, createProject} from '../src/services/projects.ts';
+import {addProjectMember, attachResourceScope, createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {id: 'rag-router-teacher', username: 'rag_router_teacher', role: 'teacher'};
 const student: AuthUser = {id: 'rag-router-student', username: 'rag_router_student', role: 'student'};
@@ -44,6 +44,13 @@ beforeAll(async () => {
                'storage://verified/router.md', 'rag-router', 'validated', '[]', ?)`,
     )
     .run(now);
+  attachResourceScope(teacher, {
+    resource_id: 'resource-rag-router',
+    scope_type: 'project',
+    scope_id: projectId,
+    access_level: 'read',
+    created_at: now,
+  });
 
   teacherToken = signToken(teacher);
   studentToken = signToken(student);

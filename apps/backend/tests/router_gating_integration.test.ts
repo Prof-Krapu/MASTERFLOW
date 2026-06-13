@@ -30,12 +30,16 @@ let studentToken: string;
 beforeAll(async () => {
   await seedAll();
   const now = Date.now();
-  getDb()
-    .prepare(
+  const db = getDb();
+  db.prepare(
       `INSERT OR IGNORE INTO users (id, username, display_name, password_hash, role, active, created_at, updated_at)
        VALUES ('gating-teacher', 'gating_teacher', 'Gating Teacher', 'x', 'teacher', 1, ?, ?)`,
     )
     .run(now, now);
+  db.prepare(
+    `INSERT OR IGNORE INTO users (id, username, display_name, password_hash, role, active, created_at, updated_at)
+     VALUES ('gating-student', 'gating_student', 'Gating Student', 'x', 'student', 1, ?, ?)`,
+  ).run(now, now);
   teacherToken = signToken({id: 'gating-teacher', username: 'gating_teacher', role: 'teacher'});
   studentToken = signToken({id: 'gating-student', username: 'gating_student', role: 'student'});
 

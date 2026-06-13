@@ -4,6 +4,51 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-HARD-1 à 7 — IMPLÉMENTÉES LOCALEMENT, RECETTE VERTE
+
+**Livrable MALEX/Codex, non commit/push en attente du GO humain.**
+
+Les raccords P0/P1 de `AUDIT_POST_PUSH_CANON_GAPS_2026-06-13.md` ont été traités par
+couches bornées, après contrôle inbox et comparaison au canon Drive :
+
+- **HARD-1 Auth** : identité effective relue en BDD pour REST/WS, révocation, compte actif,
+  rôle courant et `auth_version`; changement de rôle = invalidation immédiate des anciens JWT.
+- **HARD-2 Rooms** : `project_id` additif, resolver owner/public/membre projet, masquage des
+  Rooms privées et ownership exact de `room_instance` au handshake WS.
+- **HARD-3 Actions** : owner/scope persistés, lecture/preflight/exécution bornés, inbox filtrée,
+  registre non `live` refusé et absence d'exécuteur = `not_implemented`, jamais faux succès.
+- **HARD-4 Resource Truth** : seules les ressources `validated` sont partageables/lisibles
+  dans un projet; le RAG projet exige validation et `resource_scope`.
+- **HARD-5 Guided Runtime** : snapshots immuables guide/schéma/consentement, preview owner
+  explicite, validation guide, types/options/schéma vérifiés et route participants privée.
+- **HARD-6 Jobs** : séparation lecture/gestion; owner, admin projet ou override global tracé
+  peuvent cancel/retry; un editor lecteur ne le peut pas.
+- **HARD-7 Ownership projet** : owner unique, promotion directe interdite, transfert atomique
+  via l'action sensible `transfer_project_ownership` validée admin.
+
+Références canon appliquées :
+
+- `01_CORE/PERMISSION_RUNTIME_GUARDRAILS.md`
+- `01_CORE/PERMISSION_AND_ACCESS_GOVERNANCE_SYSTEM.md`
+- `01_CORE/MASTERFLOW_RUNTIME_CONTEXT_ISOLATION.md`
+- `02_CONTRACTS/RUNTIME_ACCESS_CONTROL_AND_SYSTEM_PERMISSION_MATRIX.md`
+- `02_CONTRACTS/PERSONA_PERMISSION_FIREWALL_AND_ROLE_SCOPE_CONTRACT.md`
+- `02_CONTRACTS/RESOURCE_TRUTH_LOCK_AND_CANONICAL_ROUTING_CONTRACT.md`
+- `02_CONTRACTS/ACTION_PREFLIGHT_DECISION_LOG_AND_VALIDATION_INBOX_CONTRACT.md`
+
+Recette :
+
+- backend TypeScript : OK;
+- backend Vitest : **213/213**, 46 fichiers;
+- frontend TypeScript : OK;
+- frontend build Vite : OK, warning historique chunk > 500 kB;
+- `git diff --check` : OK.
+
+Étape suivante après revue/push : **PR-CTX-1 context compiler**, sans brancher BGE/Qdrant à
+la sémantique des Rooms avant stabilisation du contrat.
+
+---
+
 ## 2026-06-13 — Audit post-push canon / raccords transversaux — PRÊT
 
 **Livrable MALEX/Codex.**

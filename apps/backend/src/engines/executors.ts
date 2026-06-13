@@ -3,6 +3,7 @@ import type {Action} from '@masterflow/shared';
 import type {AuthUser} from '../middleware/auth.ts';
 import {executeSetGlobalSetting} from './settings.ts';
 import {executeSetUserRole} from './users_admin.ts';
+import {executeTransferProjectOwnership} from './project_ownership.ts';
 
 /**
  * Registre des exécuteurs réels d'actions, indexés par `registry_id`.
@@ -20,4 +21,5 @@ export const ACTION_EXECUTORS: Record<
 > = {
   set_global_setting: executeSetGlobalSetting,
   set_user_role: executeSetUserRole,
+  transfer_project_ownership: executeTransferProjectOwnership,
 };

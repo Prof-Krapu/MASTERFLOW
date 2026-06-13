@@ -1,7 +1,8 @@
 import {beforeAll, describe, expect, it} from 'vitest';
 
+import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
-import {signToken, verifyToken, type AuthUser} from '../src/middleware/auth.ts';
+import {authenticateToken, signToken, verifyToken, type AuthUser} from '../src/middleware/auth.ts';
 import {hasRole} from '../src/engines/permission_runtime.ts';
 
 /**
@@ -33,6 +34,38 @@ describe('JWT — signToken / verifyToken', () => {
 
   it('jeton invalide : verifyToken("garbage") === null', () => {
     expect(verifyToken('garbage')).toBeNull();
+  });
+});
+
+describe('JWT — identité effective et révocable', () => {
+  it('relit le rôle courant en BDD et invalide les sessions après changement de version', () => {
+    const db = getDb();
+    const row = db
+      .prepare("SELECT id, username, role, auth_version FROM users WHERE username = 'vincent'")
+      .get() as AuthUser & {auth_version: number};
+    const token = signToken(row);
+
+    db.prepare(
+      "UPDATE users SET role = 'admin', auth_version = auth_version + 1 WHERE id = ?",
+    ).run(row.id);
+
+    expect(authenticateToken(token)).toEqual({ok: false, error: 'session_invalidated'});
+
+    db.prepare(
+      "UPDATE users SET role = 'godmode', auth_version = auth_version + 1 WHERE id = ?",
+    ).run(row.id);
+  });
+
+  it('refuse immédiatement un compte désactivé', () => {
+    const db = getDb();
+    const row = db
+      .prepare("SELECT id, username, role, auth_version FROM users WHERE username = 'vincent'")
+      .get() as AuthUser & {auth_version: number};
+    const token = signToken(row);
+
+    db.prepare('UPDATE users SET active = 0 WHERE id = ?').run(row.id);
+    expect(authenticateToken(token)).toEqual({ok: false, error: 'user_inactive'});
+    db.prepare('UPDATE users SET active = 1 WHERE id = ?').run(row.id);
   });
 });
 

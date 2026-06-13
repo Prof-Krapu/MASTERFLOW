@@ -37,7 +37,9 @@ function routeError(res: Response, error: unknown): void {
   if (
     message === 'rag_secret_detected' ||
     message === 'rag_resource_exists' ||
-    message === 'rag_resource_not_reindexable'
+    message === 'rag_resource_not_reindexable' ||
+    message === 'resource_not_validated' ||
+    message === 'resource_scope_not_found'
   ) {
     res.status(400).json({error: message});
     return;

@@ -15,11 +15,14 @@ import {
   listGuides,
   submitGuidedAnswer,
   updateGuide,
+  validateGuide,
 } from '../src/services/guided_runtime.ts';
+import {validateSchemaTemplate} from '../src/services/schema_templates.ts';
 
 const teacher: AuthUser = {id: 'guided-service-teacher', username: 'guided_service_teacher', role: 'teacher'};
 const student: AuthUser = {id: 'guided-service-student', username: 'guided_service_student', role: 'student'};
 const outsider: AuthUser = {id: 'guided-service-outsider', username: 'guided_service_outsider', role: 'student'};
+const admin: AuthUser = {id: 'guided-service-admin', username: 'guided_service_admin', role: 'admin'};
 
 beforeAll(async () => {
   await seedAll();
@@ -29,7 +32,7 @@ beforeAll(async () => {
        (id, username, display_name, password_hash, role, active, created_at, updated_at)
      VALUES (?, ?, ?, 'x', ?, 1, ?, ?)`,
   );
-  for (const actor of [teacher, student, outsider]) {
+  for (const actor of [teacher, student, outsider, admin]) {
     insert.run(actor.id, actor.username, actor.username, actor.role, now, now);
   }
 });
@@ -42,9 +45,9 @@ function guideRequest(name: string) {
     target_schema_id: 'cdc-template-candidate-v1',
     question_flow: [
       {question_id: 'q-context', prompt: 'Quel est le contexte ?', target_field: 'context', kind: 'text' as const, required: true},
-      {question_id: 'q-objectives', prompt: 'Quels objectifs ?', target_field: 'objectives', kind: 'text' as const, required: true},
+      {question_id: 'q-objectives', prompt: 'Quels objectifs ?', target_field: 'objectives', kind: 'multi_choice' as const, required: true, options: ['clarifier', 'cadrer']},
       {question_id: 'q-audience', prompt: 'Quelle audience ?', target_field: 'audience', kind: 'text' as const, required: true},
-      {question_id: 'q-deliverables', prompt: 'Quels livrables ?', target_field: 'deliverables', kind: 'text' as const, required: true},
+      {question_id: 'q-deliverables', prompt: 'Quels livrables ?', target_field: 'deliverables', kind: 'multi_choice' as const, required: true, options: ['cdc', 'prototype']},
     ],
     completion_rules: {complete_when_required_fields_done: true},
     functional_persona_id: 'moth-functional-cdc',
@@ -55,6 +58,34 @@ function guideRequest(name: string) {
 }
 
 describe('PR-6 — service Guided Runtime prive', () => {
+  it('exige des sources validées hors preview et un consentement explicite', () => {
+    const guide = createGuide(teacher, guideRequest('Guide gates PR-6'));
+    expect(() =>
+      createGuidedSession(teacher, {
+        guide_id: guide.guide_id,
+        preview: false,
+        consent: {accepted: true},
+      }),
+    ).toThrow('guided_source_not_validated');
+    expect(() =>
+      createGuidedSession(teacher, {
+        guide_id: guide.guide_id,
+        preview: true,
+        consent: {},
+      }),
+    ).toThrow('guided_consent_required');
+
+    validateSchemaTemplate(admin, guide.target_schema_id);
+    validateGuide(admin, guide.guide_id);
+    expect(
+      createGuidedSession(teacher, {
+        guide_id: guide.guide_id,
+        preview: false,
+        consent: {accepted: true},
+      }).status,
+    ).toBe('active');
+  });
+
   it('cree un guide draft teacher+ rattache projet et refuse student/non-owner', () => {
     const project = createProject(teacher, {name: 'Projet Guided PR-6'});
     const guide = createGuide(teacher, {...guideRequest('Guide PR-6 prive'), project_id: project.project_id});
@@ -76,7 +107,11 @@ describe('PR-6 — service Guided Runtime prive', () => {
     const updated = updateGuide(teacher, guide.guide_id, {purpose: 'Atelier CDC prive v2.'});
     expect(updated.version).toBe(2);
 
-    const session = createGuidedSession(teacher, {guide_id: guide.guide_id});
+    const session = createGuidedSession(teacher, {
+      guide_id: guide.guide_id,
+      preview: true,
+      consent: {accepted: true},
+    });
     expect(session).toMatchObject({
       guide_id: guide.guide_id,
       guide_version: 2,
@@ -87,12 +122,29 @@ describe('PR-6 — service Guided Runtime prive', () => {
 
     updateGuide(teacher, guide.guide_id, {purpose: 'Atelier CDC prive v3.'});
     expect(getGuidedSession(teacher, session.session_id).guide_version).toBe(2);
+    submitGuidedAnswer(teacher, session.session_id, {
+      question_id: 'q-context',
+      value: 'snapshot toujours actif',
+    });
+    expect(getGuidedSession(teacher, session.session_id).structured_record).toMatchObject({
+      context: 'snapshot toujours actif',
+    });
   });
 
   it('autorise participant, refuse non-participant et garde une progression stable', () => {
     const guide = createGuide(teacher, guideRequest('Guide progression PR-6'));
-    const session = createGuidedSession(teacher, {guide_id: guide.guide_id});
-    addGuidedSessionParticipant(teacher, session.session_id, student.id, 'participant');
+    const session = createGuidedSession(teacher, {
+      guide_id: guide.guide_id,
+      preview: true,
+      consent: {accepted: true},
+    });
+    addGuidedSessionParticipant(
+      teacher,
+      session.session_id,
+      student.id,
+      'participant',
+      {accepted: true},
+    );
 
     expect(() =>
       submitGuidedAnswer(outsider, session.session_id, {question_id: 'q-context', value: 'hors scope'}),
@@ -108,8 +160,18 @@ describe('PR-6 — service Guided Runtime prive', () => {
 
   it('conserve les contradictions au lieu d ecraser silencieusement', () => {
     const guide = createGuide(teacher, guideRequest('Guide contradiction PR-6'));
-    const session = createGuidedSession(teacher, {guide_id: guide.guide_id});
-    addGuidedSessionParticipant(teacher, session.session_id, student.id, 'participant');
+    const session = createGuidedSession(teacher, {
+      guide_id: guide.guide_id,
+      preview: true,
+      consent: {accepted: true},
+    });
+    addGuidedSessionParticipant(
+      teacher,
+      session.session_id,
+      student.id,
+      'participant',
+      {accepted: true},
+    );
 
     submitGuidedAnswer(teacher, session.session_id, {question_id: 'q-context', value: 'concours'});
     submitGuidedAnswer(student, session.session_id, {question_id: 'q-context', value: 'cours'});
@@ -122,9 +184,34 @@ describe('PR-6 — service Guided Runtime prive', () => {
     expect(after.current_question_id).toBe('q-context');
   });
 
+  it('refuse les valeurs incompatibles avec la question ou le schéma figé', () => {
+    const guide = createGuide(teacher, guideRequest('Guide validation PR-6'));
+    const session = createGuidedSession(teacher, {
+      guide_id: guide.guide_id,
+      preview: true,
+      consent: {accepted: true},
+    });
+    expect(() =>
+      submitGuidedAnswer(teacher, session.session_id, {
+        question_id: 'q-objectives',
+        value: 'pas un tableau',
+      }),
+    ).toThrow('guided_answer_invalid');
+    expect(() =>
+      submitGuidedAnswer(teacher, session.session_id, {
+        question_id: 'q-objectives',
+        value: ['option inconnue'],
+      }),
+    ).toThrow('guided_answer_invalid');
+  });
+
   it('complete une session privee sans effet externe une fois les champs requis remplis', () => {
     const guide = createGuide(teacher, guideRequest('Guide complete PR-6'));
-    const session = createGuidedSession(teacher, {guide_id: guide.guide_id});
+    const session = createGuidedSession(teacher, {
+      guide_id: guide.guide_id,
+      preview: true,
+      consent: {accepted: true},
+    });
 
     submitGuidedAnswer(teacher, session.session_id, {question_id: 'q-context', value: 'atelier prive'});
     submitGuidedAnswer(teacher, session.session_id, {question_id: 'q-objectives', value: ['clarifier']});

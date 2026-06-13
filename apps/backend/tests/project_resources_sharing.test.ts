@@ -37,6 +37,12 @@ beforeAll(async () => {
        VALUES ('pres-resource-1', 'doc', 'Ressource partagée', NULL, 'test', 'validated', '["maths"]', ?)`,
     )
     .run(now);
+  getDb()
+    .prepare(
+      `INSERT OR IGNORE INTO resources (id, type, title, url, source, status, subjects_json, created_at)
+       VALUES ('pres-resource-candidate', 'doc', 'Candidate', NULL, 'test', 'candidate', '[]', ?)`,
+    )
+    .run(now);
 });
 
 describe('partage de ressources par projet (multi-utilisateur)', () => {
@@ -91,5 +97,19 @@ describe('partage de ressources par projet (multi-utilisateur)', () => {
         created_at: Date.now(),
       }),
     ).toThrow('resource_not_found');
+  });
+
+  it('refuse de partager une candidate comme vérité projet', () => {
+    const project = createProject(owner, {name: 'Projet candidate refusée'});
+    expect(() =>
+      attachResourceScope(owner, {
+        resource_id: 'pres-resource-candidate',
+        scope_type: 'project',
+        scope_id: project.project_id,
+        access_level: 'read',
+        created_at: Date.now(),
+      }),
+    ).toThrow('resource_not_validated');
+    expect(listProjectResources(owner, project.project_id)).toEqual([]);
   });
 });

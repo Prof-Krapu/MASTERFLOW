@@ -56,6 +56,15 @@ beforeAll(async () => {
     `INSERT OR IGNORE INTO users (id, username, display_name, email, password_hash, role, active, created_at, updated_at)
      VALUES ('ua-other-god', 'other_god', 'Other God', NULL, 'x', 'admin', 1, ?, ?)`,
   ).run(Date.now(), Date.now());
+  const insertActor = db.prepare(
+    `INSERT OR IGNORE INTO users
+       (id, username, display_name, email, password_hash, role, active, created_at, updated_at)
+     VALUES (?, ?, ?, NULL, 'x', ?, 1, ?, ?)`,
+  );
+  const actorNow = Date.now();
+  insertActor.run(admin.id, admin.username, 'Admin', admin.role, actorNow, actorNow);
+  insertActor.run('s', 's', 'Student', 'student', actorNow, actorNow);
+  insertActor.run('t', 't', 'Teacher', 'teacher', actorNow, actorNow);
 
   const app = express();
   app.use(express.json());
@@ -130,9 +139,7 @@ describe('set_user_role — cycle de vie & garde-fous', () => {
   it('execute par admin même approuvé → failed (défense en profondeur)', () => {
     const flighted = makeRoleAction(god, targetId, 'admin');
     validateAction(god, flighted.id, {decision: 'approved'});
-    const result = executeAction(admin, flighted.id);
-    expect(result.status).toBe('failed');
-    expect(result.error).toMatch(/godmode/);
+    expect(() => executeAction(admin, flighted.id)).toThrow(/action_access_denied/);
   });
 
   it('changer son propre rôle → failed (garde-fou)', () => {

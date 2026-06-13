@@ -13,9 +13,7 @@ import {isSensitive} from './action_registry.ts';
  *    sensible mais signale `requires_validation`. La validation effective (passage
  *    en 'approved'/'rejected') reste le rôle de `validateAction`.
  *
- * Politique MVP volontairement permissive : tout utilisateur authentifié peut
- * créer une action ; le garde-fou pour les actions sensibles est la validation,
- * pas le refus de création.
+ * Une action absente du registre ou non `live` n'existe pas pour l'utilisateur.
  */
 
 /** Vrai si le rôle de l'utilisateur atteint au moins le rang `min`. */
@@ -41,13 +39,12 @@ export function validatorRoleFor(entry: ActionRegistryEntry | null): Role | null
  * (la décision elle-même passe par `validateAction`, jamais ici).
  */
 export function checkPermission(
-  user: AuthUser,
+  _user: AuthUser,
   entry: ActionRegistryEntry | null,
 ): {allowed: boolean; reason?: string} {
-  // Action hors registre ou non sensible : permissif en MVP.
-  if (!entry || !isSensitive(entry)) {
-    return {allowed: true};
-  }
+  if (!entry) return {allowed: false, reason: 'action_not_registered'};
+  if (entry.status !== 'live') return {allowed: false, reason: `action_not_live:${entry.status}`};
+  if (!isSensitive(entry)) return {allowed: true};
   // Action sensible : création autorisée, validation humaine requise ensuite.
   return {
     allowed: true,

@@ -63,6 +63,12 @@ export const ProjectMemberSchema = z.object({
 });
 export type ProjectMember = z.infer<typeof ProjectMemberSchema>;
 
+export const TransferProjectOwnershipSchema = z.object({
+  project_id: z.string().min(1),
+  new_owner_id: z.string().min(1),
+});
+export type TransferProjectOwnership = z.infer<typeof TransferProjectOwnershipSchema>;
+
 export const OwnershipEdgeSchema = z.object({
   edge_id: z.string().min(1),
   owner_type: z.enum(['user', 'project']),
@@ -293,8 +299,17 @@ export const CreateGuidedSessionRequestSchema = z.object({
   guide_id: z.string().min(1),
   room_id: z.string().min(1).nullable().optional(),
   expires_at: z.number().int().nonnegative().nullable().optional(),
+  preview: z.boolean().default(false),
+  consent: z.record(z.unknown()).default({}),
 });
 export type CreateGuidedSessionRequest = z.infer<typeof CreateGuidedSessionRequestSchema>;
+
+export const AddGuidedParticipantRequestSchema = z.object({
+  user_id: z.string().min(1),
+  role: z.enum(['facilitator', 'participant']).default('participant'),
+  consent: z.record(z.unknown()).default({}),
+});
+export type AddGuidedParticipantRequest = z.infer<typeof AddGuidedParticipantRequestSchema>;
 
 export const SubmitGuidedAnswerRequestSchema = z.object({
   question_id: z.string().min(1),
@@ -394,6 +409,7 @@ export const RoomSchema = z.object({
   name: z.string(),
   type: z.string(),
   owner_id: z.string().nullable(),
+  project_id: z.string().nullable().optional(),
   context: z.record(z.unknown()).nullable(),
   is_public: z.boolean(),
 });
@@ -492,6 +508,7 @@ export const CreateActionSchema = z.object({
   object_type: z.string().min(1),
   engine: z.string().optional(),
   room_id: z.string().optional(),
+  project_id: z.string().optional(),
   payload: z.record(z.unknown()).default({}),
 });
 export type CreateAction = z.infer<typeof CreateActionSchema>;
@@ -520,6 +537,8 @@ export const ActionSchema = z.object({
   registry_id: z.string().nullable(),
   intent: z.string(),
   object_type: z.string(),
+  user_id: z.string(),
+  project_id: z.string().nullable(),
   status: ActionStatusSchema,
   engine: z.string().nullable(),
   risk_level: RiskLevelSchema.nullable(),

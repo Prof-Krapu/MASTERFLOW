@@ -35,8 +35,15 @@ beforeAll(async () => {
     .prepare("SELECT id, username, role FROM users WHERE username = 'vincent'")
     .get() as {id: string; username: string; role: 'godmode'};
   godmodeToken = signToken({id: v.id, username: v.username, role: v.role});
-  // Rôles fabriqués : signToken signe n'importe quel rôle (jti frais, non révoqué) ;
-  // requireRole tranche sur le rôle du jeton, sans exiger de rangée user.
+  const insertUser = db.prepare(
+    `INSERT OR IGNORE INTO users
+       (id, username, display_name, password_hash, role, active, created_at, updated_at)
+     VALUES (?, ?, ?, 'x', ?, 1, ?, ?)`,
+  );
+  const actorNow = Date.now();
+  insertUser.run('test-admin', 'test-admin', 'Test Admin', 'admin', actorNow, actorNow);
+  insertUser.run('test-teacher', 'test-teacher', 'Test Teacher', 'teacher', actorNow, actorNow);
+  insertUser.run('test-student', 'test-student', 'Test Student', 'student', actorNow, actorNow);
   adminToken = signToken({id: 'test-admin', username: 'test-admin', role: 'admin'});
   teacherToken = signToken({id: 'test-teacher', username: 'test-teacher', role: 'teacher'});
   studentToken = signToken({id: 'test-student', username: 'test-student', role: 'student'});

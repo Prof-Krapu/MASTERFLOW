@@ -18,6 +18,7 @@ import {
   type GuidedQuestion,
   type GuidedSession,
   type GuidedSessionParticipant,
+  type SchemaTemplate,
   type SubmitGuidedAnswerRequest,
   type UpdateGuideRequest,
 } from '@masterflow/shared';
@@ -43,6 +44,10 @@ function assertTeacher(actor: AuthUser): void {
   if (ROLE_RANK[actor.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
 }
 
+function assertAdmin(actor: AuthUser): void {
+  if (!isAdmin(actor)) throw new Error('permission_denied');
+}
+
 function parseObject(raw: string | null): Record<string, unknown> {
   if (!raw) return {};
   const parsed = JSON.parse(raw) as unknown;
@@ -52,6 +57,79 @@ function parseObject(raw: string | null): Record<string, unknown> {
 
 function parseQuestions(raw: string): GuidedQuestion[] {
   return (JSON.parse(raw) as unknown[]).map((item) => GuidedQuestionSchema.parse(item));
+}
+
+function consentRequired(policy: Record<string, unknown>): boolean {
+  return policy['required'] === true;
+}
+
+function assertConsent(policy: Record<string, unknown>, consent: Record<string, unknown>): void {
+  if (consentRequired(policy) && consent['accepted'] !== true) {
+    throw new Error('guided_consent_required');
+  }
+}
+
+function guideFromSession(row: GuidedSessionRow): ConversationGuide {
+  if (row.guide_snapshot_json) {
+    return ConversationGuideSchema.parse(JSON.parse(row.guide_snapshot_json) as unknown);
+  }
+  const guideRow = getGuideRow(row.guide_id);
+  if (!guideRow) throw new Error('guided_guide_not_found');
+  return toGuide(guideRow);
+}
+
+function schemaFromSession(row: GuidedSessionRow): SchemaTemplate {
+  if (row.schema_snapshot_json) {
+    const parsed = JSON.parse(row.schema_snapshot_json) as SchemaTemplate;
+    return parsed;
+  }
+  return getSchemaTemplate(
+    {id: row.owner_id, username: 'session-owner', role: 'godmode'},
+    row.target_schema_id,
+  );
+}
+
+function validateQuestionValue(question: GuidedQuestion, value: unknown): void {
+  const invalid =
+    (question.kind === 'text' && typeof value !== 'string') ||
+    (question.kind === 'number' && (typeof value !== 'number' || !Number.isFinite(value))) ||
+    (question.kind === 'boolean' && typeof value !== 'boolean') ||
+    (question.kind === 'choice' &&
+      (typeof value !== 'string' || !question.options?.includes(value))) ||
+    (question.kind === 'multi_choice' &&
+      (!Array.isArray(value) ||
+        value.some((item) => typeof item !== 'string' || !question.options?.includes(item))));
+  if (invalid) throw new Error('guided_answer_invalid');
+}
+
+function validateSchemaValue(schema: Record<string, unknown>, field: string, value: unknown): void {
+  const properties = schema['properties'];
+  if (!properties || Array.isArray(properties) || typeof properties !== 'object') {
+    throw new Error('guided_target_schema_invalid');
+  }
+  const definition = (properties as Record<string, unknown>)[field];
+  if (!definition || Array.isArray(definition) || typeof definition !== 'object') {
+    throw new Error('guided_question_target_unknown');
+  }
+  const type = (definition as Record<string, unknown>)['type'];
+  const valid =
+    type === undefined ||
+    (type === 'string' && typeof value === 'string') ||
+    (type === 'number' && typeof value === 'number' && Number.isFinite(value)) ||
+    (type === 'integer' && typeof value === 'number' && Number.isInteger(value)) ||
+    (type === 'boolean' && typeof value === 'boolean') ||
+    (type === 'array' && Array.isArray(value)) ||
+    (type === 'object' && value !== null && !Array.isArray(value) && typeof value === 'object');
+  if (!valid) throw new Error('guided_answer_schema_invalid');
+}
+
+function validateStructuredRecord(template: SchemaTemplate, record: Record<string, unknown>): void {
+  for (const field of template.required_fields) {
+    if (!(field in record)) throw new Error('guided_session_incomplete');
+  }
+  for (const [field, value] of Object.entries(record)) {
+    validateSchemaValue(template.schema_json, field, value);
+  }
 }
 
 function toGuide(row: ConversationGuideRow): ConversationGuide {
@@ -258,9 +336,7 @@ function firstMissingQuestion(guide: ConversationGuide, progress: GuidedProgress
 function refreshSessionState(sessionId: string): GuidedSession {
   const row = getSessionRow(sessionId);
   if (!row) throw new Error('guided_session_not_found');
-  const guideRow = getGuideRow(row.guide_id);
-  if (!guideRow) throw new Error('guided_guide_not_found');
-  const guide = toGuide(guideRow);
+  const guide = guideFromSession(row);
   const contributions = getContributions(sessionId);
   const {progress, structuredRecord} = computeProgress(guide, contributions);
   const now = Date.now();
@@ -391,10 +467,37 @@ export function updateGuide(actor: AuthUser, guideId: string, input: UpdateGuide
   return getGuide(actor, guideId);
 }
 
+export function validateGuide(actor: AuthUser, guideId: string): ConversationGuide {
+  assertAdmin(actor);
+  const row = getGuideRow(guideId);
+  if (!row) throw new Error('guided_guide_not_found');
+  if (row.status === 'archived') throw new Error('guided_guide_not_editable');
+  const template = getSchemaTemplate(actor, row.target_schema_id);
+  if (template.status !== 'validated') throw new Error('guided_source_not_validated');
+  getDb()
+    .prepare("UPDATE conversation_guides SET status = 'validated', updated_at = ? WHERE id = ?")
+    .run(Date.now(), guideId);
+  audit({
+    event_type: 'guided.guide_validated',
+    user_id: actor.id,
+    scope: guideId,
+    detail: {guide_id: guideId, version: row.version, target_schema_version: row.target_schema_version},
+  });
+  return getGuide(actor, guideId);
+}
+
 export function createGuidedSession(actor: AuthUser, input: CreateGuidedSessionRequest): GuidedSession {
   assertTeacher(actor);
   const request = CreateGuidedSessionRequestSchema.parse(input);
   const guide = getGuide(actor, request.guide_id);
+  const template = getSchemaTemplate(actor, guide.target_schema_id);
+  if (!request.preview && (guide.status !== 'validated' || template.status !== 'validated')) {
+    throw new Error('guided_source_not_validated');
+  }
+  if (request.preview && guide.owner_id !== actor.id && !isAdmin(actor)) {
+    throw new Error('guided_preview_owner_required');
+  }
+  assertConsent(guide.consent_policy, request.consent);
   const now = Date.now();
   const empty = computeProgress(guide, []);
   const sessionId = uuid();
@@ -402,9 +505,10 @@ export function createGuidedSession(actor: AuthUser, input: CreateGuidedSessionR
     .prepare(
       `INSERT INTO guided_sessions
          (id, guide_id, guide_version, owner_id, project_id, room_id, access_mode, status,
-          current_question_id, target_schema_id, target_schema_version, progress_json,
-          structured_record_json, expires_at, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, 'private', 'active', ?, ?, ?, ?, '{}', ?, ?, ?)`,
+          current_question_id, target_schema_id, target_schema_version, guide_snapshot_json,
+          schema_snapshot_json, consent_policy_json, progress_json, structured_record_json,
+          expires_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, 'private', 'active', ?, ?, ?, ?, ?, ?, ?, '{}', ?, ?, ?)`,
     )
     .run(
       sessionId,
@@ -416,12 +520,15 @@ export function createGuidedSession(actor: AuthUser, input: CreateGuidedSessionR
       firstMissingQuestion(guide, empty.progress),
       guide.target_schema_id,
       guide.target_schema_version,
+      JSON.stringify(guide),
+      JSON.stringify(template),
+      JSON.stringify(guide.consent_policy),
       JSON.stringify(empty.progress),
       request.expires_at ?? null,
       now,
       now,
     );
-  addGuidedSessionParticipant(actor, sessionId, actor.id, 'owner');
+  addGuidedSessionParticipant(actor, sessionId, actor.id, 'owner', request.consent);
   audit({
     event_type: 'guided.session_created',
     user_id: actor.id,
@@ -436,20 +543,28 @@ export function addGuidedSessionParticipant(
   sessionId: string,
   userId: string,
   role: 'facilitator' | 'participant' | 'owner' = 'participant',
+  consent: Record<string, unknown> = {},
 ): GuidedSessionParticipant {
   const row = getSessionRow(sessionId);
   if (!row || !canManageSession(actor, row)) throw new Error('guided_session_not_found');
   const user = getDb().prepare('SELECT id FROM users WHERE id = ?').get(userId) as {id: string} | undefined;
   if (!user) throw new Error('guided_participant_not_found');
+  if (row.project_id) {
+    const allowed = decideScopedPermission({actor: {id: userId, username: 'participant', role: 'student'}, projectId: row.project_id}).allowed;
+    if (!allowed) throw new Error('guided_participant_scope_denied');
+  }
+  const policy = parseObject(row.consent_policy_json);
+  assertConsent(policy, consent);
   const now = Date.now();
   getDb()
     .prepare(
       `INSERT INTO guided_session_participants
          (session_id, user_id, guest_id, role, display_name, consent_json, joined_at, last_seen_at)
-       VALUES (?, ?, NULL, ?, NULL, '{}', ?, ?)
-       ON CONFLICT(session_id, user_id, guest_id) DO UPDATE SET role = excluded.role, last_seen_at = excluded.last_seen_at`,
+       VALUES (?, ?, NULL, ?, NULL, ?, ?, ?)
+       ON CONFLICT(session_id, user_id, guest_id) DO UPDATE SET
+         role = excluded.role, consent_json = excluded.consent_json, last_seen_at = excluded.last_seen_at`,
     )
-    .run(sessionId, userId, role, now, now);
+    .run(sessionId, userId, role, JSON.stringify(consent), now, now);
   audit({
     event_type: 'guided.participant_added',
     user_id: actor.id,
@@ -479,14 +594,16 @@ export function submitGuidedAnswer(
   const row = getSessionRow(sessionId);
   if (!row || !canReadSession(actor, row)) throw new Error('guided_session_not_found');
   assertSessionActive(row);
-  const guideRow = getGuideRow(row.guide_id);
-  if (!guideRow) throw new Error('guided_guide_not_found');
-  const guide = toGuide(guideRow);
+  const guide = guideFromSession(row);
+  const template = schemaFromSession(row);
   const request = SubmitGuidedAnswerRequestSchema.parse(input);
   const question = guide.question_flow.find((item) => item.question_id === request.question_id);
   if (!question) throw new Error('guided_question_not_found');
   const participant = getParticipantRow(sessionId, actor.id);
   if (!participant) throw new Error('guided_participant_required');
+  assertConsent(parseObject(row.consent_policy_json), parseObject(participant.consent_json));
+  validateQuestionValue(question, request.value);
+  validateSchemaValue(template.schema_json, question.target_field, request.value);
 
   const contributionId = uuid();
   const now = Date.now();
@@ -541,6 +658,7 @@ export function completeGuidedSession(actor: AuthUser, sessionId: string): Guide
   assertSessionActive(row);
   const session = refreshSessionState(sessionId);
   if (session.progress.missing_fields.length > 0) throw new Error('guided_session_incomplete');
+  validateStructuredRecord(schemaFromSession(row), session.structured_record);
   const now = Date.now();
   getDb()
     .prepare(

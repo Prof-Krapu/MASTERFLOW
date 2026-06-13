@@ -39,6 +39,10 @@ function routeError(res: Response, error: unknown): void {
     res.status(404).json({error: message});
     return;
   }
+  if (message === 'resource_not_validated') {
+    res.status(409).json({error: message});
+    return;
+  }
   res.status(500).json({error: 'project_error'});
 }
 

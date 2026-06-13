@@ -38,6 +38,11 @@ beforeAll(async () => {
      VALUES (?, 'inv_admin', 'Inv Admin', NULL, 'x', 'admin', 1, ?, ?)`,
   ).run(adminId, Date.now(), Date.now());
   adminToken = signToken({id: adminId, username: 'inv_admin', role: 'admin'});
+  db.prepare(
+    `INSERT OR IGNORE INTO users
+       (id, username, display_name, password_hash, role, active, created_at, updated_at)
+     VALUES ('s', 's', 'Student', 'x', 'student', 1, ?, ?)`,
+  ).run(Date.now(), Date.now());
 
   const app = express();
   app.use(express.json());
