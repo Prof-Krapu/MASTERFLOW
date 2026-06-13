@@ -66,6 +66,77 @@ OCR candidat, Inventory RAG, Rooms, MasterStory, UI et enfin BGE/Qdrant.
 
 ---
 
+## 2026-06-13 — Audit PR-4..9 + actions bornées traitées (agent_ouighour)
+
+`SYNC_PROOF` : `local_head = origin/main = e03b53b`, delta `0 0`. Constat : les 6 couches
+PR-4→PR-9 sont **déjà implémentées** par MALEX/Codex (tables + services + routes + tests, 81 tests
+au total). Les items inbox étaient des directives d'intégration pour Vincent, pas des TODO.
+
+### Livrés ce tour (signé agent_ouighour)
+
+- **`AUDIT_GAP_RAG_BGE_VS_PR7.md`** (PR-7, lecture seule) : écarts handoff BGE ↔ contrats PR-7.
+  Champs manquants signalés : `sensitivity`, statut chunk `quarantined`, entonnoir
+  `candidate_limit→result_limit`, `context_token_budget`, détection injection prompt (au-delà du
+  seul `SECRET_PATTERN`). Plan de raccord BGE/Qdrant borné : runner interne `:8091` jamais public,
+  branché sur `requestRagReindex` (embeddings) et `queryRag` (score), `revoke` supprime les points
+  Qdrant, score lexical conservé en fallback. **0 code.**
+- **`MAPPING_CANON_PROJECT_SCOPE_TEMPLATES.md`** (PR-4/PR-5, lecture seule) : table objet canon →
+  obligations `project_id` + `template_id+version`. PR-6 (`guided_sessions`) cité comme modèle à
+  reproduire (freeze `guide_version + target_schema_id + target_schema_version`). Proposition
+  `classe = project + membres`, mini-contrat `TemplateFrozenRef` factorisé. **0 code.**
+- **PR-9 observabilité active** (code borné, `services/jobs.ts`) : `recordWorkflowEvent` câblé sur
+  4 transitions du lifecycle jobs — `claimNextJob`→`workflow_started`,
+  `markJobNeedsReview`→`validation_requested`, `completeJob`→`workflow_completed`,
+  `failJob`→`workflow_failed` (blocker = erreur). Helper `emitJobWorkflowEvent` best-effort :
+  l'observabilité ne peut pas casser le cycle job ; aucun payload privé inscrit ; `job_events` et
+  `audit` inchangés ; 1 job = 1 workflow (`workflow_id = job.id`, `capability_id = workflow_type =
+  job.type`, `project_id` dérivé du scope). Nouveau test `jobs_workflow_observability.test.ts`.
+
+### Vérifs
+
+| Verif | Résultat |
+|---|---|
+| Backend `tsc --noEmit` | 0 erreur |
+| Backend vitest | **207/207** (44 fichiers) |
+| `git diff --check` | OK |
+
+### Reste `open`
+
+PR-6 (directive intégration MOTH/CDC future, non exécutée). Décisions MALEX attendues :
+champ `sensitivity` (impact contrat `shared`), `classe = project`, `TemplateFrozenRef` factorisé,
+route `GET /rag/stats` gated admin. **Gate** : aucun câblage BGE réel, migration, endpoint public
+ou changement de périmètre avant validation humaine MALEX.
+
+— agent_ouighour
+
+---
+
+## 2026-06-13 — RAG coordination : gate vérifié + décision raccord BGE/Qdrant
+
+Réponse de **agent_ouighour** à l'item inbox « RAG de coordination livré ». Lecture seule,
+aucun code modifié. `local_head = origin/main = c7c2426`, delta `0 0`.
+
+### Vérification du gate `POST /api/v1/rag/coordination/sync`
+
+- Montage correct : `index.ts:75` routeur RAG à la racine `/api/v1`, chemin complet
+  `/api/v1/rag/coordination/sync`.
+- `requireUser` au niveau routeur → 401 sans token ; `assertAdmin` dans le handler
+  (`syncCoordinationRagResources`) → 403 pour teacher/student, OK admin/godmode.
+- Test `rag_router.test.ts` : student → 403, admin → 200.
+- Pas de piège gate-ordering : le gate admin est dans le handler, pas en `router.use` sans path
+  (contrairement au bug corrigé sur `diagnostics`/`admin`). Aucune fuite vers les routeurs traversants.
+
+### Décision
+
+Raccord embeddings réels **BGE-M3 + Qdrant** sur le shell RAG existant via **PR-7** : travail
+séparé, gated admin/godmode. Le scoring lexical reste fallback ; BGE remplace le `embedding_ref`
+NULL et le score, sans modifier les permissions, Resource Truth ou le cycle preflight/validation.
+L'auto-sync post-pull est différée — priorité au runner embeddings cité.
+
+— agent_ouighour
+
+---
+
 ## 2026-06-13 — RAG de coordination Git/inbox — LIVRÉ
 
 **Livrable MALEX/Codex.** Première exploitation concrète du RAG permissionné pour accélérer la
