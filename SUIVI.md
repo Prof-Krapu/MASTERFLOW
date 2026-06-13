@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-2 : écriture global_settings via action sensible — LIVRÉE + intégrée sur `main`
+
+**GO Vincent reçu 2026-06-13.** Merge fast-forward `main` `1b08b38` → `7b32573`.
+
+### Livré (`claude/pr2-settings-action`, commits `92741ae` + `7b32573`)
+- **`packages/shared/src/index.ts`** : `validator_role?: Role` additif dans `ActionRegistryEntrySchema`
+  (rétro-compatible ; entrées existantes inchangées) + `SetGlobalSettingSchema {app, key, value}`.
+- **`seeds/action_registry_seed.v1.json`** : entrée `set_global_setting` (medium_high, preflight+validation,
+  `validator_role: admin`, `ui_surface: admin_settings_cockpit`, `status: live`).
+- **`engines/permission_runtime.ts`** : `validatorRoleFor` lit `entry.validator_role ?? 'teacher'` — généralise
+  sans casser l'existant (`approve_validation_item` reste `teacher`).
+- **`engines/settings.ts`** (nouveau) : allowlist `ADMIN_CONTROLLED_KEYS` (`llm::provider/model/base_url/temperature`,
+  `app::maintenance_mode/max_tokens_per_request`), exécuteur `executeSetGlobalSetting` (assert `role ≥ admin` en
+  défense en profondeur, validation payload, vérif allowlist, UPSERT `global_settings`, retour diff
+  `{previous, new}`), map `ACTION_EXECUTORS`.
+- **`engines/action_engine.ts`** : dispatcher `ACTION_EXECUTORS` par `registry_id` (défaut = mock MVP conservé) +
+  try/catch → `status: failed` + audit `execute_refused` si l'exécuteur lève.
+- **`tests/settings_action.test.ts`** (nouveau) : 6 cas couverts.
+
+### Tests `vitest` 37/37 ✓ · `tsc --noEmit` ✓ · `vite build` ✓ (32 modules)
+
+### Invariants tenus
+- Aucune action sensible sans validation humaine explicite (`pending_validation` obligatoire ; `execute` refuse ≠ `approved`).
+- Écriture settings = action sensible, gate double : validation admin + assert admin à l'exécution.
+- Secrets jamais en BDD ; `global_settings` = config non-secrète uniquement.
+- Contrat additif rétro-compatible.
+
+---
+
 ## 2026-06-12 — Spec détaillée des 2 PRs prioritaires (audit-only)
 
 **Périmètre.** Spec des 2 features resserrées (suivi token, écriture settings admin), ancrée sur le code réel
