@@ -381,6 +381,51 @@ function migrate(d: Database.Database): void {
       CHECK (status IN ('draft','rejected') OR validation_ref IS NOT NULL)
     );
 
+    -- ───────────────────────── Pré-correction explicable PR-C3 ─────────────
+    -- Sorties candidates uniquement : aucune note finale ni validation implicite.
+    CREATE TABLE IF NOT EXISTS pre_correction_runs (
+      id                    TEXT PRIMARY KEY,
+      manifest_id           TEXT NOT NULL REFERENCES pre_correction_manifests(id),
+      batch_id              TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      submission_id         TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
+      owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope         TEXT NOT NULL,
+      rubric_version_id     TEXT NOT NULL REFERENCES rubric_versions(id),
+      grading_profile_id    TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
+      analysis_type         TEXT NOT NULL
+                              CHECK (analysis_type IN (
+                                'ocr_structured','rubric_scoring','creative_structure',
+                                'portfolio_review','mixed'
+                              )),
+      evidence_snapshot_ref TEXT NOT NULL,
+      method_version        TEXT NOT NULL,
+      model_profile_ref     TEXT REFERENCES task_model_profiles(id),
+      criterion_score_refs_json TEXT NOT NULL,
+      review_reasons_json   TEXT NOT NULL DEFAULT '[]',
+      status                TEXT NOT NULL DEFAULT 'needs_review'
+                              CHECK (status = 'needs_review'),
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS criterion_score_drafts (
+      id                TEXT PRIMARY KEY,
+      run_id            TEXT NOT NULL REFERENCES pre_correction_runs(id) ON DELETE CASCADE,
+      submission_id     TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
+      rubric_version_id TEXT NOT NULL REFERENCES rubric_versions(id),
+      criterion_id      TEXT NOT NULL,
+      draft_score       REAL NOT NULL CHECK (draft_score >= 0),
+      max_points        REAL NOT NULL CHECK (max_points > 0),
+      evidence_refs_json TEXT NOT NULL,
+      confidence        REAL NOT NULL CHECK (confidence BETWEEN 0 AND 1),
+      comment_ref       TEXT,
+      status            TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (status IN ('candidate','rejected','superseded')),
+      created_at        INTEGER NOT NULL,
+      CHECK (draft_score <= max_points),
+      UNIQUE(run_id, criterion_id)
+    );
+
     -- ───────────────────────── Jobs / queues PR-C2 ────────────────────────
     CREATE TABLE IF NOT EXISTS jobs (
       id            TEXT PRIMARY KEY,
@@ -460,6 +505,12 @@ function migrate(d: Database.Database): void {
       ON submissions(batch_id, status);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_batch
       ON pre_correction_manifests(batch_id, status);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_owner
+      ON pre_correction_runs(owner_id, project_scope, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_submission
+      ON pre_correction_runs(submission_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_criterion_score_drafts_run
+      ON criterion_score_drafts(run_id, criterion_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_owner_status
       ON jobs(owner_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_jobs_scope
@@ -633,6 +684,41 @@ export interface TaskModelProfileRow {
   created_at: number;
   updated_at: number;
   updated_by: string | null;
+}
+
+export interface PreCorrectionRunRow {
+  id: string;
+  manifest_id: string;
+  batch_id: string;
+  submission_id: string;
+  owner_id: string;
+  project_scope: string;
+  rubric_version_id: string;
+  grading_profile_id: string;
+  analysis_type: string;
+  evidence_snapshot_ref: string;
+  method_version: string;
+  model_profile_ref: string | null;
+  criterion_score_refs_json: string;
+  review_reasons_json: string;
+  status: 'needs_review';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CriterionScoreDraftRow {
+  id: string;
+  run_id: string;
+  submission_id: string;
+  rubric_version_id: string;
+  criterion_id: string;
+  draft_score: number;
+  max_points: number;
+  evidence_refs_json: string;
+  confidence: number;
+  comment_ref: string | null;
+  status: 'candidate' | 'rejected' | 'superseded';
+  created_at: number;
 }
 
 export interface JobRow {

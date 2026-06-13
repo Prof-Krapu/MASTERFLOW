@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C3 pré-correction explicable
+
+**Livrable MALEX/Codex.** Fondation interne du scoring brouillon par critère, sans runner ni
+note finale.
+
+Ajouts :
+
+- `SPEC_PR_C3_PRE_CORRECTION_EXPLICABLE.md` ;
+- contrats `PreCorrectionRunDraft` et `CriterionScoreDraft` stricts ;
+- tables `pre_correction_runs` et `criterion_score_drafts` ;
+- dépôt interne `recordPreCorrectionDraft` sans route publique ;
+- alignement obligatoire manifest/batch/copie/rubrique/profil/owner/scope ;
+- manifest et rubrique validés avant écriture ;
+- couverture exacte des critères de la rubrique ;
+- preuves utilisables et confiance bornée pour chaque proposition ;
+- éventuel profil modèle validé pour `criterion_analysis` ;
+- sortie forcée en `needs_review`, scores forcés en `candidate` ;
+- audit sans contenu pédagogique sensible.
+
+Aucun total, `final_score`, calibration, feedback, validation professeur, export ou règle de
+sujet codée en dur n'est livré. Vincent doit comparer ce contrat à son `scoring_trace` réel et
+signaler les métadonnées de provenance manquantes avant tout raccord runner.
+
+---
+
 ## 2026-06-13 — PR-C2 ingestion OCR et jobs shell
 
 **Livrable MALEX/Codex.** Fondation observable pour les traitements OCR longs, sans runner réel.

@@ -596,6 +596,74 @@ export const PreCorrectionManifestSchema = z
   );
 export type PreCorrectionManifest = z.infer<typeof PreCorrectionManifestSchema>;
 
+// ───────────────────────── Pré-correction explicable PR-C3 ─────────────────────────
+
+export const PreCorrectionAnalysisTypeSchema = z.enum([
+  'ocr_structured',
+  'rubric_scoring',
+  'creative_structure',
+  'portfolio_review',
+  'mixed',
+]);
+export type PreCorrectionAnalysisType = z.infer<typeof PreCorrectionAnalysisTypeSchema>;
+
+/**
+ * Proposition de score strictement bornée à un critère.
+ *
+ * Ce contrat ne possède volontairement ni note finale, ni statut validé :
+ * une proposition reste candidate jusqu'à la décision distincte du professeur.
+ */
+export const CriterionScoreDraftSchema = z
+  .object({
+    draft_id: z.string().min(1),
+    run_id: z.string().min(1),
+    submission_id: z.string().min(1),
+    rubric_version_id: z.string().min(1),
+    criterion_id: z.string().min(1),
+    draft_score: z.number().nonnegative(),
+    max_points: z.number().positive(),
+    evidence_refs: z.array(z.string().min(1)).min(1),
+    confidence: z.number().min(0).max(1),
+    comment_ref: z.string().min(1).nullable(),
+    status: z.enum(['candidate', 'rejected', 'superseded']),
+    created_at: z.number().int().nonnegative(),
+  })
+  .strict()
+  .refine((draft) => draft.draft_score <= draft.max_points, {
+    message: 'Un score brouillon ne peut pas dépasser le maximum du critère.',
+    path: ['draft_score'],
+  });
+export type CriterionScoreDraft = z.infer<typeof CriterionScoreDraftSchema>;
+
+/**
+ * Enveloppe d'une analyse de pré-correction.
+ *
+ * Le run aboutit toujours en review humaine. Les scores restent dans les
+ * CriterionScoreDraft référencés et ne sont jamais agrégés en note finale ici.
+ */
+export const PreCorrectionRunDraftSchema = z
+  .object({
+    run_id: z.string().min(1),
+    manifest_id: z.string().min(1),
+    batch_id: z.string().min(1),
+    submission_id: z.string().min(1),
+    owner_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    rubric_version_id: z.string().min(1),
+    grading_profile_id: z.string().min(1),
+    analysis_type: PreCorrectionAnalysisTypeSchema,
+    evidence_snapshot_ref: z.string().min(1),
+    method_version: z.string().min(1),
+    model_profile_ref: z.string().min(1).nullable(),
+    criterion_score_refs: z.array(z.string().min(1)).min(1),
+    review_reasons: z.array(z.string().min(1)),
+    status: z.literal('needs_review'),
+    created_at: z.number().int().nonnegative(),
+    updated_at: z.number().int().nonnegative(),
+  })
+  .strict();
+export type PreCorrectionRunDraft = z.infer<typeof PreCorrectionRunDraftSchema>;
+
 // ───────────────────────── Jobs / ingestion OCR PR-C2 ─────────────────────────
 
 export const JobStatusSchema = z.enum([

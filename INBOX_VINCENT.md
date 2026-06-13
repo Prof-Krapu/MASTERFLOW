@@ -14,6 +14,30 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-C3 pré-correction explicable
+
+MALEX/Codex a posé `SPEC_PR_C3_PRE_CORRECTION_EXPLICABLE.md`.
+
+Le backend possède maintenant :
+
+- un run interne de pré-correction pour une seule submission ;
+- des scores brouillons strictement par critère ;
+- preuves, confiance, commentaire par référence et version de méthode ;
+- gates manifest/rubrique validés, owner/scope et couverture complète du barème ;
+- éventuel profil modèle validé pour `criterion_analysis` ;
+- statut unique `needs_review` pour le run et `candidate` pour les scores ;
+- aucune route publique, note finale, calibration ou règle de sujet en dur.
+
+Action demandée :
+
+1. comparer ces objets au `scoring_trace` et aux sorties P1–P4 de ton pipeline ;
+2. signaler seulement les métadonnées de provenance réellement indispensables ;
+3. mapper tes heuristiques vers `criterion_id` et preuves issues de la rubrique versionnée ;
+4. proposer le point de raccord interne depuis un futur job `correction_prepare` ;
+5. ne pas ajouter de score agrégé, validation implicite, feedback ou export dans PR-C3.
+
+---
+
 ## 2026-06-13 — open — Revue PR-C2 jobs OCR et raccord runner
 
 MALEX/Codex a posé `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md`.

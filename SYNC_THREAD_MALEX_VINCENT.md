@@ -23,6 +23,18 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C3 pré-correction explicable prête
+
+La couche `SPEC_PR_C3_PRE_CORRECTION_EXPLICABLE.md` persiste maintenant un scoring brouillon
+strictement par critère, avec preuves, confiance et version de méthode. Elle exige manifest et
+rubrique validés, aligne tous les scopes et termine exclusivement en `needs_review`.
+
+Merci de comparer ce contrat à ton `scoring_trace` P1–P4 et de proposer uniquement le raccord
+runner minimal. Aucun total final, calibration, feedback ou endpoint public ne doit entrer dans
+cette tranche.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C2 jobs OCR prête
 
 Le shell jobs OCR est livré dans `SPEC_PR_C2_OCR_INGESTION_AND_JOBS_SHELL.md`.
