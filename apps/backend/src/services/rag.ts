@@ -5,6 +5,7 @@ import {dirname, join} from 'node:path';
 import {
   ROLE_RANK,
   RagContextPackSchema,
+  RagContextFiltersSchema,
   RagQueryRequestSchema,
   RagQueryResponseSchema,
   RagResourceChunkSchema,
@@ -13,6 +14,7 @@ import {
   type Job,
   type RagCitation,
   type RagContextPack,
+  type RagContextFilters,
   type RagQueryRequest,
   type RagQueryResponse,
   type RagResource,
@@ -37,6 +39,8 @@ import type {RoomRow} from '../db/schema.ts';
 
 const SECRET_PATTERN =
   /(\.env|api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization|begin [a-z ]*private key)/i;
+const PROMPT_INJECTION_PATTERN =
+  /(ignore (all )?(previous|prior)|system prompt|developer message|jailbreak|bypass|reveal (the )?prompt|affiche (le )?prompt|oublie (les )?instructions)/i;
 const PACK_TTL_MS = 15 * 60 * 1000;
 const COORDINATION_DOCS = [
   {id: 'coordination-suivi', path: 'SUIVI.md', title: 'SUIVI MasterFlow'},
@@ -109,6 +113,7 @@ function toPack(row: RagContextPackRow): RagContextPack {
     scope_type: row.scope_type,
     scope_id: row.scope_id,
     citations: JSON.parse(row.citations_json) as unknown,
+    filters: RagContextFiltersSchema.parse(JSON.parse(row.filters_json || '{}') as unknown),
     status: row.status,
     refusal_reason: row.refusal_reason,
     created_at: row.created_at,
@@ -195,6 +200,30 @@ function scoreExcerpt(terms: string[], excerpt: string): number {
   return hits / terms.length;
 }
 
+function filtersFromRequest(request: RagQueryRequest): RagContextFilters {
+  return RagContextFiltersSchema.parse({
+    active_app: request.active_app ?? null,
+    zoom_level: request.zoom_level ?? null,
+    entity_refs: request.entity_refs ?? [],
+    allowed_statuses: request.allowed_statuses ?? ['validated'],
+    spoiler_policy: request.spoiler_policy ?? 'none',
+    context_token_budget: request.context_token_budget ?? 4000,
+    sensitivity: request.sensitivity ?? 'private',
+  });
+}
+
+function applyContextBudget(citations: RagCitation[], tokenBudget: number): RagCitation[] {
+  let used = 0;
+  const selected: RagCitation[] = [];
+  for (const citation of citations) {
+    const estimated = Math.max(1, Math.ceil(citation.excerpt.length / 4));
+    if (used + estimated > tokenBudget && selected.length > 0) break;
+    selected.push(citation);
+    used += estimated;
+  }
+  return selected;
+}
+
 function recordQuery(input: {
   actor: AuthUser;
   queryHash: string;
@@ -243,10 +272,16 @@ function createPack(input: {
   scopeType: 'owner' | 'project';
   scopeId: string;
   citations: RagCitation[];
-  refusalReason: 'no_authorized_source' | 'no_reliable_source' | 'scope_denied' | null;
+  refusalReason:
+    | 'no_authorized_source'
+    | 'no_reliable_source'
+    | 'scope_denied'
+    | 'unsafe_query'
+    | null;
   purpose: string;
   roomInstanceId: string | null;
   contextTier: RagContextPack['context_tier'];
+  filters: RagContextFilters;
 }): RagContextPack {
   const now = Date.now();
   const id = uuid();
@@ -254,9 +289,9 @@ function createPack(input: {
     .prepare(
       `INSERT INTO rag_context_packs
          (id, query_hash, user_id, purpose, room_instance_id, context_tier,
-          retrieval_strategy, scope_type, scope_id, citations_json, status,
+          retrieval_strategy, scope_type, scope_id, citations_json, filters_json, status,
           refusal_reason, created_at, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, 'lexical', ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, 'lexical', ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       id,
@@ -268,6 +303,7 @@ function createPack(input: {
       input.scopeType,
       input.scopeId,
       JSON.stringify(input.citations),
+      JSON.stringify(input.filters),
       input.refusalReason ? 'refused' : 'active',
       input.refusalReason,
       now,
@@ -510,6 +546,7 @@ export function queryRag(
   input: Pick<RagQueryRequest, 'query'> & Partial<Omit<RagQueryRequest, 'query'>>,
 ): RagQueryResponse {
   const request = RagQueryRequestSchema.parse(input);
+  const filters = filtersFromRequest(request);
   const queryHash = hash(request.query.trim().toLocaleLowerCase('fr'));
   const instance = request.room_instance_id
     ? getOwnedAccessibleRoomInstance(actor, request.room_instance_id)
@@ -523,6 +560,32 @@ export function queryRag(
   const effectiveProjectId = request.project_id ?? null;
   const scopeType = effectiveProjectId ? 'project' : 'owner';
   const scopeId = effectiveProjectId ?? actor.id;
+
+  if (PROMPT_INJECTION_PATTERN.test(request.query)) {
+    const contextPack = createPack({
+      actor,
+      queryHash,
+      scopeType,
+      scopeId,
+      citations: [],
+      refusalReason: 'unsafe_query',
+      purpose: request.purpose,
+      roomInstanceId: request.room_instance_id ?? null,
+      contextTier: request.context_tier,
+      filters,
+    });
+    recordQuery({
+      actor,
+      queryHash,
+      scopeType,
+      scopeId,
+      resultCount: 0,
+      refusalReason: 'unsafe_query',
+      purpose: request.purpose,
+      roomInstanceId: request.room_instance_id ?? null,
+    });
+    return RagQueryResponseSchema.parse({context_pack: contextPack, refusal_reason: 'unsafe_query'});
+  }
 
   if (
     roomScopeMismatch ||
@@ -539,6 +602,7 @@ export function queryRag(
       purpose: request.purpose,
       roomInstanceId: request.room_instance_id ?? null,
       contextTier: request.context_tier,
+      filters,
     });
     recordQuery({
       actor,
@@ -553,9 +617,11 @@ export function queryRag(
     return RagQueryResponseSchema.parse({context_pack: contextPack, refusal_reason: 'scope_denied'});
   }
 
-  const rows = getDb()
-    .prepare(
-      `SELECT c.*, r.title, r.source_uri, r.status AS resource_status,
+  const canReadValidatedSources = filters.allowed_statuses.includes('validated');
+  const rows = canReadValidatedSources
+    ? (getDb()
+        .prepare(
+          `SELECT c.*, r.title, r.source_uri, r.status AS resource_status,
               r.trust_status, r.scope_type, r.scope_id
        FROM rag_resource_chunks c
        INNER JOIN rag_resources r ON r.id = c.resource_id
@@ -565,19 +631,20 @@ export function queryRag(
          AND r.revoked_at IS NULL
          AND r.indexed_at IS NOT NULL
          AND c.status = 'active'`,
-    )
-    .all(scopeType, scopeId) as Array<
-    RagResourceChunkRow & {
-      title: string;
-      source_uri: string;
-      resource_status: RagResourceRow['status'];
-      trust_status: RagResourceRow['trust_status'];
-      scope_type: RagResourceRow['scope_type'];
-      scope_id: string;
-    }
-  >;
+        )
+        .all(scopeType, scopeId) as Array<
+        RagResourceChunkRow & {
+          title: string;
+          source_uri: string;
+          resource_status: RagResourceRow['status'];
+          trust_status: RagResourceRow['trust_status'];
+          scope_type: RagResourceRow['scope_type'];
+          scope_id: string;
+        }
+      >)
+    : [];
   const terms = queryTerms(request.query);
-  const citations = rows
+  const scoredCitations = rows
     .map((row) => ({row, score: scoreExcerpt(terms, row.content_excerpt)}))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score)
@@ -594,6 +661,7 @@ export function queryRag(
       score,
       excerpt: row.content_excerpt.slice(0, 500),
     })) satisfies RagCitation[];
+  const citations = applyContextBudget(scoredCitations, filters.context_token_budget);
   const refusalReason = citations.length === 0 ? 'no_reliable_source' : null;
   const contextPack = createPack({
     actor,
@@ -605,6 +673,7 @@ export function queryRag(
     purpose: request.purpose,
     roomInstanceId: request.room_instance_id ?? null,
     contextTier: request.context_tier,
+    filters,
   });
   recordQuery({
     actor,

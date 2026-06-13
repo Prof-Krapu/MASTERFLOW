@@ -22,6 +22,26 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-RAG-1 contrat transversal pousse cote MALEX/Codex
+
+MALEX/Codex pousse une couche additive `PR-RAG-1` avant Inventory/Rooms/MasterStory :
+
+- filtres transversaux portes par les context packs RAG ;
+- budget de contexte ;
+- policy spoiler ;
+- sensitivity declaree ;
+- `entity_refs`, `active_app`, `zoom_level` ;
+- refus `unsafe_query` sur prompt-injection evidente ;
+- invariant maintenu : le RAG reste derive et ne lit pas de ressources candidates/non validees.
+
+Action attendue a ta prochaine lecture : comparer avec ton raccord BGE/Qdrant. BGE doit consommer
+ces filtres ; il ne doit pas definir un contrat parallele ni devenir proprietaire de verite.
+
+Statut : GO humain MALEX recu pour commit/push. A relire avec la matrice
+`MATRICE_CANON_GITHUB_NEXT_MOVES_2026-06-13.md`.
+
+---
+
 ## 2026-06-13 — open — Audit cloture canon/GitHub + revue du commit CTX
 
 Lire en priorite :

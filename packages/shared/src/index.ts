@@ -1597,8 +1597,20 @@ export const RagRefusalReasonSchema = z.enum([
   'no_authorized_source',
   'no_reliable_source',
   'scope_denied',
+  'unsafe_query',
 ]);
 export type RagRefusalReason = z.infer<typeof RagRefusalReasonSchema>;
+
+export const RagContextFiltersSchema = z.object({
+  active_app: z.string().min(1).max(80).nullable().default(null),
+  zoom_level: z.string().min(1).max(80).nullable().default(null),
+  entity_refs: z.array(z.string().min(1).max(160)).max(40).default([]),
+  allowed_statuses: z.array(RagResourceStatusSchema).min(1).max(5).default(['validated']),
+  spoiler_policy: z.enum(['none', 'reader_safe', 'author_full']).default('none'),
+  context_token_budget: z.number().int().min(256).max(32000).default(4000),
+  sensitivity: z.enum(['public', 'internal', 'private', 'sensitive']).default('private'),
+});
+export type RagContextFilters = z.infer<typeof RagContextFiltersSchema>;
 
 export const RagContextPackSchema = z.object({
   pack_id: z.string().min(1),
@@ -1611,6 +1623,7 @@ export const RagContextPackSchema = z.object({
   scope_type: z.enum(['owner', 'project']),
   scope_id: z.string().min(1),
   citations: z.array(RagCitationSchema),
+  filters: RagContextFiltersSchema,
   status: z.enum(['active', 'refused', 'stale', 'expired']),
   refusal_reason: RagRefusalReasonSchema.nullable(),
   created_at: z.number().int().nonnegative(),
@@ -1633,6 +1646,13 @@ export const RagQueryRequestSchema = z.object({
   room_instance_id: z.string().min(1).nullable().optional(),
   purpose: z.string().min(1).max(120).default('context_retrieval'),
   context_tier: ContextTierSchema.default('T2'),
+  active_app: z.string().min(1).max(80).nullable().optional(),
+  zoom_level: z.string().min(1).max(80).nullable().optional(),
+  entity_refs: z.array(z.string().min(1).max(160)).max(40).optional(),
+  allowed_statuses: z.array(RagResourceStatusSchema).min(1).max(5).optional(),
+  spoiler_policy: z.enum(['none', 'reader_safe', 'author_full']).optional(),
+  context_token_budget: z.number().int().min(256).max(32000).optional(),
+  sensitivity: z.enum(['public', 'internal', 'private', 'sensitive']).optional(),
   limit: z.number().int().min(1).max(10).default(5),
 });
 export type RagQueryRequest = z.infer<typeof RagQueryRequestSchema>;

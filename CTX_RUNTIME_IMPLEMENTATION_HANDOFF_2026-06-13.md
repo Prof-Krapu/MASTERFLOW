@@ -1,6 +1,10 @@
 # CTX Runtime Implementation Handoff - 2026-06-13
 
-Statut : local, non committe, non pousse.
+Statut : pousse sur `codex/frontend-masterflow`, en attente de revue Vincent.
+
+Commit de reference : `875a7908e17359b31b14f57ddcde27efdada2b25`
+
+Commit de cloture sync/docs : `3bd1dcf43ca1520f64b7916e1eced1b1f90c2ec8`
 
 ## But
 
@@ -79,6 +83,16 @@ charger tout le canon, toute la memoire ou des catalogues globaux.
 - Frontend TypeScript : OK.
 - Frontend Vite build : OK.
 - `git diff --check` : OK.
+
+## Etat d'integration attendu
+
+Vincent doit comparer cette pile avec ses modules existants avant merge vers `main` :
+
+- conserver les objets de contexte comme proprietaires du runtime, pas BGE/Qdrant ;
+- signaler tout doublon avec ses services de memoire/contexte ;
+- proposer une integration courte, sans reconstruire `context_compiler`, `loadout`,
+  `room_checkpoints` ou `memory_cards` si les contrats conviennent ;
+- rebaser/merger seulement apres validation humaine MALEX.
 
 ## Run reel attendu
 

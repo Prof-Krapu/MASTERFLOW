@@ -4,6 +4,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-RAG-1 contrat transversal — PRET A PUSH
+
+**Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**
+
+But : stabiliser le RAG comme couche derivee commune avant Inventory, Rooms, MasterStory et
+BGE/Qdrant.
+
+Ajouts en cours :
+
+- `MATRICE_CANON_GITHUB_NEXT_MOVES_2026-06-13.md` : matrice Drive canon -> GitHub -> gap -> PR ;
+- correction du statut `CTX_RUNTIME_IMPLEMENTATION_HANDOFF_2026-06-13.md` : CTX est bien pousse
+  sur `codex/frontend-masterflow` et attend revue Vincent ;
+- contrat RAG additif : filtres transversaux (`active_app`, `zoom_level`, `entity_refs`,
+  `allowed_statuses`, `spoiler_policy`, `context_token_budget`, `sensitivity`) portes par les
+  context packs ;
+- refusal `unsafe_query` pour requetes de type prompt-injection ;
+- invariant conserve : meme si la requete demande des statuts candidats, le retrieval ne lit que
+  les ressources validees et verifiees.
+
+Recette avant commit : backend complet **233/233**, RAG cible **14/14**, backend/frontend
+TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-13 — Audit cloture canon/GitHub + sync CTX poussee
 
 **Livrable MALEX/Codex.** Correction du diagnostic de sync apres audit GitHub complet et

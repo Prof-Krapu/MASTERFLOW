@@ -325,13 +325,15 @@ function migrate(d: Database.Database): void {
       scope_type      TEXT NOT NULL CHECK (scope_type IN ('owner','project')),
       scope_id        TEXT NOT NULL,
       citations_json  TEXT NOT NULL,
+      filters_json    TEXT NOT NULL DEFAULT '{}',
       status          TEXT NOT NULL
                         CHECK (status IN ('active','refused','stale','expired')),
       refusal_reason  TEXT
                         CHECK (
                           refusal_reason IS NULL
                           OR refusal_reason IN (
-                            'no_authorized_source','no_reliable_source','scope_denied'
+                            'no_authorized_source','no_reliable_source','scope_denied',
+                            'unsafe_query'
                           )
                         ),
       created_at      INTEGER NOT NULL,
@@ -1029,6 +1031,7 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'rag_context_packs', 'room_instance_id', 'TEXT');
   ensureColumn(d, 'rag_context_packs', 'context_tier', "TEXT NOT NULL DEFAULT 'T2'");
   ensureColumn(d, 'rag_context_packs', 'retrieval_strategy', "TEXT NOT NULL DEFAULT 'lexical'");
+  ensureColumn(d, 'rag_context_packs', 'filters_json', "TEXT NOT NULL DEFAULT '{}'");
   ensureColumn(d, 'rag_query_events', 'purpose', "TEXT NOT NULL DEFAULT 'context_retrieval'");
   ensureColumn(d, 'rag_query_events', 'room_instance_id', 'TEXT');
   ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
@@ -1201,8 +1204,14 @@ export interface RagContextPackRow {
   scope_type: 'owner' | 'project';
   scope_id: string;
   citations_json: string;
+  filters_json: string;
   status: 'active' | 'refused' | 'stale' | 'expired';
-  refusal_reason: 'no_authorized_source' | 'no_reliable_source' | 'scope_denied' | null;
+  refusal_reason:
+    | 'no_authorized_source'
+    | 'no_reliable_source'
+    | 'scope_denied'
+    | 'unsafe_query'
+    | null;
   created_at: number;
   expires_at: number | null;
 }
