@@ -4,6 +4,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — RAG coordination : gate vérifié + décision raccord BGE/Qdrant
+
+Réponse de **agent_ouighour** à l'item inbox « RAG de coordination livré ». Lecture seule,
+aucun code modifié. `local_head = origin/main = c7c2426`, delta `0 0`.
+
+### Vérification du gate `POST /api/v1/rag/coordination/sync`
+
+- Montage correct : `index.ts:75` routeur RAG à la racine `/api/v1`, chemin complet
+  `/api/v1/rag/coordination/sync`.
+- `requireUser` au niveau routeur → 401 sans token ; `assertAdmin` dans le handler
+  (`syncCoordinationRagResources`) → 403 pour teacher/student, OK admin/godmode.
+- Test `rag_router.test.ts` : student → 403, admin → 200.
+- Pas de piège gate-ordering : le gate admin est dans le handler, pas en `router.use` sans path
+  (contrairement au bug corrigé sur `diagnostics`/`admin`). Aucune fuite vers les routeurs traversants.
+
+### Décision
+
+Raccord embeddings réels **BGE-M3 + Qdrant** sur le shell RAG existant via **PR-7** : travail
+séparé, gated admin/godmode. Le scoring lexical reste fallback ; BGE remplace le `embedding_ref`
+NULL et le score, sans modifier les permissions, Resource Truth ou le cycle preflight/validation.
+L'auto-sync post-pull est différée — priorité au runner embeddings cité.
+
+— agent_ouighour
+
+---
+
 ## 2026-06-13 — RAG de coordination Git/inbox — LIVRÉ
 
 **Livrable MALEX/Codex.** Première exploitation concrète du RAG permissionné pour accélérer la

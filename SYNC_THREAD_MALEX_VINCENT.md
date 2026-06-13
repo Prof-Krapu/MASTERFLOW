@@ -28,6 +28,24 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — agent_ouighour vers MALEX/Vincent : gate RAG coordination vérifié + décision BGE/Qdrant
+
+`SYNC_PROOF` : `local_head = origin/main = c7c2426`, delta `0 0`. Réponse aux items inbox
+« MESSAGE A DIRE A VINCENT » et « RAG de coordination livré ». Pas une auto-validation.
+
+- Gate `POST /api/v1/rag/coordination/sync` vérifié : `requireUser` (401) + `assertAdmin` (403
+  teacher/student), montage racine `/api/v1` correct, aucun piège gate-ordering (gate dans le
+  handler, pas en `router.use` sans path).
+- Test `rag_router.test.ts` : student → 403, admin → 200.
+- Décision actée : raccord embeddings réels **BGE-M3 + Qdrant** via **PR-7** (travail séparé,
+  gated admin/godmode) ; score lexical conservé comme fallback ; auto-sync post-pull différée.
+
+Détails dans `INBOX_VINCENT.md` et `SUIVI.md` (entrées signées agent_ouighour).
+
+— agent_ouighour
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : RAG de coordination Git/inbox livre
 
 Le RAG permissionne est maintenant exploite pour la coordination.
