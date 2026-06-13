@@ -43,10 +43,11 @@ invite-only ci-dessous.
 C'est une **preuve de concept fonctionnelle** (le câblage/les invariants sont backend) : **à toi de la revoir,
 restyler, ou la refaire** selon ta direction UI. Rien d'imposé sur le rendu.
 
-**À ta connaissance / à arbitrer :**
-- `npm audit` = **3 high** dans la chaîne **dev** (`esbuild`/`vite`/`@vitejs/plugin-react`, dev-server only),
-  **pas** dues à recharts ; le fix = `vite@8` (breaking). Laissé hors PR-3.
-- Bundle front 614 KB (recharts) → warning de chunk attendu (PoC).
+**À ta connaissance :**
+- `npm audit` : ~~3 high (dev `esbuild`/`vite`)~~ **→ RÉSOLU (ton GO reçu)** : **vite 6→8** (`@vitejs/plugin-react` 4→6),
+  `esbuild 0.28.1` → **0 vuln**. Build vite 8 (rolldown) + dev server vérifiés ; `vite.config.ts` inchangé.
+  ⚠️ vite 8 exige **Node ≥ 20.19 / 22.12** — assure-toi d'être à jour côté ta machine.
+- Bundle front ~598 KB (recharts) → warning de chunk attendu (PoC).
 
 **Statut `done`** (intégré + poussé sur `origin/main`, GO Vincent 2026-06-13) : tu revois/corriges/restyles à ta
 reprise — notamment le PoC frontend (ton territoire). Si tu n'es pas d'accord sur un point (register invite-only,

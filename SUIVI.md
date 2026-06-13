@@ -4,6 +4,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Durcissement sécu : vite 6→8 + esbuild 0.28.1 → `npm audit` 0 vuln — LIVRÉE + poussée (MALEX ok)
+
+**GO Malex + Vincent reçu.** Résout les 3 high dev-only laissées par PR-3 (advisories `esbuild` GHSA-gv7w-rqvm-qjhr
++ GHSA-g7r4-m6w7-qqqr, via la chaîne `vite`).
+
+### Livré
+- **`apps/frontend/package.json`** : `vite` `^6.0.0 → ^8.0.16`, `@vitejs/plugin-react` `^4.3.0 → ^6.0.2`
+  (peer vite ^8). Le `vite@6.4.3` du front (seule copie vulnérable) dédupe désormais sur `vite@8.0.16` —
+  comme vitest qui était déjà sur 8.
+- **`npm audit fix`** (non-`--force`) : `esbuild 0.28.0 → 0.28.1` (correctif), partagé tsx + vite. **0 vuln.**
+- Node 22.22.3 satisfait l'exigence vite 8 (`^20.19 || >=22.12`). `vite.config.ts` inchangé (n'utilise que
+  `server.{port,host,allowedHosts,proxy}` + `react()` — stables 6→8).
+
+### Vérifs
+`npm audit` **0 vuln** · `vitest` 55/55 ✓ · `tsc` front ✓ · `vite build` ✓ (rolldown, 305 ms ; bundle 598 KB,
+warning chunk recharts attendu) · **dev server vite 8 boote** (config OK, sert HTTP 200, `allowedHosts` accepté).
+
+### Gate
+Intégrée sur `main` + poussée sur `origin/main`. Aucun changement fonctionnel runtime (outil de build uniquement).
+
+---
+
 ## 2026-06-13 — PR-3 : admin API_manage (invitations + comptes/rôles) + monitoring usage/coût (API_corrector) — LIVRÉE + intégrée sur `main`
 
 **GO Vincent reçu 2026-06-13 : push `main` autorisé.** Merge fast-forward `main` `1bac470` → `cf5cfcb`, poussé sur
@@ -46,9 +68,8 @@ Smoke runtime (DB jetable) ✓ : login godmode, GET users, création/redemption 
 - Contrat additif rétro-compatible ; secrets hors BDD (inchangé).
 
 ### ⚠️ Points d'attention
-- **`npm audit` : 3 high** dans la chaîne **dev** `esbuild`/`vite`/`@vitejs/plugin-react` (dev-server only),
-  **non introduites par recharts** ; correctif = `vite@8` (breaking) → hors périmètre PR-3, à arbitrer.
-- Bundle front 614 KB (recharts) > 500 KB : warning de chunk attendu pour un PoC.
+- ~~`npm audit` : 3 high (chaîne dev `esbuild`/`vite`)~~ **→ RÉSOLU** (entrée 2026-06-13 vite 6→8 + esbuild 0.28.1, 0 vuln).
+- Bundle front ~598 KB (recharts) > 500 KB : warning de chunk attendu pour un PoC.
 
 ### Gate
 **Intégrée sur `main` + poussée sur `origin/main`** (GO Vincent 2026-06-13). MALEX prévenu via `INBOX_MALEX.md`
