@@ -498,6 +498,10 @@ dd {
   border-color: rgba(240, 195, 107, 0.38);
 }
 
+.rag-panel {
+  border-color: rgba(126, 183, 255, 0.34);
+}
+
 .project-panel {
   border-color: rgba(88, 193, 137, 0.34);
 }
@@ -622,6 +626,82 @@ dd {
 
 .validation-state--error {
   border-color: rgba(255, 143, 143, 0.48);
+}
+
+.rag-state {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 2px;
+  margin-bottom: 12px;
+  min-height: 58px;
+  padding: 10px 12px;
+}
+
+.rag-state strong {
+  color: var(--blue);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.rag-state span,
+.rag-state small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.rag-state--error {
+  border-color: rgba(255, 143, 143, 0.48);
+}
+
+.rag-state--refused {
+  border-color: rgba(240, 195, 107, 0.42);
+}
+
+.rag-actions {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.rag-form {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.rag-citations {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.rag-citation {
+  background: #12151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.rag-citation div {
+  display: grid;
+  gap: 2px;
+}
+
+.rag-citation span,
+.rag-citation small {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.rag-citation p {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .validation-list {
@@ -1074,7 +1154,9 @@ dd {
   }
 
   .project-grid,
-  .project-attach {
+  .project-attach,
+  .rag-actions,
+  .rag-form {
     grid-template-columns: 1fr;
   }
 

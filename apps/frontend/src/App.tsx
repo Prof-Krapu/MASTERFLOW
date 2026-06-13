@@ -10,6 +10,7 @@ import type {
   Project,
   ProjectMember,
   ProjectMemberRole,
+  RagContextPack,
   RegistryStatus,
   Resource,
   WsServerMessage,
@@ -30,7 +31,9 @@ import {
   login,
   preflightAction,
   proposeResource,
+  queryRag,
   setToken,
+  syncCoordinationRag,
   updateRoomInstance,
   validateAction,
   validateResource,
@@ -81,6 +84,11 @@ type ResourceProposalState = {
 type ProjectSyncState = {
   status: 'idle' | 'loading' | 'ready' | 'attaching' | 'synced' | 'error';
   message: string;
+};
+type RagSyncState = {
+  status: 'idle' | 'syncing' | 'querying' | 'ready' | 'refused' | 'error';
+  message: string;
+  pack?: RagContextPack;
 };
 type RoomSyncState = {
   status: 'idle' | 'syncing' | 'synced' | 'error';
@@ -200,6 +208,11 @@ function App(): ReactElement {
   const [projectSync, setProjectSync] = useState<ProjectSyncState>({
     status: 'idle',
     message: 'Aucun projet charge.',
+  });
+  const [ragQuestion, setRagQuestion] = useState('');
+  const [ragSync, setRagSync] = useState<RagSyncState>({
+    status: 'idle',
+    message: 'Memoire de coordination non interrogee.',
   });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -361,6 +374,8 @@ function App(): ReactElement {
     setProjectMembers([]);
     setProjectResources([]);
     setProjectResourceId('');
+    setRagQuestion('');
+    setRagSync({status: 'idle', message: 'Memoire de coordination non interrogee.'});
     setToken(null);
     setState('idle');
     setSelectedMode('home');
@@ -729,6 +744,51 @@ function App(): ReactElement {
       });
     }
   }, [auth, projectResourceId, refreshProjectSurface, selectedProjectId]);
+
+  const handleCoordinationSync = useCallback(async (): Promise<void> => {
+    if (!auth) return;
+
+    setRagSync({status: 'syncing', message: 'Indexation des fichiers de coordination.'});
+    try {
+      const response = await syncCoordinationRag(auth.token);
+      setRagSync({
+        status: 'ready',
+        message: `${response.results.length} source(s) de coordination synchronisee(s).`,
+      });
+    } catch (err) {
+      setRagSync({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Synchronisation RAG impossible.',
+      });
+    }
+  }, [auth]);
+
+  const handleCoordinationQuery = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();
+    if (!auth) return;
+    const query = ragQuestion.trim();
+    if (query.length < 2) {
+      setRagSync({status: 'error', message: 'Question trop courte.'});
+      return;
+    }
+
+    setRagSync({status: 'querying', message: 'Recherche dans la memoire de coordination.'});
+    try {
+      const response = await queryRag({query, limit: 6}, auth.token);
+      setRagSync({
+        status: response.refusal_reason ? 'refused' : 'ready',
+        message: response.refusal_reason
+          ? `Aucune source exploitable : ${response.refusal_reason}.`
+          : `${response.context_pack.citations.length} citation(s) trouvee(s).`,
+        pack: response.context_pack,
+      });
+    } catch (err) {
+      setRagSync({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Recherche RAG impossible.',
+      });
+    }
+  }, [auth, ragQuestion]);
 
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
@@ -1323,6 +1383,58 @@ function App(): ReactElement {
                   <p className="muted compact">Aucune action en attente.</p>
                 )}
               </div>
+            </article>
+          ) : null}
+
+          {canAdmin ? (
+            <article className="panel panel--wide rag-panel">
+              <div className="panel-header">
+                <h2>Memoire coordination</h2>
+                <span className="counter">{ragSync.pack?.citations.length ?? 0}</span>
+              </div>
+              <div className={`rag-state rag-state--${ragSync.status}`} aria-live="polite">
+                <strong>{ragSync.status}</strong>
+                <span>{ragSync.message}</span>
+                {ragSync.pack?.pack_id ? <small>{ragSync.pack.pack_id}</small> : null}
+              </div>
+              <div className="rag-actions">
+                <button
+                  className="secondary"
+                  disabled={ragSync.status === 'syncing'}
+                  onClick={() => void handleCoordinationSync()}
+                  type="button"
+                >
+                  Synchroniser
+                </button>
+                <form className="rag-form" onSubmit={handleCoordinationQuery}>
+                  <input
+                    aria-label="Question RAG coordination"
+                    onChange={(event) => setRagQuestion(event.target.value)}
+                    placeholder="Chercher dans SUIVI / inbox / sync thread"
+                    type="search"
+                    value={ragQuestion}
+                  />
+                  <button disabled={ragSync.status === 'querying' || ragQuestion.trim().length < 2} type="submit">
+                    Chercher
+                  </button>
+                </form>
+              </div>
+              {ragSync.pack?.citations.length ? (
+                <div className="rag-citations">
+                  {ragSync.pack.citations.map((citation) => (
+                    <article className="rag-citation" key={citation.chunk_id}>
+                      <div>
+                        <strong>{citation.title}</strong>
+                        <span>{citation.source_uri}</span>
+                      </div>
+                      <p>{citation.excerpt}</p>
+                      <small>{Math.round(citation.score * 100)}% / {citation.trust_status}</small>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="muted compact">Synchronise puis cherche un point ouvert, une decision ou un blocage.</p>
+              )}
             </article>
           ) : null}
 

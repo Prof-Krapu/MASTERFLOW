@@ -11,6 +11,9 @@ import type {
   Project,
   ProjectMember,
   ProposeResource,
+  RagQueryRequest,
+  RagQueryResponse,
+  RagResource,
   Resource,
   ResourceScope,
   RoomInstance,
@@ -175,6 +178,21 @@ export async function attachProjectResource(
     method: 'POST',
     body: JSON.stringify(body),
   }, token);
+}
+
+// ───────────────────────── RAG permissionné / coordination ─────────────────────────
+
+export async function queryRag(body: RagQueryRequest, token?: string | null): Promise<RagQueryResponse> {
+  return request<RagQueryResponse>('/rag/query', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function syncCoordinationRag(
+  token?: string | null,
+): Promise<{results: RagResource[]; synced_at: number}> {
+  return request<{results: RagResource[]; synced_at: number}>('/rag/coordination/sync', {method: 'POST'}, token);
 }
 
 // ───────────────────────── Administration (gated admin/godmode) ─────────────────────────

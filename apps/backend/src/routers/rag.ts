@@ -10,6 +10,7 @@ import {
   registerRagResource,
   requestRagReindex,
   revokeRagResource,
+  syncCoordinationRagResources,
 } from '../services/rag.ts';
 
 function actor(req: Request): AuthUser {
@@ -64,6 +65,14 @@ export function createRagRouter(): Router {
 
   router.get('/rag/resources', (req: Request, res: Response): void => {
     res.json({results: listRagResources(actor(req))});
+  });
+
+  router.post('/rag/coordination/sync', (req: Request, res: Response): void => {
+    try {
+      res.json({results: syncCoordinationRagResources(actor(req)), synced_at: Date.now()});
+    } catch (error) {
+      routeError(res, error);
+    }
   });
 
   router.post('/rag/resources', (req: Request, res: Response): void => {

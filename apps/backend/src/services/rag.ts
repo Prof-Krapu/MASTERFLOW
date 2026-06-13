@@ -1,4 +1,6 @@
 import {createHash} from 'node:crypto';
+import {existsSync, readFileSync} from 'node:fs';
+import {dirname, join} from 'node:path';
 
 import {
   ROLE_RANK,
@@ -34,6 +36,12 @@ import {decideScopedPermission} from './projects.ts';
 const SECRET_PATTERN =
   /(\.env|api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization|begin [a-z ]*private key)/i;
 const PACK_TTL_MS = 15 * 60 * 1000;
+const COORDINATION_DOCS = [
+  {id: 'coordination-suivi', path: 'SUIVI.md', title: 'SUIVI MasterFlow'},
+  {id: 'coordination-sync-thread', path: 'SYNC_THREAD_MALEX_VINCENT.md', title: 'Sync thread MALEX/Vincent'},
+  {id: 'coordination-inbox-malex', path: 'INBOX_MALEX.md', title: 'Inbox MALEX'},
+  {id: 'coordination-inbox-vincent', path: 'INBOX_VINCENT.md', title: 'Inbox Vincent'},
+] as const;
 
 function hash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
@@ -45,6 +53,10 @@ function isAdmin(actor: AuthUser): boolean {
 
 function assertTeacher(actor: AuthUser): void {
   if (ROLE_RANK[actor.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
+}
+
+function assertAdmin(actor: AuthUser): void {
+  if (!isAdmin(actor)) throw new Error('permission_denied');
 }
 
 function toResource(row: RagResourceRow): RagResource {
@@ -140,6 +152,36 @@ function queryTerms(query: string): string[] {
   ];
 }
 
+function chunkCoordinationDoc(content: string): string[] {
+  const normalized = content.replace(/\r\n/g, '\n').trim();
+  if (!normalized) return [];
+  const sections = normalized
+    .split(/\n(?=##\s)/g)
+    .map((section) => section.trim())
+    .filter(Boolean);
+  const chunks: string[] = [];
+  for (const section of sections.length > 0 ? sections : [normalized]) {
+    if (section.length <= 1800) {
+      chunks.push(section);
+      continue;
+    }
+    for (let index = 0; index < section.length; index += 1600) {
+      chunks.push(section.slice(index, index + 1800).trim());
+    }
+  }
+  return chunks.slice(0, 100);
+}
+
+function findCoordinationRoot(start = process.cwd()): string {
+  let current = start;
+  while (true) {
+    if (existsSync(join(current, 'SUIVI.md'))) return current;
+    const parent = dirname(current);
+    if (parent === current) return start;
+    current = parent;
+  }
+}
+
 function scoreExcerpt(terms: string[], excerpt: string): number {
   if (terms.length === 0) return 0;
   const normalized = excerpt.toLocaleLowerCase('fr');
@@ -218,6 +260,21 @@ function createPack(input: {
     | undefined;
   if (!row) throw new Error('rag_context_pack_not_found');
   return toPack(row);
+}
+
+function markContextPacksStaleForResource(resourceId: string): number {
+  const packs = getDb()
+    .prepare("SELECT * FROM rag_context_packs WHERE status = 'active'")
+    .all() as RagContextPackRow[];
+  const staleIds = packs
+    .filter((pack) => {
+      const citations = JSON.parse(pack.citations_json) as Array<{resource_id?: string}>;
+      return citations.some((citation) => citation.resource_id === resourceId);
+    })
+    .map((pack) => pack.id);
+  const stale = getDb().prepare("UPDATE rag_context_packs SET status = 'stale' WHERE id = ?");
+  staleIds.forEach((packId) => stale.run(packId));
+  return staleIds.length;
 }
 
 export function registerRagResource(
@@ -302,6 +359,114 @@ export function getRagResource(actor: AuthUser, id: string): RagResource {
   const row = getRagResourceRow(id);
   if (!row || !canReadResource(actor, row)) throw new Error('rag_resource_not_found');
   return toResource(row);
+}
+
+export function syncCoordinationRagResources(actor: AuthUser): RagResource[] {
+  assertAdmin(actor);
+  const now = Date.now();
+  const db = getDb();
+  const synced: RagResource[] = [];
+  const root = findCoordinationRoot();
+
+  for (const doc of COORDINATION_DOCS) {
+    const absolutePath = join(root, doc.path);
+    if (!existsSync(absolutePath)) continue;
+    const content = readFileSync(absolutePath, 'utf8');
+    const chunks = chunkCoordinationDoc(content);
+    if (chunks.length === 0) continue;
+
+    db.prepare(
+      `INSERT INTO resources (id, type, title, url, source, status, subjects_json, created_at)
+       VALUES (?, 'document', ?, ?, 'masterflow_coordination_git', 'validated', ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         title = excluded.title,
+         url = excluded.url,
+         source = excluded.source,
+         status = excluded.status,
+         subjects_json = excluded.subjects_json`,
+    ).run(
+      doc.id,
+      doc.title,
+      `git://masterflow/${doc.path}`,
+      JSON.stringify(['masterflow', 'coordination', 'sync']),
+      now,
+    );
+
+    const ragId = `rag-${doc.id}-${actor.id}`;
+    const contentHash = hash(chunks.join('\n'));
+    db.prepare(
+      `INSERT INTO rag_resources
+         (id, resource_id, owner_id, project_id, source_type, source_uri, title, status,
+          trust_status, scope_type, scope_id, content_hash, indexed_at, revoked_at,
+          created_at, updated_at)
+       VALUES (?, ?, ?, NULL, 'markdown', ?, ?, 'validated', 'canonical', 'owner', ?,
+          ?, ?, NULL, ?, ?)
+       ON CONFLICT(resource_id, scope_type, scope_id) DO UPDATE SET
+         source_type = excluded.source_type,
+         source_uri = excluded.source_uri,
+         title = excluded.title,
+         status = excluded.status,
+         trust_status = excluded.trust_status,
+         content_hash = excluded.content_hash,
+         indexed_at = excluded.indexed_at,
+         revoked_at = NULL,
+         updated_at = excluded.updated_at`,
+    ).run(
+      ragId,
+      doc.id,
+      actor.id,
+      `git://masterflow/${doc.path}`,
+      doc.title,
+      actor.id,
+      contentHash,
+      now,
+      now,
+      now,
+    );
+
+    const row = db
+      .prepare('SELECT * FROM rag_resources WHERE resource_id = ? AND scope_type = ? AND scope_id = ?')
+      .get(doc.id, 'owner', actor.id) as RagResourceRow | undefined;
+    if (!row) throw new Error('rag_resource_not_found');
+
+    const staleContextPackCount = markContextPacksStaleForResource(row.id);
+    db.prepare('DELETE FROM rag_resource_chunks WHERE resource_id = ?').run(row.id);
+    const insertChunk = db.prepare(
+      `INSERT INTO rag_resource_chunks
+         (id, resource_id, chunk_index, content_excerpt, embedding_ref, token_count,
+          metadata_json, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, NULL, ?, ?, 'active', ?, ?)`,
+    );
+    chunks.forEach((excerpt, index) => {
+      insertChunk.run(
+        uuid(),
+        row.id,
+        index,
+        excerpt,
+        excerpt.split(/\s+/).length,
+        JSON.stringify({path: doc.path, coordination: true}),
+        now,
+        now,
+      );
+    });
+    synced.push(toResource(row));
+    if (staleContextPackCount > 0) {
+      audit({
+        event_type: 'rag.coordination_context_stale',
+        user_id: actor.id,
+        scope: actor.id,
+        detail: {rag_resource_id: row.id, stale_context_pack_count: staleContextPackCount},
+      });
+    }
+  }
+
+  audit({
+    event_type: 'rag.coordination_synced',
+    user_id: actor.id,
+    scope: actor.id,
+    detail: {resource_count: synced.length, source: 'git_coordination_docs'},
+  });
+  return synced;
 }
 
 export function listRagResourceChunks(actor: AuthUser, id: string): RagResourceChunk[] {
@@ -444,22 +609,12 @@ export function revokeRagResource(actor: AuthUser, id: string): RagResource {
     .prepare("UPDATE rag_resource_chunks SET status = 'revoked', updated_at = ? WHERE resource_id = ?")
     .run(now, id);
 
-  const packs = getDb()
-    .prepare("SELECT * FROM rag_context_packs WHERE status = 'active'")
-    .all() as RagContextPackRow[];
-  const staleIds = packs
-    .filter((pack) => {
-      const citations = JSON.parse(pack.citations_json) as Array<{resource_id?: string}>;
-      return citations.some((citation) => citation.resource_id === id);
-    })
-    .map((pack) => pack.id);
-  const stale = getDb().prepare("UPDATE rag_context_packs SET status = 'stale' WHERE id = ?");
-  staleIds.forEach((packId) => stale.run(packId));
+  const staleContextPackCount = markContextPacksStaleForResource(id);
   audit({
     event_type: 'rag.resource_revoked',
     user_id: actor.id,
     scope: row.scope_id,
-    detail: {rag_resource_id: id, stale_context_pack_count: staleIds.length},
+    detail: {rag_resource_id: id, stale_context_pack_count: staleContextPackCount},
   });
   return getRagResource(actor, id);
 }

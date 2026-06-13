@@ -147,4 +147,22 @@ describe('PR-7 — routes RAG permissionne', () => {
     });
     expect(await stalePack.json()).toMatchObject({pack_id: packId, status: 'stale'});
   });
+
+  it('reserve la synchronisation RAG coordination aux admin/godmode', async () => {
+    const refused = await fetch(`${base}/rag/coordination/sync`, {
+      method: 'POST',
+      headers: auth(studentToken),
+    });
+    expect(refused.status).toBe(403);
+
+    const synced = await fetch(`${base}/rag/coordination/sync`, {
+      method: 'POST',
+      headers: auth(adminToken),
+    });
+    expect(synced.status).toBe(200);
+    const payload = (await synced.json()) as {results: Array<{title: string; scope_type: string}>};
+    expect(payload.results).toContainEqual(
+      expect.objectContaining({title: 'SUIVI MasterFlow', scope_type: 'owner'}),
+    );
+  });
 });

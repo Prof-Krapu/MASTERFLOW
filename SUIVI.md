@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — RAG de coordination Git/inbox — LIVRÉ
+
+**Livrable MALEX/Codex.** Première exploitation concrète du RAG permissionné pour accélérer la
+synchronisation MALEX/Vincent sans remplacer le protocole Git.
+
+Ajouts :
+
+- route admin/godmode `POST /api/v1/rag/coordination/sync` ;
+- synchronisation des fichiers `SUIVI.md`, `SYNC_THREAD_MALEX_VINCENT.md`,
+  `INBOX_MALEX.md` et `INBOX_VINCENT.md` en ressources RAG `validated/canonical` ;
+- scope `owner` par acteur admin/godmode, pour éviter toute exposition aux comptes non autorisés ;
+- chunks reconstruits depuis les sections Markdown, citations conservées par `RagContextPack` ;
+- surface frontend `Memoire coordination` pour synchroniser puis interroger l'historique avec citations ;
+- aucun contournement du protocole : le RAG aide à retrouver les passages, le Git reste source de vérité.
+
+À brancher plus tard côté Vincent si utile :
+
+- automatisation post-commit / post-pull de cette sync ;
+- raccord au runner BGE/Qdrant via `rag_reindex` ;
+- éventuel scope projet privé partagé MALEX/Vincent si plusieurs comptes doivent interroger la même mémoire.
+
+Verification prévue : lint frontend, build frontend, tests backend, lint backend, `git diff --check`.
+
+---
+
 ## 2026-06-13 — Frontend : surface projets multi-utilisateur — LIVRÉE
 
 **Livrable MALEX/Codex.** Première consommation frontend de la couche Project/Scope multi-utilisateur livrée par Vincent.

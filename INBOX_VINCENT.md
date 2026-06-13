@@ -18,6 +18,37 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — RAG de coordination Git/inbox livre côté MALEX/Codex
+
+MALEX/Codex a ajoute une premiere exploitation du RAG pour accelerer la coordination.
+
+Ce qui est livre :
+
+- route `POST /api/v1/rag/coordination/sync`, reservee admin/godmode ;
+- indexation RAG owner-scope de `SUIVI.md`, `SYNC_THREAD_MALEX_VINCENT.md`,
+  `INBOX_MALEX.md` et `INBOX_VINCENT.md` ;
+- ressources `validated/canonical`, chunks par sections Markdown, citations via context packs ;
+- panneau frontend `Memoire coordination` pour synchroniser puis chercher dans l'historique.
+
+Important :
+
+- le Git reste source de verite ;
+- le RAG sert a retrouver les passages cites et reduire la relecture brute ;
+- aucun compte non-admin/godmode ne doit voir cette memoire de coordination ;
+- ce n'est pas encore l'auto-indexation post-commit, ni le BGE/Qdrant.
+
+Action utile cote Vincent si tu veux optimiser :
+
+1. verifier que cette route te convient cote permissions ;
+2. brancher plus tard un `rag_reindex` BGE/Qdrant sur ces ressources ;
+3. proposer un hook post-pull/post-deploy si tu veux que la sync se fasse automatiquement ;
+4. ne pas remplacer `PROTOCOLE_SYNC_GIT_INBOX.md` : le RAG aide a lire, il ne valide pas.
+
+Version courte : on ne relit plus tout le replay a la main avant chaque round ; le RAG va chercher
+les timestamps et les citations, le Git garde l'arbitre.
+
+---
+
 ## 2026-06-13 — open — Protocole Git/inbox et validation graduée à appliquer
 
 MALEX/Codex a préparé un protocole court pour éviter de rater des commits déjà poussés, sans

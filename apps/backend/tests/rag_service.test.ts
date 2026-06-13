@@ -10,6 +10,7 @@ import {
   registerRagResource,
   requestRagReindex,
   revokeRagResource,
+  syncCoordinationRagResources,
 } from '../src/services/rag.ts';
 
 const teacher: AuthUser = {id: 'rag-service-teacher', username: 'rag_service_teacher', role: 'teacher'};
@@ -165,5 +166,22 @@ describe('PR-7 — service RAG permissionne', () => {
     expect(response.context_pack.citations).not.toContainEqual(
       expect.objectContaining({resource_id: resource.rag_resource_id}),
     );
+  });
+
+  it('synchronise les fichiers de coordination Git en RAG owner admin/godmode', () => {
+    expect(() => syncCoordinationRagResources(student)).toThrow('permission_denied');
+
+    const synced = syncCoordinationRagResources(admin);
+    expect(synced.map((resource) => resource.title)).toEqual(
+      expect.arrayContaining(['SUIVI MasterFlow', 'Inbox Vincent']),
+    );
+    expect(synced.every((resource) => resource.scope_type === 'owner')).toBe(true);
+    expect(synced.every((resource) => resource.status === 'validated')).toBe(true);
+    expect(synced.every((resource) => resource.trust_status === 'canonical')).toBe(true);
+
+    const response = queryRag(admin, {query: 'protocole sync inbox', limit: 5});
+    expect(response.refusal_reason).toBeNull();
+    expect(response.context_pack.citations.length).toBeGreaterThan(0);
+    expect(response.context_pack.citations.some((citation) => /SUIVI|Inbox|Sync/.test(citation.title))).toBe(true);
   });
 });

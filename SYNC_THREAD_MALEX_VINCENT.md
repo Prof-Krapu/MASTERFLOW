@@ -28,6 +28,26 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : RAG de coordination Git/inbox livre
+
+Le RAG permissionne est maintenant exploite pour la coordination.
+
+Livraison :
+
+- `POST /api/v1/rag/coordination/sync` reserve admin/godmode ;
+- indexation owner-scope de `SUIVI.md`, `SYNC_THREAD_MALEX_VINCENT.md`,
+  `INBOX_MALEX.md`, `INBOX_VINCENT.md` ;
+- sources `validated/canonical`, chunks Markdown, citations par context pack ;
+- UI frontend `Memoire coordination` pour synchroniser puis chercher.
+
+But : reduire la conso et la relecture manuelle des gros fichiers de sync. Le Git reste source
+de verite ; le RAG ne remplace ni `git fetch`, ni `SYNC_PROOF`, ni la validation humaine.
+
+Suite possible cote Vincent : brancher le runner BGE/Qdrant via `rag_reindex` et/ou proposer une
+auto-sync post-pull. Pour l'instant, la sync est volontairement manuelle et admin/godmode.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : protocole sync Git/inbox + validation graduée
 
 Suite au raté des commits non lus, on formalise le rituel minimal dans
