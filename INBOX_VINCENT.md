@@ -14,6 +14,43 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Bridge Project/Scope applique a la preparation de correction
+
+MALEX/Codex a prolonge le bridge des preuves vers la chaine de correction.
+
+Objets maintenant raccordables a un vrai projet :
+
+- rubric template/version ;
+- institutional grading profile ;
+- correction batch ;
+- submission ;
+- pre-correction manifest/run ;
+- requete et job `correction_prepare`.
+
+Regle active pour les nouveaux objets projet :
+
+- `project_id` obligatoire dans toute la chaine et `project_scope === project_id` pendant la
+  transition ;
+- toutes les references doivent viser exactement le meme projet ;
+- run et job correction exigent membership `editor+` ;
+- des preuves de plusieurs owners sont acceptables seulement dans ce meme projet ;
+- sans `project_id`, le comportement legacy owner-only reste inchange.
+
+Action demandee :
+
+1. faire porter le vrai `project_id` a tes nouvelles creations de rubriques, batches,
+   submissions et manifests ;
+2. ne pas melanger une reference legacy sans `project_id` dans une nouvelle chaine projet ;
+3. conserver les validations humaines et preflights actuels ;
+4. ne pas migrer feedback/export par raccourci : cette chaine sera traitee dans une passe
+   separee ;
+5. signaler tout objet Vincent qui doit etre mappe avant de lancer un runner correction reel.
+
+Version courte : la correction joue maintenant sur le meme stage que ses preuves. Une reference
+qui arrive avec un autre stage ID est refusee avant le round.
+
+---
+
 ## 2026-06-13 — open — Premier bridge Project/Scope applique aux donnees pedagogiques
 
 MALEX/Codex a branche `evidence_events` et `pedagogical_signals` sur les vrais projets.

@@ -124,7 +124,9 @@ Référence :
 Rubriques et profils institutionnels versionnés, batches, submissions privées et manifests de
 pré-correction.
 
-Etat : contrats, migrations, index et tests livrés. Aucun score, route, runner ou export.
+Etat : contrats, migrations, index et tests livrés. Le bridge Project/Scope couvre rubrique,
+profil, batch, submission et manifest avec fallback legacy owner-only. Aucun score final, route
+publique, runner réel ou export.
 
 Référence :
 

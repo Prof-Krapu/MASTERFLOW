@@ -1,6 +1,6 @@
 # SPEC — PR-C3 Pré-correction explicable
 
-Statut : `FOUNDATION IMPLEMENTED / INTERNAL ONLY / NEEDS REVIEW / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / PROJECT BRIDGE / INTERNAL ONLY / NEEDS REVIEW / 2026-06-13`
 
 ## Objectif
 
@@ -58,13 +58,18 @@ Le contrat ne possède ni note finale, ni calibration, ni statut validé.
 
 1. exige au moins le rôle teacher ;
 2. limite un teacher à ses propres objets ;
+   pour une chaine projet, remplace ce fallback par un membership `editor+` ;
 3. exige un manifest humainement validé ;
 4. aligne owner, scope, batch, submission, rubrique et profil ;
+   avec `project_id`, aligne aussi chaque reference et chaque preuve sur le meme projet ;
 5. exige une rubrique validée et tous ses critères exactement une fois ;
 6. refuse les preuves absentes, rejetées, archivées ou hors scope ;
 7. n'accepte un profil modèle que s'il est validé pour `criterion_analysis` ;
 8. force le run en `needs_review` et les scores en `candidate` ;
 9. audite uniquement les références et compteurs non sensibles.
+
+Les objets legacy sans `project_id` conservent les gates owner-only. Le bridge ne migre ni
+feedback ni export, traites separement.
 
 ## Hors scope
 

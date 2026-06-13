@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope correction
+
+Le bridge Project/Scope couvre maintenant rubriques, profils institutionnels, batches,
+submissions, manifests, runs de pre-correction et `correction_prepare`.
+
+Pour une nouvelle chaine projet, chaque objet et chaque preuve doivent porter le meme
+`project_id`, avec `project_scope` identique pendant la transition. Un membre `editor+` peut
+produire/lire le run et preparer le job ; le fallback sans `project_id` reste owner-only.
+
+Merci de mapper tes objets correction existants vers cette chaine avant tout runner reel.
+Feedback et export ne sont pas inclus dans cette passe et ne doivent pas etre consideres migres.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope evidence/signaux
 
 Le premier bridge des anciens `project_scope` vers les vrais projets est livre sur

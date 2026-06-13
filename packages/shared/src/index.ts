@@ -726,6 +726,7 @@ export type RubricCriterion = z.infer<typeof RubricCriterionSchema>;
 export const RubricTemplateSchema = z.object({
   template_id: z.string().min(1),
   owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable().optional(),
   project_scope: z.string().min(1),
   title: z.string().min(1),
   subject_ref: z.string().min(1).nullable(),
@@ -741,6 +742,7 @@ export const RubricVersionSchema = z
     version_id: z.string().min(1),
     template_id: z.string().min(1),
     version: z.number().int().positive(),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     criteria: z.array(RubricCriterionSchema).min(1),
     total_points: z.number().positive(),
@@ -774,6 +776,7 @@ export const InstitutionalGradingProfileSchema = z
   .object({
     profile_id: z.string().min(1),
     owner_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     version: z.number().int().positive(),
     scale: GradeBandSchema,
@@ -808,6 +811,7 @@ export type InstitutionalGradingProfile = z.infer<typeof InstitutionalGradingPro
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),
   owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable().optional(),
   project_scope: z.string().min(1),
   rubric_version_id: z.string().min(1),
   grading_profile_id: z.string().min(1),
@@ -822,6 +826,7 @@ export const SubmissionRecordSchema = z.object({
   submission_id: z.string().min(1),
   batch_id: z.string().min(1),
   owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable().optional(),
   project_scope: z.string().min(1),
   student_ref: z.string().min(1).nullable(),
   source_evidence_ref: z.string().min(1),
@@ -837,6 +842,7 @@ export const PreCorrectionManifestSchema = z
   .object({
     manifest_id: z.string().min(1),
     batch_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     rubric_version_id: z.string().min(1),
     grading_profile_id: z.string().min(1),
@@ -908,6 +914,7 @@ export const PreCorrectionRunDraftSchema = z
     batch_id: z.string().min(1),
     submission_id: z.string().min(1),
     owner_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     rubric_version_id: z.string().min(1),
     grading_profile_id: z.string().min(1),
@@ -1199,6 +1206,7 @@ export type OcrPrepareRequest = z.infer<typeof OcrPrepareRequestSchema>;
 
 export const CorrectionPrepareRequestSchema = z.object({
   owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable().optional(),
   project_scope: z.string().min(1),
   batch_id: z.string().min(1),
   manifest_ref: z.string().min(1),

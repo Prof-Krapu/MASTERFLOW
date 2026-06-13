@@ -26,6 +26,7 @@ import {
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 const CANCELLABLE = new Set<JobStatus>(['queued', 'running', 'needs_review']);
 const FINALIZABLE = new Set<JobStatus>(['queued', 'running']);
@@ -46,6 +47,7 @@ const SECRET_PATTERN =
 interface ManifestRow {
   id: string;
   batch_id: string;
+  project_id: string | null;
   project_scope: string;
   workflow_version: string;
   status: string;
@@ -55,6 +57,7 @@ interface ManifestRow {
 interface BatchRow {
   id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
 }
 
@@ -104,10 +107,20 @@ function toEvent(row: JobEventRow): JobEvent {
   });
 }
 
-function assertCanRead(actor: AuthUser, ownerId: string): void {
-  if (actor.id !== ownerId && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
-    throw new Error('job_not_found');
-  }
+function canReadJob(actor: AuthUser, row: JobRow): boolean {
+  if (actor.id === row.owner_id || ROLE_RANK[actor.role] >= ROLE_RANK.admin) return true;
+  if (row.type !== 'correction_prepare') return false;
+  const payload = JSON.parse(row.payload_json) as {project_id?: unknown};
+  if (typeof payload.project_id !== 'string') return false;
+  return decideScopedPermission({
+    actor,
+    projectId: payload.project_id,
+    minimumProjectRole: 'editor',
+  }).allowed;
+}
+
+function assertCanRead(actor: AuthUser, row: JobRow): void {
+  if (!canReadJob(actor, row)) throw new Error('job_not_found');
 }
 
 function assertNoSecrets(payload: unknown): void {
@@ -270,17 +283,28 @@ export function createRagReindexJob(
 
 export function createCorrectionPrepareJob(actor: AuthUser, input: CorrectionPrepareRequest): Job {
   const request = CorrectionPrepareRequestSchema.parse(input);
-  assertTeacherOwner(actor, request.owner_id);
+  if (request.project_id) {
+    if (ROLE_RANK[actor.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
+    if (request.project_scope !== request.project_id) throw new Error('project_scope_mismatch');
+    const decision = decideScopedPermission({
+      actor,
+      projectId: request.project_id,
+      minimumProjectRole: 'editor',
+    });
+    if (!decision.allowed) throw new Error('scope_denied');
+  } else {
+    assertTeacherOwner(actor, request.owner_id);
+  }
 
   const db = getDb();
   const manifest = db
     .prepare(
-      `SELECT id, batch_id, project_scope, workflow_version, status, validation_ref
+      `SELECT id, batch_id, project_id, project_scope, workflow_version, status, validation_ref
        FROM pre_correction_manifests WHERE id = ?`,
     )
     .get(request.manifest_ref) as ManifestRow | undefined;
   const batch = db
-    .prepare('SELECT id, owner_id, project_scope FROM correction_batches WHERE id = ?')
+    .prepare('SELECT id, owner_id, project_id, project_scope FROM correction_batches WHERE id = ?')
     .get(request.batch_id) as BatchRow | undefined;
   if (!manifest || !batch) throw new Error('correction_prepare_reference_not_found');
   if (manifest.status !== 'validated' || !manifest.validation_ref) {
@@ -295,6 +319,14 @@ export function createCorrectionPrepareJob(actor: AuthUser, input: CorrectionPre
     batch.owner_id === request.owner_id,
     batch.project_scope === request.project_scope,
   ];
+  if (request.project_id) {
+    alignedRefs.push(
+      manifest.project_id === request.project_id,
+      batch.project_id === request.project_id,
+    );
+  } else {
+    alignedRefs.push(manifest.project_id === null, batch.project_id === null);
+  }
   if (alignedRefs.some((isAligned) => !isAligned)) {
     throw new Error('correction_prepare_context_mismatch');
   }
@@ -369,19 +401,14 @@ export function createExportPrepareJob(actor: AuthUser, input: ExportPrepareRequ
 }
 
 export function listJobs(actor: AuthUser): Job[] {
-  const rows =
-    ROLE_RANK[actor.role] >= ROLE_RANK.admin
-      ? (getDb().prepare('SELECT * FROM jobs ORDER BY updated_at DESC').all() as JobRow[])
-      : (getDb()
-          .prepare('SELECT * FROM jobs WHERE owner_id = ? ORDER BY updated_at DESC')
-          .all(actor.id) as JobRow[]);
-  return rows.map(toJob);
+  const rows = getDb().prepare('SELECT * FROM jobs ORDER BY updated_at DESC').all() as JobRow[];
+  return rows.filter((row) => canReadJob(actor, row)).map(toJob);
 }
 
 export function getJob(actor: AuthUser, jobId: string): Job {
   const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
   if (!row) throw new Error('job_not_found');
-  assertCanRead(actor, row.owner_id);
+  assertCanRead(actor, row);
   return toJob(row);
 }
 

@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Bridge Project/Scope de la chaine de correction
+
+**Livrable MALEX/Codex.** Deuxieme migration progressive des scopes libres vers un vrai
+`project_id`, cette fois sur les objets de reference et de preparation de correction.
+
+Ajouts :
+
+- `project_id` nullable dans les contrats rubriques, profils institutionnels, batches,
+  submissions, manifests, runs de pre-correction et requetes `correction_prepare` ;
+- colonnes et index projet idempotents sur toute cette chaine ;
+- nouveaux runs projet : `project_scope` doit egaler `project_id` ;
+- manifest, batch, submission, rubrique, profil et preuves doivent tous viser ce meme projet ;
+- ecriture et lecture d'un run projet exige membership `editor+` ;
+- preuves multi-auteurs autorisees seulement lorsqu'elles appartiennent toutes au meme projet ;
+- un editeur projet peut preparer et relire le job `correction_prepare` du projet ;
+- anciens objets sans `project_id` conserves avec les gates owner-only historiques ;
+- aucune note finale, validation automatique, publication ou export ajoute.
+
+Cette passe ne migre pas encore les feedbacks et previews/exports. Ils restent owner/scope legacy
+jusqu'a une tranche dediee avec leurs propres tests de confidentialite et validation.
+
+Verification :
+
+- `npm test` : 37 fichiers / 155 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Consolidation Project/Scope vers Evidence et signaux
 
 **Livrable MALEX/Codex.** Premier remplacement progressif des `project_scope` libres par un

@@ -8,6 +8,7 @@ import {
   recordPreCorrectionDraft,
   type PreCorrectionDraftBundle,
 } from '../src/services/pre_correction.ts';
+import {addProjectMember, createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {
   id: 'teacher-pre-correction',
@@ -31,6 +32,7 @@ const admin: AuthUser = {
 };
 
 const now = Date.now();
+let correctionProjectId = '';
 const baseBundle: PreCorrectionDraftBundle = {
   run: {
     run_id: 'pre-correction-run-valid',
@@ -94,6 +96,12 @@ beforeAll(async () => {
   for (const actor of [teacher, otherTeacher, student, admin]) {
     insertUser.run(actor.id, actor.username, actor.username, actor.role, now, now);
   }
+  const project = createProject(teacher, {name: 'Projet correction bridge'});
+  correctionProjectId = project.project_id;
+  addProjectMember(teacher, correctionProjectId, {
+    user_id: otherTeacher.id,
+    role: 'editor',
+  });
 
   db.prepare(
     `INSERT INTO evidence_events
@@ -189,6 +197,103 @@ beforeAll(async () => {
     null,
     now,
   );
+
+  const insertProjectEvidence = db.prepare(
+    `INSERT INTO evidence_events
+       (id, source_type, adapter_id, owner_id, project_id, project_scope, target_refs_json,
+        payload_ref, extraction_confidence, privacy_level, occurred_at, status, created_at)
+     VALUES (?, 'submission', 'ocr-submission-v1', ?, ?, ?, '["submission-project-bridge"]',
+             ?, 0.9, 'private', ?, 'candidate', ?)`,
+  );
+  insertProjectEvidence.run(
+    'evidence-project-correction-owner',
+    teacher.id,
+    correctionProjectId,
+    correctionProjectId,
+    'storage://private/submissions/project-owner',
+    now,
+    now,
+  );
+  insertProjectEvidence.run(
+    'evidence-project-correction-editor',
+    otherTeacher.id,
+    correctionProjectId,
+    correctionProjectId,
+    'storage://private/submissions/project-editor',
+    now,
+    now,
+  );
+  db.prepare(
+    `INSERT INTO rubric_templates
+       (id, owner_id, project_id, project_scope, title, status, created_at, updated_at)
+     VALUES ('template-project-correction', ?, ?, ?, 'Projet bridge',
+             'active', ?, ?)`,
+  ).run(teacher.id, correctionProjectId, correctionProjectId, now, now);
+  db.prepare(
+    `INSERT INTO rubric_versions
+       (id, template_id, version, project_id, project_scope, criteria_json, total_points,
+        status, created_by, created_at)
+     VALUES ('rubric-project-correction-v1', 'template-project-correction', 1, ?, ?, ?,
+             20, 'validated', ?, ?)`,
+  ).run(
+    correctionProjectId,
+    correctionProjectId,
+    JSON.stringify([
+      {
+        criterion_id: 'clarity',
+        label: 'Clarté',
+        description: 'Proposition compréhensible.',
+        weight: 0.4,
+        max_points: 8,
+        evidence_requirements: ['passage_source'],
+        required: true,
+      },
+      {
+        criterion_id: 'quality',
+        label: 'Qualité',
+        description: 'Niveau attendu.',
+        weight: 0.6,
+        max_points: 12,
+        evidence_requirements: ['passage_source'],
+        required: true,
+      },
+    ]),
+    teacher.id,
+    now,
+  );
+  db.prepare(
+    `INSERT INTO institutional_grading_profiles
+       (id, owner_id, project_id, project_scope, version, scale_json, expected_band_json,
+        anchors_json, calibration_mode, max_global_delta,
+        protected_thresholds_json, threshold_crossing_requires_validation,
+        status, created_at)
+     VALUES ('grading-project-correction-v1', ?, ?, ?, 1, '[0,20]', '[13,14]', '{}',
+             'diagnostic_then_teacher_validation', 1, '[10]', 1, 'validated', ?)`,
+  ).run(teacher.id, correctionProjectId, correctionProjectId, now);
+  db.prepare(
+    `INSERT INTO correction_batches
+       (id, owner_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        status, submission_count, created_at, updated_at)
+     VALUES ('batch-project-correction', ?, ?, ?, 'rubric-project-correction-v1',
+             'grading-project-correction-v1', 'review', 1, ?, ?)`,
+  ).run(teacher.id, correctionProjectId, correctionProjectId, now, now);
+  db.prepare(
+    `INSERT INTO submissions
+       (id, batch_id, owner_id, project_id, project_scope, source_evidence_ref,
+        identity_status, status, privacy_level, created_at, updated_at)
+     VALUES ('submission-project-bridge', 'batch-project-correction', ?, ?, ?,
+             'evidence-project-correction-owner', 'confirmed', 'review', 'private', ?, ?)`,
+  ).run(teacher.id, correctionProjectId, correctionProjectId, now, now);
+  db.prepare(
+    `INSERT INTO pre_correction_manifests
+       (id, batch_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        submission_refs_json, workflow_version, status, created_by,
+        validation_ref, created_at)
+     VALUES ('manifest-project-correction', 'batch-project-correction', ?, ?,
+             'rubric-project-correction-v1', 'grading-project-correction-v1',
+             '["submission-project-bridge"]', 'workflow-project-v1', 'validated', ?,
+             'validation-project-correction', ?)`,
+  ).run(correctionProjectId, correctionProjectId, teacher.id, now);
 });
 
 describe('PR-C3 — dépôt interne de pré-correction', () => {
@@ -255,12 +360,80 @@ describe('PR-C3 — dépôt interne de pré-correction', () => {
     expect(scoreColumns.map((column) => column.name)).not.toContain('final_score');
   });
 
+  it('relie toute la pré-correction à un projet réel et accepte ses preuves multi-auteurs', () => {
+    const projectBundle: PreCorrectionDraftBundle = {
+      run: {
+        ...baseBundle.run,
+        run_id: 'pre-correction-run-project',
+        manifest_id: 'manifest-project-correction',
+        batch_id: 'batch-project-correction',
+        submission_id: 'submission-project-bridge',
+        project_id: correctionProjectId,
+        project_scope: correctionProjectId,
+        rubric_version_id: 'rubric-project-correction-v1',
+        grading_profile_id: 'grading-project-correction-v1',
+        evidence_snapshot_ref: 'storage://private/evidence-snapshots/project-correction',
+        criterion_score_refs: [
+          'score-project-correction-clarity',
+          'score-project-correction-quality',
+        ],
+      },
+      criterion_scores: [
+        {
+          ...baseBundle.criterion_scores[0]!,
+          draft_id: 'score-project-correction-clarity',
+          run_id: 'pre-correction-run-project',
+          submission_id: 'submission-project-bridge',
+          rubric_version_id: 'rubric-project-correction-v1',
+          evidence_refs: ['evidence-project-correction-owner'],
+        },
+        {
+          ...baseBundle.criterion_scores[1]!,
+          draft_id: 'score-project-correction-quality',
+          run_id: 'pre-correction-run-project',
+          submission_id: 'submission-project-bridge',
+          rubric_version_id: 'rubric-project-correction-v1',
+          evidence_refs: ['evidence-project-correction-editor'],
+        },
+      ],
+    };
+
+    const saved = recordPreCorrectionDraft(otherTeacher, projectBundle);
+    expect(saved.run).toMatchObject({
+      project_id: correctionProjectId,
+      project_scope: correctionProjectId,
+      status: 'needs_review',
+    });
+    expect(getPreCorrectionDraft(otherTeacher, saved.run.run_id)).toEqual(saved);
+
+    expect(() =>
+      recordPreCorrectionDraft(otherTeacher, {
+        ...projectBundle,
+        run: {
+          ...projectBundle.run,
+          run_id: 'pre-correction-run-project-mismatch',
+          project_scope: 'legacy-free-text',
+          criterion_score_refs: [
+            'score-project-mismatch-clarity',
+            'score-project-mismatch-quality',
+          ],
+        },
+        criterion_scores: projectBundle.criterion_scores.map((score) => ({
+          ...score,
+          draft_id: score.draft_id.replace('correction', 'mismatch'),
+          run_id: 'pre-correction-run-project-mismatch',
+        })),
+      }),
+    ).toThrow('project_scope_mismatch');
+  });
+
   it('trace le run sans copier les preuves ou commentaires dans l audit', () => {
     const row = getDb()
       .prepare(
         `SELECT detail_json FROM audit_logs
          WHERE event_type = 'pre_correction.draft_recorded'
-         ORDER BY created_at DESC LIMIT 1`,
+           AND detail_json LIKE '%pre-correction-run-valid%'
+         LIMIT 1`,
       )
       .get() as {detail_json: string};
     expect(row.detail_json).toContain('pre-correction-run-valid');

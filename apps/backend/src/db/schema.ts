@@ -495,6 +495,7 @@ function migrate(d: Database.Database): void {
     CREATE TABLE IF NOT EXISTS rubric_templates (
       id                  TEXT PRIMARY KEY,
       owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id          TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope       TEXT NOT NULL,
       title               TEXT NOT NULL,
       subject_ref         TEXT,
@@ -509,6 +510,7 @@ function migrate(d: Database.Database): void {
       id            TEXT PRIMARY KEY,
       template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,
       version       INTEGER NOT NULL CHECK (version > 0),
+      project_id    TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope TEXT NOT NULL,
       criteria_json TEXT NOT NULL,
       total_points  REAL NOT NULL CHECK (total_points > 0),
@@ -522,6 +524,7 @@ function migrate(d: Database.Database): void {
     CREATE TABLE IF NOT EXISTS institutional_grading_profiles (
       id                     TEXT PRIMARY KEY,
       owner_id               TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id             TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope          TEXT NOT NULL,
       version                INTEGER NOT NULL CHECK (version > 0),
       scale_json             TEXT NOT NULL,
@@ -542,6 +545,7 @@ function migrate(d: Database.Database): void {
     CREATE TABLE IF NOT EXISTS correction_batches (
       id                 TEXT PRIMARY KEY,
       owner_id           TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id         TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope      TEXT NOT NULL,
       rubric_version_id  TEXT NOT NULL REFERENCES rubric_versions(id),
       grading_profile_id TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
@@ -558,6 +562,7 @@ function migrate(d: Database.Database): void {
       id                  TEXT PRIMARY KEY,
       batch_id            TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
       owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id          TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope       TEXT NOT NULL,
       student_ref         TEXT,
       source_evidence_ref TEXT NOT NULL REFERENCES evidence_events(id),
@@ -576,6 +581,7 @@ function migrate(d: Database.Database): void {
     CREATE TABLE IF NOT EXISTS pre_correction_manifests (
       id                 TEXT PRIMARY KEY,
       batch_id           TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      project_id         TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope      TEXT NOT NULL,
       rubric_version_id  TEXT NOT NULL REFERENCES rubric_versions(id),
       grading_profile_id TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
@@ -597,6 +603,7 @@ function migrate(d: Database.Database): void {
       batch_id              TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
       submission_id         TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
       owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id            TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope         TEXT NOT NULL,
       rubric_version_id     TEXT NOT NULL REFERENCES rubric_versions(id),
       grading_profile_id    TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
@@ -931,6 +938,13 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
   ensureColumn(d, 'pedagogical_signals', 'project_id', 'TEXT');
+  ensureColumn(d, 'rubric_templates', 'project_id', 'TEXT');
+  ensureColumn(d, 'rubric_versions', 'project_id', 'TEXT');
+  ensureColumn(d, 'institutional_grading_profiles', 'project_id', 'TEXT');
+  ensureColumn(d, 'correction_batches', 'project_id', 'TEXT');
+  ensureColumn(d, 'submissions', 'project_id', 'TEXT');
+  ensureColumn(d, 'pre_correction_manifests', 'project_id', 'TEXT');
+  ensureColumn(d, 'pre_correction_runs', 'project_id', 'TEXT');
   d.exec(`
     CREATE INDEX IF NOT EXISTS idx_jobs_claimable
       ON jobs(status, type, updated_at, lease_expires_at);
@@ -938,6 +952,20 @@ function migrate(d: Database.Database): void {
       ON evidence_events(project_id, status, occurred_at);
     CREATE INDEX IF NOT EXISTS idx_signals_project
       ON pedagogical_signals(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_rubric_templates_project
+      ON rubric_templates(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_rubric_versions_project
+      ON rubric_versions(project_id, status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_grading_profiles_project
+      ON institutional_grading_profiles(project_id, status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_correction_batches_project
+      ON correction_batches(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_submissions_project
+      ON submissions(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_project
+      ON pre_correction_manifests(project_id, status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_project
+      ON pre_correction_runs(project_id, status, updated_at);
   `);
 }
 
@@ -1296,6 +1324,7 @@ export interface PreCorrectionRunRow {
   batch_id: string;
   submission_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   rubric_version_id: string;
   grading_profile_id: string;

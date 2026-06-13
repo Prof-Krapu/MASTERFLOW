@@ -7,7 +7,9 @@ import {
   createCorrectionPrepareJob,
   createExportPrepareJob,
   listJobEvents,
+  listJobs,
 } from '../src/services/jobs.ts';
+import {addProjectMember, createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {
   id: 'jobs-correction-export-teacher',
@@ -31,6 +33,7 @@ const student: AuthUser = {
 };
 
 const now = Date.now();
+let correctionProjectId = '';
 
 beforeAll(async () => {
   await seedAll();
@@ -43,6 +46,9 @@ beforeAll(async () => {
   for (const actor of [teacher, otherTeacher, admin, student]) {
     insertUser.run(actor.id, actor.username, actor.username, actor.role, now, now);
   }
+  const project = createProject(teacher, {name: 'Projet job correction bridge'});
+  correctionProjectId = project.project_id;
+  addProjectMember(teacher, correctionProjectId, {user_id: otherTeacher.id, role: 'editor'});
 
   db.prepare(
     `INSERT INTO rubric_templates
@@ -112,6 +118,23 @@ beforeAll(async () => {
     null,
     now,
   );
+  db.prepare(
+    `INSERT INTO correction_batches
+       (id, owner_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        status, submission_count, created_at, updated_at)
+     VALUES ('batch-job-correction-project', ?, ?, ?, 'rubric-job-correction-export-v1',
+             'grading-job-correction-export-v1', 'review', 0, ?, ?)`,
+  ).run(teacher.id, correctionProjectId, correctionProjectId, now, now);
+  db.prepare(
+    `INSERT INTO pre_correction_manifests
+       (id, batch_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        submission_refs_json, workflow_version, status, created_by,
+        validation_ref, created_at)
+     VALUES ('manifest-job-correction-project', 'batch-job-correction-project', ?, ?,
+             'rubric-job-correction-export-v1', 'grading-job-correction-export-v1',
+             '[]', 'workflow-project-v1', 'validated', ?,
+             'validation-job-correction-project', ?)`,
+  ).run(correctionProjectId, correctionProjectId, teacher.id, now);
   db.prepare(
     `INSERT INTO correction_export_previews
        (id, batch_id, owner_id, project_scope, format, target,
@@ -198,6 +221,40 @@ describe('PR-C6 — handoffs jobs correction/export', () => {
     expect(() => createCorrectionPrepareJob(student, request)).toThrow('permission_denied');
     expect(() => createCorrectionPrepareJob(otherTeacher, request)).toThrow('job_owner_required');
     expect(() => createCorrectionPrepareJob(admin, request)).toThrow('job_owner_required');
+  });
+
+  it('autorise un éditeur projet sur une chaîne correction reliée au même Project/Scope', () => {
+    const job = createCorrectionPrepareJob(otherTeacher, {
+      owner_id: teacher.id,
+      project_id: correctionProjectId,
+      project_scope: correctionProjectId,
+      batch_id: 'batch-job-correction-project',
+      manifest_ref: 'manifest-job-correction-project',
+      preflight_ref: 'preflight-correction-project',
+      validation_ref: 'validation-job-correction-project',
+      workflow_version: 'workflow-project-v1',
+      source_kind: 'validated_pre_correction_manifest',
+    });
+
+    expect(job.payload).toMatchObject({
+      project_id: correctionProjectId,
+      project_scope: correctionProjectId,
+    });
+    expect(listJobs(otherTeacher).map((item) => item.job_id)).toContain(job.job_id);
+    expect(listJobs(student).map((item) => item.job_id)).not.toContain(job.job_id);
+    expect(() =>
+      createCorrectionPrepareJob(otherTeacher, {
+        owner_id: teacher.id,
+        project_id: correctionProjectId,
+        project_scope: 'legacy-free-text',
+        batch_id: 'batch-job-correction-project',
+        manifest_ref: 'manifest-job-correction-project',
+        preflight_ref: 'preflight-correction-project-mismatch',
+        validation_ref: 'validation-job-correction-project',
+        workflow_version: 'workflow-project-v1',
+        source_kind: 'validated_pre_correction_manifest',
+      }),
+    ).toThrow('project_scope_mismatch');
   });
 
   it('crée un export_prepare seulement depuis une preview approuvée', () => {

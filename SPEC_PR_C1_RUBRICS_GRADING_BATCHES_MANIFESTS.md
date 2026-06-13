@@ -1,6 +1,6 @@
 # SPEC — PR-C1 Rubriques, profils institutionnels, batches et manifests
 
-Statut : `FOUNDATION IMPLEMENTED / NO EXECUTION / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / PROJECT BRIDGE / NO EXECUTION / 2026-06-13`
 
 ## Objectif
 
@@ -75,6 +75,10 @@ Tout état autre que `draft` ou `rejected` exige `validation_ref`.
 ## Invariants
 
 - owner et `project_scope` obligatoires ;
+- `project_id` nullable pour compatibilite legacy ;
+- si `project_id` est present, `project_scope` doit lui etre identique et toute la chaine
+  rubrique/profil/batch/submission/manifest doit viser ce meme projet ;
+- les objets sans `project_id` restent dans le mode owner-only historique ;
 - données étudiantes privées par défaut ;
 - version et provenance obligatoires ;
 - aucune moyenne imposée ;
@@ -89,6 +93,7 @@ Tout état autre que `draft` ou `rejected` exige `validation_ref`.
 - tables et index idempotents dans `apps/backend/src/db/schema.ts` ;
 - tests des cohérences de barème et bandes de notation ;
 - tests de persistance et du gate de validation du manifest.
+- bridge Project/Scope idempotent, avec index projet sur chaque objet de reference.
 
 ## Suite
 

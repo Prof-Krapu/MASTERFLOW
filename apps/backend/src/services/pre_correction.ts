@@ -16,10 +16,12 @@ import {
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 interface ManifestRow {
   id: string;
   batch_id: string;
+  project_id: string | null;
   project_scope: string;
   rubric_version_id: string;
   grading_profile_id: string;
@@ -31,6 +33,7 @@ interface ManifestRow {
 interface BatchRow {
   id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   rubric_version_id: string;
   grading_profile_id: string;
@@ -40,13 +43,22 @@ interface SubmissionRow {
   id: string;
   batch_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
 }
 
 interface RubricRow {
   id: string;
+  project_id: string | null;
   project_scope: string;
   criteria_json: string;
+  status: string;
+}
+
+interface GradingProfileRow {
+  id: string;
+  project_id: string | null;
+  project_scope: string;
   status: string;
 }
 
@@ -63,6 +75,31 @@ function assertTeacherOwnership(actor: AuthUser, ownerId: string): void {
   if (actor.role === 'teacher' && actor.id !== ownerId) throw new Error('scope_denied');
 }
 
+function assertProjectBridge(projectScope: string, projectId: string | null | undefined): void {
+  if (projectId && projectScope !== projectId) throw new Error('project_scope_mismatch');
+}
+
+function assertProjectEditor(actor: AuthUser, projectId: string): void {
+  const decision = decideScopedPermission({
+    actor,
+    projectId,
+    minimumProjectRole: 'editor',
+  });
+  if (!decision.allowed) throw new Error('scope_denied');
+}
+
+function assertCorrectionAccess(
+  actor: AuthUser,
+  ownerId: string,
+  projectId: string | null | undefined,
+): void {
+  if (projectId) {
+    assertProjectEditor(actor, projectId);
+    return;
+  }
+  assertTeacherOwnership(actor, ownerId);
+}
+
 function toRunDTO(row: PreCorrectionRunRow): PreCorrectionRunDraft {
   return PreCorrectionRunDraftSchema.parse({
     run_id: row.id,
@@ -70,6 +107,7 @@ function toRunDTO(row: PreCorrectionRunRow): PreCorrectionRunDraft {
     batch_id: row.batch_id,
     submission_id: row.submission_id,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     project_scope: row.project_scope,
     rubric_version_id: row.rubric_version_id,
     grading_profile_id: row.grading_profile_id,
@@ -117,7 +155,8 @@ export function recordPreCorrectionDraft(
   const criterionScores = input.criterion_scores.map((draft) =>
     CriterionScoreDraftSchema.parse(draft),
   );
-  assertTeacherOwnership(actor, run.owner_id);
+  assertProjectBridge(run.project_scope, run.project_id);
+  assertCorrectionAccess(actor, run.owner_id, run.project_id);
   if (criterionScores.some((draft) => draft.status !== 'candidate')) {
     throw new Error('criterion_score_must_be_candidate');
   }
@@ -156,10 +195,22 @@ export function recordPreCorrectionDraft(
     .prepare('SELECT * FROM submissions WHERE id = ?')
     .get(run.submission_id) as SubmissionRow | undefined;
   const rubric = db
-    .prepare('SELECT id, project_scope, criteria_json, status FROM rubric_versions WHERE id = ?')
+    .prepare(
+      `SELECT id, project_id, project_scope, criteria_json, status
+       FROM rubric_versions WHERE id = ?`,
+    )
     .get(run.rubric_version_id) as RubricRow | undefined;
-  if (!batch || !submission || !rubric) throw new Error('pre_correction_reference_not_found');
+  const gradingProfile = db
+    .prepare(
+      `SELECT id, project_id, project_scope, status
+       FROM institutional_grading_profiles WHERE id = ?`,
+    )
+    .get(run.grading_profile_id) as GradingProfileRow | undefined;
+  if (!batch || !submission || !rubric || !gradingProfile) {
+    throw new Error('pre_correction_reference_not_found');
+  }
   if (rubric.status !== 'validated') throw new Error('rubric_not_validated');
+  if (gradingProfile.status !== 'validated') throw new Error('grading_profile_not_validated');
 
   const manifestSubmissionRefs = JSON.parse(manifest.submission_refs_json) as unknown;
   if (
@@ -182,28 +233,47 @@ export function recordPreCorrectionDraft(
     submission.owner_id === run.owner_id,
     submission.project_scope === run.project_scope,
     rubric.project_scope === run.project_scope,
+    gradingProfile.project_scope === run.project_scope,
   ];
+  if (run.project_id) {
+    alignedRefs.push(
+      manifest.project_id === run.project_id,
+      batch.project_id === run.project_id,
+      submission.project_id === run.project_id,
+      rubric.project_id === run.project_id,
+      gradingProfile.project_id === run.project_id,
+    );
+  } else {
+    alignedRefs.push(
+      manifest.project_id === null,
+      batch.project_id === null,
+      submission.project_id === null,
+      rubric.project_id === null,
+      gradingProfile.project_id === null,
+    );
+  }
   if (alignedRefs.some((isAligned) => !isAligned)) throw new Error('pre_correction_scope_mismatch');
 
   const criteria = z.array(RubricCriterionSchema).parse(JSON.parse(rubric.criteria_json));
   assertCriterionCoverage(criteria, criterionScores);
-  assertEvidence(actor, run.project_scope, criterionScores);
+  assertEvidence(actor, run.project_scope, criterionScores, run.project_id);
   assertModelProfile(run.model_profile_ref);
 
   const save = db.transaction(() => {
     db.prepare(
       `INSERT INTO pre_correction_runs
-         (id, manifest_id, batch_id, submission_id, owner_id, project_scope,
+         (id, manifest_id, batch_id, submission_id, owner_id, project_id, project_scope,
           rubric_version_id, grading_profile_id, analysis_type, evidence_snapshot_ref,
           method_version, model_profile_ref, criterion_score_refs_json,
           review_reasons_json, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'needs_review', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'needs_review', ?, ?)`,
     ).run(
       run.run_id,
       run.manifest_id,
       run.batch_id,
       run.submission_id,
       run.owner_id,
+      run.project_id ?? null,
       run.project_scope,
       run.rubric_version_id,
       run.grading_profile_id,
@@ -265,7 +335,7 @@ export function getPreCorrectionDraft(
     | PreCorrectionRunRow
     | undefined;
   if (!runRow) throw new Error('pre_correction_run_not_found');
-  assertTeacherOwnership(actor, runRow.owner_id);
+  assertCorrectionAccess(actor, runRow.owner_id, runRow.project_id);
 
   const scoreRows = getDb()
     .prepare('SELECT * FROM criterion_score_drafts WHERE run_id = ? ORDER BY criterion_id')
@@ -298,17 +368,19 @@ function assertEvidence(
   actor: AuthUser,
   projectScope: string,
   criterionScores: CriterionScoreDraft[],
+  projectId?: string | null,
 ): void {
   const evidenceRefs = [...new Set(criterionScores.flatMap((draft) => draft.evidence_refs))];
   const placeholders = evidenceRefs.map(() => '?').join(',');
   const rows = getDb()
     .prepare(
-      `SELECT id, owner_id, project_scope, status FROM evidence_events
+      `SELECT id, owner_id, project_id, project_scope, status FROM evidence_events
        WHERE id IN (${placeholders})`,
     )
     .all(...evidenceRefs) as Array<{
     id: string;
     owner_id: string;
+    project_id: string | null;
     project_scope: string;
     status: string;
   }>;
@@ -323,7 +395,10 @@ function assertEvidence(
   ) {
     throw new Error('evidence_not_usable');
   }
-  if (actor.role === 'teacher' && rows.some((row) => row.owner_id !== actor.id)) {
+  if (projectId && rows.some((row) => row.project_id !== projectId)) {
+    throw new Error('evidence_not_usable');
+  }
+  if (!projectId && actor.role === 'teacher' && rows.some((row) => row.owner_id !== actor.id)) {
     throw new Error('scope_denied');
   }
 }
