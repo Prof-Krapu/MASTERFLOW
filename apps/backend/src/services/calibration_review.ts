@@ -17,10 +17,12 @@ import {
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 interface BatchRow {
   id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   grading_profile_id: string;
 }
@@ -28,6 +30,7 @@ interface BatchRow {
 interface GradingProfileRow {
   id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   scale_json: string;
   expected_band_json: string;
@@ -40,6 +43,7 @@ interface GradingProfileRow {
 interface RunMetricRow {
   run_id: string;
   submission_id: string;
+  project_id: string | null;
   draft_score: number;
   max_points: number;
   mean_confidence: number;
@@ -74,11 +78,40 @@ function assertTeacherOwnership(actor: AuthUser, ownerId: string): void {
   if (actor.role === 'teacher' && actor.id !== ownerId) throw new Error('scope_denied');
 }
 
+function assertProjectAccess(
+  actor: AuthUser,
+  ownerId: string,
+  projectId: string | null,
+): void {
+  if (!projectId) {
+    assertTeacherOwnership(actor, ownerId);
+    return;
+  }
+  const decision = decideScopedPermission({
+    actor,
+    projectId,
+    minimumProjectRole: 'editor',
+  });
+  if (!decision.allowed) throw new Error('scope_denied');
+}
+
+function assertCanCreateCalibration(
+  actor: AuthUser,
+  ownerId: string,
+  projectId: string | null,
+): void {
+  if (actor.role !== 'teacher' && actor.id !== ownerId) {
+    throw new Error('calibration_owner_required');
+  }
+  assertProjectAccess(actor, ownerId, projectId);
+}
+
 function toReviewDTO(row: CohortCalibrationReviewRow): CohortCalibrationReview {
   return CohortCalibrationReviewSchema.parse({
     review_id: row.id,
     batch_id: row.batch_id,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     project_scope: row.project_scope,
     grading_profile_id: row.grading_profile_id,
     method_version: row.method_version,
@@ -125,21 +158,31 @@ export function createCalibrationReview(
 
   const db = getDb();
   const batch = db
-    .prepare('SELECT id, owner_id, project_scope, grading_profile_id FROM correction_batches WHERE id = ?')
+    .prepare(
+      `SELECT id, owner_id, project_id, project_scope, grading_profile_id
+       FROM correction_batches WHERE id = ?`,
+    )
     .get(input.batch_id) as BatchRow | undefined;
   if (!batch) throw new Error('correction_batch_not_found');
-  assertTeacherOwnership(actor, batch.owner_id);
+  if (batch.project_id && batch.project_scope !== batch.project_id) {
+    throw new Error('project_scope_mismatch');
+  }
+  assertCanCreateCalibration(actor, batch.owner_id, batch.project_id);
 
   const profile = db
     .prepare(
-      `SELECT id, owner_id, project_scope, scale_json, expected_band_json,
+      `SELECT id, owner_id, project_id, project_scope, scale_json, expected_band_json,
               max_global_delta, protected_thresholds_json,
               threshold_crossing_requires_validation, status
        FROM institutional_grading_profiles WHERE id = ?`,
     )
     .get(batch.grading_profile_id) as GradingProfileRow | undefined;
   if (!profile || profile.status !== 'validated') throw new Error('grading_profile_not_validated');
-  if (profile.owner_id !== batch.owner_id || profile.project_scope !== batch.project_scope) {
+  if (
+    profile.owner_id !== batch.owner_id ||
+    profile.project_scope !== batch.project_scope ||
+    profile.project_id !== batch.project_id
+  ) {
     throw new Error('calibration_scope_mismatch');
   }
 
@@ -155,7 +198,7 @@ export function createCalibrationReview(
   );
   const rows = db
     .prepare(
-      `SELECT r.id AS run_id, r.submission_id,
+      `SELECT r.id AS run_id, r.submission_id, r.project_id,
               SUM(s.draft_score) AS draft_score,
               SUM(s.max_points) AS max_points,
               AVG(s.confidence) AS mean_confidence
@@ -167,6 +210,9 @@ export function createCalibrationReview(
     )
     .all(batch.id) as RunMetricRow[];
   if (rows.length === 0) throw new Error('no_pre_correction_runs');
+  if (rows.some((row) => row.project_id !== batch.project_id)) {
+    throw new Error('calibration_scope_mismatch');
+  }
 
   const metrics = rows.map((row) => ({
     run_id: row.run_id,
@@ -210,6 +256,7 @@ export function createCalibrationReview(
     review_id: input.review_id,
     batch_id: batch.id,
     owner_id: batch.owner_id,
+    project_id: batch.project_id,
     project_scope: batch.project_scope,
     grading_profile_id: profile.id,
     method_version: 'cohort-quality-review-v1',
@@ -249,15 +296,16 @@ export function createCalibrationReview(
   const save = db.transaction(() => {
     db.prepare(
       `INSERT INTO cohort_calibration_reviews
-         (id, batch_id, owner_id, project_scope, grading_profile_id, method_version,
+         (id, batch_id, owner_id, project_id, project_scope, grading_profile_id, method_version,
           statistics_json,
           diagnostic_delta_candidate, protected_threshold_crossing_count,
           alert_codes_json, sample_item_refs_json, status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review_required', ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'review_required', ?)`,
     ).run(
       review.review_id,
       review.batch_id,
       review.owner_id,
+      review.project_id ?? null,
       review.project_scope,
       review.grading_profile_id,
       review.method_version,
@@ -315,7 +363,7 @@ export function getCalibrationReview(
     .prepare('SELECT * FROM cohort_calibration_reviews WHERE id = ?')
     .get(reviewId) as CohortCalibrationReviewRow | undefined;
   if (!row) throw new Error('calibration_review_not_found');
-  assertTeacherOwnership(actor, row.owner_id);
+  assertProjectAccess(actor, row.owner_id, row.project_id);
   const items = getDb()
     .prepare('SELECT * FROM quality_review_items WHERE calibration_review_id = ? ORDER BY id')
     .all(reviewId) as QualityReviewItemRow[];

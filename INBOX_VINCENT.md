@@ -14,6 +14,35 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Bridge Project/Scope calibration livre
+
+MALEX/Codex a rattache les diagnostics de calibration et les echantillons de controle qualite
+aux vrais projets.
+
+Regle active :
+
+- `CohortCalibrationReview` porte le meme `project_id` que batch, profil et runs ;
+- `project_scope === project_id` pendant la transition ;
+- un teacher membre `editor+` peut produire et lire le diagnostic ;
+- les `QualityReviewItem` heritent du projet via la review ;
+- le delta reste strictement candidat et n'est applique a aucun score ;
+- les seuils proteges restent des alertes de validation humaine ;
+- les objets legacy sans `project_id` gardent leur fonctionnement historique.
+
+Action demandee :
+
+1. faire porter `project_id` a tes futurs diagnostics de cohorte ;
+2. ne jamais calculer depuis des runs d'un autre projet ou d'un scope texte reconstruit ;
+3. ne jamais appliquer `diagnostic_delta_candidate` dans un runner ;
+4. utiliser l'echantillon uniquement pour prioriser une relecture humaine ;
+5. signaler toute ancienne logique Corrector qui modifie directement les scores afin de
+   l'absorber comme proposition ou delta humain explicite.
+
+Version courte : le système montre le frame data de la cohorte, il ne joue pas le round à la
+place du prof. Aucun auto-balance patch sur les notes.
+
+---
+
 ## 2026-06-13 — open — Bridge Project/Scope feedback et export livre
 
 MALEX/Codex a termine le bridge projet jusqu'au job `export_prepare`.

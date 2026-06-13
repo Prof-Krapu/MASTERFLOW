@@ -7,6 +7,7 @@ import {
   createCalibrationReview,
   getCalibrationReview,
 } from '../src/services/calibration_review.ts';
+import {addProjectMember, createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {
   id: 'teacher-calibration',
@@ -29,6 +30,7 @@ const admin: AuthUser = {
   role: 'admin',
 };
 const now = Date.now();
+let calibrationProjectId = '';
 
 beforeAll(async () => {
   await seedAll();
@@ -41,6 +43,9 @@ beforeAll(async () => {
   for (const actor of [teacher, otherTeacher, student, admin]) {
     insertUser.run(actor.id, actor.username, actor.username, actor.role, now, now);
   }
+  const project = createProject(teacher, {name: 'Projet calibration bridge'});
+  calibrationProjectId = project.project_id;
+  addProjectMember(teacher, calibrationProjectId, {user_id: otherTeacher.id, role: 'editor'});
   db.prepare(
     `INSERT INTO evidence_events
        (id, source_type, adapter_id, owner_id, project_scope, target_refs_json,
@@ -228,6 +233,131 @@ beforeAll(async () => {
     );
     insertScore.run(scoreId, runId, submissionId, 8 + index, 0.8, now);
   }
+
+  db.prepare(
+    `INSERT INTO evidence_events
+       (id, source_type, adapter_id, owner_id, project_id, project_scope, target_refs_json,
+        payload_ref, extraction_confidence, privacy_level, occurred_at, status, created_at)
+     VALUES ('evidence-calibration-project', 'submission', 'ocr-submission-v1', ?, ?, ?,
+             '[]', 'storage://private/calibration-project', 0.9, 'private', ?,
+             'candidate', ?)`,
+  ).run(teacher.id, calibrationProjectId, calibrationProjectId, now, now);
+  db.prepare(
+    `INSERT INTO rubric_templates
+       (id, owner_id, project_id, project_scope, title, status, created_at, updated_at)
+     VALUES ('template-calibration-project', ?, ?, ?, 'Calibration projet',
+             'active', ?, ?)`,
+  ).run(teacher.id, calibrationProjectId, calibrationProjectId, now, now);
+  db.prepare(
+    `INSERT INTO rubric_versions
+       (id, template_id, version, project_id, project_scope, criteria_json, total_points,
+        status, created_by, created_at)
+     VALUES ('rubric-calibration-project-v1', 'template-calibration-project', 1, ?, ?, ?,
+             20, 'validated', ?, ?)`,
+  ).run(
+    calibrationProjectId,
+    calibrationProjectId,
+    JSON.stringify([
+      {
+        criterion_id: 'global',
+        label: 'Global',
+        description: 'Score brut projet.',
+        weight: 1,
+        max_points: 20,
+        evidence_requirements: [],
+        required: true,
+      },
+    ]),
+    teacher.id,
+    now,
+  );
+  db.prepare(
+    `INSERT INTO institutional_grading_profiles
+       (id, owner_id, project_id, project_scope, version, scale_json, expected_band_json,
+        anchors_json, calibration_mode, max_global_delta,
+        protected_thresholds_json, threshold_crossing_requires_validation,
+        status, created_at)
+     VALUES ('grading-calibration-project-v1', ?, ?, ?, 1, '[0,20]', '[13,14]', '{}',
+             'diagnostic_then_teacher_validation', 1, '[10]', 1, 'validated', ?)`,
+  ).run(teacher.id, calibrationProjectId, calibrationProjectId, now);
+  db.prepare(
+    `INSERT INTO correction_batches
+       (id, owner_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        status, submission_count, created_at, updated_at)
+     VALUES ('batch-calibration-project', ?, ?, ?, 'rubric-calibration-project-v1',
+             'grading-calibration-project-v1', 'review', 3, ?, ?)`,
+  ).run(teacher.id, calibrationProjectId, calibrationProjectId, now, now);
+  db.prepare(
+    `INSERT INTO correction_batches
+       (id, owner_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        status, submission_count, created_at, updated_at)
+     VALUES ('batch-calibration-project-mismatch', ?, ?, 'legacy-free-text',
+             'rubric-calibration-project-v1', 'grading-calibration-project-v1',
+             'review', 0, ?, ?)`,
+  ).run(teacher.id, calibrationProjectId, now, now);
+
+  const projectSubmissionRefs = [];
+  for (let index = 1; index <= 3; index += 1) {
+    const submissionId = `submission-calibration-project-${index}`;
+    projectSubmissionRefs.push(submissionId);
+    db.prepare(
+      `INSERT INTO submissions
+         (id, batch_id, owner_id, project_id, project_scope, source_evidence_ref,
+          identity_status, status, privacy_level, created_at, updated_at)
+       VALUES (?, 'batch-calibration-project', ?, ?, ?, 'evidence-calibration-project',
+               'confirmed', 'review', 'private', ?, ?)`,
+    ).run(submissionId, teacher.id, calibrationProjectId, calibrationProjectId, now, now);
+  }
+  db.prepare(
+    `INSERT INTO pre_correction_manifests
+       (id, batch_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        submission_refs_json, workflow_version, status, created_by,
+        validation_ref, created_at)
+     VALUES ('manifest-calibration-project', 'batch-calibration-project', ?, ?,
+             'rubric-calibration-project-v1', 'grading-calibration-project-v1', ?,
+             'workflow-project-v1', 'validated', ?, 'validation-calibration-project', ?)`,
+  ).run(
+    calibrationProjectId,
+    calibrationProjectId,
+    JSON.stringify(projectSubmissionRefs),
+    teacher.id,
+    now,
+  );
+  const projectScores = [11, 12, 13];
+  projectScores.forEach((score, index) => {
+    const suffix = index + 1;
+    const runId = `run-calibration-project-${suffix}`;
+    const submissionId = `submission-calibration-project-${suffix}`;
+    const scoreId = `score-calibration-project-${suffix}`;
+    db.prepare(
+      `INSERT INTO pre_correction_runs
+         (id, manifest_id, batch_id, submission_id, owner_id, project_id, project_scope,
+          rubric_version_id, grading_profile_id, analysis_type, evidence_snapshot_ref,
+          method_version, criterion_score_refs_json, review_reasons_json,
+          status, created_at, updated_at)
+       VALUES (?, 'manifest-calibration-project', 'batch-calibration-project', ?, ?, ?, ?,
+               'rubric-calibration-project-v1', 'grading-calibration-project-v1',
+               'rubric_scoring', ?, 'criterion-analysis-v1', ?, '[]',
+               'needs_review', ?, ?)`,
+    ).run(
+      runId,
+      submissionId,
+      teacher.id,
+      calibrationProjectId,
+      calibrationProjectId,
+      `storage://private/snapshots/${runId}`,
+      JSON.stringify([scoreId]),
+      now,
+      now,
+    );
+    db.prepare(
+      `INSERT INTO criterion_score_drafts
+         (id, run_id, submission_id, rubric_version_id, criterion_id, draft_score,
+          max_points, evidence_refs_json, confidence, status, created_at)
+       VALUES (?, ?, ?, 'rubric-calibration-project-v1', 'global', ?, 20,
+               '["evidence-calibration-project"]', 0.8, 'candidate', ?)`,
+    ).run(scoreId, runId, submissionId, score, now);
+  });
 });
 
 describe('PR-C4 — calibration et contrôle qualité internes', () => {
@@ -240,6 +370,7 @@ describe('PR-C4 — calibration et contrôle qualité internes', () => {
     };
     expect(() => createCalibrationReview(student, input)).toThrow('permission_denied');
     expect(() => createCalibrationReview(otherTeacher, input)).toThrow('scope_denied');
+    expect(() => createCalibrationReview(admin, input)).toThrow('calibration_owner_required');
   });
 
   it('crée un diagnostic borné et signale le seuil protégé sans toucher aux scores', () => {
@@ -313,6 +444,47 @@ describe('PR-C4 — calibration et contrôle qualité internes', () => {
     expect(bundle.review.statistics.position).toBe('insufficient_data');
     expect(bundle.review.diagnostic_delta_candidate).toBeNull();
     expect(bundle.review.alert_codes).toEqual(['insufficient_sample']);
+  });
+
+  it('permet un diagnostic projet par un éditeur sans modifier les scores', () => {
+    const before = getDb()
+      .prepare(
+        `SELECT id, draft_score, status FROM criterion_score_drafts
+         WHERE run_id LIKE 'run-calibration-project-%' ORDER BY id`,
+      )
+      .all();
+    const bundle = createCalibrationReview(otherTeacher, {
+      review_id: 'calibration-review-project',
+      batch_id: 'batch-calibration-project',
+      max_sample_size: 8,
+      created_at: now,
+    });
+
+    expect(bundle.review).toMatchObject({
+      project_id: calibrationProjectId,
+      project_scope: calibrationProjectId,
+      owner_id: teacher.id,
+      status: 'review_required',
+    });
+    expect(getCalibrationReview(otherTeacher, bundle.review.review_id)).toEqual(bundle);
+    expect(getCalibrationReview(teacher, bundle.review.review_id)).toEqual(bundle);
+    expect(
+      getDb()
+        .prepare(
+          `SELECT id, draft_score, status FROM criterion_score_drafts
+           WHERE run_id LIKE 'run-calibration-project-%' ORDER BY id`,
+        )
+        .all(),
+    ).toEqual(before);
+
+    expect(() =>
+      createCalibrationReview(otherTeacher, {
+        review_id: 'calibration-review-project-mismatch',
+        batch_id: 'batch-calibration-project-mismatch',
+        max_sample_size: 8,
+        created_at: now,
+      }),
+    ).toThrow('project_scope_mismatch');
   });
 
   it('audite le diagnostic sans exposer les scores individuels', () => {

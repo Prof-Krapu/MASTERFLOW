@@ -990,6 +990,7 @@ export const CohortCalibrationReviewSchema = z
     review_id: z.string().min(1),
     batch_id: z.string().min(1),
     owner_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     grading_profile_id: z.string().min(1),
     method_version: z.string().min(1),

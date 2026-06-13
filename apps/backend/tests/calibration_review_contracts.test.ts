@@ -10,7 +10,8 @@ describe('PR-C4 — contrats calibration et contrôle qualité', () => {
       review_id: 'calibration-review-contract',
       batch_id: 'batch-contract',
       owner_id: 'teacher-contract',
-      project_scope: 'course-contract',
+      project_id: 'project-contract',
+      project_scope: 'project-contract',
       grading_profile_id: 'grading-contract',
       method_version: 'cohort-quality-review-v1',
       statistics: {

@@ -4,6 +4,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Bridge Project/Scope calibration et revue qualite
+
+**Livrable MALEX/Codex.** Rattachement du diagnostic de cohorte au vrai projet, sans ajouter
+d'application automatique du delta.
+
+Ajouts :
+
+- `project_id` nullable dans `CohortCalibrationReview` ;
+- colonne et index projet idempotents sur `cohort_calibration_reviews` ;
+- batch, profil institutionnel et runs sources obligatoirement alignes sur le meme projet ;
+- `project_scope === project_id` pour les nouveaux diagnostics projet ;
+- creation et lecture accessibles aux membres `editor+` du projet ;
+- items de controle qualite heritent du projet par leur review, sans duplication de scope ;
+- fallback legacy sans `project_id` conserve avec les permissions historiques ;
+- tests de diagnostic cree par un editeur, lecture owner/editor, mismatch et immutabilite des
+  scores ;
+- aucun delta applique, aucune note finale, aucun profilage durable et aucune validation
+  automatique.
+
+Verification :
+
+- `npm test` : 37 fichiers / 158 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Bridge Project/Scope des feedbacks et exports
 
 **Livrable MALEX/Codex.** Troisieme tranche de migration progressive vers les vrais projets,

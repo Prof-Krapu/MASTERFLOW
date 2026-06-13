@@ -23,6 +23,21 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope calibration
+
+Le diagnostic de cohorte est maintenant rattache au vrai projet. Batch, profil institutionnel,
+runs et review doivent porter le meme `project_id`; les membres `editor+` peuvent produire et
+lire le diagnostic.
+
+Invariant inchangé : `diagnostic_delta_candidate` reste une information de review. Aucun score
+n'est modifie, aucun seuil n'est franchi automatiquement et aucun item de qualite ne devient une
+etiquette durable d'etudiant.
+
+Merci de mapper tes anciennes fonctions de calibration vers ce diagnostic et de signaler toute
+logique qui applique encore directement un delta.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope feedback/export
 
 Le bridge projet couvre maintenant `FeedbackDraft`, `CorrectionExportPreview` et

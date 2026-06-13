@@ -1,6 +1,6 @@
 # SPEC — PR-C4 Calibration et contrôle qualité
 
-Statut : `FOUNDATION IMPLEMENTED / INTERNAL ONLY / REVIEW REQUIRED / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / PROJECT BRIDGE / INTERNAL ONLY / REVIEW REQUIRED / 2026-06-13`
 
 ## Objectif
 
@@ -57,11 +57,16 @@ Un item référence une submission et un run privés. Il ne contient ni nom d'é
 
 ## Permissions et audit
 
-- création et lecture : teacher owner, admin/godmode en supervision ;
+- création et lecture legacy : teacher owner, admin/godmode en supervision ;
+- création et lecture projet : teacher membre `editor+`, admin/godmode en supervision ;
 - aucune route publique ;
 - aucune donnée individuelle dans l'audit ;
 - profil institutionnel validé et scope cohérent obligatoires ;
 - taille d'échantillon bornée entre 3 et 20.
+
+Pour un diagnostic projet, batch, profil institutionnel, runs et review portent le meme
+`project_id`, avec `project_scope` identique pendant la transition. Les items de qualite
+heritent de ce projet via leur review. Les objets legacy sans `project_id` restent compatibles.
 
 ## Hors scope
 
