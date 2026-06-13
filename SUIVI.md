@@ -4,6 +4,44 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-7 RAG permissionne
+
+**Livrable MALEX/Codex.** Shell RAG scope, cite, revoke-aware et branche sur Resource Truth et
+Jobs, sans pretendre livrer BGE/Qdrant.
+
+Ajouts :
+
+- contrats partages `RagResource`, `RagResourceChunk`, `RagContextPack`, `RagCitation`,
+  `RagQueryRequest/Response`, statuts et raisons de refus ;
+- tables `rag_resources`, `rag_resource_chunks`, `rag_context_packs`, `rag_query_events` ;
+- routes auth `POST /rag/query`, `GET/POST /rag/resources`,
+  `POST /rag/resources/:id/reindex`, `POST /rag/resources/:id/revoke`,
+  `GET /rag/context-packs/:id` ;
+- chaque manifeste RAG reference une ressource Resource Truth existante et herite de son statut ;
+- permission scope/owner avant retrieval et avant scoring ;
+- retrieval lexical borne pour valider le contrat sans moteur vectoriel fictif ;
+- seules les ressources `validated` et fiables alimentent les context packs ;
+- citations obligatoires avec source, statut, trust, scope, score et extrait court ;
+- query sans source fiable = refus explicite, sans reponse brodee ;
+- query stockee uniquement sous forme de hash ;
+- detection de secrets avant creation des chunks ;
+- revoke admin/godmode, chunks revoques et context packs existants marques `stale` ;
+- reindex raccorde au shell jobs par un job `rag_reindex`, chunks marques `stale` en attente ;
+- tests service + router.
+
+Le moteur local BGE-M3/reranker/Qdrant reste a raccorder par Vincent derriere le job
+`rag_reindex`. Le contrat de permission, provenance, citation et revocation est deja en place.
+
+Verification :
+
+- `npm test` : 37 fichiers / 152 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — PR-6 Guided Runtime prive
 
 **Livrable MALEX/Codex.** Premier runtime guide prive, testable sans LLM, branche sur

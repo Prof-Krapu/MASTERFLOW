@@ -16,6 +16,7 @@ import {createJobsRouter} from './routers/jobs.ts';
 import {createProjectsRouter} from './routers/projects.ts';
 import {createSchemaTemplatesRouter} from './routers/schema_templates.ts';
 import {createGuidedRuntimeRouter} from './routers/guided_runtime.ts';
+import {createRagRouter} from './routers/rag.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -69,6 +70,7 @@ async function main(): Promise<void> {
   app.use(api, createProjectsRouter());
   app.use(api, createSchemaTemplatesRouter());
   app.use(api, createGuidedRuntimeRouter());
+  app.use(api, createRagRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

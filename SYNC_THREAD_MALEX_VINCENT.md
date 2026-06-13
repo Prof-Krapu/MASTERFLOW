@@ -23,6 +23,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-7 RAG permissionne livre
+
+Le shell `RAG permissionne` est livre.
+
+Il ajoute manifestes ressources/chunks, context packs cites, query events hashes, filtrage
+scope/owner avant scoring, refus sans source fiable, secret detection et revocation qui rend les
+packs existants `stale`.
+
+Le retrieval actuel est lexical et borne : il sert a valider le contrat sans faire semblant que
+BGE/Qdrant est deja branche. Le point de raccord runner est le job `rag_reindex` existant.
+
+Merci de brancher ton runtime BGE-M3/reranker/Qdrant derriere ce job, en conservant strictement
+l'ordre permission -> statut/trust -> retrieval -> citations -> audit. L'index reste derive ;
+Resource Truth reste l'autorite.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-6 Guided Runtime prive livre
 
 La premiere couche backend du `Guided Runtime prive` est livree.

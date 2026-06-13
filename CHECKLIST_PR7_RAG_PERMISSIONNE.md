@@ -1,6 +1,6 @@
 # CHECKLIST PR-7 — RAG permissionne
 
-Statut : `BACKEND CHECKLIST / 2026-06-13`
+Statut : `BACKEND IMPLEMENTED / 2026-06-13`
 
 ## Intention
 
@@ -147,3 +147,18 @@ GET /api/v1/rag/context-packs/:id
 - hallucination presentee comme source ;
 - ressource revoquee encore visible ;
 - endpoint diagnostic expose a teacher/student.
+
+## Implementation livree
+
+- tables ressources/chunks/context packs/query events ;
+- contrats partages RAG ;
+- routes query/resources/reindex/revoke/context packs ;
+- manifestes relies a Resource Truth ;
+- permission avant retrieval/scoring ;
+- retrieval lexical borne, remplacable par BGE/Qdrant derriere le meme contrat ;
+- citations obligatoires et refus explicites ;
+- query hash uniquement dans l'audit ;
+- secret detection ;
+- revoke avec chunks revoques et context packs `stale` ;
+- reindex via job `rag_reindex` ;
+- tests service + router.

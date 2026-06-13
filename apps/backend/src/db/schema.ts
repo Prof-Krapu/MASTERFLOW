@@ -207,6 +207,77 @@ function migrate(d: Database.Database): void {
       PRIMARY KEY (resource_id, scope_type, scope_id)
     );
 
+    -- ───────────────────────── RAG permissionné PR-7 ──────────────────────
+    CREATE TABLE IF NOT EXISTS rag_resources (
+      id            TEXT PRIMARY KEY,
+      resource_id   TEXT NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
+      owner_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id    TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      source_type   TEXT NOT NULL,
+      source_uri    TEXT NOT NULL,
+      title         TEXT NOT NULL,
+      status        TEXT NOT NULL
+                      CHECK (status IN ('candidate','validated','deprecated','revoked','archived')),
+      trust_status  TEXT NOT NULL
+                      CHECK (trust_status IN (
+                        'unverified','source_verified','canonical','private_reference'
+                      )),
+      scope_type    TEXT NOT NULL CHECK (scope_type IN ('owner','project')),
+      scope_id      TEXT NOT NULL,
+      content_hash  TEXT NOT NULL,
+      indexed_at    INTEGER,
+      revoked_at    INTEGER,
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL,
+      UNIQUE(resource_id, scope_type, scope_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS rag_resource_chunks (
+      id              TEXT PRIMARY KEY,
+      resource_id     TEXT NOT NULL REFERENCES rag_resources(id) ON DELETE CASCADE,
+      chunk_index     INTEGER NOT NULL CHECK (chunk_index >= 0),
+      content_excerpt TEXT NOT NULL,
+      embedding_ref   TEXT,
+      token_count     INTEGER CHECK (token_count IS NULL OR token_count >= 0),
+      metadata_json   TEXT NOT NULL DEFAULT '{}',
+      status          TEXT NOT NULL DEFAULT 'active'
+                        CHECK (status IN ('active','stale','revoked')),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(resource_id, chunk_index)
+    );
+
+    CREATE TABLE IF NOT EXISTS rag_context_packs (
+      id              TEXT PRIMARY KEY,
+      query_hash      TEXT NOT NULL,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      scope_type      TEXT NOT NULL CHECK (scope_type IN ('owner','project')),
+      scope_id        TEXT NOT NULL,
+      citations_json  TEXT NOT NULL,
+      status          TEXT NOT NULL
+                        CHECK (status IN ('active','refused','stale','expired')),
+      refusal_reason  TEXT
+                        CHECK (
+                          refusal_reason IS NULL
+                          OR refusal_reason IN (
+                            'no_authorized_source','no_reliable_source','scope_denied'
+                          )
+                        ),
+      created_at      INTEGER NOT NULL,
+      expires_at      INTEGER
+    );
+
+    CREATE TABLE IF NOT EXISTS rag_query_events (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      query_hash      TEXT NOT NULL,
+      scope_type      TEXT NOT NULL CHECK (scope_type IN ('owner','project')),
+      scope_id        TEXT NOT NULL,
+      result_count    INTEGER NOT NULL CHECK (result_count >= 0),
+      refusal_reason  TEXT,
+      created_at      INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Template / Schema Registry PR-5 ────────────
     CREATE TABLE IF NOT EXISTS schema_templates (
       id                    TEXT PRIMARY KEY,
@@ -771,6 +842,14 @@ function migrate(d: Database.Database): void {
       ON ownership_edges(object_type, object_id, scope);
     CREATE INDEX IF NOT EXISTS idx_resource_scopes_scope
       ON resource_scopes(scope_type, scope_id, access_level);
+    CREATE INDEX IF NOT EXISTS idx_rag_resources_scope
+      ON rag_resources(scope_type, scope_id, status, trust_status);
+    CREATE INDEX IF NOT EXISTS idx_rag_chunks_resource
+      ON rag_resource_chunks(resource_id, status, chunk_index);
+    CREATE INDEX IF NOT EXISTS idx_rag_context_packs_user
+      ON rag_context_packs(user_id, status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_rag_query_events_user
+      ON rag_query_events(user_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_schema_templates_status
       ON schema_templates(domain, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_schema_templates_owner
@@ -918,6 +997,51 @@ export interface ResourceScopeRow {
   scope_id: string;
   access_level: 'read' | 'write' | 'admin';
   created_at: number;
+}
+
+export interface RagResourceRow {
+  id: string;
+  resource_id: string;
+  owner_id: string;
+  project_id: string | null;
+  source_type: string;
+  source_uri: string;
+  title: string;
+  status: 'candidate' | 'validated' | 'deprecated' | 'revoked' | 'archived';
+  trust_status: 'unverified' | 'source_verified' | 'canonical' | 'private_reference';
+  scope_type: 'owner' | 'project';
+  scope_id: string;
+  content_hash: string;
+  indexed_at: number | null;
+  revoked_at: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface RagResourceChunkRow {
+  id: string;
+  resource_id: string;
+  chunk_index: number;
+  content_excerpt: string;
+  embedding_ref: string | null;
+  token_count: number | null;
+  metadata_json: string;
+  status: 'active' | 'stale' | 'revoked';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface RagContextPackRow {
+  id: string;
+  query_hash: string;
+  user_id: string;
+  scope_type: 'owner' | 'project';
+  scope_id: string;
+  citations_json: string;
+  status: 'active' | 'refused' | 'stale' | 'expired';
+  refusal_reason: 'no_authorized_source' | 'no_reliable_source' | 'scope_denied' | null;
+  created_at: number;
+  expires_at: number | null;
 }
 
 export interface SchemaTemplateRow {

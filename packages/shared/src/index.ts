@@ -1316,6 +1316,116 @@ export const SearchResourcesResponseSchema = z.object({
 });
 export type SearchResourcesResponse = z.infer<typeof SearchResourcesResponseSchema>;
 
+// ───────────────────────── RAG permissionné PR-7 ─────────────────────────
+
+export const RagResourceStatusSchema = z.enum([
+  'candidate',
+  'validated',
+  'deprecated',
+  'revoked',
+  'archived',
+]);
+export type RagResourceStatus = z.infer<typeof RagResourceStatusSchema>;
+
+export const RagTrustStatusSchema = z.enum([
+  'unverified',
+  'source_verified',
+  'canonical',
+  'private_reference',
+]);
+export type RagTrustStatus = z.infer<typeof RagTrustStatusSchema>;
+
+export const RagResourceSchema = z.object({
+  rag_resource_id: z.string().min(1),
+  resource_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  source_type: z.string().min(1),
+  source_uri: z.string().min(1),
+  title: z.string().min(1),
+  status: RagResourceStatusSchema,
+  trust_status: RagTrustStatusSchema,
+  scope_type: z.enum(['owner', 'project']),
+  scope_id: z.string().min(1),
+  content_hash: z.string().min(1),
+  indexed_at: z.number().int().nonnegative().nullable(),
+  revoked_at: z.number().int().nonnegative().nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type RagResource = z.infer<typeof RagResourceSchema>;
+
+export const RagResourceChunkSchema = z.object({
+  chunk_id: z.string().min(1),
+  resource_id: z.string().min(1),
+  chunk_index: z.number().int().nonnegative(),
+  content_excerpt: z.string().min(1).max(2000),
+  embedding_ref: z.string().min(1).nullable(),
+  token_count: z.number().int().nonnegative().nullable(),
+  metadata: z.record(z.unknown()),
+  status: z.enum(['active', 'stale', 'revoked']),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type RagResourceChunk = z.infer<typeof RagResourceChunkSchema>;
+
+export const RagCitationSchema = z.object({
+  resource_id: z.string().min(1),
+  chunk_id: z.string().min(1),
+  title: z.string().min(1),
+  source_uri: z.string().min(1),
+  status: RagResourceStatusSchema,
+  trust_status: RagTrustStatusSchema,
+  scope_type: z.enum(['owner', 'project']),
+  scope_id: z.string().min(1),
+  score: z.number().min(0).max(1),
+  excerpt: z.string().min(1).max(500),
+});
+export type RagCitation = z.infer<typeof RagCitationSchema>;
+
+export const RagRefusalReasonSchema = z.enum([
+  'no_authorized_source',
+  'no_reliable_source',
+  'scope_denied',
+]);
+export type RagRefusalReason = z.infer<typeof RagRefusalReasonSchema>;
+
+export const RagContextPackSchema = z.object({
+  pack_id: z.string().min(1),
+  query_hash: z.string().min(1),
+  user_id: z.string().min(1),
+  scope_type: z.enum(['owner', 'project']),
+  scope_id: z.string().min(1),
+  citations: z.array(RagCitationSchema),
+  status: z.enum(['active', 'refused', 'stale', 'expired']),
+  refusal_reason: RagRefusalReasonSchema.nullable(),
+  created_at: z.number().int().nonnegative(),
+  expires_at: z.number().int().nonnegative().nullable(),
+});
+export type RagContextPack = z.infer<typeof RagContextPackSchema>;
+
+export const RegisterRagResourceRequestSchema = z.object({
+  resource_id: z.string().min(1),
+  project_id: z.string().min(1).nullable().optional(),
+  source_type: z.string().min(1).max(80),
+  source_uri: z.string().min(1).max(1000),
+  chunks: z.array(z.string().min(1).max(2000)).min(1).max(100),
+});
+export type RegisterRagResourceRequest = z.infer<typeof RegisterRagResourceRequestSchema>;
+
+export const RagQueryRequestSchema = z.object({
+  query: z.string().min(2).max(1000),
+  project_id: z.string().min(1).nullable().optional(),
+  limit: z.number().int().min(1).max(10).default(5),
+});
+export type RagQueryRequest = z.infer<typeof RagQueryRequestSchema>;
+
+export const RagQueryResponseSchema = z.object({
+  context_pack: RagContextPackSchema,
+  refusal_reason: RagRefusalReasonSchema.nullable(),
+});
+export type RagQueryResponse = z.infer<typeof RagQueryResponseSchema>;
+
 // ───────────────────────── Contexte courant ─────────────────────────
 
 export const CurrentContextSchema = z.object({

@@ -45,6 +45,11 @@ asset.
 
 Manifestes, permissions, context packs, pas d'index massif.
 
+Etat : contrats, tables, routes auth, manifestes lies a Resource Truth, chunks derives,
+retrieval lexical permissionne, context packs cites, refus explicites, secret detection,
+revoke/stale, audit hash et handoff `rag_reindex` vers Jobs livres. BGE/Qdrant reste a raccorder
+par runner.
+
 ### PR-8 — `jobs_shell`
 
 Jobs, events, progress, cancel/retry, logs.

@@ -14,6 +14,37 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-7 RAG permissionne livre
+
+MALEX/Codex a livre le shell RAG permissionne backend.
+
+Le backend possede maintenant :
+
+- registres `rag_resources`, chunks, context packs et query events ;
+- routes auth `/rag/query`, `/rag/resources`, reindex, revoke et lecture context pack ;
+- reference obligatoire vers une ressource Resource Truth existante ;
+- permission scope/owner avant retrieval et scoring ;
+- citations obligatoires ;
+- refus explicite sans source fiable ;
+- secret detection avant chunking ;
+- revoke admin/godmode avec context packs `stale` ;
+- job `rag_reindex` compatible avec le shell jobs/runners existant.
+
+Action demandee :
+
+1. brancher BGE-M3/reranker/Qdrant derriere les jobs `rag_reindex`, jamais en acces direct libre ;
+2. conserver le filtrage permission/statut/trust avant recherche vectorielle ;
+3. le runner doit reconstruire les chunks/embeddings puis les remettre `active` seulement apres
+   succes ;
+4. ne jamais stocker query brute sensible dans `rag_query_events` : garder le hash ;
+5. ne jamais servir une candidate, revoked ou stale comme source fiable ;
+6. comparer ton handoff Local RAG BGE a ces contrats et signaler les champs manquants utiles.
+
+Version courte : le RAG a maintenant son neutral, ses hit confirms et son replay. BGE peut entrer
+sur le terrain, mais il ne touche ni aux permissions ni au canon.
+
+---
+
 ## 2026-06-13 — open — PR-6 Guided Runtime prive livre
 
 MALEX/Codex a livre la premiere couche backend du Guided Runtime prive.

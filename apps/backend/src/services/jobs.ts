@@ -237,6 +237,37 @@ export function createOcrPrepareJob(actor: AuthUser, input: OcrPrepareRequest): 
   );
 }
 
+export function createRagReindexJob(
+  actor: AuthUser,
+  input: {
+    rag_resource_id: string;
+    owner_id: string;
+    scope_type: 'owner' | 'project';
+    scope_id: string;
+    content_hash: string;
+  },
+): Job {
+  if (ROLE_RANK[actor.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
+  if (actor.id !== input.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
+    throw new Error('job_owner_required');
+  }
+  return insertQueuedJob(
+    actor,
+    'rag_reindex',
+    input.owner_id,
+    input.scope_type,
+    input.scope_id,
+    'medium',
+    {
+      rag_resource_id: input.rag_resource_id,
+      content_hash: input.content_hash,
+    },
+    {rag_resource_id: input.rag_resource_id},
+    'job.rag_reindex.queued',
+    input.scope_id,
+  );
+}
+
 export function createCorrectionPrepareJob(actor: AuthUser, input: CorrectionPrepareRequest): Job {
   const request = CorrectionPrepareRequestSchema.parse(input);
   assertTeacherOwner(actor, request.owner_id);
