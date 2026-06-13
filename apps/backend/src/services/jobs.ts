@@ -73,6 +73,16 @@ interface ExportPreviewRow {
   validation_ref: string | null;
 }
 
+interface OcrManifestRow {
+  id: string;
+  batch_id: string;
+  project_id: string | null;
+  project_scope: string;
+  status: string;
+  validation_ref: string | null;
+  owner_id: string;
+}
+
 function toJob(row: JobRow): Job {
   return JobSchema.parse({
     job_id: row.id,
@@ -110,14 +120,21 @@ function toEvent(row: JobEventRow): JobEvent {
 
 function canReadJob(actor: AuthUser, row: JobRow): boolean {
   if (actor.id === row.owner_id || ROLE_RANK[actor.role] >= ROLE_RANK.admin) return true;
-  if (row.type !== 'correction_prepare' && row.type !== 'export_prepare') return false;
-  let payload: {project_id?: unknown};
+  if (
+    row.type !== 'correction_prepare' &&
+    row.type !== 'export_prepare' &&
+    row.type !== 'ocr_prepare'
+  ) {
+    return false;
+  }
+  let payload: {project_id?: unknown; adapter_id?: unknown};
   try {
     payload = JSON.parse(row.payload_json) as {project_id?: unknown};
   } catch {
     return false;
   }
   if (typeof payload.project_id !== 'string') return false;
+  if (row.type === 'ocr_prepare' && payload.adapter_id !== 'ocr-submission-v1') return false;
   return decideScopedPermission({
     actor,
     projectId: payload.project_id,
@@ -234,7 +251,50 @@ function insertQueuedJob(
 
 export function createOcrPrepareJob(actor: AuthUser, input: OcrPrepareRequest): Job {
   const request = OcrPrepareRequestSchema.parse(input);
-  if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
+  if (request.project_id) {
+    if (request.project_scope !== request.project_id) throw new Error('project_scope_mismatch');
+    if (request.adapter_id === 'ocr-submission-v1') {
+      if (actor.role !== 'teacher') throw new Error('ocr_teacher_required');
+      const decision = decideScopedPermission({
+        actor,
+        projectId: request.project_id,
+        minimumProjectRole: 'editor',
+      });
+      if (!decision.allowed) throw new Error('scope_denied');
+
+      const manifest = getDb()
+        .prepare(
+          `SELECT m.id, m.batch_id, m.project_id, m.project_scope, m.status,
+                  m.validation_ref, b.owner_id
+           FROM pre_correction_manifests m
+           INNER JOIN correction_batches b ON b.id = m.batch_id
+           WHERE m.id = ?`,
+        )
+        .get(request.manifest_ref) as OcrManifestRow | undefined;
+      if (!manifest) throw new Error('ocr_manifest_not_found');
+      if (manifest.status !== 'validated' || !manifest.validation_ref) {
+        throw new Error('ocr_manifest_not_validated');
+      }
+      if (
+        manifest.owner_id !== request.owner_id ||
+        manifest.project_id !== request.project_id ||
+        manifest.project_scope !== request.project_scope ||
+        request.validation_ref !== manifest.validation_ref
+      ) {
+        throw new Error('ocr_prepare_context_mismatch');
+      }
+    } else {
+      if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
+        throw new Error('scope_denied');
+      }
+      const decision = decideScopedPermission({
+        actor,
+        projectId: request.project_id,
+        minimumProjectRole: 'participant',
+      });
+      if (!decision.allowed) throw new Error('scope_denied');
+    }
+  } else if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
     throw new Error('scope_denied');
   }
 

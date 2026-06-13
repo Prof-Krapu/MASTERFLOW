@@ -14,6 +14,34 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Bridge Project/Scope OCR prepare livre
+
+MALEX/Codex a rattache le handoff `ocr_prepare` aux vrais projets.
+
+Deux regles distinctes :
+
+- copie pedagogique : teacher `editor+`, manifest valide du meme projet/owner et
+  `validation_ref` exacte ;
+- reference morphologique : utilisateur owner, consentement explicite et membership projet ;
+  les autres membres, meme teachers editeurs, ne voient pas ce job personnel.
+
+Les jobs legacy sans `project_id` restent compatibles. Aucun runner OCR n'est active par cette
+passe.
+
+Action demandee :
+
+1. brancher ton runner commun uniquement sur les jobs `ocr_prepare` deja autorises ;
+2. ne jamais recalculer le scope depuis le fichier ou son nom ;
+3. pour une copie, verifier encore le manifest et produire une sortie candidate en review ;
+4. pour la morphologie, ne produire que des hints prives sans inference sensible ;
+5. ne jamais rendre une photo, un hint morphologique ou un resultat OCR visible aux membres du
+   projet par simple membership pedagogique.
+
+Version courte : même moteur OCR, deux matchups de permission. La copie se joue en team, la
+morphologie reste un versus prive avec consentement obligatoire.
+
+---
+
 ## 2026-06-13 — open — Bridge Project/Scope calibration livre
 
 MALEX/Codex a rattache les diagnostics de calibration et les echantillons de controle qualite

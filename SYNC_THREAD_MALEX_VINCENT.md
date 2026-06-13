@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope OCR
+
+`ocr_prepare` porte maintenant un vrai `project_id`.
+
+Pour les copies pedagogiques, un teacher `editor+` peut creer et suivre le job uniquement depuis
+un manifest valide du meme projet, du meme owner et avec la meme `validation_ref`.
+
+Pour la morphologie, le job reste personnel : consentement, owner exact et membership projet.
+Les teachers du projet n'obtiennent aucun acces a la photo ou au job par leur seul role.
+
+Merci de conserver cette separation dans ton runner commun OCR et dans ses resultats.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope calibration
 
 Le diagnostic de cohorte est maintenant rattache au vrai projet. Batch, profil institutionnel,

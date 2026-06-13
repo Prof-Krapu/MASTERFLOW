@@ -4,6 +4,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Bridge Project/Scope du handoff OCR
+
+**Livrable MALEX/Codex.** Rattachement des intentions `ocr_prepare` aux vrais projets, avec
+separation explicite entre copies pedagogiques et references morphologiques personnelles.
+
+Ajouts :
+
+- `project_id` nullable dans `OcrPrepareRequest` ;
+- `project_scope === project_id` pour les nouvelles intentions OCR projet ;
+- OCR copie projet limite aux teachers membres `editor+` ;
+- manifest de pre-correction existant, valide, du meme projet et du meme owner ;
+- `validation_ref` du job obligatoirement identique a celle du manifest ;
+- jobs de copie projet visibles aux editeurs du projet ;
+- OCR morphologique projet reserve a l'utilisateur owner avec consentement et membership ;
+- job morphologique invisible aux autres membres du projet, y compris teachers editeurs ;
+- fallback legacy sans `project_id` conserve ;
+- aucun upload, OCR reel, extraction, promotion canon ou runner ajoute.
+
+Verification :
+
+- `npm test` : 37 fichiers / 160 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Bridge Project/Scope calibration et revue qualite
 
 **Livrable MALEX/Codex.** Rattachement du diagnostic de cohorte au vrai projet, sans ajouter

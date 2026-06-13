@@ -1182,6 +1182,7 @@ export const OcrPrepareRequestSchema = z
   .object({
     adapter_id: z.enum(['ocr-submission-v1', 'morphological-reference-v1']),
     owner_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     project_scope: z.string().min(1),
     source_ref: z.string().startsWith('storage://'),
     preflight_ref: z.string().min(1),

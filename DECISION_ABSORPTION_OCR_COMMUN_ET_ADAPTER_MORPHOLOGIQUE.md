@@ -64,6 +64,10 @@ permission_check
 
 La validation utilisateur gagne toujours sur l'enrichissement automatique.
 
+Un rattachement a un `project_id` ne change pas cette autorite : le job et ses resultats restent
+personnels. Le membership teacher/editor d'un projet n'accorde aucun acces a la photo ou aux
+hints morphologiques d'un participant.
+
 ## Règle d'implémentation
 
 Améliorer le runner lorsqu'une capacité est générique :
@@ -91,6 +95,7 @@ Donc : **mutualiser le moteur, spécialiser les contrats**.
 
 ## État actuel
 
-Le registre déclare le runner et l'adapter, mais aucun upload, stockage photo, job OCR ou endpoint
-n'est `live`. L'activation attend l'audit du code Vincent, Project/Scope, storage privé,
-suppression/révocation, jobs, tests et recette humaine.
+Le registre declare le runner et l'adapter. Le handoff interne `ocr_prepare` et son bridge
+Project/Scope sont livres, mais aucun upload, stockage photo, runner OCR ou endpoint de creation
+n'est `live`. L'activation attend l'audit du code Vincent, storage prive,
+suppression/revocation et recette humaine.

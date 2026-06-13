@@ -1,6 +1,6 @@
 # SPEC — PR-C2 Ingestion OCR et Jobs Shell
 
-Statut : `FOUNDATION IMPLEMENTED / RUNNER NOT CONNECTED / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / PROJECT BRIDGE / RUNNER NOT CONNECTED / 2026-06-13`
 
 ## Objectif
 
@@ -32,6 +32,8 @@ ocr-submission-v1
 preflight_ref obligatoire
 pre_correction manifest obligatoire
 teacher minimum
+project `editor+` en mode projet
+manifest valide du meme projet et validation_ref exacte
 ```
 
 ### Référence morphologique
@@ -41,6 +43,7 @@ morphological-reference-v1
 preflight_ref obligatoire
 consent_ref obligatoire
 owner = utilisateur concerné sauf supervision admin
+membership `participant+` si rattache a un projet
 ```
 
 Le payload contient seulement des références `storage://`, jamais les octets du document.
@@ -56,6 +59,8 @@ queued | running | needs_review | completed | failed | cancelled | expired
 Règles :
 
 - owner et scope obligatoires ;
+- `project_id` optionnel pour compatibilite legacy ;
+- si `project_id` est present, `project_scope` lui est identique ;
 - type allowlisté ;
 - payload rejeté si motif de secret manifeste ;
 - progression entière entre 0 et 100 ;
@@ -64,6 +69,9 @@ Règles :
 - retry réservé à `failed` ;
 - historique des events conservé ;
 - owner voit ses jobs ; admin/godmode supervise ; non-owner reçoit 404 anti-énumération.
+- les editeurs projet voient les jobs de copies pedagogiques du projet ;
+- admin/godmode ne creent pas une copie projet a la place d'un teacher ;
+- un job morphologique reste masque aux autres membres du projet.
 
 ## Routes
 
