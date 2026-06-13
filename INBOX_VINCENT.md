@@ -18,6 +18,41 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — answered — Audit PR-4..9 + actions bornées traitées (agent_ouighour)
+
+Réponse de **agent_ouighour** aux items `PR-4`, `PR-5`, `PR-7`, `PR-9` (et référence `PR-6`).
+`SYNC_PROOF` : `local_head = origin/main = e03b53b`, delta `0 0`. Pas une auto-validation.
+
+**Constat d'audit** : les 6 couches PR-4→PR-9 sont **déjà IMPLÉMENTÉES** par MALEX/Codex
+(tables + services + routes + tests). Les items inbox étaient des directives d'intégration
+adressées à Vincent, pas des TODO d'implémentation.
+
+**Actions bornées traitées ce tour (signées agent_ouighour) :**
+
+- **PR-7 (action 6)** → `AUDIT_GAP_RAG_BGE_VS_PR7.md` : comparaison handoff BGE
+  (OpenAPI + schemas + docs sécurité) ↔ contrats PR-7 réels. Signale les champs manquants
+  (`sensitivity`, `quarantined`, entonnoir candidate→result, budget token, injection prompt) et
+  un plan de raccord BGE/Qdrant borné sans nouvel engine. **Lecture seule, 0 code.**
+- **PR-4 + PR-5 (actions 4)** → `MAPPING_CANON_PROJECT_SCOPE_TEMPLATES.md` : table mappant chaque
+  objet canon (MOTH/CDC, devis, event, asset, batches/soumissions correction) à ses obligations
+  de figement `project_id` + `template_id+version`. PR-6 cité comme modèle à reproduire.
+  **Lecture seule, 0 code.**
+- **PR-9 (action 1)** → `recordWorkflowEvent` désormais **câblé** dans le lifecycle jobs
+  (`services/jobs.ts`) : `claimNextJob`→`workflow_started`, `markJobNeedsReview`→`validation_requested`,
+  `completeJob`→`workflow_completed`, `failJob`→`workflow_failed` (blocker = erreur). Best-effort,
+  aucun payload privé, n'altère pas `job_events`/`audit`. **Vérifs : `tsc --noEmit` 0 erreur,
+  vitest 207/207** (nouveau test `jobs_workflow_observability.test.ts`).
+
+**Reste `open`** : PR-6 (directive d'intégration MOTH/CDC future — non exécutée, citée comme
+exemplar dans le mapping). Les points nécessitant décision MALEX (champ `sensitivity`,
+classe=`project`, `TemplateFrozenRef` factorisé) sont listés dans les deux docs.
+
+Les items `PR-4`, `PR-5`, `PR-7`, `PR-9` passent `open → answered`. Détails dans `SUIVI.md`.
+
+— agent_ouighour
+
+---
+
 ## 2026-06-13 — answered — RAG coordination : gate vérifié + raccord BGE/Qdrant acté (PR-7)
 
 Réponse de **agent_ouighour** aux items « MESSAGE A DIRE A VINCENT AU CHECK INBOX » et
@@ -305,7 +340,7 @@ vrai stage ID.
 
 ---
 
-## 2026-06-13 — open — PR-7 RAG permissionne livre
+## 2026-06-13 — answered — PR-7 RAG permissionne livre
 
 MALEX/Codex a livre le shell RAG permissionne backend.
 
@@ -369,7 +404,7 @@ pas de cashprize, pas de “j'ai clique complete donc j'ai inscrit tout le monde
 
 ---
 
-## 2026-06-13 — open — PR-5 Template / Schema Registry livree
+## 2026-06-13 — answered — PR-5 Template / Schema Registry livree
 
 MALEX/Codex a livre la couche `Template / Schema Registry` backend.
 
@@ -401,7 +436,7 @@ badge `validated`.
 
 ---
 
-## 2026-06-13 — open — PR-4 Project/Scope reel livree
+## 2026-06-13 — answered — PR-4 Project/Scope reel livree
 
 MALEX/Codex a livre la couche `Project/Scope` backend.
 
@@ -452,7 +487,7 @@ runner réel, ou Guided Runtime privé.
 
 ---
 
-## 2026-06-13 — open — PR-9 workflow observability livrée
+## 2026-06-13 — answered — PR-9 workflow observability livrée
 
 MALEX/Codex a posé la passe fondation `PR-9 workflow_observability`.
 

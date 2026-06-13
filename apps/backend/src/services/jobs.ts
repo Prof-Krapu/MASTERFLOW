@@ -14,6 +14,8 @@ import {
   type JobType,
   type OcrPrepareRequest,
   type RiskLevel,
+  type WorkflowEventType,
+  type WorkflowRuntimeStatus,
 } from '@masterflow/shared';
 
 import {getAdapterForRole} from '../engines/adapter_registry.ts';
@@ -27,6 +29,7 @@ import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
+import {recordWorkflowEvent} from './workflow_observability.ts';
 
 const CANCELLABLE = new Set<JobStatus>(['queued', 'running', 'needs_review']);
 const FINALIZABLE = new Set<JobStatus>(['queued', 'running']);
@@ -204,6 +207,41 @@ function insertEvent(jobId: string, eventType: JobEvent['event_type'], detail?: 
        VALUES (?, ?, ?, ?, ?)`,
     )
     .run(uuid(), jobId, eventType, detail ? JSON.stringify(detail) : null, Date.now());
+}
+
+/**
+ * Émet un `WorkflowEvent` sobre pour une transition du cycle job (PR-9 observabilité).
+ *
+ * Un job = un workflow (`workflow_id = job.id`, `capability_id = workflow_type = job.type`).
+ * Best-effort : l'observabilité ne doit jamais casser le cycle job lui-même. Aucun payload
+ * métier, message ou contenu privé n'est inscrit (conforme à l'invariant PR-9).
+ */
+function emitJobWorkflowEvent(
+  row: JobRow,
+  eventType: WorkflowEventType,
+  status: WorkflowRuntimeStatus,
+  blockerCategory: string | null = null,
+): void {
+  try {
+    recordWorkflowEvent({
+      event_id: uuid(),
+      workflow_id: row.id,
+      event_type: eventType,
+      workflow_type: row.type,
+      capability_id: row.type,
+      owner_id: row.owner_id,
+      project_id: row.scope_type === 'project' ? row.scope_id : null,
+      room_id: null,
+      duration_ms: null,
+      cost_eur: null,
+      tokens: null,
+      status,
+      blocker_category: blockerCategory,
+      created_at: Date.now(),
+    });
+  } catch {
+    // Observabilité best-effort : on ignore silencieusement l'échec d'émission.
+  }
 }
 
 function insertQueuedJob(
@@ -576,6 +614,7 @@ export function claimNextJob(
     return db.prepare('SELECT * FROM jobs WHERE id = ?').get(row.id) as JobRow;
   })();
 
+  if (claimed) emitJobWorkflowEvent(claimed, 'workflow_started', 'started');
   return claimed ? toJob(claimed) : null;
 }
 
@@ -723,6 +762,7 @@ export function markJobNeedsReview(
     scope: row.scope_id,
     detail: {job_id: jobId, type: row.type, review_reason: reviewReason},
   });
+  emitJobWorkflowEvent(row, 'validation_requested', 'validation_pending');
 }
 
 /** API interne runner-only : clôture seulement les jobs sans revue humaine supplémentaire. */
@@ -761,6 +801,7 @@ export function completeJob(
     scope: row.scope_id,
     detail: {job_id: jobId, type: row.type},
   });
+  emitJobWorkflowEvent(row, 'workflow_completed', 'completed');
 }
 
 /** API interne runner-only : clôture en erreur exploitable, sans exposer de secret. */
@@ -799,4 +840,5 @@ export function failJob(
     scope: row.scope_id,
     detail: {job_id: jobId, type: row.type, error},
   });
+  emitJobWorkflowEvent(row, 'workflow_failed', 'failed', error);
 }

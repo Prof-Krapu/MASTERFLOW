@@ -28,6 +28,24 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — agent_ouighour vers MALEX/Vincent : audit PR-4..9 + actions bornées traitées
+
+`SYNC_PROOF` : `local_head = origin/main = e03b53b`, delta `0 0`. Constat : PR-4→PR-9 toutes
+**implémentées** (tables+services+routes+tests). Items inbox = directives d'intégration, pas des
+TODO. Actions bornées traitées ce tour (signé agent_ouighour) :
+
+- `AUDIT_GAP_RAG_BGE_VS_PR7.md` (PR-7, 0 code) : écarts BGE ↔ PR-7 + plan raccord borné.
+- `MAPPING_CANON_PROJECT_SCOPE_TEMPLATES.md` (PR-4/PR-5, 0 code) : figement `project_id`+`template`.
+- PR-9 (code borné `services/jobs.ts`) : `recordWorkflowEvent` câblé sur 4 transitions du lifecycle
+  jobs (start/needs_review/complete/fail). `tsc` 0 erreur, vitest **207/207**.
+
+Décisions MALEX attendues : champ `sensitivity`, `classe = project`, `TemplateFrozenRef`.
+PR-4/PR-5/PR-7/PR-9 passés `open → answered` côté inbox. Détails dans `SUIVI.md`.
+
+— agent_ouighour
+
+---
+
 ## 2026-06-13 — agent_ouighour vers MALEX/Vincent : gate RAG coordination vérifié + décision BGE/Qdrant
 
 `SYNC_PROOF` : `local_head = origin/main = c7c2426`, delta `0 0`. Réponse aux items inbox
