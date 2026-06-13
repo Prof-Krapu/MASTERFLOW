@@ -18,6 +18,84 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Audit post-push canon à traiter avant nouvelles verticales
+
+Lire :
+
+`AUDIT_POST_PUSH_CANON_GAPS_2026-06-13.md`
+
+Les derniers pushes ont bien comblé plusieurs anciens absents, mais l'intégration révèle des
+gates transversaux manquants.
+
+Priorités proposées :
+
+1. rôle effectif BDD + révocation pour REST et WS;
+2. accès Rooms et ownership exact des `room_instances`;
+3. ownership/scope/statut `live` des actions, sans faux succès mock;
+4. Resource Truth sur partage projet et RAG;
+5. version immuable, JSON Schema et consentement Guided Runtime;
+6. séparer lecture et mutation des jobs;
+7. transfert d'ownership projet explicite.
+
+Merci de comparer ces constats avec tes modules existants et de signaler ce qui est déjà corrigé
+sur une branche non encore intégrée. Ne pas reconstruire les fondations : patches courts et tests
+de non-régression.
+
+Note après lecture de ton commit `141ab68` : le raccord PR-9 jobs/workflow est bien pris en
+compte. En revanche, `MAPPING_CANON_PROJECT_SCOPE_TEMPLATES.md` ne doit pas considérer PR-6 comme
+réellement frozen : `guide_version` est stocké, mais les recalculs relisent le guide courant par
+`guide_id`. Il faut un snapshot/révision immuable avant de reprendre ce pattern ailleurs.
+
+---
+
+## 2026-06-13 — open — Audit déploiement de contexte à lire
+
+Lire :
+
+`AUDIT_DEPLOIEMENT_CONTEXTE_ROOMS_LOADOUT_MEMORY_2026-06-13.md`
+
+Constat : `room_instances`, RAG, Project/Scope, personas et seeds existent, mais il manque encore
+le compilateur qui produit un contexte runtime permissionné, borné, cité et adapté à la Room.
+Le WebSocket ne reçoit aujourd'hui qu'un prompt persona léger, pas un contexte Room/projet/RAG
+compilé.
+
+Action demandée :
+
+1. comparer tes modules de mémoire/contexte au mapping de l'audit;
+2. préserver la séparation `loadout`, `room_checkpoint`, vérité métier, RAG et memory cards;
+3. faire de PR-CTX-1 le contrat commun avant de figer l'intégration BGE/Qdrant;
+4. signaler les briques déjà réalisées ou réutilisables;
+5. ne pas exposer de listes globales de personas/actions hors du loadout effectif.
+6. intégrer les bridges inter-projets explicites, la maturité projet, les memory cards L0-L4,
+   les teamspaces sans fusion d'ownership et le routage des surfaces.
+
+BGE/Qdrant peut avancer en parallèle comme runner générique. Il ne doit pas définir la
+sémantique des Rooms, les tiers de contexte ou les permissions.
+
+---
+
+## 2026-06-13 — open — Audit RAG transversal canon a lire
+
+Lire :
+
+`AUDIT_RAG_TRANSVERSAL_CANON_INVENTORY_ROOMS_MASTERSTORY_2026-06-13.md`
+
+Constat : le RAG doit etre exploite transversalement pour Inventory/OCR, reprise de Rooms et
+MasterStory, mais rester un index derive. Il ne remplace ni Resource Truth, ni ownership, ni
+validation des candidats OCR, ni checkpoint Room, ni canon narratif.
+
+Action demandee :
+
+1. comparer tes features existantes au plan de PRs de l'audit;
+2. signaler ce qui existe deja cote runners, Inventory, memory/context ou narrative;
+3. ne pas brancher BGE/Qdrant avant stabilisation des contrats et proprietaires de verite;
+4. proposer les absorptions utiles sans recreer les moteurs du canon.
+
+Priorite proposee : contrat RAG transversal -> Inventory Core -> OCR candidats -> Inventory RAG
+-> Room checkpoints -> MasterStory artifacts/retrieval -> UI -> BGE/Qdrant.
+
+---
+
 ## 2026-06-13 — open — MESSAGE A DIRE A VINCENT AU CHECK INBOX
 
 Claude/Vincent : a la lecture de cette inbox, dire clairement a Vincent :

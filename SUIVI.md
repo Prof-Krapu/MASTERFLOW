@@ -4,6 +4,68 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Audit post-push canon / raccords transversaux — PRÊT
+
+**Livrable MALEX/Codex.**
+
+`AUDIT_POST_PUSH_CANON_GAPS_2026-06-13.md`
+
+Les derniers pushes rendent désormais Project/Scope, jobs/runners, RAG, Guided Runtime,
+correction et admin partiellement exécutables. L'audit complet du 12 juin doit donc être
+actualisé.
+
+Écarts P0 trouvés : rôle JWT non rafraîchi après rétrogradation, révocation absente du handshake
+WS, Rooms/instances non isolées, actions non bornées par owner/scope/statut live et Resource
+Truth contournable via les ressources projet.
+
+Écarts P1 : version Guided Runtime non figée, validation JSON Schema/consentement incomplète,
+lecture de job confondue avec cancel/retry, ownership projet ambigu et inscription invitation
+non transactionnelle.
+
+Dernier delta distant `141ab68` lu : l'observabilité workflow est maintenant raccordée au
+lifecycle jobs. Cela ne ferme pas les écarts ci-dessus. Son mapping Templates stocke bien
+`guide_version`, mais surestime le freeze effectif : le runtime relit encore le guide courant.
+
+Ordre conseillé : hardening auth/WS, Rooms, actions, Resource Truth, Guided Runtime, jobs et
+ownership, puis reprise du `context_compiler`.
+
+---
+
+## 2026-06-13 — Audit déploiement du contexte / Rooms / loadout / mémoire — PRÊT
+
+**Livrable MALEX/Codex.** Audit ciblé du canon Drive contre le runtime Git :
+
+`AUDIT_DEPLOIEMENT_CONTEXTE_ROOMS_LOADOUT_MEMORY_2026-06-13.md`
+
+Conclusion : le Git sait stocker un `room_instance`, mais ne possède pas encore le
+`context_compiler` qui résout permissions, loadout, projet, checkpoint, ressources, tier et
+provenance en un paquet borné pour l'UI et les personas.
+
+Ordre recommandé : contrats et compilateur T1/T2, loadout resolver, checkpoints, raccord RAG,
+injection WebSocket, transitions/bridges, mémoire compressée et payloads, teamspaces/surfaces,
+UI de contexte puis observabilité. La passe canon couvre aussi maturité projet, activation
+progressive des Rooms et isolation inter-projets. BGE/Qdrant peut avancer en parallèle comme
+runner générique, sans devenir propriétaire de la sémantique du contexte.
+
+---
+
+## 2026-06-13 — Audit RAG transversal canon / Inventory / Rooms / MasterStory — PRÊT
+
+**Livrable MALEX/Codex.** Audit ciblé du canon Drive contre le Git :
+
+`AUDIT_RAG_TRANSVERSAL_CANON_INVENTORY_ROOMS_MASTERSTORY_2026-06-13.md`
+
+Conclusion : le RAG doit devenir la couche dérivée de chargement contextuel pour les ressources,
+l'inventaire, les Rooms et MasterStory, sans remplacer Resource Truth, ownership, validation
+Inventory, checkpoints Room ou canon narratif.
+
+Écart principal : le Git possède le shell RAG, les jobs OCR, Project/Scope, `room_instances` et
+les seeds UI, mais pas encore le vrai Inventory Core, les checkpoints Room ni le graphe
+MasterStory. L'ordre recommandé commence par le contrat RAG transversal, puis Inventory Core,
+OCR candidat, Inventory RAG, Rooms, MasterStory, UI et enfin BGE/Qdrant.
+
+---
+
 ## 2026-06-13 — RAG de coordination Git/inbox — LIVRÉ
 
 **Livrable MALEX/Codex.** Première exploitation concrète du RAG permissionné pour accélérer la
