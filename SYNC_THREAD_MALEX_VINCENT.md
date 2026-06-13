@@ -23,6 +23,21 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C9 heartbeats runners prête
+
+La couche `SPEC_PR_C9_RUNNER_HEARTBEATS.md` ajoute l'identité et la santé internes des runners :
+
+1. `recordRunnerHeartbeat` ;
+2. `listClaimableRunnerHeartbeats(job_type)` ;
+3. table `runner_heartbeats` ;
+4. statuts `online`, `draining`, `offline`.
+
+Merci de faire déclarer chaque runner avant claim : famille, types de jobs, version, lease et
+job actif. `draining` ne prend plus de nouveau job ; `offline` sert aux arrêts propres. Pas de
+secret ni contenu métier dans les heartbeats.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C8 claim/lease runners prête
 
 La couche `SPEC_PR_C8_RUNNER_CLAIM_AND_LEASE.md` ajoute l'attribution sûre des jobs :

@@ -14,6 +14,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-C9 : heartbeat runner avant claim
+
+MALEX/Codex a posé `SPEC_PR_C9_RUNNER_HEARTBEATS.md`.
+
+Le backend possède maintenant :
+
+- table `runner_heartbeats` ;
+- contrat `RunnerHeartbeat` ;
+- `recordRunnerHeartbeat` ;
+- `listClaimableRunnerHeartbeats(job_type)` ;
+- statuts `online`, `draining`, `offline`.
+
+Action demandée :
+
+1. chaque runner envoie un heartbeat `online` au démarrage ;
+2. chaque heartbeat déclare `runner_family`, `job_types`, `version`, `lease_ms` ;
+3. pendant un job, heartbeat avec `active_job_id` ;
+4. arrêt propre = `draining`, attendre fin/abandon de claim, puis `offline` ;
+5. pas de secret, token, clé, host sensible ou contenu métier dans le heartbeat ;
+6. `draining` est visible mais ne prend pas de nouveau job.
+
+Le principe : avant de prétendre courir, le runner montre sa carte d'identité. Sinon il reste au
+fond de la salle, pas sur le ring.
+
+---
+
 ## 2026-06-13 — open — PR-C8 : claim/lease obligatoire avant runner
 
 MALEX/Codex a posé `SPEC_PR_C8_RUNNER_CLAIM_AND_LEASE.md`.

@@ -960,6 +960,22 @@ export const ExportPrepareRequestSchema = z.object({
 });
 export type ExportPrepareRequest = z.infer<typeof ExportPrepareRequestSchema>;
 
+export const RunnerStatusSchema = z.enum(['online', 'draining', 'offline']);
+export type RunnerStatus = z.infer<typeof RunnerStatusSchema>;
+
+export const RunnerHeartbeatSchema = z.object({
+  runner_id: z.string().min(1),
+  runner_family: z.string().min(1),
+  job_types: z.array(JobTypeSchema).min(1),
+  status: RunnerStatusSchema,
+  active_job_id: z.string().min(1).nullable(),
+  version: z.string().min(1),
+  host_ref: z.string().min(1).nullable(),
+  lease_ms: z.number().int().positive().max(60 * 60 * 1000),
+  last_seen_at: z.number().int().nonnegative(),
+});
+export type RunnerHeartbeat = z.infer<typeof RunnerHeartbeatSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);

@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C9 heartbeats internes des runners
+
+**Livrable MALEX/Codex.** Observabilité interne des runners avant activation réelle, sans route
+publique.
+
+Ajouts :
+
+- `SPEC_PR_C9_RUNNER_HEARTBEATS.md` ;
+- contrat `RunnerHeartbeat` partagé ;
+- table `runner_heartbeats` ;
+- `recordRunnerHeartbeat(input)` ;
+- `getRunnerHeartbeat(runner_id)` ;
+- `listRunnerHeartbeats()` ;
+- `listClaimableRunnerHeartbeats(job_type, now?, stale_ms?)` ;
+- statuts `online`, `draining`, `offline` ;
+- filtrage des runners claimables par fraîcheur, statut et type de job ;
+- audit sobre sans host secret ni contenu métier ;
+- tests upsert, filtrage, secrets, colonnes et audit.
+
+Vincent doit faire battre ses runners avant claim : `online` pour prendre du travail, `draining`
+pour arrêter proprement sans nouveau job, `offline` pour maintenance. Les heartbeats ne créent
+aucun droit utilisateur et n'activent aucune route publique.
+
+---
+
 ## 2026-06-13 — PR-C8 claim et lease internes des runners
 
 **Livrable MALEX/Codex.** Attribution sûre des jobs aux runners, sans broker externe, route

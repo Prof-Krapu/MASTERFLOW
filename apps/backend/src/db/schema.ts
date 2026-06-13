@@ -576,6 +576,20 @@ function migrate(d: Database.Database): void {
       created_at  INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS runner_heartbeats (
+      runner_id      TEXT PRIMARY KEY,
+      runner_family  TEXT NOT NULL,
+      job_types_json TEXT NOT NULL,
+      status         TEXT NOT NULL
+                       CHECK (status IN ('online','draining','offline')),
+      active_job_id  TEXT REFERENCES jobs(id) ON DELETE SET NULL,
+      version        TEXT NOT NULL,
+      host_ref       TEXT,
+      lease_ms       INTEGER NOT NULL CHECK (lease_ms > 0 AND lease_ms <= 3600000),
+      last_seen_at   INTEGER NOT NULL,
+      updated_at     INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
@@ -635,6 +649,8 @@ function migrate(d: Database.Database): void {
       ON jobs(scope_type, scope_id, status);
     CREATE INDEX IF NOT EXISTS idx_job_events_job
       ON job_events(job_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_runner_heartbeats_family
+      ON runner_heartbeats(runner_family, status, last_seen_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -963,4 +979,17 @@ export interface JobEventRow {
   event_type: string;
   detail_json: string | null;
   created_at: number;
+}
+
+export interface RunnerHeartbeatRow {
+  runner_id: string;
+  runner_family: string;
+  job_types_json: string;
+  status: 'online' | 'draining' | 'offline';
+  active_job_id: string | null;
+  version: string;
+  host_ref: string | null;
+  lease_ms: number;
+  last_seen_at: number;
+  updated_at: number;
 }

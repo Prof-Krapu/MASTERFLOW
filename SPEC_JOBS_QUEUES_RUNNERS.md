@@ -55,6 +55,7 @@ created_at
   `updateJobProgress`, `markJobNeedsReview`, `completeJob`, `failJob` ;
 - pas d'ecriture directe dans `jobs` / `job_events`.
 - consommation runner via `claimNextJob` puis lease actif ; pas de polling SQL direct.
+- heartbeat runner interne obligatoire avant claim réel.
 
 ## Lifecycle runner interne
 
@@ -80,6 +81,24 @@ Le service ajoute `runner_id`, `claimed_at` et `lease_expires_at`. Un job `runni
 repris que si son lease est expiré. Les traitements longs prolongent le bail avec
 `extendJobLease`. Les transitions de progression/finalisation doivent fournir le même
 `runner_id`.
+
+## Heartbeats runners
+
+Les runners déclarent leur identité et leur santé avec :
+
+```text
+recordRunnerHeartbeat(...)
+```
+
+Statuts :
+
+```text
+online | draining | offline
+```
+
+Seuls les runners `online`, frais et compatibles avec le type de job sont considérés claimables.
+`draining` reste visible mais ne prend pas de nouveau job. Les heartbeats ne contiennent aucun
+secret ni contenu métier.
 
 ## Endpoints PR-1
 
