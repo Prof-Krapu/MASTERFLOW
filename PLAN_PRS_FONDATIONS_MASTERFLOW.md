@@ -20,6 +20,10 @@ Enums partages, mapping action registry/capability registry, migration docs.
 
 Projects, members, ownership edges, premiers checks permission objet.
 
+Etat : contrats partages, migrations SQLite, services internes, routes auth projet/membres,
+scopes ressources, anti-enumeration et tests livres. Les prochaines verticales doivent utiliser
+un `project_id` reel plutot qu'un scope texte libre des qu'un contexte projet existe.
+
 ### PR-5 — `template_schema_registry`
 
 Templates versionnes, CDC candidat, validation admin.

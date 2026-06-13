@@ -1,6 +1,6 @@
 # SPEC — Project / Scope / Ownership
 
-Statut : `FOUNDATION SPEC / 2026-06-13`
+Statut : `BACKEND IMPLEMENTED / 2026-06-13`
 
 ## Objectif
 
@@ -65,7 +65,7 @@ can(user, action, object, context)
 = role global + membership + ownership + object scope + action risk
 ```
 
-## Endpoints PR-1
+## Endpoints PR-4
 
 | Endpoint | Permission | Effet |
 |---|---|---|
@@ -83,3 +83,24 @@ can(user, action, object, context)
 - project scope bloque une ressource hors projet ;
 - audit membership.
 
+## Implementation livree
+
+- contrats partages : `Project`, `ProjectMember`, `OwnershipEdge`, `ResourceScope`,
+  `ScopedPermissionDecision` ;
+- migrations SQLite : `projects`, `project_members`, `ownership_edges`, `resource_scopes` ;
+- service interne : creation/liste/detail projet, gestion membres, attache scope ressource,
+  decision permission scopee ;
+- routes : `GET/POST /projects`, `GET /projects/:id`, `GET/POST /projects/:id/members` ;
+- anti-enumeration : non-membre = `project_not_found` ;
+- audit : `project.created`, `project.member_upserted`, `resource.scope_attached` ;
+- tests service + router.
+
+## Verification
+
+```text
+npm test
+npm run lint
+npm run lint:frontend
+npm run build:frontend
+git diff --check
+```

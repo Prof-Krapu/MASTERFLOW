@@ -33,6 +33,77 @@ export const UserSchema = z.object({
 });
 export type User = z.infer<typeof UserSchema>;
 
+// ───────────────────────── Projects / scopes / ownership ─────────────────────────
+
+export const ProjectStatusSchema = z.enum(['active', 'archived']);
+export type ProjectStatus = z.infer<typeof ProjectStatusSchema>;
+
+export const ProjectVisibilitySchema = z.enum(['private']);
+export type ProjectVisibility = z.infer<typeof ProjectVisibilitySchema>;
+
+export const ProjectMemberRoleSchema = z.enum(['viewer', 'participant', 'editor', 'owner', 'admin']);
+export type ProjectMemberRole = z.infer<typeof ProjectMemberRoleSchema>;
+
+export const ProjectSchema = z.object({
+  project_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  name: z.string().min(1).max(160),
+  status: ProjectStatusSchema,
+  visibility: ProjectVisibilitySchema,
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type Project = z.infer<typeof ProjectSchema>;
+
+export const ProjectMemberSchema = z.object({
+  project_id: z.string().min(1),
+  user_id: z.string().min(1),
+  role: ProjectMemberRoleSchema,
+  created_at: z.number().int().nonnegative(),
+});
+export type ProjectMember = z.infer<typeof ProjectMemberSchema>;
+
+export const OwnershipEdgeSchema = z.object({
+  edge_id: z.string().min(1),
+  owner_type: z.enum(['user', 'project']),
+  owner_id: z.string().min(1),
+  object_type: z.string().min(1),
+  object_id: z.string().min(1),
+  scope: z.string().min(1),
+  created_at: z.number().int().nonnegative(),
+});
+export type OwnershipEdge = z.infer<typeof OwnershipEdgeSchema>;
+
+export const ResourceScopeSchema = z.object({
+  resource_id: z.string().min(1),
+  scope_type: z.enum(['project']),
+  scope_id: z.string().min(1),
+  access_level: z.enum(['read', 'write', 'admin']),
+  created_at: z.number().int().nonnegative(),
+});
+export type ResourceScope = z.infer<typeof ResourceScopeSchema>;
+
+export const ScopedPermissionDecisionSchema = z.object({
+  allowed: z.boolean(),
+  reason: z.string().min(1),
+  global_role: RoleSchema,
+  project_role: ProjectMemberRoleSchema.nullable(),
+  owner_match: z.boolean(),
+  resource_scope_match: z.boolean().nullable(),
+});
+export type ScopedPermissionDecision = z.infer<typeof ScopedPermissionDecisionSchema>;
+
+export const CreateProjectRequestSchema = z.object({
+  name: z.string().min(1).max(160),
+});
+export type CreateProjectRequest = z.infer<typeof CreateProjectRequestSchema>;
+
+export const AddProjectMemberRequestSchema = z.object({
+  user_id: z.string().min(1),
+  role: ProjectMemberRoleSchema,
+});
+export type AddProjectMemberRequest = z.infer<typeof AddProjectMemberRequestSchema>;
+
 // ───────────────────────── Auth ─────────────────────────
 
 export const RegisterRequestSchema = z.object({

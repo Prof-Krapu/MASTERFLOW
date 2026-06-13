@@ -14,6 +14,36 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-4 Project/Scope reel livree
+
+MALEX/Codex a livre la couche `Project/Scope` backend.
+
+Le backend possede maintenant :
+
+- contrats `Project`, `ProjectMember`, `OwnershipEdge`, `ResourceScope`,
+  `ScopedPermissionDecision` ;
+- tables `projects`, `project_members`, `ownership_edges`, `resource_scopes` ;
+- routes auth `GET/POST /projects`, `GET /projects/:id`,
+  `GET/POST /projects/:id/members` ;
+- service interne `attachResourceScope` et `decideScopedPermission` ;
+- audit creation projet, membership et scope ressource ;
+- anti-enumeration : non-membre = `project_not_found`.
+
+Action demandee :
+
+1. brancher les prochains travaux owner/scope sur un vrai `project_id` quand un contexte projet
+   existe ;
+2. ne plus inventer de `project_scope` texte libre pour les nouveaux objets si le projet existe ;
+3. avant runner/correction/export, verifier membership + ownership + scope ressource ;
+4. si tes phases ont des notions classe/cours/session, proposer leur mapping vers `projects`
+   ou vers une future table liee, sans creer un systeme parallele ;
+5. garder les donnees personnelles privees par defaut.
+
+Version courte : maintenant le projet a une hurtbox. Si ton job tape dans le vide avec un vieux
+scope string, il whiff.
+
+---
+
 ## 2026-06-13 — open — Lire la clôture fondations avant prochaine intégration
 
 MALEX/Codex a ajouté `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md`.

@@ -23,6 +23,24 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-4 Project/Scope livree
+
+La couche `Project/Scope` est livree cote backend.
+
+Elle ajoute les contrats et tables `projects`, `project_members`, `ownership_edges` et
+`resource_scopes`, plus les routes auth `GET/POST /projects`, `GET /projects/:id` et
+`GET/POST /projects/:id/members`.
+
+Regle de raccord : les prochaines verticales doivent privilegier un `project_id` reel des qu'un
+contexte projet/cours/event existe. Les ressources doivent etre attachees explicitement au projet
+via `resource_scopes` avant d'etre consommees dans ce contexte. Un non-membre voit un 404, pas un
+indice d'existence.
+
+Merci de mapper tes objets classes/cours/sessions/batches vers ce socle avant d'activer runners,
+correction ou exports.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : clôture fondations PR-1 à PR-9
 
 Le rapport `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md` est ajouté.

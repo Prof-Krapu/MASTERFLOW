@@ -67,6 +67,39 @@ function migrate(d: Database.Database): void {
       expires_at  INTEGER NOT NULL
     );
 
+    -- ───────────────────────── Projects / scopes / ownership ───────────────
+    CREATE TABLE IF NOT EXISTS projects (
+      id          TEXT PRIMARY KEY,
+      owner_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name        TEXT NOT NULL,
+      status      TEXT NOT NULL DEFAULT 'active'
+                    CHECK (status IN ('active','archived')),
+      visibility  TEXT NOT NULL DEFAULT 'private'
+                    CHECK (visibility = 'private'),
+      created_at  INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS project_members (
+      project_id  TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      role        TEXT NOT NULL
+                    CHECK (role IN ('viewer','participant','editor','owner','admin')),
+      created_at  INTEGER NOT NULL,
+      PRIMARY KEY (project_id, user_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS ownership_edges (
+      id          TEXT PRIMARY KEY,
+      owner_type  TEXT NOT NULL CHECK (owner_type IN ('user','project')),
+      owner_id    TEXT NOT NULL,
+      object_type TEXT NOT NULL,
+      object_id   TEXT NOT NULL,
+      scope       TEXT NOT NULL,
+      created_at  INTEGER NOT NULL,
+      UNIQUE(owner_type, owner_id, object_type, object_id, scope)
+    );
+
     -- ───────────────────────── Rooms (UI Room OS) ──────────────────────────
     CREATE TABLE IF NOT EXISTS rooms (
       id          TEXT PRIMARY KEY,
@@ -163,6 +196,15 @@ function migrate(d: Database.Database): void {
                     CHECK (status IN ('candidate','validated','deprecated')),
       subjects_json TEXT,
       created_at  INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS resource_scopes (
+      resource_id   TEXT NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
+      scope_type    TEXT NOT NULL CHECK (scope_type = 'project'),
+      scope_id      TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      access_level  TEXT NOT NULL CHECK (access_level IN ('read','write','admin')),
+      created_at    INTEGER NOT NULL,
+      PRIMARY KEY (resource_id, scope_type, scope_id)
     );
 
     -- ───────────────────────── Config & audit LLM (réutilisé) ──────────────
@@ -628,6 +670,14 @@ function migrate(d: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_token_events_user    ON token_events(user_id);
     CREATE INDEX IF NOT EXISTS idx_token_events_user_ts ON token_events(user_id, ts);
     CREATE INDEX IF NOT EXISTS idx_revoked_expires     ON revoked_tokens(expires_at);
+    CREATE INDEX IF NOT EXISTS idx_projects_owner_status
+      ON projects(owner_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_project_members_user
+      ON project_members(user_id, role);
+    CREATE INDEX IF NOT EXISTS idx_ownership_edges_object
+      ON ownership_edges(object_type, object_id, scope);
+    CREATE INDEX IF NOT EXISTS idx_resource_scopes_scope
+      ON resource_scopes(scope_type, scope_id, access_level);
     CREATE INDEX IF NOT EXISTS idx_evidence_scope_status
       ON evidence_events(project_scope, status, occurred_at);
     CREATE INDEX IF NOT EXISTS idx_evidence_owner
@@ -724,6 +774,41 @@ export interface UserRow {
   created_at: number;
   updated_at: number;
   last_login: number | null;
+}
+
+export interface ProjectRow {
+  id: string;
+  owner_id: string;
+  name: string;
+  status: 'active' | 'archived';
+  visibility: 'private';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface ProjectMemberRow {
+  project_id: string;
+  user_id: string;
+  role: 'viewer' | 'participant' | 'editor' | 'owner' | 'admin';
+  created_at: number;
+}
+
+export interface OwnershipEdgeRow {
+  id: string;
+  owner_type: 'user' | 'project';
+  owner_id: string;
+  object_type: string;
+  object_id: string;
+  scope: string;
+  created_at: number;
+}
+
+export interface ResourceScopeRow {
+  resource_id: string;
+  scope_type: 'project';
+  scope_id: string;
+  access_level: 'read' | 'write' | 'admin';
+  created_at: number;
 }
 
 export interface RoomRow {

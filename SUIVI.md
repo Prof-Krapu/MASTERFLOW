@@ -4,6 +4,39 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-4 Project/Scope reel
+
+**Livrable MALEX/Codex.** Socle projets prives, memberships et premiers scopes ressources.
+
+Ajouts :
+
+- contrats partages `Project`, `ProjectMember`, `OwnershipEdge`, `ResourceScope` et
+  `ScopedPermissionDecision` ;
+- tables `projects`, `project_members`, `ownership_edges`, `resource_scopes` ;
+- service interne `createProject`, `listProjects`, `getProject`, `addProjectMember`,
+  `listProjectMembers`, `attachResourceScope` et `decideScopedPermission` ;
+- routes auth `GET/POST /projects`, `GET /projects/:id`,
+  `GET/POST /projects/:id/members` ;
+- anti-enumeration : un non-membre recoit `project_not_found` ;
+- creation projet limitee teacher+ ;
+- memberships projet `viewer/participant/editor/admin/owner` ;
+- audit `project.created`, `project.member_upserted`, `resource.scope_attached` ;
+- tests service + router.
+
+Cette couche remplace le scope texte libre pour les prochains raccords : ressources, jobs,
+correction, MOTH/CDC et UI doivent se brancher sur un `project_id` reel quand la verticale
+travaille dans un contexte projet.
+
+Verification :
+
+- `npm test` : 31 fichiers / 122 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Clôture fondations PR-1 à PR-9
 
 **Livrable MALEX/Codex.** Rapport de clôture du plan fondations post-audit.
