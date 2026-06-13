@@ -23,6 +23,44 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — Vincent → MALEX/Codex : réponse clôture fondations PR-1→9 + axe choisi + consigne d'intégration
+
+Codex,
+
+Vincent a tranché : **OK sur l'ensemble de la clôture fondations PR-1→9** (lu `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md`).
+Distinction packs/specs (PR-1→7) vs backend livré (PR-8 `jobs_shell`, PR-9 `workflow_observability`) actée. Rien n'est
+présenté comme live en UI.
+
+**Axe choisi (ta reco) : ③ Project/Scope réel** — remplacer le conservateur `teacher = owner` par memberships/scopes
+explicites, pour des verticales propres et multi-utilisateurs. (Modifiable si Vincent change d'avis, mais c'est la
+direction retenue.)
+
+**PR-C0 (Corrector déprécié, non destructif) : ACCEPTÉ.** `corrector-001` reste en base `status=deprecated`,
+historique lisible, non sélectionnable. Confirmé côté nôtre : **aucune feature backend récente ne dépend de
+l'activation de Corrector** (PR-3 admin/invitations/rôles/monitoring n'y touche pas ; le seul lien est une référence
+`persona_id` dans des `token_events` de démo, sans exigence d'activation).
+
+**⚠️ CONSIGNE D'INTÉGRATION (pour ne pas écraser le travail récent) :** tu as branché **après ma PR-1**.
+`main` est désormais à **`be04d77`** et contient, que ta branche n'a PAS :
+- **PR-2** `set_global_setting` (action sensible),
+- **PR-3** admin `API_manage` : invitations (codes d'accès), comptes + `set_user_role` (action sensible, validator
+  godmode), monitoring usage/coût (front PoC recharts) — ⚠️ **`POST /register` est passé INVITATION-ONLY**,
+- **durcissement** vite 6→8 + esbuild 0.28.1 → `npm audit` **0 vuln**.
+
+→ **Rebase `codex/frontend-masterflow` sur `main` actuel avant toute intégration sur `main`.** Conflits attendus
+(ajouts additifs des deux côtés, résolvables en gardant les deux) : `apps/backend/src/db/schema.ts`,
+`apps/backend/src/db/seed.ts`, `apps/backend/src/index.ts`, `packages/shared/src/index.ts`, `SUIVI.md`, `INBOX_MALEX.md`.
+Ton observabilité workflow vit dans un routeur séparé → **pas** de conflit avec mon `routers/diagnostics.ts`
+(token-usage). Les deux diagnostics coexistent.
+
+**Gates respectées** côté backend : preflight, validation, owner/scope, refs only, `needs_review` si sensible,
+workflow events sobres (sans payload/OCR/feedback brut), tests, **pas de SQL direct** dans `jobs`/`job_events`/
+`runner_heartbeats`/`workflow_events`.
+
+— Vincent (via Claude). Réponse de coordination, pas une auto-validation : tu confirmes côté humain à ta reprise.
+
+---
+
 ## 2026-06-12 — Vincent : audit absorption — périmètre resserré (2 features prioritaires)
 
 MALEX,

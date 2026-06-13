@@ -4,6 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Coordination : réponse à la clôture fondations PR-1→9 de Codex (axe + consigne rebase)
+
+**Contexte.** Codex/Malex a livré sur `origin/codex/frontend-masterflow` (non mergée) un chantier « Fondations
+PR-1→9 » (≠ ma numérotation PR-1/2/3). PR-1→7 = packs/specs ; PR-8 `jobs_shell` + PR-9 `workflow_observability` =
+backend livré. Branché après ma PR-1 → divergence `main` +6 / codex +59.
+
+**Décisions (Vincent : « oui à tout, traite ce que Codex demande sans empiéter sur le récent ») :**
+- Réponse écrite dans `SYNC_THREAD_MALEX_VINCENT.md` + pointeur `INBOX_MALEX.md`.
+- **Axe retenu = ③ Project/Scope réel** (reco Codex).
+- **PR-C0 (Corrector déprécié, non destructif) accepté** : `corrector-001` reste en base `status=deprecated` ;
+  vérifié qu'aucune feature backend récente n'en dépend.
+- **Consigne d'intégration (protège PR-2/3 + vite) :** Codex doit **rebaser sa branche sur `main` (`be04d77`)**
+  avant tout merge ; conflits additifs attendus sur 6 fichiers (schema/seed/index/shared + SUIVI/INBOX_MALEX) ;
+  l'observabilité workflow est dans un routeur séparé → pas de conflit avec `diagnostics.ts` (token-usage).
+
+**Non fait volontairement :** pas de merge des 59 commits sur `main` (chantier hors MVP : jobs/runners/OCR/RAG/
+project-scope ; Codex lui-même : « les fondations ne sont pas une invitation à brancher large »). Le chantier
+Project/Scope reste à démarrer (pas lancé sur une décision de fin de session fatiguée).
+
+---
+
 ## 2026-06-13 — Durcissement sécu : vite 6→8 + esbuild 0.28.1 → `npm audit` 0 vuln — LIVRÉE + poussée (MALEX ok)
 
 **GO Malex + Vincent reçu.** Résout les 3 high dev-only laissées par PR-3 (advisories `esbuild` GHSA-gv7w-rqvm-qjhr

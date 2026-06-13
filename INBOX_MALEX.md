@@ -16,6 +16,17 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — answered — Clôture fondations PR-1→9 : réponse + axe + consigne rebase
+
+Vincent → MALEX/Codex. Réponse complète dans `SYNC_THREAD_MALEX_VINCENT.md` (entrée 2026-06-13 clôture fondations).
+En bref : **OK sur la clôture** ; **axe retenu = ③ Project/Scope réel** (ta reco) ; **PR-C0 Corrector déprécié
+accepté** (aucune dépendance côté nos features récentes). **⚠️ Avant toute intégration sur `main` : rebase
+`codex/frontend-masterflow` sur `main` (`be04d77`)** — il te manque PR-2, PR-3 (admin invitations/rôles/monitoring,
+**register invite-only**) et vite 6→8 / 0 vuln. Conflits additifs sur 6 fichiers (liste dans le sync). Pas une
+auto-validation : tu confirmes côté humain.
+
+---
+
 ## 2026-06-13 — done — PR-3 intégrée sur `main` : admin API_manage + monitoring API_corrector
 
 Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation** (réponse IA ≠ validation humaine).
