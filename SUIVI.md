@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-9 workflow observability
+
+**Livrable MALEX/Codex.** Observabilité workflow admin/godmode, sans payload brut ni action
+runtime.
+
+Ajouts :
+
+- `SPEC_WORKFLOW_OBSERVABILITY.md` passé en implemented ;
+- contrat partagé `WorkflowEvent` ;
+- table `workflow_events` ;
+- service interne `recordWorkflowEvent` ;
+- `getWorkflowDiagnostics` avec agrégats ;
+- `getWorkflowTrace` par workflow ;
+- routes `GET /diagnostics/workflows` et `GET /diagnostics/workflows/:id` ;
+- filtres période, capability et workflow type ;
+- métriques : workflows, events, completion rate, failed, blocked, validations, p50/p95,
+  coût nullable, tokens nullable, friction blockers ;
+- gate admin/godmode via router diagnostics existant ;
+- tests service + router.
+
+Cette passe termine le plan fondations PR-1→PR-9 côté socle. Elle observe les workflows ; elle
+ne lance aucun runner, ne publie rien, ne corrige rien et n'expose pas de contenu personnel brut.
+
+---
+
 ## 2026-06-13 — PR-C11 gates famille/type runner
 
 **Livrable MALEX/Codex.** Cohérence stricte entre `runner_family` et types de jobs claimés.

@@ -590,6 +590,33 @@ function migrate(d: Database.Database): void {
       updated_at     INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS workflow_events (
+      id               TEXT PRIMARY KEY,
+      workflow_id      TEXT NOT NULL,
+      event_type       TEXT NOT NULL
+                         CHECK (event_type IN (
+                           'workflow_started','workflow_step_completed',
+                           'workflow_blocked','workflow_failed','workflow_completed',
+                           'validation_requested','validation_approved','validation_rejected',
+                           'job_queued','job_failed','resource_missing','permission_denied'
+                         )),
+      workflow_type    TEXT NOT NULL,
+      capability_id    TEXT NOT NULL,
+      owner_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id       TEXT,
+      room_id          TEXT REFERENCES rooms(id) ON DELETE SET NULL,
+      duration_ms      INTEGER CHECK (duration_ms IS NULL OR duration_ms >= 0),
+      cost_eur         REAL CHECK (cost_eur IS NULL OR cost_eur >= 0),
+      tokens           INTEGER CHECK (tokens IS NULL OR tokens >= 0),
+      status           TEXT NOT NULL
+                         CHECK (status IN (
+                           'started','running','blocked','failed','completed',
+                           'validation_pending','validation_approved','validation_rejected'
+                         )),
+      blocker_category TEXT,
+      created_at       INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
@@ -651,6 +678,12 @@ function migrate(d: Database.Database): void {
       ON job_events(job_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_runner_heartbeats_family
       ON runner_heartbeats(runner_family, status, last_seen_at);
+    CREATE INDEX IF NOT EXISTS idx_workflow_events_created
+      ON workflow_events(created_at, capability_id, workflow_type);
+    CREATE INDEX IF NOT EXISTS idx_workflow_events_workflow
+      ON workflow_events(workflow_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_workflow_events_owner
+      ON workflow_events(owner_id, created_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -992,4 +1025,21 @@ export interface RunnerHeartbeatRow {
   lease_ms: number;
   last_seen_at: number;
   updated_at: number;
+}
+
+export interface WorkflowEventRow {
+  id: string;
+  workflow_id: string;
+  event_type: string;
+  workflow_type: string;
+  capability_id: string;
+  owner_id: string;
+  project_id: string | null;
+  room_id: string | null;
+  duration_ms: number | null;
+  cost_eur: number | null;
+  tokens: number | null;
+  status: string;
+  blocker_category: string | null;
+  created_at: number;
 }

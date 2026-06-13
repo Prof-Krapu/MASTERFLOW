@@ -976,6 +976,52 @@ export const RunnerHeartbeatSchema = z.object({
 });
 export type RunnerHeartbeat = z.infer<typeof RunnerHeartbeatSchema>;
 
+export const WorkflowEventTypeSchema = z.enum([
+  'workflow_started',
+  'workflow_step_completed',
+  'workflow_blocked',
+  'workflow_failed',
+  'workflow_completed',
+  'validation_requested',
+  'validation_approved',
+  'validation_rejected',
+  'job_queued',
+  'job_failed',
+  'resource_missing',
+  'permission_denied',
+]);
+export type WorkflowEventType = z.infer<typeof WorkflowEventTypeSchema>;
+
+export const WorkflowRuntimeStatusSchema = z.enum([
+  'started',
+  'running',
+  'blocked',
+  'failed',
+  'completed',
+  'validation_pending',
+  'validation_approved',
+  'validation_rejected',
+]);
+export type WorkflowRuntimeStatus = z.infer<typeof WorkflowRuntimeStatusSchema>;
+
+export const WorkflowEventSchema = z.object({
+  event_id: z.string().min(1),
+  workflow_id: z.string().min(1),
+  event_type: WorkflowEventTypeSchema,
+  workflow_type: z.string().min(1),
+  capability_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  room_id: z.string().min(1).nullable(),
+  duration_ms: z.number().int().nonnegative().nullable(),
+  cost_eur: z.number().nonnegative().nullable(),
+  tokens: z.number().int().nonnegative().nullable(),
+  status: WorkflowRuntimeStatusSchema,
+  blocker_category: z.string().min(1).nullable(),
+  created_at: z.number().int().nonnegative(),
+});
+export type WorkflowEvent = z.infer<typeof WorkflowEventSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);

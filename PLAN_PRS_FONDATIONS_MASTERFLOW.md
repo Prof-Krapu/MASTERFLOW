@@ -40,6 +40,10 @@ Jobs, events, progress, cancel/retry, logs.
 
 Diagnostics workflows, friction, latence, completion, cout nullable.
 
+Etat : contrat partagé, table `workflow_events`, service interne, routes diagnostics admin+,
+agrégats p50/p95/completion/friction et tests livrés. Aucun contenu métier brut, aucune action
+runtime et aucune UI.
+
 ### PR-CB0 — `pedagogical_evidence_signal_delta_contracts`
 
 Contrats partages et migrations pour evidence events, pedagogical signals, teacher decision

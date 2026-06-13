@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-9 workflow observability prête
+
+La passe fondation `PR-9 workflow_observability` est livrée.
+
+Elle ajoute `WorkflowEvent`, la table `workflow_events`, le service interne
+`recordWorkflowEvent`, les agrégats admin/godmode `GET /diagnostics/workflows` et le détail
+`GET /diagnostics/workflows/:id`.
+
+Merci de brancher les futurs workflows/runners en émettant des événements sobres : ids, type,
+capability, statut, durée, coût/tokens nullable et blocker si utile. Aucun contenu métier brut,
+message utilisateur, OCR, feedback ou export dans cette table.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C11 gates famille/type prête
 
 La couche `SPEC_PR_C11_RUNNER_FAMILY_GATES.md` ajoute le mapping `job_type -> runner_family`.

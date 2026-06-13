@@ -1,6 +1,6 @@
 # SPEC — Observabilite workflow
 
-Statut : `FOUNDATION SPEC / 2026-06-13`
+Statut : `FOUNDATION IMPLEMENTED / INTERNAL EVENTS + ADMIN DIAGNOSTICS / 2026-06-13`
 
 ## Objectif
 
@@ -56,6 +56,18 @@ blocker_category nullable
 | `GET /diagnostics/workflows` | admin+ | agrégats |
 | `GET /diagnostics/workflows/:id` | admin+ | detail trace |
 
+## Implementation livree
+
+- contrat partagé `WorkflowEvent` ;
+- table `workflow_events` ;
+- service interne `recordWorkflowEvent` ;
+- agrégats `getWorkflowDiagnostics` ;
+- trace `getWorkflowTrace` ;
+- routes admin/godmode uniquement ;
+- filtres `from`, `to`, `capability_id`, `workflow_type` ;
+- coût et tokens nullable ;
+- pas de payload, message utilisateur ou contenu métier brut.
+
 ## Tests minimum
 
 - admin only ;
@@ -63,4 +75,3 @@ blocker_category nullable
 - pas de contenu personnel brut ;
 - cout nullable ;
 - filtres par periode/capability.
-

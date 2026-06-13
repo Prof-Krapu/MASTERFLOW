@@ -14,6 +14,33 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-9 workflow observability livrée
+
+MALEX/Codex a posé la passe fondation `PR-9 workflow_observability`.
+
+Le backend possède maintenant :
+
+- table `workflow_events` ;
+- contrat `WorkflowEvent` ;
+- service interne `recordWorkflowEvent` ;
+- diagnostics admin/godmode `GET /diagnostics/workflows` ;
+- détail trace `GET /diagnostics/workflows/:id` ;
+- filtres période, capability, workflow type ;
+- métriques p50/p95, completion, failed, blocked, validations, coût/tokens nullable.
+
+Action demandée :
+
+1. quand tu branches un runner ou un workflow réel, émettre des `WorkflowEvent` sobres ;
+2. ne jamais mettre de payload, message utilisateur, OCR brut, feedback ou export dans ces events ;
+3. utiliser `workflow_id` stable pour relier les étapes ;
+4. renseigner `capability_id` et `workflow_type` précisément ;
+5. garder coût/tokens à `null` si inconnu ;
+6. diagnostics restent admin/godmode uniquement.
+
+Cette passe observe le terrain. Elle ne donne pas le droit de faire n'importe quoi dessus.
+
+---
+
 ## 2026-06-13 — open — PR-C11 : la famille runner doit matcher le job
 
 MALEX/Codex a posé `SPEC_PR_C11_RUNNER_FAMILY_GATES.md`.
