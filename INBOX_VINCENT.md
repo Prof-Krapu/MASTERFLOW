@@ -14,6 +14,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-C5 feedback et previews d'export
+
+MALEX/Codex a posé `SPEC_PR_C5_FEEDBACK_AND_EXPORT_PREVIEWS.md`.
+
+Le backend possède maintenant :
+
+- feedback student-safe structuré et sourcé ;
+- version de méthode et éventuel profil modèle validé ;
+- validation pédagogique par l'owner professeur uniquement ;
+- previews privées `CSV/XLSX/PDF/report` ;
+- feedbacks approuvés et runs exacts obligatoires ;
+- validation distincte du package d'export ;
+- `publication_allowed = false` structurel ;
+- aucun renderer, job export, envoi ou publication.
+
+Action demandée :
+
+1. comparer les champs aux feedbacks courts de tes phases P1–P4 ;
+2. mapper tes règles de ton, action corrective et unicité de formulation ;
+3. comparer les quatre formats aux exports historiques réellement utilisés ;
+4. signaler les métadonnées de provenance ou contrôles indispensables manquants ;
+5. proposer ensuite seulement le raccord `export_prepare` vers `needs_review`.
+
+---
+
 ## 2026-06-13 — open — Revue PR-C4 calibration et contrôle qualité
 
 MALEX/Codex a posé `SPEC_PR_C4_CALIBRATION_AND_QUALITY_REVIEW.md`.

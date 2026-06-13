@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C5 feedback student-safe et previews d'export
+
+**Livrable MALEX/Codex.** Cycle interne supervisé du feedback pédagogique à la preview privée,
+sans rendu final ni publication.
+
+Ajouts :
+
+- `SPEC_PR_C5_FEEDBACK_AND_EXPORT_PREVIEWS.md` ;
+- contrats stricts `FeedbackDraft` et `CorrectionExportPreview` ;
+- tables `feedback_drafts` et `correction_export_previews` ;
+- feedback structuré : force, problème, preuves, impact, axe, action et critère de progression ;
+- provenance par version de méthode et profil modèle `feedback_draft` validé optionnel ;
+- validation pédagogique réservée à l'owner professeur ;
+- formats preview `CSV`, `XLSX`, `PDF` et `report` ;
+- sources limitées aux feedbacks approuvés et aux runs exacts du batch ;
+- validation d'export distincte, réservée à l'owner ;
+- `publication_allowed = false` imposé par contrat et BDD ;
+- supervision admin/godmode en lecture et audits sans contenu privé.
+
+`approved_for_export` n'engendre aucun job, fichier final, lien de livraison ou publication.
+Vincent doit comparer les champs aux feedbacks et exports de ses phases P1–P4 et signaler les
+formats ou contrôles qualité réellement manquants avant raccord renderer.
+
+---
+
 ## 2026-06-13 — PR-C4 calibration et contrôle qualité
 
 **Livrable MALEX/Codex.** Diagnostic interne de cohorte et échantillon de relecture, sans

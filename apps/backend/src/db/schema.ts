@@ -462,6 +462,75 @@ function migrate(d: Database.Database): void {
       UNIQUE(calibration_review_id, run_id)
     );
 
+    -- ───────────────────────── Feedback / exports supervisés PR-C5 ─────────
+    CREATE TABLE IF NOT EXISTS feedback_drafts (
+      id                      TEXT PRIMARY KEY,
+      run_id                  TEXT NOT NULL REFERENCES pre_correction_runs(id) ON DELETE CASCADE,
+      submission_id           TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
+      owner_id                TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope           TEXT NOT NULL,
+      method_version          TEXT NOT NULL,
+      model_profile_ref       TEXT REFERENCES task_model_profiles(id),
+      observed_strength_ref   TEXT NOT NULL,
+      observed_issue_ref      TEXT NOT NULL,
+      evidence_refs_json      TEXT NOT NULL,
+      impact_on_work_ref      TEXT NOT NULL,
+      pedagogical_axis_ref    TEXT NOT NULL,
+      next_action_ref         TEXT NOT NULL,
+      validation_criterion_ref TEXT NOT NULL,
+      tone_level              TEXT NOT NULL
+                                CHECK (tone_level IN ('supportive','clear','firm')),
+      evaluation_alignment    TEXT NOT NULL
+                                CHECK (evaluation_alignment IN ('aligned','review_required')),
+      teacher_validation_required INTEGER NOT NULL DEFAULT 1
+                                CHECK (teacher_validation_required = 1),
+      status                  TEXT NOT NULL DEFAULT 'needs_teacher_validation'
+                                CHECK (status IN (
+                                  'needs_teacher_validation','approved','rejected'
+                                )),
+      validator_id            TEXT REFERENCES users(id),
+      validation_ref          TEXT,
+      created_at              INTEGER NOT NULL,
+      updated_at              INTEGER NOT NULL,
+      CHECK (
+        (status = 'needs_teacher_validation' AND validator_id IS NULL AND validation_ref IS NULL)
+        OR
+        (status IN ('approved','rejected') AND validator_id IS NOT NULL AND validation_ref IS NOT NULL)
+      )
+    );
+
+    CREATE TABLE IF NOT EXISTS correction_export_previews (
+      id                      TEXT PRIMARY KEY,
+      batch_id                TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      owner_id                TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope           TEXT NOT NULL,
+      format                  TEXT NOT NULL CHECK (format IN ('csv','xlsx','pdf','report')),
+      target                  TEXT NOT NULL
+                                CHECK (target IN ('teacher_download','manual_injection')),
+      source_feedback_refs_json TEXT NOT NULL,
+      source_run_refs_json    TEXT NOT NULL,
+      preview_ref             TEXT NOT NULL,
+      schema_version          TEXT NOT NULL,
+      contains_private_data   INTEGER NOT NULL DEFAULT 1 CHECK (contains_private_data = 1),
+      publication_allowed     INTEGER NOT NULL DEFAULT 0 CHECK (publication_allowed = 0),
+      human_validation_required INTEGER NOT NULL DEFAULT 1
+                                CHECK (human_validation_required = 1),
+      status                  TEXT NOT NULL DEFAULT 'needs_teacher_validation'
+                                CHECK (status IN (
+                                  'needs_teacher_validation','approved_for_export','rejected'
+                                )),
+      validator_id            TEXT REFERENCES users(id),
+      validation_ref          TEXT,
+      created_at              INTEGER NOT NULL,
+      updated_at              INTEGER NOT NULL,
+      CHECK (
+        (status = 'needs_teacher_validation' AND validator_id IS NULL AND validation_ref IS NULL)
+        OR
+        (status IN ('approved_for_export','rejected')
+          AND validator_id IS NOT NULL AND validation_ref IS NOT NULL)
+      )
+    );
+
     -- ───────────────────────── Jobs / queues PR-C2 ────────────────────────
     CREATE TABLE IF NOT EXISTS jobs (
       id            TEXT PRIMARY KEY,
@@ -551,6 +620,12 @@ function migrate(d: Database.Database): void {
       ON cohort_calibration_reviews(batch_id, status, created_at);
     CREATE INDEX IF NOT EXISTS idx_quality_review_items_review
       ON quality_review_items(calibration_review_id, status);
+    CREATE INDEX IF NOT EXISTS idx_feedback_drafts_run
+      ON feedback_drafts(run_id, status);
+    CREATE INDEX IF NOT EXISTS idx_feedback_drafts_owner
+      ON feedback_drafts(owner_id, project_scope, status);
+    CREATE INDEX IF NOT EXISTS idx_correction_export_previews_batch
+      ON correction_export_previews(batch_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_jobs_owner_status
       ON jobs(owner_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_jobs_scope
@@ -788,6 +863,52 @@ export interface QualityReviewItemRow {
   selection_reasons_json: string;
   status: 'review_required';
   created_at: number;
+}
+
+export interface FeedbackDraftRow {
+  id: string;
+  run_id: string;
+  submission_id: string;
+  owner_id: string;
+  project_scope: string;
+  method_version: string;
+  model_profile_ref: string | null;
+  observed_strength_ref: string;
+  observed_issue_ref: string;
+  evidence_refs_json: string;
+  impact_on_work_ref: string;
+  pedagogical_axis_ref: string;
+  next_action_ref: string;
+  validation_criterion_ref: string;
+  tone_level: 'supportive' | 'clear' | 'firm';
+  evaluation_alignment: 'aligned' | 'review_required';
+  teacher_validation_required: number;
+  status: 'needs_teacher_validation' | 'approved' | 'rejected';
+  validator_id: string | null;
+  validation_ref: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CorrectionExportPreviewRow {
+  id: string;
+  batch_id: string;
+  owner_id: string;
+  project_scope: string;
+  format: 'csv' | 'xlsx' | 'pdf' | 'report';
+  target: 'teacher_download' | 'manual_injection';
+  source_feedback_refs_json: string;
+  source_run_refs_json: string;
+  preview_ref: string;
+  schema_version: string;
+  contains_private_data: number;
+  publication_allowed: number;
+  human_validation_required: number;
+  status: 'needs_teacher_validation' | 'approved_for_export' | 'rejected';
+  validator_id: string | null;
+  validation_ref: string | null;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface JobRow {

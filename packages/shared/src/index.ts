@@ -744,6 +744,105 @@ export const CohortCalibrationReviewSchema = z
   .strict();
 export type CohortCalibrationReview = z.infer<typeof CohortCalibrationReviewSchema>;
 
+// ───────────────────────── Feedback et exports supervisés PR-C5 ─────────────────────────
+
+const StorageRefSchema = z.string().startsWith('storage://');
+
+export const FeedbackDraftSchema = z
+  .object({
+    feedback_id: z.string().min(1),
+    run_id: z.string().min(1),
+    submission_id: z.string().min(1),
+    owner_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    method_version: z.string().min(1),
+    model_profile_ref: z.string().min(1).nullable(),
+    observed_strength_ref: StorageRefSchema,
+    observed_issue_ref: StorageRefSchema,
+    evidence_refs: z.array(z.string().min(1)).min(1),
+    impact_on_work_ref: StorageRefSchema,
+    pedagogical_axis_ref: StorageRefSchema,
+    next_action_ref: StorageRefSchema,
+    validation_criterion_ref: StorageRefSchema,
+    tone_level: z.enum(['supportive', 'clear', 'firm']),
+    evaluation_alignment: z.enum(['aligned', 'review_required']),
+    teacher_validation_required: z.literal(true),
+    status: z.enum(['needs_teacher_validation', 'approved', 'rejected']),
+    validator_id: z.string().min(1).nullable(),
+    validation_ref: z.string().min(1).nullable(),
+    created_at: z.number().int().nonnegative(),
+    updated_at: z.number().int().nonnegative(),
+  })
+  .strict()
+  .superRefine((feedback, ctx) => {
+    const decided = feedback.status === 'approved' || feedback.status === 'rejected';
+    if (decided && (!feedback.validator_id || !feedback.validation_ref)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un feedback décidé doit référencer son validateur et sa décision.',
+        path: ['validation_ref'],
+      });
+    }
+    if (!decided && (feedback.validator_id || feedback.validation_ref)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un feedback en attente ne peut pas porter de validation.',
+        path: ['validator_id'],
+      });
+    }
+  });
+export type FeedbackDraft = z.infer<typeof FeedbackDraftSchema>;
+
+export const CorrectionExportFormatSchema = z.enum(['csv', 'xlsx', 'pdf', 'report']);
+export type CorrectionExportFormat = z.infer<typeof CorrectionExportFormatSchema>;
+
+/**
+ * Preview privée d'un export de correction.
+ *
+ * Même approuvée, elle n'est jamais une publication et ne déclenche aucun
+ * envoi externe. Le rendu réel reste derrière un futur job export_prepare.
+ */
+export const CorrectionExportPreviewSchema = z
+  .object({
+    export_id: z.string().min(1),
+    batch_id: z.string().min(1),
+    owner_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    format: CorrectionExportFormatSchema,
+    target: z.enum(['teacher_download', 'manual_injection']),
+    source_feedback_refs: z.array(z.string().min(1)).min(1),
+    source_run_refs: z.array(z.string().min(1)).min(1),
+    preview_ref: StorageRefSchema,
+    schema_version: z.string().min(1),
+    contains_private_data: z.literal(true),
+    publication_allowed: z.literal(false),
+    human_validation_required: z.literal(true),
+    status: z.enum(['needs_teacher_validation', 'approved_for_export', 'rejected']),
+    validator_id: z.string().min(1).nullable(),
+    validation_ref: z.string().min(1).nullable(),
+    created_at: z.number().int().nonnegative(),
+    updated_at: z.number().int().nonnegative(),
+  })
+  .strict()
+  .superRefine((preview, ctx) => {
+    const decided = preview.status === 'approved_for_export' || preview.status === 'rejected';
+    if (decided && (!preview.validator_id || !preview.validation_ref)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un export décidé doit référencer son validateur et sa décision.',
+        path: ['validation_ref'],
+      });
+    }
+    if (!decided && (preview.validator_id || preview.validation_ref)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Une preview en attente ne peut pas porter de validation.',
+        path: ['validator_id'],
+      });
+    }
+  });
+export type CorrectionExportPreview = z.infer<typeof CorrectionExportPreviewSchema>;
+
 // ───────────────────────── Jobs / ingestion OCR PR-C2 ─────────────────────────
 
 export const JobStatusSchema = z.enum([

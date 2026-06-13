@@ -23,6 +23,19 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C5 feedback/exports prête
+
+La couche `SPEC_PR_C5_FEEDBACK_AND_EXPORT_PREVIEWS.md` sépare désormais :
+
+1. le feedback student-safe structuré, validé par l'owner professeur ;
+2. la preview privée `CSV/XLSX/PDF/report`, validée comme package d'export.
+
+Même approuvée, une preview garde `publication_allowed = false` et ne crée aucun job ni fichier
+final. Merci de comparer tes feedbacks, règles d'unicité et exports P1–P4, puis de proposer les
+écarts utiles avant tout raccord `export_prepare`.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C4 calibration/quality review prête
 
 La couche `SPEC_PR_C4_CALIBRATION_AND_QUALITY_REVIEW.md` produit désormais un diagnostic
