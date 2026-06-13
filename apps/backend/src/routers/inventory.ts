@@ -1,20 +1,30 @@
 import {Router, type Request, type Response} from 'express';
 
 import {
+  CreateCollectionMatchRequestSchema,
   CreateInventoryCollectionRequestSchema,
   CreateInventoryItemRequestSchema,
   IngestInventoryOcrCandidatesRequestSchema,
+  ResolveCollectionMatchRequestSchema,
+  SetCollectionCompletionRequestSchema,
 } from '@masterflow/shared';
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
   archiveInventoryItem,
+  createCollectionMatch,
   createInventoryCollection,
   createInventoryItem,
   getInventoryItem,
+  findInventoryDuplicateCandidates,
   ingestInventoryOcrCandidates,
   indexInventoryItem,
   listInventoryItems,
+  listInventoryCollections,
+  listCollectionMatches,
+  resolveCollectionMatch,
+  setInventoryCollectionCompletion,
+  validateInventoryCollection,
   validateInventoryItem,
 } from '../services/inventory.ts';
 
@@ -33,6 +43,7 @@ function routeError(res: Response, error: unknown): void {
   if (
     message === 'inventory_item_not_found' ||
     message === 'inventory_collection_not_found' ||
+    message === 'inventory_match_not_found' ||
     message === 'project_not_found'
   ) {
     res.status(404).json({error: message});
@@ -152,6 +163,83 @@ export function createInventoryRouter(): Router {
     }
     try {
       res.status(201).json(createInventoryCollection(actor(req), parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.get('/inventory/collections', (req: Request, res: Response): void => {
+    try {
+      res.json({
+        results: listInventoryCollections(actor(req), {
+          project_id: typeof req.query.project_id === 'string' ? req.query.project_id : null,
+          include_candidates:
+            req.query.include_candidates === '1' || req.query.include_candidates === 'true',
+        }),
+      });
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/collections/:id/validate', (req: Request, res: Response): void => {
+    try {
+      res.json(validateInventoryCollection(actor(req), req.params.id ?? ''));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/collections/:id/completion', (req: Request, res: Response): void => {
+    const parsed = SetCollectionCompletionRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(setInventoryCollectionCompletion(actor(req), req.params.id ?? '', parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.get('/inventory/collections/:id/matches', (req: Request, res: Response): void => {
+    try {
+      res.json({results: listCollectionMatches(actor(req), req.params.id ?? '')});
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/collections/:id/matches', (req: Request, res: Response): void => {
+    const parsed = CreateCollectionMatchRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.status(201).json(createCollectionMatch(actor(req), req.params.id ?? '', parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/matches/:id/resolve', (req: Request, res: Response): void => {
+    const parsed = ResolveCollectionMatchRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(resolveCollectionMatch(actor(req), req.params.id ?? '', parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.get('/inventory/items/:id/duplicate-candidates', (req: Request, res: Response): void => {
+    try {
+      res.json({results: findInventoryDuplicateCandidates(actor(req), req.params.id ?? '')});
     } catch (error) {
       routeError(res, error);
     }

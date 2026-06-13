@@ -130,6 +130,10 @@ function migrate(d: Database.Database): void {
                           CHECK (visibility_scope IN ('private','project')),
       validation_status TEXT NOT NULL DEFAULT 'candidate'
                           CHECK (validation_status IN ('candidate','validated','archived')),
+      completion_state  TEXT NOT NULL DEFAULT 'unknown'
+                          CHECK (completion_state IN (
+                            'unknown','selective','complete_declared','abandoned'
+                          )),
       created_at        INTEGER NOT NULL,
       updated_at        INTEGER NOT NULL
     );
@@ -1113,6 +1117,12 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'rag_context_packs', 'filters_json', "TEXT NOT NULL DEFAULT '{}'");
   ensureColumn(d, 'rag_query_events', 'purpose', "TEXT NOT NULL DEFAULT 'context_retrieval'");
   ensureColumn(d, 'rag_query_events', 'room_instance_id', 'TEXT');
+  ensureColumn(
+    d,
+    'inventory_collections',
+    'completion_state',
+    "TEXT NOT NULL DEFAULT 'unknown'",
+  );
   ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
@@ -1249,6 +1259,18 @@ export interface InventoryCollectionRow {
   description: string | null;
   visibility_scope: 'private' | 'project';
   validation_status: 'candidate' | 'validated' | 'archived';
+  completion_state: 'unknown' | 'selective' | 'complete_declared' | 'abandoned';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CollectionMatchRow {
+  id: string;
+  item_id: string;
+  collection_id: string;
+  match_status: 'candidate' | 'confirmed' | 'rejected';
+  confidence: number | null;
+  source_ref: string | null;
   created_at: number;
   updated_at: number;
 }

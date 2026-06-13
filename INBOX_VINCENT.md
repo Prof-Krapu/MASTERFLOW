@@ -22,6 +22,21 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INV-4 Collection Graph pousse cote MALEX/Codex
+
+Collection Graph livre sans fusion automatique :
+
+- matches candidats confirmables/rejetables ;
+- ownership preserve ;
+- completion declarative ;
+- doublons advisory uniquement ;
+- scopes projet/personnel conserves.
+
+Tout resolver OCR/collection Vincent doit produire des matches candidats, jamais rattacher ou
+fusionner silencieusement.
+
+---
+
 ## 2026-06-13 — open — PR-INV-3 Inventory RAG pousse cote MALEX/Codex
 
 Projection derivee livree :

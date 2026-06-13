@@ -1,22 +1,31 @@
 import {
   CreateInventoryCollectionRequestSchema,
   CreateInventoryItemRequestSchema,
+  CreateCollectionMatchRequestSchema,
+  CollectionMatchSchema,
   IngestInventoryOcrCandidatesRequestSchema,
   InventoryCollectionSchema,
   InventoryItemSchema,
   ListInventoryItemsRequestSchema,
+  ResolveCollectionMatchRequestSchema,
+  SetCollectionCompletionRequestSchema,
   ROLE_RANK,
   type CreateInventoryCollectionRequest,
   type CreateInventoryItemRequest,
+  type CreateCollectionMatchRequest,
+  type CollectionMatch,
   type InventoryCollection,
   type InventoryItem,
   type IngestInventoryOcrCandidatesRequest,
   type ListInventoryItemsRequest,
   type ProjectMemberRole,
+  type ResolveCollectionMatchRequest,
+  type SetCollectionCompletionRequest,
 } from '@masterflow/shared';
 
 import {
   getDb,
+  type CollectionMatchRow,
   type InventoryCollectionRow,
   type InventoryItemRow,
 } from '../db/schema.ts';
@@ -46,6 +55,20 @@ function toCollection(row: InventoryCollectionRow): InventoryCollection {
     description: row.description,
     visibility_scope: row.visibility_scope,
     validation_status: row.validation_status,
+    completion_state: row.completion_state,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+}
+
+function toCollectionMatch(row: CollectionMatchRow): CollectionMatch {
+  return CollectionMatchSchema.parse({
+    match_id: row.id,
+    item_id: row.item_id,
+    collection_id: row.collection_id,
+    match_status: row.match_status,
+    confidence: row.confidence,
+    source_ref: row.source_ref,
     created_at: row.created_at,
     updated_at: row.updated_at,
   });
@@ -125,6 +148,25 @@ function getItemRow(id: string): InventoryItemRow | undefined {
     | undefined;
 }
 
+function assertCanManageCollection(actor: AuthUser, row: InventoryCollectionRow): void {
+  if (isGlobalAdmin(actor) || row.owner_id === actor.id) return;
+  if (row.project_id && canEditProject(actor, row.project_id)) return;
+  throw new Error('inventory_collection_not_found');
+}
+
+function assertCanReadCollection(actor: AuthUser, row: InventoryCollectionRow): void {
+  if (isGlobalAdmin(actor) || row.owner_id === actor.id) return;
+  if (
+    row.project_id &&
+    row.visibility_scope === 'project' &&
+    row.validation_status === 'validated' &&
+    canReadProject(actor, row.project_id)
+  ) {
+    return;
+  }
+  throw new Error('inventory_collection_not_found');
+}
+
 function assertCollectionCompatible(
   actor: AuthUser,
   collectionId: string | null | undefined,
@@ -154,8 +196,8 @@ export function createInventoryCollection(
     .prepare(
       `INSERT INTO inventory_collections
          (id, owner_id, project_id, scope_type, label, description, visibility_scope,
-          validation_status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'candidate', ?, ?)`,
+          validation_status, completion_state, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'candidate', 'unknown', ?, ?)`,
     )
     .run(
       id,
@@ -175,6 +217,198 @@ export function createInventoryCollection(
     detail: {collection_id: id, project_id: projectId, validation_status: 'candidate'},
   });
   return toCollection(getCollectionRow(id)!);
+}
+
+export function listInventoryCollections(
+  actor: AuthUser,
+  input: Partial<ListInventoryItemsRequest> = {},
+): InventoryCollection[] {
+  const request = ListInventoryItemsRequestSchema.parse(input);
+  const projectId = request.project_id ?? null;
+  let rows: InventoryCollectionRow[];
+  if (projectId) {
+    if (!canReadProject(actor, projectId)) throw new Error('inventory_scope_denied');
+    const includeCandidates = request.include_candidates && canEditProject(actor, projectId);
+    rows = getDb()
+      .prepare(
+        `SELECT * FROM inventory_collections
+         WHERE project_id = ? AND visibility_scope = 'project'
+           AND validation_status IN (${includeCandidates ? "'candidate','validated'" : "'validated'"})
+         ORDER BY updated_at DESC`,
+      )
+      .all(projectId) as InventoryCollectionRow[];
+  } else {
+    rows = getDb()
+      .prepare(
+        `SELECT * FROM inventory_collections
+         WHERE owner_id = ? AND scope_type = 'user'
+           AND validation_status IN (${request.include_candidates ? "'candidate','validated'" : "'validated'"})
+         ORDER BY updated_at DESC`,
+      )
+      .all(actor.id) as InventoryCollectionRow[];
+  }
+  return rows.map(toCollection);
+}
+
+export function validateInventoryCollection(actor: AuthUser, id: string): InventoryCollection {
+  const row = getCollectionRow(id);
+  if (!row) throw new Error('inventory_collection_not_found');
+  assertCanManageCollection(actor, row);
+  getDb()
+    .prepare(
+      `UPDATE inventory_collections
+       SET validation_status = 'validated', updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(Date.now(), id);
+  audit({
+    event_type: 'inventory.collection_validated',
+    user_id: actor.id,
+    scope: row.project_id ?? row.owner_id,
+    detail: {collection_id: id, project_id: row.project_id},
+  });
+  return toCollection(getCollectionRow(id)!);
+}
+
+export function setInventoryCollectionCompletion(
+  actor: AuthUser,
+  id: string,
+  input: SetCollectionCompletionRequest,
+): InventoryCollection {
+  const request = SetCollectionCompletionRequestSchema.parse(input);
+  const row = getCollectionRow(id);
+  if (!row) throw new Error('inventory_collection_not_found');
+  assertCanManageCollection(actor, row);
+  getDb()
+    .prepare('UPDATE inventory_collections SET completion_state = ?, updated_at = ? WHERE id = ?')
+    .run(request.completion_state, Date.now(), id);
+  audit({
+    event_type: 'inventory.collection_completion_declared',
+    user_id: actor.id,
+    scope: row.project_id ?? row.owner_id,
+    detail: {collection_id: id, completion_state: request.completion_state},
+  });
+  return toCollection(getCollectionRow(id)!);
+}
+
+export function createCollectionMatch(
+  actor: AuthUser,
+  collectionId: string,
+  input: CreateCollectionMatchRequest,
+): CollectionMatch {
+  const request = CreateCollectionMatchRequestSchema.parse(input);
+  const collection = getCollectionRow(collectionId);
+  const item = getItemRow(request.item_id);
+  if (!collection) throw new Error('inventory_collection_not_found');
+  if (!item) throw new Error('inventory_item_not_found');
+  assertCanManageCollection(actor, collection);
+  assertCanValidateItem(actor, item);
+  if (collection.project_id !== item.project_id) {
+    throw new Error('inventory_collection_scope_mismatch');
+  }
+  const now = Date.now();
+  const id = uuid();
+  getDb()
+    .prepare(
+      `INSERT INTO collection_matches
+         (id, item_id, collection_id, match_status, confidence, source_ref, created_at, updated_at)
+       VALUES (?, ?, ?, 'candidate', ?, ?, ?, ?)
+       ON CONFLICT(item_id, collection_id) DO UPDATE SET
+         match_status = 'candidate',
+         confidence = excluded.confidence,
+         source_ref = excluded.source_ref,
+         updated_at = excluded.updated_at`,
+    )
+    .run(
+      id,
+      item.id,
+      collection.id,
+      request.confidence ?? null,
+      request.source_ref ?? null,
+      now,
+      now,
+    );
+  const row = getDb()
+    .prepare('SELECT * FROM collection_matches WHERE item_id = ? AND collection_id = ?')
+    .get(item.id, collection.id) as CollectionMatchRow;
+  return toCollectionMatch(row);
+}
+
+export function resolveCollectionMatch(
+  actor: AuthUser,
+  matchId: string,
+  input: ResolveCollectionMatchRequest,
+): CollectionMatch {
+  const request = ResolveCollectionMatchRequestSchema.parse(input);
+  const row = getDb().prepare('SELECT * FROM collection_matches WHERE id = ?').get(matchId) as
+    | CollectionMatchRow
+    | undefined;
+  if (!row) throw new Error('inventory_match_not_found');
+  const collection = getCollectionRow(row.collection_id);
+  const item = getItemRow(row.item_id);
+  if (!collection || !item) throw new Error('inventory_match_not_found');
+  assertCanManageCollection(actor, collection);
+  const now = Date.now();
+  getDb()
+    .prepare('UPDATE collection_matches SET match_status = ?, updated_at = ? WHERE id = ?')
+    .run(request.decision, now, matchId);
+  if (request.decision === 'confirmed') {
+    getDb()
+      .prepare('UPDATE inventory_items SET collection_id = ?, updated_at = ? WHERE id = ?')
+      .run(collection.id, now, item.id);
+  }
+  audit({
+    event_type: 'inventory.collection_match_resolved',
+    user_id: actor.id,
+    scope: collection.project_id ?? collection.owner_id,
+    detail: {match_id: matchId, decision: request.decision},
+  });
+  const updated = getDb()
+    .prepare('SELECT * FROM collection_matches WHERE id = ?')
+    .get(matchId) as CollectionMatchRow;
+  return toCollectionMatch(updated);
+}
+
+export function listCollectionMatches(actor: AuthUser, collectionId: string): CollectionMatch[] {
+  const collection = getCollectionRow(collectionId);
+  if (!collection) throw new Error('inventory_collection_not_found');
+  assertCanReadCollection(actor, collection);
+  return (
+    getDb()
+      .prepare('SELECT * FROM collection_matches WHERE collection_id = ? ORDER BY updated_at DESC')
+      .all(collectionId) as CollectionMatchRow[]
+  ).map(toCollectionMatch);
+}
+
+function normalizedDuplicateKey(row: InventoryItemRow): string {
+  return `${row.type}|${row.label.trim().toLocaleLowerCase('fr')}|${(row.creator_or_brand ?? '')
+    .trim()
+    .toLocaleLowerCase('fr')}`;
+}
+
+export function findInventoryDuplicateCandidates(
+  actor: AuthUser,
+  itemId: string,
+): InventoryItem[] {
+  const item = getItemRow(itemId);
+  if (!item) throw new Error('inventory_item_not_found');
+  assertCanReadItem(actor, item);
+  const rows = item.project_id
+    ? (getDb()
+        .prepare(
+          `SELECT * FROM inventory_items
+           WHERE project_id = ? AND id <> ? AND validation_status <> 'archived'`,
+        )
+        .all(item.project_id, item.id) as InventoryItemRow[])
+    : (getDb()
+        .prepare(
+          `SELECT * FROM inventory_items
+           WHERE owner_id = ? AND scope_type = 'user' AND id <> ?
+             AND validation_status <> 'archived'`,
+        )
+        .all(item.owner_id, item.id) as InventoryItemRow[]);
+  const key = normalizedDuplicateKey(item);
+  return rows.filter((candidate) => normalizedDuplicateKey(candidate) === key).map(toItem);
 }
 
 export function createInventoryItem(actor: AuthUser, input: CreateInventoryItemRequest): InventoryItem {

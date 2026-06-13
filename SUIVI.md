@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-INV-4 Collection Graph — PRET A PUSH
+
+- validation explicite des collections ;
+- matches item -> collection en `candidate`, puis confirmation/rejet humain ;
+- confirmation rattache l'item sans modifier ownership ;
+- completion `unknown|selective|complete_declared|abandoned` declaree, jamais deduite ;
+- doublons retournes comme candidats consultatifs, sans fusion ni suppression ;
+- lecture des collections/matches projet seulement apres validation et permission.
+
+Recette : Inventory collections **11/11**, backend complet **244/244**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-13 — PR-INV-3 Inventory RAG — PRET A PUSH
 
 Projection RAG explicite des items Inventory valides :

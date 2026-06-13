@@ -172,10 +172,23 @@ export const InventoryCollectionSchema = z.object({
   description: z.string().max(1000).nullable(),
   visibility_scope: InventoryVisibilityScopeSchema,
   validation_status: InventoryValidationStatusSchema,
+  completion_state: z.enum(['unknown', 'selective', 'complete_declared', 'abandoned']),
   created_at: z.number().int().nonnegative(),
   updated_at: z.number().int().nonnegative(),
 });
 export type InventoryCollection = z.infer<typeof InventoryCollectionSchema>;
+
+export const CollectionMatchSchema = z.object({
+  match_id: z.string().min(1),
+  item_id: z.string().min(1),
+  collection_id: z.string().min(1),
+  match_status: z.enum(['candidate', 'confirmed', 'rejected']),
+  confidence: z.number().min(0).max(1).nullable(),
+  source_ref: z.string().min(1).max(240).nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type CollectionMatch = z.infer<typeof CollectionMatchSchema>;
 
 export const InventoryItemSchema = z.object({
   item_id: z.string().min(1),
@@ -258,6 +271,25 @@ export const IngestInventoryOcrCandidatesRequestSchema = z.object({
 });
 export type IngestInventoryOcrCandidatesRequest = z.input<
   typeof IngestInventoryOcrCandidatesRequestSchema
+>;
+
+export const CreateCollectionMatchRequestSchema = z.object({
+  item_id: z.string().min(1),
+  confidence: z.number().min(0).max(1).nullable().optional(),
+  source_ref: z.string().min(1).max(240).nullable().optional(),
+});
+export type CreateCollectionMatchRequest = z.input<typeof CreateCollectionMatchRequestSchema>;
+
+export const ResolveCollectionMatchRequestSchema = z.object({
+  decision: z.enum(['confirmed', 'rejected']),
+});
+export type ResolveCollectionMatchRequest = z.input<typeof ResolveCollectionMatchRequestSchema>;
+
+export const SetCollectionCompletionRequestSchema = z.object({
+  completion_state: z.enum(['unknown', 'selective', 'complete_declared', 'abandoned']),
+});
+export type SetCollectionCompletionRequest = z.input<
+  typeof SetCollectionCompletionRequestSchema
 >;
 
 // ───────────────────────── Template / Schema Registry ─────────────────────────
