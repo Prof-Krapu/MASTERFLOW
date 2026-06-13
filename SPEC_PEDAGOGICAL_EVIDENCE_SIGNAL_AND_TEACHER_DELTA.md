@@ -1,6 +1,6 @@
 # SPEC — Evidence, signals et deltas professeur
 
-Statut : `FOUNDATION SPEC / PR-CB0 / 2026-06-13`
+Statut : `BACKEND IMPLEMENTED + PROJECT BRIDGE / PR-CB0 / 2026-06-13`
 
 Implementation initiale Git :
 
@@ -9,7 +9,8 @@ Implementation initiale Git :
 - migrations SQLite idempotentes posees dans `apps/backend/src/db/schema.ts` ;
 - tests de contraintes et defaults poses dans `apps/backend/tests/pedagogical_storage.test.ts` ;
 - depot interne permissionne pose dans `apps/backend/src/services/pedagogical_records.ts` ;
-- teacher limite a ses objets tant que Project/Scope n'existe pas, profils modele admin en draft ;
+- `project_id` reel disponible pour preuves/signaux projet, fallback legacy owner-only ;
+- ecriture projet `editor+`, lecture par membership, profils modele admin en draft ;
 - aucune route ou capability `live` ajoutee a ce stade.
 
 ## But
@@ -40,6 +41,7 @@ interface EvidenceEvent {
   source_type: EvidenceSourceType;
   adapter_id: string;
   owner_id: string;
+  project_id?: string | null;
   project_scope: string;
   target_refs: string[];
   payload_ref: string;
@@ -72,6 +74,7 @@ interface PedagogicalSignal {
     | 'subject_quality'
     | 'drift';
   level: 'individual' | 'group' | 'cohort' | 'course' | 'method' | 'system';
+  project_id?: string | null;
   project_scope: string;
   evidence_refs: string[];
   recurrence: number;
@@ -165,6 +168,15 @@ Contraintes :
 | task model profile | admin/godmode | action sensible validee |
 
 Le persona actif n'intervient jamais dans ces permissions.
+
+### Bridge Project/Scope
+
+- un objet avec `project_id` utilise les memberships du projet ;
+- `editor+` est requis pour capturer une preuve ou creer un signal projet ;
+- la lecture projet est bornee aux membres autorises ;
+- les preuves multi-owner peuvent nourrir un signal seulement dans le meme projet ;
+- pendant la migration, `project_scope` doit etre egal au `project_id` ;
+- un objet sans `project_id` reste en mode legacy teacher owner-only.
 
 ## Evenements
 

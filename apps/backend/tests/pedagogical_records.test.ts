@@ -10,6 +10,7 @@ import {
   recordTeacherDecisionDelta,
   saveTaskModelProfileDraft,
 } from '../src/services/pedagogical_records.ts';
+import {addProjectMember, createProject} from '../src/services/projects.ts';
 
 const teacherA: AuthUser = {id: 'teacher-records-a', username: 'teacher_records_a', role: 'teacher'};
 const teacherB: AuthUser = {id: 'teacher-records-b', username: 'teacher_records_b', role: 'teacher'};
@@ -31,6 +32,77 @@ beforeAll(async () => {
 });
 
 describe('PR-CB0 — dépôt interne permissionné', () => {
+  it('utilise Project/Scope pour les nouvelles preuves et signaux projet', () => {
+    const project = createProject(teacherA, {name: 'Projet pedagogique bridge'});
+    const baseEvidence = {
+      source_type: 'teacher_note' as const,
+      adapter_id: 'teacher-note-v1',
+      project_id: project.project_id,
+      project_scope: project.project_id,
+      target_refs: ['cohort-bridge'],
+      extraction_confidence: null,
+      privacy_level: 'private' as const,
+      occurred_at: Date.now(),
+      status: 'candidate' as const,
+    };
+
+    expect(() =>
+      captureEvidence(teacherB, {
+        ...baseEvidence,
+        evidence_id: 'evidence-project-bridge-denied',
+        owner_id: teacherB.id,
+        payload_ref: 'storage://teacher-b-denied',
+      }),
+    ).toThrow('scope_denied');
+
+    addProjectMember(teacherA, project.project_id, {user_id: teacherB.id, role: 'editor'});
+    captureEvidence(teacherA, {
+      ...baseEvidence,
+      evidence_id: 'evidence-project-bridge-a',
+      owner_id: teacherA.id,
+      payload_ref: 'storage://teacher-a-project',
+    });
+    captureEvidence(teacherB, {
+      ...baseEvidence,
+      evidence_id: 'evidence-project-bridge-b',
+      owner_id: teacherB.id,
+      payload_ref: 'storage://teacher-b-project',
+    });
+
+    expect(
+      listEvidence(teacherA, project.project_id, project.project_id).map((item) => item.evidence_id),
+    ).toEqual(
+      expect.arrayContaining(['evidence-project-bridge-a', 'evidence-project-bridge-b']),
+    );
+    expect(
+      recordPedagogicalSignal(teacherA, {
+        signal_id: 'signal-project-bridge',
+        signal_type: 'confusion',
+        level: 'cohort',
+        project_id: project.project_id,
+        project_scope: project.project_id,
+        evidence_refs: ['evidence-project-bridge-a', 'evidence-project-bridge-b'],
+        recurrence: 2,
+        contradiction_refs: [],
+        confidence: 0.7,
+        sensitivity: 'sensitive',
+        status: 'observation',
+        created_at: Date.now(),
+        updated_at: Date.now(),
+      }),
+    ).toMatchObject({project_id: project.project_id});
+
+    expect(() =>
+      captureEvidence(teacherA, {
+        ...baseEvidence,
+        evidence_id: 'evidence-project-bridge-mismatch',
+        owner_id: teacherA.id,
+        project_scope: 'legacy-free-text',
+        payload_ref: 'storage://mismatch',
+      }),
+    ).toThrow('project_scope_mismatch');
+  });
+
   it('interdit les preuves au student et les écritures teacher pour un autre owner', () => {
     const input = {
       evidence_id: 'evidence-records-denied',

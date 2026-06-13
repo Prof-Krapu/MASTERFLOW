@@ -14,6 +14,34 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Premier bridge Project/Scope applique aux donnees pedagogiques
+
+MALEX/Codex a branche `evidence_events` et `pedagogical_signals` sur les vrais projets.
+
+Regle active :
+
+- nouveaux objets projet portent `project_id` ;
+- pendant la transition, `project_scope` doit contenir exactement ce meme `project_id` ;
+- ecriture projet exige membership `editor+` ;
+- lecture projet exige membership reel ;
+- plusieurs owners peuvent alimenter un meme signal si toutes les preuves appartiennent au meme
+  projet ;
+- anciens objets sans `project_id` restent accessibles en fallback teacher owner-only.
+
+Action demandee :
+
+1. tes adapters OCR/WooClap/transcription/notes prof doivent transmettre un vrai `project_id`
+   lorsqu'ils travaillent dans une classe/projet connu ;
+2. ne plus generer de nouveau scope libre type `course-foo` si un projet existe ;
+3. conserver le fallback legacy uniquement pour migration, pas comme nouvelle norme ;
+4. ne pas migrer correction/batches/exports en masse sans mapping et tests ;
+5. proposer ensuite le mapping de tes objets correction vers `project_id`.
+
+Traduction : on ne supprime pas les anciens replays, mais les nouveaux matchs utilisent enfin le
+vrai stage ID.
+
+---
+
 ## 2026-06-13 — open — PR-7 RAG permissionne livre
 
 MALEX/Codex a livre le shell RAG permissionne backend.

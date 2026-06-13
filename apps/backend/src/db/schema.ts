@@ -405,6 +405,7 @@ function migrate(d: Database.Database): void {
                               )),
       adapter_id            TEXT NOT NULL,
       owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id            TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope         TEXT NOT NULL,
       target_refs_json      TEXT NOT NULL,
       payload_ref           TEXT NOT NULL,
@@ -432,6 +433,7 @@ function migrate(d: Database.Database): void {
                                 CHECK (level IN (
                                   'individual','group','cohort','course','method','system'
                                 )),
+      project_id              TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope           TEXT NOT NULL,
       evidence_refs_json      TEXT NOT NULL,
       recurrence              INTEGER NOT NULL DEFAULT 0 CHECK (recurrence >= 0),
@@ -927,9 +929,15 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
   ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
+  ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
+  ensureColumn(d, 'pedagogical_signals', 'project_id', 'TEXT');
   d.exec(`
     CREATE INDEX IF NOT EXISTS idx_jobs_claimable
       ON jobs(status, type, updated_at, lease_expires_at);
+    CREATE INDEX IF NOT EXISTS idx_evidence_project
+      ON evidence_events(project_id, status, occurred_at);
+    CREATE INDEX IF NOT EXISTS idx_signals_project
+      ON pedagogical_signals(project_id, status, updated_at);
   `);
 }
 
@@ -1227,6 +1235,7 @@ export interface EvidenceEventRow {
   source_type: string;
   adapter_id: string;
   owner_id: string;
+  project_id: string | null;
   project_scope: string;
   target_refs_json: string;
   payload_ref: string;
@@ -1241,6 +1250,7 @@ export interface PedagogicalSignalRow {
   id: string;
   signal_type: string;
   level: string;
+  project_id: string | null;
   project_scope: string;
   evidence_refs_json: string;
   recurrence: number;

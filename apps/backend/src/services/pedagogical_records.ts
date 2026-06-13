@@ -19,13 +19,14 @@ import {
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 /**
  * Dépôt interne PR-CB0.
  *
  * Il persiste des objets déjà validés par les schémas partagés, sans exposer de
- * route HTTP. En attendant Project/Scope, la règle conservatrice est :
- * teacher = ses propres objets uniquement ; admin/godmode = supervision.
+ * route HTTP. Les objets avec `project_id` utilisent Project/Scope. Les anciens
+ * objets sans `project_id` gardent la règle conservatrice owner-only.
  */
 
 function requireMinimumRole(actor: AuthUser, minimum: 'teacher' | 'admin'): void {
@@ -40,12 +41,32 @@ function assertOwnedByActor(actor: AuthUser, ownerId: string): void {
   }
 }
 
+function assertProjectAccess(
+  actor: AuthUser,
+  projectId: string,
+  minimumProjectRole?: 'viewer' | 'participant' | 'editor' | 'admin' | 'owner',
+): void {
+  const decision = decideScopedPermission({
+    actor,
+    projectId,
+    minimumProjectRole,
+  });
+  if (!decision.allowed) throw new Error('scope_denied');
+}
+
+function assertProjectBridge(projectScope: string, projectId: string | null | undefined): void {
+  if (projectId && projectScope !== projectId) {
+    throw new Error('project_scope_mismatch');
+  }
+}
+
 function toEvidenceDTO(row: EvidenceEventRow): EvidenceEvent {
   return EvidenceEventSchema.parse({
     evidence_id: row.id,
     source_type: row.source_type,
     adapter_id: row.adapter_id,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     project_scope: row.project_scope,
     target_refs: JSON.parse(row.target_refs_json) as unknown,
     payload_ref: row.payload_ref,
@@ -61,6 +82,7 @@ function toSignalDTO(row: PedagogicalSignalRow): PedagogicalSignal {
     signal_id: row.id,
     signal_type: row.signal_type,
     level: row.level,
+    project_id: row.project_id,
     project_scope: row.project_scope,
     evidence_refs: JSON.parse(row.evidence_refs_json) as unknown,
     recurrence: row.recurrence,
@@ -106,19 +128,24 @@ export function captureEvidence(actor: AuthUser, input: EvidenceEvent): Evidence
   requireMinimumRole(actor, 'teacher');
   const evidence = EvidenceEventSchema.parse(input);
   assertOwnedByActor(actor, evidence.owner_id);
+  assertProjectBridge(evidence.project_scope, evidence.project_id);
+  if (evidence.project_id) {
+    assertProjectAccess(actor, evidence.project_id, 'editor');
+  }
 
   getDb()
     .prepare(
       `INSERT INTO evidence_events
-         (id, source_type, adapter_id, owner_id, project_scope, target_refs_json,
+         (id, source_type, adapter_id, owner_id, project_id, project_scope, target_refs_json,
           payload_ref, extraction_confidence, privacy_level, occurred_at, status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       evidence.evidence_id,
       evidence.source_type,
       evidence.adapter_id,
       evidence.owner_id,
+      evidence.project_id ?? null,
       evidence.project_scope,
       JSON.stringify(evidence.target_refs),
       evidence.payload_ref,
@@ -143,9 +170,25 @@ export function captureEvidence(actor: AuthUser, input: EvidenceEvent): Evidence
   return getEvidenceOrThrow(evidence.evidence_id);
 }
 
-export function listEvidence(actor: AuthUser, projectScope: string): EvidenceEvent[] {
+export function listEvidence(
+  actor: AuthUser,
+  projectScope: string,
+  projectId?: string | null,
+): EvidenceEvent[] {
   requireMinimumRole(actor, 'teacher');
+  assertProjectBridge(projectScope, projectId);
   const db = getDb();
+  if (projectId) {
+    assertProjectAccess(actor, projectId);
+    const rows = db
+      .prepare(
+        `SELECT * FROM evidence_events
+         WHERE project_id = ?
+         ORDER BY occurred_at DESC`,
+      )
+      .all(projectId) as EvidenceEventRow[];
+    return rows.map(toEvidenceDTO);
+  }
   const rows =
     actor.role === 'teacher'
       ? (db
@@ -171,19 +214,24 @@ export function recordPedagogicalSignal(
 ): PedagogicalSignal {
   requireMinimumRole(actor, 'teacher');
   const signal = PedagogicalSignalSchema.parse(input);
-  assertEvidenceScope(actor, signal.project_scope, signal.evidence_refs);
+  assertProjectBridge(signal.project_scope, signal.project_id);
+  if (signal.project_id) {
+    assertProjectAccess(actor, signal.project_id, 'editor');
+  }
+  assertEvidenceScope(actor, signal.project_scope, signal.evidence_refs, signal.project_id);
 
   getDb()
     .prepare(
       `INSERT INTO pedagogical_signals
-         (id, signal_type, level, project_scope, evidence_refs_json, recurrence,
+         (id, signal_type, level, project_id, project_scope, evidence_refs_json, recurrence,
           contradiction_refs_json, confidence, sensitivity, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       signal.signal_id,
       signal.signal_type,
       signal.level,
+      signal.project_id ?? null,
       signal.project_scope,
       JSON.stringify(signal.evidence_refs),
       signal.recurrence,
@@ -308,18 +356,31 @@ export function saveTaskModelProfileDraft(
   return getTaskModelProfileOrThrow(profile.profile_id);
 }
 
-function assertEvidenceScope(actor: AuthUser, projectScope: string, evidenceRefs: string[]): void {
+function assertEvidenceScope(
+  actor: AuthUser,
+  projectScope: string,
+  evidenceRefs: string[],
+  projectId?: string | null,
+): void {
   const placeholders = evidenceRefs.map(() => '?').join(',');
   const rows = getDb()
     .prepare(
-      `SELECT id, owner_id, project_scope FROM evidence_events
+      `SELECT id, owner_id, project_id, project_scope FROM evidence_events
        WHERE id IN (${placeholders})`,
     )
-    .all(...evidenceRefs) as Array<{id: string; owner_id: string; project_scope: string}>;
+    .all(...evidenceRefs) as Array<{
+    id: string;
+    owner_id: string;
+    project_id: string | null;
+    project_scope: string;
+  }>;
 
   if (rows.length !== evidenceRefs.length) throw new Error('evidence_not_found');
   if (rows.some((row) => row.project_scope !== projectScope)) throw new Error('scope_mismatch');
-  if (actor.role === 'teacher' && rows.some((row) => row.owner_id !== actor.id)) {
+  if (projectId && rows.some((row) => row.project_id !== projectId)) {
+    throw new Error('scope_mismatch');
+  }
+  if (!projectId && actor.role === 'teacher' && rows.some((row) => row.owner_id !== actor.id)) {
     throw new Error('scope_denied');
   }
 }

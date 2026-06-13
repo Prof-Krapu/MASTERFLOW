@@ -67,9 +67,9 @@ runtime et aucune UI.
 Contrats partages et migrations pour evidence events, pedagogical signals, teacher decision
 deltas et task model profiles. Aucune correction, note ou adaptation automatique.
 
-Etat : contrats Zod, migrations SQLite, depot interne permissionne, audits et tests livres sur la
-branche MALEX/Codex. Project/Scope doit ensuite remplacer la restriction conservatrice
-`teacher = owner` avant toute route ou adapter runtime.
+Etat : contrats Zod, migrations SQLite, depot interne permissionne, audits et tests livres.
+Le bridge Project/Scope est actif pour `evidence_events` et `pedagogical_signals` : nouveaux
+objets projet avec `project_id`, permissions membership, fallback legacy owner-only.
 
 Reference :
 

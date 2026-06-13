@@ -4,6 +4,38 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Consolidation Project/Scope vers Evidence et signaux
+
+**Livrable MALEX/Codex.** Premier remplacement progressif des `project_scope` libres par un
+`project_id` reel, sans casser les donnees et tests legacy.
+
+Ajouts :
+
+- `project_id` nullable dans `EvidenceEvent` et `PedagogicalSignal` ;
+- colonnes/migrations idempotentes `project_id` sur `evidence_events` et
+  `pedagogical_signals` ;
+- index projet dedies ;
+- nouveaux objets projet : `project_scope` doit egaler `project_id` pendant la transition ;
+- ecriture preuve/signal projet exige membership `editor+` ;
+- lecture projet exige membership reel et peut agreger les preuves des owners membres ;
+- un signal projet peut citer plusieurs owners uniquement si toutes les preuves appartiennent
+  au meme `project_id` ;
+- objets legacy sans `project_id` conserves en mode teacher owner-only ;
+- tests membership, lecture projet, multi-owner et mismatch scope/id.
+
+Cette tranche ne migre pas encore les rubriques, batches, correction, feedback ou exports. Elle
+pose le pattern de migration retrocompatible qui pourra etre applique progressivement.
+
+Verification :
+
+- `npm test` : 37 fichiers / 153 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — PR-7 RAG permissionne
 
 **Livrable MALEX/Codex.** Shell RAG scope, cite, revoke-aware et branche sur Resource Truth et

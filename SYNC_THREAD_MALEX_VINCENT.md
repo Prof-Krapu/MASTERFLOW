@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope evidence/signaux
+
+Le premier bridge des anciens `project_scope` vers les vrais projets est livre sur
+`evidence_events` et `pedagogical_signals`.
+
+Les nouveaux objets projet portent `project_id` et exigent membership reel. Durant la
+transition, `project_scope` doit etre identique au `project_id`. Les anciens objets sans
+`project_id` restent en fallback owner-only pour ne pas casser les historiques.
+
+Merci de faire transmettre le vrai `project_id` par tes adapters OCR/WooClap/transcription/notes
+prof, puis de proposer le mapping correction/batches/exports avant la prochaine migration.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-7 RAG permissionne livre
 
 Le shell `RAG permissionne` est livre.
