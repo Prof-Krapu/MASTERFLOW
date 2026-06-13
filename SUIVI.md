@@ -4,7 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — PR-INV-2 OCR vers candidates Inventory — PRET A PUSH
+## 2026-06-13 — Queue Inventory backend — LANCEE
+
+**GO QUEUE humain MALEX recu.**
+
+Ordre : Inventory RAG -> Collection Graph -> Search/Needs -> bridge Room/context ->
+observabilite -> recette end-to-end -> handoff Vincent.
+
+Garde-fous :
+
+- Drive canon relu avant chaque couche ;
+- aucun BGE/Qdrant reel, aucune UI finale, aucun merge `main` ;
+- un commit/push par intention apres recette verte ;
+- arret sur conflit distant, ambiguite canon ou fuite de permission.
+
+Baseline : `HEAD = origin/codex/frontend-masterflow = c1e3486`, `origin/main = 141ab68`,
+worktree propre au lancement.
+
+---
+
+## 2026-06-13 — PR-INV-2 OCR vers candidates Inventory — POUSSEE
 
 **Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**
 
@@ -26,7 +45,7 @@ backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
 
 ---
 
-## 2026-06-13 — PR-INV-1 Inventory Core — PRET A PUSH
+## 2026-06-13 — PR-INV-1 Inventory Core — POUSSEE
 
 **Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**
 
@@ -58,7 +77,7 @@ backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
 
 ---
 
-## 2026-06-13 — PR-RAG-1 contrat transversal — PRET A PUSH
+## 2026-06-13 — PR-RAG-1 contrat transversal — POUSSEE
 
 **Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**
 

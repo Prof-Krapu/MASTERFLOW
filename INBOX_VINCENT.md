@@ -22,6 +22,22 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Queue Inventory backend lancee cote MALEX/Codex
+
+GO humain MALEX recu pour une queue de commits bornes :
+
+1. Inventory RAG sur items/collections valides uniquement ;
+2. Collection Graph avec confirmation/rejet humain ;
+3. recherche et matching besoins projet sans promesse de disponibilite ;
+4. bridge Inventory vers context compiler/Rooms ;
+5. observabilite sans donnees privees ;
+6. recette end-to-end et handoff.
+
+Pas de merge `main`, pas de BGE/Qdrant reel, pas d'UI finale. Chaque couche sera poussee
+separement apres tests verts.
+
+---
+
 ## 2026-06-13 — open — PR-INV-2 OCR vers candidates Inventory pousse cote MALEX/Codex
 
 MALEX/Codex pousse le pont minimal OCR -> Inventory :
