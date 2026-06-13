@@ -4,6 +4,33 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Décision : socle OCR Vincent absorbé et adapter morphologique déclaré
+
+**Décision MALEX.** Le protocole OCR multimodal de Vincent est conservé comme apport transversal.
+
+Architecture :
+
+```text
+runner ocr_multimodal commun
+-> adapters métier indépendants
+-> contrats, privacy, permissions et sorties séparés
+```
+
+Ajouts :
+
+- `DECISION_ABSORPTION_OCR_COMMUN_ET_ADAPTER_MORPHOLOGIQUE.md` ;
+- champ `runner_family` dans le registre ;
+- contrat de sortie et gates explicites par adapter ;
+- adapter `morphological-reference-v1` raccordé au canon Drive ;
+- classification `sensitive_private`, consentement et validation utilisateur obligatoires ;
+- tests prouvant que copies et morphologie partagent le runner sans partager leur contrat.
+
+Aucun OCR n'est activé. Vincent doit auditer et découpler son runner existant avant branchement.
+Le futur adapter morphologique produira des hints stylisés privés, jamais une identification,
+une biométrie ou un canon automatique.
+
+---
+
 ## 2026-06-13 — PR-C0 Corrector déprécié sans destruction
 
 **Livrable MALEX/Codex.** Application runtime de la décision d'absorption de Corrector.

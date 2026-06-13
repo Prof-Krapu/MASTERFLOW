@@ -14,6 +14,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Décision MALEX : absorber ton socle OCR pour tous les usages
+
+Lire `DECISION_ABSORPTION_OCR_COMMUN_ET_ADAPTER_MORPHOLOGIQUE.md`.
+
+Décision : ton protocole OCR doit être conservé et généralisé comme runner commun
+`ocr_multimodal`. On ne duplique pas le moteur complet : on branche des adapters spécialisés
+pour copies, inventaire, documents/rubriques, morphologie et futurs besoins.
+
+Le registre contient désormais `morphological-reference-v1`, raccordé au canon photo/OCR/avatar
+de MALEX. Il produit uniquement un `MorphologicalHintProfile` privé après consentement, sans
+identification, biométrie ni inférence sensible.
+
+Action demandée :
+
+1. inventorier les composants génériques réutilisables de ton OCR ;
+2. séparer runner technique et logique Corrector ;
+3. préciser formats, modèles, confiance, erreurs, batch, retry et ressources CPU/GPU ;
+4. identifier les dépendances qui empêchent un usage copies + morphologie ;
+5. proposer une PR courte de runner interne, sans upload public ni statut `live`.
+
+Le protocole est un apport réel et transversal. On l'améliore une fois, puis tous les adapters en
+profitent.
+
+---
+
 ## 2026-06-13 — open — Revue PR-C0 Corrector déprécié sans destruction
 
 MALEX/Codex a appliqué la décision dans

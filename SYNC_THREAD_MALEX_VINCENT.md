@@ -23,6 +23,17 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : absorption du socle OCR commun
+
+MALEX confirme qu'on garde ton protocole OCR et qu'on l'étend au-delà de Corrector.
+
+Architecture décidée : un runner `ocr_multimodal` commun, plusieurs adapters métier séparés.
+L'adapter morphologique privé est maintenant déclaré conformément au canon Drive. Merci
+d'inventorier les composants réutilisables et de proposer un découplage court, sans activation
+publique. Détails : `DECISION_ABSORPTION_OCR_COMMUN_ET_ADAPTER_MORPHOLOGIQUE.md`.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C0 appliquée
 
 Corrector est désormais déprécié sans destruction. Il reste lisible pour les références et

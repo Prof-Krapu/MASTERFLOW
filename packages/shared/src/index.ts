@@ -233,6 +233,7 @@ export type ActionRegistryEntry = z.infer<typeof ActionRegistryEntrySchema>;
 
 export const AdapterKindSchema = z.enum([
   'ocr_submission',
+  'morphological_reference',
   'wooclap_import',
   'transcript_import',
   'teacher_note',
@@ -267,6 +268,7 @@ export const AdapterRegistryEntrySchema = z
     label: z.string().min(1),
     kind: AdapterKindSchema,
     owner_engine: z.string().min(1),
+    runner_family: z.string().min(1).nullable(),
     input_types: z.array(z.string().min(1)).min(1),
     output_source_type: z.enum([
       'submission',
@@ -276,8 +278,12 @@ export const AdapterRegistryEntrySchema = z
       'survey',
       'teacher_note',
       'calendar',
+      'morphological_reference',
     ]),
+    output_contract: z.string().min(1),
     capabilities: z.array(z.string().min(1)).min(1),
+    required_gates: z.array(z.string().min(1)),
+    data_classification: z.enum(['standard', 'private', 'sensitive_private']),
     privacy_mode: z.enum(['local_only', 'approved_remote', 'hybrid']),
     risk_level: RiskLevelSchema,
     minimum_role: RoleSchema,
