@@ -6,6 +6,7 @@ import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {getRegistryEntry, riskLevelFor, isSensitive} from './action_registry.ts';
 import {checkPermission, validatorRoleFor, hasRole} from './permission_runtime.ts';
+import {ACTION_EXECUTORS} from './settings.ts';
 
 /**
  * Moteur du cycle de vie des actions.
@@ -301,14 +302,36 @@ export function executeAction(user: AuthUser, actionId: string): Action {
     scope: action.registry_id ?? action.intent,
   });
 
-  // Exécution mockée (MVP) : pas de runner réel, on produit un résultat traçable.
-  const result = {
-    ok: true,
-    executed_at: now,
-    intent: action.intent,
-    object_type: action.object_type,
-    note: 'résultat simulé (MVP — pas de runner réel)',
-  };
+  // Dispatcher : exécuteurs réels par registry_id ; défaut = résultat mocké MVP.
+  let result: Record<string, unknown>;
+  try {
+    const executor = action.registry_id ? ACTION_EXECUTORS[action.registry_id] : undefined;
+    if (executor) {
+      result = executor(user, action);
+    } else {
+      result = {
+        ok: true,
+        executed_at: now,
+        intent: action.intent,
+        object_type: action.object_type,
+        note: 'résultat simulé (MVP — pas de runner réel)',
+      };
+    }
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const failedAt = Date.now();
+    getDb()
+      .prepare("UPDATE actions SET status = 'failed', error = ?, updated_at = ? WHERE id = ?")
+      .run(errMsg, failedAt, actionId);
+    audit({
+      event_type: 'execute_refused',
+      user_id: user.id,
+      action_id: actionId,
+      scope: action.registry_id ?? action.intent,
+      detail: {reason: errMsg},
+    });
+    return reloadAction(actionId);
+  }
 
   const done = Date.now();
   getDb()

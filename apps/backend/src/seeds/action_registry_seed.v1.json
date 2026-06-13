@@ -130,6 +130,17 @@
       "validation_required": false,
       "ui_surface": "admin_diagnostics_panel",
       "status": "live"
+    },
+    {
+      "action_id": "set_global_setting",
+      "label": "Modifier un réglage global",
+      "endpoint": "POST /actions/{action_id}/execute",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "validator_role": "admin",
+      "ui_surface": "admin_settings_cockpit",
+      "status": "live"
     }
   ]
 }

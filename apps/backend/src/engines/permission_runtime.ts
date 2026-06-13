@@ -25,12 +25,12 @@ export function hasRole(user: AuthUser, min: Role): boolean {
 
 /**
  * Rôle requis pour valider une action.
- * Sensible → 'teacher' (validateur humain par défaut) ; sinon `null` (aucune
- * validation requise).
+ * Lit `validator_role` du registre si présent ; sinon 'teacher' par défaut pour
+ * toute action sensible. Retourne `null` si l'action n'est pas sensible.
  */
 export function validatorRoleFor(entry: ActionRegistryEntry | null): Role | null {
-  if (entry && isSensitive(entry)) return 'teacher';
-  return null;
+  if (!entry || !isSensitive(entry)) return null;
+  return entry.validator_role ?? 'teacher';
 }
 
 /**

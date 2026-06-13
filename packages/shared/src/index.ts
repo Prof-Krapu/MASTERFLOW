@@ -221,10 +221,23 @@ export const ActionRegistryEntrySchema = z.object({
   risk_level: z.string(),
   preflight_required: z.boolean(),
   validation_required: z.union([z.boolean(), z.literal('depends_on_preflight')]),
+  /** Rôle minimal requis pour valider cette action (optionnel — défaut 'teacher' si sensible). */
+  validator_role: RoleSchema.optional(),
   ui_surface: z.string(),
   status: RegistryStatusSchema.default('future'),
 });
 export type ActionRegistryEntry = z.infer<typeof ActionRegistryEntrySchema>;
+
+/**
+ * Payload d'une action `set_global_setting`.
+ * `value` accepte tout JSON-sérialisable ; les secrets ne passent jamais ici.
+ */
+export const SetGlobalSettingSchema = z.object({
+  app: z.string().min(1),
+  key: z.string().min(1),
+  value: z.unknown(),
+});
+export type SetGlobalSetting = z.infer<typeof SetGlobalSettingSchema>;
 
 /**
  * Diagnostic d'usage tokens — réponse de `GET /diagnostics/token-usage`
