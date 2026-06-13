@@ -28,6 +28,10 @@ un `project_id` reel plutot qu'un scope texte libre des qu'un contexte projet ex
 
 Templates versionnes, CDC candidat, validation admin.
 
+Etat : contrats partages, table `schema_templates`, seeds candidats non canoniques, routes auth,
+creation teacher+ candidate, validation admin/godmode, masquage deprecated/archive et tests
+livres. Les futures sessions doivent figer `template_id + version`.
+
 ### PR-6 — `guided_runtime_pr1`
 
 MOTH/CDC prive, sur templates et scopes si disponibles.

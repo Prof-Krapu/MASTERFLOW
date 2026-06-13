@@ -207,6 +207,28 @@ function migrate(d: Database.Database): void {
       PRIMARY KEY (resource_id, scope_type, scope_id)
     );
 
+    -- ───────────────────────── Template / Schema Registry PR-5 ────────────
+    CREATE TABLE IF NOT EXISTS schema_templates (
+      id                    TEXT PRIMARY KEY,
+      domain                TEXT NOT NULL
+                              CHECK (domain IN (
+                                'cdc','quote_intake','event_registration','asset_manifest',
+                                'bot_guide','correction','course','generic'
+                              )),
+      name                  TEXT NOT NULL,
+      status                TEXT NOT NULL DEFAULT 'candidate'
+                              CHECK (status IN ('candidate','validated','deprecated','archived')),
+      version               INTEGER NOT NULL CHECK (version > 0),
+      owner_id              TEXT REFERENCES users(id) ON DELETE CASCADE,
+      schema_json           TEXT NOT NULL,
+      required_fields_json  TEXT NOT NULL,
+      validation_rules_json TEXT NOT NULL DEFAULT '{}',
+      ui_hints_json         TEXT,
+      changelog             TEXT NOT NULL,
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Config & audit LLM (réutilisé) ──────────────
     CREATE TABLE IF NOT EXISTS global_settings (
       app        TEXT NOT NULL,
@@ -678,6 +700,10 @@ function migrate(d: Database.Database): void {
       ON ownership_edges(object_type, object_id, scope);
     CREATE INDEX IF NOT EXISTS idx_resource_scopes_scope
       ON resource_scopes(scope_type, scope_id, access_level);
+    CREATE INDEX IF NOT EXISTS idx_schema_templates_status
+      ON schema_templates(domain, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_schema_templates_owner
+      ON schema_templates(owner_id, domain, version);
     CREATE INDEX IF NOT EXISTS idx_evidence_scope_status
       ON evidence_events(project_scope, status, occurred_at);
     CREATE INDEX IF NOT EXISTS idx_evidence_owner
@@ -809,6 +835,30 @@ export interface ResourceScopeRow {
   scope_id: string;
   access_level: 'read' | 'write' | 'admin';
   created_at: number;
+}
+
+export interface SchemaTemplateRow {
+  id: string;
+  domain:
+    | 'cdc'
+    | 'quote_intake'
+    | 'event_registration'
+    | 'asset_manifest'
+    | 'bot_guide'
+    | 'correction'
+    | 'course'
+    | 'generic';
+  name: string;
+  status: 'candidate' | 'validated' | 'deprecated' | 'archived';
+  version: number;
+  owner_id: string | null;
+  schema_json: string;
+  required_fields_json: string;
+  validation_rules_json: string;
+  ui_hints_json: string | null;
+  changelog: string;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface RoomRow {

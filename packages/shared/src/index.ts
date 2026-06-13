@@ -104,6 +104,52 @@ export const AddProjectMemberRequestSchema = z.object({
 });
 export type AddProjectMemberRequest = z.infer<typeof AddProjectMemberRequestSchema>;
 
+// ───────────────────────── Template / Schema Registry ─────────────────────────
+
+export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);
+export type SchemaTemplateStatus = z.infer<typeof SchemaTemplateStatusSchema>;
+
+export const SchemaTemplateDomainSchema = z.enum([
+  'cdc',
+  'quote_intake',
+  'event_registration',
+  'asset_manifest',
+  'bot_guide',
+  'correction',
+  'course',
+  'generic',
+]);
+export type SchemaTemplateDomain = z.infer<typeof SchemaTemplateDomainSchema>;
+
+export const SchemaTemplateSchema = z.object({
+  template_id: z.string().min(1),
+  domain: SchemaTemplateDomainSchema,
+  name: z.string().min(1).max(160),
+  status: SchemaTemplateStatusSchema,
+  version: z.number().int().positive(),
+  owner_id: z.string().min(1).nullable(),
+  schema_json: z.record(z.unknown()),
+  required_fields: z.array(z.string().min(1)),
+  validation_rules: z.record(z.unknown()),
+  ui_hints: z.record(z.unknown()).nullable(),
+  changelog: z.string().min(1).max(1000),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type SchemaTemplate = z.infer<typeof SchemaTemplateSchema>;
+
+export const CreateSchemaTemplateRequestSchema = z.object({
+  domain: SchemaTemplateDomainSchema,
+  name: z.string().min(1).max(160),
+  version: z.number().int().positive(),
+  schema_json: z.record(z.unknown()),
+  required_fields: z.array(z.string().min(1)),
+  validation_rules: z.record(z.unknown()).default({}),
+  ui_hints: z.record(z.unknown()).nullable().optional(),
+  changelog: z.string().min(1).max(1000),
+});
+export type CreateSchemaTemplateRequest = z.infer<typeof CreateSchemaTemplateRequestSchema>;
+
 // ───────────────────────── Auth ─────────────────────────
 
 export const RegisterRequestSchema = z.object({

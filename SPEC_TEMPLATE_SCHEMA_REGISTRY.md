@@ -1,6 +1,6 @@
 # SPEC — Template / Schema Registry
 
-Statut : `FOUNDATION SPEC / 2026-06-13`
+Statut : `BACKEND IMPLEMENTED / 2026-06-13`
 
 ## Objectif
 
@@ -46,7 +46,7 @@ candidate | validated | deprecated | archived
 - `event-registration-candidate-v1` ;
 - `asset-manifest-candidate-v1`.
 
-## Endpoints PR-1
+## Endpoints PR-5
 
 | Endpoint | Permission | Effet |
 |---|---|---|
@@ -63,3 +63,29 @@ candidate | validated | deprecated | archived
 - schema invalide refuse ;
 - audit validation.
 
+## Implementation livree
+
+- contrats partages : `SchemaTemplate`, domaines, statuts et
+  `CreateSchemaTemplateRequest` ;
+- migration SQLite : `schema_templates` ;
+- seeds candidats non canoniques : CDC, devis, inscription event, manifest asset ;
+- service interne : liste, detail, creation candidate, validation admin ;
+- routes : `GET/POST /schema-templates`, `GET /schema-templates/:id`,
+  `POST /schema-templates/:id/validate` ;
+- templates owner-prives masques aux autres owners ;
+- `deprecated` et `archived` masques par defaut ;
+- validation basique du schema : `type = object`, `properties` non vide,
+  `required_fields` coherents ;
+- doublon `domain/name/version/owner` refuse ;
+- audit : `schema_template.created`, `schema_template.validated` ;
+- tests service + router.
+
+## Verification
+
+```text
+npm test
+npm run lint
+npm run lint:frontend
+npm run build:frontend
+git diff --check
+```

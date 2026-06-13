@@ -14,6 +14,38 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-5 Template / Schema Registry livree
+
+MALEX/Codex a livre la couche `Template / Schema Registry` backend.
+
+Le backend possede maintenant :
+
+- table `schema_templates` ;
+- contrats `SchemaTemplate` et `CreateSchemaTemplateRequest` ;
+- routes auth `GET /schema-templates`, `GET /schema-templates/:id`,
+  `POST /schema-templates`, `POST /schema-templates/:id/validate` ;
+- seeds candidats non canoniques CDC, devis, inscription event et manifest asset ;
+- creation teacher+ en `candidate` ;
+- validation admin/godmode en `validated` ;
+- templates owner-prives masques aux autres owners ;
+- `deprecated` et `archived` masques par defaut ;
+- audit creation/validation.
+
+Action demandee :
+
+1. tout nouveau Guided Runtime, CDC, devis, event ou asset manifest doit figer
+   `template_id + version` ;
+2. ne pas utiliser un template `candidate` pour une surface publique, exportable ou partageable ;
+3. si une structure change, creer une nouvelle version plutot que modifier silencieusement ;
+4. mapper tes schemas existants utiles vers `schema_templates` au lieu de creer un registre
+   parallele ;
+5. signaler les champs manquants vraiment necessaires avant d'activer PR-6/MOTH.
+
+Version courte : le template candidat, c'est le training mode. Pour aller online, il faut le
+badge `validated`.
+
+---
+
 ## 2026-06-13 — open — PR-4 Project/Scope reel livree
 
 MALEX/Codex a livre la couche `Project/Scope` backend.

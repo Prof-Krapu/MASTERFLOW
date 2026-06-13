@@ -14,6 +14,7 @@ import {createResourcesRouter} from './routers/resources.ts';
 import {createDiagnosticsRouter} from './routers/diagnostics.ts';
 import {createJobsRouter} from './routers/jobs.ts';
 import {createProjectsRouter} from './routers/projects.ts';
+import {createSchemaTemplatesRouter} from './routers/schema_templates.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -33,7 +34,7 @@ async function main(): Promise<void> {
 
   const seeded = await seedAll();
   console.log(
-    `[masterflow] seed → users:${seeded.users} personas:${seeded.personas} rooms:${seeded.rooms} resources:${seeded.resources}`,
+    `[masterflow] seed → users:${seeded.users} personas:${seeded.personas} rooms:${seeded.rooms} resources:${seeded.resources} schemaTemplates:${seeded.schemaTemplates}`,
   );
 
   const app = express();
@@ -48,6 +49,7 @@ async function main(): Promise<void> {
       personas: (db.prepare('SELECT COUNT(*) AS n FROM personas').get() as {n: number}).n,
       rooms: (db.prepare('SELECT COUNT(*) AS n FROM rooms').get() as {n: number}).n,
       resources: (db.prepare('SELECT COUNT(*) AS n FROM resources').get() as {n: number}).n,
+      schemaTemplates: (db.prepare('SELECT COUNT(*) AS n FROM schema_templates').get() as {n: number}).n,
     };
     res.json({ok: true, service: 'masterflow-backend', ts: Date.now(), counts});
   });
@@ -64,6 +66,7 @@ async function main(): Promise<void> {
   app.use(api, createDiagnosticsRouter());
   app.use(api, createJobsRouter());
   app.use(api, createProjectsRouter());
+  app.use(api, createSchemaTemplatesRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

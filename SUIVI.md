@@ -4,6 +4,44 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-5 Template / Schema Registry
+
+**Livrable MALEX/Codex.** Registre backend minimal des templates versionnes, candidats ou
+valides, sans moteur conversationnel ni marketplace.
+
+Ajouts :
+
+- contrats partages `SchemaTemplate`, `CreateSchemaTemplateRequest`, domaines et statuts ;
+- table `schema_templates` ;
+- seeds candidats non canoniques :
+  `cdc-template-candidate-v1`, `quote-intake-candidate-v1`,
+  `event-registration-candidate-v1`, `asset-manifest-candidate-v1` ;
+- service interne `listSchemaTemplates`, `getSchemaTemplate`, `createSchemaTemplate`,
+  `validateSchemaTemplate` ;
+- routes auth `GET /schema-templates`, `GET /schema-templates/:id`,
+  `POST /schema-templates`, `POST /schema-templates/:id/validate` ;
+- creation limitee teacher+ en statut `candidate` ;
+- validation limitee admin/godmode ;
+- templates owner-prives masques aux autres owners ;
+- templates `deprecated` et `archived` masques par defaut ;
+- validation basique : schema objet, `properties` non vide, `required_fields` coherents ;
+- doublon `domain/name/version/owner` refuse pour forcer une nouvelle version explicite ;
+- audit `schema_template.created` et `schema_template.validated` ;
+- tests service + router.
+
+Cette couche ne livre pas MOTH/CDC, devis, event ou asset pipeline : elle donne seulement le
+support versionne que ces verticales devront figer en session ou en objet consommateur.
+
+Verification :
+
+- `npm test` : 33 fichiers / 133 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — PR-4 Project/Scope reel
 
 **Livrable MALEX/Codex.** Socle projets prives, memberships et premiers scopes ressources.

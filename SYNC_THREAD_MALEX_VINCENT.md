@@ -23,6 +23,25 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-5 Template Registry livree
+
+La couche `Template / Schema Registry` est livree cote backend.
+
+Elle ajoute la table `schema_templates`, les contrats partages, les routes auth
+`GET/POST /schema-templates`, `GET /schema-templates/:id` et
+`POST /schema-templates/:id/validate`, ainsi que quatre seeds candidats non canoniques :
+CDC, devis, inscription event et manifest asset.
+
+Regle de raccord : une session ou un objet consommateur doit figer `template_id + version`.
+Un template `candidate` peut servir en atelier prive/test, mais pas en surface publique,
+exportable ou partageable. Toute evolution de structure doit devenir une nouvelle version, pas
+une modification silencieuse.
+
+Merci de comparer tes schemas existants et de proposer uniquement les champs manquants
+necessaires avant PR-6/MOTH ou devis/event.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-4 Project/Scope livree
 
 La couche `Project/Scope` est livree cote backend.
