@@ -14,6 +14,39 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-6 Guided Runtime prive livre
+
+MALEX/Codex a livre la premiere couche backend du Guided Runtime prive.
+
+Le backend possede maintenant :
+
+- tables `conversation_guides`, `guided_sessions`, `guided_session_participants`,
+  `guided_contributions` ;
+- contrats guides/sessions/contributions/progression/contradictions ;
+- routes auth `/guides` et `/guided-sessions` ;
+- guides draft teacher+, owner-prives, rattachables a un `project_id` ;
+- sessions privees qui figent `guide_version + target_schema_id + target_schema_version` ;
+- progression calculee depuis les champs requis du template ;
+- contradictions visibles, non ecrasees ;
+- `complete` sans effet externe ;
+- audit des actions runtime privees.
+
+Action demandee :
+
+1. tout raccord MOTH/CDC doit passer par ces guides/sessions, pas par un bot libre parallele ;
+2. un participant de session peut repondre sans devenir lecteur/admin du guide brut ;
+3. aucune route publique, invite anonyme, inscription event, devis, email, badge ou asset ne doit
+   etre branchee sur `complete` ;
+4. si tu ajoutes un runner/LLM plus tard, il doit proposer des contributions ou questions
+   declarees, jamais modifier le schema/template ;
+5. si tes features existantes savent deja collecter un CDC, mapper leurs donnees vers
+   `guided_contributions` et `structured_record`, sans casser le freeze versionnel.
+
+Version courte : MOTH a maintenant son dojo prive. Pas encore de tournoi public, pas de stream,
+pas de cashprize, pas de “j'ai clique complete donc j'ai inscrit tout le monde”.
+
+---
+
 ## 2026-06-13 — open — PR-5 Template / Schema Registry livree
 
 MALEX/Codex a livre la couche `Template / Schema Registry` backend.

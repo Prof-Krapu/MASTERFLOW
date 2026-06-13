@@ -1,6 +1,6 @@
 # CHECKLIST PR-6 — Guided Runtime prive
 
-Statut : `BACKEND CHECKLIST / 2026-06-13`
+Statut : `BACKEND IMPLEMENTED / 2026-06-13`
 
 ## Intention
 
@@ -172,3 +172,16 @@ POST /api/v1/guided-sessions/:id/complete
 - `complete` qui declenche publication/export/email ;
 - acces public ou guest anonyme ;
 - bouton/contrat donnant l'impression que Ours d'Or, devis ou badges sont livres.
+
+## Implementation livree
+
+- tables `conversation_guides`, `guided_sessions`, `guided_session_participants`,
+  `guided_contributions` ;
+- contrats partages guides/sessions/participants/contributions/progression/contradictions ;
+- routes `/guides` et `/guided-sessions` ;
+- guides draft teacher+, owner-prives et rattachables projet ;
+- sessions privees avec freeze `guide_version`, `target_schema_id`, `target_schema_version` ;
+- progression depuis champs requis du template ;
+- contradictions visibles ;
+- complete prive sans effet externe ;
+- tests service + router.

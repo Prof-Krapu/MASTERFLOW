@@ -23,6 +23,25 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-6 Guided Runtime prive livre
+
+La premiere couche backend du `Guided Runtime prive` est livree.
+
+Elle ajoute guides, sessions privees, participants, contributions, progression deterministe et
+contradictions visibles. Les sessions figent `guide_version`, `target_schema_id` et
+`target_schema_version`, donc un changement ulterieur du guide ou du template ne modifie pas
+silencieusement une session existante.
+
+Regle de raccord : MOTH/CDC et les futurs bots de collecte doivent consommer cette couche comme
+atelier prive. `complete` ne publie rien, n'inscrit personne, n'envoie aucun email, ne cree aucun
+devis, export, badge ou asset.
+
+Merci de mapper tes collecteurs/CDC existants vers `guided_contributions` et
+`structured_record`, puis de signaler les ecarts vraiment utiles avant de brancher LLM, public
+link ou verticale Ours d'Or/devis.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-5 Template Registry livree
 
 La couche `Template / Schema Registry` est livree cote backend.

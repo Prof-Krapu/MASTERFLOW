@@ -229,6 +229,77 @@ function migrate(d: Database.Database): void {
       updated_at            INTEGER NOT NULL
     );
 
+    -- ───────────────────────── Guided Runtime privé PR-6 ──────────────────
+    CREATE TABLE IF NOT EXISTS conversation_guides (
+      id                    TEXT PRIMARY KEY,
+      owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id            TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      name                  TEXT NOT NULL,
+      purpose               TEXT NOT NULL,
+      domain                TEXT NOT NULL,
+      status                TEXT NOT NULL DEFAULT 'draft'
+                              CHECK (status IN ('draft','candidate','validated','archived')),
+      target_schema_id      TEXT NOT NULL REFERENCES schema_templates(id),
+      target_schema_version INTEGER NOT NULL CHECK (target_schema_version > 0),
+      question_flow_json    TEXT NOT NULL,
+      completion_rules_json TEXT NOT NULL DEFAULT '{}',
+      functional_persona_id TEXT,
+      lore_persona_id       TEXT,
+      ui_manifest_json      TEXT,
+      analytics_policy_json TEXT NOT NULL DEFAULT '{}',
+      consent_policy_json   TEXT NOT NULL DEFAULT '{}',
+      version               INTEGER NOT NULL DEFAULT 1 CHECK (version > 0),
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS guided_sessions (
+      id                     TEXT PRIMARY KEY,
+      guide_id               TEXT NOT NULL REFERENCES conversation_guides(id) ON DELETE CASCADE,
+      guide_version          INTEGER NOT NULL CHECK (guide_version > 0),
+      owner_id               TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id             TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      room_id                TEXT REFERENCES rooms(id) ON DELETE SET NULL,
+      access_mode            TEXT NOT NULL DEFAULT 'private' CHECK (access_mode = 'private'),
+      status                 TEXT NOT NULL DEFAULT 'active'
+                               CHECK (status IN ('active','completed','expired','revoked')),
+      current_question_id    TEXT,
+      target_schema_id       TEXT NOT NULL REFERENCES schema_templates(id),
+      target_schema_version  INTEGER NOT NULL CHECK (target_schema_version > 0),
+      progress_json          TEXT NOT NULL,
+      structured_record_json TEXT NOT NULL DEFAULT '{}',
+      expires_at             INTEGER,
+      created_at             INTEGER NOT NULL,
+      updated_at             INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS guided_session_participants (
+      session_id   TEXT NOT NULL REFERENCES guided_sessions(id) ON DELETE CASCADE,
+      user_id      TEXT REFERENCES users(id) ON DELETE CASCADE,
+      guest_id     TEXT,
+      role         TEXT NOT NULL CHECK (role IN ('owner','facilitator','participant')),
+      display_name TEXT,
+      consent_json TEXT NOT NULL DEFAULT '{}',
+      joined_at    INTEGER NOT NULL,
+      last_seen_at INTEGER NOT NULL,
+      PRIMARY KEY (session_id, user_id, guest_id),
+      CHECK (user_id IS NOT NULL OR guest_id IS NOT NULL)
+    );
+
+    CREATE TABLE IF NOT EXISTS guided_contributions (
+      id              TEXT PRIMARY KEY,
+      session_id      TEXT NOT NULL REFERENCES guided_sessions(id) ON DELETE CASCADE,
+      participant_ref TEXT NOT NULL,
+      question_id     TEXT NOT NULL,
+      target_field    TEXT NOT NULL,
+      value_json      TEXT NOT NULL,
+      source          TEXT NOT NULL CHECK (source IN ('user','facilitator')),
+      status          TEXT NOT NULL DEFAULT 'accepted'
+                       CHECK (status IN ('accepted','contradiction','superseded')),
+      supersedes_id   TEXT REFERENCES guided_contributions(id),
+      created_at      INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Config & audit LLM (réutilisé) ──────────────
     CREATE TABLE IF NOT EXISTS global_settings (
       app        TEXT NOT NULL,
@@ -704,6 +775,18 @@ function migrate(d: Database.Database): void {
       ON schema_templates(domain, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_schema_templates_owner
       ON schema_templates(owner_id, domain, version);
+    CREATE INDEX IF NOT EXISTS idx_conversation_guides_owner
+      ON conversation_guides(owner_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_conversation_guides_project
+      ON conversation_guides(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_guided_sessions_owner
+      ON guided_sessions(owner_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_guided_sessions_guide
+      ON guided_sessions(guide_id, status);
+    CREATE INDEX IF NOT EXISTS idx_guided_participants_user
+      ON guided_session_participants(user_id, role);
+    CREATE INDEX IF NOT EXISTS idx_guided_contributions_session
+      ON guided_contributions(session_id, target_field, created_at);
     CREATE INDEX IF NOT EXISTS idx_evidence_scope_status
       ON evidence_events(project_scope, status, occurred_at);
     CREATE INDEX IF NOT EXISTS idx_evidence_owner
@@ -859,6 +942,71 @@ export interface SchemaTemplateRow {
   changelog: string;
   created_at: number;
   updated_at: number;
+}
+
+export interface ConversationGuideRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  name: string;
+  purpose: string;
+  domain: string;
+  status: 'draft' | 'candidate' | 'validated' | 'archived';
+  target_schema_id: string;
+  target_schema_version: number;
+  question_flow_json: string;
+  completion_rules_json: string;
+  functional_persona_id: string | null;
+  lore_persona_id: string | null;
+  ui_manifest_json: string | null;
+  analytics_policy_json: string;
+  consent_policy_json: string;
+  version: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface GuidedSessionRow {
+  id: string;
+  guide_id: string;
+  guide_version: number;
+  owner_id: string;
+  project_id: string | null;
+  room_id: string | null;
+  access_mode: 'private';
+  status: 'active' | 'completed' | 'expired' | 'revoked';
+  current_question_id: string | null;
+  target_schema_id: string;
+  target_schema_version: number;
+  progress_json: string;
+  structured_record_json: string;
+  expires_at: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface GuidedSessionParticipantRow {
+  session_id: string;
+  user_id: string | null;
+  guest_id: string | null;
+  role: 'owner' | 'facilitator' | 'participant';
+  display_name: string | null;
+  consent_json: string;
+  joined_at: number;
+  last_seen_at: number;
+}
+
+export interface GuidedContributionRow {
+  id: string;
+  session_id: string;
+  participant_ref: string;
+  question_id: string;
+  target_field: string;
+  value_json: string;
+  source: 'user' | 'facilitator';
+  status: 'accepted' | 'contradiction' | 'superseded';
+  supersedes_id: string | null;
+  created_at: number;
 }
 
 export interface RoomRow {

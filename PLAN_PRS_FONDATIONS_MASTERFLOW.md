@@ -36,6 +36,11 @@ livres. Les futures sessions doivent figer `template_id + version`.
 
 MOTH/CDC prive, sur templates et scopes si disponibles.
 
+Etat : contrats, tables, routes auth, guides draft, sessions privees, participants internes,
+contributions, progression deterministe, contradictions visibles, freeze `guide/template version`
+et tests livres. Aucun lien public, LLM obligatoire, inscription, devis, email, export, badge ou
+asset.
+
 ### PR-7 — `rag_capability_shell`
 
 Manifestes, permissions, context packs, pas d'index massif.

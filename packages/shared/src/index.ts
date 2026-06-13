@@ -150,6 +150,147 @@ export const CreateSchemaTemplateRequestSchema = z.object({
 });
 export type CreateSchemaTemplateRequest = z.infer<typeof CreateSchemaTemplateRequestSchema>;
 
+// ───────────────────────── Guided Runtime privé PR-6 ─────────────────────────
+
+export const GuidedQuestionSchema = z.object({
+  question_id: z.string().min(1),
+  prompt: z.string().min(1).max(1000),
+  target_field: z.string().min(1),
+  kind: z.enum(['text', 'choice', 'multi_choice', 'boolean', 'number']).default('text'),
+  required: z.boolean().default(true),
+  options: z.array(z.string().min(1)).optional(),
+});
+export type GuidedQuestion = z.infer<typeof GuidedQuestionSchema>;
+
+export const ConversationGuideStatusSchema = z.enum(['draft', 'candidate', 'validated', 'archived']);
+export type ConversationGuideStatus = z.infer<typeof ConversationGuideStatusSchema>;
+
+export const ConversationGuideSchema = z.object({
+  guide_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  name: z.string().min(1).max(160),
+  purpose: z.string().min(1).max(1000),
+  domain: SchemaTemplateDomainSchema,
+  status: ConversationGuideStatusSchema,
+  target_schema_id: z.string().min(1),
+  target_schema_version: z.number().int().positive(),
+  question_flow: z.array(GuidedQuestionSchema).min(1),
+  completion_rules: z.record(z.unknown()),
+  functional_persona_id: z.string().min(1).nullable(),
+  lore_persona_id: z.string().min(1).nullable(),
+  ui_manifest: z.record(z.unknown()).nullable(),
+  analytics_policy: z.record(z.unknown()),
+  consent_policy: z.record(z.unknown()),
+  version: z.number().int().positive(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type ConversationGuide = z.infer<typeof ConversationGuideSchema>;
+
+export const GuidedContradictionSchema = z.object({
+  target_field: z.string().min(1),
+  values: z.array(z.unknown()).min(2),
+  contribution_ids: z.array(z.string().min(1)).min(2),
+});
+export type GuidedContradiction = z.infer<typeof GuidedContradictionSchema>;
+
+export const GuidedProgressSchema = z.object({
+  completion_ratio: z.number().min(0).max(1),
+  required_fields: z.array(z.string().min(1)),
+  completed_fields: z.array(z.string().min(1)),
+  missing_fields: z.array(z.string().min(1)),
+  contradictions: z.array(GuidedContradictionSchema),
+});
+export type GuidedProgress = z.infer<typeof GuidedProgressSchema>;
+
+export const GuidedSessionStatusSchema = z.enum(['active', 'completed', 'expired', 'revoked']);
+export type GuidedSessionStatus = z.infer<typeof GuidedSessionStatusSchema>;
+
+export const GuidedSessionSchema = z.object({
+  session_id: z.string().min(1),
+  guide_id: z.string().min(1),
+  guide_version: z.number().int().positive(),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  room_id: z.string().min(1).nullable(),
+  access_mode: z.enum(['private']),
+  status: GuidedSessionStatusSchema,
+  current_question_id: z.string().min(1).nullable(),
+  target_schema_id: z.string().min(1),
+  target_schema_version: z.number().int().positive(),
+  progress: GuidedProgressSchema,
+  structured_record: z.record(z.unknown()),
+  expires_at: z.number().int().nonnegative().nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type GuidedSession = z.infer<typeof GuidedSessionSchema>;
+
+export const GuidedSessionParticipantSchema = z.object({
+  session_id: z.string().min(1),
+  user_id: z.string().min(1).nullable(),
+  guest_id: z.string().min(1).nullable(),
+  role: z.enum(['owner', 'facilitator', 'participant']),
+  display_name: z.string().min(1).max(160).nullable(),
+  consent: z.record(z.unknown()),
+  joined_at: z.number().int().nonnegative(),
+  last_seen_at: z.number().int().nonnegative(),
+});
+export type GuidedSessionParticipant = z.infer<typeof GuidedSessionParticipantSchema>;
+
+export const GuidedContributionSchema = z.object({
+  contribution_id: z.string().min(1),
+  session_id: z.string().min(1),
+  participant_ref: z.string().min(1),
+  question_id: z.string().min(1),
+  target_field: z.string().min(1),
+  value: z.unknown(),
+  source: z.enum(['user', 'facilitator']),
+  status: z.enum(['accepted', 'contradiction', 'superseded']),
+  supersedes_id: z.string().min(1).nullable(),
+  created_at: z.number().int().nonnegative(),
+});
+export type GuidedContribution = z.infer<typeof GuidedContributionSchema>;
+
+export const CreateGuideRequestSchema = z.object({
+  name: z.string().min(1).max(160),
+  purpose: z.string().min(1).max(1000),
+  domain: SchemaTemplateDomainSchema,
+  project_id: z.string().min(1).nullable().optional(),
+  target_schema_id: z.string().min(1),
+  question_flow: z.array(GuidedQuestionSchema).min(1),
+  completion_rules: z.record(z.unknown()).default({}),
+  functional_persona_id: z.string().min(1).nullable().optional(),
+  lore_persona_id: z.string().min(1).nullable().optional(),
+  ui_manifest: z.record(z.unknown()).nullable().optional(),
+  analytics_policy: z.record(z.unknown()).default({private: true}),
+  consent_policy: z.record(z.unknown()).default({required: true}),
+});
+export type CreateGuideRequest = z.infer<typeof CreateGuideRequestSchema>;
+
+export const UpdateGuideRequestSchema = z.object({
+  name: z.string().min(1).max(160).optional(),
+  purpose: z.string().min(1).max(1000).optional(),
+  question_flow: z.array(GuidedQuestionSchema).min(1).optional(),
+  completion_rules: z.record(z.unknown()).optional(),
+  ui_manifest: z.record(z.unknown()).nullable().optional(),
+});
+export type UpdateGuideRequest = z.infer<typeof UpdateGuideRequestSchema>;
+
+export const CreateGuidedSessionRequestSchema = z.object({
+  guide_id: z.string().min(1),
+  room_id: z.string().min(1).nullable().optional(),
+  expires_at: z.number().int().nonnegative().nullable().optional(),
+});
+export type CreateGuidedSessionRequest = z.infer<typeof CreateGuidedSessionRequestSchema>;
+
+export const SubmitGuidedAnswerRequestSchema = z.object({
+  question_id: z.string().min(1),
+  value: z.unknown(),
+});
+export type SubmitGuidedAnswerRequest = z.infer<typeof SubmitGuidedAnswerRequestSchema>;
+
 // ───────────────────────── Auth ─────────────────────────
 
 export const RegisterRequestSchema = z.object({

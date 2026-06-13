@@ -4,6 +4,43 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-6 Guided Runtime prive
+
+**Livrable MALEX/Codex.** Premier runtime guide prive, testable sans LLM, branche sur
+Project/Scope et Template Registry.
+
+Ajouts :
+
+- contrats partages `ConversationGuide`, `GuidedSession`, `GuidedSessionParticipant`,
+  `GuidedContribution`, `GuidedProgress`, `GuidedQuestion`, `GuidedContradiction` ;
+- tables `conversation_guides`, `guided_sessions`, `guided_session_participants`,
+  `guided_contributions` ;
+- routes auth `GET/POST /guides`, `GET/PATCH /guides/:id`,
+  `POST /guided-sessions`, `GET /guided-sessions/:id`,
+  `POST /guided-sessions/:id/answers`, `/advance`, `/complete` ;
+- guides draft crees par teacher+, owner-prives et rattachables a un `project_id` ;
+- sessions privees qui figent `guide_version`, `target_schema_id` et `target_schema_version` ;
+- progression deterministe depuis les champs requis du template ;
+- contradictions conservees et visibles, sans ecrasement silencieux ;
+- participants de session distincts des lecteurs du guide brut ;
+- `complete` marque uniquement la session privee comme terminee, sans publication, email,
+  devis, inscription, export ou asset ;
+- audit creation/update guide, creation session, participant, answer, advance et complete ;
+- tests service + router.
+
+Cette couche rend possible MOTH/CDC en atelier prive. Elle ne livre pas encore de lien public,
+bot externe, inscription Ours d'Or, devis, badge, email, analytics nominatives ou UI finale.
+
+Verification :
+
+- `npm test` : 35 fichiers / 142 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — PR-5 Template / Schema Registry
 
 **Livrable MALEX/Codex.** Registre backend minimal des templates versionnes, candidats ou
