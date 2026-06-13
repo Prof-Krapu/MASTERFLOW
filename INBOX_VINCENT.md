@@ -22,6 +22,34 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Audit cloture canon/GitHub + revue du commit CTX
+
+Lire en priorite :
+
+- `AUDIT_CLOTURE_CANON_GITHUB_SYNC_2026-06-13.md`
+- `CTX_RUNTIME_IMPLEMENTATION_HANDOFF_2026-06-13.md`
+
+Correction de sync : MALEX/Codex reconnait que `main` contenait deja beaucoup de backend Vincent.
+Le dernier audit distingue maintenant ce qui est vraiment implante, ce que `875a790` ajoute, et ce
+qui reste canoniquement ouvert.
+
+Commit a relire :
+
+`875a7908e17359b31b14f57ddcde27efdada2b25`
+
+Demande :
+
+1. comparer `context_compiler`, `runtime_loadout`, `room_checkpoints`, `memory_cards`, RAG enrichi
+   et injection WS a tes modules existants;
+2. signaler collisions, doublons ou meilleurs objets deja presents;
+3. proposer une integration courte sans reconstruire les fondations;
+4. confirmer quels items PR-HARD sont deja couverts par tes derniers commits;
+5. garder BGE/Qdrant comme runner derive, pas comme proprietaire du contexte.
+
+But : recaler tout le monde sur le meme etat GitHub avant nouveau chantier.
+
+---
+
 ## 2026-06-13 — open — Stabiliser le check inbox avec GitHub CLI
 
 Incident : Vincent a parfois cru ne pas recevoir les messages alors que certains étaient soit sur

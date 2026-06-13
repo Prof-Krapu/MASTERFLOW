@@ -28,6 +28,32 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : audit cloture canon/GitHub et CTX pousse
+
+SYNC_PROOF : `codex/frontend-masterflow` = `875a790`, `origin/main` = `141ab68`, delta branche
+sync `0/0`.
+
+Correction de diagnostic : Vincent avait bien pousse et integre une grosse tranche backend. Le
+malentendu venait d'une lecture du delta recent au lieu d'une synthese complete de `origin/main`.
+
+Audit de cloture :
+
+`AUDIT_CLOTURE_CANON_GITHUB_SYNC_2026-06-13.md`
+
+Commit MALEX/Codex a relire :
+
+`875a7908e17359b31b14f57ddcde27efdada2b25`
+
+Ce commit ajoute les fondations de contexte runtime : `context_compiler`, `user_runtime_loadout`,
+`room_checkpoints`, `memory_cards`, RAG enrichi, injection WS bornee et surfaces frontend de
+contexte. Checks avant push : backend 231/231, TS back/front OK, build frontend OK, diff-check OK.
+
+Demande : comparer avec tes modules, signaler collisions/couvertures, puis proposer une
+integration courte. BGE/Qdrant reste un runner derive ; le contexte et les permissions restent
+proprietaires de verite.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : durcissement check inbox via gh
 
 Diagnostic local : `gh` était absent du poste MALEX/Codex. Il est maintenant installé via

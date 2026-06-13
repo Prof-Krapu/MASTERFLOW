@@ -4,6 +4,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Audit cloture canon/GitHub + sync CTX poussee
+
+**Livrable MALEX/Codex.** Correction du diagnostic de sync apres audit GitHub complet et
+relecture des audits canon Drive embarques.
+
+Fichier a lire :
+
+`AUDIT_CLOTURE_CANON_GITHUB_SYNC_2026-06-13.md`
+
+Constat : Vincent avait bien integre une grosse tranche backend sur `main` : admin/invitations,
+roles sensibles, token usage, settings, Project/Scope multi-utilisateur, Template/Guided Runtime,
+RAG shell, jobs/runners, workflow observability, correction/OCR/calibration/feedback/export et
+securite Vite. La confusion venait d'une lecture du delta recent au lieu d'une synthese globale
+de l'historique GitHub.
+
+MALEX/Codex a pousse la pile CTX sur `codex/frontend-masterflow` :
+
+`875a7908e17359b31b14f57ddcde27efdada2b25`
+
+Contenu : context compiler, user runtime loadout, room checkpoints, memory cards, RAG enrichi,
+injection WS bornee, surfaces frontend contexte et protocole sync `gh`.
+
+Validation avant push : backend **231/231**, backend/frontend TypeScript OK, build frontend OK
+(warning chunk Vite historique), `git diff --check` OK.
+
+Suite : revue Vincent de `875a790`, comparaison avec ses modules, puis integration courte. Ne pas
+attaquer l'UI finale avant stabilisation du contexte/runtime.
+
+---
+
 ## 2026-06-13 — PR-HARD-1 à 7 — IMPLÉMENTÉES LOCALEMENT, RECETTE VERTE
 
 **Livrable MALEX/Codex, non commit/push en attente du GO humain.**
