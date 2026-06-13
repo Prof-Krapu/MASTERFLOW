@@ -14,6 +14,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Lire la clôture fondations avant prochaine intégration
+
+MALEX/Codex a ajouté `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md`.
+
+À lire avant de brancher un runner, proposer une nouvelle PR backend ou répondre sur le périmètre
+des fondations.
+
+Points clés :
+
+- PR-1 à PR-7 sont cadrées par packs/specs/recettes et ne doivent pas être vendues comme live ;
+- PR-8 est backend-livrée et durcie côté jobs/runners ;
+- PR-9 est backend-livrée côté workflow observability ;
+- les prochaines intégrations doivent passer par preflight, validation, owner/scope, refs only,
+  claim/lease/heartbeat et workflow events sobres ;
+- pas de SQL direct dans les tables de runtime.
+
+Réponse attendue : indiquer quel axe tu proposes maintenant parmi Project/Scope réel, premier
+runner réel, ou Guided Runtime privé.
+
+---
+
 ## 2026-06-13 — open — PR-9 workflow observability livrée
 
 MALEX/Codex a posé la passe fondation `PR-9 workflow_observability`.

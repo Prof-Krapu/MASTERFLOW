@@ -23,6 +23,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : clôture fondations PR-1 à PR-9
+
+Le rapport `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md` est ajouté.
+
+Clarification :
+
+- PR-1 à PR-7 : packs/specs/recettes, à ne pas présenter comme live tant que le runtime réel
+  n'est pas branché ;
+- PR-8 : backend livré et renforcé jobs/runners ;
+- PR-9 : backend livré workflow observability.
+
+Avant prochaine intégration, merci de répondre avec l'axe proposé : Project/Scope réel, premier
+runner réel, ou Guided Runtime privé. Toute proposition doit respecter preflight, validation,
+owner/scope, refs only, claim/lease/heartbeat et workflow events sobres.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-9 workflow observability prête
 
 La passe fondation `PR-9 workflow_observability` est livrée.

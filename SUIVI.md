@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Clôture fondations PR-1 à PR-9
+
+**Livrable MALEX/Codex.** Rapport de clôture du plan fondations post-audit.
+
+Ajout :
+
+- `FONDATIONS_PR1_PR9_CLOSURE_REPORT.md`.
+
+Clarification importante :
+
+- PR-1 à PR-7 sont cadrées par packs/specs/recettes et doivent rester non deceptive tant que
+  leurs runtimes réels ne sont pas livrés ;
+- PR-8 est backend-livrée et renforcée côté jobs/runners ;
+- PR-9 est backend-livrée côté workflow observability ;
+- les runners réels Vincent doivent maintenant se brancher par les gates PR-8/PR-C7→PR-C11 ;
+- toute prochaine verticale doit choisir explicitement entre Project/Scope réel, runner réel ou
+  Guided Runtime privé.
+
+Cette clôture évite de continuer à empiler des couches runner et remet le projet sur un choix
+produit clair avant UI finale.
+
+---
+
 ## 2026-06-13 — PR-9 workflow observability
 
 **Livrable MALEX/Codex.** Observabilité workflow admin/godmode, sans payload brut ni action
