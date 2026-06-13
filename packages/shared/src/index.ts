@@ -450,6 +450,152 @@ export const TaskModelProfileSchema = z.object({
 });
 export type TaskModelProfile = z.infer<typeof TaskModelProfileSchema>;
 
+// ───────────────────────── Correction versionnée PR-C1 ─────────────────────────
+
+export const RubricCriterionSchema = z.object({
+  criterion_id: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().min(1),
+  weight: z.number().positive().max(1),
+  max_points: z.number().positive(),
+  evidence_requirements: z.array(z.string().min(1)),
+  required: z.boolean(),
+});
+export type RubricCriterion = z.infer<typeof RubricCriterionSchema>;
+
+export const RubricTemplateSchema = z.object({
+  template_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_scope: z.string().min(1),
+  title: z.string().min(1),
+  subject_ref: z.string().min(1).nullable(),
+  current_version_ref: z.string().min(1).nullable(),
+  status: z.enum(['draft', 'active', 'deprecated']),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type RubricTemplate = z.infer<typeof RubricTemplateSchema>;
+
+export const RubricVersionSchema = z
+  .object({
+    version_id: z.string().min(1),
+    template_id: z.string().min(1),
+    version: z.number().int().positive(),
+    project_scope: z.string().min(1),
+    criteria: z.array(RubricCriterionSchema).min(1),
+    total_points: z.number().positive(),
+    status: z.enum(['draft', 'candidate', 'validated', 'archived']),
+    created_by: z.string().min(1),
+    created_at: z.number().int().nonnegative(),
+  })
+  .superRefine((rubric, ctx) => {
+    const weight = rubric.criteria.reduce((total, criterion) => total + criterion.weight, 0);
+    if (Math.abs(weight - 1) > 0.0001) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'La somme des poids de critères doit être égale à 1.',
+        path: ['criteria'],
+      });
+    }
+    const points = rubric.criteria.reduce((total, criterion) => total + criterion.max_points, 0);
+    if (Math.abs(points - rubric.total_points) > 0.0001) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Le total du barème doit correspondre aux points des critères.',
+        path: ['total_points'],
+      });
+    }
+  });
+export type RubricVersion = z.infer<typeof RubricVersionSchema>;
+
+const GradeBandSchema = z.tuple([z.number(), z.number()]);
+
+export const InstitutionalGradingProfileSchema = z
+  .object({
+    profile_id: z.string().min(1),
+    owner_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    version: z.number().int().positive(),
+    scale: GradeBandSchema,
+    expected_cohort_band: GradeBandSchema,
+    anchors: z.object({
+      insufficient: GradeBandSchema,
+      minimum_met: GradeBandSchema,
+      expected: GradeBandSchema,
+      strong: GradeBandSchema,
+      exceptional: GradeBandSchema,
+    }),
+    calibration_mode: z.literal('diagnostic_then_teacher_validation'),
+    max_global_delta: z.number().nonnegative(),
+    protected_thresholds: z.array(z.number()),
+    threshold_crossing_requires_validation: z.boolean(),
+    status: z.enum(['draft', 'validated', 'deprecated']),
+    created_at: z.number().int().nonnegative(),
+  })
+  .superRefine((profile, ctx) => {
+    const [scaleMin, scaleMax] = profile.scale;
+    const bands = [profile.expected_cohort_band, ...Object.values(profile.anchors)];
+    if (scaleMin >= scaleMax || bands.some(([min, max]) => min > max || min < scaleMin || max > scaleMax)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Les bandes de notation doivent être ordonnées et incluses dans l’échelle.',
+        path: ['anchors'],
+      });
+    }
+  });
+export type InstitutionalGradingProfile = z.infer<typeof InstitutionalGradingProfileSchema>;
+
+export const CorrectionBatchSchema = z.object({
+  batch_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_scope: z.string().min(1),
+  rubric_version_id: z.string().min(1),
+  grading_profile_id: z.string().min(1),
+  status: z.enum(['draft', 'ready', 'running', 'review', 'completed', 'failed', 'archived']),
+  submission_count: z.number().int().nonnegative(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type CorrectionBatch = z.infer<typeof CorrectionBatchSchema>;
+
+export const SubmissionRecordSchema = z.object({
+  submission_id: z.string().min(1),
+  batch_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_scope: z.string().min(1),
+  student_ref: z.string().min(1).nullable(),
+  source_evidence_ref: z.string().min(1),
+  identity_status: z.enum(['unknown', 'candidate', 'confirmed', 'rejected']),
+  status: z.enum(['candidate', 'ready', 'processing', 'review', 'completed', 'rejected']),
+  privacy_level: z.literal('private'),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type SubmissionRecord = z.infer<typeof SubmissionRecordSchema>;
+
+export const PreCorrectionManifestSchema = z
+  .object({
+    manifest_id: z.string().min(1),
+    batch_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    rubric_version_id: z.string().min(1),
+    grading_profile_id: z.string().min(1),
+    submission_refs: z.array(z.string().min(1)).min(1),
+    workflow_version: z.string().min(1),
+    status: z.enum(['draft', 'validated', 'executing', 'completed', 'rejected']),
+    created_by: z.string().min(1),
+    validation_ref: z.string().min(1).nullable(),
+    created_at: z.number().int().nonnegative(),
+  })
+  .refine(
+    (manifest) => manifest.status === 'draft' || manifest.status === 'rejected' || manifest.validation_ref !== null,
+    {
+      message: 'Un manifest utilisable doit référencer une validation humaine.',
+      path: ['validation_ref'],
+    },
+  );
+export type PreCorrectionManifest = z.infer<typeof PreCorrectionManifestSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);

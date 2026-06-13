@@ -282,7 +282,8 @@ Ils completent les objets Corrector deja listes dans
 3. `PR-CB2` : task-aware model profiles et egress gated. Résolution mono-provider fail-closed,
    privacy locale, allowlist d'origine et tests livrés ; fallback réel hors scope.
 4. `PR-C0` : deprecation non destructive du persona Corrector.
-5. `PR-C1` : rubriques, profils institutionnels, batches et manifests.
+5. `PR-C1` : rubriques, profils institutionnels, batches et manifests. Contrats, migrations et
+   gates de cohérence livrés ; aucun score ni runner.
 6. `PR-C2` : ingestion/jobs.
 7. `PR-C3` : pre-correction explicable.
 8. `PR-C4` : calibration, quality review et signals.

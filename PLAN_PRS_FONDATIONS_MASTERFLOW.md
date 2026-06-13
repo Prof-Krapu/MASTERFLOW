@@ -97,6 +97,18 @@ Référence :
 - `SPEC_PR_C0_DEPRECATION_NON_DESTRUCTIVE_CORRECTOR.md`
 - `DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`
 
+### PR-C1 — `correction_reference_objects`
+
+Rubriques et profils institutionnels versionnés, batches, submissions privées et manifests de
+pré-correction.
+
+Etat : contrats, migrations, index et tests livrés. Aucun score, route, runner ou export.
+
+Référence :
+
+- `SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md`
+- `DECISION_ABSORPTION_CORRECTOR_ET_CALIBRATION_INSTITUTIONNELLE.md`
+
 ## Regle de sequencing
 
 Chaque PR doit livrer :

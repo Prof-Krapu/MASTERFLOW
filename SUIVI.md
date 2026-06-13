@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C1 objets de référence correction
+
+**Livrable MALEX/Codex.** Fondation versionnée de la correction, sans exécution.
+
+Ajouts :
+
+- `SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md` ;
+- `RubricTemplate` et `RubricVersion` avec cohérence poids/points ;
+- `InstitutionalGradingProfile` avec bandes bornées et validation professeur ;
+- `CorrectionBatch` ;
+- `SubmissionRecord` privé relié à une preuve ;
+- `PreCorrectionManifest` exigeant une validation pour tout état utilisable ;
+- six tables SQLite, index et tests.
+
+La zone 13–14 reste un repère institutionnel de cohérence et ne force aucune moyenne. Aucun
+score, feedback, export, route ou runner n'est ajouté. PR-C2 devra consommer ces références pour
+les jobs d'ingestion et ne jamais reprendre les heuristiques historiques en dur.
+
+Vincent doit comparer ses correction sheets et manifests P1–P4 aux contrats et répondre avec les
+champs manquants réellement nécessaires.
+
+---
+
 ## 2026-06-13 — Décision : socle OCR Vincent absorbé et adapter morphologique déclaré
 
 **Décision MALEX.** Le protocole OCR multimodal de Vincent est conservé comme apport transversal.

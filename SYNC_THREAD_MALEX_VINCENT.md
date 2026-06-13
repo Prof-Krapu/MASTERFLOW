@@ -23,6 +23,17 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C1 prête à challenger
+
+Les objets versionnés de correction sont posés dans
+`SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md`.
+
+Merci de comparer ta correction sheet YAML, tes batches et manifests P1–P4 avec les contrats.
+Réponse attendue : champs manquants réellement nécessaires et mapping vers PR-C2 ingestion/jobs.
+Aucun score, feedback ou pipeline ne doit être ajouté à cette tranche.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : absorption du socle OCR commun
 
 MALEX confirme qu'on garde ton protocole OCR et qu'on l'étend au-delà de Corrector.

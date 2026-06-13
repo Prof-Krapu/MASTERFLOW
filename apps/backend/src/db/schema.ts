@@ -282,6 +282,105 @@ function migrate(d: Database.Database): void {
       updated_by             TEXT REFERENCES users(id)
     );
 
+    -- ───────────────────────── Correction versionnée PR-C1 ────────────────
+    -- Objets fondationnels uniquement : aucun score ni exécution automatique.
+    CREATE TABLE IF NOT EXISTS rubric_templates (
+      id                  TEXT PRIMARY KEY,
+      owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope       TEXT NOT NULL,
+      title               TEXT NOT NULL,
+      subject_ref         TEXT,
+      current_version_ref TEXT,
+      status              TEXT NOT NULL DEFAULT 'draft'
+                            CHECK (status IN ('draft','active','deprecated')),
+      created_at          INTEGER NOT NULL,
+      updated_at          INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS rubric_versions (
+      id            TEXT PRIMARY KEY,
+      template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,
+      version       INTEGER NOT NULL CHECK (version > 0),
+      project_scope TEXT NOT NULL,
+      criteria_json TEXT NOT NULL,
+      total_points  REAL NOT NULL CHECK (total_points > 0),
+      status        TEXT NOT NULL DEFAULT 'draft'
+                      CHECK (status IN ('draft','candidate','validated','archived')),
+      created_by    TEXT NOT NULL REFERENCES users(id),
+      created_at    INTEGER NOT NULL,
+      UNIQUE(template_id, version)
+    );
+
+    CREATE TABLE IF NOT EXISTS institutional_grading_profiles (
+      id                     TEXT PRIMARY KEY,
+      owner_id               TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope          TEXT NOT NULL,
+      version                INTEGER NOT NULL CHECK (version > 0),
+      scale_json             TEXT NOT NULL,
+      expected_band_json     TEXT NOT NULL,
+      anchors_json           TEXT NOT NULL,
+      calibration_mode       TEXT NOT NULL
+                               CHECK (calibration_mode = 'diagnostic_then_teacher_validation'),
+      max_global_delta       REAL NOT NULL CHECK (max_global_delta >= 0),
+      protected_thresholds_json TEXT NOT NULL DEFAULT '[]',
+      threshold_crossing_requires_validation INTEGER NOT NULL DEFAULT 1
+                               CHECK (threshold_crossing_requires_validation IN (0,1)),
+      status                 TEXT NOT NULL DEFAULT 'draft'
+                               CHECK (status IN ('draft','validated','deprecated')),
+      created_at             INTEGER NOT NULL,
+      UNIQUE(owner_id, project_scope, version)
+    );
+
+    CREATE TABLE IF NOT EXISTS correction_batches (
+      id                 TEXT PRIMARY KEY,
+      owner_id           TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope      TEXT NOT NULL,
+      rubric_version_id  TEXT NOT NULL REFERENCES rubric_versions(id),
+      grading_profile_id TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
+      status             TEXT NOT NULL DEFAULT 'draft'
+                           CHECK (status IN (
+                             'draft','ready','running','review','completed','failed','archived'
+                           )),
+      submission_count   INTEGER NOT NULL DEFAULT 0 CHECK (submission_count >= 0),
+      created_at         INTEGER NOT NULL,
+      updated_at         INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS submissions (
+      id                  TEXT PRIMARY KEY,
+      batch_id            TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope       TEXT NOT NULL,
+      student_ref         TEXT,
+      source_evidence_ref TEXT NOT NULL REFERENCES evidence_events(id),
+      identity_status     TEXT NOT NULL DEFAULT 'unknown'
+                            CHECK (identity_status IN ('unknown','candidate','confirmed','rejected')),
+      status              TEXT NOT NULL DEFAULT 'candidate'
+                            CHECK (status IN (
+                              'candidate','ready','processing','review','completed','rejected'
+                            )),
+      privacy_level       TEXT NOT NULL DEFAULT 'private'
+                            CHECK (privacy_level = 'private'),
+      created_at          INTEGER NOT NULL,
+      updated_at          INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS pre_correction_manifests (
+      id                 TEXT PRIMARY KEY,
+      batch_id           TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      project_scope      TEXT NOT NULL,
+      rubric_version_id  TEXT NOT NULL REFERENCES rubric_versions(id),
+      grading_profile_id TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
+      submission_refs_json TEXT NOT NULL,
+      workflow_version   TEXT NOT NULL,
+      status             TEXT NOT NULL DEFAULT 'draft'
+                           CHECK (status IN ('draft','validated','executing','completed','rejected')),
+      created_by         TEXT NOT NULL REFERENCES users(id),
+      validation_ref     TEXT,
+      created_at         INTEGER NOT NULL,
+      CHECK (status IN ('draft','rejected') OR validation_ref IS NOT NULL)
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
@@ -307,6 +406,18 @@ function migrate(d: Database.Database): void {
       ON teacher_decision_deltas(object_type, object_ref);
     CREATE INDEX IF NOT EXISTS idx_task_model_profiles_task
       ON task_model_profiles(task, status);
+    CREATE INDEX IF NOT EXISTS idx_rubric_templates_scope
+      ON rubric_templates(project_scope, status);
+    CREATE INDEX IF NOT EXISTS idx_rubric_versions_template
+      ON rubric_versions(template_id, version);
+    CREATE INDEX IF NOT EXISTS idx_grading_profiles_scope
+      ON institutional_grading_profiles(project_scope, status);
+    CREATE INDEX IF NOT EXISTS idx_correction_batches_scope
+      ON correction_batches(project_scope, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_submissions_batch
+      ON submissions(batch_id, status);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_batch
+      ON pre_correction_manifests(batch_id, status);
   `);
 }
 

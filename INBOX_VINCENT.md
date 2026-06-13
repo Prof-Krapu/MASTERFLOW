@@ -14,6 +14,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-C1 objets de référence correction
+
+MALEX/Codex a posé `SPEC_PR_C1_RUBRICS_GRADING_BATCHES_MANIFESTS.md`.
+
+Objets livrés :
+
+- `RubricTemplate` et `RubricVersion` ;
+- `InstitutionalGradingProfile` ;
+- `CorrectionBatch` ;
+- `SubmissionRecord` privé ;
+- `PreCorrectionManifest`.
+
+Le contrat refuse les poids/points incohérents et tout manifest utilisable sans validation
+humaine. La plage 13–14 est un repère diagnostique, jamais une moyenne forcée. Aucun score,
+runner, endpoint ou export n'est livré.
+
+Action demandée :
+
+1. comparer ces champs à ta correction sheet YAML et à tes manifests P1–P4 ;
+2. signaler les métadonnées réellement indispensables manquantes ;
+3. mapper les heuristiques codées en dur vers critères/version/sujet ;
+4. préparer PR-C2 ingestion/jobs en consommant ces références ;
+5. ne pas injecter de note ou feedback dans les tables fondationnelles.
+
+---
+
 ## 2026-06-13 — open — Décision MALEX : absorber ton socle OCR pour tous les usages
 
 Lire `DECISION_ABSORPTION_OCR_COMMUN_ET_ADAPTER_MORPHOLOGIQUE.md`.
