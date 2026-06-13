@@ -346,6 +346,42 @@ export const InventoryNeedMatchResultSchema = z.object({
 });
 export type InventoryNeedMatchResult = z.infer<typeof InventoryNeedMatchResultSchema>;
 
+export const InventoryDiagnosticsSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  totals: z.object({
+    items: z.number().int().nonnegative(),
+    collections: z.number().int().nonnegative(),
+    collection_matches: z.number().int().nonnegative(),
+    project_needs: z.number().int().nonnegative(),
+    active_rag_projections: z.number().int().nonnegative(),
+  }),
+  validation: z.object({
+    items: z.object({
+      candidate: z.number().int().nonnegative(),
+      validated: z.number().int().nonnegative(),
+      archived: z.number().int().nonnegative(),
+    }),
+    collections: z.object({
+      candidate: z.number().int().nonnegative(),
+      validated: z.number().int().nonnegative(),
+      archived: z.number().int().nonnegative(),
+    }),
+  }),
+  scopes: z.object({
+    personal_items: z.number().int().nonnegative(),
+    project_items: z.number().int().nonnegative(),
+    personal_collections: z.number().int().nonnegative(),
+    project_collections: z.number().int().nonnegative(),
+  }),
+  workflow: z.object({
+    open_project_needs: z.number().int().nonnegative(),
+    candidate_collection_matches: z.number().int().nonnegative(),
+    validated_project_items_without_rag: z.number().int().nonnegative(),
+    stale_rag_projections: z.number().int().nonnegative(),
+  }),
+});
+export type InventoryDiagnostics = z.infer<typeof InventoryDiagnosticsSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

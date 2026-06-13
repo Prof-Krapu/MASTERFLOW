@@ -6,6 +6,7 @@ import {
   getWorkflowDiagnostics,
   getWorkflowTrace,
 } from '../services/workflow_observability.ts';
+import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -135,6 +136,11 @@ export function createDiagnosticsRouter(): Router {
     } catch {
       res.status(404).json({error: 'workflow_not_found'});
     }
+  });
+
+  // GET /diagnostics/inventory — agrégats owner ops sans données métier privées.
+  router.get('/diagnostics/inventory', (_req: Request, res: Response): void => {
+    res.json(getInventoryDiagnostics());
   });
 
   return router;

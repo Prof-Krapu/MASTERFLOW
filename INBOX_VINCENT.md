@@ -22,7 +22,17 @@ Règles de lecture :
 
 ---
 
-## 2026-06-13 — open — PR-INV-6 Room / Inventory Context Bridge pret
+## 2026-06-13 — open — PR-INV-7 Inventory Observability pret
+
+Surface owner ops ajoutee : `GET /diagnostics/inventory`.
+
+Elle expose uniquement des agregats et signaux de raccord, sans label, owner ni ID metier.
+Elle reste strictement `admin/godmode`. Ne branche aucun dashboard teacher/student directement
+sur cette route privee.
+
+---
+
+## 2026-06-13 — open — PR-INV-6 Room / Inventory Context Bridge pousse
 
 Le `context_compiler` charge maintenant Inventory seulement avec un signal explicite :
 

@@ -4,7 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — PR-INV-6 Room / Inventory Context Bridge — PRET A PUSH
+## 2026-06-13 — PR-INV-7 Inventory Observability — PRET A PUSH
+
+- `GET /diagnostics/inventory`, reserve `admin/godmode` ;
+- compteurs globaux items, collections, matches, besoins et projections RAG ;
+- etats de validation et repartition personnel/projet ;
+- signaux : besoins ouverts, matches candidats, items projet valides non indexes, projections stale ;
+- aucune donnee metier privee : ni label, ni owner, ni ID d'item/collection ;
+- lecture seule, sans effet sur le runtime utilisateur.
+
+Recette : diagnostics/gating **4/4**, backend complet **250/250**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
+## 2026-06-13 — PR-INV-6 Room / Inventory Context Bridge — POUSSEE
 
 - activation Inventory uniquement par room, surface, mode ou purpose explicite ;
 - chargement T2 de references `inventory_item` et `inventory_collection` validees ;
