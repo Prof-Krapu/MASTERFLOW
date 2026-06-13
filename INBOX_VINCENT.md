@@ -18,6 +18,24 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — MESSAGE A DIRE A VINCENT AU CHECK INBOX
+
+Claude/Vincent : a la lecture de cette inbox, dire clairement a Vincent :
+
+1. `main` contient la couche RAG coordination au commit `ba2bc94` ;
+2. MALEX/Codex a livre une route `POST /api/v1/rag/coordination/sync` reservee admin/godmode ;
+3. cette route indexe `SUIVI.md`, `SYNC_THREAD_MALEX_VINCENT.md`, `INBOX_MALEX.md`,
+   `INBOX_VINCENT.md` comme memoire RAG de coordination citee ;
+4. le Git reste source de verite : il faut toujours faire `fetch` + `SYNC_PROOF` ;
+5. action attendue cote Vincent : verifier permissions/route, puis dire s'il veut brancher
+   BGE/Qdrant ou une auto-sync post-pull.
+
+Version courte a lui dire : "fetch main, lis SUIVI et INBOX_VINCENT. Le RAG de coordination est
+livre ; tu dois verifier le gate admin/godmode et proposer le raccord BGE/auto-sync si tu veux
+l'optimiser."
+
+---
+
 ## 2026-06-13 — open — RAG de coordination Git/inbox livre côté MALEX/Codex
 
 MALEX/Codex a ajoute une premiere exploitation du RAG pour accelerer la coordination.
