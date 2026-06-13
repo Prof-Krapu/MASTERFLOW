@@ -32,6 +32,14 @@ const FINALIZABLE = new Set<JobStatus>(['queued', 'running']);
 const DEFAULT_LEASE_MS = 5 * 60 * 1000;
 const MAX_LEASE_MS = 60 * 60 * 1000;
 const RUNNER_STALE_MS = 2 * 60 * 1000;
+const JOB_RUNNER_FAMILIES: Record<JobType, string> = {
+  rag_reindex: 'rag',
+  resource_revoke: 'resource',
+  export_prepare: 'export',
+  asset_prepare: 'asset',
+  ocr_prepare: 'ocr_multimodal',
+  correction_prepare: 'correction',
+};
 const SECRET_PATTERN =
   /(api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization)/i;
 
@@ -141,6 +149,10 @@ function assertRunnerCanClaim(runnerId: string, jobTypes: JobType[], now: number
   if (!Array.isArray(declaredTypes)) throw new Error('runner_job_types_invalid');
   if (jobTypes.some((type) => !declaredTypes.includes(type))) {
     throw new Error('runner_job_type_not_allowed');
+  }
+  const expectedFamilies = new Set(jobTypes.map((type) => JOB_RUNNER_FAMILIES[type]));
+  if (expectedFamilies.size !== 1 || !expectedFamilies.has(row.runner_family)) {
+    throw new Error('runner_family_not_allowed');
   }
 }
 

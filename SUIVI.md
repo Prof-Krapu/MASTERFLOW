@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C11 gates famille/type runner
+
+**Livrable MALEX/Codex.** Cohérence stricte entre `runner_family` et types de jobs claimés.
+
+Ajouts :
+
+- `SPEC_PR_C11_RUNNER_FAMILY_GATES.md` ;
+- mapping interne `job_type -> runner_family` ;
+- `claimNextJob` refuse une famille incompatible ;
+- `claimNextJob` refuse les claims multi-types mélangeant plusieurs familles ;
+- erreur `runner_family_not_allowed` ;
+- tests mis à jour pour exiger `runner_family = asset` sur `asset_prepare` ;
+- test refusant un runner `ocr_multimodal` qui tente de claim `asset_prepare`.
+
+Mapping actif : OCR = `ocr_multimodal`, correction = `correction`, export = `export`, asset =
+`asset`, RAG = `rag`, resource revoke = `resource`. Cette couche évite qu'un runner spécialisé
+absorbe un job qui n'est pas de sa famille technique.
+
+---
+
 ## 2026-06-13 — PR-C10 gates de claim runner
 
 **Livrable MALEX/Codex.** Le heartbeat runner devient obligatoire avant claim.

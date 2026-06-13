@@ -14,6 +14,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-C11 : la famille runner doit matcher le job
+
+MALEX/Codex a posé `SPEC_PR_C11_RUNNER_FAMILY_GATES.md`.
+
+`job_types` ne suffit plus. Le heartbeat doit aussi déclarer la bonne `runner_family` :
+
+- `ocr_prepare` -> `ocr_multimodal` ;
+- `correction_prepare` -> `correction` ;
+- `export_prepare` -> `export` ;
+- `asset_prepare` -> `asset` ;
+- `rag_reindex` -> `rag` ;
+- `resource_revoke` -> `resource`.
+
+Action demandée :
+
+1. chaque runner utilise une `runner_family` exacte ;
+2. ne mélange pas OCR/correction/export dans un même heartbeat ;
+3. si tu veux un orchestrateur multi-famille, propose-le séparément ;
+4. un runner OCR ne claim jamais `export_prepare` ou `correction_prepare` ;
+5. garde `ocr_multimodal` pour le socle OCR mutualisé.
+
+Version courte : maintenant on check aussi le style de combat. Un shoto ne rentre pas en grappler
+parce qu'il a coché la mauvaise case.
+
+---
+
 ## 2026-06-13 — open — PR-C10 : pas de heartbeat, pas de claim
 
 MALEX/Codex a posé `SPEC_PR_C10_RUNNER_CLAIM_GATES.md`.

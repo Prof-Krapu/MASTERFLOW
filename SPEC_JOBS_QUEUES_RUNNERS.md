@@ -86,6 +86,20 @@ repris que si son lease est expiré. Les traitements longs prolongent le bail av
 demandés. Un runner `draining`, `offline`, inconnu, stale ou non déclaré pour le type demandé
 ne peut pas prendre de job.
 
+La famille technique du runner doit aussi correspondre au type demandé :
+
+```text
+ocr_prepare        -> ocr_multimodal
+correction_prepare -> correction
+export_prepare     -> export
+asset_prepare      -> asset
+rag_reindex        -> rag
+resource_revoke    -> resource
+```
+
+Un claim multi-type qui mélange plusieurs familles est refusé tant qu'aucun orchestrateur
+multi-famille explicite n'existe.
+
 ## Heartbeats runners
 
 Les runners déclarent leur identité et leur santé avec :

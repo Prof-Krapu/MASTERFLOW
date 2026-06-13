@@ -55,10 +55,11 @@ function heartbeatRunner(
   jobTypes: Array<'asset_prepare' | 'ocr_prepare' | 'export_prepare' | 'correction_prepare'>,
   lastSeenAt: number,
   status: 'online' | 'draining' | 'offline' = 'online',
+  runnerFamily = 'asset',
 ): void {
   recordRunnerHeartbeat({
     runner_id: runnerId,
-    runner_family: 'test_runner',
+    runner_family: runnerFamily,
     job_types: jobTypes,
     status,
     active_job_id: null,
@@ -186,6 +187,11 @@ describe('PR-C8 — claim et lease internes des jobs', () => {
     heartbeatRunner('runner-wrong-type', ['ocr_prepare'], now + 900);
     expect(() => claimNextJob('runner-wrong-type', ['asset_prepare'], 1000, now + 1000)).toThrow(
       'runner_job_type_not_allowed',
+    );
+
+    heartbeatRunner('runner-wrong-family', ['asset_prepare'], now + 900, 'online', 'ocr_multimodal');
+    expect(() => claimNextJob('runner-wrong-family', ['asset_prepare'], 1000, now + 1000)).toThrow(
+      'runner_family_not_allowed',
     );
   });
 });

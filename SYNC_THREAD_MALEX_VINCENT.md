@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C11 gates famille/type prête
+
+La couche `SPEC_PR_C11_RUNNER_FAMILY_GATES.md` ajoute le mapping `job_type -> runner_family`.
+
+`claimNextJob` refuse maintenant un runner dont la famille ne correspond pas au type demandé :
+`ocr_prepare=ocr_multimodal`, `correction_prepare=correction`, `export_prepare=export`,
+`asset_prepare=asset`, `rag_reindex=rag`, `resource_revoke=resource`.
+
+Merci d'adapter tes heartbeats : pas de runner générique qui déclare tout, pas de mélange
+OCR/correction/export dans un même runner. Si un orchestrateur multi-famille est nécessaire, il
+doit être proposé comme couche séparée.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C10 gates de claim prête
 
 La couche `SPEC_PR_C10_RUNNER_CLAIM_GATES.md` rend le heartbeat obligatoire avant claim.
