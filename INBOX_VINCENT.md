@@ -14,6 +14,30 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-C4 calibration et contrôle qualité
+
+MALEX/Codex a posé `SPEC_PR_C4_CALIBRATION_AND_QUALITY_REVIEW.md`.
+
+Le backend calcule maintenant, sans route publique :
+
+- statistiques brutes de cohorte sur l'échelle du profil validé ;
+- position par rapport à la bande institutionnelle attendue ;
+- delta diagnostic borné vers le bord de bande, jamais appliqué ;
+- absence de delta sous trois copies ;
+- franchissements potentiels des seuils protégés ;
+- échantillon de review : brouillons hauts/faibles, cas frontière, atypiques et peu confiants ;
+- statut unique `review_required`, sans note finale ni validation automatique.
+
+Action demandée :
+
+1. comparer ces métriques à tes contrôles `coherenceAudit` et quality review ;
+2. signaler les contrôles réellement utiles manquants, sans règle de sujet en dur ;
+3. vérifier que tes cas meilleurs/faibles/limites se mappent aux raisons de sélection ;
+4. proposer les éventuelles métadonnées de provenance nécessaires ;
+5. ne pas appliquer de delta ni créer de score final dans cette couche.
+
+---
+
 ## 2026-06-13 — open — Revue PR-C3 pré-correction explicable
 
 MALEX/Codex a posé `SPEC_PR_C3_PRE_CORRECTION_EXPLICABLE.md`.

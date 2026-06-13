@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C4 calibration et contrôle qualité
+
+**Livrable MALEX/Codex.** Diagnostic interne de cohorte et échantillon de relecture, sans
+modification des scores.
+
+Ajouts :
+
+- `SPEC_PR_C4_CALIBRATION_AND_QUALITY_REVIEW.md` ;
+- contrats stricts `CohortCalibrationReview` et `QualityReviewItem` ;
+- tables `cohort_calibration_reviews` et `quality_review_items` ;
+- méthode versionnée `cohort-quality-review-v1` ;
+- statistiques brutes sur l'échelle du profil institutionnel ;
+- position sous/dans/au-dessus de la bande attendue ;
+- aucun delta si moins de trois copies ;
+- delta diagnostic borné vers le bord de bande, jamais appliqué ;
+- détection des franchissements de seuils protégés ;
+- échantillonnage des extrêmes, frontières, écarts statistiques et faibles confiances ;
+- permission teacher owner, supervision admin/godmode et audit agrégé.
+
+Aucune moyenne n'est forcée. Aucun score PR-C3 n'est modifié et aucune note finale, validation,
+étiquette étudiante, route publique ou UI n'est ajoutée. Vincent doit comparer l'échantillonnage
+et les métriques à ses contrôles qualité historiques avant tout raccord runner.
+
+---
+
 ## 2026-06-13 — PR-C3 pré-correction explicable
 
 **Livrable MALEX/Codex.** Fondation interne du scoring brouillon par critère, sans runner ni

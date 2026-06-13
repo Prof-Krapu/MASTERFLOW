@@ -426,6 +426,42 @@ function migrate(d: Database.Database): void {
       UNIQUE(run_id, criterion_id)
     );
 
+    -- ───────────────────────── Calibration / quality review PR-C4 ──────────
+    -- Diagnostic uniquement : aucun score source n'est modifié.
+    CREATE TABLE IF NOT EXISTS cohort_calibration_reviews (
+      id                    TEXT PRIMARY KEY,
+      batch_id              TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope         TEXT NOT NULL,
+      grading_profile_id    TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
+      method_version        TEXT NOT NULL,
+      statistics_json       TEXT NOT NULL,
+      diagnostic_delta_candidate REAL,
+      protected_threshold_crossing_count INTEGER NOT NULL DEFAULT 0
+                                CHECK (protected_threshold_crossing_count >= 0),
+      alert_codes_json      TEXT NOT NULL DEFAULT '[]',
+      sample_item_refs_json TEXT NOT NULL,
+      status                TEXT NOT NULL DEFAULT 'review_required'
+                              CHECK (status = 'review_required'),
+      created_at            INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS quality_review_items (
+      id                    TEXT PRIMARY KEY,
+      calibration_review_id TEXT NOT NULL
+                              REFERENCES cohort_calibration_reviews(id) ON DELETE CASCADE,
+      run_id                TEXT NOT NULL REFERENCES pre_correction_runs(id) ON DELETE CASCADE,
+      submission_id         TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
+      raw_score             REAL NOT NULL,
+      scale_json            TEXT NOT NULL,
+      mean_confidence       REAL NOT NULL CHECK (mean_confidence BETWEEN 0 AND 1),
+      selection_reasons_json TEXT NOT NULL,
+      status                TEXT NOT NULL DEFAULT 'review_required'
+                              CHECK (status = 'review_required'),
+      created_at            INTEGER NOT NULL,
+      UNIQUE(calibration_review_id, run_id)
+    );
+
     -- ───────────────────────── Jobs / queues PR-C2 ────────────────────────
     CREATE TABLE IF NOT EXISTS jobs (
       id            TEXT PRIMARY KEY,
@@ -511,6 +547,10 @@ function migrate(d: Database.Database): void {
       ON pre_correction_runs(submission_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_criterion_score_drafts_run
       ON criterion_score_drafts(run_id, criterion_id);
+    CREATE INDEX IF NOT EXISTS idx_calibration_reviews_batch
+      ON cohort_calibration_reviews(batch_id, status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_quality_review_items_review
+      ON quality_review_items(calibration_review_id, status);
     CREATE INDEX IF NOT EXISTS idx_jobs_owner_status
       ON jobs(owner_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_jobs_scope
@@ -718,6 +758,35 @@ export interface CriterionScoreDraftRow {
   confidence: number;
   comment_ref: string | null;
   status: 'candidate' | 'rejected' | 'superseded';
+  created_at: number;
+}
+
+export interface CohortCalibrationReviewRow {
+  id: string;
+  batch_id: string;
+  owner_id: string;
+  project_scope: string;
+  grading_profile_id: string;
+  method_version: string;
+  statistics_json: string;
+  diagnostic_delta_candidate: number | null;
+  protected_threshold_crossing_count: number;
+  alert_codes_json: string;
+  sample_item_refs_json: string;
+  status: 'review_required';
+  created_at: number;
+}
+
+export interface QualityReviewItemRow {
+  id: string;
+  calibration_review_id: string;
+  run_id: string;
+  submission_id: string;
+  raw_score: number;
+  scale_json: string;
+  mean_confidence: number;
+  selection_reasons_json: string;
+  status: 'review_required';
   created_at: number;
 }
 

@@ -23,6 +23,19 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C4 calibration/quality review prête
+
+La couche `SPEC_PR_C4_CALIBRATION_AND_QUALITY_REVIEW.md` produit désormais un diagnostic
+institutionnel borné et un échantillon de relecture ciblé. Le delta candidat vise uniquement le
+bord de la bande attendue, respecte `max_global_delta`, signale les seuils protégés et n'est
+jamais appliqué. Moins de trois copies donne `insufficient_data`.
+
+Merci de comparer ce contrat à `coherenceAudit`, aux cas meilleurs/faibles/limites et aux
+contrôles historiques de tes pipelines. Réponse attendue : écarts utiles seulement, sans note
+finale, règle de sujet ou validation automatique.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C3 pré-correction explicable prête
 
 La couche `SPEC_PR_C3_PRE_CORRECTION_EXPLICABLE.md` persiste maintenant un scoring brouillon

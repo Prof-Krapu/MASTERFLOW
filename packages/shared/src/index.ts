@@ -664,6 +664,86 @@ export const PreCorrectionRunDraftSchema = z
   .strict();
 export type PreCorrectionRunDraft = z.infer<typeof PreCorrectionRunDraftSchema>;
 
+// ───────────────────────── Calibration et contrôle qualité PR-C4 ─────────────────────────
+
+export const CalibrationPositionSchema = z.enum([
+  'insufficient_data',
+  'below_expected_band',
+  'within_expected_band',
+  'above_expected_band',
+]);
+export type CalibrationPosition = z.infer<typeof CalibrationPositionSchema>;
+
+export const CohortScoreStatisticsSchema = z
+  .object({
+    sample_count: z.number().int().positive(),
+    scale: GradeBandSchema,
+    expected_band: GradeBandSchema,
+    mean_raw_score: z.number(),
+    median_raw_score: z.number(),
+    min_raw_score: z.number(),
+    max_raw_score: z.number(),
+    standard_deviation: z.number().nonnegative(),
+    position: CalibrationPositionSchema,
+  })
+  .strict();
+export type CohortScoreStatistics = z.infer<typeof CohortScoreStatisticsSchema>;
+
+export const QualitySelectionReasonSchema = z.enum([
+  'strongest_draft',
+  'weakest_draft',
+  'protected_threshold_boundary',
+  'statistical_outlier',
+  'low_confidence',
+]);
+export type QualitySelectionReason = z.infer<typeof QualitySelectionReasonSchema>;
+
+export const QualityReviewItemSchema = z
+  .object({
+    item_id: z.string().min(1),
+    calibration_review_id: z.string().min(1),
+    run_id: z.string().min(1),
+    submission_id: z.string().min(1),
+    raw_score: z.number(),
+    scale: GradeBandSchema,
+    mean_confidence: z.number().min(0).max(1),
+    selection_reasons: z.array(QualitySelectionReasonSchema).min(1),
+    status: z.literal('review_required'),
+    created_at: z.number().int().nonnegative(),
+  })
+  .strict();
+export type QualityReviewItem = z.infer<typeof QualityReviewItemSchema>;
+
+/**
+ * Diagnostic de cohorte candidat. Le delta proposé est une information de
+ * review bornée ; il n'est appliqué à aucun score par ce contrat.
+ */
+export const CohortCalibrationReviewSchema = z
+  .object({
+    review_id: z.string().min(1),
+    batch_id: z.string().min(1),
+    owner_id: z.string().min(1),
+    project_scope: z.string().min(1),
+    grading_profile_id: z.string().min(1),
+    method_version: z.string().min(1),
+    statistics: CohortScoreStatisticsSchema,
+    diagnostic_delta_candidate: z.number().nullable(),
+    protected_threshold_crossing_count: z.number().int().nonnegative(),
+    alert_codes: z.array(
+      z.enum([
+        'insufficient_sample',
+        'cohort_below_expected_band',
+        'cohort_above_expected_band',
+        'protected_threshold_crossing',
+      ]),
+    ),
+    sample_item_refs: z.array(z.string().min(1)).min(1),
+    status: z.literal('review_required'),
+    created_at: z.number().int().nonnegative(),
+  })
+  .strict();
+export type CohortCalibrationReview = z.infer<typeof CohortCalibrationReviewSchema>;
+
 // ───────────────────────── Jobs / ingestion OCR PR-C2 ─────────────────────────
 
 export const JobStatusSchema = z.enum([
