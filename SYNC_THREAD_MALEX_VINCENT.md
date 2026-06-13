@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C6 handoffs jobs prête
+
+La couche `SPEC_PR_C6_CORRECTION_EXPORT_JOB_HANDOFFS.md` crée maintenant les intentions
+`correction_prepare` et `export_prepare` uniquement depuis des objets validés :
+
+1. manifest pré-correction `validated` + `validation_ref` pour correction ;
+2. preview export `approved_for_export` + `validation_ref` pour export.
+
+Création owner-only professeur, supervision admin/godmode en lecture, aucune route publique de
+création arbitraire. Merci de brancher tes runners exclusivement sur ces jobs `queued`, avec
+progression monotone, cancel/retry, sortie en `needs_review` et zéro publication implicite.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C5 feedback/exports prête
 
 La couche `SPEC_PR_C5_FEEDBACK_AND_EXPORT_PREVIEWS.md` sépare désormais :

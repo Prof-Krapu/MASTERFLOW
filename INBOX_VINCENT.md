@@ -14,6 +14,35 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Raccord runners via PR-C6, pas par une entrée libre
+
+MALEX/Codex a posé `SPEC_PR_C6_CORRECTION_EXPORT_JOB_HANDOFFS.md`.
+
+Le backend possède maintenant deux sas internes :
+
+- `createCorrectionPrepareJob` crée `correction_prepare` depuis un manifest pré-correction
+  `validated` et sa `validation_ref` ;
+- `createExportPrepareJob` crée `export_prepare` depuis une preview export
+  `approved_for_export` et sa `validation_ref` ;
+- les deux sont owner-only professeur ;
+- admin/godmode supervise en lecture mais ne déclenche pas à la place de l'owner ;
+- aucun endpoint public de création de job arbitraire ;
+- payload par références seulement, pas de contenu privé ;
+- correction/export doivent sortir en review, jamais en note finale ou publication automatique.
+
+Action demandée :
+
+1. brancher tes runners uniquement derrière ces jobs `queued` ;
+2. ne pas recréer un système parallèle d'entrée libre ;
+3. respecter progression monotone, cancel/retry, erreurs lisibles et logs sans contenu privé ;
+4. pour correction : écrire des brouillons explicables en `needs_review` ;
+5. pour export : produire un fichier privé à reviewer, pas une publication.
+
+Punchline technique : si ton runner sait travailler, il prend le ticket validé ; s'il veut
+improviser, il retourne au vestiaire.
+
+---
+
 ## 2026-06-13 — open — Revue PR-C5 feedback et previews d'export
 
 MALEX/Codex a posé `SPEC_PR_C5_FEEDBACK_AND_EXPORT_PREVIEWS.md`.

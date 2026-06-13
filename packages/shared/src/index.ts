@@ -934,6 +934,29 @@ export const OcrPrepareRequestSchema = z
   });
 export type OcrPrepareRequest = z.infer<typeof OcrPrepareRequestSchema>;
 
+export const CorrectionPrepareRequestSchema = z.object({
+  owner_id: z.string().min(1),
+  project_scope: z.string().min(1),
+  batch_id: z.string().min(1),
+  manifest_ref: z.string().min(1),
+  preflight_ref: z.string().min(1),
+  validation_ref: z.string().min(1),
+  workflow_version: z.string().min(1),
+  source_kind: z.literal('validated_pre_correction_manifest'),
+});
+export type CorrectionPrepareRequest = z.infer<typeof CorrectionPrepareRequestSchema>;
+
+export const ExportPrepareRequestSchema = z.object({
+  owner_id: z.string().min(1),
+  project_scope: z.string().min(1),
+  batch_id: z.string().min(1),
+  export_preview_ref: z.string().min(1),
+  preflight_ref: z.string().min(1),
+  validation_ref: z.string().min(1),
+  source_kind: z.literal('approved_correction_export_preview'),
+});
+export type ExportPrepareRequest = z.infer<typeof ExportPrepareRequestSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);

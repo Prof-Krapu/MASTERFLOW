@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C6 handoffs jobs correction/export
+
+**Livrable MALEX/Codex.** Sas interne entre objets validés et futurs runners correction/export,
+sans runner, sans route publique et sans publication.
+
+Ajouts :
+
+- `SPEC_PR_C6_CORRECTION_EXPORT_JOB_HANDOFFS.md` ;
+- contrats `CorrectionPrepareRequest` et `ExportPrepareRequest` ;
+- service `createCorrectionPrepareJob` depuis manifest pré-correction validé ;
+- service `createExportPrepareJob` depuis preview `approved_for_export` ;
+- création owner-only professeur, admin/godmode en supervision lecture seulement ;
+- alignement obligatoire owner/scope/batch/validation/workflow ;
+- jobs `correction_prepare` et `export_prepare` créés en `queued` ;
+- payloads réduits aux refs utiles, sans contenu privé ni `storage://private` pour export ;
+- tests de refus manifest draft, preview non approuvée, validation incohérente et owner mismatch.
+
+Cette couche donne à Vincent le point d'ancrage propre pour ses runners : ils doivent consommer
+ces jobs uniquement, avancer en progression monotone, puis sortir en `needs_review`. La correction
+ne crée toujours aucune note finale ; l'export ne publie toujours rien.
+
+---
+
 ## 2026-06-13 — PR-C5 feedback student-safe et previews d'export
 
 **Livrable MALEX/Codex.** Cycle interne supervisé du feedback pédagogique à la preview privée,

@@ -1,12 +1,18 @@
 import {
+  CorrectionPrepareRequestSchema,
+  ExportPrepareRequestSchema,
   JobEventSchema,
   JobSchema,
   OcrPrepareRequestSchema,
   ROLE_RANK,
+  type CorrectionPrepareRequest,
+  type ExportPrepareRequest,
   type Job,
   type JobEvent,
   type JobStatus,
+  type JobType,
   type OcrPrepareRequest,
+  type RiskLevel,
 } from '@masterflow/shared';
 
 import {getAdapterForRole} from '../engines/adapter_registry.ts';
@@ -18,6 +24,32 @@ import type {AuthUser} from '../middleware/auth.ts';
 const CANCELLABLE = new Set<JobStatus>(['queued', 'running', 'needs_review']);
 const SECRET_PATTERN =
   /(api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization)/i;
+
+interface ManifestRow {
+  id: string;
+  batch_id: string;
+  project_scope: string;
+  workflow_version: string;
+  status: string;
+  validation_ref: string | null;
+}
+
+interface BatchRow {
+  id: string;
+  owner_id: string;
+  project_scope: string;
+}
+
+interface ExportPreviewRow {
+  id: string;
+  batch_id: string;
+  owner_id: string;
+  project_scope: string;
+  format: string;
+  target: string;
+  status: string;
+  validation_ref: string | null;
+}
 
 function toJob(row: JobRow): Job {
   return JobSchema.parse({
@@ -61,6 +93,11 @@ function assertNoSecrets(payload: unknown): void {
   if (SECRET_PATTERN.test(JSON.stringify(payload))) throw new Error('job_payload_contains_secret');
 }
 
+function assertTeacherOwner(actor: AuthUser, ownerId: string): void {
+  if (ROLE_RANK[actor.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
+  if (actor.id !== ownerId) throw new Error('job_owner_required');
+}
+
 function insertEvent(jobId: string, eventType: JobEvent['event_type'], detail?: Record<string, unknown>): void {
   getDb()
     .prepare(
@@ -68,6 +105,49 @@ function insertEvent(jobId: string, eventType: JobEvent['event_type'], detail?: 
        VALUES (?, ?, ?, ?, ?)`,
     )
     .run(uuid(), jobId, eventType, detail ? JSON.stringify(detail) : null, Date.now());
+}
+
+function insertQueuedJob(
+  actor: AuthUser,
+  type: JobType,
+  ownerId: string,
+  scopeType: string,
+  scopeId: string,
+  riskLevel: RiskLevel,
+  payload: unknown,
+  eventDetail: Record<string, unknown>,
+  auditEventType: string,
+  auditScope: string,
+): Job {
+  assertNoSecrets(payload);
+  const now = Date.now();
+  const id = uuid();
+  getDb()
+    .prepare(
+      `INSERT INTO jobs
+         (id, type, status, owner_id, scope_type, scope_id, risk_level,
+          payload_json, progress, retry_count, created_at, updated_at)
+       VALUES (?, ?, 'queued', ?, ?, ?, ?, ?, 0, 0, ?, ?)`,
+    )
+    .run(
+      id,
+      type,
+      ownerId,
+      scopeType,
+      scopeId,
+      riskLevel,
+      JSON.stringify(payload),
+      now,
+      now,
+    );
+  insertEvent(id, 'job_queued', eventDetail);
+  audit({
+    event_type: auditEventType,
+    user_id: actor.id,
+    scope: auditScope,
+    detail: {job_id: id, ...eventDetail},
+  });
+  return getJob(actor, id);
 }
 
 export function createOcrPrepareJob(actor: AuthUser, input: OcrPrepareRequest): Job {
@@ -80,34 +160,118 @@ export function createOcrPrepareJob(actor: AuthUser, input: OcrPrepareRequest): 
   if (!adapter || adapter.runner_family !== 'ocr_multimodal') {
     throw new Error('ocr_adapter_not_allowed');
   }
-  assertNoSecrets(request);
+  return insertQueuedJob(
+    actor,
+    'ocr_prepare',
+    request.owner_id,
+    'project',
+    request.project_scope,
+    adapter.risk_level,
+    request,
+    {adapter_id: request.adapter_id},
+    'job.ocr_prepare.queued',
+    request.project_scope,
+  );
+}
 
-  const now = Date.now();
-  const id = uuid();
-  getDb()
+export function createCorrectionPrepareJob(actor: AuthUser, input: CorrectionPrepareRequest): Job {
+  const request = CorrectionPrepareRequestSchema.parse(input);
+  assertTeacherOwner(actor, request.owner_id);
+
+  const db = getDb();
+  const manifest = db
     .prepare(
-      `INSERT INTO jobs
-         (id, type, status, owner_id, scope_type, scope_id, risk_level,
-          payload_json, progress, retry_count, created_at, updated_at)
-       VALUES (?, 'ocr_prepare', 'queued', ?, 'project', ?, ?, ?, 0, 0, ?, ?)`,
+      `SELECT id, batch_id, project_scope, workflow_version, status, validation_ref
+       FROM pre_correction_manifests WHERE id = ?`,
     )
-    .run(
-      id,
-      request.owner_id,
-      request.project_scope,
-      adapter.risk_level,
-      JSON.stringify(request),
-      now,
-      now,
-    );
-  insertEvent(id, 'job_queued', {adapter_id: request.adapter_id});
-  audit({
-    event_type: 'job.ocr_prepare.queued',
-    user_id: actor.id,
-    scope: request.project_scope,
-    detail: {job_id: id, adapter_id: request.adapter_id},
-  });
-  return getJob(actor, id);
+    .get(request.manifest_ref) as ManifestRow | undefined;
+  const batch = db
+    .prepare('SELECT id, owner_id, project_scope FROM correction_batches WHERE id = ?')
+    .get(request.batch_id) as BatchRow | undefined;
+  if (!manifest || !batch) throw new Error('correction_prepare_reference_not_found');
+  if (manifest.status !== 'validated' || !manifest.validation_ref) {
+    throw new Error('correction_manifest_not_validated');
+  }
+
+  const alignedRefs = [
+    manifest.batch_id === request.batch_id,
+    manifest.project_scope === request.project_scope,
+    manifest.workflow_version === request.workflow_version,
+    manifest.validation_ref === request.validation_ref,
+    batch.owner_id === request.owner_id,
+    batch.project_scope === request.project_scope,
+  ];
+  if (alignedRefs.some((isAligned) => !isAligned)) {
+    throw new Error('correction_prepare_context_mismatch');
+  }
+
+  return insertQueuedJob(
+    actor,
+    'correction_prepare',
+    request.owner_id,
+    'batch',
+    request.batch_id,
+    'high',
+    request,
+    {source_kind: request.source_kind, manifest_ref: request.manifest_ref},
+    'job.correction_prepare.queued',
+    request.project_scope,
+  );
+}
+
+export function createExportPrepareJob(actor: AuthUser, input: ExportPrepareRequest): Job {
+  const request = ExportPrepareRequestSchema.parse(input);
+  assertTeacherOwner(actor, request.owner_id);
+
+  const db = getDb();
+  const preview = db
+    .prepare(
+      `SELECT id, batch_id, owner_id, project_scope, format, target, status, validation_ref
+       FROM correction_export_previews WHERE id = ?`,
+    )
+    .get(request.export_preview_ref) as ExportPreviewRow | undefined;
+  const batch = db
+    .prepare('SELECT id, owner_id, project_scope FROM correction_batches WHERE id = ?')
+    .get(request.batch_id) as BatchRow | undefined;
+  if (!preview || !batch) throw new Error('export_prepare_reference_not_found');
+  if (preview.status !== 'approved_for_export' || !preview.validation_ref) {
+    throw new Error('export_preview_not_approved');
+  }
+
+  const alignedRefs = [
+    preview.batch_id === request.batch_id,
+    preview.owner_id === request.owner_id,
+    preview.project_scope === request.project_scope,
+    preview.validation_ref === request.validation_ref,
+    batch.owner_id === request.owner_id,
+    batch.project_scope === request.project_scope,
+  ];
+  if (alignedRefs.some((isAligned) => !isAligned)) {
+    throw new Error('export_prepare_context_mismatch');
+  }
+
+  const payload = {
+    ...request,
+    format: preview.format,
+    target: preview.target,
+  };
+  return insertQueuedJob(
+    actor,
+    'export_prepare',
+    request.owner_id,
+    'export_preview',
+    request.export_preview_ref,
+    'high',
+    payload,
+    {
+      source_kind: request.source_kind,
+      export_preview_ref: request.export_preview_ref,
+      format: preview.format,
+      target: preview.target,
+    },
+    'job.export_prepare.queued',
+    request.project_scope,
+  );
 }
 
 export function listJobs(actor: AuthUser): Job[] {
