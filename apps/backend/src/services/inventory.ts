@@ -1,6 +1,7 @@
 import {
   CreateInventoryCollectionRequestSchema,
   CreateInventoryItemRequestSchema,
+  IngestInventoryOcrCandidatesRequestSchema,
   InventoryCollectionSchema,
   InventoryItemSchema,
   ListInventoryItemsRequestSchema,
@@ -9,6 +10,7 @@ import {
   type CreateInventoryItemRequest,
   type InventoryCollection,
   type InventoryItem,
+  type IngestInventoryOcrCandidatesRequest,
   type ListInventoryItemsRequest,
   type ProjectMemberRole,
 } from '@masterflow/shared';
@@ -22,6 +24,7 @@ import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
+import {getJob} from './jobs.ts';
 
 const PROJECT_EDITOR: ProjectMemberRole = 'editor';
 
@@ -306,4 +309,53 @@ export function archiveInventoryItem(actor: AuthUser, id: string): InventoryItem
     detail: {item_id: id, project_id: row.project_id},
   });
   return toItem(getItemRow(id)!);
+}
+
+export function ingestInventoryOcrCandidates(
+  actor: AuthUser,
+  input: IngestInventoryOcrCandidatesRequest,
+): InventoryItem[] {
+  const request = IngestInventoryOcrCandidatesRequestSchema.parse(input);
+  const job = getJob(actor, request.job_id);
+  if (job.type !== 'ocr_prepare') throw new Error('inventory_ocr_job_required');
+  if (job.status !== 'needs_review' && job.status !== 'completed') {
+    throw new Error('inventory_ocr_job_not_ready');
+  }
+  const payload = job.payload as {
+    adapter_id?: unknown;
+    project_id?: unknown;
+    owner_id?: unknown;
+  };
+  if (
+    payload.adapter_id !== 'morphological-reference-v1' &&
+    payload.adapter_id !== 'ocr-submission-v1'
+  ) {
+    throw new Error('inventory_ocr_adapter_not_supported');
+  }
+  const projectId = typeof payload.project_id === 'string' ? payload.project_id : null;
+  const items = request.candidates.map((candidate) =>
+    createInventoryItem(actor, {
+      project_id: projectId,
+      collection_id: request.collection_id ?? null,
+      type: candidate.type,
+      label: candidate.label,
+      creator_or_brand: candidate.creator_or_brand ?? null,
+      item_status: candidate.item_status ?? 'detected',
+      intent: candidate.intent ?? null,
+      quantity: candidate.quantity ?? 1,
+      condition: candidate.condition ?? null,
+      estimated_value: candidate.estimated_value ?? null,
+      replacement_cost: candidate.replacement_cost ?? null,
+      usage_tags: [...(candidate.usage_tags ?? []), 'ocr_candidate'],
+      source_refs: [`job:${job.job_id}`, candidate.source_ref],
+      visibility_scope: projectId ? 'project' : 'private',
+    }),
+  );
+  audit({
+    event_type: 'inventory.ocr_candidates_ingested',
+    user_id: actor.id,
+    scope: projectId ?? actor.id,
+    detail: {job_id: job.job_id, item_count: items.length, project_id: projectId},
+  });
+  return items;
 }

@@ -4,6 +4,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-INV-2 OCR vers candidates Inventory — PRET A PUSH
+
+**Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**
+
+But : raccorder les sorties OCR existantes a Inventory sans lancer d'OCR reel et sans creer de
+verite automatique.
+
+Ajouts :
+
+- contrat `IngestInventoryOcrCandidatesRequest` ;
+- service/router `POST /inventory/ocr-candidates` ;
+- ingestion seulement depuis job `ocr_prepare` en `needs_review` ou `completed` ;
+- chaque entree devient un `inventory_item` en `candidate` avec `source_refs` vers le job OCR ;
+- aucune validation automatique, aucun chunk RAG, aucun runner BGE.
+
+Invariant : OCR candidate != Inventory validated != Resource Truth != RAG authoritative.
+
+Recette avant commit : backend complet **239/239**, test Inventory cible **6/6**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-13 — PR-INV-1 Inventory Core — PRET A PUSH
 
 **Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**

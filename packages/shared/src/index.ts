@@ -234,6 +234,32 @@ export const ListInventoryItemsRequestSchema = z.object({
 });
 export type ListInventoryItemsRequest = z.input<typeof ListInventoryItemsRequestSchema>;
 
+export const InventoryOcrCandidateSchema = CreateInventoryItemRequestSchema.pick({
+  type: true,
+  label: true,
+  creator_or_brand: true,
+  item_status: true,
+  intent: true,
+  quantity: true,
+  condition: true,
+  estimated_value: true,
+  replacement_cost: true,
+  usage_tags: true,
+}).extend({
+  confidence: z.number().min(0).max(1).nullable().optional(),
+  source_ref: z.string().min(1).max(240),
+});
+export type InventoryOcrCandidate = z.input<typeof InventoryOcrCandidateSchema>;
+
+export const IngestInventoryOcrCandidatesRequestSchema = z.object({
+  job_id: z.string().min(1),
+  collection_id: z.string().min(1).nullable().optional(),
+  candidates: z.array(InventoryOcrCandidateSchema).min(1).max(50),
+});
+export type IngestInventoryOcrCandidatesRequest = z.input<
+  typeof IngestInventoryOcrCandidatesRequestSchema
+>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

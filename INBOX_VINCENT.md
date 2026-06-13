@@ -22,6 +22,21 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INV-2 OCR vers candidates Inventory pousse cote MALEX/Codex
+
+MALEX/Codex pousse le pont minimal OCR -> Inventory :
+
+- `POST /inventory/ocr-candidates` ;
+- accepte seulement un job `ocr_prepare` pret (`needs_review` ou `completed`) ;
+- cree des `inventory_items` en `candidate` avec refs vers le job/source OCR ;
+- ne valide rien automatiquement ;
+- ne pousse rien vers RAG/BGE/Qdrant.
+
+Action attendue : si ton runner OCR produit deja un format de candidats, mappe-le vers ce contrat
+plutot que vers une table parallele.
+
+---
+
 ## 2026-06-13 — open — PR-INV-1 Inventory Core pousse cote MALEX/Codex
 
 MALEX/Codex pousse une couche minimale Inventory avant OCR/RAG/UI :

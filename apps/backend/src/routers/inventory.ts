@@ -3,6 +3,7 @@ import {Router, type Request, type Response} from 'express';
 import {
   CreateInventoryCollectionRequestSchema,
   CreateInventoryItemRequestSchema,
+  IngestInventoryOcrCandidatesRequestSchema,
 } from '@masterflow/shared';
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
@@ -11,6 +12,7 @@ import {
   createInventoryCollection,
   createInventoryItem,
   getInventoryItem,
+  ingestInventoryOcrCandidates,
   listInventoryItems,
   validateInventoryItem,
 } from '../services/inventory.ts';
@@ -36,6 +38,14 @@ function routeError(res: Response, error: unknown): void {
     return;
   }
   if (message === 'inventory_collection_scope_mismatch') {
+    res.status(409).json({error: message});
+    return;
+  }
+  if (
+    message === 'inventory_ocr_job_required' ||
+    message === 'inventory_ocr_job_not_ready' ||
+    message === 'inventory_ocr_adapter_not_supported'
+  ) {
     res.status(409).json({error: message});
     return;
   }
@@ -121,6 +131,19 @@ export function createInventoryRouter(): Router {
     }
     try {
       res.status(201).json(createInventoryCollection(actor(req), parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/ocr-candidates', (req: Request, res: Response): void => {
+    const parsed = IngestInventoryOcrCandidatesRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.status(201).json({results: ingestInventoryOcrCandidates(actor(req), parsed.data)});
     } catch (error) {
       routeError(res, error);
     }

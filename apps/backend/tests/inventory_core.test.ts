@@ -9,6 +9,7 @@ import {
   createInventoryCollection,
   createInventoryItem,
   getInventoryItem,
+  ingestInventoryOcrCandidates,
   listInventoryItems,
   validateInventoryItem,
 } from '../src/services/inventory.ts';
@@ -137,5 +138,52 @@ describe('PR-INV-1 — Inventory Core', () => {
       .prepare('SELECT COUNT(*) AS n FROM rag_resources WHERE resource_id = ?')
       .get(item.item_id) as {n: number};
     expect(ragCount.n).toBe(0);
+  });
+
+  it('ingere un resultat OCR pret comme candidates Inventory sans validation automatique', () => {
+    const now = Date.now();
+    getDb()
+      .prepare(
+        `INSERT INTO jobs
+           (id, type, status, owner_id, scope_type, scope_id, risk_level, payload_json,
+            progress, retry_count, created_at, updated_at)
+         VALUES ('inventory-ocr-job-ready', 'ocr_prepare', 'needs_review', ?, 'project', ?,
+                 'medium', ?, 80, 0, ?, ?)`,
+      )
+      .run(
+        editor.id,
+        projectId,
+        JSON.stringify({
+          adapter_id: 'morphological-reference-v1',
+          owner_id: editor.id,
+          project_id: projectId,
+        }),
+        now,
+        now,
+      );
+
+    const items = ingestInventoryOcrCandidates(editor, {
+      job_id: 'inventory-ocr-job-ready',
+      candidates: [
+        {
+          type: 'book',
+          label: 'Livre detecte par OCR',
+          source_ref: 'ocr:line:1',
+          confidence: 0.82,
+        },
+      ],
+    });
+
+    expect(items).toHaveLength(1);
+    const firstItem = items[0]!;
+    expect(firstItem).toMatchObject({
+      project_id: projectId,
+      validation_status: 'candidate',
+      visibility_scope: 'project',
+      source_refs: ['job:inventory-ocr-job-ready', 'ocr:line:1'],
+    });
+    expect(listInventoryItems(participant, {project_id: projectId})).not.toContainEqual(
+      expect.objectContaining({item_id: firstItem.item_id}),
+    );
   });
 });
