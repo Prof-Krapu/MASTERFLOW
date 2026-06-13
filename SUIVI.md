@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C10 gates de claim runner
+
+**Livrable MALEX/Codex.** Le heartbeat runner devient obligatoire avant claim.
+
+Ajouts :
+
+- `SPEC_PR_C10_RUNNER_CLAIM_GATES.md` ;
+- `claimNextJob` refuse les runners inconnus ;
+- `claimNextJob` refuse `draining` et `offline` ;
+- `claimNextJob` refuse les heartbeats stale ;
+- `claimNextJob` refuse les types de jobs non déclarés par le runner ;
+- les tests PR-C8 exigent maintenant un heartbeat online avant claim ;
+- test dédié inconnu/draining/stale/mauvais type.
+
+Cette couche empêche un runner OCR de prendre un export, un runner en arrêt propre de reprendre
+du travail, ou un processus inconnu de consommer la queue. Aucun droit utilisateur n'est déduit
+du runner : il s'agit seulement d'un gate technique d'exécution.
+
+---
+
 ## 2026-06-13 — PR-C9 heartbeats internes des runners
 
 **Livrable MALEX/Codex.** Observabilité interne des runners avant activation réelle, sans route

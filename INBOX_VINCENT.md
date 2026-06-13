@@ -14,6 +14,30 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-C10 : pas de heartbeat, pas de claim
+
+MALEX/Codex a posé `SPEC_PR_C10_RUNNER_CLAIM_GATES.md`.
+
+À partir de maintenant, `claimNextJob` refuse :
+
+- runner inconnu ;
+- runner `draining` ou `offline` ;
+- heartbeat trop ancien ;
+- type de job non déclaré dans le heartbeat.
+
+Action demandée :
+
+1. avant tout claim, ton runner doit envoyer `recordRunnerHeartbeat(status='online')` ;
+2. `job_types` doit lister explicitement les types qu'il sait traiter ;
+3. un runner spécialisé OCR ne demande pas `export_prepare` ;
+4. `draining` veut dire “je finis ce que j'ai, je ne prends plus rien” ;
+5. si ton process redémarre, il heartbeat avant de reprendre.
+
+Punchline : le runner ne rentre plus sur le terrain en jogging fluo sans dossard. Carte, rôle,
+heartbeat, puis seulement après il touche au job.
+
+---
+
 ## 2026-06-13 — open — PR-C9 : heartbeat runner avant claim
 
 MALEX/Codex a posé `SPEC_PR_C9_RUNNER_HEARTBEATS.md`.

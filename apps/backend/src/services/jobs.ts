@@ -17,7 +17,12 @@ import {
 } from '@masterflow/shared';
 
 import {getAdapterForRole} from '../engines/adapter_registry.ts';
-import {getDb, type JobEventRow, type JobRow} from '../db/schema.ts';
+import {
+  getDb,
+  type JobEventRow,
+  type JobRow,
+  type RunnerHeartbeatRow,
+} from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
@@ -26,6 +31,7 @@ const CANCELLABLE = new Set<JobStatus>(['queued', 'running', 'needs_review']);
 const FINALIZABLE = new Set<JobStatus>(['queued', 'running']);
 const DEFAULT_LEASE_MS = 5 * 60 * 1000;
 const MAX_LEASE_MS = 60 * 60 * 1000;
+const RUNNER_STALE_MS = 2 * 60 * 1000;
 const SECRET_PATTERN =
   /(api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization)/i;
 
@@ -120,6 +126,21 @@ function assertRunnerLease(row: JobRow, runnerId: string | undefined, now = Date
   if (row.runner_id !== runnerId) throw new Error('job_lease_mismatch');
   if (row.lease_expires_at !== null && row.lease_expires_at <= now) {
     throw new Error('job_lease_expired');
+  }
+}
+
+function assertRunnerCanClaim(runnerId: string, jobTypes: JobType[], now: number): void {
+  const row = getDb()
+    .prepare('SELECT * FROM runner_heartbeats WHERE runner_id = ?')
+    .get(runnerId) as RunnerHeartbeatRow | undefined;
+  if (!row) throw new Error('runner_not_registered');
+  if (row.status !== 'online') throw new Error('runner_not_online');
+  if (row.last_seen_at < now - RUNNER_STALE_MS) throw new Error('runner_heartbeat_stale');
+
+  const declaredTypes = JSON.parse(row.job_types_json) as unknown;
+  if (!Array.isArray(declaredTypes)) throw new Error('runner_job_types_invalid');
+  if (jobTypes.some((type) => !declaredTypes.includes(type))) {
+    throw new Error('runner_job_type_not_allowed');
   }
 }
 
@@ -339,6 +360,7 @@ export function claimNextJob(
   assertLeaseMs(leaseMs);
   const jobTypes = [...new Set(types.map((type) => JobTypeSchema.parse(type)))];
   if (jobTypes.length === 0) throw new Error('job_type_required');
+  assertRunnerCanClaim(runnerId, jobTypes, now);
 
   const placeholders = jobTypes.map(() => '?').join(', ');
   const db = getDb();

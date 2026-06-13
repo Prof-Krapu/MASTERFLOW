@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C10 gates de claim prête
+
+La couche `SPEC_PR_C10_RUNNER_CLAIM_GATES.md` rend le heartbeat obligatoire avant claim.
+
+`claimNextJob` refuse désormais les runners inconnus, `draining`, `offline`, stale ou non
+compatibles avec le type demandé. Un runner doit donc déclarer `runner_id`, statut `online` et
+`job_types` avant de prendre un job.
+
+Merci d'adapter tes runners à ce flux : heartbeat online -> claim -> lease/progress ->
+finalisation -> draining/offline à l'arrêt. Aucun runner spécialisé ne doit demander un type de
+job qu'il n'a pas explicitement déclaré.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C9 heartbeats runners prête
 
 La couche `SPEC_PR_C9_RUNNER_HEARTBEATS.md` ajoute l'identité et la santé internes des runners :

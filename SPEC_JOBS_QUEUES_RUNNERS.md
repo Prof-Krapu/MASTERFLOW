@@ -82,6 +82,10 @@ repris que si son lease est expiré. Les traitements longs prolongent le bail av
 `extendJobLease`. Les transitions de progression/finalisation doivent fournir le même
 `runner_id`.
 
+`claimNextJob` exige aussi un heartbeat récent, `online` et compatible avec tous les types
+demandés. Un runner `draining`, `offline`, inconnu, stale ou non déclaré pour le type demandé
+ne peut pas prendre de job.
+
 ## Heartbeats runners
 
 Les runners déclarent leur identité et leur santé avec :

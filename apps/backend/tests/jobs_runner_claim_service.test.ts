@@ -13,6 +13,7 @@ import {
   markJobNeedsReview,
   updateJobProgress,
 } from '../src/services/jobs.ts';
+import {recordRunnerHeartbeat} from '../src/services/runners.ts';
 
 const owner: AuthUser = {
   id: 'jobs-claim-owner',
@@ -49,11 +50,32 @@ function insertAssetJob(id: string, createdAt: number): void {
   ).run(`${id}-queued`, id, createdAt);
 }
 
+function heartbeatRunner(
+  runnerId: string,
+  jobTypes: Array<'asset_prepare' | 'ocr_prepare' | 'export_prepare' | 'correction_prepare'>,
+  lastSeenAt: number,
+  status: 'online' | 'draining' | 'offline' = 'online',
+): void {
+  recordRunnerHeartbeat({
+    runner_id: runnerId,
+    runner_family: 'test_runner',
+    job_types: jobTypes,
+    status,
+    active_job_id: null,
+    version: 'test-runner-v1',
+    host_ref: null,
+    lease_ms: 5000,
+    last_seen_at: lastSeenAt,
+  });
+}
+
 describe('PR-C8 — claim et lease internes des jobs', () => {
   it('attribue un job queued à un runner et masque ce job aux autres runners', () => {
     const now = Date.now();
     insertAssetJob('claim-job-a', now);
     insertAssetJob('claim-job-b', now + 1);
+    heartbeatRunner('runner-a', ['asset_prepare'], now + 900);
+    heartbeatRunner('runner-b', ['asset_prepare'], now + 900);
 
     const first = claimNextJob('runner-a', ['asset_prepare'], 5000, now + 1000);
     const second = claimNextJob('runner-b', ['asset_prepare'], 5000, now + 1001);
@@ -73,6 +95,7 @@ describe('PR-C8 — claim et lease internes des jobs', () => {
   it('étend un lease actif et refuse un runner concurrent', () => {
     const now = Date.now();
     insertAssetJob('claim-job-extend', now);
+    heartbeatRunner('runner-extend', ['asset_prepare'], now + 900);
     const claimed = claimNextJob('runner-extend', ['asset_prepare'], 1000, now + 1000)!;
 
     const extended = extendJobLease(claimed.job_id, 'runner-extend', 2000, now + 1500);
@@ -90,6 +113,9 @@ describe('PR-C8 — claim et lease internes des jobs', () => {
   it('réattribue un job running seulement après expiration du lease', () => {
     const now = Date.now();
     insertAssetJob('claim-job-expire', now);
+    heartbeatRunner('runner-old', ['asset_prepare'], now + 900);
+    heartbeatRunner('runner-too-early', ['asset_prepare'], now + 900);
+    heartbeatRunner('runner-new', ['asset_prepare'], now + 900);
     const claimed = claimNextJob('runner-old', ['asset_prepare'], 100, now + 1000)!;
 
     expect(claimNextJob('runner-too-early', ['asset_prepare'], 1000, now + 1099)).toBeNull();
@@ -104,6 +130,7 @@ describe('PR-C8 — claim et lease internes des jobs', () => {
   it('finalise uniquement avec le runner détenteur du lease et nettoie l expiration', () => {
     const now = Date.now();
     insertAssetJob('claim-job-finalize', now);
+    heartbeatRunner('runner-finalize', ['asset_prepare'], now + 900);
     const claimed = claimNextJob('runner-finalize', ['asset_prepare'], 60_000, now + 1000)!;
 
     expect(() =>
@@ -127,13 +154,38 @@ describe('PR-C8 — claim et lease internes des jobs', () => {
     expect(reviewed.lease_expires_at).toBeNull();
 
     insertAssetJob('claim-job-complete', now + 2000);
+    heartbeatRunner('runner-complete', ['asset_prepare'], now + 2900);
     const completedClaim = claimNextJob('runner-complete', ['asset_prepare'], 60_000, now + 3000)!;
     completeJob(completedClaim.job_id, {ok: true}, 'runner-complete');
     expect(getJob(owner, completedClaim.job_id).lease_expires_at).toBeNull();
 
     insertAssetJob('claim-job-fail', now + 4000);
+    heartbeatRunner('runner-fail', ['asset_prepare'], now + 4900);
     const failedClaim = claimNextJob('runner-fail', ['asset_prepare'], 60_000, now + 5000)!;
     failJob(failedClaim.job_id, 'runner_error', undefined, 'runner-fail');
     expect(getJob(owner, failedClaim.job_id).lease_expires_at).toBeNull();
+  });
+
+  it('refuse le claim sans heartbeat online, frais et compatible', () => {
+    const now = Date.now();
+    insertAssetJob('claim-job-gated-unknown', now);
+    expect(() => claimNextJob('runner-unknown', ['asset_prepare'], 1000, now + 1000)).toThrow(
+      'runner_not_registered',
+    );
+
+    heartbeatRunner('runner-draining', ['asset_prepare'], now + 900, 'draining');
+    expect(() => claimNextJob('runner-draining', ['asset_prepare'], 1000, now + 1000)).toThrow(
+      'runner_not_online',
+    );
+
+    heartbeatRunner('runner-stale', ['asset_prepare'], now - 200_000);
+    expect(() => claimNextJob('runner-stale', ['asset_prepare'], 1000, now + 1000)).toThrow(
+      'runner_heartbeat_stale',
+    );
+
+    heartbeatRunner('runner-wrong-type', ['ocr_prepare'], now + 900);
+    expect(() => claimNextJob('runner-wrong-type', ['asset_prepare'], 1000, now + 1000)).toThrow(
+      'runner_job_type_not_allowed',
+    );
   });
 });
