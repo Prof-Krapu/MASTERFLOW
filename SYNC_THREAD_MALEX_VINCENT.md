@@ -23,6 +23,20 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-C7 lifecycle runners prête
+
+La couche `SPEC_PR_C7_RUNNER_JOB_LIFECYCLE.md` ajoute les sorties internes runner-only :
+
+1. `markJobNeedsReview` pour les traitements sensibles à relire ;
+2. `completeJob` pour les traitements sans review humaine supplémentaire ;
+3. `failJob` pour les erreurs lisibles et retryables.
+
+Merci de brancher tes runners via ces services uniquement. Pas d'écriture SQL directe dans
+`jobs`/`job_events`. Pour `ocr_prepare`, `correction_prepare` et `export_prepare`, la sortie
+normale attendue reste `needs_review` avec artefact privé, pas `completed` automatique.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-C6 handoffs jobs prête
 
 La couche `SPEC_PR_C6_CORRECTION_EXPORT_JOB_HANDOFFS.md` crée maintenant les intentions

@@ -4,6 +4,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-C7 lifecycle interne des runners jobs
+
+**Livrable MALEX/Codex.** Transitions runner-only pour terminer proprement les jobs, sans route
+publique ni écriture directe table.
+
+Ajouts :
+
+- `SPEC_PR_C7_RUNNER_JOB_LIFECYCLE.md` ;
+- `markJobNeedsReview(job_id, result, review_reason)` ;
+- `completeJob(job_id, result)` ;
+- `failJob(job_id, error, detail?)` ;
+- statut finalisable limité à `queued/running` ;
+- progression finale forcée à `100` sur review/completion ;
+- events `job_needs_review`, `job_completed`, `job_failed` ;
+- audit sobre sans contenu privé ;
+- refus des payloads/resultats/détails contenant des libellés de secrets ;
+- tests runner lifecycle : review, complete, fail/retry, cancel et secrets.
+
+Vincent peut brancher ses runners sans écrire directement `jobs`/`job_events`. Pour OCR,
+correction et export sensibles, la sortie attendue reste `needs_review`, jamais une note finale
+ou une publication.
+
+---
+
 ## 2026-06-13 — PR-C6 handoffs jobs correction/export
 
 **Livrable MALEX/Codex.** Sas interne entre objets validés et futurs runners correction/export,

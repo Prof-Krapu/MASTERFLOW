@@ -51,6 +51,21 @@ created_at
 - logs sobres ;
 - resultats rattaches owner/scope ;
 - runner externe jamais direct depuis UI.
+- runner backend via services internes uniquement :
+  `updateJobProgress`, `markJobNeedsReview`, `completeJob`, `failJob` ;
+- pas d'ecriture directe dans `jobs` / `job_events`.
+
+## Lifecycle runner interne
+
+```text
+queued -> running -> needs_review
+queued -> running -> completed
+queued -> running -> failed -> queued via retry
+```
+
+`needs_review` est la sortie normale des traitements sensibles : OCR, correction, export,
+generation d'asset ou toute action contenant des donnees privees. `completed` est reserve aux
+jobs sans review humaine supplementaire ou aux futures etapes explicitement validees ailleurs.
 
 ## Endpoints PR-1
 
@@ -69,4 +84,3 @@ created_at
 - retry failed ;
 - progress monotone ;
 - audit events.
-

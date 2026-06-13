@@ -22,6 +22,7 @@ import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 
 const CANCELLABLE = new Set<JobStatus>(['queued', 'running', 'needs_review']);
+const FINALIZABLE = new Set<JobStatus>(['queued', 'running']);
 const SECRET_PATTERN =
   /(api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization)/i;
 
@@ -91,6 +92,10 @@ function assertCanRead(actor: AuthUser, ownerId: string): void {
 
 function assertNoSecrets(payload: unknown): void {
   if (SECRET_PATTERN.test(JSON.stringify(payload))) throw new Error('job_payload_contains_secret');
+}
+
+function assertFinalizable(row: JobRow): void {
+  if (!FINALIZABLE.has(row.status as JobStatus)) throw new Error('job_not_finalizable');
 }
 
 function assertTeacherOwner(actor: AuthUser, ownerId: string): void {
@@ -366,4 +371,108 @@ export function updateJobProgress(jobId: string, progress: number): void {
   if (progress > 0) {
     insertEvent(jobId, 'job_progress', {progress});
   }
+}
+
+/** API interne runner-only : termine un traitement avec un résultat à valider humainement. */
+export function markJobNeedsReview(
+  jobId: string,
+  result: Record<string, unknown>,
+  reviewReason: string,
+): void {
+  if (!reviewReason.trim()) throw new Error('review_reason_required');
+  assertNoSecrets(result);
+  const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
+  if (!row) throw new Error('job_not_found');
+  assertFinalizable(row);
+
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `UPDATE jobs
+       SET status = 'needs_review',
+           progress = 100,
+           result_json = ?,
+           error = NULL,
+           started_at = COALESCE(started_at, ?),
+           completed_at = ?,
+           updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(JSON.stringify(result), now, now, now, jobId);
+  if (row.status === 'queued') {
+    insertEvent(jobId, 'job_started', {progress: row.progress});
+  }
+  insertEvent(jobId, 'job_needs_review', {review_reason: reviewReason});
+  audit({
+    event_type: 'job.needs_review',
+    scope: row.scope_id,
+    detail: {job_id: jobId, type: row.type, review_reason: reviewReason},
+  });
+}
+
+/** API interne runner-only : clôture seulement les jobs sans revue humaine supplémentaire. */
+export function completeJob(jobId: string, result: Record<string, unknown>): void {
+  assertNoSecrets(result);
+  const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
+  if (!row) throw new Error('job_not_found');
+  assertFinalizable(row);
+
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `UPDATE jobs
+       SET status = 'completed',
+           progress = 100,
+           result_json = ?,
+           error = NULL,
+           started_at = COALESCE(started_at, ?),
+           completed_at = ?,
+           updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(JSON.stringify(result), now, now, now, jobId);
+  if (row.status === 'queued') {
+    insertEvent(jobId, 'job_started', {progress: row.progress});
+  }
+  insertEvent(jobId, 'job_completed');
+  audit({
+    event_type: 'job.completed',
+    scope: row.scope_id,
+    detail: {job_id: jobId, type: row.type},
+  });
+}
+
+/** API interne runner-only : clôture en erreur exploitable, sans exposer de secret. */
+export function failJob(
+  jobId: string,
+  error: string,
+  detail?: Record<string, unknown>,
+): void {
+  if (!error.trim()) throw new Error('job_error_required');
+  assertNoSecrets({error, detail});
+  const row = getDb().prepare('SELECT * FROM jobs WHERE id = ?').get(jobId) as JobRow | undefined;
+  if (!row) throw new Error('job_not_found');
+  assertFinalizable(row);
+
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `UPDATE jobs
+       SET status = 'failed',
+           error = ?,
+           started_at = COALESCE(started_at, ?),
+           completed_at = ?,
+           updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(error, now, now, now, jobId);
+  if (row.status === 'queued') {
+    insertEvent(jobId, 'job_started', {progress: row.progress});
+  }
+  insertEvent(jobId, 'job_failed', detail);
+  audit({
+    event_type: 'job.failed',
+    scope: row.scope_id,
+    detail: {job_id: jobId, type: row.type, error},
+  });
 }

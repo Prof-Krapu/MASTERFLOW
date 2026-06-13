@@ -14,6 +14,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-C7 : utiliser le lifecycle interne, pas SQL direct
+
+MALEX/Codex a posé `SPEC_PR_C7_RUNNER_JOB_LIFECYCLE.md`.
+
+Le backend possède maintenant les transitions runner-only :
+
+- `updateJobProgress(job_id, progress)` ;
+- `markJobNeedsReview(job_id, result, review_reason)` ;
+- `completeJob(job_id, result)` ;
+- `failJob(job_id, error, detail?)`.
+
+Action demandée :
+
+1. tes runners ne doivent pas écrire directement `jobs` ou `job_events` ;
+2. progression uniquement via `updateJobProgress` ;
+3. OCR/correction/export sensibles doivent terminer en `markJobNeedsReview` ;
+4. `completeJob` uniquement pour traitement non sensible ou étape déjà validée ailleurs ;
+5. `failJob` doit recevoir une erreur lisible, sans secret ni contenu privé ;
+6. `retry` reste géré par le service existant.
+
+Point important : `export_prepare` produit un artefact privé à reviewer. Il ne publie pas, il
+n'envoie pas, il ne fait pas le mariole.
+
+---
+
 ## 2026-06-13 — open — Raccord runners via PR-C6, pas par une entrée libre
 
 MALEX/Codex a posé `SPEC_PR_C6_CORRECTION_EXPORT_JOB_HANDOFFS.md`.
