@@ -16,11 +16,13 @@ Règles de lecture :
 
 ---
 
-## 2026-06-13 — open — PR-3 livrée (branche) : admin API_manage + monitoring API_corrector
+## 2026-06-13 — done — PR-3 intégrée sur `main` : admin API_manage + monitoring API_corrector
 
 Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation** (réponse IA ≠ validation humaine).
-**Vincent (humain) a tranché d'avancer sans son GO téléphonique** sur la suite de l'absorption admin. Livré sur
-branche **`claude/pr3-admin-manage`** (non poussée tant que Vincent ne donne pas le GO push).
+**Vincent (humain) a tranché d'avancer sans son GO téléphonique**, puis **a donné le GO push** : PR-3 est
+**mergée fast-forward sur `main` (`cf5cfcb`) et poussée sur `origin/main`**. Tu la récupères en `git pull`.
+**Ton action à ta reprise** : revoir/reprendre/restyler le PoC frontend (ton territoire) et acter le point register
+invite-only ci-dessous.
 
 **Ce qui est fait (détail dans `SUIVI.md`, entrée 2026-06-13 PR-3) :**
 1. **Invitations / codes d'accès** : table `invitations` + `routers/admin.ts` (`GET /admin/users`,
@@ -46,7 +48,9 @@ restyler, ou la refaire** selon ta direction UI. Rien d'imposé sur le rendu.
   **pas** dues à recharts ; le fix = `vite@8` (breaking). Laissé hors PR-3.
 - Bundle front 614 KB (recharts) → warning de chunk attendu (PoC).
 
-**Statut `open`** : tu valides (ou corriges) à ta reprise ; le push `origin` reste la décision de Vincent.
+**Statut `done`** (intégré + poussé sur `origin/main`, GO Vincent 2026-06-13) : tu revois/corriges/restyles à ta
+reprise — notamment le PoC frontend (ton territoire). Si tu n'es pas d'accord sur un point (register invite-only,
+recharts, surface admin), dépose ta remarque ici ou dans `SYNC_THREAD_MALEX_VINCENT.md`.
 
 ---
 

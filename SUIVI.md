@@ -4,12 +4,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-13 — PR-3 : admin API_manage (invitations + comptes/rôles) + monitoring usage/coût (API_corrector) — LIVRÉE (branche, GATE push)
+## 2026-06-13 — PR-3 : admin API_manage (invitations + comptes/rôles) + monitoring usage/coût (API_corrector) — LIVRÉE + intégrée sur `main`
 
-**Décision humaine Vincent : avancer sans le GO téléphonique de Malex.** Branche `claude/pr3-admin-manage`
-(pas encore poussée → décision push réservée à Vincent). Choix tranchés avec Vincent : (1) changement de rôle =
-**action sensible** (validator godmode) ; (2) inscription **sur invitation uniquement** (register ouvert fermé) ;
-(3) dataviz = **Recharts**.
+**GO Vincent reçu 2026-06-13 : push `main` autorisé.** Merge fast-forward `main` `1bac470` → `cf5cfcb`, poussé sur
+`origin/main`. **Décision humaine Vincent : avancer sans le GO téléphonique de Malex.** Choix tranchés avec Vincent :
+(1) changement de rôle = **action sensible** (validator godmode) ; (2) inscription **sur invitation uniquement**
+(register ouvert fermé) ; (3) dataviz = **Recharts**.
 
 ### Livré
 - **Backend — invitations (codes d'accès)** : table `invitations` (`db/schema.ts`), engine `engines/invitations.ts`
@@ -51,8 +51,8 @@ Smoke runtime (DB jetable) ✓ : login godmode, GET users, création/redemption 
 - Bundle front 614 KB (recharts) > 500 KB : warning de chunk attendu pour un PoC.
 
 ### Gate
-Branche locale, **non poussée**. Push `origin` = **décision Vincent** (règle multi-agents : commit d'agent ≠ validation).
-MALEX prévenu via `INBOX_MALEX.md` (notif, pas auto-validation).
+**Intégrée sur `main` + poussée sur `origin/main`** (GO Vincent 2026-06-13). MALEX prévenu via `INBOX_MALEX.md`
+(notif `done` — pas une auto-validation ; à lui de revoir/reprendre le PoC frontend, son territoire).
 
 ---
 
