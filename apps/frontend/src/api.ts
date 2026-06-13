@@ -16,6 +16,7 @@ import type {
   RagResource,
   Resource,
   ResourceScope,
+  RoomCheckpoint,
   RoomInstance,
   SearchResourcesResponse,
   TokenUsageGroupBy,
@@ -144,6 +145,22 @@ export async function updateRoomInstance(
   }, token);
 }
 
+export async function getLatestRoomCheckpoint(
+  roomId: string,
+  token?: string | null,
+): Promise<RoomCheckpoint | null> {
+  try {
+    return await request<RoomCheckpoint>(
+      `/rooms/${encodeURIComponent(roomId)}/checkpoint/latest`,
+      {method: 'GET'},
+      token,
+    );
+  } catch (error) {
+    if (error instanceof Error && error.message === 'checkpoint_not_found') return null;
+    throw error;
+  }
+}
+
 export async function proposeResource(body: ProposeResource, token?: string | null): Promise<Resource> {
   return request<Resource>('/resources', {
     method: 'POST',
@@ -182,7 +199,10 @@ export async function attachProjectResource(
 
 // ───────────────────────── RAG permissionné / coordination ─────────────────────────
 
-export async function queryRag(body: RagQueryRequest, token?: string | null): Promise<RagQueryResponse> {
+export async function queryRag(
+  body: Pick<RagQueryRequest, 'query'> & Partial<Omit<RagQueryRequest, 'query'>>,
+  token?: string | null,
+): Promise<RagQueryResponse> {
   return request<RagQueryResponse>('/rag/query', {
     method: 'POST',
     body: JSON.stringify(body),

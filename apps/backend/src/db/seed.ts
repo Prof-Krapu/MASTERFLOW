@@ -22,6 +22,27 @@ const BCRYPT_COST = 12;
 // Personas du MVP. visual_config porte la palette Zerg (consommée par le PoC métaballs).
 const PERSONA_SEEDS = [
   {
+    id: 'masterflow-system-001',
+    name: 'MasterFlow System',
+    owner_type: 'system',
+    domain: 'orientation / assistance',
+    voice_config: {
+      register: {formality: 'medium', energy: 'calm'},
+      lexical_field: ['contexte', 'etape', 'action utile'],
+      signature_moves: ['clarification courte', 'prochaine etape'],
+    },
+    method_config: {
+      cadrage: 'orienter sobrement sans inventer de contexte ni de permission',
+      heuristiques: ['dire ce qui manque', 'proposer une etape utile'],
+    },
+    visual_config: {
+      silhouette: 'interface neutre',
+      color_palette: {core: '#2F3437', glow: '#D8DEE2', accent: '#2F8F83'},
+    },
+    permissions: {can_blend: false, can_lend_method: false, can_be_primary: true},
+    status: 'active',
+  },
+  {
     id: 'masterflex-001',
     name: 'MasterFlex',
     owner_type: 'persona',

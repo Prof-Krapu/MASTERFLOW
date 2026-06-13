@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import type {Request, Response} from 'express';
 
-import {UpdateRoomInstanceSchema} from '@masterflow/shared';
+import {CreateRoomCheckpointSchema, UpdateRoomInstanceSchema} from '@masterflow/shared';
 import type {Room, RoomInstance} from '@masterflow/shared';
 
 import {getDb} from '../db/schema.ts';
@@ -9,6 +9,11 @@ import type {RoomInstanceRow, RoomRow} from '../db/schema.ts';
 import {uuid} from '../lib/uuid.ts';
 import {requireUser} from '../middleware/auth.ts';
 import {getAccessibleRoom, listAccessibleRooms} from '../services/room_access.ts';
+import {
+  checkpointMeaningfulRoomMutation,
+  createRoomCheckpoint,
+  getLatestRoomCheckpoint,
+} from '../services/room_checkpoints.ts';
 
 /**
  * Router des rooms (UI Room OS) — MVP.
@@ -156,6 +161,38 @@ export function createRoomsRouter(): Router {
     res.json(toRoomInstanceDTO(row));
   });
 
+  router.get('/:id/checkpoint/latest', (req: Request, res: Response): void => {
+    const user = req.user;
+    const roomId = req.params.id;
+    if (!user || !roomId || !getAccessibleRoom(user, roomId)) {
+      res.status(404).json({error: 'room_not_found'});
+      return;
+    }
+    const instance = findInstance(roomId, user.id);
+    const checkpoint = instance ? getLatestRoomCheckpoint(user, instance.id) : null;
+    if (!checkpoint) {
+      res.status(404).json({error: 'checkpoint_not_found'});
+      return;
+    }
+    res.json(checkpoint);
+  });
+
+  router.post('/:id/checkpoints', (req: Request, res: Response): void => {
+    const user = req.user;
+    const roomId = req.params.id;
+    if (!user || !roomId || !getAccessibleRoom(user, roomId)) {
+      res.status(404).json({error: 'room_not_found'});
+      return;
+    }
+    const parsed = CreateRoomCheckpointSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    const instance = findInstance(roomId, user.id) ?? createInstance(roomId, user.id);
+    res.status(201).json(createRoomCheckpoint(user, instance.id, parsed.data));
+  });
+
   // PUT /rooms/:id/instance — met à jour zoom / surface / densité / widgets (création paresseuse).
   router.put('/:id/instance', (req: Request, res: Response): void => {
     const user = req.user;
@@ -203,6 +240,7 @@ export function createRoomsRouter(): Router {
         next.id,
       );
 
+    checkpointMeaningfulRoomMutation(user, current, next);
     res.json(toRoomInstanceDTO(next));
   });
 

@@ -32,6 +32,8 @@ import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {createRagReindexJob} from './jobs.ts';
 import {decideScopedPermission} from './projects.ts';
+import {getOwnedAccessibleRoomInstance} from './room_access.ts';
+import type {RoomRow} from '../db/schema.ts';
 
 const SECRET_PATTERN =
   /(\.env|api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization|begin [a-z ]*private key)/i;
@@ -100,6 +102,10 @@ function toPack(row: RagContextPackRow): RagContextPack {
     pack_id: row.id,
     query_hash: row.query_hash,
     user_id: row.user_id,
+    purpose: row.purpose,
+    room_instance_id: row.room_instance_id,
+    context_tier: row.context_tier,
+    retrieval_strategy: row.retrieval_strategy,
     scope_type: row.scope_type,
     scope_id: row.scope_id,
     citations: JSON.parse(row.citations_json) as unknown,
@@ -196,18 +202,23 @@ function recordQuery(input: {
   scopeId: string;
   resultCount: number;
   refusalReason: string | null;
+  purpose: string;
+  roomInstanceId: string | null;
 }): void {
   const now = Date.now();
   getDb()
     .prepare(
       `INSERT INTO rag_query_events
-         (id, user_id, query_hash, scope_type, scope_id, result_count, refusal_reason, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+         (id, user_id, query_hash, purpose, room_instance_id, scope_type, scope_id,
+          result_count, refusal_reason, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       uuid(),
       input.actor.id,
       input.queryHash,
+      input.purpose,
+      input.roomInstanceId,
       input.scopeType,
       input.scopeId,
       input.resultCount,
@@ -233,20 +244,27 @@ function createPack(input: {
   scopeId: string;
   citations: RagCitation[];
   refusalReason: 'no_authorized_source' | 'no_reliable_source' | 'scope_denied' | null;
+  purpose: string;
+  roomInstanceId: string | null;
+  contextTier: RagContextPack['context_tier'];
 }): RagContextPack {
   const now = Date.now();
   const id = uuid();
   getDb()
     .prepare(
       `INSERT INTO rag_context_packs
-         (id, query_hash, user_id, scope_type, scope_id, citations_json, status,
+         (id, query_hash, user_id, purpose, room_instance_id, context_tier,
+          retrieval_strategy, scope_type, scope_id, citations_json, status,
           refusal_reason, created_at, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, 'lexical', ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       id,
       input.queryHash,
       input.actor.id,
+      input.purpose,
+      input.roomInstanceId,
+      input.contextTier,
       input.scopeType,
       input.scopeId,
       JSON.stringify(input.citations),
@@ -489,16 +507,27 @@ export function listRagResourceChunks(actor: AuthUser, id: string): RagResourceC
 
 export function queryRag(
   actor: AuthUser,
-  input: Omit<RagQueryRequest, 'limit'> & {limit?: number},
+  input: Pick<RagQueryRequest, 'query'> & Partial<Omit<RagQueryRequest, 'query'>>,
 ): RagQueryResponse {
   const request = RagQueryRequestSchema.parse(input);
   const queryHash = hash(request.query.trim().toLocaleLowerCase('fr'));
-  const scopeType = request.project_id ? 'project' : 'owner';
-  const scopeId = request.project_id ?? actor.id;
+  const instance = request.room_instance_id
+    ? getOwnedAccessibleRoomInstance(actor, request.room_instance_id)
+    : null;
+  const room = instance
+    ? (getDb().prepare('SELECT * FROM rooms WHERE id = ?').get(instance.room_id) as RoomRow | undefined)
+    : null;
+  const roomScopeMismatch =
+    request.room_instance_id !== undefined &&
+    (!instance || (request.project_id ?? null) !== (room?.project_id ?? null));
+  const effectiveProjectId = request.project_id ?? null;
+  const scopeType = effectiveProjectId ? 'project' : 'owner';
+  const scopeId = effectiveProjectId ?? actor.id;
 
   if (
-    request.project_id &&
-    !decideScopedPermission({actor, projectId: request.project_id}).allowed
+    roomScopeMismatch ||
+    (effectiveProjectId &&
+      !decideScopedPermission({actor, projectId: effectiveProjectId}).allowed)
   ) {
     const contextPack = createPack({
       actor,
@@ -507,8 +536,20 @@ export function queryRag(
       scopeId,
       citations: [],
       refusalReason: 'scope_denied',
+      purpose: request.purpose,
+      roomInstanceId: request.room_instance_id ?? null,
+      contextTier: request.context_tier,
     });
-    recordQuery({actor, queryHash, scopeType, scopeId, resultCount: 0, refusalReason: 'scope_denied'});
+    recordQuery({
+      actor,
+      queryHash,
+      scopeType,
+      scopeId,
+      resultCount: 0,
+      refusalReason: 'scope_denied',
+      purpose: request.purpose,
+      roomInstanceId: request.room_instance_id ?? null,
+    });
     return RagQueryResponseSchema.parse({context_pack: contextPack, refusal_reason: 'scope_denied'});
   }
 
@@ -561,8 +602,20 @@ export function queryRag(
     scopeId,
     citations,
     refusalReason,
+    purpose: request.purpose,
+    roomInstanceId: request.room_instance_id ?? null,
+    contextTier: request.context_tier,
   });
-  recordQuery({actor, queryHash, scopeType, scopeId, resultCount: citations.length, refusalReason});
+  recordQuery({
+    actor,
+    queryHash,
+    scopeType,
+    scopeId,
+    resultCount: citations.length,
+    refusalReason,
+    purpose: request.purpose,
+    roomInstanceId: request.room_instance_id ?? null,
+  });
   return RagQueryResponseSchema.parse({context_pack: contextPack, refusal_reason: refusalReason});
 }
 

@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import type {Request, Response} from 'express';
 
-import {CurrentContextSchema} from '@masterflow/shared';
+import {CompileRuntimeContextRequestSchema, CurrentContextSchema} from '@masterflow/shared';
 import type {CurrentContext, Room, RoomInstance, User} from '@masterflow/shared';
 
 import {getDb} from '../db/schema.ts';
@@ -10,6 +10,11 @@ import {uuid} from '../lib/uuid.ts';
 import {requireUser} from '../middleware/auth.ts';
 import {listRegistry} from '../engines/action_registry.ts';
 import {getActiveBlend, listPersonas} from '../engines/persona_engine.ts';
+import {
+  compileRuntimeContext,
+  ContextCompilationError,
+} from '../services/context_compiler.ts';
+import {deriveUserRuntimeLoadout} from '../services/runtime_loadout.ts';
 
 /**
  * Router de contexte — résolution du « où je suis » courant.
@@ -43,6 +48,7 @@ function toRoomDTO(row: RoomRow): Room {
     name: row.name,
     type: row.type,
     owner_id: row.owner_id,
+    project_id: row.project_id,
     context: JSON.parse(row.context_json ?? 'null') as Record<string, unknown> | null,
     is_public: row.is_public === 1,
   };
@@ -124,6 +130,29 @@ function ensureRoomInstance(userId: string, roomId: string): RoomInstanceRow {
 export function createContextRouter(): Router {
   const router = Router();
 
+  router.post('/compile', requireUser, (req: Request, res: Response): void => {
+    const actor = req.user;
+    if (!actor) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    const parsed = CompileRuntimeContextRequestSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_context_request', details: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(compileRuntimeContext(actor, parsed.data));
+    } catch (error) {
+      if (error instanceof ContextCompilationError) {
+        const status = error.code === 'room_not_found' ? 404 : 403;
+        res.status(status).json({error: error.code});
+        return;
+      }
+      throw error;
+    }
+  });
+
   /**
    * GET /context/current — snapshot du contexte courant de l'utilisateur authentifié.
    * Résout sa room d'ancrage, garantit l'instance, et agrège personas / chimère / actions.
@@ -151,14 +180,24 @@ export function createContextRouter(): Router {
     }
 
     const instanceRow = ensureRoomInstance(authUser.id, roomRow.id);
+    const runtimeContext = compileRuntimeContext(authUser, {
+      purpose: 'current_context',
+      requested_tier: roomRow.project_id ? 'T2' : 'T1',
+      room_instance_id: instanceRow.id,
+    });
+    const loadout = deriveUserRuntimeLoadout(authUser, roomRow, instanceRow);
+    const personaIds = new Set(loadout.available_persona_ids);
+    const actionIds = new Set(loadout.available_action_ids);
 
     const context: CurrentContext = {
       user: toUserDTO(userRow),
       room: toRoomDTO(roomRow),
       room_instance: toRoomInstanceDTO(instanceRow),
-      personas: listPersonas(),
+      personas: listPersonas().filter((persona) => personaIds.has(persona.id)),
       active_blend: getActiveBlend(instanceRow.id),
-      available_actions: listRegistry(),
+      available_actions: listRegistry().filter((entry) => actionIds.has(entry.action_id)),
+      runtime_context: runtimeContext,
+      user_runtime_loadout: loadout,
     };
 
     res.json(CurrentContextSchema.parse(context));

@@ -17,6 +17,10 @@ Règles de lecture :
 - si une entrée implique backend, frontend, run ou périmètre, répondre dans `SYNC_THREAD_MALEX_VINCENT.md` ou par commit Git explicite.
 - si un agent ne voit pas un message attendu, il doit citer `local_head`, `origin_main` et les
   fichiers réellement lus avant de conclure.
+- si `gh` est disponible, citer aussi le SHA GitHub de `main`; si `gh` n'est pas authentifié, le
+  dire explicitement.
+- un message Vincent non commit/push est invisible côté MALEX/Codex : demander la branche et le SHA
+  publiés avant de considérer la demande perdue.
 
 ---
 

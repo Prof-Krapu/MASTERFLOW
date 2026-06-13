@@ -13,6 +13,7 @@ import type {
   RagContextPack,
   RegistryStatus,
   Resource,
+  RoomCheckpoint,
   WsServerMessage,
 } from '@masterflow/shared';
 
@@ -20,10 +21,9 @@ import {
   attachProjectResource,
   createAction,
   executeAction,
-  getAvailableActions,
   getCurrentContext,
+  getLatestRoomCheckpoint,
   getPendingActions,
-  getPersonas,
   getProjectMembers,
   getProjectResources,
   getProjects,
@@ -95,12 +95,6 @@ type RoomSyncState = {
   message: string;
 };
 
-const STATUS_LABEL: Record<RegistryStatus, string> = {
-  live: 'live',
-  future: 'a venir',
-  out_of_scope: 'masque',
-};
-
 const ROLE_LABEL: Record<string, string> = {
   student: 'learn',
   teacher: 'prof',
@@ -109,7 +103,6 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
-const ENTRY_INTENTS: WorkModeId[] = ['learning', 'teaching', 'story', 'project', 'inventory'];
 const PROJECT_ROLE_LABEL: Record<ProjectMemberRole, string> = {
   viewer: 'lecture',
   participant: 'participant',
@@ -196,6 +189,7 @@ function writeEntryProfile(profile: EntryProfile): void {
 function App(): ReactElement {
   const [auth, setAuth] = useState<AuthResponse | null>(null);
   const [context, setContext] = useState<CurrentContext | null>(null);
+  const [latestCheckpoint, setLatestCheckpoint] = useState<RoomCheckpoint | null>(null);
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
@@ -255,17 +249,32 @@ function App(): ReactElement {
   const actionBuckets = useMemo(() => bucketActions(visibleActions), [visibleActions]);
   const liveActions = actionBuckets.live;
   const nextActions = liveActions.slice(0, 3);
-  const lockedActions = actionBuckets.future.slice(0, 4);
+  const lockedCapabilities = context?.user_runtime_loadout.locked_capabilities.slice(0, 4) ?? [];
   const isGodmode = context?.user.role === 'godmode';
   const canAdmin = context?.user.role === 'admin' || context?.user.role === 'godmode';
   const canValidate = canValidateActions(context?.user.role);
   const canReviewResourceTruth = canReviewResources(context?.user.role);
   const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
   const availableModes = useMemo(
-    () => WORK_MODES.filter((mode) => canUseMode(mode, context?.user.role)),
-    [context?.user.role],
+    () => {
+      const enabled = new Set(context?.user_runtime_loadout.active_mode_cycle ?? []);
+      return WORK_MODES.filter(
+        (mode) => canUseMode(mode, context?.user.role) && enabled.has(mode.id),
+      );
+    },
+    [context?.user.role, context?.user_runtime_loadout.active_mode_cycle],
+  );
+  const entryModes = useMemo(
+    () => availableModes.filter((mode) => mode.id !== 'admin'),
+    [availableModes],
   );
   const activeMode = availableModes.find((mode) => mode.id === selectedMode) ?? availableModes[0] ?? DEFAULT_WORK_MODE;
+
+  useEffect(() => {
+    if (entryModes.some((mode) => mode.id === entryIntent)) return;
+    const first = entryModes[0];
+    if (first) setEntryIntent(first.id);
+  }, [entryIntent, entryModes]);
 
   const activePersonaId = context?.active_blend?.speaker_persona_id ?? null;
 
@@ -307,21 +316,21 @@ function App(): ReactElement {
     setState('loading');
     setError(null);
     try {
-      const [current, nextPersonas, nextActions, nextResources] = await Promise.all([
+      const [current, nextResources] = await Promise.all([
         getCurrentContext(token),
-        getPersonas(token),
-        getAvailableActions(token),
         getResources(token),
       ]);
+      const checkpoint = await getLatestRoomCheckpoint(current.room.id, token);
       const nextProjects = await getProjects(token);
       setContext(current);
+      setLatestCheckpoint(checkpoint);
       const storedEntry = readEntryProfile(current.user.id);
       setEntryProfile(storedEntry);
       if (storedEntry) {
         setSelectedMode(storedEntry.intent);
       }
-      setPersonas(nextPersonas);
-      setActions(nextActions);
+      setPersonas(current.personas);
+      setActions(current.available_actions);
       setResources(nextResources);
       setProjects(nextProjects);
       setSelectedProjectId((currentProjectId) => (
@@ -365,6 +374,7 @@ function App(): ReactElement {
     assistantTurnRef.current = null;
     setAuth(null);
     setContext(null);
+    setLatestCheckpoint(null);
     setPersonas([]);
     setActions([]);
     setResources([]);
@@ -965,8 +975,8 @@ function App(): ReactElement {
           <fieldset>
             <legend>Aujourd'hui</legend>
             <div className="entry-options">
-              {ENTRY_INTENTS.map((intent) => {
-                const mode = WORK_MODES.find((candidate) => candidate.id === intent) ?? DEFAULT_WORK_MODE;
+              {entryModes.map((mode) => {
+                const intent = mode.id;
                 return (
                   <button
                     className={`entry-option${entryIntent === intent ? ' entry-option--active' : ''}`}
@@ -1043,6 +1053,35 @@ function App(): ReactElement {
                   <span>{context.room_instance.active_surface}</span>
                   <span>{context.room_instance.cognitive_density}</span>
                 </div>
+                <section className="context-card" aria-label="Contexte charge">
+                  <div>
+                    <p className="eyebrow">Tu es ici</p>
+                    <strong>
+                      {typeof context.room.context?.['purpose'] === 'string'
+                        ? context.room.context['purpose']
+                        : `${context.room.name} organise le travail utile maintenant.`}
+                    </strong>
+                  </div>
+                  <div className="context-card__meta">
+                    <span>{context.runtime_context.trace.granted_tier}</span>
+                    <span>{context.runtime_context.authoritative_facts.length} sources fiables</span>
+                    <span>{context.user_runtime_loadout.available_action_ids.length} actions</span>
+                  </div>
+                  {latestCheckpoint ? (
+                    <div className="context-resume">
+                      <strong>Reprise</strong>
+                      <span>{latestCheckpoint.summary}</span>
+                      {latestCheckpoint.next_recommended_action ? (
+                        <small>Ensuite : {latestCheckpoint.next_recommended_action}</small>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {context.runtime_context.trace.uncertainty.length > 0 ? (
+                    <p className="context-warning">
+                      Contexte incomplet : {context.runtime_context.trace.uncertainty.join(', ')}
+                    </p>
+                  ) : null}
+                </section>
                 <div className={`room-sync room-sync--${roomSync.status}`} aria-live="polite">
                   <strong>{roomSync.status}</strong>
                   <span>{roomSync.message}</span>
@@ -1477,14 +1516,14 @@ function App(): ReactElement {
                 <span className="counter">{actionSummary}</span>
               </div>
               <div className="locked-grid">
-                {lockedActions.length > 0 ? (
-                  lockedActions.map((action) => (
-                    <article className="locked-item" key={action.action_id}>
+                {lockedCapabilities.length > 0 ? (
+                  lockedCapabilities.map((capability) => (
+                    <article className="locked-item" key={capability.capability_id}>
                       <div>
-                        <strong>{action.label}</strong>
-                        <span>{action.endpoint}</span>
+                        <strong>{capability.capability_id}</strong>
+                        <span>{capability.reason}</span>
                       </div>
-                      <small>{STATUS_LABEL[action.status]}</small>
+                      <small>verrouille</small>
                     </article>
                   ))
                 ) : null}

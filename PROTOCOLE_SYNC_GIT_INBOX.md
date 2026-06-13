@@ -17,6 +17,16 @@ git rev-list --left-right --count HEAD...origin/main
 git log --oneline --decorate -5 origin/main
 ```
 
+Si `gh` est disponible et authentifie, verifier aussi l'etat GitHub distant. Ce check ne remplace
+pas Git, il sert a prouver que l'agent regarde le depot public attendu et pas seulement un clone
+local :
+
+```bash
+gh auth status
+gh repo view Prof-Krapu/MASTERFLOW --json nameWithOwner,defaultBranchRef,pushedAt,url
+gh api repos/Prof-Krapu/MASTERFLOW/commits/main --jq '{sha: .sha, date: .commit.committer.date}'
+```
+
 Ensuite lire les fichiers depuis la ref la plus a jour. Si `HEAD` differe de `origin/main`, ne
 pas conclure depuis les fichiers locaux sans lire aussi la version distante :
 
@@ -36,6 +46,8 @@ git show origin/main:INBOX_VINCENT.md
 5. `INBOX_VINCENT.md`
 
 Une inbox lue sans `git fetch` prealable vaut contexte incomplet.
+Une inbox modifiee localement mais non commit/push vaut message non transmis : Vincent/Claude ne
+peut pas la voir, meme si Codex local la lit.
 
 ## Communication proportionnee
 
@@ -49,6 +61,7 @@ Le protocole ne doit pas transformer chaque message en ceremonie lourde.
 | commit/push/merge/rebase | validation humaine MALEX explicite |
 | run backend, URL partagee, secret, permission, endpoint sensible | validation humaine explicite avant execution |
 | divergence Git | lire `origin/main:<fichier>` avant toute conclusion |
+| message introuvable par l'autre agent | citer la branche distante lue + dernier SHA GitHub/`origin/main` + statut commit/push |
 
 But : moins de blocage sur les etapes de lecture, plus de preuve sur l'etat reel du repo.
 
@@ -61,6 +74,7 @@ SYNC_PROOF
 - local_branch:
 - local_head:
 - origin_main:
+- github_main:
 - head_vs_origin_main:
 - fichiers_lus:
 - conclusion:
@@ -73,6 +87,7 @@ SYNC_PROOF
 - local_branch: codex/frontend-masterflow
 - local_head: 90aa65c
 - origin_main: 90aa65c
+- github_main: 90aa65c
 - head_vs_origin_main: 0/0
 - fichiers_lus: CLAUDE.md, SUIVI.md, SYNC_THREAD_MALEX_VINCENT.md, INBOX_MALEX.md, INBOX_VINCENT.md
 - conclusion: branche alignee, inbox a jour
@@ -87,6 +102,8 @@ Si `HEAD...origin/main` n'est pas `0 0` :
 - ne jamais dire "pas de nouveau message" depuis une copie locale en retard ;
 - demander validation humaine avant merge, rebase, commit ou push si le contexte l'exige ;
 - ne pas ecraser une branche de travail sans accord explicite.
+- si le message est seulement dans le worktree local, demander un commit/push explicite MALEX
+  avant de le considerer transmis a Vincent.
 
 ## Message court attendu
 

@@ -76,8 +76,18 @@ describe('PR-7 — service RAG permissionne', () => {
       ],
     });
 
-    const response = queryRag(student, {query: 'templates versionnes', project_id: projectId, limit: 5});
+    const response = queryRag(student, {
+      query: 'templates versionnes',
+      project_id: projectId,
+      purpose: 'course_support',
+      limit: 5,
+    });
     expect(response.refusal_reason).toBeNull();
+    expect(response.context_pack).toMatchObject({
+      purpose: 'course_support',
+      context_tier: 'T2',
+      retrieval_strategy: 'lexical',
+    });
     expect(response.context_pack.citations).toContainEqual(
       expect.objectContaining({
         resource_id: resource.rag_resource_id,

@@ -145,6 +145,53 @@ function migrate(d: Database.Database): void {
       UNIQUE(user_id, room_id)
     );
 
+    CREATE TABLE IF NOT EXISTS room_checkpoints (
+      id                       TEXT PRIMARY KEY,
+      room_id                  TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+      room_instance_id         TEXT NOT NULL REFERENCES room_instances(id) ON DELETE CASCADE,
+      user_id                  TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id               TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      reason                   TEXT NOT NULL
+                                 CHECK (reason IN (
+                                   'validation','mode_change','stable_activity',
+                                   'pedagogical_progress','significant_mutation','manual_save'
+                                 )),
+      summary                  TEXT NOT NULL,
+      active_widgets_json      TEXT NOT NULL DEFAULT '[]',
+      active_mode              TEXT NOT NULL,
+      decisions_json           TEXT NOT NULL DEFAULT '[]',
+      open_loops_json          TEXT NOT NULL DEFAULT '[]',
+      media_queue_refs_json    TEXT NOT NULL DEFAULT '[]',
+      asset_queue_refs_json    TEXT NOT NULL DEFAULT '[]',
+      resource_refs_json       TEXT NOT NULL DEFAULT '[]',
+      next_recommended_action  TEXT,
+      rollback_light_possible INTEGER NOT NULL DEFAULT 0,
+      privacy_scope            TEXT NOT NULL DEFAULT 'private'
+                                 CHECK (privacy_scope = 'private'),
+      created_at               INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS memory_cards (
+      id                TEXT PRIMARY KEY,
+      type              TEXT NOT NULL,
+      owner_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id        TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      scope             TEXT NOT NULL CHECK (scope IN ('user','project')),
+      source_ref        TEXT NOT NULL,
+      extracted_signal  TEXT NOT NULL,
+      distilled_value   TEXT NOT NULL,
+      confidence        TEXT NOT NULL CHECK (confidence IN ('low','medium','high','validated')),
+      privacy           TEXT NOT NULL CHECK (privacy IN ('public','private','sensitive','restricted')),
+      affects_json      TEXT NOT NULL,
+      status            TEXT NOT NULL CHECK (status IN ('candidate','active','stale','archived','rejected')),
+      compression_level TEXT NOT NULL CHECK (compression_level IN ('L2','L3','L4')),
+      invalidation_rule TEXT NOT NULL,
+      next_action       TEXT,
+      validated_by      TEXT REFERENCES users(id),
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Personas & chimères ─────────────────────────
     CREATE TABLE IF NOT EXISTS personas (
       id            TEXT PRIMARY KEY,
@@ -271,6 +318,10 @@ function migrate(d: Database.Database): void {
       id              TEXT PRIMARY KEY,
       query_hash      TEXT NOT NULL,
       user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      purpose         TEXT NOT NULL DEFAULT 'context_retrieval',
+      room_instance_id TEXT REFERENCES room_instances(id) ON DELETE SET NULL,
+      context_tier    TEXT NOT NULL DEFAULT 'T2',
+      retrieval_strategy TEXT NOT NULL DEFAULT 'lexical',
       scope_type      TEXT NOT NULL CHECK (scope_type IN ('owner','project')),
       scope_id        TEXT NOT NULL,
       citations_json  TEXT NOT NULL,
@@ -291,6 +342,8 @@ function migrate(d: Database.Database): void {
       id              TEXT PRIMARY KEY,
       user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       query_hash      TEXT NOT NULL,
+      purpose         TEXT NOT NULL DEFAULT 'context_retrieval',
+      room_instance_id TEXT REFERENCES room_instances(id) ON DELETE SET NULL,
       scope_type      TEXT NOT NULL CHECK (scope_type IN ('owner','project')),
       scope_id        TEXT NOT NULL,
       result_count    INTEGER NOT NULL CHECK (result_count >= 0),
@@ -862,6 +915,10 @@ function migrate(d: Database.Database): void {
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
+    CREATE INDEX IF NOT EXISTS idx_room_checkpoints_instance
+      ON room_checkpoints(room_instance_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_memory_cards_scope
+      ON memory_cards(scope, owner_id, project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
     CREATE INDEX IF NOT EXISTS idx_actions_status      ON actions(status);
     CREATE INDEX IF NOT EXISTS idx_actions_user        ON actions(user_id);
@@ -968,6 +1025,12 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'guided_sessions', 'guide_snapshot_json', 'TEXT');
   ensureColumn(d, 'guided_sessions', 'schema_snapshot_json', 'TEXT');
   ensureColumn(d, 'guided_sessions', 'consent_policy_json', "TEXT NOT NULL DEFAULT '{}'");
+  ensureColumn(d, 'rag_context_packs', 'purpose', "TEXT NOT NULL DEFAULT 'context_retrieval'");
+  ensureColumn(d, 'rag_context_packs', 'room_instance_id', 'TEXT');
+  ensureColumn(d, 'rag_context_packs', 'context_tier', "TEXT NOT NULL DEFAULT 'T2'");
+  ensureColumn(d, 'rag_context_packs', 'retrieval_strategy', "TEXT NOT NULL DEFAULT 'lexical'");
+  ensureColumn(d, 'rag_query_events', 'purpose', "TEXT NOT NULL DEFAULT 'context_retrieval'");
+  ensureColumn(d, 'rag_query_events', 'room_instance_id', 'TEXT');
   ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
@@ -1131,6 +1194,10 @@ export interface RagContextPackRow {
   id: string;
   query_hash: string;
   user_id: string;
+  purpose: string;
+  room_instance_id: string | null;
+  context_tier: 'T0' | 'T1' | 'T2' | 'T3' | 'T4' | 'T5';
+  retrieval_strategy: 'lexical' | 'vector' | 'hybrid';
   scope_type: 'owner' | 'project';
   scope_id: string;
   citations_json: string;
@@ -1253,6 +1320,54 @@ export interface RoomInstanceRow {
   active_surface: string;
   cognitive_density: string;
   widget_state_json: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface RoomCheckpointRow {
+  id: string;
+  room_id: string;
+  room_instance_id: string;
+  user_id: string;
+  project_id: string | null;
+  reason:
+    | 'validation'
+    | 'mode_change'
+    | 'stable_activity'
+    | 'pedagogical_progress'
+    | 'significant_mutation'
+    | 'manual_save';
+  summary: string;
+  active_widgets_json: string;
+  active_mode: string;
+  decisions_json: string;
+  open_loops_json: string;
+  media_queue_refs_json: string;
+  asset_queue_refs_json: string;
+  resource_refs_json: string;
+  next_recommended_action: string | null;
+  rollback_light_possible: number;
+  privacy_scope: 'private';
+  created_at: number;
+}
+
+export interface MemoryCardRow {
+  id: string;
+  type: string;
+  owner_id: string;
+  project_id: string | null;
+  scope: 'user' | 'project';
+  source_ref: string;
+  extracted_signal: string;
+  distilled_value: string;
+  confidence: 'low' | 'medium' | 'high' | 'validated';
+  privacy: 'public' | 'private' | 'sensitive' | 'restricted';
+  affects_json: string;
+  status: 'candidate' | 'active' | 'stale' | 'archived' | 'rejected';
+  compression_level: 'L2' | 'L3' | 'L4';
+  invalidation_rule: string;
+  next_action: string | null;
+  validated_by: string | null;
   created_at: number;
   updated_at: number;
 }

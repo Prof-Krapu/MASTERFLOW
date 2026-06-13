@@ -48,6 +48,7 @@
       "risk_level": "medium_high",
       "preflight_required": true,
       "validation_required": true,
+      "minimum_role": "teacher",
       "ui_surface": "validation_inbox",
       "status": "live"
     },
@@ -128,6 +129,7 @@
       "risk_level": "low",
       "preflight_required": false,
       "validation_required": false,
+      "minimum_role": "admin",
       "ui_surface": "admin_diagnostics_panel",
       "status": "live"
     },
@@ -139,6 +141,7 @@
       "preflight_required": true,
       "validation_required": true,
       "validator_role": "admin",
+      "minimum_role": "admin",
       "ui_surface": "admin_settings_cockpit",
       "status": "live"
     },
@@ -150,6 +153,7 @@
       "preflight_required": true,
       "validation_required": true,
       "validator_role": "godmode",
+      "minimum_role": "godmode",
       "ui_surface": "admin_users_cockpit",
       "status": "live"
     },
@@ -161,6 +165,7 @@
       "preflight_required": true,
       "validation_required": true,
       "validator_role": "admin",
+      "minimum_role": "teacher",
       "ui_surface": "project_members_cockpit",
       "status": "live"
     },
@@ -171,6 +176,7 @@
       "risk_level": "low",
       "preflight_required": false,
       "validation_required": false,
+      "minimum_role": "admin",
       "ui_surface": "admin_users_cockpit",
       "status": "live"
     },
@@ -181,6 +187,7 @@
       "risk_level": "medium",
       "preflight_required": false,
       "validation_required": false,
+      "minimum_role": "admin",
       "ui_surface": "admin_invitations_cockpit",
       "status": "live"
     }

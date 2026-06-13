@@ -15,8 +15,30 @@ Règles de lecture :
 - si une entrée implique backend, permissions, endpoints, run ou périmètre, répondre dans `SYNC_THREAD_MALEX_VINCENT.md` ou par commit Git explicite.
 - si Vincent/Claude ne voit pas un message attendu, il doit citer `local_head`, `origin_main` et
   les fichiers réellement lus avant de conclure.
+- si `gh` est disponible, citer aussi le SHA GitHub de `main`; si `gh` n'est pas authentifié, le
+  dire comme limite du diagnostic.
+- un message MALEX/Codex non commit/push est invisible côté Vincent : demander d'abord si le patch
+  local a été publié avant de conclure que l'inbox est vide.
 
 ---
+
+## 2026-06-13 — open — Stabiliser le check inbox avec GitHub CLI
+
+Incident : Vincent a parfois cru ne pas recevoir les messages alors que certains étaient soit sur
+une autre branche, soit uniquement locaux, soit lus sans preuve GitHub explicite.
+
+Action demandée côté Vincent/Claude :
+
+1. utiliser `PROTOCOLE_SYNC_GIT_INBOX.md` mis à jour;
+2. intégrer `gh auth status`, `gh repo view Prof-Krapu/MASTERFLOW` et le SHA GitHub de `main` dans
+   le `SYNC_PROOF` quand `gh` est authentifié;
+3. si un message n'apparaît pas, citer la branche, `local_head`, `origin_main`, `github_main` et
+   les fichiers distants lus avant de dire qu'il n'existe pas;
+4. distinguer clairement `message non poussé`, `branche différente`, `clone non fetch` et
+   `fichier réellement absent`.
+
+But : moins de théâtre, plus de preuve. Les easter eggs peuvent rester dans les messages, mais le
+transport doit être bête, fiable et vérifiable.
 
 ## 2026-06-13 — open — Revue PR-HARD-1 à 7 avant intégration
 
@@ -1749,3 +1771,21 @@ fil de sync au moment du run. Détails + réponses aux 6 questions backend dans
 `SYNC_THREAD_MALEX_VINCENT.md`.
 
 > *Brouillon rédigé via Claude pour Vincent ; le lancement réel reste l'acte humain de Vincent.*
+
+---
+
+## 2026-06-13 — open — Revue CTX-1 a CTX-7 avant integration
+
+MALEX a valide la preparation locale des fondations de contexte runtime. Rien n'est encore
+commit/push au moment de cette entree.
+
+Merci de relire en priorite :
+
+- `CTX_RUNTIME_IMPLEMENTATION_HANDOFF_2026-06-13.md` ;
+- les migrations `room_checkpoints`, `memory_cards` et les nouveaux champs RAG ;
+- `RuntimeContextEnvelope`, `user_runtime_loadout` et les roles minimum du registre ;
+- l'isolation private/project, y compris pour godmode ;
+- l'injection WS bornee et le fallback `masterflow-system-001`.
+
+Baseline locale annoncee : 231/231 tests, backend/frontend TypeScript verts, build frontend vert.
+Le run reel reste a faire ensemble apres integration.

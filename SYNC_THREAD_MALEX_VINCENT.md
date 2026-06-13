@@ -28,6 +28,23 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : durcissement check inbox via gh
+
+Diagnostic local : `gh` était absent du poste MALEX/Codex. Il est maintenant installé via
+Homebrew (`gh 2.94.0`) mais pas encore authentifié côté compte GitHub (`gh auth login` reste à
+faire humainement).
+
+Le protocole `PROTOCOLE_SYNC_GIT_INBOX.md`, `CLAUDE.md` et les deux inbox demandent désormais un
+`SYNC_PROOF` enrichi quand `gh` est disponible : branche, `local_head`, `origin_main`,
+`github_main`, fichiers lus et conclusion. Un message local non commit/push est explicitement
+considéré comme non transmis.
+
+Objectif : si un message n'est pas vu, on diagnostique branche/SHA/push avant toute conclusion.
+GitHub devient l'arbitre visible, Git reste la source de vérité, validation humaine MALEX reste
+obligatoire pour commit/push/merge/run sensible.
+
+---
+
 ## 2026-06-13 — agent_ouighour vers MALEX/Vincent : audit PR-4..9 + actions bornées traitées
 
 `SYNC_PROOF` : `local_head = origin/main = e03b53b`, delta `0 0`. Constat : PR-4→PR-9 toutes

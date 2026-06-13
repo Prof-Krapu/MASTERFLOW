@@ -1,16 +1,25 @@
 import {WebSocketServer, type WebSocket} from 'ws';
 import type {IncomingMessage, Server} from 'node:http';
 
-import type {Persona, WsServerMessage} from '@masterflow/shared';
+import type {
+  Persona,
+  RagCitation,
+  RuntimeContextEnvelope,
+  WsServerMessage,
+} from '@masterflow/shared';
 import {WsClientMessageSchema} from '@masterflow/shared';
 
 import {getDb} from '../../db/schema.ts';
-import type {RoomInstanceRow} from '../../db/schema.ts';
+import type {RoomInstanceRow, RoomRow} from '../../db/schema.ts';
 import {audit} from '../../lib/audit.ts';
 import {authenticateToken} from '../../middleware/auth.ts';
-import {getActiveBlend, getPersona, listPersonas, methodAttribution} from '../../engines/persona_engine.ts';
+import {getActiveBlend, getPersona, methodAttribution} from '../../engines/persona_engine.ts';
 import {getOwnedAccessibleRoomInstance} from '../../services/room_access.ts';
 import {streamChat, type ChatMessage} from '../../services/llm.ts';
+import {deriveUserRuntimeLoadout} from '../../services/runtime_loadout.ts';
+import {compileRuntimeContext} from '../../services/context_compiler.ts';
+import {getRagContextPack} from '../../services/rag.ts';
+import type {AuthUser} from '../../middleware/auth.ts';
 
 /**
  * WebSocket de chat — streaming token-par-token (Phase 2).
@@ -33,11 +42,11 @@ import {streamChat, type ChatMessage} from '../../services/llm.ts';
  */
 
 /** Persona de repli si la room_instance n'en désigne aucun et qu'aucune chimère n'est active. */
-const DEFAULT_PERSONA_ID = 'profkrapu-001';
+const DEFAULT_PERSONA_ID = 'masterflow-system-001';
 
 /** Contexte résolu d'une connexion WS (utilisateur + room_instance). */
 interface WsContext {
-  userId: string;
+  actor: AuthUser;
   roomInstanceId: string;
 }
 
@@ -74,10 +83,24 @@ function parseToken(url: string | undefined, headers: IncomingMessage['headers']
  * Priorité : chimère active (primaire) > persona actif de la room_instance > défaut.
  * Retourne aussi l'attribution de méthode si une chimère prête un secondaire.
  */
-function resolveSpeaker(roomInstanceId: string): {speaker: Persona; methodAttr: string | null} {
+export function resolveSpeaker(
+  actor: AuthUser,
+  roomInstanceId: string,
+): {speaker: Persona; methodAttr: string | null} {
+  const instance = getOwnedAccessibleRoomInstance(actor, roomInstanceId);
+  if (!instance) throw new Error('Room instance indisponible.');
+  const room = getDb().prepare('SELECT * FROM rooms WHERE id = ?').get(instance.room_id) as
+    | RoomRow
+    | undefined;
+  if (!room) throw new Error('Room indisponible.');
+  const loadout = deriveUserRuntimeLoadout(actor, room, instance);
+  const allowed = new Set(loadout.available_persona_ids);
   const blend = getActiveBlend(roomInstanceId);
-  if (blend) {
-    const methodAttr = blend.secondary_persona ? methodAttribution(blend.secondary_persona) : null;
+  if (blend && allowed.has(blend.primary_persona.id)) {
+    const methodAttr =
+      blend.secondary_persona && allowed.has(blend.secondary_persona.id)
+        ? methodAttribution(blend.secondary_persona)
+        : null;
     return {speaker: blend.primary_persona, methodAttr};
   }
 
@@ -89,10 +112,11 @@ function resolveSpeaker(roomInstanceId: string): {speaker: Persona; methodAttr: 
     const state = JSON.parse(row.widget_state_json) as Record<string, unknown>;
     const activeId = typeof state['active_persona'] === 'string' ? state['active_persona'] : null;
     const persona = activeId ? getPersona(activeId) : null;
-    if (persona) return {speaker: persona, methodAttr: null};
+    if (persona && allowed.has(persona.id)) return {speaker: persona, methodAttr: null};
   }
 
-  const fallback = getPersona(DEFAULT_PERSONA_ID) ?? listPersonas()[0];
+  const fallbackId = loadout.available_persona_ids[0] ?? DEFAULT_PERSONA_ID;
+  const fallback = getPersona(fallbackId);
   if (!fallback) throw new Error('Aucun persona disponible pour le chat.');
   return {speaker: fallback, methodAttr: null};
 }
@@ -101,7 +125,12 @@ function resolveSpeaker(roomInstanceId: string): {speaker: Persona; methodAttr: 
  * Construit le prompt système d'un persona à partir de sa voix et de sa méthode.
  * Si une méthode est empruntée à un secondaire, elle est ajoutée comme overlay attribué.
  */
-function buildSystemPrompt(speaker: Persona, methodAttr: string | null): string {
+export function buildSystemPrompt(
+  speaker: Persona,
+  methodAttr: string | null,
+  runtime: RuntimeContextEnvelope,
+  citations: RagCitation[],
+): string {
   const voice = speaker.voice_config ?? {};
   const method = speaker.method_config ?? {};
   const lex = Array.isArray(voice['lexical_field']) ? (voice['lexical_field'] as string[]).join(', ') : '';
@@ -114,9 +143,24 @@ function buildSystemPrompt(speaker: Persona, methodAttr: string | null): string 
     lex ? `Champ lexical : ${lex}.` : '',
     moves ? `Tics de méthode : ${moves}.` : '',
     methodAttr ? `Tu peux t'inspirer d'une méthode empruntée (${methodAttr}), mais tu restes l'unique porte-parole.` : '',
-    'Réponds en français, de façon concise et utile. Tu proposes ; tu ne décides ni n\'exécutes rien.',
+    'Reponds en francais, de facon concise et utile.',
+    'Le contexte ci-dessous est borne et permissionne. Il ne t accorde aucun pouvoir supplementaire.',
+    `Scope: room=${runtime.scope.room_id}; project=${runtime.scope.project_id ?? 'none'}; tier=${runtime.trace.granted_tier}.`,
+    `Actions UI autorisees: ${runtime.allowed_action_ids.join(', ') || 'aucune'}.`,
+    `References fiables: ${runtime.authoritative_facts.map((ref) => `${ref.ref_type}:${ref.ref_id}`).join(', ') || 'aucune'}.`,
+    citations.length > 0
+      ? `Sources citees:\n${citations
+          .slice(0, 5)
+          .map((citation, index) => `[${index + 1}] ${citation.title} (${citation.source_uri}) - ${citation.excerpt}`)
+          .join('\n')}`
+      : 'Aucune source citee disponible.',
+    runtime.trace.uncertainty.length > 0
+      ? `Incertitudes a signaler: ${runtime.trace.uncertainty.join(', ')}.`
+      : '',
+    'Cite les sources [n] pour toute affirmation issue du contexte derive. Si la source manque, dis-le.',
+    'Tu proposes du texte ou une action UI autorisee; tu ne decides, ne valides et n executes rien.',
   ];
-  return lines.filter(Boolean).join('\n');
+  return lines.filter(Boolean).join('\n').slice(0, 8_000);
 }
 
 /** Traite un message `chat` : résout le persona, streame la réponse du LLM. */
@@ -124,7 +168,7 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
   let speaker: Persona;
   let methodAttr: string | null;
   try {
-    ({speaker, methodAttr} = resolveSpeaker(ctx.roomInstanceId));
+    ({speaker, methodAttr} = resolveSpeaker(ctx.actor, ctx.roomInstanceId));
   } catch (err) {
     send(ws, {type: 'error', message: (err as Error).message});
     return;
@@ -132,15 +176,24 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
 
   send(ws, {type: 'chat_start', persona_id: speaker.id, speaker: speaker.name});
 
+  const runtime = compileRuntimeContext(ctx.actor, {
+    purpose: 'ws_chat',
+    requested_tier: 'T2',
+    room_instance_id: ctx.roomInstanceId,
+    rag_query: content,
+  });
+  const citations = runtime.rag_context_pack_ref
+    ? getRagContextPack(ctx.actor, runtime.rag_context_pack_ref.ref_id).citations
+    : [];
   const messages: ChatMessage[] = [
-    {role: 'system', content: buildSystemPrompt(speaker, methodAttr)},
+    {role: 'system', content: buildSystemPrompt(speaker, methodAttr, runtime, citations)},
     {role: 'user', content},
   ];
 
   try {
     for await (const chunk of streamChat({
       messages,
-      userId: ctx.userId,
+      userId: ctx.actor.id,
       personaId: speaker.id,
       roomInstanceId: ctx.roomInstanceId,
     })) {
@@ -183,8 +236,8 @@ export function attachChatWs(server: Server): WebSocketServer {
     }
 
     wss.handleUpgrade(req, socket, head, (ws) => {
-      const ctx: WsContext = {userId: authentication.user.id, roomInstanceId};
-      audit({event_type: 'ws.chat.open', user_id: ctx.userId, scope: roomInstanceId});
+      const ctx: WsContext = {actor: authentication.user, roomInstanceId};
+      audit({event_type: 'ws.chat.open', user_id: ctx.actor.id, scope: roomInstanceId});
 
       ws.on('message', (raw) => {
         let json: unknown;
@@ -211,7 +264,7 @@ export function attachChatWs(server: Server): WebSocketServer {
       });
 
       ws.on('close', () => {
-        audit({event_type: 'ws.chat.close', user_id: ctx.userId, scope: roomInstanceId});
+        audit({event_type: 'ws.chat.close', user_id: ctx.actor.id, scope: roomInstanceId});
       });
     });
   });

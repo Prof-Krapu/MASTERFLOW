@@ -435,6 +435,91 @@ export const UpdateRoomInstanceSchema = z.object({
 });
 export type UpdateRoomInstance = z.infer<typeof UpdateRoomInstanceSchema>;
 
+export const RoomCheckpointReasonSchema = z.enum([
+  'validation',
+  'mode_change',
+  'stable_activity',
+  'pedagogical_progress',
+  'significant_mutation',
+  'manual_save',
+]);
+export type RoomCheckpointReason = z.infer<typeof RoomCheckpointReasonSchema>;
+
+export const CreateRoomCheckpointSchema = z.object({
+  reason: RoomCheckpointReasonSchema,
+  summary: z.string().min(1).max(1000),
+  active_widgets: z.array(z.string().min(1)).max(30).default([]),
+  active_mode: z.string().min(1).max(80),
+  decisions: z.array(z.string().min(1).max(500)).max(20).default([]),
+  open_loops: z.array(z.string().min(1).max(500)).max(20).default([]),
+  media_queue_refs: z.array(z.string().min(1)).max(50).default([]),
+  asset_queue_refs: z.array(z.string().min(1)).max(50).default([]),
+  resource_refs: z.array(z.string().min(1)).max(50).default([]),
+  next_recommended_action: z.string().min(1).max(500).nullable().default(null),
+  rollback_light_possible: z.boolean().default(false),
+});
+export type CreateRoomCheckpoint = z.infer<typeof CreateRoomCheckpointSchema>;
+
+export const RoomCheckpointSchema = CreateRoomCheckpointSchema.extend({
+  checkpoint_id: z.string().min(1),
+  room_id: z.string().min(1),
+  room_instance_id: z.string().min(1),
+  user_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  privacy_scope: z.literal('private'),
+  created_at: z.number().int().nonnegative(),
+});
+export type RoomCheckpoint = z.infer<typeof RoomCheckpointSchema>;
+
+export const MemoryCardTypeSchema = z.enum([
+  'preference',
+  'canon_candidate',
+  'rule',
+  'resource',
+  'feedback',
+  'project_fact',
+  'user_trait',
+  'bug',
+  'idea',
+  'output_template',
+  'opportunity',
+]);
+export const MemoryCardAffectSchema = z.enum([
+  'persona',
+  'DA',
+  'pedagogy',
+  'resource_routing',
+  'output',
+  'backend',
+  'pricing',
+]);
+export const CreateMemoryCardSchema = z.object({
+  type: MemoryCardTypeSchema,
+  project_id: z.string().min(1).nullable().optional(),
+  source_ref: z.string().min(1).max(1000),
+  extracted_signal: z.string().min(1).max(1000),
+  distilled_value: z.string().min(1).max(1000),
+  confidence: z.enum(['low', 'medium', 'high']).default('medium'),
+  privacy: z.enum(['public', 'private', 'sensitive', 'restricted']).default('private'),
+  affects: z.array(MemoryCardAffectSchema).min(1).max(7),
+  invalidation_rule: z.string().min(1).max(500),
+  next_action: z.string().min(1).max(500).nullable().default(null),
+});
+export type CreateMemoryCard = z.infer<typeof CreateMemoryCardSchema>;
+
+export const MemoryCardSchema = CreateMemoryCardSchema.extend({
+  memory_card_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  scope: z.enum(['user', 'project']),
+  confidence: z.enum(['low', 'medium', 'high', 'validated']),
+  status: z.enum(['candidate', 'active', 'stale', 'archived', 'rejected']),
+  compression_level: z.enum(['L2', 'L3', 'L4']),
+  validated_by: z.string().min(1).nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type MemoryCard = z.infer<typeof MemoryCardSchema>;
+
 // ───────────────────────── Personas & chimères ─────────────────────────
 
 export const PersonaStatusSchema = z.enum(['active', 'deprecated']);
@@ -573,6 +658,8 @@ export const ActionRegistryEntrySchema = z.object({
   validation_required: z.union([z.boolean(), z.literal('depends_on_preflight')]),
   /** Rôle minimal requis pour valider cette action (optionnel — défaut 'teacher' si sensible). */
   validator_role: RoleSchema.optional(),
+  /** Rôle minimal requis pour voir et créer cette action dans un loadout. */
+  minimum_role: RoleSchema.default('student'),
   ui_surface: z.string(),
   status: RegistryStatusSchema.default('future'),
 });
@@ -1434,6 +1521,11 @@ export const SearchResourcesResponseSchema = z.object({
 });
 export type SearchResourcesResponse = z.infer<typeof SearchResourcesResponseSchema>;
 
+// ───────────────────────── Context tiers ─────────────────────────
+
+export const ContextTierSchema = z.enum(['T0', 'T1', 'T2', 'T3', 'T4', 'T5']);
+export type ContextTier = z.infer<typeof ContextTierSchema>;
+
 // ───────────────────────── RAG permissionné PR-7 ─────────────────────────
 
 export const RagResourceStatusSchema = z.enum([
@@ -1512,6 +1604,10 @@ export const RagContextPackSchema = z.object({
   pack_id: z.string().min(1),
   query_hash: z.string().min(1),
   user_id: z.string().min(1),
+  purpose: z.string().min(1).max(120),
+  room_instance_id: z.string().min(1).nullable(),
+  context_tier: ContextTierSchema,
+  retrieval_strategy: z.enum(['lexical', 'vector', 'hybrid']),
   scope_type: z.enum(['owner', 'project']),
   scope_id: z.string().min(1),
   citations: z.array(RagCitationSchema),
@@ -1534,6 +1630,9 @@ export type RegisterRagResourceRequest = z.infer<typeof RegisterRagResourceReque
 export const RagQueryRequestSchema = z.object({
   query: z.string().min(2).max(1000),
   project_id: z.string().min(1).nullable().optional(),
+  room_instance_id: z.string().min(1).nullable().optional(),
+  purpose: z.string().min(1).max(120).default('context_retrieval'),
+  context_tier: ContextTierSchema.default('T2'),
   limit: z.number().int().min(1).max(10).default(5),
 });
 export type RagQueryRequest = z.infer<typeof RagQueryRequestSchema>;
@@ -1544,6 +1643,104 @@ export const RagQueryResponseSchema = z.object({
 });
 export type RagQueryResponse = z.infer<typeof RagQueryResponseSchema>;
 
+// ───────────────────────── Runtime context compilation ─────────────────────────
+
+export const ContextReferenceSchema = z.object({
+  ref_type: z.string().min(1).max(80),
+  ref_id: z.string().min(1),
+  authority: z.enum(['authoritative', 'derived']),
+  source: z.string().min(1).max(120),
+  scope_type: z.enum(['user', 'project', 'room', 'room_instance']),
+  scope_id: z.string().min(1),
+});
+export type ContextReference = z.infer<typeof ContextReferenceSchema>;
+
+export const RejectedContextReferenceSchema = z.object({
+  ref_type: z.string().min(1).max(80),
+  ref_id: z.string().min(1),
+  reason: z.string().min(1).max(240),
+});
+export type RejectedContextReference = z.infer<typeof RejectedContextReferenceSchema>;
+
+export const ContextCompilationTraceSchema = z.object({
+  purpose: z.string().min(1).max(120),
+  requested_tier: ContextTierSchema,
+  granted_tier: ContextTierSchema,
+  loaded_refs: z.array(ContextReferenceSchema),
+  rejected_refs: z.array(RejectedContextReferenceSchema),
+  missing_context: z.array(z.string().min(1).max(240)),
+  uncertainty: z.array(z.string().min(1).max(240)),
+  budget: z.object({
+    max_refs: z.number().int().positive(),
+    max_chars: z.number().int().positive(),
+    used_refs: z.number().int().nonnegative(),
+    used_chars: z.number().int().nonnegative(),
+  }),
+});
+export type ContextCompilationTrace = z.infer<typeof ContextCompilationTraceSchema>;
+
+export const RuntimeContextEnvelopeSchema = z.object({
+  actor: z.object({
+    user_id: z.string().min(1),
+    role: RoleSchema,
+  }),
+  scope: z.object({
+    project_id: z.string().min(1).nullable(),
+    room_id: z.string().min(1),
+    room_instance_id: z.string().min(1),
+  }),
+  room_runtime: z.object({
+    room_type: z.string().min(1),
+    zoom_level: ZoomLevelSchema,
+    active_surface: z.string().min(1),
+    cognitive_density: z.enum(['low', 'medium', 'high']),
+  }),
+  authoritative_facts: z.array(ContextReferenceSchema),
+  derived_context: z.array(ContextReferenceSchema),
+  allowed_action_ids: z.array(z.string().min(1)),
+  allowed_persona_ids: z.array(z.string().min(1)),
+  checkpoint_ref: ContextReferenceSchema.nullable(),
+  rag_context_pack_ref: ContextReferenceSchema.nullable(),
+  trace: ContextCompilationTraceSchema,
+  compiled_at: z.number().int().nonnegative(),
+});
+export type RuntimeContextEnvelope = z.infer<typeof RuntimeContextEnvelopeSchema>;
+
+export const CompileRuntimeContextRequestSchema = z.object({
+  purpose: z.string().min(1).max(120).default('room_bootstrap'),
+  requested_tier: ContextTierSchema.default('T2'),
+  room_id: z.string().min(1).optional(),
+  room_instance_id: z.string().min(1).optional(),
+  rag_query: z.string().min(2).max(1000).optional(),
+});
+export type CompileRuntimeContextRequest = z.infer<typeof CompileRuntimeContextRequestSchema>;
+
+export const LockedCapabilitySchema = z.object({
+  capability_id: z.string().min(1),
+  reason: z.string().min(1).max(240),
+});
+export type LockedCapability = z.infer<typeof LockedCapabilitySchema>;
+
+export const UserRuntimeLoadoutSchema = z.object({
+  user_id: z.string().min(1),
+  room_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  available_apps: z.array(z.string().min(1)),
+  available_persona_ids: z.array(z.string().min(1)),
+  available_action_ids: z.array(z.string().min(1)),
+  locked_capabilities: z.array(LockedCapabilitySchema),
+  default_action_ids: z.array(z.string().min(1)),
+  quick_palette_action_ids: z.array(z.string().min(1)),
+  create_launcher_action_ids: z.array(z.string().min(1)),
+  available_shortcuts: z.array(z.string().min(1)),
+  active_mode_cycle: z.array(z.string().min(1)),
+  command_center_scope: z.enum(['user', 'project', 'room']),
+  suggested_first_action_ids: z.array(z.string().min(1)),
+  simplified_support_action_ids: z.array(z.string().min(1)),
+  disabled_reason_map: z.record(z.string().min(1)),
+});
+export type UserRuntimeLoadout = z.infer<typeof UserRuntimeLoadoutSchema>;
+
 // ───────────────────────── Contexte courant ─────────────────────────
 
 export const CurrentContextSchema = z.object({
@@ -1553,6 +1750,8 @@ export const CurrentContextSchema = z.object({
   personas: z.array(PersonaSchema),
   active_blend: PersonaBlendSchema.nullable(),
   available_actions: z.array(ActionRegistryEntrySchema),
+  runtime_context: RuntimeContextEnvelopeSchema,
+  user_runtime_loadout: UserRuntimeLoadoutSchema,
 });
 export type CurrentContext = z.infer<typeof CurrentContextSchema>;
 

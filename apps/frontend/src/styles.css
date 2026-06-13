@@ -308,6 +308,52 @@ dd {
   gap: 18px;
 }
 
+.context-card {
+  background: #12151b;
+  border: 1px solid rgba(88, 193, 137, 0.34);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.context-card strong,
+.context-card span,
+.context-card small {
+  overflow-wrap: anywhere;
+}
+
+.context-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.context-card__meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.context-resume {
+  border-left: 2px solid var(--accent);
+  display: grid;
+  gap: 3px;
+  padding-left: 10px;
+}
+
+.context-resume span,
+.context-resume small,
+.context-warning {
+  color: var(--muted);
+}
+
+.context-warning {
+  margin: 0;
+}
+
 .room-title,
 .room-summary,
 .next-actions,

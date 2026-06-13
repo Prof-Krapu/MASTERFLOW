@@ -23,13 +23,17 @@ Avant toute reprise de travail, toute réponse de coordination ou toute modifica
 0. `git fetch --all --prune`, puis vérifier les derniers commits de `origin/main` et des branches de
    sync avant de répondre à MALEX. Si Vincent vient de pousser une correction, lire les versions
    distantes (`git show origin/main:<fichier>`) avant toute conclusion.
+0bis. Si `gh` est installé et connecté, vérifier aussi GitHub avec `gh auth status`,
+   `gh repo view Prof-Krapu/MASTERFLOW` et le SHA de `main`. Si `gh` n'est pas connecté, le dire
+   explicitement au lieu de prétendre que le check GitHub est fait.
 1. `SUIVI.md`
 2. `SYNC_THREAD_MALEX_VINCENT.md`
 3. `INBOX_VINCENT.md`
 4. `INBOX_MALEX.md` si présent
 
 Chaque réponse de coordination doit inclure mentalement ou explicitement un `SYNC_PROOF` :
-branche locale, `HEAD`, `origin/main`, delta `HEAD...origin/main`, fichiers lus et conclusion.
+branche locale, `HEAD`, `origin/main`, `github_main` si disponible, delta `HEAD...origin/main`,
+fichiers lus et conclusion.
 Si le delta n'est pas `0 0`, ne jamais conclure depuis les fichiers locaux seuls.
 
 Règle : une inbox non lue = contexte incomplet. Vincent peut déposer ses demandes dans
@@ -38,6 +42,11 @@ réponse IA n'est jamais une validation humaine. Codex/Claude peut analyser l'im
 un patch minimal, mais aucune modification, exécution, permission, dépense, publication,
 déploiement ou changement de périmètre demandé par Vincent ne doit être appliqué sans validation
 humaine explicite de MALEX.
+
+Règle de transmission : un message écrit dans `INBOX_VINCENT.md`, `INBOX_MALEX.md`, `SUIVI.md` ou
+`SYNC_THREAD_MALEX_VINCENT.md` n'existe pour l'autre côté qu'après commit + push sur la branche
+qu'il lit. Si Vincent ne voit pas un message, diagnostiquer d'abord : branche lue, SHA GitHub,
+SHA `origin/main`, fichier distant lu, puis statut du worktree local.
 
 Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, refaire un dernier
 check distant rapide (`git fetch --all --prune` + lecture du dernier `origin/main`) pour éviter de
@@ -135,4 +144,10 @@ Multi-room, pipeline de correction, ComfyUI/rendu image, factories, OCR, dashboa
 
 MVP backend **livré et validé** (`tsc` 0 erreur, vitest **4.1.8** 13/13, **`npm audit` 0 vulnérabilité**, streaming WS + invariants prouvés en run réel). Frontend MALEX (`apps/frontend`) : shell couche 1 (login + `GET /context/current`), avance par couches. PoC retiré. Registre d'actions : champ `status` (`live`/`future`/`out_of_scope`) + `endpoint` alignés sur le réel.
 
-**Décisions de périmètre actées (sync MALEX/Vincent ; Q6 confirmée humainement par Vincent le 2026-06-07)** : `user_runtime_loadout`, validation inbox dédiée et endpoints lourds (`/da`, `/assets`, `/inventory`, `/subjects`) = **hors V1** ; backflow/factories = `out_of_scope` ; **godmode étendu** — en rôle `godmode` l'UI peut exécuter des actions et `owner_ops_private_diagnostic` est exposé (quand le backend l'implémentera), **gated rôle `godmode` uniquement** (jamais teacher/student) ; lève le cloisonnement strict Owner Ops de la 1re carte ; l'UI ne présente rien comme fonctionnel avant contrat + endpoint réels. *(Une correction « Owner Ops strict » avait été poussée le 2026-06-07 puis annulée à la demande de Vincent au profit de godmode étendu.)* Détail daté dans `SUIVI.md` et `SYNC_THREAD_MALEX_VINCENT.md`.
+**Décisions de périmètre actées.** Les endpoints lourds (`/da`, `/assets`, `/inventory`,
+`/subjects`) restent hors V1 et backflow/factories restent `out_of_scope`. Le
+`user_runtime_loadout`, initialement reporte, est désormais une fondation runtime minimale :
+il filtre actions, personas, modes et capacités verrouillées depuis les permissions et la Room.
+**Godmode étendu** reste valable pour les capacités explicitement autorisées, mais ne traverse
+jamais un scope utilisateur/projet privé par simple rang global. L'UI ne présente rien comme
+fonctionnel avant contrat + endpoint réels. Détail daté dans `SUIVI.md`.

@@ -2793,3 +2793,44 @@ Tauri shell (`apps/desktop`) · brancher un vrai LLM · phases 2+ des specs (mul
 
 ### Note exploitation
 Lancement du backend = **human in the loop** (Vincent). Backend bind `*:8000`, Vite `--host 0.0.0.0`.
+
+---
+
+## 2026-06-13 — CTX-1 a CTX-7 : fondations de contexte runtime (local, non pousse)
+
+**Statut :** implementation locale terminee sur `codex/frontend-masterflow`. Aucun commit ni
+push sans nouveau GO humain. Handoff detaille :
+`CTX_RUNTIME_IMPLEMENTATION_HANDOFF_2026-06-13.md`.
+
+### Construit
+
+- `RuntimeContextEnvelope` T0-T5, compile au maximum en T2 par defaut, avec budget, provenance,
+  refs chargees/rejetees, contexte manquant et incertitude.
+- `user_runtime_loadout` derive de la Room, du role et des permissions. Actions/personas/modes
+  absents du loadout absents de l'UI et du chat. Capacites futures visibles uniquement en
+  diagnostic admin autorise.
+- `room_checkpoints` prives, bornes a 20 par instance. Sauvegarde explicite et auto-checkpoint
+  uniquement lors d'un changement de mode significatif.
+- RAG ancre a `purpose`, `room_instance_id`, tier et strategie de retrieval. Le fallback lexical
+  est declare ; les packs restent derives, cites, expirables et invalidables.
+- WebSocket : speaker limite au loadout, prompt borne a 8 000 caracteres, citations et
+  incertitudes injectees, aucune permission ou execution accordee au LLM.
+- Persona fallback canonique `masterflow-system-001`; MasterFlex n'est plus le fallback global.
+- Cartes memoire L2 candidates, promotion humaine explicite en L3, invalidation et isolation
+  private/project. Aucun chat brut sauvegarde automatiquement.
+- Frontend branche sur `GET /context/current` filtre : context card, tier, sources, reprise,
+  incertitude et modes/actions issus du loadout. Suppression du bootstrap par catalogues globaux.
+
+### Validation locale
+
+- `npm test` : **51 fichiers, 231/231 tests OK**.
+- `npm run lint` : backend TypeScript OK.
+- `npm run lint:frontend` : frontend TypeScript OK.
+- `npm run build:frontend` : build Vite OK (warning de taille de chunk non bloquant).
+- `git diff --check` : OK.
+
+### Reste avant integration
+
+- Relecture Vincent des migrations, contrats partages et gates de scope.
+- Run reel backend + frontend : login, context/current, checkpoint, RAG, WS et carte memoire.
+- Commit/push seulement apres GO MALEX et dernier check distant.

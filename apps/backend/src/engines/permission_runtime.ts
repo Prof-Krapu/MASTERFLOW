@@ -39,11 +39,14 @@ export function validatorRoleFor(entry: ActionRegistryEntry | null): Role | null
  * (la décision elle-même passe par `validateAction`, jamais ici).
  */
 export function checkPermission(
-  _user: AuthUser,
+  user: AuthUser,
   entry: ActionRegistryEntry | null,
 ): {allowed: boolean; reason?: string} {
   if (!entry) return {allowed: false, reason: 'action_not_registered'};
   if (entry.status !== 'live') return {allowed: false, reason: `action_not_live:${entry.status}`};
+  if (!hasRole(user, entry.minimum_role)) {
+    return {allowed: false, reason: `minimum_role_required:${entry.minimum_role}`};
+  }
   if (!isSensitive(entry)) return {allowed: true};
   // Action sensible : création autorisée, validation humaine requise ensuite.
   return {
