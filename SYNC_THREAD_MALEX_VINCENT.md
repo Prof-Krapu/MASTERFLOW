@@ -23,6 +23,17 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : PR-CB2 prête à challenger
+
+Le runner LLM applique désormais le profil validé de chaque tâche et bloque tout egress hors
+allowlist. Détails dans `SPEC_TASK_AWARE_MODEL_ROUTING_AND_EGRESS_PR_CB2.md`.
+
+Cette tranche reste volontairement mono-provider : elle valide la configuration active, mais ne
+simule pas plusieurs credentials ni un fallback automatique. Merci de comparer avec les gates
+`API_corrector` / `vibe` et de signaler les protections ou contraintes opérationnelles à absorber.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : PR-CB1 prête à challenger
 
 Le registre read-only des adapters pédagogiques est posé dans

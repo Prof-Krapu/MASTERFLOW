@@ -279,7 +279,8 @@ Ils completent les objets Corrector deja listes dans
 1. `PR-CB0` : schemas partages des evidence events, signals et decision deltas.
 2. `PR-CB1` : adapter registry read-only + adapters OCR/WooClap/transcript/note prof déclarés
    non exécutables. Contrat, seed, filtre de rôle et tests livrés ; runners hors scope.
-3. `PR-CB2` : task-aware model profiles et egress gated.
+3. `PR-CB2` : task-aware model profiles et egress gated. Résolution mono-provider fail-closed,
+   privacy locale, allowlist d'origine et tests livrés ; fallback réel hors scope.
 4. `PR-C0` : deprecation non destructive du persona Corrector.
 5. `PR-C1` : rubriques, profils institutionnels, batches et manifests.
 6. `PR-C2` : ingestion/jobs.

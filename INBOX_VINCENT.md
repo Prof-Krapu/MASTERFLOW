@@ -14,6 +14,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Revue PR-CB2 routing LLM et egress gated
+
+MALEX/Codex a posé `SPEC_TASK_AWARE_MODEL_ROUTING_AND_EGRESS_PR_CB2.md`.
+
+Le runner LLM externe exige maintenant un profil validé unique pour la tâche, un provider
+autorisé, une privacy compatible et une origine exacte dans `LLM_EGRESS_ALLOWLIST`. HTTPS est
+obligatoire hors loopback. Le mode mock reste inchangé et sans réseau.
+
+Action demandée : comparer le gate avec tes implémentations `API_corrector` / `vibe` :
+
+- stripping ou headers supplémentaires réellement nécessaires ;
+- providers et origines à déclarer côté serveur ;
+- contraintes timeout/retry ;
+- éventuelles protections DNS/IP manquantes ;
+- stratégie future de plusieurs credentials et fallback.
+
+Ne pas injecter de clé en BDD, ne pas rendre les profils modifiables sans action sensible, et ne
+pas annoncer de fallback tant qu'il n'est pas réellement testé.
+
+---
+
 ## 2026-06-13 — open — Revue PR-CB1 adapter registry read-only
 
 MALEX/Codex a posé `SPEC_ADAPTER_REGISTRY_PR_CB1.md`.

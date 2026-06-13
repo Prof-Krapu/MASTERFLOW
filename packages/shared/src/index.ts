@@ -418,17 +418,20 @@ export const TeacherDecisionDeltaSchema = z
   });
 export type TeacherDecisionDelta = z.infer<typeof TeacherDecisionDeltaSchema>;
 
+export const LLMTaskSchema = z.enum([
+  'ocr',
+  'rubric_extraction',
+  'criterion_analysis',
+  'feedback_draft',
+  'cohort_synthesis',
+  'subject_revision',
+  'chat',
+]);
+export type LLMTask = z.infer<typeof LLMTaskSchema>;
+
 export const TaskModelProfileSchema = z.object({
   profile_id: z.string().min(1),
-  task: z.enum([
-    'ocr',
-    'rubric_extraction',
-    'criterion_analysis',
-    'feedback_draft',
-    'cohort_synthesis',
-    'subject_revision',
-    'chat',
-  ]),
+  task: LLMTaskSchema,
   allowed_providers: z.array(z.string().min(1)).min(1),
   fallback_order: z.array(z.string().min(1)),
   privacy_mode: z.enum(['local_only', 'approved_remote', 'hybrid']),

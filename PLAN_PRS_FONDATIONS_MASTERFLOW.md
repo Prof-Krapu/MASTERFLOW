@@ -72,6 +72,19 @@ Référence :
 
 L'activation d'un adapter attend Project/Scope, Jobs, stockage, permission/preflight et recette.
 
+### PR-CB2 — `task_aware_model_routing_and_egress`
+
+Routage du provider actif contre un profil validé par tâche et gate réseau anti-SSRF.
+
+Etat : contrat de tâches partagé, résolution fail-closed, privacy `local_only`, origine exacte
+allowlistée et tests livrés. Le mock reste sans réseau. Le fallback multi-provider, les budgets
+préflight et l'administration des profils restent hors scope.
+
+Référence :
+
+- `SPEC_TASK_AWARE_MODEL_ROUTING_AND_EGRESS_PR_CB2.md`
+- `BRIDGE_CANON_FEATURES_VINCENT_CORRECTION_PEDAGOGIE.md`
+
 ## Regle de sequencing
 
 Chaque PR doit livrer :

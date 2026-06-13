@@ -4,6 +4,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-CB2 routage LLM par tâche et egress gated
+
+**Livrable MALEX/Codex.** Le runner LLM ne route plus un provider externe sur la seule base de
+variables globales.
+
+Ajouts :
+
+- contrat partagé `LLMTaskSchema` ;
+- résolution d'un profil `task_model_profiles` validé et unique ;
+- vérification du provider autorisé et du fallback déclaré ;
+- blocage des configurations incomplètes ;
+- allowlist d'origines réseau `LLM_EGRESS_ALLOWLIST` ;
+- HTTPS obligatoire hors loopback, credentials/query/fragment interdits dans l'URL ;
+- respect de `privacy_mode=local_only` ;
+- branchement du gate avant tout `fetch` du runner ;
+- tests du mock, du profil validé, des refus provider/tâche et de l'anti-SSRF.
+
+Le mode mock reste sans réseau. Cette tranche ne prétend pas livrer un fallback multi-provider :
+une seule configuration serveur est active. Budgets coût/latence, timeout/retry, administration
+et validation sensible des profils restent à construire.
+
+Vincent doit challenger le gate contre ses implémentations `API_corrector` / `vibe`, sans ajouter
+de secret en BDD ni rendre un fallback fictivement disponible.
+
+---
+
 ## 2026-06-13 — PR-CB1 adapter registry read-only
 
 **Livrable MALEX/Codex.** Ajout d'un registre statique et versionné pour les entrées pédagogiques
