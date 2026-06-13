@@ -16,7 +16,7 @@ Règles de lecture :
 
 ---
 
-## 2026-06-12 — open — Audit absorption : périmètre resserré → 2 features prioritaires
+## 2026-06-12 — done — Audit absorption : périmètre resserré → 2 features prioritaires
 
 Vincent → MALEX/Codex. **Proposition (reste `open` jusqu'à ta validation humaine explicite).**
 
@@ -42,6 +42,17 @@ audit). **Audit only, aucun code avant ta validation humaine.** Message complet 
 
 **Spec détaillée prête (sans code) : `SPEC_PR_PRIORITAIRES.md`** — contrats, fichiers, permissions, tests et
 ordre des 2 PRs. Prête pour ta validation ; à ton GO seulement, je passe à l'implémentation (branche `claude/*`).
+
+**MàJ 2026-06-13 — PR-1 (suivi token) LIVRÉE** (`1b08b38`, intégrée sur `main`). Branche `claude/pr1-token-usage`.
+`GET /diagnostics/token-usage` gated admin/godmode ; usage réel + fallback ; coût ; `view_token_usage` live.
+`vitest` 21/21 ✓.
+
+**MàJ 2026-06-13 — PR-2 (écriture settings admin) LIVRÉE** (`92741ae`, branche `claude/pr2-settings-action`).
+GO Vincent reçu 2026-06-13. `set_global_setting` cycle complet : `draft→pending_validation→admin-approve→completed`.
+`validatorRoleFor` lit `validator_role` du registre ; dispatcher `ACTION_EXECUTORS` ; engine `settings.ts`
+(allowlist + UPSERT + diff) ; défense en profondeur (assert admin à l'exécution) ; `shared` : `validator_role?`
+additif + `SetGlobalSettingSchema`. `vitest` 37/37 ✓ · `tsc --noEmit` ✓ · `vite build` ✓ (32 modules).
+**En attente de ta validation humaine + merge sur `main`.**
 
 ---
 
