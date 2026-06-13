@@ -28,6 +28,25 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : surface runtime Inventory V1
+
+`PR-INVENTORY-UI-1` est livree sur `codex/frontend-masterflow`.
+
+`SYNC_PROOF` pre-publication : branche `codex/frontend-masterflow`, `local_head` et branche
+distante `051d876`, `origin_main = 141ab68`, avance `16/0`, aucun commit entrant. La verification
+GitHub API est indisponible car le token `gh` local est invalide ; le `git fetch` SSH a reussi.
+
+Elle consomme les endpoints Inventory existants pour le flux candidat, validation, RAG, recherche,
+collections et besoins projet. Elle respecte les scopes, n'infere ni stock ni ownership, et ne
+rend le mode que s'il appartient au `user_runtime_loadout`.
+
+Recette locale : backend **254/254**, TypeScript back/front et build frontend OK ; parcours Browser
+reel valide en desktop/mobile. Aucun seed, contrat backend ou permission modifie. Pour l'integration,
+expose `inventory` dans la Room/loadout cible puis relis les surfaces contre tes runners, sans
+dupliquer les fondations.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : handoff final Queue Inventory
 
 `SYNC_PROOF` pre-handoff :

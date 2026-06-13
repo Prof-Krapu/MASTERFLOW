@@ -22,6 +22,26 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INVENTORY-UI-1 surface runtime prete
+
+La premiere verticale frontend Inventory consomme maintenant les contrats backend livres :
+
+- catalogue, recherche, candidats, validation, archive et indexation RAG ;
+- collections et completion declarative ;
+- besoins projet sans promesse de disponibilite ;
+- scopes personnel/projet et droits editor+ derives des contrats existants ;
+- aucun OCR, stock ou ownership invente cote UI.
+
+Le mode n'est jamais force dans le frontend. Pour le rendre visible dans une Room cible, ajoute
+`inventory` au `user_runtime_loadout` via son contexte canonique. Le test local a modifie
+uniquement la base de developpement, pas le seed.
+
+Checks MALEX/Codex : Browser desktop/mobile, backend **254/254**, TypeScript back/front et build
+frontend OK. Merci de verifier l'integration du loadout et les contrats, sans recreer de route,
+table ou permission Inventory parallele.
+
+---
+
 ## 2026-06-13 — open — HANDOFF CONSOLIDE Inventory a relire
 
 Lis en premier :

@@ -41,6 +41,7 @@ import {
 import {ActionAudit} from './action-audit.tsx';
 import {AdminConsole} from './admin-console.tsx';
 import {RegisterWithCode} from './register-form.tsx';
+import {InventoryWorkspace} from './inventory-workspace.tsx';
 import {
   buildModeView,
   canUseMode,
@@ -1168,7 +1169,18 @@ function App(): ReactElement {
             {actionRun.action ? <ActionAudit action={actionRun.action} /> : null}
           </article>
 
-          <article className="panel panel--wide">
+          {activeMode.id === 'inventory' && auth && context ? (
+            <InventoryWorkspace
+              onProjectChange={setSelectedProjectId}
+              projectMemberRole={currentProjectMember?.role ?? null}
+              projects={projects}
+              role={context.user.role}
+              selectedProjectId={selectedProjectId}
+              token={auth.token}
+            />
+          ) : null}
+
+          {activeMode.id !== 'inventory' ? <article className="panel panel--wide">
             <div className="panel-header">
               <h2>Objets</h2>
               <span className="counter">{modeView.deck.length}</span>
@@ -1184,9 +1196,9 @@ function App(): ReactElement {
                 </article>
               ))}
             </div>
-          </article>
+          </article> : null}
 
-          <article className="panel panel--wide source-strip">
+          {activeMode.id !== 'inventory' ? <article className="panel panel--wide source-strip">
             <div className="panel-header">
               <h2>Sources</h2>
               <span className="counter">{resources.length}</span>
@@ -1263,7 +1275,7 @@ function App(): ReactElement {
                 )}
               </div>
             ) : null}
-          </article>
+          </article> : null}
 
           {activeMode.id === 'project' ? (
             <article className="panel panel--wide project-panel">

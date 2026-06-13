@@ -4,6 +4,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-INVENTORY-UI-1 Surface runtime Inventory — LIVREE SUR BRANCHE
+
+Premiere verticale frontend fonctionnelle sur les contrats Inventory existants, sans declarer
+l'UI finale livree :
+
+- mode visible uniquement s'il est present dans `user_runtime_loadout` ;
+- scopes personnel prive et projet permissionne ;
+- catalogue valide, recherche et indexation RAG explicite ;
+- saisie manuelle en candidat, validation ou archivage humain ;
+- collections candidates, validation et completion declarative ;
+- besoins projet avec resultat `candidate_available|missing|unknown` et disponibilite jamais
+  garantie ;
+- aucun OCR simule, aucun stock deduit, aucune logique metier reconstruite dans React ;
+- icones `lucide-react`, layout utilitaire responsive et sans debordement desktop/mobile.
+
+Recette : parcours Browser reel
+`candidate -> validation -> RAG -> recherche -> archive`, backend complet **254/254**,
+backend/frontend TypeScript OK, frontend build OK. Verification visuelle **1280x720** et
+**390x844**, aucun debordement Inventory.
+
+Note d'integration : le test local a active `inventory` uniquement dans le `context_json` de la
+base de developpement. Aucun seed ni permission n'est modifie : Vincent doit exposer le mode par
+la Room/loadout cible, conformement a l'invariant « mode absent = mode inexistant ».
+
+---
+
 ## 2026-06-13 — Queue Inventory backend — TERMINEE
 
 Queue livree sur `codex/frontend-masterflow`, sans merge `main`, sans runner OCR/BGE reel et sans

@@ -4,9 +4,18 @@ import type {
   AdminUser,
   AuthResponse,
   CreateAction,
+  CreateInventoryCollectionRequest,
+  CreateInventoryItemRequest,
+  CreateInventoryProjectNeedRequest,
   CreateInvitation,
   CurrentContext,
+  InventoryCollection,
+  InventoryItem,
+  InventoryNeedMatchResult,
+  InventoryProjectNeed,
+  InventorySearchResult,
   Invitation,
+  MatchInventoryProjectNeedRequest,
   Persona,
   Project,
   ProjectMember,
@@ -18,6 +27,7 @@ import type {
   ResourceScope,
   RoomCheckpoint,
   RoomInstance,
+  SetCollectionCompletionRequest,
   SearchResourcesResponse,
   TokenUsageGroupBy,
   TokenUsageReport,
@@ -195,6 +205,149 @@ export async function attachProjectResource(
     method: 'POST',
     body: JSON.stringify(body),
   }, token);
+}
+
+// ───────────────────────── Inventory ─────────────────────────
+
+export async function getInventoryItems(
+  options: {projectId?: string | null; includeCandidates?: boolean} = {},
+  token?: string | null,
+): Promise<InventoryItem[]> {
+  const params = new URLSearchParams();
+  if (options.projectId) params.set('project_id', options.projectId);
+  if (options.includeCandidates) params.set('include_candidates', '1');
+  const query = params.size > 0 ? `?${params.toString()}` : '';
+  const response = await request<{results: InventoryItem[]}>(`/inventory/items${query}`, {method: 'GET'}, token);
+  return response.results;
+}
+
+export async function createInventoryItem(
+  body: CreateInventoryItemRequest,
+  token?: string | null,
+): Promise<InventoryItem> {
+  return request<InventoryItem>('/inventory/items', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function validateInventoryItem(
+  itemId: string,
+  token?: string | null,
+): Promise<InventoryItem> {
+  return request<InventoryItem>(
+    `/inventory/items/${encodeURIComponent(itemId)}/validate`,
+    {method: 'POST'},
+    token,
+  );
+}
+
+export async function archiveInventoryItem(
+  itemId: string,
+  token?: string | null,
+): Promise<InventoryItem> {
+  return request<InventoryItem>(
+    `/inventory/items/${encodeURIComponent(itemId)}/archive`,
+    {method: 'POST'},
+    token,
+  );
+}
+
+export async function indexInventoryItem(
+  itemId: string,
+  token?: string | null,
+): Promise<RagResource> {
+  return request<RagResource>(
+    `/inventory/items/${encodeURIComponent(itemId)}/rag-index`,
+    {method: 'POST'},
+    token,
+  );
+}
+
+export async function searchInventory(
+  query: string,
+  projectId?: string | null,
+  token?: string | null,
+): Promise<InventorySearchResult[]> {
+  const params = new URLSearchParams({q: query, limit: '20'});
+  if (projectId) params.set('project_id', projectId);
+  const response = await request<{results: InventorySearchResult[]}>(
+    `/inventory/search?${params.toString()}`,
+    {method: 'GET'},
+    token,
+  );
+  return response.results;
+}
+
+export async function getInventoryCollections(
+  options: {projectId?: string | null; includeCandidates?: boolean} = {},
+  token?: string | null,
+): Promise<InventoryCollection[]> {
+  const params = new URLSearchParams();
+  if (options.projectId) params.set('project_id', options.projectId);
+  if (options.includeCandidates) params.set('include_candidates', '1');
+  const query = params.size > 0 ? `?${params.toString()}` : '';
+  const response = await request<{results: InventoryCollection[]}>(
+    `/inventory/collections${query}`,
+    {method: 'GET'},
+    token,
+  );
+  return response.results;
+}
+
+export async function createInventoryCollection(
+  body: CreateInventoryCollectionRequest,
+  token?: string | null,
+): Promise<InventoryCollection> {
+  return request<InventoryCollection>('/inventory/collections', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function validateInventoryCollection(
+  collectionId: string,
+  token?: string | null,
+): Promise<InventoryCollection> {
+  return request<InventoryCollection>(
+    `/inventory/collections/${encodeURIComponent(collectionId)}/validate`,
+    {method: 'POST'},
+    token,
+  );
+}
+
+export async function setInventoryCollectionCompletion(
+  collectionId: string,
+  body: SetCollectionCompletionRequest,
+  token?: string | null,
+): Promise<InventoryCollection> {
+  return request<InventoryCollection>(
+    `/inventory/collections/${encodeURIComponent(collectionId)}/completion`,
+    {method: 'POST', body: JSON.stringify(body)},
+    token,
+  );
+}
+
+export async function createInventoryProjectNeed(
+  body: CreateInventoryProjectNeedRequest,
+  token?: string | null,
+): Promise<InventoryProjectNeed> {
+  return request<InventoryProjectNeed>('/inventory/project-needs', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function matchInventoryProjectNeed(
+  needId: string,
+  body: MatchInventoryProjectNeedRequest,
+  token?: string | null,
+): Promise<InventoryNeedMatchResult> {
+  return request<InventoryNeedMatchResult>(
+    `/inventory/project-needs/${encodeURIComponent(needId)}/match`,
+    {method: 'POST', body: JSON.stringify(body)},
+    token,
+  );
 }
 
 // ───────────────────────── RAG permissionné / coordination ─────────────────────────
