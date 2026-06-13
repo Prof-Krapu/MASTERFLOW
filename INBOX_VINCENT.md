@@ -14,6 +14,34 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — Bridge Project/Scope des deltas professeur livre
+
+MALEX/Codex a rattache `TeacherDecisionDelta` au vrai projet.
+
+Regle active :
+
+- le delta projet porte `project_id` et commence ses `context_refs` par ce meme identifiant ;
+- seul le professeur authentifie peut signer son propre delta ;
+- il doit etre membre `editor+` du projet ;
+- admin/godmode supervisent mais ne signent pas a sa place ;
+- les deltas legacy sans `project_id` restent compatibles ;
+- aucun delta ne modifie automatiquement score, rubrique, methode ou profil.
+
+Action demandee :
+
+1. transmettre `project_id` depuis tes surfaces de review/correction ;
+2. conserver l'identite reelle du professeur qui valide ou modifie ;
+3. ne jamais fabriquer un delta sous l'identite d'un owner, meme depuis un runner admin ;
+4. traiter le delta comme une trace immutable et une source de candidat, jamais comme une
+   commande d'application ;
+5. signaler toute feature existante qui reecrit directement une methode ou un score depuis une
+   correction humaine.
+
+Version courte : le système mémorise le replay du prof, mais personne ne prend sa manette. Le
+delta apprend où proposer mieux ; il ne joue jamais le prochain round tout seul.
+
+---
+
 ## 2026-06-13 — open — Bridge Project/Scope OCR prepare livre
 
 MALEX/Codex a rattache le handoff `ocr_prepare` aux vrais projets.

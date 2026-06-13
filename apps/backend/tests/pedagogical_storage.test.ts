@@ -53,7 +53,12 @@ describe('PR-CB0 — persistance evidence, signaux et deltas', () => {
            )`,
       )
       .all() as Array<{name: string}>;
-    expect(indexes.length).toBeGreaterThanOrEqual(7);
+    expect(indexes.map((row) => row.name)).toContain('idx_teacher_deltas_project');
+
+    const deltaColumns = db
+      .prepare(`PRAGMA table_info('teacher_decision_deltas')`)
+      .all() as Array<{name: string}>;
+    expect(deltaColumns.map((row) => row.name)).toContain('project_id');
   });
 
   it('stocke une evidence privée par défaut et refuse une confiance hors bornes', () => {

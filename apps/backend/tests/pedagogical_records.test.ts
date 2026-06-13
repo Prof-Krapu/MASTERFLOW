@@ -204,6 +204,65 @@ describe('PR-CB0 — dépôt interne permissionné', () => {
     expect(enrichmentTables).toHaveLength(0);
   });
 
+  it('rattache un delta au projet sans permettre d usurper son auteur', () => {
+    const project = createProject(teacherA, {name: 'Projet deltas prof'});
+    const base = {
+      object_type: 'feedback' as const,
+      object_ref: 'feedback-project-delta',
+      ai_proposal_ref: 'feedback-project-ai',
+      human_decision_ref: 'feedback-project-human',
+      changed_fields: ['observed_issue'],
+      reason_code: 'precision',
+      free_note_ref: null,
+      project_id: project.project_id,
+      context_refs: [project.project_id, 'feedback-project-delta'],
+      created_at: Date.now(),
+    };
+
+    expect(() =>
+      recordTeacherDecisionDelta(teacherB, {
+        ...base,
+        delta_id: 'delta-project-before-membership',
+        teacher_id: teacherB.id,
+      }),
+    ).toThrow('scope_denied');
+
+    addProjectMember(teacherA, project.project_id, {user_id: teacherB.id, role: 'editor'});
+    expect(
+      recordTeacherDecisionDelta(teacherB, {
+        ...base,
+        delta_id: 'delta-project-editor',
+        teacher_id: teacherB.id,
+      }),
+    ).toMatchObject({
+      project_id: project.project_id,
+      teacher_id: teacherB.id,
+    });
+
+    expect(() =>
+      recordTeacherDecisionDelta(teacherB, {
+        ...base,
+        delta_id: 'delta-project-usurped',
+        teacher_id: teacherA.id,
+      }),
+    ).toThrow('teacher_delta_author_required');
+    expect(() =>
+      recordTeacherDecisionDelta(admin, {
+        ...base,
+        delta_id: 'delta-project-admin-usurped',
+        teacher_id: teacherA.id,
+      }),
+    ).toThrow('teacher_delta_author_required');
+    expect(() =>
+      recordTeacherDecisionDelta(teacherB, {
+        ...base,
+        delta_id: 'delta-project-context-mismatch',
+        teacher_id: teacherB.id,
+        context_refs: ['legacy-context'],
+      }),
+    ).toThrow('teacher_delta_context_mismatch');
+  });
+
   it('réserve les profils modèle à admin et les force à rester draft', () => {
     const profile = {
       profile_id: 'task-profile-records',

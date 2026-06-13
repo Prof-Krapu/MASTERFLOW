@@ -465,6 +465,7 @@ function migrate(d: Database.Database): void {
       reason_code        TEXT,
       free_note_ref      TEXT,
       teacher_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id         TEXT REFERENCES projects(id) ON DELETE SET NULL,
       context_refs_json  TEXT NOT NULL DEFAULT '[]',
       created_at         INTEGER NOT NULL,
       CHECK (ai_proposal_ref <> human_decision_ref)
@@ -941,6 +942,7 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
   ensureColumn(d, 'pedagogical_signals', 'project_id', 'TEXT');
+  ensureColumn(d, 'teacher_decision_deltas', 'project_id', 'TEXT');
   ensureColumn(d, 'rubric_templates', 'project_id', 'TEXT');
   ensureColumn(d, 'rubric_versions', 'project_id', 'TEXT');
   ensureColumn(d, 'institutional_grading_profiles', 'project_id', 'TEXT');
@@ -958,6 +960,8 @@ function migrate(d: Database.Database): void {
       ON evidence_events(project_id, status, occurred_at);
     CREATE INDEX IF NOT EXISTS idx_signals_project
       ON pedagogical_signals(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_teacher_deltas_project
+      ON teacher_decision_deltas(project_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_rubric_templates_project
       ON rubric_templates(project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_rubric_versions_project
@@ -1312,6 +1316,7 @@ export interface TeacherDecisionDeltaRow {
   reason_code: string | null;
   free_note_ref: string | null;
   teacher_id: string;
+  project_id: string | null;
   context_refs_json: string;
   created_at: number;
 }

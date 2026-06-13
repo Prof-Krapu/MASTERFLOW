@@ -41,6 +41,12 @@ function assertOwnedByActor(actor: AuthUser, ownerId: string): void {
   }
 }
 
+function assertTeacherAuthorship(actor: AuthUser, teacherId: string): void {
+  if (actor.role !== 'teacher' || actor.id !== teacherId) {
+    throw new Error('teacher_delta_author_required');
+  }
+}
+
 function assertProjectAccess(
   actor: AuthUser,
   projectId: string,
@@ -106,6 +112,7 @@ function toDeltaDTO(row: TeacherDecisionDeltaRow): TeacherDecisionDelta {
     reason_code: row.reason_code,
     free_note_ref: row.free_note_ref,
     teacher_id: row.teacher_id,
+    project_id: row.project_id,
     context_refs: JSON.parse(row.context_refs_json) as unknown,
     created_at: row.created_at,
   });
@@ -263,15 +270,21 @@ export function recordTeacherDecisionDelta(
 ): TeacherDecisionDelta {
   requireMinimumRole(actor, 'teacher');
   const delta = TeacherDecisionDeltaSchema.parse(input);
-  assertOwnedByActor(actor, delta.teacher_id);
+  assertTeacherAuthorship(actor, delta.teacher_id);
+  if (delta.project_id) {
+    assertProjectAccess(actor, delta.project_id, 'editor');
+    if (delta.context_refs[0] !== delta.project_id) {
+      throw new Error('teacher_delta_context_mismatch');
+    }
+  }
 
   getDb()
     .prepare(
       `INSERT INTO teacher_decision_deltas
          (id, object_type, object_ref, ai_proposal_ref, human_decision_ref,
           changed_fields_json, reason_code, free_note_ref, teacher_id,
-          context_refs_json, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          project_id, context_refs_json, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       delta.delta_id,
@@ -283,6 +296,7 @@ export function recordTeacherDecisionDelta(
       delta.reason_code,
       delta.free_note_ref,
       delta.teacher_id,
+      delta.project_id ?? null,
       JSON.stringify(delta.context_refs),
       delta.created_at,
     );
@@ -290,7 +304,7 @@ export function recordTeacherDecisionDelta(
   audit({
     event_type: 'teacher_delta.recorded',
     user_id: actor.id,
-    scope: delta.context_refs[0] ?? null,
+    scope: delta.project_id ?? delta.context_refs[0] ?? null,
     detail: {
       delta_id: delta.delta_id,
       object_type: delta.object_type,

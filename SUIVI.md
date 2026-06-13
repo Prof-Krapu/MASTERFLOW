@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Bridge Project/Scope des deltas professeur
+
+**Livrable MALEX/Codex.** Fermeture du dernier scope pedagogique encore porte uniquement par une
+reference texte.
+
+Ajouts :
+
+- `project_id` nullable dans `TeacherDecisionDelta` ;
+- colonne et index projet idempotents sur `teacher_decision_deltas` ;
+- delta projet reserve au professeur auteur, membre `editor+` du projet ;
+- `context_refs[0] === project_id` pour rendre le contexte canonique non ambigu ;
+- admin/godmode limites a la supervision : aucune signature a la place du professeur ;
+- fallback legacy sans `project_id` conserve pour les deltas historiques ;
+- aucun enrichissement, score ou changement de methode applique automatiquement.
+
+Verification :
+
+- `npm test` : 37 fichiers / 161 tests ;
+- `npm run lint` ;
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Bridge Project/Scope du handoff OCR
 
 **Livrable MALEX/Codex.** Rattachement des intentions `ocr_prepare` aux vrais projets, avec

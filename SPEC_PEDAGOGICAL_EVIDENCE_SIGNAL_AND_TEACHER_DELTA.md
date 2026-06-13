@@ -106,6 +106,7 @@ interface TeacherDecisionDelta {
   reason_code: string | null;
   free_note_ref: string | null;
   teacher_id: string;
+  project_id?: string | null;
   context_refs: string[];
   created_at: number;
 }
@@ -175,6 +176,9 @@ Le persona actif n'intervient jamais dans ces permissions.
 - `editor+` est requis pour capturer une preuve ou creer un signal projet ;
 - la lecture projet est bornee aux membres autorises ;
 - les preuves multi-owner peuvent nourrir un signal seulement dans le meme projet ;
+- un delta projet est ecrit uniquement par son `teacher_id`, membre `editor+` du projet ;
+- le premier `context_ref` d'un delta projet est son `project_id` canonique ;
+- admin/godmode peuvent auditer mais ne signent jamais une decision a la place du professeur ;
 - pendant la migration, `project_scope` doit etre egal au `project_id` ;
 - un objet sans `project_id` reste en mode legacy teacher owner-only.
 

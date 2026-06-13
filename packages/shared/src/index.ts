@@ -678,6 +678,7 @@ export const TeacherDecisionDeltaSchema = z
     reason_code: z.string().min(1).nullable(),
     free_note_ref: z.string().min(1).nullable(),
     teacher_id: z.string().min(1),
+    project_id: z.string().min(1).nullable().optional(),
     context_refs: z.array(z.string().min(1)),
     created_at: z.number().int().nonnegative(),
   })

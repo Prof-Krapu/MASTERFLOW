@@ -58,6 +58,7 @@ describe('contrats evidence, signaux et deltas professeur', () => {
       reason_code: 'precision',
       free_note_ref: null,
       teacher_id: 'teacher-001',
+      project_id: 'project-001',
       context_refs: ['course-001'],
       created_at: 1,
     };

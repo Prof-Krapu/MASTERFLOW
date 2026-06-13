@@ -128,12 +128,16 @@ teacher_decision_delta:
   reason_code:
   free_note_ref:
   teacher_id:
+  project_id:
   context_refs:
   created_at:
 ```
 
 Ce delta peut produire un enrichissement candidat. Il ne modifie jamais silencieusement une
 rubrique, une methode ou un modele.
+
+Pour un delta projet, `teacher_id` est obligatoirement l'acteur authentifie, membre `editor+`,
+et `context_refs[0]` reprend le `project_id`. Admin et godmode supervisent sans signer a sa place.
 
 ### 3. Task-aware model routing
 

@@ -23,6 +23,17 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope deltas professeur
+
+`TeacherDecisionDelta` porte maintenant un vrai `project_id`. Le professeur authentifie doit
+etre l'auteur du delta, membre `editor+`, et son premier `context_ref` reprend le projet.
+
+Admin/godmode peuvent superviser mais ne signent jamais a la place du professeur. Merci de
+transmettre cette identite depuis tes surfaces et runners, et de conserver le delta comme trace
+immutable ou source de candidat : aucune application directe sur score, rubrique ou methode.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : bridge Project/Scope OCR
 
 `ocr_prepare` porte maintenant un vrai `project_id`.
