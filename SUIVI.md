@@ -4,6 +4,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — Frontend : surface projets multi-utilisateur — LIVRÉE
+
+**Livrable MALEX/Codex.** Première consommation frontend de la couche Project/Scope multi-utilisateur livrée par Vincent.
+
+Ajouts :
+
+- client API pour `GET /projects`, `GET /projects/:id/members`,
+  `GET /projects/:id/resources` et `POST /projects/:id/resources` ;
+- panneau `Projet` dans le mode Project ;
+- lecture des projets accessibles à l'utilisateur connecté ;
+- lecture des membres et ressources partagées du projet ;
+- rattachement d'une ressource validée à un projet quand le backend l'autorise ;
+- aucun changement backend, aucune création de projet/membre, aucune action sensible ajoutée.
+
+Verification :
+
+- `npm run lint:frontend` ;
+- `npm run build:frontend` ;
+- `npm test` : 42 fichiers / 190 tests ;
+- `npm run lint` ;
+- `git diff --check`.
+
+---
+
 ## 2026-06-13 — Multi-utilisateur RÉEL : partage de ressources par projet + fix gate-ordering — LIVRÉE
 
 **GO Vincent (« rendre l'application multi-utilisateur »).** Construit SUR la fondation Project/Scope de Codex

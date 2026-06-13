@@ -7,18 +7,25 @@ import type {
   AuthResponse,
   CurrentContext,
   Persona,
+  Project,
+  ProjectMember,
+  ProjectMemberRole,
   RegistryStatus,
   Resource,
   WsServerMessage,
 } from '@masterflow/shared';
 
 import {
+  attachProjectResource,
   createAction,
   executeAction,
   getAvailableActions,
   getCurrentContext,
   getPendingActions,
   getPersonas,
+  getProjectMembers,
+  getProjectResources,
+  getProjects,
   getResources,
   login,
   preflightAction,
@@ -71,6 +78,10 @@ type ResourceProposalState = {
   message: string;
   resource?: Resource;
 };
+type ProjectSyncState = {
+  status: 'idle' | 'loading' | 'ready' | 'attaching' | 'synced' | 'error';
+  message: string;
+};
 type RoomSyncState = {
   status: 'idle' | 'syncing' | 'synced' | 'error';
   message: string;
@@ -91,6 +102,13 @@ const ROLE_LABEL: Record<string, string> = {
 
 const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
 const ENTRY_INTENTS: WorkModeId[] = ['learning', 'teaching', 'story', 'project', 'inventory'];
+const PROJECT_ROLE_LABEL: Record<ProjectMemberRole, string> = {
+  viewer: 'lecture',
+  participant: 'participant',
+  editor: 'edition',
+  owner: 'owner',
+  admin: 'admin projet',
+};
 const ENTRY_DENSITIES: Array<{id: EntryDensity; label: string; signal: string}> = [
   {id: 'low', label: 'Calme', signal: 'peu dense'},
   {id: 'medium', label: 'Equilibre', signal: 'standard'},
@@ -131,6 +149,11 @@ function canReviewResources(role: string | undefined): boolean {
   return role === 'admin' || role === 'godmode';
 }
 
+function canAttachProjectResource(role: string | undefined, memberRole: ProjectMemberRole | null): boolean {
+  if (role === 'admin' || role === 'godmode') return true;
+  return memberRole === 'owner' || memberRole === 'admin';
+}
+
 function entryStorageKey(userId: string): string {
   return `${ENTRY_STORAGE_PREFIX}${userId}`;
 }
@@ -169,6 +192,15 @@ function App(): ReactElement {
   const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [resourceCandidates, setResourceCandidates] = useState<Resource[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [projectMembers, setProjectMembers] = useState<ProjectMember[]>([]);
+  const [projectResources, setProjectResources] = useState<Resource[]>([]);
+  const [projectResourceId, setProjectResourceId] = useState('');
+  const [projectSync, setProjectSync] = useState<ProjectSyncState>({
+    status: 'idle',
+    message: 'Aucun projet charge.',
+  });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [state, setState] = useState<LoadState>('idle');
@@ -268,6 +300,7 @@ function App(): ReactElement {
         getAvailableActions(token),
         getResources(token),
       ]);
+      const nextProjects = await getProjects(token);
       setContext(current);
       const storedEntry = readEntryProfile(current.user.id);
       setEntryProfile(storedEntry);
@@ -277,6 +310,18 @@ function App(): ReactElement {
       setPersonas(nextPersonas);
       setActions(nextActions);
       setResources(nextResources);
+      setProjects(nextProjects);
+      setSelectedProjectId((currentProjectId) => (
+        currentProjectId && nextProjects.some((project) => project.project_id === currentProjectId)
+          ? currentProjectId
+          : nextProjects[0]?.project_id ?? ''
+      ));
+      setProjectSync({
+        status: nextProjects.length > 0 ? 'ready' : 'idle',
+        message: nextProjects.length > 0
+          ? `${nextProjects.length} projet(s) accessible(s).`
+          : 'Aucun projet accessible pour cet utilisateur.',
+      });
       setState('ready');
     } catch (err) {
       setState('error');
@@ -311,6 +356,11 @@ function App(): ReactElement {
     setActions([]);
     setResources([]);
     setResourceCandidates([]);
+    setProjects([]);
+    setSelectedProjectId('');
+    setProjectMembers([]);
+    setProjectResources([]);
+    setProjectResourceId('');
     setToken(null);
     setState('idle');
     setSelectedMode('home');
@@ -325,6 +375,7 @@ function App(): ReactElement {
     setResourceUrl('');
     setResourceSubjects('');
     setResourceProposal({status: 'idle', message: 'Aucune proposition en attente.'});
+    setProjectSync({status: 'idle', message: 'Aucun projet charge.'});
     setRoomSync({status: 'idle', message: 'Instance non synchronisee.'});
     setWsState('idle');
     setChatInput('');
@@ -449,6 +500,36 @@ function App(): ReactElement {
       });
     }
   }, [auth, canReviewResourceTruth]);
+
+  const refreshProjectSurface = useCallback(async (projectId: string): Promise<void> => {
+    if (!auth || !projectId) {
+      setProjectMembers([]);
+      setProjectResources([]);
+      setProjectSync({status: 'idle', message: 'Aucun projet selectionne.'});
+      return;
+    }
+
+    setProjectSync({status: 'loading', message: 'Chargement du projet.'});
+    try {
+      const [members, sharedResources] = await Promise.all([
+        getProjectMembers(projectId, auth.token),
+        getProjectResources(projectId, auth.token),
+      ]);
+      setProjectMembers(members);
+      setProjectResources(sharedResources);
+      setProjectSync({
+        status: 'ready',
+        message: `${sharedResources.length} ressource(s) partagee(s), ${members.length} membre(s).`,
+      });
+    } catch (err) {
+      setProjectMembers([]);
+      setProjectResources([]);
+      setProjectSync({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Projet indisponible.',
+      });
+    }
+  }, [auth]);
 
   const runApprovedAction = useCallback(async (action: Action): Promise<void> => {
     if (!auth) return;
@@ -629,6 +710,26 @@ function App(): ReactElement {
     }
   }, [auth, refreshResources]);
 
+  const handleAttachProjectResource = useCallback(async (): Promise<void> => {
+    if (!auth || !selectedProjectId || !projectResourceId) return;
+
+    setProjectSync({status: 'attaching', message: 'Rattachement de la ressource au projet.'});
+    try {
+      await attachProjectResource(selectedProjectId, {
+        resource_id: projectResourceId,
+        access_level: 'read',
+      }, auth.token);
+      setProjectResourceId('');
+      await refreshProjectSurface(selectedProjectId);
+      setProjectSync({status: 'synced', message: 'Ressource partagee avec le projet.'});
+    } catch (err) {
+      setProjectSync({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Rattachement impossible.',
+      });
+    }
+  }, [auth, projectResourceId, refreshProjectSurface, selectedProjectId]);
+
   useEffect(() => {
     document.title = isConnected ? 'MasterFlow - Home Room' : 'MasterFlow - Connexion';
   }, [isConnected]);
@@ -642,6 +743,32 @@ function App(): ReactElement {
     if (!auth || !context || showEntryGate) return;
     void refreshResources();
   }, [auth, canReviewResourceTruth, context, refreshResources, showEntryGate]);
+
+  useEffect(() => {
+    if (!auth || !context || showEntryGate) return;
+    void refreshProjectSurface(selectedProjectId);
+  }, [auth, context, refreshProjectSurface, selectedProjectId, showEntryGate]);
+
+  const selectedProject = useMemo(
+    () => projects.find((project) => project.project_id === selectedProjectId) ?? null,
+    [projects, selectedProjectId],
+  );
+  const currentProjectMember = useMemo(() => {
+    if (!context) return null;
+    return projectMembers.find((member) => member.user_id === context.user.id) ?? null;
+  }, [context, projectMembers]);
+  const sharedResourceIds = useMemo(
+    () => new Set(projectResources.map((resource) => resource.id)),
+    [projectResources],
+  );
+  const attachableResources = useMemo(
+    () => resources.filter((resource) => !sharedResourceIds.has(resource.id)),
+    [resources, sharedResourceIds],
+  );
+  const canAttachCurrentProjectResource = canAttachProjectResource(
+    context?.user.role,
+    currentProjectMember?.role ?? null,
+  );
 
   useEffect(() => {
     if (!auth || !context || showEntryGate) return undefined;
@@ -1038,6 +1165,110 @@ function App(): ReactElement {
               </div>
             ) : null}
           </article>
+
+          {activeMode.id === 'project' ? (
+            <article className="panel panel--wide project-panel">
+              <div className="panel-header">
+                <h2>Projet</h2>
+                <span className="counter">{projects.length}</span>
+              </div>
+              <div className={`project-state project-state--${projectSync.status}`} aria-live="polite">
+                <strong>{projectSync.status}</strong>
+                <span>{projectSync.message}</span>
+              </div>
+
+              {projects.length > 0 ? (
+                <>
+                  <label className="project-selector">
+                    Projet actif
+                    <select
+                      onChange={(event) => setSelectedProjectId(event.target.value)}
+                      value={selectedProjectId}
+                    >
+                      {projects.map((project) => (
+                        <option key={project.project_id} value={project.project_id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <div className="project-grid">
+                    <section className="project-section">
+                      <div className="panel-header">
+                        <h3>Ressources partagees</h3>
+                        <span className="counter">{projectResources.length}</span>
+                      </div>
+                      {projectResources.length > 0 ? (
+                        <div className="resource-list">
+                          {projectResources.slice(0, 6).map((resource) => (
+                            <a className="resource-item" href={resource.url ?? '#'} key={resource.id}>
+                              <strong>{resource.title}</strong>
+                              <span>{resource.source}</span>
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="muted compact">Aucune ressource partagee dans ce projet.</p>
+                      )}
+                    </section>
+
+                    <section className="project-section">
+                      <div className="panel-header">
+                        <h3>Membres</h3>
+                        <span className="counter">{projectMembers.length}</span>
+                      </div>
+                      <div className="member-list">
+                        {projectMembers.slice(0, 8).map((member) => (
+                          <article className="member-item" key={`${member.project_id}-${member.user_id}`}>
+                            <strong>{member.user_id === context?.user.id ? 'Vous' : member.user_id}</strong>
+                            <span>{PROJECT_ROLE_LABEL[member.role]}</span>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  </div>
+
+                  <div className="project-attach">
+                    <div>
+                      <strong>{selectedProject?.name ?? 'Projet'}</strong>
+                      <span>
+                        {canAttachCurrentProjectResource
+                          ? 'Rattachement autorise par le backend pour ce role.'
+                          : 'Lecture projet active ; rattachement reserve owner/admin.'}
+                      </span>
+                    </div>
+                    <select
+                      aria-label="Ressource a partager"
+                      disabled={!canAttachCurrentProjectResource || attachableResources.length === 0}
+                      onChange={(event) => setProjectResourceId(event.target.value)}
+                      value={projectResourceId}
+                    >
+                      <option value="">Choisir une source validee</option>
+                      {attachableResources.map((resource) => (
+                        <option key={resource.id} value={resource.id}>
+                          {resource.title}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      disabled={
+                        !canAttachCurrentProjectResource ||
+                        projectSync.status === 'attaching' ||
+                        projectResourceId.length === 0
+                      }
+                      onClick={() => void handleAttachProjectResource()}
+                      type="button"
+                    >
+                      Partager
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="muted compact">Aucun projet accessible. Le backend Project/Scope est pret, mais aucun espace n est encore assigne a ce compte.</p>
+              )}
+            </article>
+          ) : null}
 
           {canValidate ? (
             <article className="panel panel--wide validation-panel">

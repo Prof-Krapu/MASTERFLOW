@@ -8,8 +8,11 @@ import type {
   CurrentContext,
   Invitation,
   Persona,
+  Project,
+  ProjectMember,
   ProposeResource,
   Resource,
+  ResourceScope,
   RoomInstance,
   SearchResourcesResponse,
   TokenUsageGroupBy,
@@ -147,6 +150,31 @@ export async function proposeResource(body: ProposeResource, token?: string | nu
 
 export async function validateResource(resourceId: string, token?: string | null): Promise<Resource> {
   return request<Resource>(`/resources/${encodeURIComponent(resourceId)}/validate`, {method: 'POST'}, token);
+}
+
+// ───────────────────────── Projets / scopes ─────────────────────────
+
+export async function getProjects(token?: string | null): Promise<Project[]> {
+  return request<Project[]>('/projects', {method: 'GET'}, token);
+}
+
+export async function getProjectMembers(projectId: string, token?: string | null): Promise<ProjectMember[]> {
+  return request<ProjectMember[]>(`/projects/${encodeURIComponent(projectId)}/members`, {method: 'GET'}, token);
+}
+
+export async function getProjectResources(projectId: string, token?: string | null): Promise<Resource[]> {
+  return request<Resource[]>(`/projects/${encodeURIComponent(projectId)}/resources`, {method: 'GET'}, token);
+}
+
+export async function attachProjectResource(
+  projectId: string,
+  body: {resource_id: string; access_level: 'read' | 'write' | 'admin'},
+  token?: string | null,
+): Promise<ResourceScope> {
+  return request<ResourceScope>(`/projects/${encodeURIComponent(projectId)}/resources`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
 }
 
 // ───────────────────────── Administration (gated admin/godmode) ─────────────────────────
