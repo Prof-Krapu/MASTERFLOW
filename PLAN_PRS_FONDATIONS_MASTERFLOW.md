@@ -45,8 +45,9 @@ Diagnostics workflows, friction, latence, completion, cout nullable.
 Contrats partages et migrations pour evidence events, pedagogical signals, teacher decision
 deltas et task model profiles. Aucune correction, note ou adaptation automatique.
 
-Etat : contrats Zod et tests de garde initiaux livres sur la branche MALEX/Codex ; migrations,
-permissions internes et events restent a completer avec Vincent.
+Etat : contrats Zod, migrations SQLite, depot interne permissionne, audits et tests livres sur la
+branche MALEX/Codex. Project/Scope doit ensuite remplacer la restriction conservatrice
+`teacher = owner` avant toute route ou adapter runtime.
 
 Reference :
 

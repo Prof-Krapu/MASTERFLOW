@@ -296,6 +296,7 @@ export const PedagogicalSignalSchema = z.object({
     'drift',
   ]),
   level: z.enum(['individual', 'group', 'cohort', 'course', 'method', 'system']),
+  project_scope: z.string().min(1),
   evidence_refs: z.array(z.string().min(1)).min(1),
   recurrence: z.number().int().nonnegative(),
   contradiction_refs: z.array(z.string().min(1)),

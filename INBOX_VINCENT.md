@@ -33,12 +33,16 @@ exports, egress gated et transport desktop.
 Action demandee :
 
 1. utiliser le bridge comme mapping de reference ;
-2. relire les contrats PR-CB0 deja poses dans `packages/shared/src/index.ts` et leurs tests dans
-   `apps/backend/tests/pedagogical_contracts.test.ts` ;
-3. proposer la suite PR-CB0 : migrations, permissions internes et events, sans routes publiques ;
+2. relire la tranche PR-CB0 deja posee :
+   - contrats dans `packages/shared/src/index.ts` ;
+   - migrations dans `apps/backend/src/db/schema.ts` ;
+   - depot interne dans `apps/backend/src/services/pedagogical_records.ts` ;
+   - tests `pedagogical_contracts`, `pedagogical_storage`, `pedagogical_records` ;
+3. challenger les contraintes et proposer les adaptations necessaires a Project/Scope ;
 4. ne creer aucun nouvel engine ;
 5. conserver chaque proposition IA et decision prof comme objets distincts ;
-6. repondre avec les tables/tests complementaires et les incompatibilites eventuelles.
+6. ne pas ajouter de route publique ou de statut `live` avant scopes et recette ;
+7. repondre avec les incompatibilites eventuelles et la prochaine PR courte.
 
 Le gain cle est la boucle :
 

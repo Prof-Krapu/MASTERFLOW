@@ -6,7 +6,11 @@ Implementation initiale Git :
 
 - schemas Zod additifs poses dans `packages/shared/src/index.ts` ;
 - tests de garde poses dans `apps/backend/tests/pedagogical_contracts.test.ts` ;
-- aucune route, table ou capability `live` ajoutee a ce stade.
+- migrations SQLite idempotentes posees dans `apps/backend/src/db/schema.ts` ;
+- tests de contraintes et defaults poses dans `apps/backend/tests/pedagogical_storage.test.ts` ;
+- depot interne permissionne pose dans `apps/backend/src/services/pedagogical_records.ts` ;
+- teacher limite a ses objets tant que Project/Scope n'existe pas, profils modele admin en draft ;
+- aucune route ou capability `live` ajoutee a ce stade.
 
 ## But
 
@@ -68,6 +72,7 @@ interface PedagogicalSignal {
     | 'subject_quality'
     | 'drift';
   level: 'individual' | 'group' | 'cohort' | 'course' | 'method' | 'system';
+  project_scope: string;
   evidence_refs: string[];
   recurrence: number;
   contradiction_refs: string[];

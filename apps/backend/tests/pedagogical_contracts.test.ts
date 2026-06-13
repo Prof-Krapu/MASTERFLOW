@@ -31,6 +31,7 @@ describe('contrats evidence, signaux et deltas professeur', () => {
       signal_id: 'signal-001',
       signal_type: 'confusion',
       level: 'cohort',
+      project_scope: 'course-001',
       evidence_refs: ['evidence-001'],
       recurrence: 2,
       contradiction_refs: [],

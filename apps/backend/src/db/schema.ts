@@ -188,6 +188,100 @@ function migrate(d: Database.Database): void {
       room_instance_id  TEXT
     );
 
+    -- ───────────────────────── Evidence & signaux pédagogiques ────────────
+    -- Fondation PR-CB0 : persistance interne uniquement, aucune route publique.
+    CREATE TABLE IF NOT EXISTS evidence_events (
+      id                    TEXT PRIMARY KEY,
+      source_type           TEXT NOT NULL
+                              CHECK (source_type IN (
+                                'submission','rubric','transcript','wooclap',
+                                'survey','teacher_note','calendar'
+                              )),
+      adapter_id            TEXT NOT NULL,
+      owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_scope         TEXT NOT NULL,
+      target_refs_json      TEXT NOT NULL,
+      payload_ref           TEXT NOT NULL,
+      extraction_confidence REAL
+                              CHECK (
+                                extraction_confidence IS NULL
+                                OR (extraction_confidence >= 0 AND extraction_confidence <= 1)
+                              ),
+      privacy_level         TEXT NOT NULL DEFAULT 'private'
+                              CHECK (privacy_level IN ('private','restricted','shared')),
+      occurred_at           INTEGER NOT NULL,
+      status                TEXT NOT NULL DEFAULT 'candidate'
+                              CHECK (status IN ('candidate','validated','rejected','archived')),
+      created_at            INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS pedagogical_signals (
+      id                      TEXT PRIMARY KEY,
+      signal_type             TEXT NOT NULL
+                                CHECK (signal_type IN (
+                                  'progression','blockage','confusion','overload',
+                                  'method','subject_quality','drift'
+                                )),
+      level                   TEXT NOT NULL
+                                CHECK (level IN (
+                                  'individual','group','cohort','course','method','system'
+                                )),
+      project_scope           TEXT NOT NULL,
+      evidence_refs_json      TEXT NOT NULL,
+      recurrence              INTEGER NOT NULL DEFAULT 0 CHECK (recurrence >= 0),
+      contradiction_refs_json TEXT NOT NULL DEFAULT '[]',
+      confidence              REAL
+                                CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1)),
+      sensitivity             TEXT NOT NULL DEFAULT 'sensitive'
+                                CHECK (sensitivity IN ('normal','sensitive','highly_sensitive')),
+      status                  TEXT NOT NULL DEFAULT 'observation'
+                                CHECK (status IN (
+                                  'observation','hypothesis','candidate_pattern',
+                                  'validated_alert','stale','archived'
+                                )),
+      created_at              INTEGER NOT NULL,
+      updated_at              INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS teacher_decision_deltas (
+      id                 TEXT PRIMARY KEY,
+      object_type        TEXT NOT NULL
+                           CHECK (object_type IN (
+                             'criterion_score','feedback','rubric',
+                             'calibration','subject','remediation'
+                           )),
+      object_ref         TEXT NOT NULL,
+      ai_proposal_ref    TEXT NOT NULL,
+      human_decision_ref TEXT NOT NULL,
+      changed_fields_json TEXT NOT NULL,
+      reason_code        TEXT,
+      free_note_ref      TEXT,
+      teacher_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      context_refs_json  TEXT NOT NULL DEFAULT '[]',
+      created_at         INTEGER NOT NULL,
+      CHECK (ai_proposal_ref <> human_decision_ref)
+    );
+
+    CREATE TABLE IF NOT EXISTS task_model_profiles (
+      id                     TEXT PRIMARY KEY,
+      task                   TEXT NOT NULL
+                               CHECK (task IN (
+                                 'ocr','rubric_extraction','criterion_analysis',
+                                 'feedback_draft','cohort_synthesis','subject_revision','chat'
+                               )),
+      allowed_providers_json TEXT NOT NULL,
+      fallback_order_json    TEXT NOT NULL DEFAULT '[]',
+      privacy_mode           TEXT NOT NULL
+                               CHECK (privacy_mode IN ('local_only','approved_remote','hybrid')),
+      max_cost_eur           REAL CHECK (max_cost_eur IS NULL OR max_cost_eur >= 0),
+      max_latency_ms         INTEGER CHECK (max_latency_ms IS NULL OR max_latency_ms > 0),
+      status                 TEXT NOT NULL DEFAULT 'draft'
+                               CHECK (status IN ('draft','validated','disabled')),
+      created_at             INTEGER NOT NULL,
+      updated_at             INTEGER NOT NULL,
+      updated_by             TEXT REFERENCES users(id)
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
@@ -199,6 +293,20 @@ function migrate(d: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_token_events_user    ON token_events(user_id);
     CREATE INDEX IF NOT EXISTS idx_token_events_user_ts ON token_events(user_id, ts);
     CREATE INDEX IF NOT EXISTS idx_revoked_expires     ON revoked_tokens(expires_at);
+    CREATE INDEX IF NOT EXISTS idx_evidence_scope_status
+      ON evidence_events(project_scope, status, occurred_at);
+    CREATE INDEX IF NOT EXISTS idx_evidence_owner
+      ON evidence_events(owner_id, occurred_at);
+    CREATE INDEX IF NOT EXISTS idx_signals_scope_status
+      ON pedagogical_signals(project_scope, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_signals_type_level
+      ON pedagogical_signals(signal_type, level);
+    CREATE INDEX IF NOT EXISTS idx_teacher_deltas_teacher
+      ON teacher_decision_deltas(teacher_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_teacher_deltas_object
+      ON teacher_decision_deltas(object_type, object_ref);
+    CREATE INDEX IF NOT EXISTS idx_task_model_profiles_task
+      ON task_model_profiles(task, status);
   `);
 }
 
@@ -308,4 +416,62 @@ export interface ResourceRow {
   status: 'candidate' | 'validated' | 'deprecated';
   subjects_json: string | null;
   created_at: number;
+}
+
+export interface EvidenceEventRow {
+  id: string;
+  source_type: string;
+  adapter_id: string;
+  owner_id: string;
+  project_scope: string;
+  target_refs_json: string;
+  payload_ref: string;
+  extraction_confidence: number | null;
+  privacy_level: 'private' | 'restricted' | 'shared';
+  occurred_at: number;
+  status: 'candidate' | 'validated' | 'rejected' | 'archived';
+  created_at: number;
+}
+
+export interface PedagogicalSignalRow {
+  id: string;
+  signal_type: string;
+  level: string;
+  project_scope: string;
+  evidence_refs_json: string;
+  recurrence: number;
+  contradiction_refs_json: string;
+  confidence: number | null;
+  sensitivity: 'normal' | 'sensitive' | 'highly_sensitive';
+  status: 'observation' | 'hypothesis' | 'candidate_pattern' | 'validated_alert' | 'stale' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface TeacherDecisionDeltaRow {
+  id: string;
+  object_type: string;
+  object_ref: string;
+  ai_proposal_ref: string;
+  human_decision_ref: string;
+  changed_fields_json: string;
+  reason_code: string | null;
+  free_note_ref: string | null;
+  teacher_id: string;
+  context_refs_json: string;
+  created_at: number;
+}
+
+export interface TaskModelProfileRow {
+  id: string;
+  task: string;
+  allowed_providers_json: string;
+  fallback_order_json: string;
+  privacy_mode: 'local_only' | 'approved_remote' | 'hybrid';
+  max_cost_eur: number | null;
+  max_latency_ms: number | null;
+  status: 'draft' | 'validated' | 'disabled';
+  created_at: number;
+  updated_at: number;
+  updated_by: string | null;
 }

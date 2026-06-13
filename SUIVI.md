@@ -20,6 +20,13 @@ Ajouts :
 - premiere implementation additive PR-CB0 dans `packages/shared` :
   `EvidenceEvent`, `PedagogicalSignal`, `TeacherDecisionDelta`, `TaskModelProfile` ;
 - tests de garde des preuves, confiances, deltas IA/humain et profils de tache.
+- migrations SQLite idempotentes des quatre objets, avec privacy privee par defaut, statuts
+  fermes, confiances bornees et separation obligatoire proposition IA / decision humaine ;
+- indexes scope/statut/date et tests de persistance, sans route publique.
+- depot interne permissionne : teacher limite a ses propres preuves/deltas, signaux obligatoirement
+  relies a des preuves accessibles, profils de modele reserves admin et forces en `draft` ;
+- audits `evidence.captured`, `signal.observed`, `teacher_delta.recorded` et
+  `model_profile.proposed`, sans payload pedagogique sensible dans les logs.
 
 Le terrain partage prepare :
 
