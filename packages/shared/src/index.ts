@@ -121,6 +121,119 @@ export const AttachProjectResourceRequestSchema = z.object({
 });
 export type AttachProjectResourceRequest = z.infer<typeof AttachProjectResourceRequestSchema>;
 
+// ───────────────────────── Inventory Core ─────────────────────────
+
+export const InventoryScopeTypeSchema = z.enum(['user', 'project']);
+export type InventoryScopeType = z.infer<typeof InventoryScopeTypeSchema>;
+
+export const InventoryVisibilityScopeSchema = z.enum(['private', 'project']);
+export type InventoryVisibilityScope = z.infer<typeof InventoryVisibilityScopeSchema>;
+
+export const InventoryValidationStatusSchema = z.enum(['candidate', 'validated', 'archived']);
+export type InventoryValidationStatus = z.infer<typeof InventoryValidationStatusSchema>;
+
+export const InventoryItemTypeSchema = z.enum([
+  'book',
+  'comic',
+  'manga',
+  'artbook',
+  'art_supply',
+  'tool',
+  'gear',
+  'software',
+  'product',
+  'archive',
+  'custom',
+]);
+export type InventoryItemType = z.infer<typeof InventoryItemTypeSchema>;
+
+export const InventoryItemStatusSchema = z.enum([
+  'detected',
+  'owned_confirmed',
+  'owned_declared',
+  'wishlist',
+  'complete_declared',
+  'selective',
+  'not_interested',
+  'abandoned',
+  'duplicate',
+  'loan',
+  'sell_or_give',
+  'to_verify',
+]);
+export type InventoryItemStatus = z.infer<typeof InventoryItemStatusSchema>;
+
+export const InventoryCollectionSchema = z.object({
+  collection_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  scope_type: InventoryScopeTypeSchema,
+  label: z.string().min(1).max(180),
+  description: z.string().max(1000).nullable(),
+  visibility_scope: InventoryVisibilityScopeSchema,
+  validation_status: InventoryValidationStatusSchema,
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type InventoryCollection = z.infer<typeof InventoryCollectionSchema>;
+
+export const InventoryItemSchema = z.object({
+  item_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  collection_id: z.string().min(1).nullable(),
+  scope_type: InventoryScopeTypeSchema,
+  type: InventoryItemTypeSchema,
+  label: z.string().min(1).max(240),
+  creator_or_brand: z.string().max(240).nullable(),
+  item_status: InventoryItemStatusSchema,
+  validation_status: InventoryValidationStatusSchema,
+  intent: z.string().max(240).nullable(),
+  quantity: z.number().int().positive(),
+  condition: z.string().max(120).nullable(),
+  estimated_value: z.number().nonnegative().nullable(),
+  replacement_cost: z.number().nonnegative().nullable(),
+  usage_tags: z.array(z.string().min(1).max(80)),
+  source_refs: z.array(z.string().min(1).max(240)),
+  visibility_scope: InventoryVisibilityScopeSchema,
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+  archived_at: z.number().int().nonnegative().nullable(),
+});
+export type InventoryItem = z.infer<typeof InventoryItemSchema>;
+
+export const CreateInventoryCollectionRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  label: z.string().min(1).max(180),
+  description: z.string().max(1000).nullable().optional(),
+  visibility_scope: InventoryVisibilityScopeSchema.optional(),
+});
+export type CreateInventoryCollectionRequest = z.input<typeof CreateInventoryCollectionRequestSchema>;
+
+export const CreateInventoryItemRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  collection_id: z.string().min(1).nullable().optional(),
+  type: InventoryItemTypeSchema,
+  label: z.string().min(1).max(240),
+  creator_or_brand: z.string().max(240).nullable().optional(),
+  item_status: InventoryItemStatusSchema.default('detected'),
+  intent: z.string().max(240).nullable().optional(),
+  quantity: z.number().int().positive().default(1),
+  condition: z.string().max(120).nullable().optional(),
+  estimated_value: z.number().nonnegative().nullable().optional(),
+  replacement_cost: z.number().nonnegative().nullable().optional(),
+  usage_tags: z.array(z.string().min(1).max(80)).max(30).default([]),
+  source_refs: z.array(z.string().min(1).max(240)).max(30).default([]),
+  visibility_scope: InventoryVisibilityScopeSchema.optional(),
+});
+export type CreateInventoryItemRequest = z.input<typeof CreateInventoryItemRequestSchema>;
+
+export const ListInventoryItemsRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  include_candidates: z.boolean().default(false),
+});
+export type ListInventoryItemsRequest = z.input<typeof ListInventoryItemsRequestSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

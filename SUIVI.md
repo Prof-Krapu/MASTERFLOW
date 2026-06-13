@@ -4,6 +4,38 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-13 — PR-INV-1 Inventory Core — PRET A PUSH
+
+**Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**
+
+But : poser l'inventaire comme source de verite minimale avant OCR, RAG Inventory, UI et
+MasterStory props.
+
+Sources canon Drive relues :
+
+- `03_APPS/INVENTORY_APP_RUNTIME.md`
+- `04_ENGINES/INVENTORY_ENGINE.md`
+- `02_CONTRACTS/REFERENCE_INVENTORY_OCR_COLLECTION_GRAPH_CONTRACT.md`
+- `02_CONTRACTS/RESOURCE_TRUTH_LOCK_AND_CANONICAL_ROUTING_CONTRACT.md`
+
+Ajouts :
+
+- contrats shared `InventoryItem`, `InventoryCollection`, payloads create/list ;
+- tables `inventory_items`, `inventory_collections`, `collection_matches`, `inventory_visibility` ;
+- service et router `/inventory/*` ;
+- cycle minimal candidat -> validation explicite -> archive ;
+- permissions : inventaire personnel prive par defaut ; inventaire projet cree/valide par editor+ ;
+  les membres projet ne voient que les items `validated` en visibility `project` ;
+- invariant : aucune ressource RAG n'est creee automatiquement depuis un item Inventory.
+
+Hors scope volontaire : OCR photo, matching avance, mouvements de stock, reservations, prix,
+BGE/Qdrant, UI Inventory.
+
+Recette avant commit : backend complet **238/238**, test Inventory cible **5/5**,
+backend/frontend TypeScript OK, frontend build OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-13 — PR-RAG-1 contrat transversal — PRET A PUSH
 
 **Livrable MALEX/Codex. GO humain MALEX recu pour commit/push.**

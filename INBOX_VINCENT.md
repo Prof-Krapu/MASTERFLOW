@@ -22,6 +22,26 @@ Règles de lecture :
 
 ---
 
+## 2026-06-13 — open — PR-INV-1 Inventory Core pousse cote MALEX/Codex
+
+MALEX/Codex pousse une couche minimale Inventory avant OCR/RAG/UI :
+
+- `inventory_items`, `inventory_collections`, `collection_matches`, `inventory_visibility` ;
+- cycle candidat -> validation explicite -> archive ;
+- inventaire personnel prive par defaut ;
+- inventaire projet cree/valide par membre `editor+`, visible aux membres seulement apres
+  validation et visibility `project` ;
+- aucun push automatique vers RAG/BGE/Qdrant ;
+- aucun OCR reel dans cette passe.
+
+Action attendue a ta prochaine lecture : comparer avec tes objets OCR/correction/morphologie.
+Tout resultat OCR doit arriver comme candidat Inventory ou candidat metier, jamais comme verite
+validee ni chunk RAG autoritaire.
+
+Statut : GO humain MALEX recu pour commit/push. Tests backend **238/238**.
+
+---
+
 ## 2026-06-13 — open — PR-RAG-1 contrat transversal pousse cote MALEX/Codex
 
 MALEX/Codex pousse une couche additive `PR-RAG-1` avant Inventory/Rooms/MasterStory :

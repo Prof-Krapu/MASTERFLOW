@@ -118,6 +118,77 @@ function migrate(d: Database.Database): void {
       UNIQUE(owner_type, owner_id, object_type, object_id, scope)
     );
 
+    -- ───────────────────────── Inventory Core ─────────────────────────────
+    CREATE TABLE IF NOT EXISTS inventory_collections (
+      id                TEXT PRIMARY KEY,
+      owner_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id        TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      scope_type        TEXT NOT NULL CHECK (scope_type IN ('user','project')),
+      label             TEXT NOT NULL,
+      description       TEXT,
+      visibility_scope  TEXT NOT NULL DEFAULT 'private'
+                          CHECK (visibility_scope IN ('private','project')),
+      validation_status TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (validation_status IN ('candidate','validated','archived')),
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS inventory_items (
+      id                TEXT PRIMARY KEY,
+      owner_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id        TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      collection_id     TEXT REFERENCES inventory_collections(id) ON DELETE SET NULL,
+      scope_type        TEXT NOT NULL CHECK (scope_type IN ('user','project')),
+      type              TEXT NOT NULL,
+      label             TEXT NOT NULL,
+      creator_or_brand  TEXT,
+      item_status       TEXT NOT NULL DEFAULT 'detected'
+                          CHECK (item_status IN (
+                            'detected','owned_confirmed','owned_declared','wishlist',
+                            'complete_declared','selective','not_interested','abandoned',
+                            'duplicate','loan','sell_or_give','to_verify'
+                          )),
+      validation_status TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (validation_status IN ('candidate','validated','archived')),
+      intent            TEXT,
+      quantity          INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+      condition         TEXT,
+      estimated_value   REAL,
+      replacement_cost  REAL,
+      usage_tags_json   TEXT NOT NULL DEFAULT '[]',
+      source_refs_json  TEXT NOT NULL DEFAULT '[]',
+      visibility_scope  TEXT NOT NULL DEFAULT 'private'
+                          CHECK (visibility_scope IN ('private','project')),
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL,
+      archived_at       INTEGER
+    );
+
+    CREATE TABLE IF NOT EXISTS collection_matches (
+      id            TEXT PRIMARY KEY,
+      item_id       TEXT NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+      collection_id TEXT NOT NULL REFERENCES inventory_collections(id) ON DELETE CASCADE,
+      match_status  TEXT NOT NULL DEFAULT 'candidate'
+                    CHECK (match_status IN ('candidate','confirmed','rejected')),
+      confidence    REAL,
+      source_ref    TEXT,
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL,
+      UNIQUE(item_id, collection_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS inventory_visibility (
+      object_type  TEXT NOT NULL CHECK (object_type IN ('item','collection')),
+      object_id    TEXT NOT NULL,
+      scope_type   TEXT NOT NULL CHECK (scope_type IN ('user','project')),
+      scope_id     TEXT NOT NULL,
+      access_level TEXT NOT NULL DEFAULT 'read'
+                   CHECK (access_level IN ('read','write','admin')),
+      created_at   INTEGER NOT NULL,
+      PRIMARY KEY (object_type, object_id, scope_type, scope_id)
+    );
+
     -- ───────────────────────── Rooms (UI Room OS) ──────────────────────────
     CREATE TABLE IF NOT EXISTS rooms (
       id          TEXT PRIMARY KEY,
@@ -938,6 +1009,14 @@ function migrate(d: Database.Database): void {
       ON ownership_edges(object_type, object_id, scope);
     CREATE INDEX IF NOT EXISTS idx_resource_scopes_scope
       ON resource_scopes(scope_type, scope_id, access_level);
+    CREATE INDEX IF NOT EXISTS idx_inventory_items_owner
+      ON inventory_items(owner_id, validation_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_inventory_items_project
+      ON inventory_items(project_id, visibility_scope, validation_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_inventory_collections_owner
+      ON inventory_collections(owner_id, validation_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_inventory_visibility_scope
+      ON inventory_visibility(scope_type, scope_id, access_level);
     CREATE INDEX IF NOT EXISTS idx_rag_resources_scope
       ON rag_resources(scope_type, scope_id, status, trust_status);
     CREATE INDEX IF NOT EXISTS idx_rag_chunks_resource
@@ -1159,6 +1238,66 @@ export interface ResourceScopeRow {
   scope_id: string;
   access_level: 'read' | 'write' | 'admin';
   created_at: number;
+}
+
+export interface InventoryCollectionRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  scope_type: 'user' | 'project';
+  label: string;
+  description: string | null;
+  visibility_scope: 'private' | 'project';
+  validation_status: 'candidate' | 'validated' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface InventoryItemRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  collection_id: string | null;
+  scope_type: 'user' | 'project';
+  type:
+    | 'book'
+    | 'comic'
+    | 'manga'
+    | 'artbook'
+    | 'art_supply'
+    | 'tool'
+    | 'gear'
+    | 'software'
+    | 'product'
+    | 'archive'
+    | 'custom';
+  label: string;
+  creator_or_brand: string | null;
+  item_status:
+    | 'detected'
+    | 'owned_confirmed'
+    | 'owned_declared'
+    | 'wishlist'
+    | 'complete_declared'
+    | 'selective'
+    | 'not_interested'
+    | 'abandoned'
+    | 'duplicate'
+    | 'loan'
+    | 'sell_or_give'
+    | 'to_verify';
+  validation_status: 'candidate' | 'validated' | 'archived';
+  intent: string | null;
+  quantity: number;
+  condition: string | null;
+  estimated_value: number | null;
+  replacement_cost: number | null;
+  usage_tags_json: string;
+  source_refs_json: string;
+  visibility_scope: 'private' | 'project';
+  created_at: number;
+  updated_at: number;
+  archived_at: number | null;
 }
 
 export interface RagResourceRow {
