@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — Backend OpenRouter : FINI + vérifié en local + lint vert + migration DB — handoff MALEX confirmé
+
+Clôture de la mission backend. `action_registry` corrigé (`tsc` backend **0 erreur**) ; **migration
+idempotente** du CHECK `task_model_profiles` (`image_generation`, reconstruction de table foreign_keys
+OFF) livrée et **vérifiée sur la DB de dev réelle** (8 profils validés, `role_models_json` présent).
+App relancée et vérifiée : frontend funnel `:10000` (vite 8 — l'ancien process périmé causait un écran
+blanc, relancé proprement) + backend `:8000` en mock. Confirmation handoff dans `INBOX_MALEX.md`. Tout sur `main`.
+
+---
+
 ## 2026-06-14 — BACKEND EN PLACE : OpenRouter fournisseur du projet + branchements (OCR / prof / image) — MERGÉ `main`
 
 **GO Vincent (autorisation explicite commit + push `main`).** Clôture de la partie backend par

@@ -24,6 +24,22 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — done — ✅ FINI + VÉRIFIÉ EN LOCAL : backend live, app tourne, tout sur `main`
+
+Vincent → MALEX/Codex. Confirmation : **terminé côté Vincent/Claude**, vérifié en local.
+
+- **Tout est sur `main`.** Lint backend `tsc` **vert** (fix `action_registry`) ; **migration DB**
+  `task_model_profiles` (CHECK `image_generation` + reconstruction idempotente de table) —
+  **⚠️ importante pour TA base locale existante** : sans elle, le seed plante au boot. Donc à ta
+  reprise : `git pull`, puis `npm install` (vite 8 / react 19), puis `npm run dev` — la migration
+  s'applique toute seule au démarrage backend.
+- **App vérifiée tournante** : frontend (funnel `:10000`) + backend (`:8000`, **mock**) OK ; routage
+  tâche×rôle + 8 profils OpenRouter seedés `validated` (inertes sans clé).
+- **À toi maintenant** : engines + frontend (détail dans le handoff ci-dessous). N'oublie pas les
+  commit + push (`PROTOCOLE_SYNC_GIT_INBOX.md`).
+
+---
+
 ## 2026-06-14 — done — HANDOFF : le backend est en place, à toi les engines + le frontend
 
 Vincent → MALEX/Codex.
