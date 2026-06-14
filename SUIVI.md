@@ -4,6 +4,40 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — Runner OCR réel (OpenRouter, multimodal) — LIVRÉ SUR BRANCHE
+
+Premier runner local réel de MasterFlow, sur branche `claude/ocr-runner-openrouter`
+(`332b8a8`, poussée sur `origin`). **Non mergé sur `main`.** Notif de sync, pas une auto-validation.
+
+**Ce qui est livré** (`apps/backend`) :
+- `runners/ocr_runner.ts` — prend un job `ocr_prepare` (déjà autorisé/créé), charge la source
+  privée via `storage://`, demande à un LLM multimodal d'extraire des candidats d'inventaire
+  STRUCTURÉS, remonte en `needs_review` — **jamais `completed`**. Le runner ne crée aucun
+  `inventory_item` : l'owner valide+ingère via `POST /inventory/ocr-candidates`. Aucun SQL direct.
+- `runners/runner_loop.ts` — boucle générique (heartbeat avant claim, **1 job à la fois**, arrêt
+  propre SIGINT/SIGTERM), doctrine PR-C8/C9/C10. Ne connaît rien d'OCR.
+- `lib/storage.ts` — résolution `storage://` → image base64 (sources privées).
+- `services/llm.ts` — ajout `completeVision()` (multimodal non streamé) : même routage fail-closed
+  que le chat (`resolveLLMRoute` : profil de tâche validé + allowlist egress anti-SSRF), coût/usage
+  inscrits dans `token_events`. En mock → renvoie `[]` (on n'invente jamais de contenu extrait).
+
+**Anti-hallucination** : prompt strict (« uniquement ce qui est réellement visible »), parse
+tolérant qui **REJETTE silencieusement** tout élément non conforme à `InventoryOcrCandidateSchema`,
+cap `MAX_CANDIDATES=50`, `source_ref` complétée si absente. Erreurs caviardées (secrets) + tronquées.
+
+**Recette** : `vitest` **275/275** ✓ (dont `tests/ocr_runner.test.ts` + `tests/storage.test.ts`).
+
+**Gate humain avant merge / run live** (aucun effet réel tant qu'il n'est pas franchi — reste en
+mock) :
+1. un profil `ocr` `status='validated'` dans `task_model_profiles` ;
+2. clé OpenRouter + `LLM_PROVIDER` / `LLM_MODEL` / `LLM_BASE_URL` / `LLM_EGRESS_ALLOWLIST` configurés
+   en env serveur (secrets jamais dans Git ni dans un profil).
+
+**Next** : extension « modèle par profil » (modèle propre à chaque `TaskModelProfile`, routage
+multi-LLM selon rôle/besoin) — préparée sur branche séparée, changement `shared` additif.
+
+---
+
 ## 2026-06-14 — INTÉGRATION main : fast-forward `codex/frontend-masterflow` (20 commits inventory + memory + room) — LIVRÉE + poussée
 
 **GO MALEX (« traites mes tâches »).** La branche `codex/frontend-masterflow` était déjà

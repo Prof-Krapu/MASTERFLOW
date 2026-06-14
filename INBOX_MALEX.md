@@ -24,6 +24,32 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — blocked — Runner OCR réel (OpenRouter) livré sur branche — gate humain avant merge/run live
+
+Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation** (réponse IA ≠ validation
+humaine). Périmètre **backend = mon territoire** ; aucune action requise côté front.
+
+Premier **runner local réel** livré sur `claude/ocr-runner-openrouter` (`332b8a8`, poussée sur
+`origin`, **non mergé sur `main`**). Détail technique : `SUIVI.md` (entrée 2026-06-14 Runner OCR).
+
+- prend un job `ocr_prepare`, extrait des candidats d'inventaire **structurés** via LLM multimodal,
+  remonte en **`needs_review` (jamais `completed`)** ; **ne crée aucun `inventory_item`** —
+  l'owner valide+ingère via `POST /inventory/ocr-candidates` (pont Inventory **que tu as livré**).
+- routage **fail-closed** (`resolveLLMRoute` : profil de tâche validé + allowlist egress anti-SSRF) ;
+  **mock par défaut → `[]`** (aucun contenu inventé) ; anti-hallucination (schéma strict, rejet
+  silencieux des éléments non conformes, cap 50).
+- 1 job à la fois, heartbeat/lease (PR-C8/C9/C10). `vitest` **275/275** ✓.
+
+**Bloqué au gate humain avant tout merge / run live** (sinon reste en mock, zéro effet réel) :
+1. profil `ocr` `status='validated'` dans `task_model_profiles` ;
+2. clé OpenRouter + `LLM_*` (provider/model/base_url/egress_allowlist) en **env serveur** (jamais
+   dans Git ni dans un profil).
+
+Si un point te gêne (forme des candidats, contrat `InventoryOcrCandidate`, pont d'ingestion),
+dépose ici ou dans `SYNC_THREAD_MALEX_VINCENT.md`.
+
+---
+
 ## 2026-06-13 — done — Multi-utilisateur réel sur ta fondation Project/Scope + 🐛 fix gate-ordering (impacte TES routeurs)
 
 Vincent → MALEX/Codex. **GO Vincent « rendre l'app multi-utilisateur ».** Mergé sur `main` (voir SUIVI, entrée
