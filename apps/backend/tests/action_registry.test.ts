@@ -60,6 +60,7 @@ describe('isSensitive', () => {
     validation_required: false,
     ui_surface: 'none',
     status: 'live',
+    minimum_role: 'student',
     ...overrides,
   });
 
