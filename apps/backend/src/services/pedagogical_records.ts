@@ -124,6 +124,7 @@ function toTaskModelProfileDTO(row: TaskModelProfileRow): TaskModelProfile {
     task: row.task,
     allowed_providers: JSON.parse(row.allowed_providers_json) as unknown,
     fallback_order: JSON.parse(row.fallback_order_json) as unknown,
+    model: row.model ?? null,
     privacy_mode: row.privacy_mode,
     max_cost_eur: row.max_cost_eur,
     max_latency_ms: row.max_latency_ms,
@@ -329,13 +330,14 @@ export function saveTaskModelProfileDraft(
   getDb()
     .prepare(
       `INSERT INTO task_model_profiles
-         (id, task, allowed_providers_json, fallback_order_json, privacy_mode,
+         (id, task, allowed_providers_json, fallback_order_json, model, privacy_mode,
           max_cost_eur, max_latency_ms, status, created_at, updated_at, updated_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
          task = excluded.task,
          allowed_providers_json = excluded.allowed_providers_json,
          fallback_order_json = excluded.fallback_order_json,
+         model = excluded.model,
          privacy_mode = excluded.privacy_mode,
          max_cost_eur = excluded.max_cost_eur,
          max_latency_ms = excluded.max_latency_ms,
@@ -348,6 +350,7 @@ export function saveTaskModelProfileDraft(
       profile.task,
       JSON.stringify(profile.allowed_providers),
       JSON.stringify(profile.fallback_order),
+      profile.model ?? null,
       profile.privacy_mode,
       profile.max_cost_eur,
       profile.max_latency_ms,

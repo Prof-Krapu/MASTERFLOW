@@ -37,6 +37,27 @@ beforeAll(async () => {
       now,
       now,
     );
+
+  // Profil avec un modèle propre (routage multi-LLM selon rôle/besoin).
+  getDb()
+    .prepare(
+      `INSERT OR REPLACE INTO task_model_profiles
+         (id, task, allowed_providers_json, fallback_order_json, model, privacy_mode,
+          max_cost_eur, max_latency_ms, status, created_at, updated_at, updated_by)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'validated', ?, ?, NULL)`,
+    )
+    .run(
+      'routing-profile-rubric',
+      'rubric_extraction',
+      JSON.stringify(['provider-approved']),
+      JSON.stringify(['provider-approved']),
+      'task-model-rubric-v2',
+      'approved_remote',
+      1,
+      30_000,
+      now,
+      now,
+    );
 });
 
 describe('PR-CB2 — routage LLM et egress gated', () => {
@@ -59,6 +80,29 @@ describe('PR-CB2 — routage LLM et egress gated', () => {
     expect(route.provider).toBe('provider-approved');
     expect(route.profile?.status).toBe('validated');
     expect(route.profile?.task).toBe('criterion_analysis');
+    // Profil sans modèle propre → repli sur le modèle global de l'environnement.
+    expect(route.profile?.model).toBeNull();
+    expect(route.model).toBe('model-approved');
+  });
+
+  it('fait primer le modèle du profil sur le modèle global', () => {
+    const route = resolveLLMRoute('rubric_extraction', remoteConfig);
+
+    expect(route.provider).toBe('provider-approved');
+    expect(route.profile?.model).toBe('task-model-rubric-v2');
+    expect(route.model).toBe('task-model-rubric-v2');
+  });
+
+  it('utilise le modèle du profil même quand le modèle global est vide', () => {
+    const route = resolveLLMRoute('rubric_extraction', {...remoteConfig, model: ''});
+
+    expect(route.model).toBe('task-model-rubric-v2');
+  });
+
+  it('reste fail-closed si ni le profil ni l environnement ne fournit de modèle', () => {
+    expect(() => resolveLLMRoute('criterion_analysis', {...remoteConfig, model: ''})).toThrow(
+      'llm_route_incomplete_provider_config',
+    );
   });
 
   it('refuse une tâche sans profil validé et un provider non autorisé', () => {
