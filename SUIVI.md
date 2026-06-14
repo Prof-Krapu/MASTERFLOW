@@ -4,6 +4,38 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — BACKEND EN PLACE : OpenRouter fournisseur du projet + branchements (OCR / prof / image) — MERGÉ `main`
+
+**GO Vincent (autorisation explicite commit + push `main`).** Clôture de la partie backend par
+Vincent/Claude. Intègre sur `main` les deux branches précédentes (`claude/model-per-profile`,
+`claude/ocr-runner-openrouter`) **+** le câblage OpenRouter complet. **Inerte par défaut** :
+`LLM_PROVIDER=mock` ⇒ zéro appel réseau tant que la clé OpenRouter n'est pas posée en env serveur.
+
+**Livré :**
+- **OpenRouter = fournisseur LLM du projet** (gateway : 1 clé / 1 base URL, N modèles). `.env.example`
+  documente l'interrupteur réel ; egress allowlistée (`https://openrouter.ai`), fail-closed inchangé.
+- **Routage par tâche × rôle (économie de tokens)** : `role_models` (modèle par rôle) additif sur
+  `TaskModelProfile` ; `resolveLLMRoute(task, config, role?)` = `role_models[role] ?? model ?? env`.
+  Le chat WS passe `task='chat'` + le rôle de l'appelant → student bon marché, escalade teacher/admin.
+- **Seed de profils VALIDÉS par tâche** (provider openrouter), inertes sans clé. 1 profil/ tâche,
+  idempotent. `db/seed.ts::seedTaskModelProfiles`.
+- **OCR** : runner réel déjà livré, intégré ici (`runners/ocr_runner.ts`, sortie `needs_review`).
+- **Génération d'image (gate GO IMAGE préservé)** : tâche `image_generation` + contrats
+  `ImageGenerationRequest`/`GeneratedImage` ; `createImageGenerationJob` (job `asset_prepare`,
+  **exécuteur d'action approuvée — aucune route HTTP directe**) ; `runners/image_runner.ts` dispatch
+  **ComfyUI local → OpenRouter → mock** (sortie `needs_review`, jamais `completed`, jamais d'image
+  inventée ; ComfyUI local-only, 1 job GPU à la fois).
+
+**Recette** : backend `tsc` (seule erreur `action_registry.test.ts` **préexistante**), `vitest`
+**286/286** ✓, frontend `tsc` + `vite build` ✓ (additif `shared`, front intact).
+
+**Reste = geste humain / MALEX** : (1) poser la clé OpenRouter + `LLM_*` en env serveur pour passer
+live ; (2) câbler l'action gated `preflight_image_action`/`create_render_manifest` → `createImageGenerationJob`
+et, si voulu, lancer un ComfyUI local ; (3) **frontend** (panneau admin de routage LLM) = territoire MALEX.
+**Pas de frontend touché ici** (choix Vincent). Note de handoff dans `INBOX_MALEX.md`.
+
+---
+
 ## 2026-06-14 — Runner OCR réel (OpenRouter, multimodal) — LIVRÉ SUR BRANCHE
 
 Premier runner local réel de MasterFlow, sur branche `claude/ocr-runner-openrouter`

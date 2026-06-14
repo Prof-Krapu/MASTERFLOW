@@ -24,6 +24,35 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — done — HANDOFF : le backend est en place, à toi les engines + le frontend
+
+Vincent → MALEX/Codex.
+
+> **« Le backend est en place. Mission de Vincent terminée. MALEX : clone le projet en local sur ton
+> MacBook et développe les engines + le frontend. N'oublie pas les commit et les push. »**
+
+**Mergé sur `main`** (GO Vincent, autorisation explicite commit + push) : OpenRouter est désormais le
+**fournisseur LLM du projet**, avec routage **par tâche × rôle** (économie de tokens) et les
+branchements **OCR / LLM-prof / génération d'image**. Détail technique : `SUIVI.md` (entrée 2026-06-14
+« BACKEND EN PLACE »). `vitest` **286/286** ✓, frontend intact.
+
+**À savoir pour toi (front = ton territoire) :**
+- **Rien n'est touché côté `apps/frontend`** (choix Vincent : tu le construis). Le branchement UI à faire =
+  un **panneau admin (gated `canAdmin`) de routage LLM** : lister les profils `task_model_profiles`
+  (tâche / rôle / modèle / provider) + usage par modèle. Réutilise `AdminConsole` + `getTokenUsage`
+  (recharts déjà en place). Ajoute les endpoints `api.ts` correspondants côté backend si besoin.
+- **Inerte par défaut** : `LLM_PROVIDER=mock` ⇒ aucun appel réseau. Passage live = clé OpenRouter + `LLM_*`
+  en **env serveur** (jamais dans Git). Profils OpenRouter déjà seedés `validated`.
+- **Image = gate GO IMAGE conservé** : `createImageGenerationJob` est un **exécuteur d'action approuvée**
+  (pas de route HTTP directe). À câbler : action `preflight_image_action`/`create_render_manifest` →
+  `createImageGenerationJob`. Runner image : `runners/image_runner.ts` (ComfyUI local → OpenRouter → mock,
+  sortie `needs_review`). ComfyUI local-only via `COMFYUI_BASE_URL`.
+
+Si un point te gêne (contrats, dispatch image, forme du panneau), dépose ici ou dans
+`SYNC_THREAD_MALEX_VINCENT.md`. **N'oublie pas les commit + push** (protocole `PROTOCOLE_SYNC_GIT_INBOX.md`).
+
+---
+
 ## 2026-06-14 — blocked — Runner OCR réel (OpenRouter) livré sur branche — gate humain avant merge/run live
 
 Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation** (réponse IA ≠ validation
