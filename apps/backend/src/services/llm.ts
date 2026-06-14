@@ -278,3 +278,138 @@ export async function chat(p: LLMStreamParams): Promise<string> {
   for await (const chunk of streamChat(p)) out += chunk;
   return out;
 }
+
+// ───────────────────────────── Vision / multimodal ─────────────────────────────
+//
+// Appel LLM multimodal NON streamé (image + texte → texte unique), destiné aux
+// runners (OCR, etc.) qui ont besoin de la réponse complète d'un coup pour la
+// parser. Même doctrine que `streamChat` : le LLM ne fait que proposer, le
+// backend décide. Le routage passe par `resolveLLMRoute` (fail‑closed, profil de
+// tâche validé + allowlist egress anti‑SSRF) ; le coût/usage est inscrit dans
+// `token_events` comme pour le chat.
+
+export interface VisionImage {
+  /** Type MIME (image/png|jpeg|webp|gif). */
+  mime: string;
+  /** Octets de l'image encodés base64 (sans préfixe data:). */
+  base64: string;
+}
+
+export interface CompleteVisionParams {
+  /** Tâche LLM (ex. `ocr`) — sert au routage ET au log `token_events`. */
+  task: string;
+  /** Consigne système (optionnelle). */
+  system?: string;
+  /** Texte de la requête (placé AVANT les images, comme recommandé). */
+  userText: string;
+  /** Images jointes (au moins une). */
+  images: VisionImage[];
+  maxTokens?: number;
+  userId?: string | null;
+  personaId?: string | null;
+  roomInstanceId?: string | null;
+}
+
+export interface CompleteVisionResult {
+  text: string;
+  model: string;
+  promptTokens: number;
+  completionTokens: number;
+  costEur: number;
+}
+
+interface OpenAiCompatContentPart {
+  type: 'text' | 'image_url';
+  text?: string;
+  image_url?: {url: string};
+}
+
+/**
+ * Génère une réponse multimodale complète. En mode `mock`, AUCUN appel réseau :
+ * renvoie un tableau JSON vide (`[]`) — on n'invente jamais de contenu extrait.
+ * En mode provider réel (ex. OpenRouter), POST OpenAI‑compatible non streamé,
+ * lecture de `usage.cost` réel quand le provider le fournit (fallback `costFor`).
+ */
+export async function completeVision(p: CompleteVisionParams): Promise<CompleteVisionResult> {
+  const route = resolveLLMRoute(p.task, env.llm);
+
+  if (route.provider === 'mock') {
+    const promptTokens = estimateTokens(`${p.system ?? ''} ${p.userText}`);
+    logTokenEvent({
+      model: 'mock',
+      task: p.task,
+      promptTokens,
+      completionTokens: 0,
+      costEur: costFor('mock', promptTokens, 0),
+      userId: p.userId,
+      personaId: p.personaId,
+      roomInstanceId: p.roomInstanceId,
+    });
+    return {text: '[]', model: 'mock', promptTokens, completionTokens: 0, costEur: 0};
+  }
+
+  const {baseUrl, apiKey, model} = route;
+  if (!baseUrl || !apiKey) throw new Error('llm_route_incomplete_provider_config');
+  if (p.images.length === 0) throw new Error('llm_vision_requires_image');
+
+  const userContent: OpenAiCompatContentPart[] = [{type: 'text', text: p.userText}];
+  for (const img of p.images) {
+    userContent.push({type: 'image_url', image_url: {url: `data:${img.mime};base64,${img.base64}`}});
+  }
+  const messages: Array<{role: string; content: string | OpenAiCompatContentPart[]}> = [];
+  if (p.system) messages.push({role: 'system', content: p.system});
+  messages.push({role: 'user', content: userContent});
+
+  const url = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      // Attribution OpenRouter (sans impact fonctionnel ; aucun secret).
+      'X-Title': 'MasterFlow',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      stream: false,
+      ...(p.maxTokens ? {max_tokens: p.maxTokens} : {}),
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`llm_vision_provider_error_${res.status}:${detail.slice(0, 300)}`);
+  }
+
+  const data = (await res.json()) as {
+    choices?: {message?: {content?: string | null}}[];
+    usage?: {prompt_tokens?: number; completion_tokens?: number; cost?: number} | null;
+  };
+  const text = data.choices?.[0]?.message?.content ?? '';
+  const usage = data.usage ?? null;
+
+  const promptTokens = normalizeUsageCount(
+    usage?.prompt_tokens,
+    estimateTokens(`${p.system ?? ''} ${p.userText}`),
+  );
+  const completionTokens = normalizeUsageCount(usage?.completion_tokens, estimateTokens(text));
+  // OpenRouter renvoie le coût réel (crédits) dans `usage.cost` ; sinon table locale.
+  const costEur =
+    typeof usage?.cost === 'number' && Number.isFinite(usage.cost) && usage.cost >= 0
+      ? usage.cost
+      : costFor(model, promptTokens, completionTokens);
+
+  logTokenEvent({
+    model,
+    task: p.task,
+    promptTokens,
+    completionTokens,
+    costEur,
+    userId: p.userId,
+    personaId: p.personaId,
+    roomInstanceId: p.roomInstanceId,
+  });
+
+  return {text, model, promptTokens, completionTokens, costEur};
+}

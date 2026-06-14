@@ -30,6 +30,7 @@ function toProfile(row: TaskModelProfileRow): TaskModelProfile {
     task: row.task,
     allowed_providers: JSON.parse(row.allowed_providers_json) as unknown,
     fallback_order: JSON.parse(row.fallback_order_json) as unknown,
+    model: row.model ?? null,
     privacy_mode: row.privacy_mode,
     max_cost_eur: row.max_cost_eur,
     max_latency_ms: row.max_latency_ms,
@@ -114,7 +115,11 @@ export function resolveLLMRoute(taskInput: string, config: LLMRuntimeConfig): Re
   if (profile.fallback_order.length > 0 && !profile.fallback_order.includes(provider)) {
     throw new Error(`llm_route_provider_absent_from_fallback:${provider}`);
   }
-  if (!config.apiKey || !config.model || !config.baseUrl) {
+  // Modèle par profil : le profil de tâche prime ; sinon repli sur le modèle
+  // global de l'environnement. Le provider/base URL/secrets restent ceux du
+  // serveur — un modèle par profil ne change ni l'egress ni la privacy.
+  const model = profile.model ?? config.model;
+  if (!config.apiKey || !model || !config.baseUrl) {
     throw new Error('llm_route_incomplete_provider_config');
   }
 
@@ -126,7 +131,7 @@ export function resolveLLMRoute(taskInput: string, config: LLMRuntimeConfig): Re
   return {
     task,
     provider,
-    model: config.model,
+    model,
     baseUrl: config.baseUrl,
     apiKey: config.apiKey,
     profile,

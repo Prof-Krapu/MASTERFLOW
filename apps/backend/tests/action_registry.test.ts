@@ -58,6 +58,7 @@ describe('isSensitive', () => {
     risk_level: 'low',
     preflight_required: false,
     validation_required: false,
+    minimum_role: 'student',
     ui_surface: 'none',
     status: 'live',
     ...overrides,
