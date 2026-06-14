@@ -423,17 +423,17 @@ export function InventoryWorkspace({
             <details className="inventory-create">
               <summary><Plus aria-hidden="true" size={17} /> Ajouter un item</summary>
               <form className="inventory-item-form" onSubmit={handleCreateItem}>
-                <label>Nom<input onChange={(event) => setItemLabel(event.target.value)} required value={itemLabel} /></label>
-                <label>Type<select onChange={(event) => setItemType(event.target.value as InventoryItemType)} value={itemType}>
+                <label>Nom<input aria-label="Nom" onChange={(event) => setItemLabel(event.target.value)} required value={itemLabel} /></label>
+                <label>Type<select aria-label="Type" onChange={(event) => setItemType(event.target.value as InventoryItemType)} value={itemType}>
                   {ITEM_TYPES.map((type) => <option key={type} value={type}>{INVENTORY_TYPE_LABELS[type]}</option>)}
                 </select></label>
-                <label>Etat declare<select onChange={(event) => setItemStatus(event.target.value as InventoryItemStatus)} value={itemStatus}>
+                <label>Etat declare<select aria-label="Etat declare" onChange={(event) => setItemStatus(event.target.value as InventoryItemStatus)} value={itemStatus}>
                   {ITEM_STATUSES.map((status) => <option key={status} value={status}>{INVENTORY_STATUS_LABELS[status]}</option>)}
                 </select></label>
-                <label>Quantite<input min={1} onChange={(event) => setItemQuantity(Number(event.target.value))} type="number" value={itemQuantity} /></label>
-                <label>Marque / auteur<input onChange={(event) => setItemBrand(event.target.value)} value={itemBrand} /></label>
-                <label>Tags<input onChange={(event) => setItemTags(event.target.value)} placeholder="atelier, photo" value={itemTags} /></label>
-                <label>Collection<select onChange={(event) => setItemCollectionId(event.target.value)} value={itemCollectionId}>
+                <label>Quantite<input aria-label="Quantite" min={1} onChange={(event) => setItemQuantity(Number(event.target.value))} type="number" value={itemQuantity} /></label>
+                <label>Marque / auteur<input aria-label="Marque / auteur" onChange={(event) => setItemBrand(event.target.value)} value={itemBrand} /></label>
+                <label>Tags<input aria-label="Tags" onChange={(event) => setItemTags(event.target.value)} placeholder="atelier, photo" value={itemTags} /></label>
+                <label>Collection<select aria-label="Collection" onChange={(event) => setItemCollectionId(event.target.value)} value={itemCollectionId}>
                   <option value="">Aucune</option>
                   {validatedCollections.map((collection) => <option key={collection.collection_id} value={collection.collection_id}>{collection.label}</option>)}
                 </select></label>
@@ -533,8 +533,8 @@ export function InventoryWorkspace({
         <section className="inventory-pane">
           {canManage ? (
             <form className="inventory-collection-form" onSubmit={handleCreateCollection}>
-              <label>Nouvelle collection<input onChange={(event) => setCollectionLabel(event.target.value)} required value={collectionLabel} /></label>
-              <label>Description<input onChange={(event) => setCollectionDescription(event.target.value)} value={collectionDescription} /></label>
+              <label>Nouvelle collection<input aria-label="Nouvelle collection" onChange={(event) => setCollectionLabel(event.target.value)} required value={collectionLabel} /></label>
+              <label>Description<input aria-label="Description collection" onChange={(event) => setCollectionDescription(event.target.value)} value={collectionDescription} /></label>
               <button disabled={operation.status === 'working'} type="submit"><Plus aria-hidden="true" size={17} /> Creer</button>
             </form>
           ) : null}
@@ -586,9 +586,9 @@ export function InventoryWorkspace({
         <section className="inventory-pane">
           {canManage && effectiveProjectId ? (
             <form className="inventory-need-form" onSubmit={handleCreateNeed}>
-              <label>Besoin projet<input onChange={(event) => setNeedLabel(event.target.value)} placeholder="Objectif anamorphique" required value={needLabel} /></label>
-              <label>Quantite<input min={1} onChange={(event) => setNeedQuantity(Number(event.target.value))} type="number" value={needQuantity} /></label>
-              <label>Tags requis<input onChange={(event) => setNeedTags(event.target.value)} placeholder="cinema, tournage" value={needTags} /></label>
+              <label>Besoin projet<input aria-label="Besoin projet" onChange={(event) => setNeedLabel(event.target.value)} placeholder="Objectif anamorphique" required value={needLabel} /></label>
+              <label>Quantite<input aria-label="Quantite besoin" min={1} onChange={(event) => setNeedQuantity(Number(event.target.value))} type="number" value={needQuantity} /></label>
+              <label>Tags requis<input aria-label="Tags requis" onChange={(event) => setNeedTags(event.target.value)} placeholder="cinema, tournage" value={needTags} /></label>
               <button disabled={operation.status === 'working'} type="submit"><Search aria-hidden="true" size={17} /> Evaluer</button>
             </form>
           ) : (

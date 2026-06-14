@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — PR-INVENTORY-UI-1 complément scope projet — LIVRE SUR BRANCHE
+
+Verification locale du scope projet Inventory avec comptes reels de test :
+
+- `ui_teacher` owner projet : creation candidat projet via UI, validation explicite ;
+- `ui_student` participant : lecture seule, item valide visible, candidats/actions edition invisibles ;
+- smoke API confirme : candidat cache au student avant validation, visible apres validation ;
+- patch accessibilite : les champs des formulaires Inventory portent des labels accessibles stables
+  pour tests navigateur et usages assistes.
+
+Recette : Browser desktop, backend **254/254**, TypeScript back/front OK, frontend build OK.
+Fixture uniquement en base locale de dev, aucun seed Git modifie.
+
+---
+
 ## 2026-06-13 — PR-INVENTORY-UI-1 Surface runtime Inventory — LIVREE SUR BRANCHE
 
 Premiere verticale frontend fonctionnelle sur les contrats Inventory existants, sans declarer
