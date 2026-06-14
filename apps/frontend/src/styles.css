@@ -1411,6 +1411,44 @@ dd {
   margin: 0 0 3px;
 }
 
+.inventory-review-tools {
+  background: #0f1116;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px;
+}
+
+.inventory-review-tools button {
+  align-items: center;
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
+.inventory-review-tools button.is-active {
+  background: var(--panel-soft);
+  color: var(--text);
+}
+
+.inventory-review-tools span {
+  align-items: center;
+  background: #1b2028;
+  border-radius: 999px;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 11px;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 5px;
+}
+
 .inventory-search {
   align-items: center;
   background: #0f1116;
@@ -1581,6 +1619,21 @@ dd {
   color: var(--amber);
 }
 
+.inventory-badge--coverage-candidate_available {
+  border-color: rgba(88, 193, 137, 0.54);
+  color: var(--accent-strong);
+}
+
+.inventory-badge--coverage-missing {
+  border-color: rgba(239, 108, 108, 0.54);
+  color: var(--danger);
+}
+
+.inventory-badge--coverage-unknown {
+  border-color: rgba(118, 166, 255, 0.54);
+  color: var(--blue);
+}
+
 .danger-button {
   color: var(--danger);
 }
@@ -1668,6 +1721,48 @@ dd {
   color: var(--muted);
   gap: 8px;
   justify-content: flex-start;
+}
+
+.inventory-need-history {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.inventory-need-history__item {
+  align-items: center;
+  background: #101319;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--blue);
+  border-radius: 7px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 62px;
+  padding: 9px 11px;
+}
+
+.inventory-need-history__item > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.inventory-need-history__item strong,
+.inventory-need-history__item span,
+.inventory-need-history__item small {
+  overflow-wrap: anywhere;
+}
+
+.inventory-need-history__item span,
+.inventory-need-history__item small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.inventory-need-history__item > div:last-child {
+  justify-items: end;
 }
 
 .inventory-toggle {
@@ -1800,6 +1895,15 @@ dd {
   }
 
   .inventory-item__meta {
+    justify-items: start;
+  }
+
+  .inventory-need-history__item {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-need-history__item > div:last-child {
     justify-items: start;
   }
 

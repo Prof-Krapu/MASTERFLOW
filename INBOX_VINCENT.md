@@ -22,6 +22,25 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — open — PR-INVENTORY-UI-3 pilotage validation/besoins
+
+MALEX/Codex ajoute une couche frontend sans backend nouveau :
+
+- filtre candidats par origine `manuel / OCR / autre` depuis `source_refs` existants ;
+- affiche statut, scope et presence/absence de collection avant validation ;
+- garde les besoins projet en historique de session uniquement, sans nouvelle verite persistante ;
+- expose clairement `candidate_available`, `missing`, `unknown` et rappelle que la disponibilite
+  n'est jamais garantie.
+
+Action attendue : quand tu raccordes tes runners OCR/BGE, conserve ces conventions :
+`job:<id>` ou source OCR -> candidat OCR ; saisie UI -> candidat manuel ; aucun runner ne doit
+valider, rattacher collection ou indexer RAG sans action explicite.
+
+Checks MALEX/Codex : front TS/build OK, back TS OK, backend **254/254**, smoke API besoin
+introuvable + inventaire declare complet -> `missing`, `availability_guaranteed=false`.
+
+---
+
 ## 2026-06-14 — open — PR-INVENTORY-UI-2 besoins projet et completion
 
 MALEX/Codex ajoute une couche frontend courte sur la surface Inventory, sans nouveau backend :

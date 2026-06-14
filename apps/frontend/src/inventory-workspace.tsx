@@ -8,6 +8,7 @@ import type {
   InventoryItemType,
   InventoryNeedMatchResult,
   InventorySearchResult,
+  InventoryValidationStatus,
   Project,
   ProjectMemberRole,
   Role,
@@ -66,6 +67,14 @@ type OperationState = {
   message: string;
 };
 
+type CandidateSourceFilter = 'all' | 'manual' | 'ocr' | 'other';
+
+type NeedHistoryEntry = {
+  id: string;
+  result: InventoryNeedMatchResult;
+  inventoryCompleteDeclared: boolean;
+};
+
 const ITEM_TYPES = Object.keys(INVENTORY_TYPE_LABELS) as InventoryItemType[];
 const ITEM_STATUSES: InventoryItemStatus[] = [
   'detected',
@@ -84,15 +93,46 @@ const COMPLETION_LABELS: Record<InventoryCollection['completion_state'], string>
   abandoned: 'Abandonnee',
 };
 
+const CANDIDATE_SOURCE_LABELS: Record<CandidateSourceFilter, string> = {
+  all: 'Tous',
+  manual: 'Manuels',
+  ocr: 'OCR',
+  other: 'Autres',
+};
+
+const COVERAGE_LABELS: Record<InventoryNeedMatchResult['coverage_state'], string> = {
+  candidate_available: 'Candidat disponible',
+  missing: 'Manquant declare',
+  unknown: 'Couverture inconnue',
+};
+
+const VALIDATION_LABELS: Record<InventoryValidationStatus, string> = {
+  candidate: 'A valider',
+  validated: 'Valide',
+  archived: 'Archive',
+};
+
 function tagsFromInput(value: string): string[] {
   return [...new Set(value.split(',').map((tag) => tag.trim()).filter(Boolean))].slice(0, 30);
+}
+
+function candidateSource(item: InventoryItem): CandidateSourceFilter {
+  if (item.source_refs.some((sourceRef) => sourceRef.startsWith('frontend:inventory-manual'))) return 'manual';
+  if (item.source_refs.some((sourceRef) => sourceRef.startsWith('job:') || sourceRef.toLowerCase().includes('ocr'))) {
+    return 'ocr';
+  }
+  return 'other';
+}
+
+function candidateSourceLabel(item: InventoryItem): string {
+  return CANDIDATE_SOURCE_LABELS[candidateSource(item)];
 }
 
 function ItemStatus({item}: {item: InventoryItem}): ReactElement {
   return (
     <div className="inventory-item__status">
       <span className={`inventory-badge inventory-badge--${item.validation_status}`}>
-        {item.validation_status === 'validated' ? 'Valide' : 'A valider'}
+        {VALIDATION_LABELS[item.validation_status]}
       </span>
       <span className="inventory-badge">{INVENTORY_STATUS_LABELS[item.item_status]}</span>
     </div>
@@ -132,6 +172,8 @@ export function InventoryWorkspace({
   const [needQuantity, setNeedQuantity] = useState(1);
   const [needTags, setNeedTags] = useState('');
   const [needInventoryComplete, setNeedInventoryComplete] = useState(false);
+  const [reviewSourceFilter, setReviewSourceFilter] = useState<CandidateSourceFilter>('all');
+  const [needHistory, setNeedHistory] = useState<NeedHistoryEntry[]>([]);
 
   const project = projects.find((candidate) => candidate.project_id === selectedProjectId) ?? null;
   const projectScopeAvailable = project !== null;
@@ -158,6 +200,17 @@ export function InventoryWorkspace({
     () => items.reduce((total, item) => total + item.source_refs.length, 0),
     [items],
   );
+  const reviewCandidates = useMemo(
+    () => candidates.filter((item) => reviewSourceFilter === 'all' || candidateSource(item) === reviewSourceFilter),
+    [candidates, reviewSourceFilter],
+  );
+  const candidateSourceCounts = useMemo(() => {
+    const initial: Record<CandidateSourceFilter, number> = {all: candidates.length, manual: 0, ocr: 0, other: 0};
+    for (const item of candidates) {
+      initial[candidateSource(item)] += 1;
+    }
+    return initial;
+  }, [candidates]);
 
   const refresh = useCallback(async (): Promise<void> => {
     if (scope === 'project' && !selectedProjectId) {
@@ -311,6 +364,14 @@ export function InventoryWorkspace({
         limit: 10,
       }, token);
       setNeedResult(result);
+      setNeedHistory((previous) => [
+        {
+          id: `${need.need_id}:${Date.now()}`,
+          result,
+          inventoryCompleteDeclared: needInventoryComplete,
+        },
+        ...previous,
+      ].slice(0, 5));
       setNeedLabel('');
       setNeedTags('');
       setNeedQuantity(1);
@@ -536,17 +597,35 @@ export function InventoryWorkspace({
             <div><h3>Validation des candidats</h3><p className="muted compact">OCR ou saisie manuelle : rien n entre dans le RAG avant validation.</p></div>
             <span className="counter">{candidates.length}</span>
           </div>
+          <div className="inventory-review-tools" aria-label="Filtres validation inventaire">
+            {(Object.keys(CANDIDATE_SOURCE_LABELS) as CandidateSourceFilter[]).map((filter) => (
+              <button
+                className={reviewSourceFilter === filter ? 'is-active' : ''}
+                key={filter}
+                onClick={() => setReviewSourceFilter(filter)}
+                type="button"
+              >
+                {CANDIDATE_SOURCE_LABELS[filter]}
+                <span>{candidateSourceCounts[filter]}</span>
+              </button>
+            ))}
+          </div>
           {canManage ? (
             <div className="inventory-list">
-              {candidates.length > 0 ? candidates.map((item) => (
+              {reviewCandidates.length > 0 ? reviewCandidates.map((item) => (
                 <article className="inventory-item inventory-item--candidate" key={item.item_id}>
                   <div className="inventory-item__main">
                     <ShieldCheck aria-hidden="true" size={20} />
                     <div>
                       <strong>{item.label}</strong>
                       <span>{INVENTORY_TYPE_LABELS[item.type]} · {INVENTORY_STATUS_LABELS[item.item_status]}</span>
-                      <small>{item.source_refs.join(' · ') || 'source non renseignee'}</small>
+                      <small>{candidateSourceLabel(item)} · {item.source_refs.join(' · ') || 'source non renseignee'}</small>
                     </div>
+                  </div>
+                  <ItemStatus item={item} />
+                  <div className="inventory-item__meta" aria-label={`Candidat ${item.label}`}>
+                    <span>{item.visibility_scope === 'project' ? 'Projet' : 'Prive'}</span>
+                    <span>{item.collection_id ? 'Collection liee' : 'Sans collection'}</span>
                   </div>
                   <div className="inventory-item__actions">
                     <button
@@ -564,7 +643,7 @@ export function InventoryWorkspace({
                     </button>
                   </div>
                 </article>
-              )) : <div className="inventory-empty"><ShieldCheck aria-hidden="true" size={28} /><strong>File vide</strong><span>Aucun candidat a examiner.</span></div>}
+              )) : <div className="inventory-empty"><ShieldCheck aria-hidden="true" size={28} /><strong>File vide</strong><span>Aucun candidat ne correspond a ce filtre.</span></div>}
             </div>
           ) : (
             <div className="inventory-empty"><ShieldCheck aria-hidden="true" size={28} /><strong>Lecture seule</strong><span>Les candidats ne sont visibles qu aux editeurs du scope.</span></div>
@@ -649,13 +728,7 @@ export function InventoryWorkspace({
             <div className="inventory-need-result">
               <div>
                 <strong>{needResult.need.label}</strong>
-                <span>
-                  {needResult.coverage_state === 'candidate_available'
-                    ? 'Candidat disponible'
-                    : needResult.coverage_state === 'missing'
-                      ? 'Manquant declare'
-                      : 'Couverture inconnue'}
-                </span>
+                <span>{COVERAGE_LABELS[needResult.coverage_state]}</span>
               </div>
               <p>Disponibilite garantie : non. Une reservation ou verification reste necessaire.</p>
               {needResult.matches.length > 0 ? needResult.matches.map((match) => (
@@ -669,6 +742,32 @@ export function InventoryWorkspace({
                   <span>Aucun item valide ne couvre ce besoin.</span>
                 </article>
               )}
+            </div>
+          ) : null}
+          {needHistory.length > 0 ? (
+            <div className="inventory-need-history" aria-label="Historique besoins projet">
+              <div className="inventory-pane__heading">
+                <div>
+                  <h3>Besoins recents</h3>
+                  <p className="muted compact">Session locale : comparaison rapide, sans nouvelle source de verite.</p>
+                </div>
+                <span className="counter">{needHistory.length}</span>
+              </div>
+              {needHistory.map((entry) => (
+                <article className="inventory-need-history__item" key={entry.id}>
+                  <div>
+                    <strong>{entry.result.need.label}</strong>
+                    <span>{entry.result.need.required_tags.join(' · ') || 'aucun tag requis'}</span>
+                  </div>
+                  <div>
+                    <span className={`inventory-badge inventory-badge--coverage-${entry.result.coverage_state}`}>
+                      {COVERAGE_LABELS[entry.result.coverage_state]}
+                    </span>
+                    <small>{entry.inventoryCompleteDeclared ? 'inventaire complet declare' : 'inventaire incomplet ou inconnu'}</small>
+                    <small>{entry.result.matches.length} match(es)</small>
+                  </div>
+                </article>
+              ))}
             </div>
           ) : null}
         </section>

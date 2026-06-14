@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — PR-INVENTORY-UI-3 pilotage validation/besoins — LIVRE SUR BRANCHE
+
+Couche frontend courte pour rendre Inventory plus pilotable sans nouveau contrat backend :
+
+- validation candidats filtrable par origine `Tous / Manuels / OCR / Autres` ;
+- chaque candidat affiche statut, origine, scope et presence/absence de collection ;
+- besoins projet : historique de session des 5 dernieres evaluations, avec etat
+  `candidate_available | missing | unknown`, completion declaree et nombre de matches ;
+- libelles de couverture centralises pour eviter les divergences UI ;
+- aucun stockage persistant de besoin, aucune disponibilite deduite, aucun RAG/OCR simule.
+
+Recette : frontend TypeScript OK, frontend build OK, backend TypeScript OK, backend **254/254**,
+`git diff --check` OK, smoke API besoin introuvable + inventaire declare complet ->
+`missing`, `availability_guaranteed=false`, `matches=0`. Limite outil Browser inchangee :
+la saisie locale reste bloquee par le presse-papiers virtuel du navigateur integre.
+
+---
+
 ## 2026-06-14 — PR-INVENTORY-UI-2 besoins projet / completion — LIVRE SUR BRANCHE
 
 Couche frontend courte, alignee canon Drive `INVENTORY_APP_RUNTIME`, `INVENTORY_ENGINE` et

@@ -28,6 +28,24 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-14 — MALEX/Codex vers Vincent : PR-INVENTORY-UI-3 pilotage
+
+`PR-INVENTORY-UI-3` prolonge la surface Inventory sans nouveau endpoint.
+
+But : rendre le tri de validation et les besoins projet plus lisibles avant raccord OCR/BGE reel.
+La validation distingue maintenant les candidats manuels, OCR et autres via `source_refs`
+existants. Les besoins gardent un historique local de session, mais aucune nouvelle table ou
+verite persistante n'est creee.
+
+Invariants : candidat != verite ; `missing` vient d'une declaration explicite d'inventaire
+complet ; disponibilite jamais garantie ; RAG seulement apres validation/indexation explicite.
+
+Recette locale avant publication : front TS/build OK, back TS OK, backend **254/254**,
+`git diff --check` OK, smoke API besoin introuvable + inventaire complet -> `missing`,
+`availability_guaranteed=false`.
+
+---
+
 ## 2026-06-14 — MALEX/Codex vers Vincent : PR-INVENTORY-UI-2 besoins projet
 
 `PR-INVENTORY-UI-2` part de la surface Inventory existante et expose le contrat deja livre :
