@@ -86,6 +86,35 @@ et, si voulu, lancer un ComfyUI local ; (3) **frontend** (panneau admin de routa
 
 ---
 
+## 2026-06-14 — Validation Inbox MVP foundation — LIVRÉ SUR BRANCHE
+
+Branche MALEX/Codex : `codex/validation-inbox-mvp-foundation`.
+
+Objectif : poser la première fondation partagée de `Validation Inbox` sans réinventer le cycle
+d'actions existant.
+
+Livré :
+- contrats typés partagés `ValidationInboxItem*` dans `packages/shared` ;
+- table `validation_inbox_items` avec source actuelle `action` et index de lecture ;
+- service `validation_inbox.ts` qui projette les actions `pending_validation` en items
+  `needs_review` canon ;
+- route backend `GET /validation-inbox`, `GET /validation-inbox/:id`,
+  `POST /validation-inbox/:id/decision` ;
+- décision MVP action-based : `approve/reject` uniquement, en réutilisant `validateAction`
+  comme autorité réelle ;
+- test de non-régression gate-ordering : le router n'utilise pas de `router.use(requireRole)`
+  monté à la racine.
+
+Limites assumées :
+- pas encore de dashboard frontend dédié ;
+- pas encore de projection D06/D07/D08/D09/D10/D11/D12 hors actions ;
+- `park/request_precision/archive/export_patch` restent refusés sur une action dans cette première
+  tranche.
+
+Recette : backend `tsc --noEmit` OK, backend vitest **268/268** OK, `git diff --check` OK.
+
+---
+
 ## 2026-06-14 — Runner OCR réel (OpenRouter, multimodal) — LIVRÉ SUR BRANCHE
 
 Premier runner local réel de MasterFlow, sur branche `claude/ocr-runner-openrouter`
