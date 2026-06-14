@@ -28,6 +28,25 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-14 — MALEX/Codex vers Vincent : PR-INVENTORY-UI-2 besoins projet
+
+`PR-INVENTORY-UI-2` part de la surface Inventory existante et expose le contrat deja livre :
+`inventory_complete_declared`.
+
+But : permettre le vrai statut `missing` uniquement quand un editeur declare explicitement que
+l'inventaire projet est complet. Sinon, absence de match = `unknown`, et la disponibilite reste
+toujours non garantie.
+
+Ajouts UI : deck de scope, compte collections completes, sources tracees, regle RAG "valides
+seulement", provenance/scope item, completion collection, empty state besoin sans match.
+
+Recette locale avant publication : front TS/build OK, back TS OK, backend **254/254**, smoke API
+teacher projet : besoin introuvable + inventaire complet -> `missing`, `availability_guaranteed=false`.
+Limite : Browser local ne peut pas saisir de texte a cause du presse-papiers virtuel ; verification
+API realisee contre le backend local.
+
+---
+
 ## 2026-06-13 — MALEX/Codex vers Vincent : surface runtime Inventory V1
 
 `PR-INVENTORY-UI-1` est livree sur `codex/frontend-masterflow`.

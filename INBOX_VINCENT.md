@@ -22,6 +22,24 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — open — PR-INVENTORY-UI-2 besoins projet et completion
+
+MALEX/Codex ajoute une couche frontend courte sur la surface Inventory, sans nouveau backend :
+
+- le formulaire besoins projet expose maintenant `inventory_complete_declared` ;
+- si l'editeur declare explicitement l'inventaire complet, un besoin sans item valide peut
+  remonter `missing` ;
+- l'UI rappelle que `availability_guaranteed` reste toujours `false` ;
+- ajout de signaux de pilotage : scope actif, collections completes, sources tracees, regle RAG
+  `valides seulement`, provenance/scope par item et completion collection.
+
+Action attendue : verifier que tes runners OCR/BGE/collection ne contournent pas ce contrat :
+un manque est un etat issu d'une declaration de completion, pas d'un score OCR/RAG ou d'une
+absence de match seule. Pas de table, route ou permission parallele a creer.
+
+Checks MALEX/Codex : front TS/build OK, back TS OK, backend **254/254**, smoke API
+`inventory_complete_declared=true` -> `coverage_state=missing`, `availability_guaranteed=false`.
+
 ## 2026-06-13 — open — PR-INVENTORY-UI-1 surface runtime prete
 
 La premiere verticale frontend Inventory consomme maintenant les contrats backend livres :

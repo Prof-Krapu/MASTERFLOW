@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — PR-INVENTORY-UI-2 besoins projet / completion — LIVRE SUR BRANCHE
+
+Couche frontend courte, alignee canon Drive `INVENTORY_APP_RUNTIME`, `INVENTORY_ENGINE` et
+`REFERENCE_INVENTORY_OCR_COLLECTION_GRAPH_CONTRACT` :
+
+- expose le geste explicite `inventory_complete_declared` dans l'evaluation des besoins projet ;
+- permet donc l'etat canon `missing` sans deduire une rupture ni promettre une disponibilite ;
+- ajoute un deck de scope : scope actif, collections completes, sources tracees, regle RAG
+  "valides seulement" ;
+- affiche provenance/scope par item et completion declaree par collection.
+
+Recette : frontend TypeScript OK, frontend build OK, backend TypeScript OK, backend **254/254**,
+smoke API `ui_teacher` : besoin introuvable + inventaire declare complet -> `missing`,
+`availability_guaranteed=false`, `matches=0`. Limite outil : la saisie Browser locale est bloquee
+par le presse-papiers virtuel du navigateur integre ; l'app compile et le contrat API est valide.
+
+---
+
 ## 2026-06-14 — PR-INVENTORY-UI-1 complément scope projet — LIVRE SUR BRANCHE
 
 Verification locale du scope projet Inventory avec comptes reels de test :

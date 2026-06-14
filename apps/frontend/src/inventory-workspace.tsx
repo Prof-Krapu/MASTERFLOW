@@ -20,6 +20,7 @@ import {
   DatabaseZap,
   FolderKanban,
   LibraryBig,
+  ListChecks,
   PackageOpen,
   Plus,
   RefreshCw,
@@ -76,6 +77,13 @@ const ITEM_STATUSES: InventoryItemStatus[] = [
   'to_verify',
 ];
 
+const COMPLETION_LABELS: Record<InventoryCollection['completion_state'], string> = {
+  unknown: 'Completion inconnue',
+  selective: 'Selection volontaire',
+  complete_declared: 'Complete declaree',
+  abandoned: 'Abandonnee',
+};
+
 function tagsFromInput(value: string): string[] {
   return [...new Set(value.split(',').map((tag) => tag.trim()).filter(Boolean))].slice(0, 30);
 }
@@ -123,6 +131,7 @@ export function InventoryWorkspace({
   const [needLabel, setNeedLabel] = useState('');
   const [needQuantity, setNeedQuantity] = useState(1);
   const [needTags, setNeedTags] = useState('');
+  const [needInventoryComplete, setNeedInventoryComplete] = useState(false);
 
   const project = projects.find((candidate) => candidate.project_id === selectedProjectId) ?? null;
   const projectScopeAvailable = project !== null;
@@ -140,6 +149,14 @@ export function InventoryWorkspace({
   const validatedCollections = useMemo(
     () => collections.filter((collection) => collection.validation_status === 'validated'),
     [collections],
+  );
+  const completeCollections = useMemo(
+    () => validatedCollections.filter((collection) => collection.completion_state === 'complete_declared'),
+    [validatedCollections],
+  );
+  const sourceRefsCount = useMemo(
+    () => items.reduce((total, item) => total + item.source_refs.length, 0),
+    [items],
   );
 
   const refresh = useCallback(async (): Promise<void> => {
@@ -290,23 +307,26 @@ export function InventoryWorkspace({
         required_tags: tagsFromInput(needTags),
       }, token);
       const result = await matchInventoryProjectNeed(need.need_id, {
-        inventory_complete_declared: false,
+        inventory_complete_declared: needInventoryComplete,
         limit: 10,
       }, token);
       setNeedResult(result);
       setNeedLabel('');
       setNeedTags('');
       setNeedQuantity(1);
+      setNeedInventoryComplete(false);
       setOperation({
         status: 'ready',
         message: result.coverage_state === 'candidate_available'
           ? 'Des items candidats sont declares disponibles, sans garantie de reservation.'
-          : 'Couverture inconnue : inventaire non declare complet.',
+          : result.coverage_state === 'missing'
+            ? 'Besoin marque manquant sur inventaire declare complet.'
+            : 'Couverture inconnue : inventaire non declare complet.',
       });
     } catch (error) {
       setOperation({status: 'error', message: formatInventoryError(error)});
     }
-  }, [effectiveProjectId, needLabel, needQuantity, needTags, token]);
+  }, [effectiveProjectId, needInventoryComplete, needLabel, needQuantity, needTags, token]);
 
   const displayedItems = searchResults.length > 0
     ? searchResults.map((result) => result.item)
@@ -378,6 +398,25 @@ export function InventoryWorkspace({
         <div><span>A valider</span><strong>{counts.candidates}</strong></div>
         <div><span>Collections</span><strong>{counts.collections}</strong></div>
         <div><span>Declares disponibles</span><strong>{counts.declaredAvailable}</strong></div>
+      </div>
+
+      <div className="inventory-scope-deck" aria-label="Etat du scope inventaire">
+        <div>
+          <span>Scope</span>
+          <strong>{scope === 'project' ? project?.name ?? 'Projet' : 'Personnel'}</strong>
+        </div>
+        <div>
+          <span>Collections completes</span>
+          <strong>{completeCollections.length}/{validatedCollections.length}</strong>
+        </div>
+        <div>
+          <span>Sources tracees</span>
+          <strong>{sourceRefsCount}</strong>
+        </div>
+        <div>
+          <span>Regle RAG</span>
+          <strong>Valides seulement</strong>
+        </div>
       </div>
 
       <nav className="inventory-tabs" aria-label="Vues inventaire">
@@ -457,6 +496,10 @@ export function InventoryWorkspace({
                   </div>
                 </div>
                 <ItemStatus item={item} />
+                <div className="inventory-item__meta" aria-label={`Provenance ${item.label}`}>
+                  <span>{item.visibility_scope === 'project' ? 'Projet' : 'Prive'}</span>
+                  <span>{item.source_refs.length > 0 ? item.source_refs[0] : 'Source absente'}</span>
+                </div>
                 {canManage ? (
                   <div className="inventory-item__actions">
                     <button
@@ -546,6 +589,7 @@ export function InventoryWorkspace({
                   <div>
                     <strong>{collection.label}</strong>
                     <span>{collection.description ?? 'Sans description'}</span>
+                    <small>{COMPLETION_LABELS[collection.completion_state]}</small>
                   </div>
                 </div>
                 <span className={`inventory-badge inventory-badge--${collection.validation_status}`}>{collection.validation_status}</span>
@@ -568,10 +612,9 @@ export function InventoryWorkspace({
                         )}
                         value={collection.completion_state}
                       >
-                        <option value="unknown">Completion inconnue</option>
-                        <option value="selective">Selection volontaire</option>
-                        <option value="complete_declared">Complete declaree</option>
-                        <option value="abandoned">Abandonnee</option>
+                        {Object.entries(COMPLETION_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
                       </select>
                     )}
                   </div>
@@ -589,6 +632,14 @@ export function InventoryWorkspace({
               <label>Besoin projet<input aria-label="Besoin projet" onChange={(event) => setNeedLabel(event.target.value)} placeholder="Objectif anamorphique" required value={needLabel} /></label>
               <label>Quantite<input aria-label="Quantite besoin" min={1} onChange={(event) => setNeedQuantity(Number(event.target.value))} type="number" value={needQuantity} /></label>
               <label>Tags requis<input aria-label="Tags requis" onChange={(event) => setNeedTags(event.target.value)} placeholder="cinema, tournage" value={needTags} /></label>
+              <label className="inventory-toggle">
+                <input
+                  checked={needInventoryComplete}
+                  onChange={(event) => setNeedInventoryComplete(event.target.checked)}
+                  type="checkbox"
+                />
+                Inventaire declare complet
+              </label>
               <button disabled={operation.status === 'working'} type="submit"><Search aria-hidden="true" size={17} /> Evaluer</button>
             </form>
           ) : (
@@ -598,15 +649,26 @@ export function InventoryWorkspace({
             <div className="inventory-need-result">
               <div>
                 <strong>{needResult.need.label}</strong>
-                <span>{needResult.coverage_state === 'candidate_available' ? 'Candidat disponible' : 'Couverture inconnue'}</span>
+                <span>
+                  {needResult.coverage_state === 'candidate_available'
+                    ? 'Candidat disponible'
+                    : needResult.coverage_state === 'missing'
+                      ? 'Manquant declare'
+                      : 'Couverture inconnue'}
+                </span>
               </div>
               <p>Disponibilite garantie : non. Une reservation ou verification reste necessaire.</p>
-              {needResult.matches.map((match) => (
+              {needResult.matches.length > 0 ? needResult.matches.map((match) => (
                 <article className="inventory-need-match" key={match.item.item_id}>
                   <strong>{match.item.label}</strong>
                   <span>{Math.round(match.score * 100)}% · {match.availability_state}</span>
                 </article>
-              ))}
+              )) : (
+                <article className="inventory-need-match inventory-need-match--empty">
+                  <ListChecks aria-hidden="true" size={16} />
+                  <span>Aucun item valide ne couvre ce besoin.</span>
+                </article>
+              )}
             </div>
           ) : null}
         </section>
