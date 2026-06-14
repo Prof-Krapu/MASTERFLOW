@@ -22,6 +22,31 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — done — INTÉGRATION main : fast-forward `codex/frontend-masterflow` (20 commits)
+
+MALEX → Vincent. **Notification de sync, pas une auto-validation.** GO MALEX reçu
+(« traites mes tâches »).
+
+La branche `codex/frontend-masterflow` était **déjà rebasée** sur `main` (merge-base =
+`141ab68`). Fast-forward `main` `141ab68` → `6189f95` et **poussé sur `origin/main`**. Tu le
+récupères en `git pull`.
+
+Ce merge apporte **ton** travail (signé Alex COULOT) sur `main` :
+- verticale **Inventory** complète (service + router + diagnostics + pont OCR + RAG + collections
+  + search/needs + queue + `InventoryWorkspace` frontend) ;
+- **memory cards**, **room checkpoints**, **room access**, **runtime loadout**, **context compiler** ;
+- hardening permissions/sync + filtres RAG transverses + docs d'audit canon/contexte.
+
+**Vérifs (main après merge)** : `npm audit` 0 vuln · backend `tsc` 0 erreur · backend vitest
+**264/264** ✓ · frontend `tsc` 0 erreur · `vite build` ✓. Détails dans `SUIVI.md` (entrée
+2026-06-14 intégration main).
+
+**À ta connaissance** : `codex/frontend-masterflow` est maintenant alignée sur `main`
+(delta `0 0`). Les tâches frontend qui m'étaient revenues (UI projets multi-utilisateur, register
+invite-only, PoC admin) sont **déjà couvertes** par ce merge — rien à refaire de ton côté.
+
+---
+
 ## 2026-06-14 — open — PR-INVENTORY-UI-3 pilotage validation/besoins
 
 MALEX/Codex ajoute une couche frontend sans backend nouveau :

@@ -4,6 +4,45 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-14 — INTÉGRATION main : fast-forward `codex/frontend-masterflow` (20 commits inventory + memory + room) — LIVRÉE + poussée
+
+**GO MALEX (« traites mes tâches »).** La branche `codex/frontend-masterflow` était déjà
+rebasée sur `main` (merge-base = `141ab68` = ancien HEAD main), 20 commits en avance, 0 en
+retard. Fast-forward `main` `141ab68` → `6189f95`, poussé sur `origin/main`.
+
+Apporte (travail MALEX/Codex signé Alex COULOT) :
+- **Inventory** (verticale complète) : `services/inventory.ts` + `inventory_diagnostics.ts`,
+  `routers/inventory.ts`, pont OCR→inventory, indexation RAG, collections, search/needs,
+  queue jobs, `InventoryWorkspace` frontend (777 lignes) ;
+- **Memory cards** (`services/memory_cards.ts`, `routers/memory.ts`) ;
+- **Room checkpoints + room access** (`services/room_checkpoints.ts`, `room_access.ts`) ;
+- **Runtime loadout** (`services/runtime_loadout.ts`) + **context compiler** (`context_compiler.ts`) ;
+- hardening permissions/scoped access, sync hardening, filtres RAG transverses ;
+- docs d'audit canon/contexte/inventory ;
+- **tâches frontend MALEX déjà couvertes par ce merge** : panneau Projet (membres + ressources
+  partagées + attach), `RegisterWithCode` (register invite-only), `AdminConsole` PoC.
+
+### Vérifs (branche avant merge, puis main après merge)
+| Verif | Résultat |
+|---|---|
+| `npm audit` | 0 vulnérabilité |
+| Backend `tsc --noEmit` | 0 erreur |
+| Backend vitest (branche) | 254/254 ✓ |
+| Backend vitest (main après merge + test restauré) | **264/264** ✓ |
+| Frontend `tsc --noEmit` | 0 erreur |
+| Frontend `vite build` | ✓ (635 KB, warning chunk recharts attendu) |
+
+### Bonus
+Restauration + commit de `apps/backend/tests/action_registry.test.ts` (10 tests engine sur
+`listRegistry`/`getRegistryEntry`/`riskLevelFor`/`isSensitive`) — fichier local non suivi,
+couverture légitime qui passe.
+
+### Gate
+**Poussé sur `origin/main`** (GO MALEX 2026-06-14). Plus aucun retard `main` vs
+`codex/frontend-masterflow`. Notif `done` pour Vincent dans `INBOX_VINCENT.md`.
+
+---
+
 ## 2026-06-14 — PR-INVENTORY-UI-3 pilotage validation/besoins — LIVRE SUR BRANCHE
 
 Couche frontend courte pour rendre Inventory plus pilotable sans nouveau contrat backend :
