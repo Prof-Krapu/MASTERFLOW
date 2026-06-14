@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
 import type Database from 'better-sqlite3';
 
+import type {LLMTask, Role} from '@masterflow/shared';
+
 import {env} from '../lib/env.ts';
 import {uuid} from '../lib/uuid.ts';
 import {costFor} from '../services/llm_pricing.ts';
@@ -286,6 +288,62 @@ const SCHEMA_TEMPLATE_SEEDS = [
   },
 ] as const;
 
+// ── Profils de routage LLM (OpenRouter) — VALIDÉS mais INERTES sans clé ─────────
+// Tant que LLM_PROVIDER=mock (défaut), ces profils n'ont AUCUN effet : resolveLLMRoute
+// reste en mock, zéro appel réseau. Ils déclarent, par tâche (et par rôle pour le chat),
+// quel modèle OpenRouter utiliser quand une vraie clé est posée en env serveur.
+// Économie de tokens : modèle de base bon marché, escalade vers un modèle fort seulement
+// pour les rôles/tâches qui en ont besoin. Les ID de modèles sont des défauts raisonnables
+// — ajustables (voir openrouter.ai/models). 1 clé + 1 base URL OpenRouter → N modèles.
+const OR_CHEAP = 'google/gemini-3-flash'; // rapide, multimodal, bon marché (chat base, OCR)
+const OR_MID = 'anthropic/claude-sonnet-4.6'; // qualité correction
+const OR_STRONG = 'anthropic/claude-opus-4.8'; // raisonnement lourd / escalade prof-admin
+const OR_IMAGE = 'google/gemini-3-flash-image'; // génération d'image (cf. runner image, gated)
+
+interface SeedProfile {
+  task: LLMTask;
+  model: string;
+  role_models?: Partial<Record<Role, string>>;
+}
+
+const TASK_MODEL_PROFILE_SEEDS: SeedProfile[] = [
+  // Chat : student bon marché, escalade teacher → mid, admin/godmode → fort.
+  {task: 'chat', model: OR_CHEAP, role_models: {teacher: OR_MID, admin: OR_STRONG, godmode: OR_STRONG}},
+  {task: 'ocr', model: OR_CHEAP},
+  {task: 'criterion_analysis', model: OR_MID},
+  {task: 'rubric_extraction', model: OR_MID},
+  {task: 'feedback_draft', model: OR_MID},
+  {task: 'cohort_synthesis', model: OR_STRONG},
+  {task: 'subject_revision', model: OR_MID},
+  {task: 'image_generation', model: OR_IMAGE},
+];
+
+/**
+ * Seed idempotent des profils de routage par tâche (un profil `validated` par tâche).
+ * `INSERT OR REPLACE` sur un id déterministe → exactement un profil validé par tâche
+ * (pas d'ambiguïté de routage). Inerte tant que le provider reste `mock`.
+ */
+function seedTaskModelProfiles(db: Database.Database, now: number): void {
+  const insert = db.prepare(
+    `INSERT OR REPLACE INTO task_model_profiles
+       (id, task, allowed_providers_json, fallback_order_json, model, role_models_json, privacy_mode,
+        max_cost_eur, max_latency_ms, status, created_at, updated_at, updated_by)
+     VALUES (?, ?, ?, ?, ?, ?, 'approved_remote', NULL, NULL, 'validated', ?, ?, NULL)`,
+  );
+  for (const p of TASK_MODEL_PROFILE_SEEDS) {
+    insert.run(
+      `tmp-${p.task}`,
+      p.task,
+      JSON.stringify(['openrouter']),
+      JSON.stringify(['openrouter']),
+      p.model,
+      p.role_models ? JSON.stringify(p.role_models) : null,
+      now,
+      now,
+    );
+  }
+}
+
 export async function seedAll(): Promise<{
   users: number;
   personas: number;
@@ -419,6 +477,9 @@ export async function seedAll(): Promise<{
     );
     if (res.changes > 0) createdSchemaTemplates++;
   }
+
+  // ── Profils de routage LLM par tâche/rôle (validés, inertes sans clé) ────
+  seedTaskModelProfiles(db, now);
 
   return {
     users: createdUsers,

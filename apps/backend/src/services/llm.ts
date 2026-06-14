@@ -1,3 +1,5 @@
+import type {Role} from '@masterflow/shared';
+
 import {getDb} from '../db/schema.ts';
 import {env} from '../lib/env.ts';
 import {costFor} from './llm_pricing.ts';
@@ -36,6 +38,8 @@ export interface LLMStreamParams {
   roomInstanceId?: string | null;
   /** Tâche LLM (OCR, barème, correction, chat…). Inscrite dans `token_events`. */
   task?: string;
+  /** Rôle de l'appelant — sert au routage par tâche × rôle (économie de tokens). */
+  userRole?: Role | null;
 }
 
 /** Tâche par défaut si l'appelant n'en déclare pas une. */
@@ -261,7 +265,7 @@ async function* streamOpenAICompat(
  * Aiguille vers le mock (défaut) ou le provider OpenAI-compatible.
  */
 export async function* streamChat(p: LLMStreamParams): AsyncGenerator<string> {
-  const route = resolveLLMRoute(p.task ?? DEFAULT_TASK, env.llm);
+  const route = resolveLLMRoute(p.task ?? DEFAULT_TASK, env.llm, p.userRole ?? undefined);
   if (route.provider === 'mock') {
     yield* streamMock(p);
     return;
@@ -308,6 +312,8 @@ export interface CompleteVisionParams {
   userId?: string | null;
   personaId?: string | null;
   roomInstanceId?: string | null;
+  /** Rôle de l'appelant — routage par tâche × rôle (optionnel pour les runners). */
+  userRole?: Role | null;
 }
 
 export interface CompleteVisionResult {
@@ -331,7 +337,7 @@ interface OpenAiCompatContentPart {
  * lecture de `usage.cost` réel quand le provider le fournit (fallback `costFor`).
  */
 export async function completeVision(p: CompleteVisionParams): Promise<CompleteVisionResult> {
-  const route = resolveLLMRoute(p.task, env.llm);
+  const route = resolveLLMRoute(p.task, env.llm, p.userRole ?? undefined);
 
   if (route.provider === 'mock') {
     const promptTokens = estimateTokens(`${p.system ?? ''} ${p.userText}`);

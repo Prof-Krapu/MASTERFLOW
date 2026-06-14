@@ -196,6 +196,8 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
       userId: ctx.actor.id,
       personaId: speaker.id,
       roomInstanceId: ctx.roomInstanceId,
+      task: 'chat',
+      userRole: ctx.actor.role,
     })) {
       send(ws, {type: 'chat_chunk', content: chunk});
     }

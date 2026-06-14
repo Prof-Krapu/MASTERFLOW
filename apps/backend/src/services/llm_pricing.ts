@@ -17,6 +17,9 @@ interface Price {
 }
 
 // Prix indicatifs (à ajuster au branchement réel). Clés en minuscules.
+// NB OpenRouter : le coût RÉEL est renvoyé par le provider (`usage.cost`) et utilisé
+// en priorité (cf. completeVision) ; ces entrées ne servent que de repli pour le chat
+// streamé. Les ID OpenRouter ('vendor/model') matchent par préfixe.
 const PRICES: Record<string, Price> = {
   mock: {in: 0, out: 0},
   'gpt-4o-mini': {in: 0.00014, out: 0.00057},
@@ -24,6 +27,10 @@ const PRICES: Record<string, Price> = {
   'mistral-small': {in: 0.0002, out: 0.0006},
   'mistral-medium': {in: 0.0024, out: 0.0073},
   'deepseek-chat': {in: 0.0001, out: 0.0002},
+  // Modèles OpenRouter seedés par défaut (indicatif — à ajuster ; le réel vient de usage.cost).
+  'google/gemini-3-flash': {in: 0.0001, out: 0.0004},
+  'anthropic/claude-sonnet-4.6': {in: 0.0027, out: 0.0135},
+  'anthropic/claude-opus-4.8': {in: 0.0135, out: 0.0675},
 };
 
 // Préfixes triés du plus long au plus court → on préfère le match le plus spécifique.

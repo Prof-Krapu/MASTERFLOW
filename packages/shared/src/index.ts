@@ -1146,6 +1146,7 @@ export const LLMTaskSchema = z.enum([
   'cohort_synthesis',
   'subject_revision',
   'chat',
+  'image_generation',
 ]);
 export type LLMTask = z.infer<typeof LLMTaskSchema>;
 
@@ -1161,6 +1162,22 @@ export const TaskModelProfileSchema = z.object({
    * secrets restent gérés côté serveur — un modèle n'est pas un secret.
    */
   model: z.string().min(1).nullable().optional(),
+  /**
+   * Modèle par rôle (routage par tâche × rôle, objectif économie de tokens).
+   * Optionnel/additif : map partielle `Role → model`. Si un rôle a une entrée,
+   * elle prime sur `model` (qui prime lui-même sur le modèle global env). Permet
+   * un modèle plus fort pour teacher/admin sans surcoût pour student.
+   */
+  role_models: z
+    .object({
+      student: z.string().min(1),
+      teacher: z.string().min(1),
+      admin: z.string().min(1),
+      godmode: z.string().min(1),
+    })
+    .partial()
+    .nullable()
+    .optional(),
   privacy_mode: z.enum(['local_only', 'approved_remote', 'hybrid']),
   max_cost_eur: z.number().nonnegative().nullable(),
   max_latency_ms: z.number().int().positive().nullable(),
@@ -1665,6 +1682,37 @@ export const OcrPrepareRequestSchema = z
     }
   });
 export type OcrPrepareRequest = z.infer<typeof OcrPrepareRequestSchema>;
+
+// ── Génération d'image (branchement gated GO IMAGE) ──────────────────────────
+// Le job est de type `asset_prepare` (famille runner `asset`). Il n'est créé que
+// par l'action sensible approuvée (preflight_image_action / create_render_manifest)
+// — jamais d'image sans ce gate. La sortie du runner part en `needs_review`, jamais
+// `completed` : un humain valide et ingère l'asset.
+export const ImageGenerationRequestSchema = z.object({
+  owner_id: z.string().min(1),
+  scope_type: z.enum(['owner', 'project']),
+  scope_id: z.string().min(1),
+  prompt: z.string().min(1).max(2000),
+  negative_prompt: z.string().max(2000).optional(),
+  width: z.number().int().positive().max(4096).optional(),
+  height: z.number().int().positive().max(4096).optional(),
+  n: z.number().int().min(1).max(4).default(1),
+});
+export type ImageGenerationRequest = z.infer<typeof ImageGenerationRequestSchema>;
+
+/** Une image proposée par le runner (référence `url` ou octets `base64`, jamais inventée). */
+export const GeneratedImageSchema = z
+  .object({
+    mime: z.enum(['image/png', 'image/jpeg', 'image/webp']),
+    url: z.string().url().optional(),
+    base64: z.string().min(1).optional(),
+    width: z.number().int().positive().optional(),
+    height: z.number().int().positive().optional(),
+  })
+  .refine((img) => Boolean(img.url) || Boolean(img.base64), {
+    message: 'Une image générée doit porter une url ou des octets base64.',
+  });
+export type GeneratedImage = z.infer<typeof GeneratedImageSchema>;
 
 export const CorrectionPrepareRequestSchema = z.object({
   owner_id: z.string().min(1),

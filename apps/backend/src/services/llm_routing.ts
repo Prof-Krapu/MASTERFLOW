@@ -2,6 +2,7 @@ import {
   LLMTaskSchema,
   TaskModelProfileSchema,
   type LLMTask,
+  type Role,
   type TaskModelProfile,
 } from '@masterflow/shared';
 
@@ -31,6 +32,7 @@ function toProfile(row: TaskModelProfileRow): TaskModelProfile {
     allowed_providers: JSON.parse(row.allowed_providers_json) as unknown,
     fallback_order: JSON.parse(row.fallback_order_json) as unknown,
     model: row.model ?? null,
+    role_models: row.role_models_json ? (JSON.parse(row.role_models_json) as unknown) : null,
     privacy_mode: row.privacy_mode,
     max_cost_eur: row.max_cost_eur,
     max_latency_ms: row.max_latency_ms,
@@ -92,7 +94,11 @@ export function assertAllowedEgress(baseUrl: string, allowlist: readonly string[
  * Résout le provider global contre le profil validé de la tâche.
  * Le mock est local et reste disponible sans profil. Tout provider externe est fail-closed.
  */
-export function resolveLLMRoute(taskInput: string, config: LLMRuntimeConfig): ResolvedLLMRoute {
+export function resolveLLMRoute(
+  taskInput: string,
+  config: LLMRuntimeConfig,
+  role?: Role,
+): ResolvedLLMRoute {
   const task = LLMTaskSchema.parse(taskInput);
   const provider = config.provider.trim();
 
@@ -115,10 +121,13 @@ export function resolveLLMRoute(taskInput: string, config: LLMRuntimeConfig): Re
   if (profile.fallback_order.length > 0 && !profile.fallback_order.includes(provider)) {
     throw new Error(`llm_route_provider_absent_from_fallback:${provider}`);
   }
-  // Modèle par profil : le profil de tâche prime ; sinon repli sur le modèle
-  // global de l'environnement. Le provider/base URL/secrets restent ceux du
-  // serveur — un modèle par profil ne change ni l'egress ni la privacy.
-  const model = profile.model ?? config.model;
+  // Routage par tâche × rôle : un modèle déclaré pour le rôle de l'appelant prime,
+  // puis le modèle du profil, puis le modèle global env. Économie de tokens : on
+  // n'escalade vers un modèle fort que pour les rôles configurés (prof/admin). Le
+  // provider/base URL/secrets restent ceux du serveur — ni l'egress ni la privacy
+  // ne changent.
+  const roleModel = role ? profile.role_models?.[role] : undefined;
+  const model = roleModel ?? profile.model ?? config.model;
   if (!config.apiKey || !model || !config.baseUrl) {
     throw new Error('llm_route_incomplete_provider_config');
   }

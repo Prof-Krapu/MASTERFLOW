@@ -642,11 +642,13 @@ function migrate(d: Database.Database): void {
       task                   TEXT NOT NULL
                                CHECK (task IN (
                                  'ocr','rubric_extraction','criterion_analysis',
-                                 'feedback_draft','cohort_synthesis','subject_revision','chat'
+                                 'feedback_draft','cohort_synthesis','subject_revision','chat',
+                                 'image_generation'
                                )),
       allowed_providers_json TEXT NOT NULL,
       fallback_order_json    TEXT NOT NULL DEFAULT '[]',
       model                  TEXT,
+      role_models_json       TEXT,
       privacy_mode           TEXT NOT NULL
                                CHECK (privacy_mode IN ('local_only','approved_remote','hybrid')),
       max_cost_eur           REAL CHECK (max_cost_eur IS NULL OR max_cost_eur >= 0),
@@ -1142,6 +1144,7 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'jobs', 'claimed_at', 'INTEGER');
   ensureColumn(d, 'jobs', 'lease_expires_at', 'INTEGER');
   ensureColumn(d, 'task_model_profiles', 'model', 'TEXT');
+  ensureColumn(d, 'task_model_profiles', 'role_models_json', 'TEXT');
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
   ensureColumn(d, 'pedagogical_signals', 'project_id', 'TEXT');
   ensureColumn(d, 'teacher_decision_deltas', 'project_id', 'TEXT');
@@ -1691,6 +1694,7 @@ export interface TaskModelProfileRow {
   allowed_providers_json: string;
   fallback_order_json: string;
   model: string | null;
+  role_models_json: string | null;
   privacy_mode: 'local_only' | 'approved_remote' | 'hybrid';
   max_cost_eur: number | null;
   max_latency_ms: number | null;

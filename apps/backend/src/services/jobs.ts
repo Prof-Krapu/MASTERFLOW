@@ -1,6 +1,7 @@
 import {
   CorrectionPrepareRequestSchema,
   ExportPrepareRequestSchema,
+  ImageGenerationRequestSchema,
   JobEventSchema,
   JobSchema,
   JobTypeSchema,
@@ -8,6 +9,7 @@ import {
   ROLE_RANK,
   type CorrectionPrepareRequest,
   type ExportPrepareRequest,
+  type ImageGenerationRequest,
   type Job,
   type JobEvent,
   type JobStatus,
@@ -377,6 +379,45 @@ export function createOcrPrepareJob(actor: AuthUser, input: OcrPrepareRequest): 
     {adapter_id: request.adapter_id},
     'job.ocr_prepare.queued',
     request.project_scope,
+  );
+}
+
+/**
+ * Crée un job `asset_prepare` de génération d'image (famille runner `asset`).
+ *
+ * GATE GO IMAGE : cette fonction est l'EXÉCUTEUR appelé par l'action sensible
+ * approuvée (preflight_image_action / create_render_manifest). Elle n'est PAS
+ * exposée par une route HTTP directe — aucune image ne se crée sans le cycle
+ * d'action validé. Le runner image produira sa sortie en `needs_review`.
+ */
+export function createImageGenerationJob(actor: AuthUser, input: ImageGenerationRequest): Job {
+  const request = ImageGenerationRequestSchema.parse(input);
+  if (request.scope_type === 'project') {
+    if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
+      const decision = decideScopedPermission({
+        actor,
+        projectId: request.scope_id,
+        minimumProjectRole: 'participant',
+      });
+      if (!decision.allowed) throw new Error('scope_denied');
+    }
+  } else if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
+    throw new Error('scope_denied');
+  }
+
+  // Le discriminant `kind` vit DANS le payload : la famille `asset` peut héberger
+  // d'autres kinds plus tard ; le runner image ne traite que `image_generation`.
+  return insertQueuedJob(
+    actor,
+    'asset_prepare',
+    request.owner_id,
+    request.scope_type,
+    request.scope_id,
+    'high',
+    {...request, kind: 'image_generation'},
+    {kind: 'image_generation'},
+    'job.asset_prepare.queued',
+    request.scope_id,
   );
 }
 
