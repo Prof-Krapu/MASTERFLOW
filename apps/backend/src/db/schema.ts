@@ -1158,6 +1158,11 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'feedback_drafts', 'project_id', 'TEXT');
   ensureColumn(d, 'correction_export_previews', 'project_id', 'TEXT');
   ensureColumn(d, 'cohort_calibration_reviews', 'project_id', 'TEXT');
+
+  // SQLite ne sait pas ALTER un CHECK : la colonne `task` a gagné `image_generation`.
+  // On reconstruit la table (lignes préservées) sur les colonnes déjà étendues ci-dessus.
+  migrateTaskModelProfilesTaskCheck(d);
+
   d.exec(`
     CREATE INDEX IF NOT EXISTS idx_jobs_claimable
       ON jobs(status, type, updated_at, lease_expires_at);
@@ -1199,6 +1204,62 @@ function ensureColumn(
   const columns = d.prepare(`PRAGMA table_info('${tableName}')`).all() as Array<{name: string}>;
   if (!columns.some((column) => column.name === columnName)) {
     d.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
+  }
+}
+
+/**
+ * Migration idempotente du CHECK `task` de `task_model_profiles` (ajout de
+ * `image_generation`). SQLite ne permet pas d'ALTER un CHECK : on reconstruit la
+ * table selon la procédure recommandée (foreign_keys OFF hors transaction, copie,
+ * drop, rename). No-op si la table est déjà à jour ou absente. Suppose les colonnes
+ * `model`/`role_models_json` déjà présentes (ajoutées par `ensureColumn` en amont).
+ */
+function migrateTaskModelProfilesTaskCheck(d: Database.Database): void {
+  const row = d
+    .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='task_model_profiles'")
+    .get() as {sql?: string} | undefined;
+  if (!row?.sql || row.sql.includes('image_generation')) return; // déjà à jour / absente
+
+  d.pragma('foreign_keys = OFF');
+  try {
+    d.transaction(() => {
+      d.exec(`
+        CREATE TABLE task_model_profiles__new (
+          id                     TEXT PRIMARY KEY,
+          task                   TEXT NOT NULL
+                                   CHECK (task IN (
+                                     'ocr','rubric_extraction','criterion_analysis',
+                                     'feedback_draft','cohort_synthesis','subject_revision','chat',
+                                     'image_generation'
+                                   )),
+          allowed_providers_json TEXT NOT NULL,
+          fallback_order_json    TEXT NOT NULL DEFAULT '[]',
+          model                  TEXT,
+          role_models_json       TEXT,
+          privacy_mode           TEXT NOT NULL
+                                   CHECK (privacy_mode IN ('local_only','approved_remote','hybrid')),
+          max_cost_eur           REAL CHECK (max_cost_eur IS NULL OR max_cost_eur >= 0),
+          max_latency_ms         INTEGER CHECK (max_latency_ms IS NULL OR max_latency_ms > 0),
+          status                 TEXT NOT NULL DEFAULT 'draft'
+                                   CHECK (status IN ('draft','validated','disabled')),
+          created_at             INTEGER NOT NULL,
+          updated_at             INTEGER NOT NULL,
+          updated_by             TEXT REFERENCES users(id)
+        );
+        INSERT INTO task_model_profiles__new
+          (id, task, allowed_providers_json, fallback_order_json, model, role_models_json,
+           privacy_mode, max_cost_eur, max_latency_ms, status, created_at, updated_at, updated_by)
+          SELECT id, task, allowed_providers_json, fallback_order_json, model, role_models_json,
+                 privacy_mode, max_cost_eur, max_latency_ms, status, created_at, updated_at, updated_by
+          FROM task_model_profiles;
+        DROP TABLE task_model_profiles;
+        ALTER TABLE task_model_profiles__new RENAME TO task_model_profiles;
+        CREATE INDEX IF NOT EXISTS idx_task_model_profiles_task
+          ON task_model_profiles(task, status);
+      `);
+    })();
+  } finally {
+    d.pragma('foreign_keys = ON');
   }
 }
 
