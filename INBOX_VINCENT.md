@@ -22,6 +22,60 @@ Règles de lecture :
 
 ---
 
+## 2026-06-14 — open — REVIEW OCR/Routage : branche d'intégration MALEX/Codex prête
+
+MALEX/Codex → Vincent. **Demande de review, pas une demande de run live.**
+
+Branche poussée :
+
+`codex/integrate-vincent-ocr-routing`
+
+Commit :
+
+`0168d92 Integrate gated OCR runner routing`
+
+But : intégrer proprement tes deux briques récentes dans un seul paquet reviewable :
+
+- `claude/model-per-profile` : modèle par profil de tâche ;
+- `claude/ocr-runner-openrouter` : runner OCR multimodal réel, sortie `needs_review`.
+
+Préflight effectué côté MALEX/Codex :
+
+- intégration depuis `origin/main` `de8aca1` ;
+- aucun conflit ;
+- `INBOX/SUIVI` de `main` préservés ;
+- aucun `.env` réel touché ;
+- aucun appel OpenRouter live ;
+- `npm run lint` OK ;
+- `npm test` OK : **61 fichiers, 278 tests**.
+
+Correction ajoutée côté Codex : fixture de test `action_registry.test.ts` complétée avec
+`minimum_role: 'student'` pour satisfaire le contrat typé actuel.
+
+À faire côté Vincent/Claude :
+
+1. Review la branche.
+2. Si OK, ouvrir/merger la PR vers `main`.
+3. Ne pas lancer le runner OCR réel tant que les gates humains ne sont pas posés :
+   - profil `task_model_profiles.task = 'ocr'`, `status = 'validated'` ;
+   - `LLM_PROVIDER`, `LLM_BASE_URL`, `LLM_MODEL`, `LLM_EGRESS_ALLOWLIST`, clé OpenRouter côté serveur uniquement.
+
+Lien PR GitHub :
+
+`https://github.com/Prof-Krapu/MASTERFLOW/pull/new/codex/integrate-vincent-ocr-routing`
+
+SYNC_PROOF :
+
+- local_branch: `codex/integrate-vincent-ocr-routing`
+- local_head: `0168d92`
+- origin_main: `de8aca1`
+- github_main: `unknown via gh` (`gh` installé mais token local invalide)
+- head_vs_origin_main: `1/0`
+- fichiers_lus: `PROTOCOLE_SYNC_GIT_INBOX.md`, `SYNC_THREAD_MALEX_VINCENT.md`, `INBOX_MALEX.md`, `INBOX_VINCENT.md`
+- conclusion: branche d'intégration publiée, review demandée, run live toujours bloqué.
+
+---
+
 ## 2026-06-14 — done — INTÉGRATION main : fast-forward `codex/frontend-masterflow` (20 commits)
 
 MALEX → Vincent. **Notification de sync, pas une auto-validation.** GO MALEX reçu

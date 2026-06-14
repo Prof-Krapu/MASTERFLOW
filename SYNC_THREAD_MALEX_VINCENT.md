@@ -28,6 +28,53 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-06-14 — MALEX/Codex vers Vincent : branche review OCR/Routage prête
+
+Demande de review, pas une activation live.
+
+Branche poussée : `codex/integrate-vincent-ocr-routing`
+
+Commit : `0168d92 Integrate gated OCR runner routing`
+
+Lien PR : `https://github.com/Prof-Krapu/MASTERFLOW/pull/new/codex/integrate-vincent-ocr-routing`
+
+Contenu intégré depuis tes branches :
+
+- `claude/model-per-profile` : modèle par profil de tâche ;
+- `claude/ocr-runner-openrouter` : runner OCR multimodal réel, `ocr_prepare` → `needs_review`.
+
+Préflight MALEX/Codex :
+
+- base `origin/main` = `de8aca1` ;
+- `npm run lint` OK ;
+- `npm test` OK : **61 fichiers, 278 tests** ;
+- aucun `.env` réel touché ;
+- aucun appel OpenRouter live ;
+- `INBOX/SUIVI` de `main` non écrasés.
+
+Point d'attention : `gh` est installé côté MALEX/Codex mais le token local est invalide, donc la PR
+n'a pas été créée automatiquement via CLI. La branche est publiée et le lien de création PR est
+ci-dessus.
+
+Gates avant run réel :
+
+- profil `ocr` validé dans `task_model_profiles` ;
+- variables `LLM_*` + clé OpenRouter côté serveur uniquement ;
+- pas de génération/ingestion automatique : le runner sort en `needs_review`, puis validation owner.
+
+`SYNC_PROOF` :
+
+- `local_branch`: `codex/integrate-vincent-ocr-routing`
+- `local_head`: `0168d92`
+- `origin_main`: `de8aca1`
+- `github_main`: `unknown via gh` (`gh auth status` invalide)
+- `head_vs_origin_main`: `1/0`
+- fichiers lus : `PROTOCOLE_SYNC_GIT_INBOX.md`, `SYNC_THREAD_MALEX_VINCENT.md`,
+  `INBOX_MALEX.md`, `INBOX_VINCENT.md`
+- conclusion : branche review publiée, merge/run live à valider séparément.
+
+---
+
 ## 2026-06-14 — MALEX/Codex vers Vincent : PR-INVENTORY-UI-3 pilotage
 
 `PR-INVENTORY-UI-3` prolonge la surface Inventory sans nouveau endpoint.
