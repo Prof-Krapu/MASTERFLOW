@@ -926,6 +926,112 @@ export const ActionRegistryEntrySchema = z.object({
 });
 export type ActionRegistryEntry = z.infer<typeof ActionRegistryEntrySchema>;
 
+// ───────────────────────── Validation Inbox MVP ─────────────────────────
+
+export const ValidationInboxItemTypeSchema = z.enum([
+  'correction_review',
+  'feedback_review',
+  'grade_lock',
+  'inventory_candidate',
+  'visual_asset_candidate',
+  'generated_asset_candidate',
+  'story_patch',
+  'quote_export',
+  'quote_send',
+  'public_export',
+  'factory_backflow',
+  'permission_change',
+  'autonomy_proposal',
+  'deployment_question',
+  'output_candidate',
+  'canon_delta',
+]);
+export type ValidationInboxItemType = z.infer<typeof ValidationInboxItemTypeSchema>;
+
+export const ValidationInboxStatusSchema = z.enum([
+  'draft',
+  'candidate',
+  'needs_review',
+  'blocked',
+  'approved',
+  'rejected',
+  'parked',
+  'archived',
+]);
+export type ValidationInboxStatus = z.infer<typeof ValidationInboxStatusSchema>;
+
+export const ValidationInboxRiskLevelSchema = z.enum(['low', 'medium', 'high', 'critical']);
+export type ValidationInboxRiskLevel = z.infer<typeof ValidationInboxRiskLevelSchema>;
+
+export const ValidationPrivacyScopeSchema = z.enum([
+  'private',
+  'project',
+  'class',
+  'organization',
+  'collaborators',
+  'admin_only',
+  'public_export',
+]);
+export type ValidationPrivacyScope = z.infer<typeof ValidationPrivacyScopeSchema>;
+
+export const ValidationDecisionValueSchema = z.enum([
+  'approve',
+  'edit',
+  'reject',
+  'park',
+  'request_precision',
+  'archive',
+  'export_patch',
+]);
+export type ValidationDecisionValue = z.infer<typeof ValidationDecisionValueSchema>;
+
+export const ValidationInboxDecisionSchema = z.object({
+  value: ValidationDecisionValueSchema,
+  decided_by: z.string().min(1).nullable(),
+  decided_at: z.number().int().nonnegative().nullable(),
+  rationale: z.string().max(1000).nullable(),
+});
+export type ValidationInboxDecision = z.infer<typeof ValidationInboxDecisionSchema>;
+
+export const ValidationInboxItemSchema = z.object({
+  item_id: z.string().min(1),
+  item_type: ValidationInboxItemTypeSchema,
+  title: z.string().min(1).max(240),
+  summary: z.string().min(1).max(2000),
+  domain_refs: z.array(z.string().min(1).max(240)),
+  object_refs: z.array(z.string().min(1).max(240)),
+  source_refs: z.array(z.string().min(1).max(240)),
+  requester: z.string().min(1),
+  owner: z.string().min(1),
+  required_validator: z.string().min(1),
+  current_status: ValidationInboxStatusSchema,
+  risk_level: ValidationInboxRiskLevelSchema,
+  privacy_scope: ValidationPrivacyScopeSchema,
+  source_truth_state: z.enum(['unknown', 'source_verified', 'conflicting', 'missing']),
+  output_readiness_state: z.enum(['blocked', 'needs_review', 'ready']),
+  proposed_action: z.string().min(1).max(500),
+  impact_summary: z.string().min(1).max(1000),
+  blocked_actions: z.array(z.string().min(1).max(240)),
+  allowed_actions: z.array(z.string().min(1).max(240)),
+  conflicts: z.array(z.string().min(1).max(500)),
+  open_questions: z.array(z.string().min(1).max(500)),
+  recommended_decision: ValidationDecisionValueSchema.nullable(),
+  decision_options: z.array(ValidationDecisionValueSchema).min(1),
+  decision: ValidationInboxDecisionSchema.nullable(),
+  audit_trace: z.array(z.string().min(1).max(240)),
+  source_kind: z.enum(['action']),
+  source_id: z.string().min(1),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type ValidationInboxItem = z.infer<typeof ValidationInboxItemSchema>;
+
+export const DecideValidationInboxItemRequestSchema = z.object({
+  decision: ValidationDecisionValueSchema,
+  note: z.string().max(1000).optional(),
+});
+export type DecideValidationInboxItemRequest = z.infer<typeof DecideValidationInboxItemRequestSchema>;
+
 // ───────────────────────── Registre des adapters ─────────────────────────
 
 export const AdapterKindSchema = z.enum([

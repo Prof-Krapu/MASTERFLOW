@@ -340,6 +340,40 @@ function migrate(d: Database.Database): void {
       created_at  INTEGER NOT NULL
     );
 
+    -- ───────────────────────── Shared Validation Inbox MVP ────────────────
+    CREATE TABLE IF NOT EXISTS validation_inbox_items (
+      id                       TEXT PRIMARY KEY,
+      item_type                TEXT NOT NULL,
+      title                    TEXT NOT NULL,
+      summary                  TEXT NOT NULL,
+      domain_refs_json         TEXT NOT NULL DEFAULT '[]',
+      object_refs_json         TEXT NOT NULL DEFAULT '[]',
+      source_refs_json         TEXT NOT NULL DEFAULT '[]',
+      requester_id             TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      owner_id                 TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      required_validator       TEXT NOT NULL,
+      status                   TEXT NOT NULL,
+      risk_level               TEXT NOT NULL,
+      privacy_scope            TEXT NOT NULL,
+      source_truth_state       TEXT NOT NULL,
+      output_readiness_state   TEXT NOT NULL,
+      proposed_action          TEXT NOT NULL,
+      impact_summary           TEXT NOT NULL,
+      blocked_actions_json     TEXT NOT NULL DEFAULT '[]',
+      allowed_actions_json     TEXT NOT NULL DEFAULT '[]',
+      conflicts_json           TEXT NOT NULL DEFAULT '[]',
+      open_questions_json      TEXT NOT NULL DEFAULT '[]',
+      recommended_decision     TEXT,
+      decision_options_json    TEXT NOT NULL DEFAULT '[]',
+      decision_json            TEXT,
+      audit_trace_json         TEXT NOT NULL DEFAULT '[]',
+      source_kind              TEXT NOT NULL CHECK (source_kind = 'action'),
+      source_id                TEXT NOT NULL,
+      created_at               INTEGER NOT NULL,
+      updated_at               INTEGER NOT NULL,
+      UNIQUE(source_kind, source_id)
+    );
+
     -- ───────────────────────── Anti-hallucination ──────────────────────────
     CREATE TABLE IF NOT EXISTS resources (
       id          TEXT PRIMARY KEY,
@@ -1192,6 +1226,10 @@ function migrate(d: Database.Database): void {
       ON correction_export_previews(project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_cohort_calibration_reviews_project
       ON cohort_calibration_reviews(project_id, status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_validation_inbox_status
+      ON validation_inbox_items(status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_validation_inbox_source
+      ON validation_inbox_items(source_kind, source_id);
   `);
 }
 
@@ -1677,6 +1715,38 @@ export interface ActionRow {
   validation_note: string | null;
   result_json: string | null;
   error: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface ValidationInboxItemRow {
+  id: string;
+  item_type: string;
+  title: string;
+  summary: string;
+  domain_refs_json: string;
+  object_refs_json: string;
+  source_refs_json: string;
+  requester_id: string;
+  owner_id: string;
+  required_validator: string;
+  status: string;
+  risk_level: string;
+  privacy_scope: string;
+  source_truth_state: string;
+  output_readiness_state: string;
+  proposed_action: string;
+  impact_summary: string;
+  blocked_actions_json: string;
+  allowed_actions_json: string;
+  conflicts_json: string;
+  open_questions_json: string;
+  recommended_decision: string | null;
+  decision_options_json: string;
+  decision_json: string | null;
+  audit_trace_json: string;
+  source_kind: 'action';
+  source_id: string;
   created_at: number;
   updated_at: number;
 }
