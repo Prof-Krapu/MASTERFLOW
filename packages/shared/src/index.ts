@@ -1154,6 +1154,13 @@ export const TaskModelProfileSchema = z.object({
   task: LLMTaskSchema,
   allowed_providers: z.array(z.string().min(1)).min(1),
   fallback_order: z.array(z.string().min(1)),
+  /**
+   * Modèle propre à ce profil de tâche (routage multi-LLM selon rôle/besoin).
+   * Optionnel et additif : si absent (`null`), le runner retombe sur le modèle
+   * global de l'environnement (`LLM_MODEL`). Le provider, la base URL et les
+   * secrets restent gérés côté serveur — un modèle n'est pas un secret.
+   */
+  model: z.string().min(1).nullable().optional(),
   privacy_mode: z.enum(['local_only', 'approved_remote', 'hybrid']),
   max_cost_eur: z.number().nonnegative().nullable(),
   max_latency_ms: z.number().int().positive().nullable(),
