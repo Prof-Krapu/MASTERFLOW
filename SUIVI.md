@@ -4,6 +4,46 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-15 — Panneau admin routage LLM — PRÊT SUR BRANCHE
+
+Branche MALEX/Codex : `codex/admin-llm-routing-panel`.
+
+But : répondre au handoff Vincent du 2026-06-14 sans activer de provider réel. Le panneau admin
+expose maintenant les profils `task_model_profiles` et les met en regard du monitoring
+`token_events`.
+
+Ajouts :
+
+- route backend lecture seule `GET /admin/llm/task-model-profiles`, gated `admin/godmode` via
+  le routeur `/admin` existant ;
+- service `listTaskModelProfiles()` réutilisant le mapping `TaskModelProfile` existant ;
+- client frontend `getTaskModelProfiles()` ;
+- section `Routage LLM · profils par tâche` dans `AdminConsole` :
+  tâche, statut, provider autorisé, modèle de base, overrides par rôle, privacy mode, usage par
+  tâche et usage par modèle ;
+- test `admin_llm_profiles.test.ts` : 401 sans token, 403 student, lecture admin, absence de
+  `api_key`/`base_url` dans la réponse.
+
+Garde-fous :
+
+- aucune clé, base URL, secret ou variable d'environnement exposé ;
+- aucune écriture de profil ;
+- aucun bouton d'activation live ;
+- OpenRouter reste inerte tant que `LLM_PROVIDER=mock` / clé env serveur absente.
+
+Recette locale :
+
+- tests ciblés `admin_llm_profiles` + `token_usage` + `router_gating_integration` : **11/11** ;
+- backend complet : **288/288** ;
+- backend TypeScript : OK ;
+- frontend TypeScript : OK ;
+- frontend build Vite 8 : OK, warning chunk recharts attendu ;
+- `git diff --check` : OK.
+
+Statut : prêt à commit/push après validation MALEX.
+
+---
+
 ## 2026-06-14 — Backend OpenRouter : FINI + vérifié en local + lint vert + migration DB — handoff MALEX confirmé
 
 Clôture de la mission backend. `action_registry` corrigé (`tsc` backend **0 erreur**) ; **migration

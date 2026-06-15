@@ -1918,7 +1918,8 @@ dd {
 
 /* ───────────────────────── Console d'administration (PoC) ───────────────────────── */
 .admin-console,
-.admin-monitoring {
+.admin-monitoring,
+.admin-llm-routing {
   overflow-x: auto;
 }
 
@@ -1985,6 +1986,10 @@ dd {
   color: var(--muted);
   font-weight: 600;
 }
+.admin-llm-table th,
+.admin-llm-table td {
+  min-width: 7.5rem;
+}
 .admin-muted {
   color: var(--muted);
 }
@@ -2021,6 +2026,30 @@ dd {
 .admin-card strong {
   font-size: 1.15rem;
   color: var(--accent-strong);
+}
+.admin-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.35rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.admin-pill--validated {
+  color: var(--accent-strong);
+  border-color: color-mix(in srgb, var(--accent-strong) 45%, var(--line));
+}
+.admin-pill--draft {
+  color: var(--amber);
+}
+.admin-pill--disabled {
+  color: var(--muted);
+}
+.admin-role-models {
+  display: grid;
+  gap: 0.2rem;
 }
 .admin-charts-row {
   display: grid;

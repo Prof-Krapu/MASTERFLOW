@@ -22,6 +22,34 @@ Règles de lecture :
 
 ---
 
+## 2026-06-15 — open — Panneau admin routage LLM prêt à relire
+
+MALEX/Codex prépare une couche courte sur `codex/admin-llm-routing-panel`.
+
+Objet : répondre à ton handoff OpenRouter sans activer le live.
+
+Livré localement avant push :
+
+- `GET /admin/llm/task-model-profiles`, lecture seule, gated `admin/godmode` ;
+- affichage dans `AdminConsole` des profils `task_model_profiles` : tâche, statut, provider,
+  modèle, modèles par rôle, privacy, usage par tâche et par modèle ;
+- aucun secret exposé (`api_key`, `base_url`, env serveur absents de la réponse) ;
+- aucune écriture de profil, aucun bouton d'activation provider, aucun run OpenRouter.
+
+Checks locaux :
+
+- tests ciblés admin LLM + token usage + gate-ordering : 11/11 ;
+- backend complet : 288/288 ;
+- TS backend/front OK ;
+- build frontend OK ;
+- diff-check OK.
+
+Action attendue après publication : relire la forme de l'endpoint et confirmer si cette lecture
+suffit pour la première surface admin LLM. Toute modification de profil restera une action
+sensible séparée, pas dans cette passe.
+
+---
+
 ## 2026-06-14 — done — INTÉGRATION main : fast-forward `codex/frontend-masterflow` (20 commits)
 
 MALEX → Vincent. **Notification de sync, pas une auto-validation.** GO MALEX reçu

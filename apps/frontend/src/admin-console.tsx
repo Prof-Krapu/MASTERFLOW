@@ -5,6 +5,7 @@ import type {
   AdminUser,
   Invitation,
   Role,
+  TaskModelProfile,
   TokenUsageGroupBy,
   TokenUsageReport,
 } from '@masterflow/shared';
@@ -28,6 +29,7 @@ import {
   executeAction,
   getAdminUsers,
   getInvitations,
+  getTaskModelProfiles,
   getTokenUsage,
   preflightAction,
   revokeInvitation,
@@ -78,12 +80,26 @@ function fmtDate(ms: number | null): string {
   if (ms === null) return '—';
   return new Date(ms).toLocaleDateString('fr-FR');
 }
+function joinList(values: string[]): string {
+  return values.length > 0 ? values.join(', ') : '—';
+}
+function profileStatusLabel(status: TaskModelProfile['status']): string {
+  if (status === 'validated') return 'validé';
+  if (status === 'disabled') return 'désactivé';
+  return 'brouillon';
+}
+function profilePrivacyLabel(mode: TaskModelProfile['privacy_mode']): string {
+  if (mode === 'approved_remote') return 'remote approuvé';
+  if (mode === 'local_only') return 'local only';
+  return 'hybride';
+}
 
 export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): ReactElement {
   const isGodmode = role === 'godmode';
 
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [taskModelProfiles, setTaskModelProfiles] = useState<TaskModelProfile[]>([]);
   const [reports, setReports] = useState<Record<TokenUsageGroupBy, TokenUsageReport | null>>({
     day: null,
     model: null,
@@ -107,9 +123,10 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
     setLoading(true);
     setError(null);
     try {
-      const [u, inv, day, model, task, user] = await Promise.all([
+      const [u, inv, profiles, day, model, task, user] = await Promise.all([
         getAdminUsers(token),
         getInvitations(token),
+        getTaskModelProfiles(token),
         getTokenUsage('day', token),
         getTokenUsage('model', token),
         getTokenUsage('task', token),
@@ -117,6 +134,7 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
       ]);
       setUsers(u);
       setInvitations(inv);
+      setTaskModelProfiles(profiles);
       setReports({day, model, task, user});
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur de chargement.');
@@ -270,6 +288,24 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
       })),
     [reports.task],
   );
+
+  const taskUsage = useMemo(
+    () => new Map((reports.task?.rows ?? []).map((r) => [r.group, r])),
+    [reports.task],
+  );
+  const modelUsage = useMemo(
+    () => new Map((reports.model?.rows ?? []).map((r) => [r.group, r])),
+    [reports.model],
+  );
+  const routingTotals = useMemo(() => {
+    const validated = taskModelProfiles.filter((profile) => profile.status === 'validated').length;
+    const roleOverrides = taskModelProfiles.reduce(
+      (count, profile) => count + Object.keys(profile.role_models ?? {}).length,
+      0,
+    );
+    const remoteProfiles = taskModelProfiles.filter((profile) => profile.privacy_mode !== 'local_only').length;
+    return {validated, roleOverrides, remoteProfiles};
+  }, [taskModelProfiles]);
 
   return (
     <>
@@ -433,6 +469,116 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
             </tbody>
           </table>
         </section>
+      </article>
+
+      {/* ── Routage LLM : profils par tâche × rôle ───────────────── */}
+      <article className="panel panel--wide admin-llm-routing">
+        <div className="panel-header">
+          <h2>Routage LLM · profils par tâche</h2>
+          <span className="admin-muted">lecture seule · provider live via env serveur uniquement</span>
+        </div>
+
+        <div className="admin-cards">
+          <div className="admin-card">
+            <span className="admin-card-label">Profils validés</span>
+            <strong>
+              {routingTotals.validated}/{taskModelProfiles.length}
+            </strong>
+          </div>
+          <div className="admin-card">
+            <span className="admin-card-label">Overrides rôle</span>
+            <strong>{fmtTokens(routingTotals.roleOverrides)}</strong>
+          </div>
+          <div className="admin-card">
+            <span className="admin-card-label">Remote approuvé</span>
+            <strong>{fmtTokens(routingTotals.remoteProfiles)}</strong>
+          </div>
+          <div className="admin-card">
+            <span className="admin-card-label">Mode par défaut</span>
+            <strong>mock-safe</strong>
+          </div>
+        </div>
+
+        <p className="admin-hint">
+          Cette surface montre le contrat de routage. Elle ne stocke aucun secret, ne pousse aucune clé et
+          n’active pas un provider réel.
+        </p>
+
+        <table className="admin-table admin-llm-table">
+          <thead>
+            <tr>
+              <th>Tâche</th>
+              <th>Statut</th>
+              <th>Provider</th>
+              <th>Modèle de base</th>
+              <th>Modèles par rôle</th>
+              <th>Privacy</th>
+              <th>Usage tâche</th>
+              <th>Usage modèle</th>
+            </tr>
+          </thead>
+          <tbody>
+            {taskModelProfiles.length === 0 ? (
+              <tr>
+                <td colSpan={8}>Aucun profil de routage LLM disponible.</td>
+              </tr>
+            ) : (
+              taskModelProfiles.map((profile) => {
+                const taskRow = taskUsage.get(profile.task);
+                const modelRow = profile.model ? modelUsage.get(profile.model) : undefined;
+                const roles = Object.entries(profile.role_models ?? {});
+                return (
+                  <tr key={profile.profile_id}>
+                    <td>
+                      <code>{profile.task}</code>
+                    </td>
+                    <td>
+                      <span className={`admin-pill admin-pill--${profile.status}`}>
+                        {profileStatusLabel(profile.status)}
+                      </span>
+                    </td>
+                    <td>{joinList(profile.allowed_providers)}</td>
+                    <td>
+                      <code>{profile.model ?? 'LLM_MODEL env'}</code>
+                    </td>
+                    <td>
+                      {roles.length === 0 ? (
+                        <span className="admin-muted">—</span>
+                      ) : (
+                        <div className="admin-role-models">
+                          {roles.map(([roleName, model]) => (
+                            <span key={roleName}>
+                              {ROLE_FR[roleName as Role] ?? roleName}: <code>{model}</code>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                    <td>{profilePrivacyLabel(profile.privacy_mode)}</td>
+                    <td>
+                      {taskRow ? (
+                        <>
+                          {fmtCost(taskRow.cost_eur)} · {fmtTokens(taskRow.events)} appels
+                        </>
+                      ) : (
+                        <span className="admin-muted">aucun usage</span>
+                      )}
+                    </td>
+                    <td>
+                      {modelRow ? (
+                        <>
+                          {fmtTokens(modelRow.prompt_tokens + modelRow.completion_tokens)} tokens
+                        </>
+                      ) : (
+                        <span className="admin-muted">aucun usage</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </article>
 
       {/* ── Monitoring usage & coût (API_corrector) ───────────── */}

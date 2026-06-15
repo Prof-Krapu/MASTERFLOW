@@ -40,6 +40,17 @@ function toProfile(row: TaskModelProfileRow): TaskModelProfile {
   });
 }
 
+export function listTaskModelProfiles(): TaskModelProfile[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM task_model_profiles
+       ORDER BY task ASC, status DESC, updated_at DESC`,
+    )
+    .all() as TaskModelProfileRow[];
+
+  return rows.map(toProfile);
+}
+
 export function getValidatedTaskProfile(task: LLMTask): TaskModelProfile | null {
   const rows = getDb()
     .prepare(

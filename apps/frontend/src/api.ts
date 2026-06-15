@@ -28,6 +28,7 @@ import type {
   RoomCheckpoint,
   RoomInstance,
   SetCollectionCompletionRequest,
+  TaskModelProfile,
   SearchResourcesResponse,
   TokenUsageGroupBy,
   TokenUsageReport,
@@ -383,6 +384,10 @@ export async function register(
 
 export async function getAdminUsers(token?: string | null): Promise<AdminUser[]> {
   return request<AdminUser[]>('/admin/users', {method: 'GET'}, token);
+}
+
+export async function getTaskModelProfiles(token?: string | null): Promise<TaskModelProfile[]> {
+  return request<TaskModelProfile[]>('/admin/llm/task-model-profiles', {method: 'GET'}, token);
 }
 
 export async function getInvitations(token?: string | null): Promise<Invitation[]> {

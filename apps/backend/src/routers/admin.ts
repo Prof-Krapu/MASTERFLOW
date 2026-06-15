@@ -10,6 +10,7 @@ import {
   revokeInvitation,
 } from '../engines/invitations.ts';
 import {listAdminUsers} from '../engines/users_admin.ts';
+import {listTaskModelProfiles} from '../services/llm_routing.ts';
 
 /**
  * Router d'administration `API_manage` — gated **admin/godmode** (couvre admin=2 + godmode=3).
@@ -19,6 +20,7 @@ import {listAdminUsers} from '../engines/users_admin.ts';
  *  - GET    /admin/invitations                → liste des codes d'accès.
  *  - POST   /admin/invitations                → crée un code (rôle capé au rang du créateur).
  *  - POST   /admin/invitations/:code/revoke   → révoque un code.
+ *  - GET    /admin/llm/task-model-profiles    → lecture des profils de routage LLM.
  *
  * Le CHANGEMENT DE RÔLE d'un compte existant n'est PAS ici : c'est une action sensible
  * (`set_user_role`, validator godmode) qui passe par les endpoints `/actions`.
@@ -38,6 +40,11 @@ export function createAdminRouter(): Router {
   // ── Comptes utilisateurs ─────────────────────────────────────────
   router.get('/admin/users', (_req: Request, res: Response): void => {
     res.json(listAdminUsers());
+  });
+
+  // ── Routage LLM (lecture seule, secrets hors réponse) ─────────────
+  router.get('/admin/llm/task-model-profiles', (_req: Request, res: Response): void => {
+    res.json(listTaskModelProfiles());
   });
 
   // ── Invitations (codes d'accès) ──────────────────────────────────
