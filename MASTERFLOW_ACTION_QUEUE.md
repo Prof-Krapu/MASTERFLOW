@@ -46,8 +46,8 @@ Dernière mise à jour : 2026-06-18
 - Impact : prépare la suite logique après `feedback_draft`, sans confondre preview privée et envoi étudiant.
 - Risque : faible en audit/spec ; élevé seulement si implémenté sans garde-fous.
 - Source de vérité concernée : canon D06 + Shared Validation Inbox + GitHub.
-- Statut : spec prête, sans code (`docs/d06/D06_EXPORT_PREVIEW_INBOX_AUDIT_2026-06-18.md`).
-- Validation requise : non pour l'audit ; oui avant code.
+- Statut : implémenté et vérifié localement (`docs/d06/D06_EXPORT_PREVIEW_INBOX_AUDIT_2026-06-18.md`).
+- Validation requise : autorisation permanente MALEX reçue ; publication automatique prête.
 
 ## 2. À mettre en queue
 

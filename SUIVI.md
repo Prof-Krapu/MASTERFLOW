@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — D06 preview privée → Validation Inbox — IMPLÉMENTÉ LOCAL
+
+Deuxième source D06 de l'inbox commune après `feedback_draft` :
+
+- projection owner-only de `correction_export_preview` en attente ;
+- décision approve/reject déléguée à `reviewCorrectionExportPreview` ;
+- approbation = `approved_for_export`, jamais publication ou envoi ;
+- aucune référence `storage://` exposée dans l'item ;
+- aucun job `export_prepare`, fichier final ou effet externe créé ;
+- migration SQLite additive préservant actions et feedback drafts.
+
+Recette : ciblés D06/inbox/jobs 26/26 ; backend complet 306/306 ; TypeScript backend/frontend et
+build Vite OK. Approve/reject owner-only, aucune référence storage exposée et aucun job implicite.
+
+Statut : local vérifié, prêt à publication automatique.
+
+---
+
 ## 2026-06-18 — Teaching D05 actions guidées — IMPLÉMENTÉ LOCAL
 
 Contrat : rendre la session guidée D05 utilisable dans le bloc `Sujet guidé` de Teaching, sans

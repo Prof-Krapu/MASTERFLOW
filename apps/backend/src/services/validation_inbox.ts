@@ -1,5 +1,6 @@
 import type {
   Action,
+  CorrectionExportPreview,
   DecideValidationInboxItemRequest,
   FeedbackDraft,
   ValidationDecisionValue,
@@ -15,12 +16,15 @@ import {listPending, validateAction} from '../engines/action_engine.ts';
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {
+  listPendingCorrectionExportPreviewsForValidation,
   listPendingFeedbackDraftsForValidation,
+  reviewCorrectionExportPreview,
   reviewFeedbackDraft,
 } from './feedback_exports.ts';
 
 const ACTION_ITEM_PREFIX = 'validation_action_';
 const FEEDBACK_DRAFT_ITEM_PREFIX = 'validation_feedback_draft_';
+const EXPORT_PREVIEW_ITEM_PREFIX = 'validation_correction_export_preview_';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -108,6 +112,10 @@ function feedbackDraftItemId(feedbackId: string): string {
   return `${FEEDBACK_DRAFT_ITEM_PREFIX}${feedbackId}`;
 }
 
+function exportPreviewItemId(exportId: string): string {
+  return `${EXPORT_PREVIEW_ITEM_PREFIX}${exportId}`;
+}
+
 function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
   const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
   const validator = action.preflight?.validator_role ?? entry?.validator_role ?? 'teacher';
@@ -181,6 +189,50 @@ function buildFeedbackDraftProjection(
     audit_trace: [`feedback_draft:${feedback.feedback_id}`, `pre_correction_run:${feedback.run_id}`],
     source_kind: 'feedback_draft',
     source_id: feedback.feedback_id,
+  };
+}
+
+function buildCorrectionExportPreviewProjection(
+  preview: CorrectionExportPreview,
+): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
+  return {
+    item_id: exportPreviewItemId(preview.export_id),
+    item_type: 'public_export',
+    title: "Preview privée d'export D06 à valider",
+    summary: "Preview privée de correction en attente de validation professeur. Ce n'est pas un envoi.",
+    domain_refs: ['D06_CORRECTION_FEEDBACK_EVALUATION'],
+    object_refs: [
+      `correction_export_preview:${preview.export_id}`,
+      `correction_batch:${preview.batch_id}`,
+    ],
+    source_refs: [
+      ...preview.source_feedback_refs.map((ref) => `feedback_draft:${ref}`),
+      ...preview.source_run_refs.map((ref) => `pre_correction_run:${ref}`),
+    ],
+    requester: preview.owner_id,
+    owner: preview.owner_id,
+    required_validator: 'teacher_owner',
+    current_status: 'needs_review',
+    risk_level: 'high',
+    privacy_scope: preview.project_id ? 'project' : 'private',
+    source_truth_state: 'source_verified',
+    output_readiness_state: 'blocked',
+    proposed_action: 'approve_private_correction_export_preview',
+    impact_summary:
+      "L'approbation rend la preview éligible à un futur job privé séparé. Elle ne crée aucun fichier et n'envoie rien.",
+    blocked_actions: ['export_prepare_job', 'student_send', 'publication'],
+    allowed_actions: ['approve', 'reject'],
+    conflicts: [],
+    open_questions: [],
+    recommended_decision: null,
+    decision_options: ['approve', 'reject'],
+    decision: null,
+    audit_trace: [
+      `correction_export_preview:${preview.export_id}`,
+      `correction_batch:${preview.batch_id}`,
+    ],
+    source_kind: 'correction_export_preview',
+    source_id: preview.export_id,
   };
 }
 
@@ -271,6 +323,12 @@ export function syncValidationInboxItemForFeedbackDraft(feedback: FeedbackDraft)
   return persistValidationInboxProjection(buildFeedbackDraftProjection(feedback));
 }
 
+export function syncValidationInboxItemForCorrectionExportPreview(
+  preview: CorrectionExportPreview,
+): ValidationInboxItem {
+  return persistValidationInboxProjection(buildCorrectionExportPreviewProjection(preview));
+}
+
 export function getValidationInboxItemById(itemId: string): ValidationInboxItem {
   const row = getDb()
     .prepare('SELECT * FROM validation_inbox_items WHERE id = ?')
@@ -282,7 +340,10 @@ export function getValidationInboxItemById(itemId: string): ValidationInboxItem 
 export function listValidationInboxItems(actor: AuthUser): ValidationInboxItem[] {
   const actionItems = listPending(actor).map(syncValidationInboxItemForAction);
   const feedbackItems = listPendingFeedbackDraftsForValidation(actor).map(syncValidationInboxItemForFeedbackDraft);
-  return [...actionItems, ...feedbackItems].sort((a, b) => a.updated_at - b.updated_at);
+  const exportPreviewItems = listPendingCorrectionExportPreviewsForValidation(actor)
+    .map(syncValidationInboxItemForCorrectionExportPreview);
+  return [...actionItems, ...feedbackItems, ...exportPreviewItems]
+    .sort((a, b) => a.updated_at - b.updated_at);
 }
 
 export function getValidationInboxItemFor(actor: AuthUser, itemId: string): ValidationInboxItem | null {
@@ -393,6 +454,44 @@ function decideFeedbackDraftItem(
   return decidedItem;
 }
 
+function decideCorrectionExportPreviewItem(
+  actor: AuthUser,
+  item: ValidationInboxItem,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  if (request.decision !== 'approve' && request.decision !== 'reject') {
+    throw new Error('validation_inbox_decision_not_supported_for_correction_export_preview');
+  }
+
+  const now = Date.now();
+  const exportDecision = request.decision === 'approve' ? 'approved_for_export' : 'rejected';
+  const validationRef = `validation_inbox:${item.item_id}:${request.decision}:${now}`;
+  reviewCorrectionExportPreview(actor, item.source_id, exportDecision, validationRef);
+  const decidedItem = updateDecision(
+    item,
+    actor,
+    request,
+    request.decision === 'approve' ? 'ready' : 'blocked',
+  );
+
+  audit({
+    event_type: 'validation_inbox_decision',
+    user_id: actor.id,
+    scope: item.item_type,
+    detail: {
+      item_id: item.item_id,
+      source_kind: item.source_kind,
+      source_id: item.source_id,
+      decision: request.decision,
+      validation_ref: validationRef,
+      publication_allowed: false,
+      external_effects: [],
+    },
+  });
+
+  return decidedItem;
+}
+
 export function decideValidationInboxItem(
   actor: AuthUser,
   itemId: string,
@@ -410,5 +509,8 @@ export function decideValidationInboxItem(
 
   if (item.source_kind === 'action') return decideActionItem(actor, item, request);
   if (item.source_kind === 'feedback_draft') return decideFeedbackDraftItem(actor, item, request);
+  if (item.source_kind === 'correction_export_preview') {
+    return decideCorrectionExportPreviewItem(actor, item, request);
+  }
   throw new Error('validation_inbox_source_not_supported');
 }

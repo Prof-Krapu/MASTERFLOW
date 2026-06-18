@@ -1078,7 +1078,7 @@ export const ValidationInboxItemSchema = z.object({
   decision_options: z.array(ValidationDecisionValueSchema).min(1),
   decision: ValidationInboxDecisionSchema.nullable(),
   audit_trace: z.array(z.string().min(1).max(240)),
-  source_kind: z.enum(['action', 'feedback_draft']),
+  source_kind: z.enum(['action', 'feedback_draft', 'correction_export_preview']),
   source_id: z.string().min(1),
   created_at: z.number().int().nonnegative(),
   updated_at: z.number().int().nonnegative(),
