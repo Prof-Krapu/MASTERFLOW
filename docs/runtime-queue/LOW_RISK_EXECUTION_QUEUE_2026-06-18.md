@@ -73,5 +73,6 @@ Prochaine file safe possible :
 - `PROCESS_ACTIVATION_READ_MODEL_SPEC` — done_spec_on_pr6
 - `FEEDBACK_OUTPUT_FAMILY_REGISTRY_SPEC` — done_spec_on_pr6
 - `PROCESS_CONTROL_STRIP_SPEC` — done_spec_on_pr6
+- `D12_MISSED_TRIGGER_FINDING_SPEC` — done_spec_on_pr6
 
 Stop avant merge, migration runtime, provider, génération, export ou publication.

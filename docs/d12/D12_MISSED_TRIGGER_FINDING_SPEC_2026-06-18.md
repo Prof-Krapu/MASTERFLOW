@@ -1,0 +1,157 @@
+# D12 Missed Trigger Finding Spec — 2026-06-18
+
+Status: `SPEC_ONLY_OBSERVATION`
+
+## Intention produit
+
+Transformer un raté MasterFlow en observation exploitable, sans auto-fix.
+
+Exemple :
+
+```txt
+L'utilisateur demande une image, mais D08 manifest-first n'apparaît pas.
+```
+
+Le système doit pouvoir dire :
+
+```txt
+Process attendu : D08 visual manifest.
+Déclencheur manqué : aucun manifest/readiness proposé.
+Impact : MALEX doit orchestrer manuellement.
+Prochaine action sûre : créer une tâche/spec, pas générer.
+```
+
+## Principe de sécurité
+
+Une finding D12 n'est pas :
+
+- une action backend ;
+- une correction automatique ;
+- une migration ;
+- une écriture canon ;
+- une validation ;
+- une exécution provider.
+
+C'est une observation structurée qui peut ensuite être revue par MALEX.
+
+## Objet candidat
+
+```yaml
+d12_missed_trigger_finding:
+  finding_id:
+  detected_at:
+  source_ref:
+  expected_process:
+  actual_runtime_response:
+  missing_runtime_piece:
+  user_impact:
+  domain_refs:
+  output_family_refs:
+  evidence_refs:
+  blocked_actions:
+  recommended_queue_task:
+  severity:
+  status:
+  owner_decision_ref:
+  audit_trace:
+```
+
+## Sévérité
+
+| Sévérité | Définition | Exemple |
+|---|---|---|
+| `low` | Confort ou lisibilité manquante. | Le cockpit n'explique pas assez le prochain geste. |
+| `medium` | MALEX doit compenser manuellement. | Une demande D06 ne route pas vers la bonne famille. |
+| `high` | Risque de dérive produit. | Une demande D08 pourrait ouvrir une génération sans manifest. |
+| `critical` | Risque de publication/envoi/canonisation non validée. | Un export ou send est proposé sans validation. |
+
+## Statuts
+
+```txt
+observation
+hypothesis
+candidate_pattern
+validated_alert
+stale
+archived
+```
+
+Passage de statut :
+
+```txt
+observation -> hypothesis -> candidate_pattern -> validated_alert
+```
+
+Chaque passage demande une preuve ou une validation humaine.
+
+## Exemples de triggers manqués
+
+| Signal | Process attendu | Pièce manquante | Action sûre |
+|---|---|---|---|
+| “génère une image / retake / DA” | D08 manifest-first | manifest/readiness/read model | créer/ouvrir spec D08, pas provider |
+| “améliore ce feedback” | D06 feedback revision | prior feedback lookup + delta | queue spec feedback evolution |
+| “envoie à l'étudiant” | D06 send gate | external/student send validation | bloquer et demander validation |
+| “mets dans le canon” | canon candidate | source truth + owner validation | route Validation Inbox/canon queue |
+| “ça a échoué, fais-en une règle” | D12 backflow | finding route | créer finding, pas patch auto |
+| “stop / reset / attends” | hard stop control | action invalidation model | marquer stop/reset, ne pas exécuter |
+
+## Recommended queue task
+
+```yaml
+recommended_queue_task:
+  task:
+  impact:
+  risk:
+  source_of_truth:
+  truth_status:
+  validation_required:
+  suggested_owner:
+  forbidden_actions:
+```
+
+## Owner decision
+
+MALEX peut décider :
+
+```txt
+park
+add_to_queue
+promote_to_spec
+promote_to_canon_candidate
+reject
+archive
+```
+
+Aucune décision ne doit lancer un fix automatique dans cette spec.
+
+## Non-objectifs
+
+- Pas de detector runtime maintenant.
+- Pas de table maintenant.
+- Pas de service maintenant.
+- Pas d'auto-réparation.
+- Pas de création automatique d'action.
+- Pas de suppression.
+
+## Critère simple de succès
+
+Quand MasterFlow rate un déclenchement important, on doit pouvoir le ranger comme :
+
+```txt
+ce qui aurait dû se passer
+ce qui s'est vraiment passé
+pourquoi c'est un problème
+quelle tâche safe créer
+ce qui reste bloqué
+```
+
+## Statut de déploiement
+
+```yaml
+runtime_code: false
+migration: false
+auto_fix: false
+safe_to_queue: true
+github_main: not_merged
+requires_malex_before_code: true
+```
