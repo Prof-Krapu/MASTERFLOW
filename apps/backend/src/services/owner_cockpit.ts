@@ -7,6 +7,7 @@ import type {
 import {env} from '../lib/env.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {listActionLifecycleForCockpit} from '../engines/action_engine.ts';
+import {listD12MissedTriggerFindings} from './d12_findings.ts';
 import {listJobs} from './jobs.ts';
 import {listValidationInboxItems} from './validation_inbox.ts';
 
@@ -18,6 +19,7 @@ function chooseNextSafeAction(
   validations: ValidationInboxItem[],
   jobs: Job[],
   staleActions: number,
+  openFindings: number,
 ): OwnerCockpitStatus['next_safe_action'] {
   const critical = validations.find((item) => item.risk_level === 'critical');
   if (critical) {
@@ -89,6 +91,17 @@ function chooseNextSafeAction(
     };
   }
 
+  if (openFindings > 0) {
+    return {
+      label: 'Relire les findings D12 avant la prochaine automatisation',
+      reason: 'Des ratés d’activation sont consignés ; ils doivent rester des observations tant qu’aucune décision owner ne les promeut.',
+      source_ref: 'diagnostics:d12/findings',
+      risk: 'low',
+      requires_validation: false,
+      forbidden_followups: ['auto_fix', 'auto_canon', 'auto_patch'],
+    };
+  }
+
   return {
     label: 'Vérifier le pont canon ↔ GitHub avant la prochaine tranche',
     reason: "Le runtime ne peut pas prouver seul l'alignement du Drive et de GitHub.",
@@ -109,11 +122,18 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
   const validations = listValidationInboxItems(actor);
   const jobs = listJobs(actor);
   const actions = listActionLifecycleForCockpit(actor);
+  const d12Findings = listD12MissedTriggerFindings();
   const highOrCritical = validations.filter(
     (item) => item.risk_level === 'high' || item.risk_level === 'critical',
   ).length;
   const failedJobs = countJobs(jobs, ['failed']);
   const staleActions = actions.filter((action) => action.status === 'stale').length;
+  const openFindings = d12Findings.filter(
+    (finding) => !['stale', 'archived'].includes(finding.status),
+  ).length;
+  const highOrCriticalFindings = d12Findings.filter(
+    (finding) => finding.severity === 'high' || finding.severity === 'critical',
+  ).length;
   const releaseReported = env.releaseSha !== null;
 
   const alerts: OwnerCockpitStatus['alerts'] = [
@@ -175,6 +195,14 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       requires_validation: false,
     });
   }
+  if (openFindings > 0) {
+    alerts.unshift({
+      type: 'd12_findings_present',
+      severity: highOrCriticalFindings > 0 ? 'warning' : 'info',
+      message: `${openFindings} finding(s) D12 observation-only attendent une décision owner.`,
+      requires_validation: false,
+    });
+  }
 
   return {
     generated_at: Date.now(),
@@ -200,6 +228,11 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       approved: actions.filter((action) => action.status === 'approved').length,
       stale: staleActions,
     },
+    d12_findings: {
+      total: d12Findings.length,
+      open: openFindings,
+      high_or_critical: highOrCriticalFindings,
+    },
     capabilities: [
       {id: 'shared_validation_inbox', status: 'partial', note: 'Actions et feedback_draft D06.'},
       {id: 'd05_guided_runtime', status: 'partial', note: 'Teaching permet session, réponses et fin ; participation élève séparée.'},
@@ -208,7 +241,7 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       {id: 'd08_generation', status: 'locked', note: 'Provider et génération non exposés.'},
     ],
     alerts,
-    next_safe_action: chooseNextSafeAction(validations, jobs, staleActions),
+    next_safe_action: chooseNextSafeAction(validations, jobs, staleActions, openFindings),
     known_limits: [
       'Pas de lecture automatique du Drive canon.',
       'Pas de requête GitHub depuis le runtime.',
