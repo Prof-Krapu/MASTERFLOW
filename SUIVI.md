@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Process activation → finding D12 manuelle — IMPLÉMENTÉ LOCAL
+
+Tranche UI manuelle :
+
+- si le diagnostic process activation produit un `missed_trigger_candidate`, le cockpit affiche un
+  bouton `Créer une finding D12 observation-only` ;
+- le bouton appelle explicitement `POST /diagnostics/d12/findings` ;
+- la finding est créée au statut `observation` puis le cockpit est rafraîchi ;
+- aucun auto-fix, auto-canon, action, job ou provider n'est déclenché.
+
+Recette locale : ciblés D12/process/cockpit 12/12 ; TypeScript backend/frontend OK ; build Vite OK ;
+smoke navigateur local OK sur `Stop, ne génère pas` → finding créée → alerte D12 visible.
+
+Statut : local, recette complète à exécuter avant publication automatique.
+
+---
+
 ## 2026-06-19 — D12 findings dans Owner Cockpit — IMPLÉMENTÉ LOCAL
 
 Tranche lecture seule :

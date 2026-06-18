@@ -7,11 +7,13 @@ import type {
   CreateInventoryCollectionRequest,
   CreateInventoryItemRequest,
   CreateInventoryProjectNeedRequest,
+  CreateD12MissedTriggerFinding,
   CreateInvitation,
   ConversationGuide,
   CreateGuidedSessionRequest,
   CurrentContext,
   DecideValidationInboxItemRequest,
+  D12MissedTriggerFinding,
   InventoryCollection,
   InventoryItem,
   InventoryNeedMatchResult,
@@ -137,6 +139,16 @@ export async function diagnoseProcessActivation(
   token?: string | null,
 ): Promise<ProcessActivationReadModel> {
   return request<ProcessActivationReadModel>('/diagnostics/process-activation', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function createD12MissedTriggerFinding(
+  body: CreateD12MissedTriggerFinding,
+  token?: string | null,
+): Promise<D12MissedTriggerFinding> {
+  return request<D12MissedTriggerFinding>('/diagnostics/d12/findings', {
     method: 'POST',
     body: JSON.stringify(body),
   }, token);

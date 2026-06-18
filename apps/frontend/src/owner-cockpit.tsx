@@ -1,9 +1,9 @@
 import {useCallback, useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 
-import type {ContextTier, OwnerCockpitStatus, ProcessActivationReadModel} from '@masterflow/shared';
+import type {ContextTier, CreateD12MissedTriggerFinding, OwnerCockpitStatus, ProcessActivationReadModel} from '@masterflow/shared';
 
-import {diagnoseProcessActivation, getOwnerCockpitStatus} from './api.ts';
+import {createD12MissedTriggerFinding, diagnoseProcessActivation, getOwnerCockpitStatus} from './api.ts';
 
 type OwnerCockpitProps = {
   activeMode: string;
@@ -26,6 +26,7 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
   const [signal, setSignal] = useState('');
   const [activation, setActivation] = useState<ProcessActivationReadModel | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
+  const [findingStatus, setFindingStatus] = useState('');
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -54,10 +55,44 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
         active_mode: activeMode,
         loaded_context_tier: contextTier,
       }, token));
+      setFindingStatus('');
     } finally {
       setDiagnosing(false);
     }
   }, [activeMode, contextTier, signal, token]);
+
+  const createFinding = useCallback(async (): Promise<void> => {
+    if (!activation?.missed_trigger_candidate) return;
+    const missed = activation.missed_trigger_candidate;
+    const body: CreateD12MissedTriggerFinding = {
+      source_ref: `process_activation:${activation.generated_at}`,
+      expected_process: missed.expected_process,
+      actual_runtime_response: activation.next_safe_action.reason,
+      missing_runtime_piece: missed.missing_runtime_piece,
+      user_impact: missed.user_impact,
+      domain_refs: activation.detected_domains,
+      output_family_refs: activation.output_family_candidates,
+      evidence_refs: [`owner_signal:${activation.raw_signal_summary}`],
+      blocked_actions: activation.blocked_actions.length > 0
+        ? activation.blocked_actions
+        : ['auto_fix', 'auto_canon'],
+      recommended_queue_task: {
+        task: missed.suggested_queue_task,
+        impact: missed.user_impact,
+        risk: missed.severity,
+        source_of_truth: 'D12 missed trigger finding spec',
+        truth_status: 'observation',
+        validation_required: false,
+        suggested_owner: 'MALEX',
+        forbidden_actions: activation.next_safe_action.forbidden_followups,
+      },
+      severity: missed.severity,
+    };
+    setFindingStatus('Création de la finding D12…');
+    await createD12MissedTriggerFinding(body, token);
+    setFindingStatus('Finding D12 créée en observation. Aucun fix automatique lancé.');
+    await refresh();
+  }, [activation, refresh, token]);
 
   return (
     <article className="panel panel--wide owner-cockpit">
@@ -152,6 +187,12 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
                 <p><strong>Statut :</strong> {activation.status} · confiance {Math.round(activation.confidence * 100)} %</p>
                 <p><strong>Prochaine action sûre :</strong> {activation.next_safe_action.label}</p>
                 <p><strong>Bloqué :</strong> {activation.blocked_actions.join(' · ') || 'aucune action identifiée'}</p>
+                {activation.missed_trigger_candidate ? (
+                  <button onClick={() => void createFinding()} type="button">
+                    Créer une finding D12 observation-only
+                  </button>
+                ) : null}
+                {findingStatus ? <p className="muted compact">{findingStatus}</p> : null}
               </div>
             ) : null}
           </section>
