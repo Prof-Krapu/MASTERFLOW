@@ -27,7 +27,7 @@ MALEX.
 | Ordre | Chantier | Risque actuel | Sortie attendue | Statut |
 |---:|---|---|---|---|
 | 1 | Nettoyage queue post-Vincent | faible | files de pilotage alignées | en cours |
-| 2 | D06 export preview audit | faible en spec | contrat `correction_export_preview` → inbox ou rejet | next |
+| 2 | D06 export preview audit | faible en spec | contrat `correction_export_preview` → inbox ou rejet | done_spec |
 | 3 | Recette D05-D06 runtime | faible | script de vérification sans mutation dangereuse | queued |
 | 4 | D12 cockpit gap audit | faible | liste des indicateurs manquants pour ne plus travailler à l'aveugle | queued |
 | 5 | Process activation audit | faible | où MasterFlow doit déclencher sans MALEX-orchestrateur caché | queued |
@@ -45,3 +45,5 @@ MALEX.
 
 Lot 1 : mise à jour des queues et matrices pour acter que Vincent n'est plus bloquant et que le
 travail safe peut s'enchaîner.
+
+Lot 2 : audit `correction_export_preview` comme deuxième projection D06 possible, sans code.
