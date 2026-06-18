@@ -382,6 +382,65 @@ export const InventoryDiagnosticsSchema = z.object({
 });
 export type InventoryDiagnostics = z.infer<typeof InventoryDiagnosticsSchema>;
 
+// ───────────────────────── D12 Owner Cockpit read model ─────────────────────────
+
+export const OwnerCockpitCapabilityStatusSchema = z.enum([
+  'implemented',
+  'partial',
+  'locked',
+  'absent',
+]);
+
+export const OwnerCockpitStatusSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  runtime_truth: z.object({
+    source: z.literal('runtime_database'),
+    release_sha: z.string().min(7).nullable(),
+    release_verification: z.enum(['reported', 'unverified']),
+    github_sync: z.enum(['reported_by_release', 'not_checked_runtime']),
+    canon_sync: z.literal('manual_check_required'),
+    matrix_ref: z.literal('MASTERFLOW_CANON_SYNC_MATRIX.md'),
+  }),
+  validations: z.object({
+    total: z.number().int().nonnegative(),
+    high_or_critical: z.number().int().nonnegative(),
+  }),
+  jobs: z.object({
+    active: z.number().int().nonnegative(),
+    needs_review: z.number().int().nonnegative(),
+    failed: z.number().int().nonnegative(),
+  }),
+  capabilities: z.array(z.object({
+    id: z.string().min(1),
+    status: OwnerCockpitCapabilityStatusSchema,
+    note: z.string().min(1),
+  })),
+  alerts: z.array(z.object({
+    type: z.enum([
+      'deployment_unverified',
+      'canon_sync_manual',
+      'validation_inbox_pending',
+      'runtime_job_failed',
+      'process_activation_missing',
+      'd08_generation_locked',
+      'external_send_locked',
+    ]),
+    severity: z.enum(['info', 'warning', 'critical']),
+    message: z.string().min(1),
+    requires_validation: z.boolean(),
+  })),
+  next_safe_action: z.object({
+    label: z.string().min(1),
+    reason: z.string().min(1),
+    source_ref: z.string().min(1),
+    risk: z.enum(['low', 'medium', 'high']),
+    requires_validation: z.boolean(),
+    forbidden_followups: z.array(z.string().min(1)),
+  }),
+  known_limits: z.array(z.string().min(1)),
+});
+export type OwnerCockpitStatus = z.infer<typeof OwnerCockpitStatusSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

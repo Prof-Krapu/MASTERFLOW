@@ -4,6 +4,24 @@ Dernière mise à jour : 2026-06-18
 
 ## 1. À faire maintenant
 
+### Vague 0 — vérité de pilotage
+
+- Tâche : distinguer partout `GitHub main`, `testé`, `déployé live` et `vérifié live`, puis neutraliser les faux blocages Vincent.
+- Impact : évite de confondre merge GitHub et instance réellement publiée.
+- Risque : faible ; documentation et signalement uniquement.
+- Source de vérité concernée : GitHub `main`, pont Drive, inbox et ledger.
+- Statut : réalisé localement sur `codex/d12-owner-cockpit-runtime` ; Drive à rafraîchir après publication.
+- Validation requise : oui avant commit/push.
+
+### Vague 1 — Owner Cockpit D12 runtime
+
+- Tâche : exposer un agrégat admin/godmode en lecture seule pour validations, jobs, capacités, alertes et prochaine action sûre.
+- Impact : donne une lecture produit de l'état runtime sans parcourir les logs techniques.
+- Risque : faible à moyen ; risque principal = revendiquer une sync GitHub/Drive non prouvée.
+- Source de vérité concernée : canon D12 + runtime GitHub.
+- Statut : implémenté localement ; le runtime affiche `non vérifié` sans SHA de release injecté.
+- Validation requise : oui avant commit/push.
+
 ### Queue safe post-Vincent
 
 - Tâche : retirer Vincent comme dépendance bloquante et classer les prochains chantiers par risque.
@@ -57,7 +75,7 @@ Dernière mise à jour : 2026-06-18
 - Impact : nettoie le pilotage et évite d'attendre une personne qui a clôturé sa partie.
 - Risque : faible.
 - Source de vérité concernée : `INBOX_MALEX.md`, `INBOX_VINCENT.md`, GitHub `main`.
-- Statut : à auditer.
+- Statut : fait ; handoff clôturé, anciennes entrées `open` neutralisées comme historique.
 - Validation requise : non.
 
 - Tâche : vérifier que la matrice canon ↔ GitHub reflète bien `4e0cfbb`.

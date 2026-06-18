@@ -1,6 +1,11 @@
 # D12 Owner Cockpit Status Read Model Spec — 2026-06-18
 
-Status: `SPEC_ONLY_READ_MODEL`
+Status: `IMPLEMENTED_LOCALLY_READ_ONLY`
+
+Mise à jour : première tranche implémentée localement sur
+`codex/d12-owner-cockpit-runtime` via `GET /diagnostics/owner-cockpit`.
+Elle agrège uniquement la vérité runtime privée. GitHub et le Drive ne sont pas interrogés ; sans
+`MASTERFLOW_RELEASE_SHA`, la version live reste explicitement `unverified`.
 
 ## Intention produit
 
@@ -145,10 +150,10 @@ MALEX doit voir :
 ## Statut de déploiement
 
 ```yaml
-runtime_code: false
-endpoint: false
+runtime_code: local_true
+endpoint: GET /api/v1/diagnostics/owner-cockpit
 migration: false
 safe_to_queue: true
 github_main: not_merged
-requires_malex_before_code: true
+requires_malex_before_publish: true
 ```

@@ -4,6 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — D12 Owner Cockpit status — IMPLÉMENTÉ LOCAL
+
+Contrat : expliquer l'état runtime en décisions sans prétendre lire automatiquement GitHub ou le
+Drive canon.
+
+Ajouts locaux sur `codex/d12-owner-cockpit-runtime` :
+
+- `GET /api/v1/diagnostics/owner-cockpit`, privé admin/godmode ;
+- agrégats validations/jobs sans contenu métier privé ;
+- capacités `implemented/partial/locked/absent`, alertes et prochain geste sûr ;
+- SHA live optionnel via `MASTERFLOW_RELEASE_SHA` ; sinon statut explicite `unverified` ;
+- cockpit frontend branché sur ce read-model au lieu d'une heuristique locale ;
+- aucun appel GitHub/Drive, auto-fix, auto-retry, validation ou mutation métier.
+
+Recette : tests HTTP ciblés 4/4, backend complet 301/301, TypeScript backend/frontend et build
+Vite OK. Smoke navigateur godmode OK ; responsive 390 px sans débordement horizontal.
+
+Statut : local ; validation requise avant commit/push.
+
+---
+
 ## 2026-06-18 — Contrat D06 → Validation Inbox — SPEC LOCALE
 
 Mise à jour locale : contrat implémenté sur la branche `codex/d06-validation-inbox-contract`.
