@@ -1,6 +1,6 @@
 # D05-D06 Vertical Mapping — 2026-06-18
 
-Status: `MAPPING_PATCH_NON_RUNTIME`
+Status: `READINESS_PANEL_LOCAL_RUNTIME_VERIFIED`
 
 This document maps the Drive canon D05-D06 pedagogical/correction vertical against the current
 GitHub runtime.
@@ -115,13 +115,13 @@ Show a teacher:
 ### Now
 
 1. Create a D05-D06 frontend panel inside the existing Teaching mode.
-   - Status: `ready_for_spec`
+   - Status: `implemented_local_read_only`
    - Risk: low
    - Uses existing endpoints only.
 
 2. Add a compact “missing capability” strip.
    - Must show: file storage absent, correction routes absent, D06 object inbox projection pending.
-   - Status: `ready_for_spec`
+   - Status: `implemented_local_read_only`
    - Risk: low
 
 3. Reuse `JobObservability` logic as a compact strip, not raw logs.
@@ -179,6 +179,8 @@ student_visible_export: blocked_until_validation_route_and_storage
 
 ## Next safe action
 
-Create a small Teaching mode panel that reads existing runtime state and makes gaps visible.
+Publish the verified Home Room Teaching entry after explicit commit/push validation. Teacher and
+godmode are allowed ; student and admin remain excluded. A dedicated pedagogy Room can remain a
+later navigation decision.
 
 Do not build mutation-heavy correction flows until the D06 backend route/projection decision is made.

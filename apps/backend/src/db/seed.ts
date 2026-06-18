@@ -422,12 +422,35 @@ export async function seedAll(): Promise<{
       purpose: 'Point de départ : reprendre le contexte et lancer une action utile.',
       default_widgets: ['room_context_card', 'contextual_action_bar', 'validation_inbox_mini'],
       active_persona: 'profkrapu-001',
+      active_mode_cycle: ['home', 'teaching', 'inventory'],
     };
     db.prepare(
       `INSERT INTO rooms (id, name, type, owner_id, context_json, is_public, created_at, updated_at)
        VALUES (?, 'Home Room', 'home', ?, ?, 0, ?, ?)`,
     ).run(roomId, god.id, JSON.stringify(context), now, now);
     createdRooms++;
+  } else {
+    let context: Record<string, unknown> = {};
+    try {
+      const parsed = JSON.parse(existingHome.context_json ?? '{}') as unknown;
+      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        context = parsed as Record<string, unknown>;
+      }
+    } catch {
+      context = {};
+    }
+
+    const configuredModes = Array.isArray(context['active_mode_cycle'])
+      ? context['active_mode_cycle'].filter((mode): mode is string => typeof mode === 'string')
+      : ['home'];
+    const activeModeCycle = [...new Set([...configuredModes, 'teaching'])];
+    if (!configuredModes.includes('teaching')) {
+      db.prepare('UPDATE rooms SET context_json = ?, updated_at = ? WHERE id = ?').run(
+        JSON.stringify({...context, active_mode_cycle: activeModeCycle}),
+        now,
+        existingHome.id,
+      );
+    }
   }
 
   // ── Ressources (anti-hallucination) ──────────────────────────────

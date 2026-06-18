@@ -4,6 +4,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — D05-D06 Teaching readiness — LOCAL VÉRIFIÉ, PRÊT À PUBLIER
+
+Références canon lues avant implémentation :
+
+- `05_UI_RUNTIME_CONTRACTS/D05_D06_VERTICAL_UI_RUNTIME_CONTRACT.md` ;
+- `08_ROADMAP/D05_D06_UI_RUNTIME_MAPPING_NEXT_STEPS.md` ;
+- `08_ROADMAP/FIRST_VERTICAL_PRODUCT_PROOF_D05_D06.md`.
+
+Première tranche frontend D05-D06 en lecture seule :
+
+- état Room/projet/sources ;
+- distinction visible `prêt` / `partiel` / `bloqué` ;
+- compte compact des validations, jobs à revoir et échecs ;
+- prochain geste sûr ;
+- limites explicites : pas de correction automatique, note finale, envoi étudiant ou promesse d'upload.
+
+Le panneau utilise uniquement le contexte, les ressources, la Validation Inbox déjà chargée et
+`GET /jobs`. Aucune mutation ni nouvelle queue métier.
+
+Recette : TypeScript backend/frontend OK, build Vite 8 OK, tests rôles/runtime **4/4**, smoke
+navigateur godmode OK et responsive 390 px sans débordement horizontal.
+
+Écart découvert pendant le smoke local : la Home Room seedée exposait uniquement Home et
+Inventory. Décision MALEX : ouvrir Teaching dans la Home Room pour `teacher` et `godmode`
+uniquement. Le seed ajoute désormais le mode sans retirer les modes configurés ; le frontend
+refuse explicitement Teaching aux rôles `student` et `admin`. Une Room pédagogie dédiée reste une
+décision ultérieure.
+
+Statut : local vérifié sur `codex/d05-d06-teaching-readiness`, non commité, non poussé.
+
 ## 2026-06-18 — Shared Validation Inbox action-based — BACKEND + UI VÉRIFIÉS
 
 Référence canon lue avant implémentation :

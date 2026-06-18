@@ -45,6 +45,7 @@ import {RegisterWithCode} from './register-form.tsx';
 import {InventoryWorkspace} from './inventory-workspace.tsx';
 import {JobObservability} from './job-observability.tsx';
 import {OwnerCockpit} from './owner-cockpit.tsx';
+import {TeachingReadiness} from './teaching-readiness.tsx';
 import {
   buildModeView,
   canUseMode,
@@ -1181,6 +1182,17 @@ function App(): ReactElement {
               role={context.user.role}
               selectedProjectId={selectedProjectId}
               token={auth.token}
+            />
+          ) : null}
+
+          {activeMode.id === 'teaching' && auth && context ? (
+            <TeachingReadiness
+              context={context}
+              project={selectedProject}
+              projectResources={projectResources}
+              resources={resources}
+              token={auth.token}
+              validationItems={pendingActions}
             />
           ) : null}
 

@@ -11,10 +11,11 @@ Source of truth reminder:
 ## Current baseline
 
 ```yaml
-github_main: 17f0a47
+github_main: 0970dc4
 validation_inbox: partial_implemented_action_based_slice
 job_observability: partial_frontend_read_only_slice
-owner_cockpit: local_read_only_slice_pending_commit
+owner_cockpit: merged_read_only_slice
+teaching_readiness: local_read_only_slice_runtime_verified_teacher_godmode
 drive_bridge_refresh: recorded
 ```
 
@@ -46,19 +47,28 @@ drive_bridge_refresh: recorded
 
 ## Immediate next action
 
-Review and publish the local read-only owner cockpit slice.
+Review and publish the runtime-verified Teaching slice after explicit commit/push validation.
 
 Local implementation status:
 
 ```yaml
-owner_cockpit_component: apps/frontend/src/owner-cockpit.tsx
-mounted_in: apps/frontend/src/App.tsx
+teaching_readiness_component: apps/frontend/src/teaching-readiness.tsx
+mounted_in: apps/frontend/src/App.tsx when activeMode is teaching
 uses_existing_endpoints:
+  - GET /api/v1/context/current
+  - GET /api/v1/resources
   - GET /api/v1/jobs
-  - GET /api/v1/validation-inbox
 mutation: none
 checks:
   - npm run lint:frontend OK
   - npm run build:frontend OK
+entry_scope:
+  - teacher
+  - godmode
+  - student and admin remain excluded
+verification:
+  - role unit test OK
+  - godmode browser smoke OK
+  - responsive 390 px no horizontal overflow
 status: pending_commit_push_validation
 ```
