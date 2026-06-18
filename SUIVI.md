@@ -4,7 +4,44 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-18 — Teaching Guided Subject — LOCAL VÉRIFIÉ, PRÊT À PUBLIER
+## 2026-06-18 — Contrat D06 → Validation Inbox — SPEC LOCALE
+
+Mise à jour locale : contrat implémenté sur la branche `codex/d06-validation-inbox-contract`.
+
+Livré localement :
+
+- extension du contrat partagé `ValidationInboxItem.source_kind` à `action | feedback_draft` ;
+- migration SQLite idempotente du CHECK `validation_inbox_items.source_kind`, avec conservation des
+  items `action` existants ;
+- projection des `feedback_drafts.status = needs_teacher_validation` dans la Validation Inbox
+  commune, owner-only ;
+- décision `approve/reject` déléguée à `reviewFeedbackDraft()`, jamais par update direct D06 ;
+- approbation = feedback utilisable comme source d'une preview privée, sans export automatique,
+  sans note finale et sans envoi étudiant.
+
+Recette locale : ciblés Validation Inbox + feedback exports **16/16**, backend complet **299/299**,
+TypeScript backend/frontend OK, build frontend OK.
+
+Statut : prêt à publier après validation MALEX commit/push/PR.
+
+---
+
+Audit canon et code : `feedback_draft` est le premier objet D06 projetable en sécurité, car il
+possède déjà une attente explicite, une autorité owner-only `reviewFeedbackDraft`, un scope, une
+décision approve/reject et un audit.
+
+La pré-correction et la calibration restent exclues : leurs statuts sont figés en review sans
+autorité de résolution. L'export preview viendra seulement après la projection feedback.
+
+Le contrat couvre la migration SQLite nécessaire (`source_kind` est actuellement limité à
+`action`), le mapping, la confidentialité, le dispatch vers l'autorité D06 et les tests de
+non-régression.
+
+Référence : `docs/d06/D06_VALIDATION_INBOX_PROJECTION_CONTRACT_2026-06-18.md`.
+
+Statut historique : spec validée en travail local, puis implémentée localement dans la même tranche.
+
+## 2026-06-18 — Teaching Guided Subject — INTÉGRÉ SUR `main`
 
 Contrat : afficher le guide et la session active/récente réellement lisibles dans Teaching, sans
 création de session, réponse, correction ou envoi.
@@ -22,7 +59,7 @@ Ajouts :
 Recette : tests guided runtime **11/11**, TypeScript backend/frontend OK, build Vite 8 OK, smoke
 navigateur godmode OK, responsive 390 px sans débordement.
 
-Statut : local sur `codex/teaching-guided-session-read`, non commité, non poussé.
+Statut : PR #4 mergée sur `main` au commit `c2a4ea3`.
 
 ## 2026-06-18 — D05-D06 Teaching readiness — INTÉGRÉ SUR `main`
 

@@ -11,12 +11,13 @@ Source of truth reminder:
 ## Current baseline
 
 ```yaml
-github_main: ed7c0f1
+github_main: c2a4ea3
 validation_inbox: partial_implemented_action_based_slice
+d06_feedback_inbox_projection: local_implemented_pending_publication
 job_observability: partial_frontend_read_only_slice
 owner_cockpit: merged_read_only_slice
 teaching_readiness: merged_read_only_slice_teacher_godmode
-guided_subject_read: local_scoped_read_slice_verified
+guided_subject_read: merged_scoped_read_slice
 drive_bridge_refresh: recorded
 ```
 
@@ -48,30 +49,29 @@ drive_bridge_refresh: recorded
 
 ## Immediate next action
 
-Review and publish the scoped Guided Subject read slice after explicit commit/push validation.
+Validate commit/push/PR for the local `feedback_draft only` D06 projection.
 
-Local implementation status:
+Local contract status:
 
 ```yaml
-guided_subject_component: apps/frontend/src/teaching-readiness.tsx
-mounted_in: apps/frontend/src/App.tsx when activeMode is teaching
-uses_existing_endpoints:
-  - GET /api/v1/guides
-new_read_endpoint:
-  - GET /api/v1/guided-sessions
-other_existing_endpoints:
-  - GET /api/v1/jobs
-mutation: none
-checks:
-  - npm run lint:frontend OK
-  - npm run build:frontend OK
-entry_scope:
-  - teacher
-  - godmode
-  - student and admin remain excluded
+contract: docs/d06/D06_VALIDATION_INBOX_PROJECTION_CONTRACT_2026-06-18.md
+first_source_kind: feedback_draft
+decision_authority: reviewFeedbackDraft
+decision_scope: owner_teacher_only
+decisions:
+  - approve
+  - reject
+excluded_first_slice:
+  - pre_correction_run
+  - calibration_review
+  - correction_export_preview
+  - student_send
+status: pending_product_validation
+local_implementation: ready_pending_publication
 verification:
-  - guided runtime tests 11/11
-  - empty-state browser smoke OK
-  - responsive 390 px no horizontal overflow
-status: pending_commit_push_validation
+  backend_targeted: 16/16
+  backend_full: 299/299
+  backend_typescript: ok
+  frontend_typescript: ok
+  frontend_build: ok
 ```

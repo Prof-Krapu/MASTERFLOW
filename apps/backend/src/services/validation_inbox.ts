@@ -1,6 +1,7 @@
 import type {
   Action,
   DecideValidationInboxItemRequest,
+  FeedbackDraft,
   ValidationDecisionValue,
   ValidationInboxItem,
   ValidationInboxItemType,
@@ -13,8 +14,13 @@ import {getRegistryEntry} from '../engines/action_registry.ts';
 import {listPending, validateAction} from '../engines/action_engine.ts';
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {
+  listPendingFeedbackDraftsForValidation,
+  reviewFeedbackDraft,
+} from './feedback_exports.ts';
 
 const ACTION_ITEM_PREFIX = 'validation_action_';
+const FEEDBACK_DRAFT_ITEM_PREFIX = 'validation_feedback_draft_';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -98,6 +104,10 @@ function actionItemId(actionId: string): string {
   return `${ACTION_ITEM_PREFIX}${actionId}`;
 }
 
+function feedbackDraftItemId(feedbackId: string): string {
+  return `${FEEDBACK_DRAFT_ITEM_PREFIX}${feedbackId}`;
+}
+
 function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
   const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
   const validator = action.preflight?.validator_role ?? entry?.validator_role ?? 'teacher';
@@ -135,8 +145,48 @@ function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'creat
   };
 }
 
-export function syncValidationInboxItemForAction(action: Action): ValidationInboxItem {
-  const projected = buildActionProjection(action);
+function buildFeedbackDraftProjection(
+  feedback: FeedbackDraft,
+): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
+  return {
+    item_id: feedbackDraftItemId(feedback.feedback_id),
+    item_type: 'feedback_review',
+    title: 'Feedback à valider',
+    summary: 'Brouillon de feedback étudiant en attente de validation professeur.',
+    domain_refs: ['D06_CORRECTION_FEEDBACK_EVALUATION'],
+    object_refs: [
+      `feedback_draft:${feedback.feedback_id}`,
+      `pre_correction_run:${feedback.run_id}`,
+      `submission:${feedback.submission_id}`,
+    ],
+    source_refs: ['feedback_drafts', ...feedback.evidence_refs.map((ref) => `evidence:${ref}`)],
+    requester: feedback.owner_id,
+    owner: feedback.owner_id,
+    required_validator: 'teacher_owner',
+    current_status: 'needs_review',
+    risk_level: 'high',
+    privacy_scope: feedback.project_id ? 'project' : 'private',
+    source_truth_state: 'source_verified',
+    output_readiness_state: 'blocked',
+    proposed_action: 'approve_student_safe_feedback',
+    impact_summary:
+      "L'approbation rend le feedback utilisable comme source d'une preview privée ; elle ne l'envoie pas.",
+    blocked_actions: ['create_correction_export_preview', 'student_send'],
+    allowed_actions: ['approve', 'reject'],
+    conflicts: [],
+    open_questions: [],
+    recommended_decision: null,
+    decision_options: ['approve', 'reject'],
+    decision: null,
+    audit_trace: [`feedback_draft:${feedback.feedback_id}`, `pre_correction_run:${feedback.run_id}`],
+    source_kind: 'feedback_draft',
+    source_id: feedback.feedback_id,
+  };
+}
+
+function persistValidationInboxProjection(
+  projected: Omit<ValidationInboxItem, 'created_at' | 'updated_at'>,
+): ValidationInboxItem {
   const now = Date.now();
 
   getDb()
@@ -154,7 +204,7 @@ export function syncValidationInboxItemForAction(action: Action): ValidationInbo
           @source_truth_state, @output_readiness_state, @proposed_action, @impact_summary,
           @blocked_actions_json, @allowed_actions_json, @conflicts_json, @open_questions_json,
           @recommended_decision, @decision_options_json, NULL, @audit_trace_json,
-          'action', @source_id, @created_at, @updated_at)
+          @source_kind, @source_id, @created_at, @updated_at)
        ON CONFLICT(source_kind, source_id) DO UPDATE SET
           item_type = excluded.item_type,
           title = excluded.title,
@@ -204,12 +254,21 @@ export function syncValidationInboxItemForAction(action: Action): ValidationInbo
       recommended_decision: projected.recommended_decision,
       decision_options_json: JSON.stringify(projected.decision_options),
       audit_trace_json: JSON.stringify(projected.audit_trace),
+      source_kind: projected.source_kind,
       source_id: projected.source_id,
       created_at: now,
       updated_at: now,
     });
 
   return getValidationInboxItemById(projected.item_id);
+}
+
+export function syncValidationInboxItemForAction(action: Action): ValidationInboxItem {
+  return persistValidationInboxProjection(buildActionProjection(action));
+}
+
+export function syncValidationInboxItemForFeedbackDraft(feedback: FeedbackDraft): ValidationInboxItem {
+  return persistValidationInboxProjection(buildFeedbackDraftProjection(feedback));
 }
 
 export function getValidationInboxItemById(itemId: string): ValidationInboxItem {
@@ -221,7 +280,9 @@ export function getValidationInboxItemById(itemId: string): ValidationInboxItem 
 }
 
 export function listValidationInboxItems(actor: AuthUser): ValidationInboxItem[] {
-  return listPending(actor).map(syncValidationInboxItemForAction);
+  const actionItems = listPending(actor).map(syncValidationInboxItemForAction);
+  const feedbackItems = listPendingFeedbackDraftsForValidation(actor).map(syncValidationInboxItemForFeedbackDraft);
+  return [...actionItems, ...feedbackItems].sort((a, b) => a.updated_at - b.updated_at);
 }
 
 export function getValidationInboxItemFor(actor: AuthUser, itemId: string): ValidationInboxItem | null {
@@ -229,20 +290,19 @@ export function getValidationInboxItemFor(actor: AuthUser, itemId: string): Vali
   return allowed ?? null;
 }
 
-export function decideValidationInboxItem(
-  actor: AuthUser,
-  itemId: string,
-  request: DecideValidationInboxItemRequest,
-): ValidationInboxItem {
-  const item = getValidationInboxItemFor(actor, itemId);
-  if (!item) throw new Error('validation_inbox_item_not_found');
-  if (item.source_kind !== 'action') throw new Error('validation_inbox_source_not_supported');
-  if (request.decision !== 'approve' && request.decision !== 'reject') {
-    throw new Error('validation_inbox_decision_not_supported_for_action');
-  }
+function getExistingOwnedItem(actor: AuthUser, itemId: string): ValidationInboxItem | null {
+  const row = getDb()
+    .prepare('SELECT * FROM validation_inbox_items WHERE id = ? AND owner_id = ?')
+    .get(itemId, actor.id) as ValidationInboxItemRow | undefined;
+  return row ? toDTO(row) : null;
+}
 
-  const decision = request.decision === 'approve' ? 'approved' : 'rejected';
-  const decidedAction = validateAction(actor, item.source_id, {decision, note: request.note});
+function updateDecision(
+  item: ValidationInboxItem,
+  actor: AuthUser,
+  request: DecideValidationInboxItemRequest,
+  outputReadinessState: ValidationInboxItem['output_readiness_state'],
+): ValidationInboxItem {
   const now = Date.now();
   const decisionValue: ValidationInboxItem['decision'] = {
     value: request.decision,
@@ -259,19 +319,96 @@ export function decideValidationInboxItem(
     )
     .run(
       request.decision === 'approve' ? 'approved' : 'rejected',
-      request.decision === 'approve' ? 'ready' : 'blocked',
+      outputReadinessState,
       JSON.stringify(decisionValue),
       now,
-      itemId,
+      item.item_id,
     );
+
+  return getValidationInboxItemById(item.item_id);
+}
+
+function decideActionItem(
+  actor: AuthUser,
+  item: ValidationInboxItem,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  if (request.decision !== 'approve' && request.decision !== 'reject') {
+    throw new Error('validation_inbox_decision_not_supported_for_action');
+  }
+
+  const decision = request.decision === 'approve' ? 'approved' : 'rejected';
+  const decidedAction = validateAction(actor, item.source_id, {decision, note: request.note});
+  const decidedItem = updateDecision(
+    item,
+    actor,
+    request,
+    request.decision === 'approve' ? 'ready' : 'blocked',
+  );
 
   audit({
     event_type: 'validation_inbox_decision',
     user_id: actor.id,
     action_id: decidedAction.id,
     scope: item.item_type,
-    detail: {item_id: itemId, decision: request.decision},
+    detail: {item_id: item.item_id, source_kind: item.source_kind, decision: request.decision},
   });
 
-  return getValidationInboxItemById(itemId);
+  return decidedItem;
+}
+
+function decideFeedbackDraftItem(
+  actor: AuthUser,
+  item: ValidationInboxItem,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  if (request.decision !== 'approve' && request.decision !== 'reject') {
+    throw new Error('validation_inbox_decision_not_supported_for_feedback_draft');
+  }
+
+  const now = Date.now();
+  const feedbackDecision = request.decision === 'approve' ? 'approved' : 'rejected';
+  const validationRef = `validation_inbox:${item.item_id}:${request.decision}:${now}`;
+  reviewFeedbackDraft(actor, item.source_id, feedbackDecision, validationRef);
+  const decidedItem = updateDecision(
+    item,
+    actor,
+    request,
+    request.decision === 'approve' ? 'ready' : 'blocked',
+  );
+
+  audit({
+    event_type: 'validation_inbox_decision',
+    user_id: actor.id,
+    scope: item.item_type,
+    detail: {
+      item_id: item.item_id,
+      source_kind: item.source_kind,
+      source_id: item.source_id,
+      decision: request.decision,
+      validation_ref: validationRef,
+    },
+  });
+
+  return decidedItem;
+}
+
+export function decideValidationInboxItem(
+  actor: AuthUser,
+  itemId: string,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  const item = getValidationInboxItemFor(actor, itemId);
+  if (!item) {
+    const existing = getExistingOwnedItem(actor, itemId);
+    if (existing && existing.current_status !== 'needs_review') {
+      throw new Error('validation_inbox_item_already_decided');
+    }
+    throw new Error('validation_inbox_item_not_found');
+  }
+  if (item.current_status !== 'needs_review') throw new Error('validation_inbox_item_already_decided');
+
+  if (item.source_kind === 'action') return decideActionItem(actor, item, request);
+  if (item.source_kind === 'feedback_draft') return decideFeedbackDraftItem(actor, item, request);
+  throw new Error('validation_inbox_source_not_supported');
 }

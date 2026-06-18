@@ -367,7 +367,7 @@ function migrate(d: Database.Database): void {
       decision_options_json    TEXT NOT NULL DEFAULT '[]',
       decision_json            TEXT,
       audit_trace_json         TEXT NOT NULL DEFAULT '[]',
-      source_kind              TEXT NOT NULL CHECK (source_kind = 'action'),
+      source_kind              TEXT NOT NULL CHECK (source_kind IN ('action','feedback_draft')),
       source_id                TEXT NOT NULL,
       created_at               INTEGER NOT NULL,
       updated_at               INTEGER NOT NULL,
@@ -1196,6 +1196,7 @@ function migrate(d: Database.Database): void {
   // SQLite ne sait pas ALTER un CHECK : la colonne `task` a gagné `image_generation`.
   // On reconstruit la table (lignes préservées) sur les colonnes déjà étendues ci-dessus.
   migrateTaskModelProfilesTaskCheck(d);
+  migrateValidationInboxSourceKindCheck(d);
 
   d.exec(`
     CREATE INDEX IF NOT EXISTS idx_jobs_claimable
@@ -1294,6 +1295,80 @@ function migrateTaskModelProfilesTaskCheck(d: Database.Database): void {
         ALTER TABLE task_model_profiles__new RENAME TO task_model_profiles;
         CREATE INDEX IF NOT EXISTS idx_task_model_profiles_task
           ON task_model_profiles(task, status);
+      `);
+    })();
+  } finally {
+    d.pragma('foreign_keys = ON');
+  }
+}
+
+/**
+ * Migration idempotente du CHECK `source_kind` de la Validation Inbox.
+ * La fondation initiale acceptait uniquement `action`; D06 ajoute
+ * `feedback_draft` sans créer d'inbox parallèle et sans perdre les items action.
+ */
+function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
+  const row = d
+    .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
+    .get() as {sql?: string} | undefined;
+  if (!row?.sql || row.sql.includes('feedback_draft')) return;
+
+  d.pragma('foreign_keys = OFF');
+  try {
+    d.transaction(() => {
+      d.exec(`
+        CREATE TABLE validation_inbox_items__new (
+          id                       TEXT PRIMARY KEY,
+          item_type                TEXT NOT NULL,
+          title                    TEXT NOT NULL,
+          summary                  TEXT NOT NULL,
+          domain_refs_json         TEXT NOT NULL DEFAULT '[]',
+          object_refs_json         TEXT NOT NULL DEFAULT '[]',
+          source_refs_json         TEXT NOT NULL DEFAULT '[]',
+          requester_id             TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          owner_id                 TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          required_validator       TEXT NOT NULL,
+          status                   TEXT NOT NULL,
+          risk_level               TEXT NOT NULL,
+          privacy_scope            TEXT NOT NULL,
+          source_truth_state       TEXT NOT NULL,
+          output_readiness_state   TEXT NOT NULL,
+          proposed_action          TEXT NOT NULL,
+          impact_summary           TEXT NOT NULL,
+          blocked_actions_json     TEXT NOT NULL DEFAULT '[]',
+          allowed_actions_json     TEXT NOT NULL DEFAULT '[]',
+          conflicts_json           TEXT NOT NULL DEFAULT '[]',
+          open_questions_json      TEXT NOT NULL DEFAULT '[]',
+          recommended_decision     TEXT,
+          decision_options_json    TEXT NOT NULL DEFAULT '[]',
+          decision_json            TEXT,
+          audit_trace_json         TEXT NOT NULL DEFAULT '[]',
+          source_kind              TEXT NOT NULL CHECK (source_kind IN ('action','feedback_draft')),
+          source_id                TEXT NOT NULL,
+          created_at               INTEGER NOT NULL,
+          updated_at               INTEGER NOT NULL,
+          UNIQUE(source_kind, source_id)
+        );
+        INSERT INTO validation_inbox_items__new
+          (id, item_type, title, summary, domain_refs_json, object_refs_json, source_refs_json,
+           requester_id, owner_id, required_validator, status, risk_level, privacy_scope,
+           source_truth_state, output_readiness_state, proposed_action, impact_summary,
+           blocked_actions_json, allowed_actions_json, conflicts_json, open_questions_json,
+           recommended_decision, decision_options_json, decision_json, audit_trace_json,
+           source_kind, source_id, created_at, updated_at)
+          SELECT id, item_type, title, summary, domain_refs_json, object_refs_json, source_refs_json,
+                 requester_id, owner_id, required_validator, status, risk_level, privacy_scope,
+                 source_truth_state, output_readiness_state, proposed_action, impact_summary,
+                 blocked_actions_json, allowed_actions_json, conflicts_json, open_questions_json,
+                 recommended_decision, decision_options_json, decision_json, audit_trace_json,
+                 source_kind, source_id, created_at, updated_at
+          FROM validation_inbox_items;
+        DROP TABLE validation_inbox_items;
+        ALTER TABLE validation_inbox_items__new RENAME TO validation_inbox_items;
+        CREATE INDEX IF NOT EXISTS idx_validation_inbox_status
+          ON validation_inbox_items(status, updated_at);
+        CREATE INDEX IF NOT EXISTS idx_validation_inbox_source
+          ON validation_inbox_items(source_kind, source_id);
       `);
     })();
   } finally {
@@ -1745,7 +1820,7 @@ export interface ValidationInboxItemRow {
   decision_options_json: string;
   decision_json: string | null;
   audit_trace_json: string;
-  source_kind: 'action';
+  source_kind: 'action' | 'feedback_draft';
   source_id: string;
   created_at: number;
   updated_at: number;
