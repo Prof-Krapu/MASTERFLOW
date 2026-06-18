@@ -410,6 +410,11 @@ export const OwnerCockpitStatusSchema = z.object({
     needs_review: z.number().int().nonnegative(),
     failed: z.number().int().nonnegative(),
   }),
+  action_lifecycle: z.object({
+    pending_validation: z.number().int().nonnegative(),
+    approved: z.number().int().nonnegative(),
+    stale: z.number().int().nonnegative(),
+  }),
   capabilities: z.array(z.object({
     id: z.string().min(1),
     status: OwnerCockpitCapabilityStatusSchema,
@@ -421,6 +426,7 @@ export const OwnerCockpitStatusSchema = z.object({
       'canon_sync_manual',
       'validation_inbox_pending',
       'runtime_job_failed',
+      'stale_actions_present',
       'process_activation_missing',
       'process_activation_observation_only',
       'd08_generation_locked',

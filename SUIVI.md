@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Stale actions dans Owner Cockpit — IMPLÉMENTÉ LOCAL
+
+Tranche lecture seule :
+
+- le cockpit compte les actions `pending_validation`, `approved` et `stale` visibles ;
+- ajout du compteur `Actions stale` dans le résumé owner ;
+- alerte `stale_actions_present` si une action obsolète existe ;
+- prochaine action sûre : abandonner ou repasser en preflight, jamais retry automatique.
+
+Recette : ciblés owner cockpit / action expiry / action lifecycle 13/13 ; backend complet 317/317 ;
+TypeScript backend/frontend OK ; build Vite OK ; diff-check OK.
+
+Statut : local vérifié, prêt à publication automatique.
+
+---
+
 ## 2026-06-18 — Action expiry guard — IMPLÉMENTÉ LOCAL
 
 Première tranche runtime bornée :

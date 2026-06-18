@@ -88,6 +88,7 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
             <div><dt>Jobs actifs</dt><dd>{snapshot.jobs.active}</dd></div>
             <div><dt>À revoir</dt><dd>{snapshot.jobs.needs_review}</dd></div>
             <div><dt>Échecs</dt><dd>{snapshot.jobs.failed}</dd></div>
+            <div><dt>Actions stale</dt><dd>{snapshot.action_lifecycle.stale}</dd></div>
           </dl>
 
           <div className="owner-cockpit__truth">

@@ -117,6 +117,18 @@ export function listPending(actor: AuthUser): Action[] {
   return rows.map(toActionDTO).filter((action) => canValidateAction(actor, action));
 }
 
+/** Liste compacte des actions ouvertes/obsolètes visibles par l'owner cockpit. */
+export function listActionLifecycleForCockpit(actor: AuthUser): Action[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM actions
+        WHERE status IN ('pending_validation', 'approved', 'stale')
+        ORDER BY updated_at DESC`,
+    )
+    .all() as ActionRow[];
+  return rows.filter((row) => canReadAction(actor, row)).map(toActionDTO);
+}
+
 // ───────────────────────── Helpers internes ─────────────────────────
 
 /** Recharge une action (post-UPDATE) ou lève si elle a disparu — garde le strict mode content. */
