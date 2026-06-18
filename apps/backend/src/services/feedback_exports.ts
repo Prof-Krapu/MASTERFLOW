@@ -248,6 +248,25 @@ export function getFeedbackDraft(actor: AuthUser, feedbackId: string): FeedbackD
   return toFeedbackDTO(row);
 }
 
+/**
+ * Liste courte destinée à la Validation Inbox commune.
+ *
+ * Première tranche D06 volontairement stricte : seul l'owner professeur voit ses
+ * brouillons en attente, même lorsqu'un éditeur projet pourrait lire certains
+ * objets D06 ailleurs. La décision reste ensuite déléguée à `reviewFeedbackDraft`.
+ */
+export function listPendingFeedbackDraftsForValidation(actor: AuthUser): FeedbackDraft[] {
+  requireTeacher(actor);
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM feedback_drafts
+       WHERE owner_id = ? AND status = 'needs_teacher_validation'
+       ORDER BY updated_at ASC`,
+    )
+    .all(actor.id) as FeedbackDraftRow[];
+  return rows.map(toFeedbackDTO);
+}
+
 export function recordCorrectionExportPreview(
   actor: AuthUser,
   input: CorrectionExportPreview,
