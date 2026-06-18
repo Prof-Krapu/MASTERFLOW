@@ -14,16 +14,18 @@ import type {
   RegistryStatus,
   Resource,
   RoomCheckpoint,
+  ValidationInboxItem,
   WsServerMessage,
 } from '@masterflow/shared';
 
 import {
   attachProjectResource,
   createAction,
+  decideValidationInboxItem,
   executeAction,
   getCurrentContext,
   getLatestRoomCheckpoint,
-  getPendingActions,
+  getValidationInboxItems,
   getProjectMembers,
   getProjectResources,
   getProjects,
@@ -35,7 +37,6 @@ import {
   setToken,
   syncCoordinationRag,
   updateRoomInstance,
-  validateAction,
   validateResource,
 } from './api.ts';
 import {ActionAudit} from './action-audit.tsx';
@@ -219,7 +220,7 @@ function App(): ReactElement {
   const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
   const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
   const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
-  const [pendingActions, setPendingActions] = useState<Action[]>([]);
+  const [pendingActions, setPendingActions] = useState<ValidationInboxItem[]>([]);
   const [validationNotes, setValidationNotes] = useState<Record<string, string>>({});
   const [validationRun, setValidationRun] = useState<ValidationRunState>({status: 'idle', message: 'Inbox non chargee.'});
   const [resourceTitle, setResourceTitle] = useState('');
@@ -492,7 +493,7 @@ function App(): ReactElement {
 
     setValidationRun({status: 'loading', message: 'Chargement validations.'});
     try {
-      const pending = await getPendingActions(auth.token);
+      const pending = await getValidationInboxItems(auth.token);
       setPendingActions(pending);
       setValidationRun({
         status: 'ready',
@@ -637,29 +638,30 @@ function App(): ReactElement {
   }, [activeMode.id, auth, canValidate, context, refreshPendingActions, runApprovedAction]);
 
   const handleValidationDecision = useCallback(async (
-    action: Action,
-    decision: 'approved' | 'rejected',
+    item: ValidationInboxItem,
+    decision: 'approve' | 'reject',
     note?: string,
   ): Promise<void> => {
     if (!auth) return;
 
     setValidationRun({
       status: 'deciding',
-      message: decision === 'approved' ? 'Approbation en cours.' : 'Rejet en cours.',
+      message: decision === 'approve' ? 'Approbation en cours.' : 'Rejet en cours.',
     });
     try {
-      const decided = await validateAction(action.id, {
+      const decided = await decideValidationInboxItem(item.item_id, {
         decision,
         ...(note?.trim() ? {note: note.trim()} : {}),
       }, auth.token);
-      setActionRun({
-        status: decided.status === 'approved' ? 'approved' : 'failed',
-        message: decided.status === 'approved' ? 'Action approuvee, execution separee requise.' : 'Action rejetee.',
-        action: decided,
+      setValidationRun({
+        status: 'ready',
+        message: decided.current_status === 'approved'
+          ? 'Decision enregistree. L execution reste une action separee.'
+          : 'Candidat rejete avec trace conservee.',
       });
       setValidationNotes((current) => {
         const next = {...current};
-        delete next[action.id];
+        delete next[item.item_id];
         return next;
       });
       await refreshPendingActions();
@@ -1393,36 +1395,51 @@ function App(): ReactElement {
               </div>
               <div className="validation-list">
                 {pendingActions.length > 0 ? (
-                  pendingActions.slice(0, 5).map((action) => (
-                    <article className="validation-item" key={action.id}>
-                      <div>
-                        <strong>{action.intent}</strong>
-                        <span>{action.object_type}</span>
-                        <small>{action.preflight?.risk_level ?? action.risk_level ?? 'risk unknown'}</small>
+                  pendingActions.slice(0, 5).map((item) => (
+                    <article className="validation-item" key={item.item_id}>
+                      <div className="validation-item__summary">
+                        <div className="validation-item__heading">
+                          <strong>{item.title}</strong>
+                          <span className={`validation-risk validation-risk--${item.risk_level}`}>{item.risk_level}</span>
+                        </div>
+                        <span>{item.summary}</span>
+                        <div className="validation-facts">
+                          <span><strong>Changement</strong>{item.proposed_action}</span>
+                          <span><strong>Impact</strong>{item.impact_summary}</span>
+                          <span><strong>Source</strong>{item.source_truth_state}</span>
+                          <span><strong>Validateur</strong>{item.required_validator}</span>
+                        </div>
+                        <div className="validation-blockers">
+                          <strong>Bloque</strong>
+                          <span>{item.blocked_actions.join(', ') || 'Aucun effet declare'}</span>
+                        </div>
+                        <small>
+                          Prochaine decision : {item.recommended_decision ?? item.decision_options[0] ?? 'demander precision'}
+                        </small>
                       </div>
                       <label className="validation-note">
                         <span>Note de decision</span>
                         <textarea
                           onChange={(event) => setValidationNotes((current) => ({
                             ...current,
-                            [action.id]: event.target.value,
+                            [item.item_id]: event.target.value,
                           }))}
                           rows={2}
-                          value={validationNotes[action.id] ?? ''}
+                          value={validationNotes[item.item_id] ?? ''}
                         />
                       </label>
                       <div className="validation-actions">
                         <button
                           className="secondary"
-                          disabled={validationRun.status === 'deciding'}
-                          onClick={() => void handleValidationDecision(action, 'rejected', validationNotes[action.id])}
+                          disabled={validationRun.status === 'deciding' || !item.decision_options.includes('reject')}
+                          onClick={() => void handleValidationDecision(item, 'reject', validationNotes[item.item_id])}
                           type="button"
                         >
                           Rejeter
                         </button>
                         <button
-                          disabled={validationRun.status === 'deciding'}
-                          onClick={() => void handleValidationDecision(action, 'approved', validationNotes[action.id])}
+                          disabled={validationRun.status === 'deciding' || !item.decision_options.includes('approve')}
+                          onClick={() => void handleValidationDecision(item, 'approve', validationNotes[item.item_id])}
                           type="button"
                         >
                           Approuver

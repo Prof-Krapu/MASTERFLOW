@@ -9,6 +9,7 @@ import type {
   CreateInventoryProjectNeedRequest,
   CreateInvitation,
   CurrentContext,
+  DecideValidationInboxItemRequest,
   InventoryCollection,
   InventoryItem,
   InventoryNeedMatchResult,
@@ -33,6 +34,7 @@ import type {
   TokenUsageGroupBy,
   TokenUsageReport,
   UpdateRoomInstance,
+  ValidationInboxItem,
   ValidationDecision,
 } from '@masterflow/shared';
 
@@ -111,6 +113,21 @@ export async function getAvailableActions(token?: string | null): Promise<Action
 
 export async function getPendingActions(token?: string | null): Promise<Action[]> {
   return request<Action[]>('/actions/pending', {method: 'GET'}, token);
+}
+
+export async function getValidationInboxItems(token?: string | null): Promise<ValidationInboxItem[]> {
+  return request<ValidationInboxItem[]>('/validation-inbox', {method: 'GET'}, token);
+}
+
+export async function decideValidationInboxItem(
+  itemId: string,
+  body: DecideValidationInboxItemRequest,
+  token?: string | null,
+): Promise<ValidationInboxItem> {
+  return request<ValidationInboxItem>(`/validation-inbox/${encodeURIComponent(itemId)}/decision`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
 }
 
 export async function createAction(body: CreateAction, token?: string | null): Promise<Action> {

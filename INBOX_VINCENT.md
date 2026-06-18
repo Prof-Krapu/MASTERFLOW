@@ -22,6 +22,28 @@ Règles de lecture :
 
 ---
 
+## 2026-06-18 — open — Shared Validation Inbox backend + UI prête à intégrer
+
+MALEX/Codex a repris la fondation `b52fff4` au-dessus du `main` actuel et l'a câblée à la surface
+frontend réelle, après lecture du canon Drive propre.
+
+À relire :
+
+- routes `/validation-inbox` et service action-based ;
+- UI remplaçant la mini-liste `/actions/pending` ;
+- aucune exécution automatique après approbation ;
+- aucun accès student ;
+- aucune projection D06-D12 ajoutée artificiellement dans cette tranche.
+
+Recette : **293/293** backend, ciblés **17/17**, TypeScript backend/frontend et build Vite verts,
+smoke navigateur desktop/mobile en mode mock. Le panneau admin LLM `3d6ec15` est déjà intégré sur
+`main`.
+
+Action attendue : relire après push la forme de la projection action-based. Les prochains domaines
+doivent alimenter cette inbox commune, jamais créer une queue parallèle.
+
+---
+
 ## 2026-06-15 — open — Panneau admin routage LLM prêt à relire
 
 MALEX/Codex prépare une couche courte sur `codex/admin-llm-routing-panel`.

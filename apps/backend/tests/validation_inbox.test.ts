@@ -20,6 +20,7 @@ const student: AuthUser = {id: 'validation-inbox-student', username: 'validation
 let server: Server;
 let base = '';
 let teacherToken = '';
+let studentToken = '';
 
 function insertUser(user: AuthUser): void {
   const now = Date.now();
@@ -49,6 +50,7 @@ beforeAll(async () => {
   insertUser(teacher);
   insertUser(student);
   teacherToken = signToken(teacher);
+  studentToken = signToken(student);
 
   const app = express();
   app.use(express.json());
@@ -118,5 +120,13 @@ describe('Validation Inbox MVP — projection action-based', () => {
       body: JSON.stringify({name: 'Projet après validation inbox'}),
     });
     expect(project.status).toBe(201);
+  });
+
+  it('refuse la surface partagée aux comptes student', async () => {
+    const response = await fetch(`${base}/validation-inbox`, {
+      headers: {Authorization: `Bearer ${studentToken}`},
+    });
+
+    expect(response.status).toBe(403);
   });
 });

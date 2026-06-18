@@ -1,8 +1,8 @@
 import type {
-  Action,
   ActionRegistryEntry,
   CurrentContext,
   Resource,
+  ValidationInboxItem,
 } from '@masterflow/shared';
 
 export type WorkModeId = 'home' | 'teaching' | 'story' | 'project' | 'learning' | 'inventory' | 'admin';
@@ -34,7 +34,7 @@ type ModeRuntimeInput = {
   liveActions: ActionRegistryEntry[];
   futureActionCount: number;
   hiddenActionCount: number;
-  pendingActions: Action[];
+  pendingActions: ValidationInboxItem[];
   wsState: string;
 };
 

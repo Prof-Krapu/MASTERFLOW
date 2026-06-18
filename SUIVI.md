@@ -4,6 +4,40 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — Shared Validation Inbox action-based — BACKEND + UI VÉRIFIÉS
+
+Référence canon lue avant implémentation :
+
+- `05_UI_RUNTIME_CONTRACTS/SHARED_VALIDATION_INBOX_MVP_CONTRACT.md` ;
+- `04_BRIDGE_PRIMITIVES/VALIDATION_INBOX_GLOBAL_SCHEMA.md` ;
+- `04_BRIDGE_PRIMITIVES/VALIDATION_INBOX_AND_CANDIDATE_CANON_CONTROLS.md`.
+
+La fondation `b52fff4` est reprise au-dessus du `main` courant puis câblée au frontend :
+
+- contrats partagés, table et routes `/validation-inbox` ;
+- projection des actions `pending_validation` sans créer un second cycle métier ;
+- décision `approve/reject` déléguée à `validateAction`, jamais à un effet direct ;
+- UI commune affichant changement, impact, source, risque, validateur, blocages et prochaine décision ;
+- exécution toujours séparée de la validation ;
+- accès HTTP refusé aux comptes `student`.
+
+Recette : backend **293/293**, tests ciblés **17/17**, TypeScript backend/frontend et build Vite OK.
+Smoke navigateur local godmode : item affiché, rejet tracé, compteur revenu à zéro. Responsive
+390 px : aucun débordement horizontal. OpenRouter/ComfyUI non lancés ; backend en mode mock.
+
+Limite explicite : cette première tranche projette les actions uniquement. Les candidats D06-D12
+seront raccordés progressivement à la même inbox, sans queues parallèles.
+
+---
+
+## 2026-06-18 — Panneau admin routage LLM — INTÉGRÉ SUR `main`
+
+Le commit `3d6ec15` a été fast-forward sur `origin/main` après vérification complète : backend
+**288/288**, TypeScript backend/frontend, build Vite et diff-check verts. Aucun provider réel,
+secret ou bouton d'activation n'est exposé.
+
+---
+
 ## 2026-06-15 — Panneau admin routage LLM — PRÊT SUR BRANCHE
 
 Branche MALEX/Codex : `codex/admin-llm-routing-panel`.
