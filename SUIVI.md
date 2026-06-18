@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — D12 missed-trigger findings — IMPLÉMENTÉ LOCAL
+
+Première tranche observation-only :
+
+- table `d12_missed_trigger_findings` ;
+- `POST /api/v1/diagnostics/d12/findings`, privé admin/godmode ;
+- `GET /api/v1/diagnostics/d12/findings`, liste/filtre privé ;
+- statut initial `observation` uniquement ;
+- aucun passage en action, aucun job, aucun patch, aucune écriture canon ;
+- trace audit `d12_missed_trigger_finding_created`.
+
+Recette locale : ciblés D12 findings / process activation / owner cockpit 11/11 ;
+TypeScript backend/frontend OK.
+
+Statut : local, recette complète à exécuter avant publication automatique.
+
+---
+
 ## 2026-06-19 — Stale actions dans Owner Cockpit — IMPLÉMENTÉ LOCAL
 
 Tranche lecture seule :

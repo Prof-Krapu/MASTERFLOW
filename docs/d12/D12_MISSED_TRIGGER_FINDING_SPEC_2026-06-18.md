@@ -1,6 +1,11 @@
 # D12 Missed Trigger Finding Spec — 2026-06-18
 
-Status: `SPEC_ONLY_OBSERVATION`
+Status: `PARTIAL_RUNTIME_OBSERVATION_LOCAL`
+
+Mise à jour locale : première tranche implémentée sur `codex/d12-missed-trigger-findings`.
+Elle ajoute une table privée et deux routes diagnostics admin/godmode pour créer et lister des
+findings D12 au statut initial `observation`. Cette tranche ne promeut rien, ne corrige rien et
+ne crée aucune action.
 
 ## Intention produit
 
@@ -124,11 +129,27 @@ archive
 
 Aucune décision ne doit lancer un fix automatique dans cette spec.
 
+## Première tranche implémentée localement
+
+```yaml
+table: d12_missed_trigger_findings
+routes:
+  - POST /api/v1/diagnostics/d12/findings
+  - GET /api/v1/diagnostics/d12/findings
+minimum_role: admin
+initial_status: observation
+audit_event: d12_missed_trigger_finding_created
+forbidden_effects:
+  - action_creation
+  - job_creation
+  - auto_patch
+  - canon_write
+  - provider_call
+```
+
 ## Non-objectifs
 
 - Pas de detector runtime maintenant.
-- Pas de table maintenant.
-- Pas de service maintenant.
 - Pas d'auto-réparation.
 - Pas de création automatique d'action.
 - Pas de suppression.
@@ -149,9 +170,10 @@ ce qui reste bloqué
 
 ```yaml
 runtime_code: false
-migration: false
+runtime_code_partial_observation: true
+migration: true
 auto_fix: false
 safe_to_queue: true
 github_main: not_merged
-requires_malex_before_code: true
+requires_malex_before_code: fulfilled_by_global_go
 ```
