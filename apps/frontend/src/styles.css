@@ -833,6 +833,84 @@ dd {
   text-transform: uppercase;
 }
 
+.job-observability {
+  gap: 14px;
+}
+
+.job-observability__status {
+  color: var(--muted);
+}
+
+.job-observability__summary,
+.job-observability__item dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.job-observability__summary div,
+.job-observability__item dl div {
+  background: #0d1015;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.job-observability dt {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.job-observability dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.job-observability__list {
+  display: grid;
+  gap: 10px;
+}
+
+.job-observability__item {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.job-observability__item > div:first-child {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.job-observability__item > div:first-child span {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.job-observability__item--needs_review {
+  border-color: rgba(240, 195, 107, 0.55);
+}
+
+.job-observability__item--failed {
+  border-color: rgba(255, 143, 143, 0.55);
+}
+
+.job-observability__item p,
+.job-observability__item small {
+  margin: 0;
+}
+
+.job-observability__item small {
+  color: var(--muted);
+}
+
 .resource-item {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1828,6 +1906,11 @@ dd {
 @media (max-width: 720px) {
   .audit-details {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .job-observability__summary,
+  .job-observability__item dl {
+    grid-template-columns: 1fr;
   }
 
   .workspace,

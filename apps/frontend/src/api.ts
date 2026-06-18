@@ -16,6 +16,7 @@ import type {
   InventoryProjectNeed,
   InventorySearchResult,
   Invitation,
+  Job,
   MatchInventoryProjectNeedRequest,
   Persona,
   Project,
@@ -113,6 +114,10 @@ export async function getAvailableActions(token?: string | null): Promise<Action
 
 export async function getPendingActions(token?: string | null): Promise<Action[]> {
   return request<Action[]>('/actions/pending', {method: 'GET'}, token);
+}
+
+export async function getJobs(token?: string | null): Promise<Job[]> {
+  return request<Job[]>('/jobs', {method: 'GET'}, token);
 }
 
 export async function getValidationInboxItems(token?: string | null): Promise<ValidationInboxItem[]> {
