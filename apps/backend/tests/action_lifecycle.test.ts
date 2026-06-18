@@ -4,6 +4,7 @@ import type {AuthUser} from '../src/middleware/auth.ts';
 import {
   createAction,
   executeAction,
+  expireOpenSensitiveActions,
   getActionFor,
   listPending,
   preflightAction,
@@ -128,5 +129,59 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     preflightAction(god, id);
 
     expect(() => validateAction(student, id, {decision: 'approved'})).toThrow();
+  });
+
+  it('rend stale une action sensible pending_validation après hard stop sans suppression', () => {
+    const created = createAction(god, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      payload: {},
+    });
+    const flighted = preflightAction(god, created.id);
+    expect(flighted.status).toBe('pending_validation');
+
+    const expired = expireOpenSensitiveActions(god, {
+      scope: 'mine',
+      reason: 'hard_stop',
+      note: 'test hard stop',
+    });
+    expect(expired.expired_action_ids).toContain(created.id);
+
+    const stale = getActionFor(god, created.id);
+    expect(stale?.status).toBe('stale');
+    expect(stale?.error).toContain('stale:hard_stop');
+    expect(() => validateAction(god, created.id, {decision: 'approved'})).toThrow(/stale/);
+    expect(() => executeAction(god, created.id)).toThrow(/stale/);
+  });
+
+  it('rend stale une action approuvée avant exécution si le contexte change', () => {
+    const created = createAction(god, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      payload: {},
+    });
+    preflightAction(god, created.id);
+    expect(validateAction(god, created.id, {decision: 'approved'}).status).toBe('approved');
+
+    const expired = expireOpenSensitiveActions(god, {scope: 'mine', reason: 'context_changed'});
+    expect(expired.expired_action_ids).toContain(created.id);
+    expect(getActionFor(god, created.id)?.status).toBe('stale');
+    expect(() => executeAction(god, created.id)).toThrow(/stale/);
+  });
+
+  it('ne rend pas stale une action low-risk approuvée automatiquement', () => {
+    const created = createAction(god, {
+      registry_id: 'get_current_context',
+      intent: 'get_current_context',
+      object_type: 'context',
+      payload: {},
+    });
+    expect(preflightAction(god, created.id).status).toBe('approved');
+
+    const expired = expireOpenSensitiveActions(god, {scope: 'mine', reason: 'context_changed'});
+    expect(expired.expired_action_ids).not.toContain(created.id);
+    expect(getActionFor(god, created.id)?.status).toBe('approved');
   });
 });

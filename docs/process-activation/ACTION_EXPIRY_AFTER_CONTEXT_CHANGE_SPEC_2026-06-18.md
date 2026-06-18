@@ -1,6 +1,11 @@
 # Action Expiry After Context Change Spec — 2026-06-18
 
-Status: `SPEC_ONLY_NO_RUNTIME`
+Status: `PARTIAL_RUNTIME_GUARD_LOCAL`
+
+Mise à jour locale : première tranche implémentée sur `codex/action-expiry-guard`.
+Elle ajoute un garde runtime minimal : `POST /api/v1/actions/expire-context` rend `stale`
+les actions sensibles ouvertes dans un scope contrôlé. Ce n'est pas encore un détecteur autonome
+de changement de contexte ni un hard-stop branché automatiquement au signal utilisateur.
 
 ## Intention produit
 
@@ -17,7 +22,8 @@ L'action ne doit pas rester exécutable comme si rien n'avait changé.
 
 ## Principe de sécurité
 
-Cette spec décrit le contrat. Elle ne modifie pas encore le runtime.
+Cette spec décrit le contrat. La première tranche runtime applique seulement le cas sûr :
+marquer obsolètes des actions sensibles déjà ouvertes, sans suppression et sans exécution.
 
 Objectif :
 
@@ -88,6 +94,42 @@ archived
 - send;
 - provider_call;
 - canon_write;
+
+## Première tranche implémentée localement
+
+```yaml
+route: POST /api/v1/actions/expire-context
+minimum_role: teacher
+scopes:
+  - mine
+  - project
+affected_statuses:
+  - pending_validation
+  - approved
+affected_actions:
+  - sensitive registry actions
+  - medium_high/high/variable risk actions
+  - actions whose preflight requires validation
+never_touched:
+  - low-risk approved actions
+  - executing
+  - completed
+  - failed
+  - rejected
+runtime_effect:
+  - status becomes stale
+  - executeAction refuses stale by existing status guard
+  - validateAction refuses stale by existing pending_validation guard
+audit:
+  - action_stale
+```
+
+## Gaps restants
+
+- pas encore de détection automatique de changement de contexte ;
+- pas encore de hash/snapshot de contexte ;
+- pas encore de hard-stop global branché au signal `stop` ;
+- pas de retry/re-preflight automatique.
 - publication;
 - final_grade_write.
 
