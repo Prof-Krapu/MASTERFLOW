@@ -26,13 +26,13 @@ MALEX.
 
 | Ordre | Chantier | Risque actuel | Sortie attendue | Statut |
 |---:|---|---|---|---|
-| 1 | Nettoyage queue post-Vincent | faible | files de pilotage alignées | en cours |
+| 1 | Nettoyage queue post-Vincent | faible | files de pilotage alignées | done_queue |
 | 2 | D06 export preview audit | faible en spec | contrat `correction_export_preview` → inbox ou rejet | done_spec |
 | 3 | Recette D05-D06 runtime | faible | script de vérification sans mutation dangereuse | done_recipe |
 | 4 | D12 cockpit gap audit | faible | liste des indicateurs manquants pour ne plus travailler à l'aveugle | done_audit |
 | 5 | Process activation audit | faible | où MasterFlow doit déclencher sans MALEX-orchestrateur caché | done_refresh |
 | 6 | User feedback intake | faible | méthode d'absorption sans canonisation automatique | done_route |
-| 7 | D08 manifest-first lock | faible en spec, élevé en code | verrouillage clair avant génération visuelle | queued_locked |
+| 7 | D08 manifest-first lock | faible en spec, élevé en code | verrouillage clair avant génération visuelle | done_locked_refresh |
 
 ## Décisions déjà actées
 
@@ -55,3 +55,17 @@ Lot 4 : audit gap D12 Owner Cockpit, sans code.
 Lot 5 : refresh process activation audit post-PR #5, sans code.
 
 Lot 6 : refresh user feedback intake routing, sans absorption canon.
+
+Lot 7 : refresh D08 manifest-first lock post-PR #5, sans code, sans provider, sans génération.
+
+## Résultat de queue
+
+Tous les lots low-risk de cette file sont traités côté audit/spec/ledger.
+
+Prochaine file safe possible :
+
+- `D08_MANIFEST_READ_MODEL_SPEC`
+- `PROCESS_ACTIVATION_READ_MODEL_SPEC`
+- `FEEDBACK_OUTPUT_FAMILY_REGISTRY_SPEC`
+
+Stop avant merge, migration runtime, provider, génération, export ou publication.
