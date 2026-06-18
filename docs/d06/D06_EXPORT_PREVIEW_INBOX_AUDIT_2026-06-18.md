@@ -1,8 +1,10 @@
 # D06 → Validation Inbox — audit `correction_export_preview`
 
 Date : 2026-06-18
-Statut : `SPEC_READY_NO_CODE`
-Nature : audit de projection possible, aucune migration ni implémentation runtime dans ce document.
+Statut : `IMPLEMENTED_LOCALLY_PENDING_PUBLICATION`
+Nature : contrat d'audit appliqué sur `codex/d06-export-preview-inbox`.
+
+Recette : tests ciblés 26/26, backend complet 306/306, TypeScript backend/frontend et build Vite OK.
 
 ## Diagnostic
 
@@ -100,8 +102,8 @@ recommended_decision: null
 
 ## Décision recommandée
 
-Intégrer **plus tard**, après validation MALEX, comme deuxième source D06 de la Shared Validation
-Inbox.
+Intégration locale réalisée comme deuxième source D06 de la Shared Validation Inbox, sous
+l'autorisation permanente MALEX commit/push/PR/merge.
 
 Cette intégration est plus risquée que `feedback_draft`, car le mot "export" peut être mal compris
 par l'UI ou par un utilisateur. La première implémentation devra donc avoir une copy très explicite :

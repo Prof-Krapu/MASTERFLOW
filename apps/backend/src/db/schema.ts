@@ -367,7 +367,9 @@ function migrate(d: Database.Database): void {
       decision_options_json    TEXT NOT NULL DEFAULT '[]',
       decision_json            TEXT,
       audit_trace_json         TEXT NOT NULL DEFAULT '[]',
-      source_kind              TEXT NOT NULL CHECK (source_kind IN ('action','feedback_draft')),
+      source_kind              TEXT NOT NULL CHECK (source_kind IN (
+                                 'action','feedback_draft','correction_export_preview'
+                               )),
       source_id                TEXT NOT NULL,
       created_at               INTEGER NOT NULL,
       updated_at               INTEGER NOT NULL,
@@ -1305,13 +1307,14 @@ function migrateTaskModelProfilesTaskCheck(d: Database.Database): void {
 /**
  * Migration idempotente du CHECK `source_kind` de la Validation Inbox.
  * La fondation initiale acceptait uniquement `action`; D06 ajoute
- * `feedback_draft` sans créer d'inbox parallèle et sans perdre les items action.
+ * `feedback_draft` puis `correction_export_preview` sans créer d'inbox parallèle
+ * et sans perdre les items existants.
  */
 function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
   const row = d
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
     .get() as {sql?: string} | undefined;
-  if (!row?.sql || row.sql.includes('feedback_draft')) return;
+  if (!row?.sql || row.sql.includes('correction_export_preview')) return;
 
   d.pragma('foreign_keys = OFF');
   try {
@@ -1343,7 +1346,9 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
           decision_options_json    TEXT NOT NULL DEFAULT '[]',
           decision_json            TEXT,
           audit_trace_json         TEXT NOT NULL DEFAULT '[]',
-          source_kind              TEXT NOT NULL CHECK (source_kind IN ('action','feedback_draft')),
+          source_kind              TEXT NOT NULL CHECK (source_kind IN (
+                                     'action','feedback_draft','correction_export_preview'
+                                   )),
           source_id                TEXT NOT NULL,
           created_at               INTEGER NOT NULL,
           updated_at               INTEGER NOT NULL,

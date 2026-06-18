@@ -267,6 +267,24 @@ export function listPendingFeedbackDraftsForValidation(actor: AuthUser): Feedbac
   return rows.map(toFeedbackDTO);
 }
 
+/**
+ * Projections owner-only des previews privées en attente pour l'inbox commune.
+ * Aucun contenu storage ni fichier final n'est lu ici.
+ */
+export function listPendingCorrectionExportPreviewsForValidation(
+  actor: AuthUser,
+): CorrectionExportPreview[] {
+  requireTeacher(actor);
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM correction_export_previews
+       WHERE owner_id = ? AND status = 'needs_teacher_validation'
+       ORDER BY updated_at ASC`,
+    )
+    .all(actor.id) as CorrectionExportPreviewRow[];
+  return rows.map(toExportDTO);
+}
+
 export function recordCorrectionExportPreview(
   actor: AuthUser,
   input: CorrectionExportPreview,

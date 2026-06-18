@@ -10,8 +10,11 @@ import {signToken, type AuthUser} from '../src/middleware/auth.ts';
 import {createProjectsRouter} from '../src/routers/projects.ts';
 import {createValidationInboxRouter} from '../src/routers/validation_inbox.ts';
 import {
+  getCorrectionExportPreview,
   getFeedbackDraft,
+  recordCorrectionExportPreview,
   recordFeedbackDraft,
+  reviewFeedbackDraft,
 } from '../src/services/feedback_exports.ts';
 import {
   decideValidationInboxItem,
@@ -81,6 +84,32 @@ function createPendingFeedbackDraft(feedbackId: string, owner: AuthUser = teache
     updated_at: now,
   });
   return draft.feedback_id;
+}
+
+function createPendingExportPreview(exportId: string, owner: AuthUser = teacher): string {
+  const feedbackId = createPendingFeedbackDraft(`feedback-for-${exportId}`, owner);
+  reviewFeedbackDraft(owner, feedbackId, 'approved', `approved-for-${exportId}`);
+  const preview = recordCorrectionExportPreview(owner, {
+    export_id: exportId,
+    batch_id: `batch-validation-inbox-${owner.id}`,
+    owner_id: owner.id,
+    project_scope: `course-validation-inbox-${owner.id}`,
+    format: 'xlsx',
+    target: 'teacher_download',
+    source_feedback_refs: [feedbackId],
+    source_run_refs: [`run-validation-inbox-${owner.id}`],
+    preview_ref: `storage://private/validation-inbox/${exportId}.xlsx`,
+    schema_version: 'correction-export-preview-v1',
+    contains_private_data: true,
+    publication_allowed: false,
+    human_validation_required: true,
+    status: 'needs_teacher_validation',
+    validator_id: null,
+    validation_ref: null,
+    created_at: now,
+    updated_at: now,
+  });
+  return preview.export_id;
 }
 
 function insertFeedbackFixture(owner: AuthUser): void {
@@ -375,6 +404,74 @@ describe('Validation Inbox MVP — projection action-based', () => {
     expect(() => decideValidationInboxItem(teacher, item.item_id, {decision: 'reject'})).toThrow(
       'validation_inbox_item_already_decided',
     );
+  });
+
+  it('projette une preview privée D06 owner-only sans exposer sa référence storage', () => {
+    const exportId = createPendingExportPreview('export-preview-inbox-visible');
+    const item = listValidationInboxItems(teacher).find(
+      (entry) => entry.source_kind === 'correction_export_preview' && entry.source_id === exportId,
+    );
+
+    expect(item).toMatchObject({
+      item_type: 'public_export',
+      current_status: 'needs_review',
+      risk_level: 'high',
+      required_validator: 'teacher_owner',
+      output_readiness_state: 'blocked',
+      decision_options: ['approve', 'reject'],
+    });
+    expect(item?.blocked_actions).toEqual(expect.arrayContaining(['export_prepare_job', 'student_send', 'publication']));
+    expect(JSON.stringify(item)).not.toContain('storage://');
+    expect(listValidationInboxItems(otherTeacher).some(
+      (entry) => entry.source_kind === 'correction_export_preview' && entry.source_id === exportId,
+    )).toBe(false);
+  });
+
+  it('approuve la preview privée via l autorité D06 sans job ni publication', () => {
+    const exportId = createPendingExportPreview('export-preview-inbox-approve');
+    const item = listValidationInboxItems(teacher).find(
+      (entry) => entry.source_kind === 'correction_export_preview' && entry.source_id === exportId,
+    );
+    if (!item) throw new Error('item export preview introuvable');
+    const jobsBefore = getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number};
+
+    const decided = decideValidationInboxItem(teacher, item.item_id, {
+      decision: 'approve',
+      note: 'Preview privée relue, aucun envoi',
+    });
+    const preview = getCorrectionExportPreview(teacher, exportId);
+    const jobsAfter = getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number};
+
+    expect(decided).toMatchObject({current_status: 'approved', output_readiness_state: 'ready'});
+    expect(preview.status).toBe('approved_for_export');
+    expect(preview.publication_allowed).toBe(false);
+    expect(preview.validation_ref).toContain(`validation_inbox:${item.item_id}:approve:`);
+    expect(jobsAfter.count).toBe(jobsBefore.count);
+  });
+
+  it('rejette une preview privée et refuse une seconde décision', () => {
+    const exportId = createPendingExportPreview('export-preview-inbox-reject');
+    const item = listValidationInboxItems(teacher).find(
+      (entry) => entry.source_kind === 'correction_export_preview' && entry.source_id === exportId,
+    );
+    if (!item) throw new Error('item export preview introuvable');
+
+    expect(decideValidationInboxItem(teacher, item.item_id, {decision: 'reject'})).toMatchObject({
+      current_status: 'rejected',
+      output_readiness_state: 'blocked',
+    });
+    expect(getCorrectionExportPreview(teacher, exportId).status).toBe('rejected');
+    expect(() => decideValidationInboxItem(teacher, item.item_id, {decision: 'approve'})).toThrow(
+      'validation_inbox_item_already_decided',
+    );
+  });
+
+  it('confirme la migration additive du source_kind sans inbox parallèle', () => {
+    const table = getDb()
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
+      .get() as {sql: string};
+    expect(table.sql).toContain('correction_export_preview');
+    expect(listValidationInboxItems(teacher).some((entry) => entry.source_kind === 'action')).toBe(true);
   });
 
   it('expose /validation-inbox sans bloquer les routeurs suivants montés à la racine', async () => {

@@ -13,9 +13,9 @@ le runtime GitHub.
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
 | D03 Room OS et commandes | partiel | Rooms, instances, checkpoints et frontend existent ; command surface complète absente. | moyen | Ajouter les contrôles par tranches explicites. |
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
-| Shared Validation Inbox | partiel | Les actions et `feedback_draft` D06 sont sur `main`; les autres objets D06-D12 ne sont pas encore projetés. | moyen | Auditer `correction_export_preview` en deuxième projection possible. |
+| Shared Validation Inbox | partiel+ local | Actions et `feedback_draft` sont sur `main`; `correction_export_preview` est projeté localement owner-only. | moyen | Vérifier puis publier sans job/export/send automatique. |
 | D05 sujet guidé | implémenté local vérifié | Fondation et lecture sont sur `main`; création/réponse/fin Teaching passent une vraie session locale, professeur/godmode uniquement. | faible | Publier sans ouvrir D06 ni participation élève. |
-| D06 correction / feedback | partiel | `feedback_draft` est projeté owner-only dans la Validation Inbox ; export preview et send restent exclus. | moyen | Spécifier export preview sans ouvrir publication/envoi. |
+| D06 correction / feedback | partiel+ local | `feedback_draft` est sur `main`; preview privée est raccordée localement à l'inbox ; send reste exclu. | moyen | Vérifier que approve ne crée ni job ni publication, puis publier. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode. | faible | Étendre par petites tranches en lecture avant D06. |
 | D12 owner observability | partiel | Cockpit et jobs en lecture seule ; findings/missed triggers absents. | moyen | Ajouter un agrégat backend seulement après la tranche D05-D06. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
