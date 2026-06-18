@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — D08 Visual Manifest manifest-first — FONDATION VÉRIFIÉE SUR BRANCHE
+
+Références canon relues :
+
+- `03_DOMAINS/D08_DA_VISUAL_ASSETS/DOMAIN_CARD.md` ;
+- `05_UI_RUNTIME_CONTRACTS/D08_VISUAL_MANIFEST_RUNTIME_CONTRACT.md` ;
+- `05_UI_RUNTIME_CONTRACTS/D08_VISUAL_MANIFEST_SCHEMA.json` ;
+- `DEPLOYMENT_TO_REBUILD_INBOX.md`, réponse `REBUILD-DEPLOY-D08-001`.
+
+Première tranche sûre après la Shared Validation Inbox : persistance privée/projet d'un manifeste
+visuel, références typées, rapport de gates déterministe, routes privées et testbed owner/admin.
+Un manifeste complet reste `GENERATION_BLOCKED_TECH_PENDING` : aucun job, provider, fichier généré,
+asset canonisé ou validation implicite n'est créé.
+
+Recette : backend **296/296**, TypeScript backend/frontend, build Vite et diff-check verts. Smoke
+navigateur local en DB temporaire : création privée OK, readiness `manifest_ready`, `queue_gate` et
+`human_gate` bloqués. Responsive 390 px vérifié sans débordement après correction du statut long.
+
+Limites explicites : generated assets, stockage fichier, snapshot immuable, provider image et
+promotion canon restent absents. Cette couche prépare le manifeste ; elle n'active pas la génération.
+
+---
+
 ## 2026-06-18 — Shared Validation Inbox action-based — BACKEND + UI VÉRIFIÉS
 
 Référence canon lue avant implémentation :

@@ -22,6 +22,26 @@ Règles de lecture :
 
 ---
 
+## 2026-06-18 — open — D08 Visual Manifest manifest-first à relire
+
+MALEX/Codex a préparé la première tranche D08 après la Shared Validation Inbox : manifeste
+persistant privé/projet, références typées, gates déterministes et testbed owner/admin.
+
+Invariants à relire après push :
+
+- aucun appel OpenRouter/provider image ;
+- aucun job ou asset généré ;
+- aucun canon automatique ;
+- un manifeste complet reste `GENERATION_BLOCKED_TECH_PENDING` ;
+- un godmode tiers ne traverse pas le scope privé ;
+- `queue_gate` et `human_gate` restent bloqués sans validation raccordée.
+
+Recette : **296/296** tests backend, TypeScript backend/frontend, build Vite, smoke desktop/mobile
+sur DB locale temporaire. Action attendue : relire la migration, les contrats et l'isolation de
+scope. Les generated assets, snapshots immuables, stockage et provider restent hors de cette tranche.
+
+---
+
 ## 2026-06-18 — open — Shared Validation Inbox backend + UI prête à intégrer
 
 MALEX/Codex a repris la fondation `b52fff4` au-dessus du `main` actuel et l'a câblée à la surface

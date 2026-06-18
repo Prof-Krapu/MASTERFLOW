@@ -8,6 +8,7 @@ import type {
   CreateInventoryItemRequest,
   CreateInventoryProjectNeedRequest,
   CreateInvitation,
+  CreateVisualManifestRequest,
   CurrentContext,
   DecideValidationInboxItemRequest,
   InventoryCollection,
@@ -36,6 +37,7 @@ import type {
   UpdateRoomInstance,
   ValidationInboxItem,
   ValidationDecision,
+  VisualManifest,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -125,6 +127,25 @@ export async function decideValidationInboxItem(
   token?: string | null,
 ): Promise<ValidationInboxItem> {
   return request<ValidationInboxItem>(`/validation-inbox/${encodeURIComponent(itemId)}/decision`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
+  const response = await request<{results: VisualManifest[]}>(
+    '/visual-manifests',
+    {method: 'GET'},
+    token,
+  );
+  return response.results;
+}
+
+export async function createVisualManifest(
+  body: CreateVisualManifestRequest,
+  token?: string | null,
+): Promise<VisualManifest> {
+  return request<VisualManifest>('/visual-manifests', {
     method: 'POST',
     body: JSON.stringify(body),
   }, token);

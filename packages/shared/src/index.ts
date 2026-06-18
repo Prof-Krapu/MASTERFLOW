@@ -1032,6 +1032,86 @@ export const DecideValidationInboxItemRequestSchema = z.object({
 });
 export type DecideValidationInboxItemRequest = z.infer<typeof DecideValidationInboxItemRequestSchema>;
 
+// ───────────────────────── D08 Visual Manifest (manifest-first) ─────────────────────────
+
+export const VisualReferenceStatusSchema = z.enum([
+  'canon_strict',
+  'expression_only',
+  'outfit_only',
+  'world_style',
+  'poster_energy',
+  'filter_reference',
+  'output_template',
+  'anti_pattern',
+  'rejected',
+]);
+export type VisualReferenceStatus = z.infer<typeof VisualReferenceStatusSchema>;
+
+export const VisualReferenceBindingSchema = z.object({
+  reference_ref: z.string().min(1).max(500),
+  status: VisualReferenceStatusSchema,
+});
+export type VisualReferenceBinding = z.infer<typeof VisualReferenceBindingSchema>;
+
+export const D08GateStateSchema = z.enum(['pass', 'missing', 'blocked']);
+export const D08GateReportSchema = z.object({
+  intent_gate: D08GateStateSchema,
+  owner_gate: D08GateStateSchema,
+  da_resolution_gate: D08GateStateSchema,
+  da_stack_gate: D08GateStateSchema,
+  canon_gate: D08GateStateSchema,
+  source_truth_gate: D08GateStateSchema,
+  output_gate: D08GateStateSchema,
+  permission_gate: D08GateStateSchema,
+  completion_gate: D08GateStateSchema,
+  queue_gate: D08GateStateSchema,
+  human_gate: D08GateStateSchema,
+});
+export type D08GateReport = z.infer<typeof D08GateReportSchema>;
+
+export const VisualManifestSchema = z.object({
+  manifest_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  room_id: z.string().min(1).nullable(),
+  request_title: z.string().min(1).max(240),
+  intent: z.string().min(1).max(2000),
+  privacy_scope: z.enum(['private', 'project']),
+  canon_entity_refs: z.array(z.string().min(1).max(240)),
+  da_root_ref: z.string().min(1).max(240).nullable(),
+  active_layers: z.array(z.string().min(1).max(120)),
+  filters: z.array(z.string().min(1).max(120)),
+  output_template: z.string().min(1).max(240).nullable(),
+  provider_target: z.string().min(1).max(120).nullable(),
+  references: z.array(VisualReferenceBindingSchema),
+  gate_report: D08GateReportSchema,
+  output_readiness: z.enum(['incomplete', 'manifest_ready']),
+  ui_state: z.enum(['CADRAGE', 'ACTION_READY', 'GENERATION_BLOCKED_TECH_PENDING', 'PARKED']),
+  action_ready: z.boolean(),
+  validation_item_ref: z.string().min(1).nullable(),
+  audit_trace: z.array(z.string().min(1).max(240)),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type VisualManifest = z.infer<typeof VisualManifestSchema>;
+
+export const CreateVisualManifestRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  room_id: z.string().min(1).nullable().optional(),
+  request_title: z.string().min(1).max(240),
+  intent: z.string().min(1).max(2000),
+  privacy_scope: z.enum(['private', 'project']).default('private'),
+  canon_entity_refs: z.array(z.string().min(1).max(240)).max(50).default([]),
+  da_root_ref: z.string().min(1).max(240).nullable().optional(),
+  active_layers: z.array(z.string().min(1).max(120)).max(30).default([]),
+  filters: z.array(z.string().min(1).max(120)).max(30).default([]),
+  output_template: z.string().min(1).max(240).nullable().optional(),
+  provider_target: z.string().min(1).max(120).nullable().optional(),
+  references: z.array(VisualReferenceBindingSchema).max(50).default([]),
+});
+export type CreateVisualManifestRequest = z.input<typeof CreateVisualManifestRequestSchema>;
+export type ParsedCreateVisualManifestRequest = z.output<typeof CreateVisualManifestRequestSchema>;
+
 // ───────────────────────── Registre des adapters ─────────────────────────
 
 export const AdapterKindSchema = z.enum([

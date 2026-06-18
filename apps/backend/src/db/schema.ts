@@ -374,6 +374,32 @@ function migrate(d: Database.Database): void {
       UNIQUE(source_kind, source_id)
     );
 
+    -- ───────────────────────── D08 Visual Manifest ───────────────────────
+    CREATE TABLE IF NOT EXISTS visual_manifests (
+      id                    TEXT PRIMARY KEY,
+      owner_id              TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id            TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      room_id               TEXT REFERENCES rooms(id) ON DELETE SET NULL,
+      request_title         TEXT NOT NULL,
+      intent                TEXT NOT NULL,
+      privacy_scope         TEXT NOT NULL CHECK (privacy_scope IN ('private','project')),
+      canon_entity_refs_json TEXT NOT NULL DEFAULT '[]',
+      da_root_ref           TEXT,
+      active_layers_json    TEXT NOT NULL DEFAULT '[]',
+      filters_json          TEXT NOT NULL DEFAULT '[]',
+      output_template       TEXT,
+      provider_target       TEXT,
+      references_json       TEXT NOT NULL DEFAULT '[]',
+      gate_report_json      TEXT NOT NULL,
+      output_readiness      TEXT NOT NULL CHECK (output_readiness IN ('incomplete','manifest_ready')),
+      ui_state              TEXT NOT NULL CHECK (ui_state IN ('CADRAGE','ACTION_READY','GENERATION_BLOCKED_TECH_PENDING','PARKED')),
+      action_ready          INTEGER NOT NULL DEFAULT 0,
+      validation_item_ref   TEXT REFERENCES validation_inbox_items(id) ON DELETE SET NULL,
+      audit_trace_json      TEXT NOT NULL DEFAULT '[]',
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Anti-hallucination ──────────────────────────
     CREATE TABLE IF NOT EXISTS resources (
       id          TEXT PRIMARY KEY,
@@ -1230,6 +1256,10 @@ function migrate(d: Database.Database): void {
       ON validation_inbox_items(status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_validation_inbox_source
       ON validation_inbox_items(source_kind, source_id);
+    CREATE INDEX IF NOT EXISTS idx_visual_manifests_owner
+      ON visual_manifests(owner_id, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_visual_manifests_project
+      ON visual_manifests(project_id, updated_at);
   `);
 }
 
@@ -1747,6 +1777,31 @@ export interface ValidationInboxItemRow {
   audit_trace_json: string;
   source_kind: 'action';
   source_id: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface VisualManifestRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  room_id: string | null;
+  request_title: string;
+  intent: string;
+  privacy_scope: 'private' | 'project';
+  canon_entity_refs_json: string;
+  da_root_ref: string | null;
+  active_layers_json: string;
+  filters_json: string;
+  output_template: string | null;
+  provider_target: string | null;
+  references_json: string;
+  gate_report_json: string;
+  output_readiness: 'incomplete' | 'manifest_ready';
+  ui_state: 'CADRAGE' | 'ACTION_READY' | 'GENERATION_BLOCKED_TECH_PENDING' | 'PARKED';
+  action_ready: number;
+  validation_item_ref: string | null;
+  audit_trace_json: string;
   created_at: number;
   updated_at: number;
 }

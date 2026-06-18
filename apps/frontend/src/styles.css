@@ -833,6 +833,99 @@ dd {
   text-transform: uppercase;
 }
 
+.visual-manifest-panel {
+  gap: 14px;
+}
+
+.visual-manifest-status {
+  background: #0d1015;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  padding: 9px 11px;
+}
+
+.visual-manifest-form {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.visual-manifest-form label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.visual-manifest-form label span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.visual-manifest-form__wide {
+  grid-column: span 2;
+}
+
+.visual-manifest-result {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 14px;
+}
+
+.visual-manifest-result > * {
+  min-width: 0;
+}
+
+.visual-manifest-result > div:first-child {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.visual-manifest-result > div:first-child span {
+  overflow-wrap: anywhere;
+}
+
+.visual-manifest-result dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.visual-manifest-result dl div {
+  background: #0d1015;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.visual-manifest-result dt {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.visual-manifest-result dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .visual-manifest-form,
+  .visual-manifest-result dl {
+    grid-template-columns: 1fr;
+  }
+
+  .visual-manifest-form__wide {
+    grid-column: auto;
+  }
+}
+
 .resource-item {
   border: 1px solid var(--line);
   border-radius: 8px;
