@@ -1,6 +1,6 @@
 # D12 Owner Cockpit — gap audit post-PR #5
 
-Date : 2026-06-18  
+Date : 2026-06-18
 Statut : `SAFE_GAP_AUDIT_NO_CODE`
 
 ## Diagnostic simple

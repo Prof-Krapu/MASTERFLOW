@@ -1,7 +1,7 @@
 # D06 → Validation Inbox — audit `correction_export_preview`
 
-Date : 2026-06-18  
-Statut : `SPEC_READY_NO_CODE`  
+Date : 2026-06-18
+Statut : `SPEC_READY_NO_CODE`
 Nature : audit de projection possible, aucune migration ni implémentation runtime dans ce document.
 
 ## Diagnostic
