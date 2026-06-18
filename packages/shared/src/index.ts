@@ -415,6 +415,11 @@ export const OwnerCockpitStatusSchema = z.object({
     approved: z.number().int().nonnegative(),
     stale: z.number().int().nonnegative(),
   }),
+  d12_findings: z.object({
+    total: z.number().int().nonnegative(),
+    open: z.number().int().nonnegative(),
+    high_or_critical: z.number().int().nonnegative(),
+  }),
   capabilities: z.array(z.object({
     id: z.string().min(1),
     status: OwnerCockpitCapabilityStatusSchema,
@@ -427,6 +432,7 @@ export const OwnerCockpitStatusSchema = z.object({
       'validation_inbox_pending',
       'runtime_job_failed',
       'stale_actions_present',
+      'd12_findings_present',
       'process_activation_missing',
       'process_activation_observation_only',
       'd08_generation_locked',

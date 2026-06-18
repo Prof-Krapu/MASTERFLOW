@@ -12,6 +12,7 @@ import {
   expireOpenSensitiveActions,
   preflightAction,
 } from '../src/engines/action_engine.ts';
+import {createD12MissedTriggerFinding} from '../src/services/d12_findings.ts';
 import {signToken} from '../src/middleware/auth.ts';
 import {createDiagnosticsRouter} from '../src/routers/diagnostics.ts';
 
@@ -92,5 +93,41 @@ describe('D12 Owner Cockpit read-only', () => {
       expect.objectContaining({type: 'stale_actions_present'}),
     ]));
     expect(body.next_safe_action.forbidden_followups).toContain('execute_stale_action');
+  });
+
+  it('surface les findings D12 sans auto-fix', async () => {
+    createD12MissedTriggerFinding(admin, {
+      source_ref: 'owner-cockpit-test',
+      expected_process: 'd12_finding',
+      actual_runtime_response: 'Aucune alerte cockpit visible.',
+      missing_runtime_piece: 'owner_cockpit_finding_count',
+      user_impact: 'MALEX ne voit pas le raté depuis le cockpit.',
+      domain_refs: ['D12_AUTONOMY_OBSERVABILITY'],
+      output_family_refs: ['factory_backflow'],
+      evidence_refs: ['test:owner-cockpit'],
+      blocked_actions: ['auto_fix', 'auto_canon'],
+      recommended_queue_task: {
+        task: 'Afficher les findings D12 dans le cockpit',
+        impact: 'Le raté devient visible sans logs techniques.',
+        risk: 'faible',
+        source_of_truth: 'D12 missed trigger finding spec',
+        truth_status: 'implémentation',
+        validation_required: false,
+        suggested_owner: 'MALEX',
+        forbidden_actions: ['auto_fix', 'auto_canon'],
+      },
+      severity: 'high',
+    });
+
+    const response = await fetch(`${base}/diagnostics/owner-cockpit`, auth(adminToken));
+    expect(response.status).toBe(200);
+    const body = OwnerCockpitStatusSchema.parse(await response.json());
+
+    expect(body.d12_findings.open).toBeGreaterThanOrEqual(1);
+    expect(body.d12_findings.high_or_critical).toBeGreaterThanOrEqual(1);
+    expect(body.alerts).toEqual(expect.arrayContaining([
+      expect.objectContaining({type: 'd12_findings_present'}),
+    ]));
+    expect(JSON.stringify(body.next_safe_action)).not.toContain('auto_patch');
   });
 });

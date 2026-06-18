@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — D12 findings dans Owner Cockpit — IMPLÉMENTÉ LOCAL
+
+Tranche lecture seule :
+
+- le cockpit compte les findings D12 totales, ouvertes et high/critical ;
+- alerte `d12_findings_present` si des observations attendent une décision owner ;
+- prochaine action sûre orientée revue, sans auto-fix, auto-canon ou auto-patch ;
+- UI ajoute `Findings D12` au résumé cockpit.
+
+Recette locale : ciblés owner cockpit + D12 findings 7/7 ; TypeScript backend/frontend OK.
+
+Statut : local, recette complète à exécuter avant publication automatique.
+
+---
+
 ## 2026-06-19 — D12 missed-trigger findings — IMPLÉMENTÉ LOCAL
 
 Première tranche observation-only :
