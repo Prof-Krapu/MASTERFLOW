@@ -70,7 +70,7 @@ comme un déploiement runtime tant que la PR n'est pas validée puis mergée.
 Prochaine file safe possible :
 
 - `D08_MANIFEST_READ_MODEL_SPEC` — done_spec_on_pr6
-- `PROCESS_ACTIVATION_READ_MODEL_SPEC`
+- `PROCESS_ACTIVATION_READ_MODEL_SPEC` — done_spec_on_pr6
 - `FEEDBACK_OUTPUT_FAMILY_REGISTRY_SPEC`
 
 Stop avant merge, migration runtime, provider, génération, export ou publication.
