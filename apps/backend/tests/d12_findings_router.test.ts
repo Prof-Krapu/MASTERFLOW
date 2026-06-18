@@ -118,4 +118,60 @@ describe('D12 missed trigger findings', () => {
     expect(items.length).toBeGreaterThanOrEqual(1);
     expect(items.every((item) => D12MissedTriggerFindingSchema.parse(item).status === 'observation')).toBe(true);
   });
+
+  it('décide une finding sans créer action, job ou canon write', async () => {
+    const created = await fetch(`${base}/diagnostics/d12/findings`, {
+      method: 'POST',
+      headers: auth(adminToken),
+      body: JSON.stringify({...body, source_ref: 'process_activation:decision-test'}),
+    });
+    expect(created.status).toBe(201);
+    const finding = D12MissedTriggerFindingSchema.parse(await created.json());
+
+    const before = {
+      actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
+      jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
+    };
+    const decided = await fetch(`${base}/diagnostics/d12/findings/${finding.finding_id}/decision`, {
+      method: 'POST',
+      headers: auth(adminToken),
+      body: JSON.stringify({decision: 'validate_alert', note: 'confirmé par owner'}),
+    });
+    expect(decided.status).toBe(200);
+    const bodyAfterDecision = D12MissedTriggerFindingSchema.parse(await decided.json());
+
+    expect(bodyAfterDecision.status).toBe('validated_alert');
+    expect(bodyAfterDecision.owner_decision).toMatchObject({decision: 'validate_alert'});
+
+    const after = {
+      actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
+      jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
+    };
+    expect(after).toEqual(before);
+  });
+
+  it('archive une finding sans la supprimer', async () => {
+    const created = await fetch(`${base}/diagnostics/d12/findings`, {
+      method: 'POST',
+      headers: auth(adminToken),
+      body: JSON.stringify({...body, source_ref: 'process_activation:archive-test'}),
+    });
+    const finding = D12MissedTriggerFindingSchema.parse(await created.json());
+
+    const archived = await fetch(`${base}/diagnostics/d12/findings/${finding.finding_id}/decision`, {
+      method: 'POST',
+      headers: auth(adminToken),
+      body: JSON.stringify({decision: 'archive'}),
+    });
+    expect(archived.status).toBe(200);
+    expect(D12MissedTriggerFindingSchema.parse(await archived.json()).status).toBe('archived');
+
+    const list = await fetch(`${base}/diagnostics/d12/findings?status=archived`, {
+      headers: auth(adminToken),
+    });
+    expect(list.status).toBe(200);
+    const archivedItems = await list.json() as unknown[];
+    expect(archivedItems.some((item) => D12MissedTriggerFindingSchema.parse(item).finding_id === finding.finding_id))
+      .toBe(true);
+  });
 });

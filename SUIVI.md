@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — D12 finding owner decisions — IMPLÉMENTÉ LOCAL
+
+Tranche décision owner :
+
+- `POST /api/v1/diagnostics/d12/findings/:id/decision` ;
+- décisions : garder observation, promouvoir hypothèse, pattern candidat, alerte validée,
+  marquer stale ou archiver ;
+- la décision ne crée aucune action, aucun job, aucun patch et aucune écriture canon ;
+- la note owner est stockée dans `owner_decision_json`.
+
+Recette locale : ciblés D12 finding decisions + cockpit 9/9 ; TypeScript backend/frontend OK.
+
+Statut : local, recette complète à exécuter avant publication automatique.
+
+---
+
 ## 2026-06-19 — Process activation → finding D12 manuelle — IMPLÉMENTÉ LOCAL
 
 Tranche UI manuelle :
