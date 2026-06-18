@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — Action expiry guard — IMPLÉMENTÉ LOCAL
+
+Première tranche runtime bornée :
+
+- nouveau statut action `stale` ;
+- `POST /api/v1/actions/expire-context`, réservé `teacher+` ;
+- scope `mine` ou `project`, avec contrôle d'accès projet ;
+- ne touche que les actions sensibles ouvertes `pending_validation` ou `approved` ;
+- ne supprime rien, n'exécute rien, ne touche pas aux actions `executing/completed/failed/rejected` ;
+- une action `stale` ne peut plus être validée ni exécutée sans nouveau cycle.
+
+Recette locale : ciblés action lifecycle / action expiry router / Validation Inbox 24/24 ;
+TypeScript backend/frontend OK.
+
+Statut : local, recette complète à exécuter avant publication automatique.
+
+---
+
 ## 2026-06-18 — Process activation read-model — IMPLÉMENTÉ LOCAL
 
 Première tranche observation-only :

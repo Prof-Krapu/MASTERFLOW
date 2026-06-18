@@ -1,4 +1,14 @@
-import type {Action, CreateAction, PreflightResult, RiskLevel, ValidationDecision} from '@masterflow/shared';
+import {
+  ExpireActionsRequestSchema,
+  ExpireActionsResponseSchema,
+  type Action,
+  type CreateAction,
+  type ExpireActionsRequest,
+  type ExpireActionsResponse,
+  type PreflightResult,
+  type RiskLevel,
+  type ValidationDecision,
+} from '@masterflow/shared';
 import {getDb} from '../db/schema.ts';
 import type {ActionRow, Role} from '../db/schema.ts';
 import {uuid} from '../lib/uuid.ts';
@@ -80,6 +90,17 @@ function canValidateAction(actor: AuthUser, action: Action): boolean {
   const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
   const requiredRole: Role = action.preflight?.validator_role ?? validatorRoleFor(entry) ?? 'teacher';
   return hasRole(actor, requiredRole) && hasProjectAccess(actor, action.project_id);
+}
+
+function isSensitiveForExpiry(action: Action): boolean {
+  const entry = action.registry_id ? getRegistryEntry(action.registry_id) : null;
+  return Boolean(
+    action.preflight?.requires_validation ||
+    (entry && isSensitive(entry)) ||
+    action.risk_level === 'medium_high' ||
+    action.risk_level === 'high' ||
+    action.risk_level === 'variable',
+  );
 }
 
 /** Récupère une action seulement si l'acteur peut la lire. */
@@ -301,6 +322,77 @@ export function validateAction(
   });
 
   return reloadAction(actionId);
+}
+
+// ───────────────────────── Garde stale / hard-stop borné ─────────────────────────
+
+/**
+ * Rend obsolètes des actions sensibles déjà ouvertes dans un scope contrôlé.
+ *
+ * Ce n'est pas un auto-cancel destructif : on ne supprime rien, on ne touche pas aux actions
+ * terminées/en cours, on trace l'obsolescence et `executeAction` refusera naturellement `stale`.
+ */
+export function expireOpenSensitiveActions(
+  actor: AuthUser,
+  input: ExpireActionsRequest,
+): ExpireActionsResponse {
+  const request = ExpireActionsRequestSchema.parse(input);
+  if (request.scope === 'project' && !request.project_id) {
+    throw new Error('[action_engine] project_id_required_for_project_scope');
+  }
+  if (request.project_id && !hasProjectAccess(actor, request.project_id)) {
+    throw new Error('[action_engine] action_expiry_scope_denied');
+  }
+
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM actions
+        WHERE status IN ('pending_validation', 'approved')
+        ORDER BY created_at ASC`,
+    )
+    .all() as ActionRow[];
+
+  const candidates = rows
+    .filter((row) => {
+      if (request.scope === 'mine' && row.user_id !== actor.id) return false;
+      if (request.scope === 'project' && row.project_id !== request.project_id) return false;
+      if (request.room_id && row.room_id !== request.room_id) return false;
+      return canReadAction(actor, row);
+    })
+    .map(toActionDTO)
+    .filter(isSensitiveForExpiry);
+
+  const now = Date.now();
+  const update = getDb().prepare(
+    `UPDATE actions
+        SET status = 'stale', error = ?, updated_at = ?
+      WHERE id = ? AND status IN ('pending_validation', 'approved')`,
+  );
+  const reason = `stale:${request.reason}`;
+
+  for (const action of candidates) {
+    update.run(request.note ? `${reason}:${request.note}` : reason, now, action.id);
+    audit({
+      event_type: 'action_stale',
+      user_id: actor.id,
+      action_id: action.id,
+      scope: action.registry_id ?? action.intent,
+      detail: {
+        reason: request.reason,
+        note: request.note ?? null,
+        previous_status: action.status,
+        scope_ref: request.scope === 'project' ? `project:${request.project_id}` : `user:${actor.id}`,
+      },
+    });
+  }
+
+  return ExpireActionsResponseSchema.parse({
+    expired_count: candidates.length,
+    expired_action_ids: candidates.map((action) => action.id),
+    reason: request.reason,
+    scope_ref: request.scope === 'project' ? `project:${request.project_id}` : `user:${actor.id}`,
+    audit_trace: ['action_expiry_guard_v1', 'sensitive_open_actions_only', 'no_delete', 'no_execute'],
+  });
 }
 
 // ───────────────────────── Étape 4 — Exécution ─────────────────────────

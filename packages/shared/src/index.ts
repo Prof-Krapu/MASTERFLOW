@@ -902,6 +902,7 @@ export const ActionStatusSchema = z.enum([
   'executing',
   'completed',
   'failed',
+  'stale',
 ]);
 export type ActionStatus = z.infer<typeof ActionStatusSchema>;
 
@@ -937,6 +938,24 @@ export const ValidationDecisionSchema = z.object({
   note: z.string().optional(),
 });
 export type ValidationDecision = z.infer<typeof ValidationDecisionSchema>;
+
+export const ExpireActionsRequestSchema = z.object({
+  scope: z.enum(['mine', 'project']).default('mine'),
+  project_id: z.string().min(1).optional(),
+  room_id: z.string().min(1).optional(),
+  reason: z.enum(['manual_owner_stop', 'context_changed', 'source_changed', 'hard_stop']),
+  note: z.string().max(500).optional(),
+});
+export type ExpireActionsRequest = z.infer<typeof ExpireActionsRequestSchema>;
+
+export const ExpireActionsResponseSchema = z.object({
+  expired_count: z.number().int().nonnegative(),
+  expired_action_ids: z.array(z.string().min(1)),
+  reason: ExpireActionsRequestSchema.shape.reason,
+  scope_ref: z.string().min(1),
+  audit_trace: z.array(z.string().min(1)),
+});
+export type ExpireActionsResponse = z.infer<typeof ExpireActionsResponseSchema>;
 
 export const ActionSchema = z.object({
   id: z.string(),

@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import type {Request, Response} from 'express';
 
-import {CreateActionSchema, ValidationDecisionSchema} from '@masterflow/shared';
+import {CreateActionSchema, ExpireActionsRequestSchema, ValidationDecisionSchema} from '@masterflow/shared';
 
 import {requireRole, requireUser} from '../middleware/auth.ts';
 import type {AuthUser} from '../middleware/auth.ts';
@@ -9,6 +9,7 @@ import {listRegistry} from '../engines/action_registry.ts';
 import {
   createAction,
   executeAction,
+  expireOpenSensitiveActions,
   getActionFor,
   listPending,
   preflightAction,
@@ -96,6 +97,20 @@ export function createActionsRouter(): Router {
     } catch (e) {
       // Rôle insuffisant ou status non 'pending_validation' → conflit de cycle de vie.
       res.status(409).json({error: 'validation_failed', message: errMessage(e)});
+    }
+  });
+
+  // ───────────── Expiry contrôlée — rend stale les actions sensibles ouvertes ─────────────
+  router.post('/actions/expire-context', requireRole('teacher'), (req: Request, res: Response): void => {
+    const parsed = ExpireActionsRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', details: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(expireOpenSensitiveActions(authUser(req), parsed.data));
+    } catch (e) {
+      res.status(409).json({error: 'expiry_failed', message: errMessage(e)});
     }
   });
 
