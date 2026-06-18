@@ -11,7 +11,7 @@ Source of truth reminder:
 ## Current baseline
 
 ```yaml
-github_main: bb61e4f
+github_main: 4e0cfbb
 validation_inbox: partial_implemented_action_and_d06_feedback_draft_slice
 d06_feedback_inbox_projection: merged_owner_only_feedback_draft
 job_observability: partial_frontend_read_only_slice

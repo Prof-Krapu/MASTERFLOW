@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
-Dernière vérification : 2026-06-18  
-Branche de travail : `codex/low-risk-masterflow-queue`
-GitHub `main` vérifié : `bb61e4f`
+Dernière vérification : 2026-06-18
+Branche de travail : `main`
+GitHub `main` vérifié : `4e0cfbb`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -15,4 +15,5 @@ le runtime GitHub.
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode. | faible | Étendre par petites tranches en lecture avant D06. |
 | D12 owner observability | partiel | Cockpit et jobs en lecture seule ; findings/missed triggers absents. | moyen | Ajouter un agrégat backend seulement après la tranche D05-D06. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
-| Pont de déploiement Drive | implémenté | Drive et GitHub référencent `bb61e4f`. | faible | Rafraîchir après le prochain merge. |
+| Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
+| Pont de déploiement Drive | implémenté | Drive et GitHub référencent `4e0cfbb`. | faible | Rafraîchir après le prochain merge. |

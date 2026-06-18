@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-18
 - Impact : permet d'enchaîner les audits/specs/queues sans attendre une relecture externe.
 - Risque : faible ; documentation et pilotage uniquement.
 - Source de vérité concernée : canon MasterFlow + GitHub `main` + fichiers de suivi.
-- Statut : en cours.
+- Statut : fait, mergé dans `main` via PR #6.
 - Validation requise : non, GO MALEX reçu pour les actions sans risque avec commit/push progressif.
 
 ### Audit D06 export preview → Validation Inbox
@@ -60,11 +60,11 @@ Dernière mise à jour : 2026-06-18
 - Statut : à auditer.
 - Validation requise : non.
 
-- Tâche : vérifier que la matrice canon ↔ GitHub reflète bien `bb61e4f`.
+- Tâche : vérifier que la matrice canon ↔ GitHub reflète bien `4e0cfbb`.
 - Impact : évite une alerte de sync fausse après merge D06.
 - Risque : faible.
 - Source de vérité concernée : GitHub `main`, Drive bridge, fichiers de pilotage.
-- Statut : en cours.
+- Statut : fait, Drive bridge rafraîchi post-PR #6.
 - Validation requise : non.
 
 ## 5. À décider plus tard
