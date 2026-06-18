@@ -1143,6 +1143,44 @@ dd {
   padding-left: 10px;
 }
 
+.teaching-guided__start,
+.teaching-guided__answer {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.teaching-guided__start > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.teaching-guided__consent,
+.teaching-guided__answer label,
+.teaching-guided__answer fieldset {
+  display: grid;
+  gap: 7px;
+}
+
+.teaching-guided__consent {
+  align-items: center;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.teaching-guided__answer fieldset {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.teaching-guided__answer fieldset label {
+  align-items: center;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 .resource-item {
   border: 1px solid var(--line);
   border-radius: 8px;

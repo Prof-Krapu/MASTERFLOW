@@ -9,6 +9,7 @@ import type {
   CreateInventoryProjectNeedRequest,
   CreateInvitation,
   ConversationGuide,
+  CreateGuidedSessionRequest,
   CurrentContext,
   DecideValidationInboxItemRequest,
   InventoryCollection,
@@ -18,6 +19,7 @@ import type {
   InventorySearchResult,
   Invitation,
   GuidedSession,
+  GuidedContribution,
   Job,
   MatchInventoryProjectNeedRequest,
   OwnerCockpitStatus,
@@ -37,6 +39,7 @@ import type {
   SearchResourcesResponse,
   TokenUsageGroupBy,
   TokenUsageReport,
+  SubmitGuidedAnswerRequest,
   UpdateRoomInstance,
   ValidationInboxItem,
   ValidationDecision,
@@ -135,6 +138,45 @@ export async function getGuides(token?: string | null): Promise<ConversationGuid
 export async function getGuidedSessions(token?: string | null): Promise<GuidedSession[]> {
   const response = await request<{results: GuidedSession[]}>('/guided-sessions', {method: 'GET'}, token);
   return response.results;
+}
+
+export async function createGuidedSession(
+  body: CreateGuidedSessionRequest,
+  token?: string | null,
+): Promise<GuidedSession> {
+  return request<GuidedSession>('/guided-sessions', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function submitGuidedAnswer(
+  sessionId: string,
+  body: SubmitGuidedAnswerRequest,
+  token?: string | null,
+): Promise<GuidedContribution> {
+  return request<GuidedContribution>(`/guided-sessions/${encodeURIComponent(sessionId)}/answers`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function advanceGuidedSession(
+  sessionId: string,
+  token?: string | null,
+): Promise<GuidedSession> {
+  return request<GuidedSession>(`/guided-sessions/${encodeURIComponent(sessionId)}/advance`, {
+    method: 'POST',
+  }, token);
+}
+
+export async function completeGuidedSession(
+  sessionId: string,
+  token?: string | null,
+): Promise<GuidedSession> {
+  return request<GuidedSession>(`/guided-sessions/${encodeURIComponent(sessionId)}/complete`, {
+    method: 'POST',
+  }, token);
 }
 
 export async function getValidationInboxItems(token?: string | null): Promise<ValidationInboxItem[]> {

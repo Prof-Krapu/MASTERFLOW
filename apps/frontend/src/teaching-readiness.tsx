@@ -4,6 +4,7 @@ import type {ReactElement} from 'react';
 import type {
   ConversationGuide,
   CurrentContext,
+  GuidedQuestion,
   GuidedSession,
   Job,
   Project,
@@ -11,7 +12,15 @@ import type {
   ValidationInboxItem,
 } from '@masterflow/shared';
 
-import {getGuides, getGuidedSessions, getJobs} from './api.ts';
+import {
+  advanceGuidedSession,
+  completeGuidedSession,
+  createGuidedSession,
+  getGuides,
+  getGuidedSessions,
+  getJobs,
+  submitGuidedAnswer,
+} from './api.ts';
 
 type TeachingReadinessProps = {
   context: CurrentContext;
@@ -78,6 +87,12 @@ export function TeachingReadiness({
   const [sessions, setSessions] = useState<GuidedSession[]>([]);
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
+  const [mutating, setMutating] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
+  const [answerText, setAnswerText] = useState('');
+  const [answerChoice, setAnswerChoice] = useState('');
+  const [answerBoolean, setAnswerBoolean] = useState('');
+  const [answerMulti, setAnswerMulti] = useState<string[]>([]);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -108,9 +123,10 @@ export function TeachingReadiness({
   const reviewJobs = jobs.filter((job) => job.status === 'needs_review');
   const failedJobs = jobs.filter((job) => job.status === 'failed');
   const effectiveResources = project ? projectResources : resources;
-  const scopedSessions = sessions.filter((session) => project
-    ? session.project_id === project.project_id
-    : session.room_id === context.room.id || (session.room_id === null && session.project_id === null)
+  const scopedSessions = sessions.filter((session) =>
+    (session.status === 'active' || session.status === 'completed') && (project
+      ? session.project_id === project.project_id
+      : session.room_id === context.room.id || (session.room_id === null && session.project_id === null))
   );
   const activeSession = mostRelevantSession(scopedSessions);
   const scopedGuides = guides.filter((guide) => project
@@ -120,9 +136,101 @@ export function TeachingReadiness({
   const activeGuide = activeSession
     ? guides.find((guide) => guide.guide_id === activeSession.guide_id) ?? null
     : scopedGuides[0] ?? null;
+  const startableGuides = scopedGuides.filter((guide) => guide.status === 'validated');
   const currentQuestion = activeSession?.current_question_id && activeGuide
     ? activeGuide.question_flow.find((question) => question.question_id === activeSession.current_question_id) ?? null
     : null;
+
+  useEffect(() => {
+    setAnswerText('');
+    setAnswerChoice('');
+    setAnswerBoolean('');
+    setAnswerMulti([]);
+  }, [currentQuestion?.question_id]);
+
+  const startSession = useCallback(async (guide: ConversationGuide): Promise<void> => {
+    const needsConsent = guide.consent_policy['required'] === true;
+    if (needsConsent && !consentAccepted) {
+      setStatus('Confirme le consentement avant de démarrer cette session privée.');
+      return;
+    }
+    setMutating(true);
+    try {
+      await createGuidedSession({
+        guide_id: guide.guide_id,
+        room_id: context.room.id,
+        preview: false,
+        consent: needsConsent ? {accepted: true} : {},
+      }, token);
+      await refresh();
+      setConsentAccepted(false);
+      setStatus('Session privée démarrée depuis un guide validé. Aucun autre processus n’a été lancé.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Création de session impossible.');
+    } finally {
+      setMutating(false);
+    }
+  }, [consentAccepted, context.room.id, refresh, token]);
+
+  function answerValue(question: GuidedQuestion): unknown | null {
+    if (question.kind === 'text') return answerText.trim() || null;
+    if (question.kind === 'number') {
+      const value = Number(answerText);
+      return answerText.trim() !== '' && Number.isFinite(value) ? value : null;
+    }
+    if (question.kind === 'boolean') {
+      if (answerBoolean === '') return null;
+      return answerBoolean === 'true';
+    }
+    if (question.kind === 'choice') return answerChoice || null;
+    return answerMulti.length > 0 ? answerMulti : null;
+  }
+
+  const submitCurrentAnswer = useCallback(async (): Promise<void> => {
+    if (!activeSession || !currentQuestion) return;
+    const value = answerValue(currentQuestion);
+    if (value === null) {
+      setStatus('Renseigne une réponse valide avant de continuer.');
+      return;
+    }
+    setMutating(true);
+    try {
+      await submitGuidedAnswer(activeSession.session_id, {
+        question_id: currentQuestion.question_id,
+        value,
+      }, token);
+      await advanceGuidedSession(activeSession.session_id, token);
+      await refresh();
+      setStatus('Réponse enregistrée et progression recalculée dans cette session uniquement.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Réponse impossible à enregistrer.');
+    } finally {
+      setMutating(false);
+    }
+  }, [
+    activeSession,
+    answerBoolean,
+    answerChoice,
+    answerMulti,
+    answerText,
+    currentQuestion,
+    refresh,
+    token,
+  ]);
+
+  const finishSession = useCallback(async (): Promise<void> => {
+    if (!activeSession) return;
+    setMutating(true);
+    try {
+      await completeGuidedSession(activeSession.session_id, token);
+      await refresh();
+      setStatus('Sujet guidé terminé. Aucun feedback, export ou envoi n’a été déclenché.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Session encore incomplète.');
+    } finally {
+      setMutating(false);
+    }
+  }, [activeSession, refresh, token]);
 
   const items = useMemo<ReadinessItem[]>(() => [
     {
@@ -158,7 +266,7 @@ export function TeachingReadiness({
     {
       id: 'correction',
       label: 'Correction et feedback',
-      detail: 'Fondations backend présentes ; routes et surface Teaching dédiées absentes.',
+      detail: 'Fondations backend présentes ; aucune action D06 n’est ouverte dans cette tranche D05.',
       level: 'partial',
     },
     {
@@ -187,7 +295,7 @@ export function TeachingReadiness({
       <div className="panel-header">
         <div>
           <h2>Teaching · état de préparation</h2>
-          <p className="muted compact">Lecture seule : ce qui est prêt, partiel ou réellement bloqué.</p>
+          <p className="muted compact">Pilotage D05 : état, session privée et questions structurées.</p>
         </div>
         <button className="secondary" disabled={loading} onClick={() => void refresh()} type="button">
           {loading ? 'Chargement…' : 'Rafraîchir'}
@@ -236,8 +344,87 @@ export function TeachingReadiness({
                 ? `Question en cours : ${currentQuestion.prompt}`
                 : activeSession?.status === 'completed'
                   ? 'Session terminée. Aucune réponse ou relance disponible dans cette tranche.'
-                  : 'Aucune session active. La création reste volontairement hors de cette tranche.'}
+                  : activeSession?.status === 'active' && activeSession.progress.missing_fields.length === 0
+                    ? 'Toutes les réponses requises sont présentes. La session peut être terminée.'
+                    : 'Aucune session active. Un guide validé peut démarrer une session privée.'}
             </p>
+            {activeSession?.status !== 'active' && startableGuides.length > 0 ? (
+              <div className="teaching-guided__start">
+                <label className="teaching-guided__consent">
+                  <input
+                    checked={consentAccepted}
+                    onChange={(event) => setConsentAccepted(event.target.checked)}
+                    type="checkbox"
+                  />
+                  J’accepte d’ouvrir une session privée et tracée dans ce périmètre.
+                </label>
+                <div>
+                  {startableGuides.map((guide) => (
+                    <button
+                      className="secondary"
+                      disabled={mutating || (guide.consent_policy['required'] === true && !consentAccepted)}
+                      key={guide.guide_id}
+                      onClick={() => void startSession(guide)}
+                      type="button"
+                    >
+                      Démarrer · {guide.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {activeSession?.status === 'active' && currentQuestion ? (
+              <div className="teaching-guided__answer">
+                <label>
+                  <span>{currentQuestion.prompt}</span>
+                  {currentQuestion.kind === 'text' || currentQuestion.kind === 'number' ? (
+                    <input
+                      onChange={(event) => setAnswerText(event.target.value)}
+                      type={currentQuestion.kind === 'number' ? 'number' : 'text'}
+                      value={answerText}
+                    />
+                  ) : null}
+                  {currentQuestion.kind === 'choice' ? (
+                    <select onChange={(event) => setAnswerChoice(event.target.value)} value={answerChoice}>
+                      <option value="">Choisir une réponse</option>
+                      {currentQuestion.options?.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  ) : null}
+                  {currentQuestion.kind === 'boolean' ? (
+                    <select onChange={(event) => setAnswerBoolean(event.target.value)} value={answerBoolean}>
+                      <option value="">Choisir</option>
+                      <option value="true">Oui</option>
+                      <option value="false">Non</option>
+                    </select>
+                  ) : null}
+                </label>
+                {currentQuestion.kind === 'multi_choice' ? (
+                  <fieldset>
+                    <legend>{currentQuestion.prompt}</legend>
+                    {currentQuestion.options?.map((option) => (
+                      <label key={option}>
+                        <input
+                          checked={answerMulti.includes(option)}
+                          onChange={(event) => setAnswerMulti((current) => event.target.checked
+                            ? [...current, option]
+                            : current.filter((value) => value !== option))}
+                          type="checkbox"
+                        />
+                        {option}
+                      </label>
+                    ))}
+                  </fieldset>
+                ) : null}
+                <button disabled={mutating} onClick={() => void submitCurrentAnswer()} type="button">
+                  {mutating ? 'Enregistrement…' : 'Enregistrer et continuer'}
+                </button>
+              </div>
+            ) : null}
+            {activeSession?.status === 'active' && activeSession.progress.missing_fields.length === 0 ? (
+              <button disabled={mutating} onClick={() => void finishSession()} type="button">
+                Terminer le sujet guidé
+              </button>
+            ) : null}
           </div>
         ) : (
           <p className="muted compact">
@@ -248,7 +435,7 @@ export function TeachingReadiness({
 
       <div className="teaching-readiness__limits">
         <strong>Verrous maintenus</strong>
-        <span>Pas de correction automatique · pas de note finale · pas d’envoi étudiant · pas de promesse d’upload.</span>
+        <span>Session D05 privée uniquement · pas de correction · pas de note · pas de feedback · pas d’export · pas d’envoi étudiant.</span>
       </div>
     </article>
   );

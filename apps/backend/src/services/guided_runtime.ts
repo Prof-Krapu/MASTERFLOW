@@ -501,16 +501,16 @@ export function createGuidedSession(actor: AuthUser, input: CreateGuidedSessionR
   const now = Date.now();
   const empty = computeProgress(guide, []);
   const sessionId = uuid();
-  getDb()
-    .prepare(
+  const db = getDb();
+  db.transaction(() => {
+    db.prepare(
       `INSERT INTO guided_sessions
          (id, guide_id, guide_version, owner_id, project_id, room_id, access_mode, status,
           current_question_id, target_schema_id, target_schema_version, guide_snapshot_json,
           schema_snapshot_json, consent_policy_json, progress_json, structured_record_json,
           expires_at, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, 'private', 'active', ?, ?, ?, ?, ?, ?, ?, '{}', ?, ?, ?)`,
-    )
-    .run(
+    ).run(
       sessionId,
       guide.guide_id,
       guide.version,
@@ -528,7 +528,8 @@ export function createGuidedSession(actor: AuthUser, input: CreateGuidedSessionR
       now,
       now,
     );
-  addGuidedSessionParticipant(actor, sessionId, actor.id, 'owner', request.consent);
+    addGuidedSessionParticipant(actor, sessionId, actor.id, 'owner', request.consent);
+  })();
   audit({
     event_type: 'guided.session_created',
     user_id: actor.id,
@@ -556,7 +557,8 @@ export function addGuidedSessionParticipant(
   if (!row || !canManageSession(actor, row)) throw new Error('guided_session_not_found');
   const user = getDb().prepare('SELECT id FROM users WHERE id = ?').get(userId) as {id: string} | undefined;
   if (!user) throw new Error('guided_participant_not_found');
-  if (row.project_id) {
+  const isSessionOwnerSelf = role === 'owner' && userId === row.owner_id && actor.id === row.owner_id;
+  if (row.project_id && !isSessionOwnerSelf) {
     const allowed = decideScopedPermission({actor: {id: userId, username: 'participant', role: 'student'}, projectId: row.project_id}).allowed;
     if (!allowed) throw new Error('guided_participant_scope_denied');
   }

@@ -14,7 +14,7 @@ le runtime GitHub.
 | D03 Room OS et commandes | partiel | Rooms, instances, checkpoints et frontend existent ; command surface complète absente. | moyen | Ajouter les contrôles par tranches explicites. |
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Les actions et `feedback_draft` D06 sont sur `main`; les autres objets D06-D12 ne sont pas encore projetés. | moyen | Auditer `correction_export_preview` en deuxième projection possible. |
-| D05 sujet guidé | partiel | Fondation et lecture Teaching mergées ; création/réponse UI absentes. | faible | Tester plus tard avec une vraie session autorisée. |
+| D05 sujet guidé | implémenté local vérifié | Fondation et lecture sont sur `main`; création/réponse/fin Teaching passent une vraie session locale, professeur/godmode uniquement. | faible | Publier sans ouvrir D06 ni participation élève. |
 | D06 correction / feedback | partiel | `feedback_draft` est projeté owner-only dans la Validation Inbox ; export preview et send restent exclus. | moyen | Spécifier export preview sans ouvrir publication/envoi. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode. | faible | Étendre par petites tranches en lecture avant D06. |
 | D12 owner observability | partiel | Cockpit et jobs en lecture seule ; findings/missed triggers absents. | moyen | Ajouter un agrégat backend seulement après la tranche D05-D06. |
