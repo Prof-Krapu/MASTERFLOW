@@ -7,7 +7,8 @@ modifient ni le canon, ni GitHub automatiquement.
 
 | Retour brut résumé | Classement | Hypothèse produit | Recommandation | Décision | Tâche créée |
 |---|---|---|---|---|---|
-| Aucun nouveau retour absorbé dans ce lot. | observation terrain | — | Continuer d'utiliser le registre détaillé `docs/user-feedback/USER_FEEDBACK_INTAKE_2026-06-18.md`. | en attente | aucune |
+| Besoin MALEX : enchaîner les tâches sans risque sans attendre Vincent. | observation terrain | Le pilotage doit distinguer tâches safe, tâches verrouillées et décisions MALEX. | Intégrer dans la queue opérationnelle, pas dans le canon produit. | appliqué en queue | `LOW_RISK_EXECUTION_QUEUE_2026-06-18.md` |
+| Retours conversations audit déjà classés. | observation terrain | Plusieurs signaux utiles concernent process control, feedback families, D12 findings et D08 locks. | Garder comme candidats pré-canon ; router par specs/audits. | maintenu pré-canon | `docs/user-feedback/USER_FEEDBACK_INTAKE_2026-06-18.md` |
 
 ## Règle de passage
 
@@ -15,3 +16,21 @@ modifient ni le canon, ni GitHub automatiquement.
 
 Un passage d'étape exige une décision explicite de MALEX.
 
+## Décision opérationnelle 2026-06-18
+
+Les retours utilisateurs peuvent alimenter :
+
+- une queue ;
+- une spec ;
+- une recette ;
+- un audit ;
+- une hypothèse produit.
+
+Ils ne peuvent pas alimenter directement :
+
+- le canon ;
+- une migration ;
+- une publication ;
+- un export ;
+- une génération ;
+- un envoi externe.

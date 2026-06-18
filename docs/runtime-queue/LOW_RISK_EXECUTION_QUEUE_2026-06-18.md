@@ -31,7 +31,7 @@ MALEX.
 | 3 | Recette D05-D06 runtime | faible | script de vérification sans mutation dangereuse | done_recipe |
 | 4 | D12 cockpit gap audit | faible | liste des indicateurs manquants pour ne plus travailler à l'aveugle | done_audit |
 | 5 | Process activation audit | faible | où MasterFlow doit déclencher sans MALEX-orchestrateur caché | done_refresh |
-| 6 | User feedback intake | faible | méthode d'absorption sans canonisation automatique | queued |
+| 6 | User feedback intake | faible | méthode d'absorption sans canonisation automatique | done_route |
 | 7 | D08 manifest-first lock | faible en spec, élevé en code | verrouillage clair avant génération visuelle | queued_locked |
 
 ## Décisions déjà actées
@@ -53,3 +53,5 @@ Lot 3 : recette runtime D05-D06 post-PR #5, sans mutation dangereuse.
 Lot 4 : audit gap D12 Owner Cockpit, sans code.
 
 Lot 5 : refresh process activation audit post-PR #5, sans code.
+
+Lot 6 : refresh user feedback intake routing, sans absorption canon.
