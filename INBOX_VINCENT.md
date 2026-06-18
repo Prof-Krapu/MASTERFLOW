@@ -1,5 +1,10 @@
 # INBOX VINCENT — MasterFlow
 
+> État opérationnel au 2026-06-18 : **handoff Vincent clôturé**. Aucune entrée historique
+> marquée `open` ci-dessous ne constitue encore une dépendance ou une attente active. Elles sont
+> conservées comme traces de coordination et ne doivent être réactivées que par une nouvelle
+> décision explicite de MALEX.
+
 Objectif : point d'entrée court pour les demandes MALEX/Codex à traiter côté Vincent.
 
 Règles de lecture :
@@ -22,7 +27,7 @@ Règles de lecture :
 
 ---
 
-## 2026-06-18 — open — Shared Validation Inbox backend + UI prête à intégrer
+## 2026-06-18 — done — Shared Validation Inbox backend + UI intégrée
 
 MALEX/Codex a repris la fondation `b52fff4` au-dessus du `main` actuel et l'a câblée à la surface
 frontend réelle, après lecture du canon Drive propre.
@@ -44,7 +49,7 @@ doivent alimenter cette inbox commune, jamais créer une queue parallèle.
 
 ---
 
-## 2026-06-15 — open — Panneau admin routage LLM prêt à relire
+## 2026-06-15 — done — Panneau admin routage LLM intégré
 
 MALEX/Codex prépare une couche courte sur `codex/admin-llm-routing-panel`.
 

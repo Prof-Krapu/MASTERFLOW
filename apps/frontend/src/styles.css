@@ -964,6 +964,40 @@ dd {
   padding-left: 20px;
 }
 
+.owner-cockpit__truth,
+.owner-cockpit__capabilities {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.owner-cockpit__truth section,
+.owner-cockpit__capabilities section {
+  background: #0d1015;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 10px 12px;
+}
+
+.owner-cockpit__truth span,
+.owner-cockpit__capabilities span {
+  color: var(--accent-strong);
+}
+
+.owner-cockpit__truth small,
+.owner-cockpit__capabilities p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.owner-cockpit__capabilities > section > div {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
 .teaching-readiness {
   gap: 14px;
 }
@@ -2109,6 +2143,8 @@ dd {
   .job-observability__summary,
   .job-observability__item dl,
   .owner-cockpit__summary,
+  .owner-cockpit__truth,
+  .owner-cockpit__capabilities,
   .teaching-readiness__grid,
   .teaching-guided__body dl {
     grid-template-columns: 1fr;

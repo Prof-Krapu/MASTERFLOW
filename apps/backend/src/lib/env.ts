@@ -30,6 +30,8 @@ export const env = {
   isProd,
   port: Number(process.env.PORT ?? 8000),
   apiBase: '/api/v1',
+  /** SHA injecté par l'hébergeur ou l'opérateur ; jamais inféré depuis le checkout local. */
+  releaseSha: process.env.MASTERFLOW_RELEASE_SHA?.trim() || null,
 
   jwtSecret: readSecret('JWT_SECRET', 'dev-masterflow-secret-change-me-32-characters'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '30d',

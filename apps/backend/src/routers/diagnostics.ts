@@ -7,6 +7,7 @@ import {
   getWorkflowTrace,
 } from '../services/workflow_observability.ts';
 import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
+import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -141,6 +142,16 @@ export function createDiagnosticsRouter(): Router {
   // GET /diagnostics/inventory — agrégats owner ops sans données métier privées.
   router.get('/diagnostics/inventory', (_req: Request, res: Response): void => {
     res.json(getInventoryDiagnostics());
+  });
+
+  // GET /diagnostics/owner-cockpit — décisions lisibles, sans mutation ni lecture Drive/GitHub.
+  router.get('/diagnostics/owner-cockpit', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    res.json(getOwnerCockpitStatus(user));
   });
 
   return router;
