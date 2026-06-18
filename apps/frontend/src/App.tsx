@@ -1596,7 +1596,13 @@ function App(): ReactElement {
             <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
           ) : null}
 
-          {canAdmin && auth ? <OwnerCockpit token={auth.token} /> : null}
+          {canAdmin && auth && context ? (
+            <OwnerCockpit
+              activeMode={activeMode.id}
+              contextTier={context.runtime_context.trace.granted_tier}
+              token={auth.token}
+            />
+          ) : null}
 
           {canAdmin && auth ? <JobObservability token={auth.token} /> : null}
         </section>

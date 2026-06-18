@@ -109,9 +109,9 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       requires_validation: false,
     },
     {
-      type: 'process_activation_missing',
+      type: 'process_activation_observation_only',
       severity: 'info',
-      message: "Le routeur général intention → processus n'est pas encore implémenté.",
+      message: "Le diagnostic intention → processus est actif en lecture seule ; aucune exécution automatique n'est autorisée.",
       requires_validation: false,
     },
     {
@@ -176,7 +176,7 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       {id: 'shared_validation_inbox', status: 'partial', note: 'Actions et feedback_draft D06.'},
       {id: 'd05_guided_runtime', status: 'partial', note: 'Teaching permet session, réponses et fin ; participation élève séparée.'},
       {id: 'd12_owner_cockpit', status: 'partial', note: 'Agrégat runtime disponible, sans lecture Drive live.'},
-      {id: 'process_activation', status: 'absent', note: 'Pas de routeur général intention → processus.'},
+      {id: 'process_activation', status: 'partial', note: 'Diagnostic observation-only, sans action, job, LLM ni écriture.'},
       {id: 'd08_generation', status: 'locked', note: 'Provider et génération non exposés.'},
     ],
     alerts,

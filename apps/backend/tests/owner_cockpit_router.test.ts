@@ -59,7 +59,7 @@ describe('D12 Owner Cockpit read-only', () => {
     expect(body.runtime_truth.canon_sync).toBe('manual_check_required');
     expect(body.next_safe_action.forbidden_followups.length).toBeGreaterThan(0);
     expect(body.capabilities).toEqual(expect.arrayContaining([
-      expect.objectContaining({id: 'process_activation', status: 'absent'}),
+      expect.objectContaining({id: 'process_activation', status: 'partial'}),
       expect.objectContaining({id: 'd08_generation', status: 'locked'}),
     ]));
     expect(JSON.stringify(body)).not.toContain('password');

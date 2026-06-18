@@ -8,6 +8,8 @@ import {
 } from '../services/workflow_observability.ts';
 import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
 import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
+import {diagnoseProcessActivation} from '../services/process_activation.ts';
+import {ProcessActivationRequestSchema} from '@masterflow/shared';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -152,6 +154,15 @@ export function createDiagnosticsRouter(): Router {
       return;
     }
     res.json(getOwnerCockpitStatus(user));
+  });
+
+  router.post('/diagnostics/process-activation', (req: Request, res: Response): void => {
+    const parsed = ProcessActivationRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    res.json(diagnoseProcessActivation(parsed.data));
   });
 
   return router;

@@ -422,6 +422,7 @@ export const OwnerCockpitStatusSchema = z.object({
       'validation_inbox_pending',
       'runtime_job_failed',
       'process_activation_missing',
+      'process_activation_observation_only',
       'd08_generation_locked',
       'external_send_locked',
     ]),
@@ -2006,6 +2007,63 @@ export type SearchResourcesResponse = z.infer<typeof SearchResourcesResponseSche
 
 export const ContextTierSchema = z.enum(['T0', 'T1', 'T2', 'T3', 'T4', 'T5']);
 export type ContextTier = z.infer<typeof ContextTierSchema>;
+
+// ───────────────────────── Process activation diagnostic ─────────────────────────
+
+export const ProcessActivationRequestSchema = z.object({
+  signal: z.string().min(2).max(1000),
+  source: z.enum(['owner_observation', 'user_intent', 'ui_mode']).default('owner_observation'),
+  active_mode: z.string().min(1).max(80).nullable().default(null),
+  loaded_context_tier: ContextTierSchema.default('T1'),
+});
+export type ProcessActivationRequest = z.input<typeof ProcessActivationRequestSchema>;
+
+export const ProcessActivationReadModelSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  source: z.enum(['owner_observation', 'user_intent', 'ui_mode']),
+  raw_signal_summary: z.string().min(1).max(240),
+  active_mode: z.string().nullable(),
+  detected_domains: z.array(z.string().min(1)),
+  process_candidates: z.array(z.object({
+    process_id: z.string().min(1),
+    label: z.string().min(1),
+    runtime_status: z.enum(['implemented', 'partial', 'locked', 'absent']),
+  })),
+  output_family_candidates: z.array(z.string().min(1)),
+  required_context_tier: ContextTierSchema,
+  loaded_context_status: z.object({
+    granted_tier: ContextTierSchema,
+    sufficient: z.boolean(),
+    missing: z.array(z.string().min(1)),
+  }),
+  required_gates: z.array(z.string().min(1)),
+  next_safe_action: z.object({
+    kind: z.enum(['inspect_context', 'route_to_validation_inbox', 'create_spec', 'park', 'ask_malex_decision']),
+    label: z.string().min(1),
+    reason: z.string().min(1),
+    required_validation: z.boolean(),
+    forbidden_followups: z.array(z.string().min(1)),
+  }),
+  blocked_actions: z.array(z.string().min(1)),
+  validation_route_candidate: z.object({
+    target: z.enum(['shared_validation_inbox', 'owner_cockpit', 'action_queue', 'none']),
+    object_type: z.string().min(1),
+    decision_authority: z.string().min(1),
+    decider_role: z.string().min(1),
+    reason: z.string().min(1),
+  }).nullable(),
+  missed_trigger_candidate: z.object({
+    expected_process: z.string().min(1),
+    missing_runtime_piece: z.string().min(1),
+    user_impact: z.string().min(1),
+    suggested_queue_task: z.string().min(1),
+    severity: z.enum(['low', 'medium', 'high']),
+  }).nullable(),
+  confidence: z.number().min(0).max(1),
+  status: z.enum(['diagnostic_only', 'candidate_ready_for_review', 'missing_context', 'blocked_by_gate', 'missed_trigger_candidate']),
+  audit_trace: z.array(z.string().min(1)),
+});
+export type ProcessActivationReadModel = z.infer<typeof ProcessActivationReadModelSchema>;
 
 // ───────────────────────── RAG permissionné PR-7 ─────────────────────────
 

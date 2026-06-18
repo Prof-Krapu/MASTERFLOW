@@ -1,6 +1,9 @@
 # Process Activation Read Model Spec — 2026-06-18
 
-Status: `SPEC_ONLY_NO_RUNTIME`
+Status: `IMPLEMENTED_LOCALLY_DIAGNOSTIC_ONLY`
+
+Première tranche locale : registre déterministe via `POST /diagnostics/process-activation`,
+owner/admin uniquement, sans persistance, LLM, action ou exécution.
 
 ## Intention produit
 
@@ -186,10 +189,10 @@ Pour une demande utilisateur, l'owner doit voir :
 ## Statut de déploiement
 
 ```yaml
-runtime_code: false
+runtime_code: local_true
 migration: false
 autonomous_execution: false
 safe_to_queue: true
 github_main: not_merged
-requires_malex_before_code: true
+requires_malex_before_publish: false_authorization_permanent
 ```

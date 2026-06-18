@@ -998,6 +998,42 @@ dd {
   justify-content: space-between;
 }
 
+.process-control-strip {
+  border: 1px solid rgba(104, 170, 255, 0.4);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.process-control-strip > div:first-child,
+.process-control-strip__input {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.process-control-strip > div:first-child span {
+  color: var(--muted);
+}
+
+.process-control-strip__input input {
+  flex: 1;
+  min-width: 0;
+}
+
+.process-control-strip__result {
+  background: #0d1015;
+  border-radius: 7px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.process-control-strip__result p {
+  margin: 0;
+}
+
 .teaching-readiness {
   gap: 14px;
 }
@@ -2183,9 +2219,16 @@ dd {
   .owner-cockpit__summary,
   .owner-cockpit__truth,
   .owner-cockpit__capabilities,
+  .process-control-strip__input,
   .teaching-readiness__grid,
   .teaching-guided__body dl {
     grid-template-columns: 1fr;
+  }
+
+  .process-control-strip__input,
+  .process-control-strip > div:first-child {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .workspace,
