@@ -2,7 +2,7 @@
 
 Dernière vérification : 2026-06-18
 Branche de travail : `main`
-GitHub `main` vérifié : `4e0cfbb`
+Payload PR #6 vérifié : `4e0cfbb`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -16,4 +16,4 @@ le runtime GitHub.
 | D12 owner observability | partiel | Cockpit et jobs en lecture seule ; findings/missed triggers absents. | moyen | Ajouter un agrégat backend seulement après la tranche D05-D06. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
-| Pont de déploiement Drive | implémenté | Drive et GitHub référencent `4e0cfbb`. | faible | Rafraîchir après le prochain merge. |
+| Pont de déploiement Drive | implémenté | Drive rafraîchi après le payload PR #6 ; les commits de pilotage peuvent faire avancer `main` sans changer le runtime. | faible | Rafraîchir après le prochain merge runtime ou docs important. |

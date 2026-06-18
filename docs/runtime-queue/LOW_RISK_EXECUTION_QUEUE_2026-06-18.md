@@ -3,7 +3,7 @@
 Status: `MERGED_ON_MAIN`
 
 GitHub PR: `#6` — https://github.com/Prof-Krapu/MASTERFLOW/pull/6
-GitHub `main`: `4e0cfbb`
+Payload PR #6 sur `main`: `4e0cfbb`
 
 ## Cadre
 
