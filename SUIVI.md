@@ -4,6 +4,25 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — Process activation read-model — IMPLÉMENTÉ LOCAL
+
+Première tranche observation-only :
+
+- analyse déterministe d'une intention owner dans le cockpit ;
+- candidats initiaux correction D05-D06, D08 visuel, D10 devis, canon delta, hard stop et D12 finding ;
+- niveau de contexte requis, gates, route de validation candidate et actions bloquées ;
+- confiance et statut explicites ;
+- cockpit aligné : capacité `process_activation` affichée `partial`, avec alerte observation-only ;
+- aucun LLM, stockage du signal, action, job, finding ou exécution.
+
+Recette : ciblés process activation / owner cockpit / gate-ordering 9/9 ; backend complet 311/311 ;
+TypeScript backend/frontend OK ; build Vite OK ; smoke navigateur cockpit OK sur correction, image
+D08 et stop hard-stop, sans action/job/génération.
+
+Statut : local vérifié, prêt à publication automatique.
+
+---
+
 ## 2026-06-18 — D06 preview privée → Validation Inbox — IMPLÉMENTÉ LOCAL
 
 Deuxième source D06 de l'inbox commune après `feedback_draft` :

@@ -23,6 +23,8 @@ import type {
   Job,
   MatchInventoryProjectNeedRequest,
   OwnerCockpitStatus,
+  ProcessActivationReadModel,
+  ProcessActivationRequest,
   Persona,
   Project,
   ProjectMember,
@@ -128,6 +130,16 @@ export async function getJobs(token?: string | null): Promise<Job[]> {
 
 export async function getOwnerCockpitStatus(token?: string | null): Promise<OwnerCockpitStatus> {
   return request<OwnerCockpitStatus>('/diagnostics/owner-cockpit', {method: 'GET'}, token);
+}
+
+export async function diagnoseProcessActivation(
+  body: ProcessActivationRequest,
+  token?: string | null,
+): Promise<ProcessActivationReadModel> {
+  return request<ProcessActivationReadModel>('/diagnostics/process-activation', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
 }
 
 export async function getGuides(token?: string | null): Promise<ConversationGuide[]> {

@@ -1,11 +1,13 @@
 import {useCallback, useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 
-import type {OwnerCockpitStatus} from '@masterflow/shared';
+import type {ContextTier, OwnerCockpitStatus, ProcessActivationReadModel} from '@masterflow/shared';
 
-import {getOwnerCockpitStatus} from './api.ts';
+import {diagnoseProcessActivation, getOwnerCockpitStatus} from './api.ts';
 
 type OwnerCockpitProps = {
+  activeMode: string;
+  contextTier: ContextTier;
   token: string;
 };
 
@@ -17,10 +19,13 @@ const CAPABILITY_LABELS: Record<string, string> = {
   d08_generation: 'D08 génération',
 };
 
-export function OwnerCockpit({token}: OwnerCockpitProps): ReactElement {
+export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps): ReactElement {
   const [snapshot, setSnapshot] = useState<OwnerCockpitStatus | null>(null);
   const [status, setStatus] = useState('Chargement du cockpit owner.');
   const [loading, setLoading] = useState(false);
+  const [signal, setSignal] = useState('');
+  const [activation, setActivation] = useState<ProcessActivationReadModel | null>(null);
+  const [diagnosing, setDiagnosing] = useState(false);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -38,6 +43,21 @@ export function OwnerCockpit({token}: OwnerCockpitProps): ReactElement {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  const diagnose = useCallback(async (): Promise<void> => {
+    if (signal.trim().length < 2) return;
+    setDiagnosing(true);
+    try {
+      setActivation(await diagnoseProcessActivation({
+        signal: signal.trim(),
+        source: 'owner_observation',
+        active_mode: activeMode,
+        loaded_context_tier: contextTier,
+      }, token));
+    } finally {
+      setDiagnosing(false);
+    }
+  }, [activeMode, contextTier, signal, token]);
 
   return (
     <article className="panel panel--wide owner-cockpit">
@@ -107,6 +127,32 @@ export function OwnerCockpit({token}: OwnerCockpitProps): ReactElement {
               ))}
             </ul>
           </div>
+
+          <section className="process-control-strip">
+            <div>
+              <strong>Quel processus cette demande devrait-elle activer ?</strong>
+              <span>Diagnostic déterministe · aucune exécution</span>
+            </div>
+            <div className="process-control-strip__input">
+              <input
+                onChange={(event) => setSignal(event.target.value)}
+                placeholder="Ex. corrige ce travail, génère une image, stop…"
+                value={signal}
+              />
+              <button disabled={diagnosing || signal.trim().length < 2} onClick={() => void diagnose()} type="button">
+                {diagnosing ? 'Analyse…' : 'Analyser sans exécuter'}
+              </button>
+            </div>
+            {activation ? (
+              <div className="process-control-strip__result">
+                <p><strong>Processus probable :</strong> {activation.process_candidates[0]?.label ?? 'aucun'}</p>
+                <p><strong>Famille :</strong> {activation.output_family_candidates[0] ?? 'indéterminée'}</p>
+                <p><strong>Statut :</strong> {activation.status} · confiance {Math.round(activation.confidence * 100)} %</p>
+                <p><strong>Prochaine action sûre :</strong> {activation.next_safe_action.label}</p>
+                <p><strong>Bloqué :</strong> {activation.blocked_actions.join(' · ') || 'aucune action identifiée'}</p>
+              </div>
+            ) : null}
+          </section>
         </>
       ) : null}
     </article>

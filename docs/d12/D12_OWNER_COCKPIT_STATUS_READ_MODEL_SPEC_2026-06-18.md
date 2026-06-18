@@ -84,7 +84,7 @@ active_queue_status:
 ```yaml
 process_activation_status:
   read_model_available:
-  known_missing_router:
+  observation_only:
   hard_stop_model:
   action_expiry_model:
   missed_trigger_model:
@@ -99,6 +99,7 @@ queue_item_untracked
 validation_inbox_pending
 runtime_job_failed
 process_activation_missing
+process_activation_observation_only
 d08_generation_locked
 external_send_locked
 merge_required
