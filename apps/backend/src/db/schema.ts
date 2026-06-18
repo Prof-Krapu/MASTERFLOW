@@ -1062,6 +1062,7 @@ function migrate(d: Database.Database): void {
                                       'observation','hypothesis','candidate_pattern',
                                       'validated_alert','stale','archived'
                                     )),
+      owner_decision_json         TEXT,
       detected_at                 INTEGER NOT NULL,
       created_at                  INTEGER NOT NULL,
       updated_at                  INTEGER NOT NULL
@@ -1224,6 +1225,7 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'feedback_drafts', 'project_id', 'TEXT');
   ensureColumn(d, 'correction_export_previews', 'project_id', 'TEXT');
   ensureColumn(d, 'cohort_calibration_reviews', 'project_id', 'TEXT');
+  ensureColumn(d, 'd12_missed_trigger_findings', 'owner_decision_json', 'TEXT');
 
   // SQLite ne sait pas ALTER un CHECK : la colonne `task` a gagné `image_generation`.
   // On reconstruit la table (lignes préservées) sur les colonnes déjà étendues ci-dessus.
@@ -1961,6 +1963,7 @@ export interface D12MissedTriggerFindingRow {
   recommended_queue_task_json: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'observation' | 'hypothesis' | 'candidate_pattern' | 'validated_alert' | 'stale' | 'archived';
+  owner_decision_json: string | null;
   detected_at: number;
   created_at: number;
   updated_at: number;

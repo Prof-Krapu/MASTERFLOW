@@ -136,6 +136,7 @@ table: d12_missed_trigger_findings
 routes:
   - POST /api/v1/diagnostics/d12/findings
   - GET /api/v1/diagnostics/d12/findings
+  - POST /api/v1/diagnostics/d12/findings/:id/decision
 minimum_role: admin
 initial_status: observation
 audit_event: d12_missed_trigger_finding_created
@@ -145,6 +146,24 @@ forbidden_effects:
   - auto_patch
   - canon_write
   - provider_call
+```
+
+## Décisions owner implémentées localement
+
+```yaml
+decisions:
+  keep_observation: observation
+  promote_to_hypothesis: hypothesis
+  promote_to_candidate_pattern: candidate_pattern
+  validate_alert: validated_alert
+  mark_stale: stale
+  archive: archived
+storage: owner_decision_json
+guards:
+  - no_action_creation
+  - no_job_creation
+  - no_auto_fix
+  - no_canon_write
 ```
 
 ## Non-objectifs

@@ -11,11 +11,13 @@ import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
 import {diagnoseProcessActivation} from '../services/process_activation.ts';
 import {
   CreateD12MissedTriggerFindingSchema,
+  D12FindingDecisionSchema,
   D12FindingStatusSchema,
   ProcessActivationRequestSchema,
 } from '@masterflow/shared';
 import {
   createD12MissedTriggerFinding,
+  decideD12MissedTriggerFinding,
   listD12MissedTriggerFindings,
 } from '../services/d12_findings.ts';
 
@@ -196,6 +198,29 @@ export function createDiagnosticsRouter(): Router {
       return;
     }
     res.status(201).json(createD12MissedTriggerFinding(user, parsed.data));
+  });
+
+  router.post('/diagnostics/d12/findings/:id/decision', (req: Request, res: Response): void => {
+    const user = req.user;
+    const id = req.params.id;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    if (!id) {
+      res.status(404).json({error: 'finding_not_found'});
+      return;
+    }
+    const parsed = D12FindingDecisionSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(decideD12MissedTriggerFinding(user, id, parsed.data));
+    } catch {
+      res.status(404).json({error: 'finding_not_found'});
+    }
   });
 
   return router;

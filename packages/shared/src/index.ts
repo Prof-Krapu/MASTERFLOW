@@ -2123,6 +2123,19 @@ export const D12RecommendedQueueTaskSchema = z.object({
 });
 export type D12RecommendedQueueTask = z.infer<typeof D12RecommendedQueueTaskSchema>;
 
+export const D12FindingDecisionSchema = z.object({
+  decision: z.enum([
+    'keep_observation',
+    'promote_to_hypothesis',
+    'promote_to_candidate_pattern',
+    'validate_alert',
+    'mark_stale',
+    'archive',
+  ]),
+  note: z.string().max(500).optional(),
+});
+export type D12FindingDecision = z.infer<typeof D12FindingDecisionSchema>;
+
 export const CreateD12MissedTriggerFindingSchema = z.object({
   source_ref: z.string().min(1).max(240),
   expected_process: z.string().min(1).max(160),
@@ -2145,6 +2158,7 @@ export const D12MissedTriggerFindingSchema = CreateD12MissedTriggerFindingSchema
   owner_id: z.string().min(1),
   project_id: z.string().nullable(),
   status: D12FindingStatusSchema,
+  owner_decision: D12FindingDecisionSchema.nullable(),
   audit_trace: z.array(z.string().min(1)),
   created_at: z.number().int().nonnegative(),
   updated_at: z.number().int().nonnegative(),

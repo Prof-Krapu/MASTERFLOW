@@ -1,7 +1,9 @@
 import {
   CreateD12MissedTriggerFindingSchema,
+  D12FindingDecisionSchema,
   D12MissedTriggerFindingSchema,
   type CreateD12MissedTriggerFinding,
+  type D12FindingDecision,
   type D12MissedTriggerFinding,
   type D12FindingStatus,
 } from '@masterflow/shared';
@@ -34,6 +36,7 @@ function toFinding(row: D12MissedTriggerFindingRow): D12MissedTriggerFinding {
     recommended_queue_task: JSON.parse(row.recommended_queue_task_json),
     severity: row.severity,
     status: row.status,
+    owner_decision: row.owner_decision_json ? JSON.parse(row.owner_decision_json) : null,
     audit_trace: ['d12_finding_runtime_v1', 'observation_only', 'no_action', 'no_auto_fix'],
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -55,12 +58,12 @@ export function createD12MissedTriggerFinding(
          (id, owner_id, project_id, source_ref, expected_process, actual_runtime_response,
           missing_runtime_piece, user_impact, domain_refs_json, output_family_refs_json,
           evidence_refs_json, blocked_actions_json, recommended_queue_task_json, severity,
-          status, detected_at, created_at, updated_at)
+          status, owner_decision_json, detected_at, created_at, updated_at)
        VALUES
          (@id, @owner_id, @project_id, @source_ref, @expected_process, @actual_runtime_response,
           @missing_runtime_piece, @user_impact, @domain_refs_json, @output_family_refs_json,
           @evidence_refs_json, @blocked_actions_json, @recommended_queue_task_json, @severity,
-          'observation', @detected_at, @created_at, @updated_at)`,
+          'observation', NULL, @detected_at, @created_at, @updated_at)`,
     )
     .run({
       id,
@@ -100,6 +103,65 @@ export function createD12MissedTriggerFinding(
     .get(id) as D12MissedTriggerFindingRow | undefined;
   if (!row) throw new Error('[d12_findings] finding introuvable après création');
   return toFinding(row);
+}
+
+function statusForDecision(decision: D12FindingDecision['decision']): D12FindingStatus {
+  switch (decision) {
+    case 'keep_observation':
+      return 'observation';
+    case 'promote_to_hypothesis':
+      return 'hypothesis';
+    case 'promote_to_candidate_pattern':
+      return 'candidate_pattern';
+    case 'validate_alert':
+      return 'validated_alert';
+    case 'mark_stale':
+      return 'stale';
+    case 'archive':
+      return 'archived';
+  }
+}
+
+/** Décision owner sur une finding D12. Ne déclenche aucun effet externe. */
+export function decideD12MissedTriggerFinding(
+  actor: AuthUser,
+  findingId: string,
+  input: D12FindingDecision,
+): D12MissedTriggerFinding {
+  const decision = D12FindingDecisionSchema.parse(input);
+  const row = getDb()
+    .prepare('SELECT * FROM d12_missed_trigger_findings WHERE id = ?')
+    .get(findingId) as D12MissedTriggerFindingRow | undefined;
+  if (!row) throw new Error('[d12_findings] finding_not_found');
+
+  const nextStatus = statusForDecision(decision.decision);
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `UPDATE d12_missed_trigger_findings
+          SET status = ?, owner_decision_json = ?, updated_at = ?
+        WHERE id = ?`,
+    )
+    .run(nextStatus, JSON.stringify(decision), now, findingId);
+
+  audit({
+    event_type: 'd12_missed_trigger_finding_decided',
+    user_id: actor.id,
+    scope: row.expected_process,
+    detail: {
+      finding_id: findingId,
+      decision: decision.decision,
+      next_status: nextStatus,
+      no_auto_fix: true,
+      no_canon_write: true,
+    },
+  });
+
+  const updated = getDb()
+    .prepare('SELECT * FROM d12_missed_trigger_findings WHERE id = ?')
+    .get(findingId) as D12MissedTriggerFindingRow | undefined;
+  if (!updated) throw new Error('[d12_findings] finding introuvable après décision');
+  return toFinding(updated);
 }
 
 /** Liste privée owner/admin des findings D12. */
