@@ -11,11 +11,12 @@ Source of truth reminder:
 ## Current baseline
 
 ```yaml
-github_main: 0970dc4
+github_main: ed7c0f1
 validation_inbox: partial_implemented_action_based_slice
 job_observability: partial_frontend_read_only_slice
 owner_cockpit: merged_read_only_slice
-teaching_readiness: local_read_only_slice_runtime_verified_teacher_godmode
+teaching_readiness: merged_read_only_slice_teacher_godmode
+guided_subject_read: local_scoped_read_slice_verified
 drive_bridge_refresh: recorded
 ```
 
@@ -47,16 +48,18 @@ drive_bridge_refresh: recorded
 
 ## Immediate next action
 
-Review and publish the runtime-verified Teaching slice after explicit commit/push validation.
+Review and publish the scoped Guided Subject read slice after explicit commit/push validation.
 
 Local implementation status:
 
 ```yaml
-teaching_readiness_component: apps/frontend/src/teaching-readiness.tsx
+guided_subject_component: apps/frontend/src/teaching-readiness.tsx
 mounted_in: apps/frontend/src/App.tsx when activeMode is teaching
 uses_existing_endpoints:
-  - GET /api/v1/context/current
-  - GET /api/v1/resources
+  - GET /api/v1/guides
+new_read_endpoint:
+  - GET /api/v1/guided-sessions
+other_existing_endpoints:
   - GET /api/v1/jobs
 mutation: none
 checks:
@@ -67,8 +70,8 @@ entry_scope:
   - godmode
   - student and admin remain excluded
 verification:
-  - role unit test OK
-  - godmode browser smoke OK
+  - guided runtime tests 11/11
+  - empty-state browser smoke OK
   - responsive 390 px no horizontal overflow
 status: pending_commit_push_validation
 ```

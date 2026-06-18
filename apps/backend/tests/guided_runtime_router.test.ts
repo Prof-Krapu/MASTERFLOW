@@ -110,6 +110,20 @@ describe('PR-6 — routes Guided Runtime prive', () => {
     expect(payload.access_mode).toBe('private');
     expect(payload.guide_version).toBe(1);
 
+    const teacherSessions = await fetch(`${base}/guided-sessions`, {
+      headers: auth(teacherToken),
+    });
+    expect(teacherSessions.status).toBe(200);
+    expect(await teacherSessions.json()).toMatchObject({
+      results: [expect.objectContaining({session_id: sessionId})],
+    });
+
+    const hiddenSessions = await fetch(`${base}/guided-sessions`, {
+      headers: auth(studentToken),
+    });
+    expect(hiddenSessions.status).toBe(200);
+    expect(await hiddenSessions.json()).toEqual({results: []});
+
     const refused = await fetch(`${base}/guided-sessions/${sessionId}/answers`, {
       method: 'POST',
       headers: {...auth(studentToken), 'Content-Type': 'application/json'},
@@ -127,6 +141,15 @@ describe('PR-6 — routes Guided Runtime prive', () => {
       }),
     });
     expect(joined.status).toBe(201);
+
+    const participantSessions = await fetch(`${base}/guided-sessions`, {
+      headers: auth(studentToken),
+    });
+    expect(participantSessions.status).toBe(200);
+    expect(await participantSessions.json()).toMatchObject({
+      results: [expect.objectContaining({session_id: sessionId})],
+    });
+
     const accepted = await fetch(`${base}/guided-sessions/${sessionId}/answers`, {
       method: 'POST',
       headers: {...auth(studentToken), 'Content-Type': 'application/json'},

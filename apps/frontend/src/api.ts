@@ -8,6 +8,7 @@ import type {
   CreateInventoryItemRequest,
   CreateInventoryProjectNeedRequest,
   CreateInvitation,
+  ConversationGuide,
   CurrentContext,
   DecideValidationInboxItemRequest,
   InventoryCollection,
@@ -16,6 +17,7 @@ import type {
   InventoryProjectNeed,
   InventorySearchResult,
   Invitation,
+  GuidedSession,
   Job,
   MatchInventoryProjectNeedRequest,
   Persona,
@@ -118,6 +120,16 @@ export async function getPendingActions(token?: string | null): Promise<Action[]
 
 export async function getJobs(token?: string | null): Promise<Job[]> {
   return request<Job[]>('/jobs', {method: 'GET'}, token);
+}
+
+export async function getGuides(token?: string | null): Promise<ConversationGuide[]> {
+  const response = await request<{results: ConversationGuide[]}>('/guides', {method: 'GET'}, token);
+  return response.results;
+}
+
+export async function getGuidedSessions(token?: string | null): Promise<GuidedSession[]> {
+  const response = await request<{results: GuidedSession[]}>('/guided-sessions', {method: 'GET'}, token);
+  return response.results;
 }
 
 export async function getValidationInboxItems(token?: string | null): Promise<ValidationInboxItem[]> {
