@@ -75,5 +75,6 @@ Prochaine file safe possible :
 - `PROCESS_CONTROL_STRIP_SPEC` — done_spec_on_pr6
 - `D12_MISSED_TRIGGER_FINDING_SPEC` — done_spec_on_pr6
 - `ACTION_EXPIRY_AFTER_CONTEXT_CHANGE_SPEC` — done_spec_on_pr6
+- `D12_OWNER_COCKPIT_STATUS_READ_MODEL_SPEC` — done_spec_on_pr6
 
 Stop avant merge, migration runtime, provider, génération, export ou publication.
