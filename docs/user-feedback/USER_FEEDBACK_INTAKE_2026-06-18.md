@@ -1,6 +1,9 @@
 # User Feedback Intake — 2026-06-18
 
-Status: `PRE_CANON_INTAKE`
+Status: `PRE_CANON_INTAKE_ROUTED`
+
+> Mise à jour 2026-06-18 : les retours restent pré-canon. Le GO MALEX autorise l'enchaînement
+> des audits/specs/queues sans risque, pas l'absorption canon automatique.
 
 This file classifies user-feedback audit signals from MALEX conversations.
 
@@ -132,3 +135,23 @@ Status: `locked_until_D08_manifest_sequence`
 Start with `Process Control Strip` as read-only UI/state vocabulary.
 
 Do not implement generation, send/export, or canon promotion from these feedback candidates yet.
+
+## Queue routing post-Vincent
+
+```yaml
+safe_now:
+  - classify_feedback
+  - route_to_spec
+  - route_to_queue
+  - write_read_only_recipe
+blocked_without_MALEX_validation:
+  - canon_promotion
+  - runtime_migration
+  - external_send
+  - publication
+  - provider_execution
+  - D08_generation
+next_artifact:
+  - process_control_strip_spec
+  - feedback_output_family_registry_spec
+```

@@ -1,6 +1,11 @@
 # D05-D06 Vertical Mapping — 2026-06-18
 
-Status: `READINESS_PANEL_LOCAL_RUNTIME_VERIFIED`
+Status: `SUPERSEDED_BY_RUNTIME_RECIPE_FOR_D06_INBOX_STATE`
+
+> Mise à jour 2026-06-18 : ce mapping reste utile pour l'historique D05-D06, mais il est dépassé
+> sur la Validation Inbox D06. La projection `feedback_draft` est maintenant mergée sur `main`
+> via PR #5 (`bb61e4f`). Pour l'état courant, lire
+> `docs/d05-d06/D05_D06_RUNTIME_RECIPE_2026-06-18.md`.
 
 This document maps the Drive canon D05-D06 pedagogical/correction vertical against the current
 GitHub runtime.

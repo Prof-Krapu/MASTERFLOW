@@ -1,6 +1,10 @@
 # D12 Owner Cockpit Mapping — 2026-06-18
 
-Status: `MAPPING_PATCH_NON_RUNTIME`
+Status: `SUPERSEDED_BY_GAP_AUDIT`
+
+> Mise à jour 2026-06-18 : la première surface `OwnerCockpit` read-only existe maintenant dans le
+> frontend. Ce mapping reste historique. Pour l'état courant post-PR #5, lire
+> `docs/d12/D12_OWNER_COCKPIT_GAP_AUDIT_2026-06-18.md`.
 
 This document maps the D12 Drive canon owner dashboard contract against the current GitHub runtime.
 
