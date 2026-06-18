@@ -22,6 +22,15 @@ Dernière mise à jour : 2026-06-18
 - Statut : implémenté localement ; le runtime affiche `non vérifié` sans SHA de release injecté.
 - Validation requise : oui avant commit/push.
 
+### Vague 2 — Teaching D05 actions guidées
+
+- Tâche : démarrer une session privée depuis un guide validé, répondre, avancer et terminer dans Teaching.
+- Impact : rend la première verticale D05 réellement utilisable sans ouvrir D06.
+- Risque : moyen ; consentement, scope et frontière D05/D06 doivent rester visibles.
+- Source de vérité concernée : canon D05 + Guided Runtime GitHub.
+- Statut : implémenté et vérifié localement sur `codex/d05-teaching-guided-actions` ; prêt à publier.
+- Validation requise : autorisation permanente MALEX reçue pour commit/push/PR/merge.
+
 ### Queue safe post-Vincent
 
 - Tâche : retirer Vincent comme dépendance bloquante et classer les prochains chantiers par risque.

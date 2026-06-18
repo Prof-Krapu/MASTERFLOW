@@ -4,6 +4,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-18 — Teaching D05 actions guidées — IMPLÉMENTÉ LOCAL
+
+Contrat : rendre la session guidée D05 utilisable dans le bloc `Sujet guidé` de Teaching, sans
+chat générique et sans déclencher correction, feedback, note, export ou envoi étudiant.
+
+Ajouts locaux sur `codex/d05-teaching-guided-actions` :
+
+- démarrage depuis un guide `validated` uniquement ;
+- consentement privé visible lorsque le guide l'exige ;
+- saisie adaptée aux questions text, number, boolean, choice et multi_choice ;
+- contribution tracée, progression recalculée et fin uniquement si le record est complet ;
+- permissions et validation de schéma déléguées au Guided Runtime existant.
+- correction ciblée : le créateur global d'une session projet peut devenir owner de sa propre
+  session sans être requalifié comme student ; tout autre participant reste soumis au membership projet.
+- création atomique : session et participant owner sont désormais écrits dans une transaction ;
+  un échec d'initialisation ne laisse plus de session orpheline active.
+
+Recette : vraie session locale projet 0→100 % puis `completed`, 0 contradiction, 0 session active
+orpheline, 0 feedback draft, 0 export preview, 0 job et audit `external_effects: []`.
+Backend complet 302/302, TypeScript backend/frontend et build Vite OK ; smoke godmode et responsive
+390 px sans débordement horizontal.
+
+Statut : local vérifié, prêt à publication automatique.
+
+---
+
 ## 2026-06-18 — D12 Owner Cockpit status — IMPLÉMENTÉ LOCAL
 
 Contrat : expliquer l'état runtime en décisions sans prétendre lire automatiquement GitHub ou le

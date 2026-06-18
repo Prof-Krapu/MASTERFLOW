@@ -174,7 +174,7 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
     },
     capabilities: [
       {id: 'shared_validation_inbox', status: 'partial', note: 'Actions et feedback_draft D06.'},
-      {id: 'd05_guided_runtime', status: 'partial', note: 'Backend complet, Teaching encore en lecture.'},
+      {id: 'd05_guided_runtime', status: 'partial', note: 'Teaching permet session, réponses et fin ; participation élève séparée.'},
       {id: 'd12_owner_cockpit', status: 'partial', note: 'Agrégat runtime disponible, sans lecture Drive live.'},
       {id: 'process_activation', status: 'absent', note: 'Pas de routeur général intention → processus.'},
       {id: 'd08_generation', status: 'locked', note: 'Provider et génération non exposés.'},

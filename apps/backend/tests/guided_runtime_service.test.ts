@@ -102,6 +102,31 @@ describe('PR-6 — service Guided Runtime prive', () => {
     expect(listGuides(teacher).map((item) => item.guide_id)).toContain(guide.guide_id);
   });
 
+  it('permet au créateur global de devenir owner de sa session projet sans ouvrir les autres participants', () => {
+    const project = createProject(teacher, {name: 'Projet Guided admin owner'});
+    const guide = createGuide(admin, {
+      ...guideRequest('Guide admin projet'),
+      project_id: project.project_id,
+    });
+    validateSchemaTemplate(admin, guide.target_schema_id);
+    validateGuide(admin, guide.guide_id);
+
+    const session = createGuidedSession(admin, {
+      guide_id: guide.guide_id,
+      preview: false,
+      consent: {accepted: true},
+    });
+
+    expect(session).toMatchObject({
+      owner_id: admin.id,
+      project_id: project.project_id,
+      status: 'active',
+    });
+    expect(() =>
+      addGuidedSessionParticipant(admin, session.session_id, outsider.id, 'participant', {accepted: true}),
+    ).toThrow('guided_participant_scope_denied');
+  });
+
   it('modifie seulement un draft owner et fige guide/template version en session', () => {
     const guide = createGuide(teacher, guideRequest('Guide freeze PR-6'));
     const updated = updateGuide(teacher, guide.guide_id, {purpose: 'Atelier CDC prive v2.'});
