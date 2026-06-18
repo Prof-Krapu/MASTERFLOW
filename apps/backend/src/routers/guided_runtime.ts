@@ -18,6 +18,7 @@ import {
   getGuide,
   getGuidedSession,
   listGuides,
+  listGuidedSessions,
   submitGuidedAnswer,
   updateGuide,
   validateGuide,
@@ -147,6 +148,10 @@ export function createGuidedRuntimeRouter(): Router {
     } catch (error) {
       routeError(res, error);
     }
+  });
+
+  router.get('/guided-sessions', (req: Request, res: Response): void => {
+    res.json({results: listGuidedSessions(actor(req))});
   });
 
   router.get('/guided-sessions/:id', (req: Request, res: Response): void => {

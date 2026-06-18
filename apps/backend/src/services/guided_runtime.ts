@@ -538,6 +538,13 @@ export function createGuidedSession(actor: AuthUser, input: CreateGuidedSessionR
   return getGuidedSession(actor, sessionId);
 }
 
+export function listGuidedSessions(actor: AuthUser): GuidedSession[] {
+  const rows = getDb()
+    .prepare('SELECT * FROM guided_sessions ORDER BY updated_at DESC, id DESC')
+    .all() as GuidedSessionRow[];
+  return rows.filter((row) => canReadSession(actor, row)).map(toSession);
+}
+
 export function addGuidedSessionParticipant(
   actor: AuthUser,
   sessionId: string,

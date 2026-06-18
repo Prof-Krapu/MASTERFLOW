@@ -4,25 +4,16 @@ Dernière mise à jour : 2026-06-18
 
 ## 1. À faire maintenant
 
-### Publier la tranche Teaching validée
+### Publier la lecture Guided Subject validée
 
-- Tâche : relire le diff puis commit/push/PR de la tranche Teaching.
-- Impact : rend la première tranche D05-D06 disponible sur GitHub.
-- Risque : faible ; lecture seule, rôles bornés.
+- Tâche : relire le diff puis commit/push/PR de la lecture guide/session dans Teaching.
+- Impact : montre le vrai sujet guidé et son avancement dans le périmètre actif.
+- Risque : faible à moyen ; lecture privée et scopes projet.
 - Source de vérité concernée : canon D03 + D05-D06 et GitHub.
 - Statut : implémenté, vérifié, publication autorisée.
 - Validation requise : obtenue le 2026-06-18.
 
 ## 2. À mettre en queue
-
-### Lecture de session guidée
-
-- Tâche : afficher le sujet/session guidée active via les endpoints existants.
-- Impact : transforme le readiness panel en vraie entrée de travail pédagogique.
-- Risque : faible à moyen.
-- Source de vérité concernée : canon D05 + GitHub guided runtime.
-- Statut : futur.
-- Validation requise : oui pour le contrat UI.
 
 ### Projection D06 dans la Validation Inbox
 

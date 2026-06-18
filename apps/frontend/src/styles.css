@@ -1042,6 +1042,73 @@ dd {
   color: var(--text);
 }
 
+.teaching-guided {
+  background: #0d1015;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.teaching-guided__heading,
+.teaching-guided__heading > div {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.teaching-guided__heading span {
+  color: var(--blue);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.teaching-guided__heading small,
+.teaching-guided__body p {
+  color: var(--muted);
+}
+
+.teaching-guided__body {
+  display: grid;
+  gap: 10px;
+}
+
+.teaching-guided__body h3,
+.teaching-guided__body p {
+  margin: 0;
+}
+
+.teaching-guided__body dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.teaching-guided__body dl div {
+  background: var(--panel-soft);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.teaching-guided__body dt {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.teaching-guided__body dd {
+  margin: 4px 0 0;
+}
+
+.teaching-guided__next-question {
+  border-left: 2px solid var(--blue);
+  padding-left: 10px;
+}
+
 .resource-item {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -2042,7 +2109,8 @@ dd {
   .job-observability__summary,
   .job-observability__item dl,
   .owner-cockpit__summary,
-  .teaching-readiness__grid {
+  .teaching-readiness__grid,
+  .teaching-guided__body dl {
     grid-template-columns: 1fr;
   }
 

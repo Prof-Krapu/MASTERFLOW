@@ -4,7 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-18 — D05-D06 Teaching readiness — LOCAL VÉRIFIÉ, PRÊT À PUBLIER
+## 2026-06-18 — Teaching Guided Subject — LOCAL VÉRIFIÉ, PRÊT À PUBLIER
+
+Contrat : afficher le guide et la session active/récente réellement lisibles dans Teaching, sans
+création de session, réponse, correction ou envoi.
+
+Ajouts :
+
+- `GET /api/v1/guided-sessions` retourne uniquement les sessions lisibles par l'owner, un
+  participant ou un rôle admin/godmode selon les permissions existantes ;
+- le client frontend charge guides + sessions + jobs en parallèle ;
+- Teaching privilégie une session active dans le projet/Room courant, puis la plus récente ;
+- affichage du nom, but, statut, version, progression, champs manquants, contradictions et question
+  courante ;
+- état vide explicite : aucun sujet n'est inventé et aucune session ne démarre automatiquement.
+
+Recette : tests guided runtime **11/11**, TypeScript backend/frontend OK, build Vite 8 OK, smoke
+navigateur godmode OK, responsive 390 px sans débordement.
+
+Statut : local sur `codex/teaching-guided-session-read`, non commité, non poussé.
+
+## 2026-06-18 — D05-D06 Teaching readiness — INTÉGRÉ SUR `main`
 
 Références canon lues avant implémentation :
 
@@ -32,7 +52,7 @@ uniquement. Le seed ajoute désormais le mode sans retirer les modes configurés
 refuse explicitement Teaching aux rôles `student` et `admin`. Une Room pédagogie dédiée reste une
 décision ultérieure.
 
-Statut : local vérifié sur `codex/d05-d06-teaching-readiness`, non commité, non poussé.
+Statut : PR #3 mergée sur `main` au commit `ed7c0f1`.
 
 ## 2026-06-18 — Shared Validation Inbox action-based — BACKEND + UI VÉRIFIÉS
 
