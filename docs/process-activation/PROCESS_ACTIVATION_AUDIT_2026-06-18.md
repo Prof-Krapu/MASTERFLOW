@@ -1,6 +1,11 @@
 # Process Activation Audit — 2026-06-18
 
-Status: `AUDIT_PATCH_NON_RUNTIME`
+Status: `AUDIT_PATCH_NON_RUNTIME_UPDATED_POST_PR5`
+
+> Mise à jour 2026-06-18 : Vincent n'est plus une dépendance bloquante. Ce document sert maintenant
+> de queue MALEX/Codex pour les specs/audits safe. La PR #5 (`bb61e4f`) a ajouté la projection
+> D06 `feedback_draft` dans la Validation Inbox, ce qui améliore le rail de validation mais ne
+> crée toujours pas de routeur général d'intention/process.
 
 This document answers the deployment handoff question:
 
@@ -37,6 +42,7 @@ Core audit axes:
 |---|---|---|---|
 | Action registry | implemented declarative | `apps/backend/src/engines/action_registry.ts` | Knows action metadata, risk, validation, status. |
 | Action lifecycle | implemented | `apps/backend/src/engines/action_engine.ts` | Draft/preflight/validation/execution lifecycle exists. |
+| Validation Inbox | partial+ | `apps/backend/src/services/validation_inbox.ts` | Actions + D06 `feedback_draft` existent ; autres objets D06-D12 pending. |
 | Permission gates | implemented | `permission_runtime.ts`, auth middleware | Backend decides authority; LLM does not. |
 | Runtime loadout | partial | `runtime_loadout.ts`, `context_compiler.ts` | Determines available actions/personas/modes from room/context. |
 | Context compiler | partial | `context_compiler.ts` | Builds bounded context from room/project/checkpoint/RAG/memory. |
@@ -142,7 +148,7 @@ This object should start as diagnostics/read-model, not as autonomous execution.
 
 | User signal | Expected process | Required gates | Current status |
 |---|---|---|---|
-| “corrige / feedback / note / appréciation” | D05-D06 correction | source truth, teacher validation, output readiness | backend foundation, no activation router |
+| “corrige / feedback / note / appréciation” | D05-D06 correction | source truth, teacher validation, output readiness | feedback validation now projected, no activation router |
 | “feedback V2 / améliore le retour” | D06 feedback evolution | prior feedback lookup, evidence delta, teacher validation | absent as explicit family |
 | “lettre de reco” | D06 recommendation letter | high privacy, external-send gate, evidence status | absent as explicit process |
 | “génère / retake / DA / image” | D08 visual manifest | manifest, no-generation review, validation, storage | provider/runtime locked |
@@ -153,9 +159,9 @@ This object should start as diagnostics/read-model, not as autonomous execution.
 
 ## Recommended implementation sequence
 
-### Step 1 — process activation audit panel
+### Step 1 — process activation read-model spec
 
-Read-only panel that shows:
+Read-only contract that shows:
 
 - current mode;
 - likely process candidates;
@@ -163,7 +169,7 @@ Read-only panel that shows:
 - next safe action;
 - blocked actions.
 
-Status: `ready_for_spec`
+Status: `ready_for_spec_no_code`
 
 ### Step 2 — output family registry
 
@@ -178,7 +184,7 @@ Start with a static registry for families:
 - factory_backflow;
 - no_generation_review.
 
-Status: `needs_product_validation`
+Status: `needs_product_validation_before_code`
 
 ### Step 3 — missed trigger finding
 
@@ -222,3 +228,13 @@ intent -> candidate process -> required gates -> next safe action -> blocked act
 
 This should feed D12 owner cockpit and the shared Validation Inbox, not create a new autonomous
 execution path.
+
+## Queue result
+
+```yaml
+next_artifact: PROCESS_ACTIVATION_READ_MODEL_SPEC
+risk_now: low
+code_now: false
+commit_push_allowed: true
+merge_required_before_runtime: true
+```
