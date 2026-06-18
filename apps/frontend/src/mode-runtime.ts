@@ -11,7 +11,7 @@ export type WorkMode = {
   id: WorkModeId;
   label: string;
   signal: string;
-  requiredRole?: 'admin' | 'godmode';
+  requiredRole?: 'teacher' | 'admin' | 'godmode';
 };
 
 export type DeckItem = {
@@ -40,7 +40,7 @@ type ModeRuntimeInput = {
 
 export const WORK_MODES: WorkMode[] = [
   {id: 'home', label: 'Home', signal: 'situation'},
-  {id: 'teaching', label: 'Teaching', signal: 'pedagogie'},
+  {id: 'teaching', label: 'Teaching', signal: 'pedagogie', requiredRole: 'teacher'},
   {id: 'story', label: 'Story', signal: 'narration'},
   {id: 'project', label: 'Project', signal: 'pilotage'},
   {id: 'learning', label: 'Learning', signal: 'parcours'},
@@ -56,6 +56,7 @@ export const DEFAULT_WORK_MODE: WorkMode = WORK_MODES[0] ?? {
 
 export function canUseMode(mode: WorkMode, role: string | undefined): boolean {
   if (!mode.requiredRole) return true;
+  if (mode.requiredRole === 'teacher') return role === 'teacher' || role === 'godmode';
   if (mode.requiredRole === 'admin') return role === 'admin' || role === 'godmode';
   return role === 'godmode';
 }
