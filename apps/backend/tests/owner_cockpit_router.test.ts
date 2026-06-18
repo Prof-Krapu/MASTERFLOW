@@ -7,6 +7,11 @@ import {OwnerCockpitStatusSchema} from '@masterflow/shared';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
+import {
+  createAction,
+  expireOpenSensitiveActions,
+  preflightAction,
+} from '../src/engines/action_engine.ts';
 import {signToken} from '../src/middleware/auth.ts';
 import {createDiagnosticsRouter} from '../src/routers/diagnostics.ts';
 
@@ -14,6 +19,8 @@ let server: Server;
 let base: string;
 let adminToken: string;
 let teacherToken: string;
+
+const admin = {id: 'cockpit-admin', username: 'cockpit-admin', role: 'admin'} as const;
 
 beforeAll(async () => {
   await seedAll();
@@ -25,7 +32,7 @@ beforeAll(async () => {
   );
   insert.run('cockpit-admin', 'cockpit-admin', 'Cockpit Admin', 'admin', now, now);
   insert.run('cockpit-teacher', 'cockpit-teacher', 'Cockpit Teacher', 'teacher', now, now);
-  adminToken = signToken({id: 'cockpit-admin', username: 'cockpit-admin', role: 'admin'});
+  adminToken = signToken(admin);
   teacherToken = signToken({id: 'cockpit-teacher', username: 'cockpit-teacher', role: 'teacher'});
 
   const app = express();
@@ -64,5 +71,26 @@ describe('D12 Owner Cockpit read-only', () => {
     ]));
     expect(JSON.stringify(body)).not.toContain('password');
     expect(JSON.stringify(body)).not.toContain('api_key');
+  });
+
+  it('surface les actions stale sans relancer automatiquement', async () => {
+    const created = createAction(admin, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      payload: {},
+    });
+    preflightAction(admin, created.id);
+    expireOpenSensitiveActions(admin, {scope: 'mine', reason: 'context_changed'});
+
+    const response = await fetch(`${base}/diagnostics/owner-cockpit`, auth(adminToken));
+    expect(response.status).toBe(200);
+    const body = OwnerCockpitStatusSchema.parse(await response.json());
+
+    expect(body.action_lifecycle.stale).toBeGreaterThanOrEqual(1);
+    expect(body.alerts).toEqual(expect.arrayContaining([
+      expect.objectContaining({type: 'stale_actions_present'}),
+    ]));
+    expect(body.next_safe_action.forbidden_followups).toContain('execute_stale_action');
   });
 });

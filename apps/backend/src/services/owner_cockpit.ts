@@ -6,6 +6,7 @@ import type {
 
 import {env} from '../lib/env.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {listActionLifecycleForCockpit} from '../engines/action_engine.ts';
 import {listJobs} from './jobs.ts';
 import {listValidationInboxItems} from './validation_inbox.ts';
 
@@ -16,6 +17,7 @@ function countJobs(jobs: Job[], statuses: Job['status'][]): number {
 function chooseNextSafeAction(
   validations: ValidationInboxItem[],
   jobs: Job[],
+  staleActions: number,
 ): OwnerCockpitStatus['next_safe_action'] {
   const critical = validations.find((item) => item.risk_level === 'critical');
   if (critical) {
@@ -76,6 +78,17 @@ function chooseNextSafeAction(
     };
   }
 
+  if (staleActions > 0) {
+    return {
+      label: 'Relire les actions obsolètes avant de continuer',
+      reason: 'Une ou plusieurs actions ont été rendues stale ; elles doivent être abandonnées ou repassées en preflight.',
+      source_ref: 'actions:stale',
+      risk: 'low',
+      requires_validation: false,
+      forbidden_followups: ['auto_retry', 'execute_stale_action'],
+    };
+  }
+
   return {
     label: 'Vérifier le pont canon ↔ GitHub avant la prochaine tranche',
     reason: "Le runtime ne peut pas prouver seul l'alignement du Drive et de GitHub.",
@@ -95,10 +108,12 @@ function chooseNextSafeAction(
 export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
   const validations = listValidationInboxItems(actor);
   const jobs = listJobs(actor);
+  const actions = listActionLifecycleForCockpit(actor);
   const highOrCritical = validations.filter(
     (item) => item.risk_level === 'high' || item.risk_level === 'critical',
   ).length;
   const failedJobs = countJobs(jobs, ['failed']);
+  const staleActions = actions.filter((action) => action.status === 'stale').length;
   const releaseReported = env.releaseSha !== null;
 
   const alerts: OwnerCockpitStatus['alerts'] = [
@@ -152,6 +167,14 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       requires_validation: false,
     });
   }
+  if (staleActions > 0) {
+    alerts.unshift({
+      type: 'stale_actions_present',
+      severity: 'warning',
+      message: `${staleActions} action(s) obsolète(s) doivent être abandonnées ou repassées en preflight.`,
+      requires_validation: false,
+    });
+  }
 
   return {
     generated_at: Date.now(),
@@ -172,6 +195,11 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       needs_review: countJobs(jobs, ['needs_review']),
       failed: failedJobs,
     },
+    action_lifecycle: {
+      pending_validation: actions.filter((action) => action.status === 'pending_validation').length,
+      approved: actions.filter((action) => action.status === 'approved').length,
+      stale: staleActions,
+    },
     capabilities: [
       {id: 'shared_validation_inbox', status: 'partial', note: 'Actions et feedback_draft D06.'},
       {id: 'd05_guided_runtime', status: 'partial', note: 'Teaching permet session, réponses et fin ; participation élève séparée.'},
@@ -180,7 +208,7 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       {id: 'd08_generation', status: 'locked', note: 'Provider et génération non exposés.'},
     ],
     alerts,
-    next_safe_action: chooseNextSafeAction(validations, jobs),
+    next_safe_action: chooseNextSafeAction(validations, jobs, staleActions),
     known_limits: [
       'Pas de lecture automatique du Drive canon.',
       'Pas de requête GitHub depuis le runtime.',
