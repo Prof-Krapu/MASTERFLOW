@@ -1,6 +1,8 @@
 # Low-risk execution queue — 2026-06-18
 
-Status: `ACTIVE`
+Status: `PUBLISHED_DRAFT_PR`
+
+GitHub PR: `#6` — https://github.com/Prof-Krapu/MASTERFLOW/pull/6
 
 ## Cadre
 
@@ -61,6 +63,9 @@ Lot 7 : refresh D08 manifest-first lock post-PR #5, sans code, sans provider, sa
 ## Résultat de queue
 
 Tous les lots low-risk de cette file sont traités côté audit/spec/ledger.
+
+La file est publiée en PR draft pour review/merge ultérieur. Elle ne doit pas être interprétée
+comme un déploiement runtime tant que la PR n'est pas validée puis mergée.
 
 Prochaine file safe possible :
 
