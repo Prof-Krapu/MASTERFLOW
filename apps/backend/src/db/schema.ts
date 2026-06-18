@@ -1041,6 +1041,32 @@ function migrate(d: Database.Database): void {
       created_at       INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS d12_missed_trigger_findings (
+      id                          TEXT PRIMARY KEY,
+      owner_id                    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id                  TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      source_ref                  TEXT NOT NULL,
+      expected_process            TEXT NOT NULL,
+      actual_runtime_response     TEXT NOT NULL,
+      missing_runtime_piece       TEXT NOT NULL,
+      user_impact                 TEXT NOT NULL,
+      domain_refs_json            TEXT NOT NULL DEFAULT '[]',
+      output_family_refs_json     TEXT NOT NULL DEFAULT '[]',
+      evidence_refs_json          TEXT NOT NULL DEFAULT '[]',
+      blocked_actions_json        TEXT NOT NULL DEFAULT '[]',
+      recommended_queue_task_json TEXT NOT NULL,
+      severity                    TEXT NOT NULL
+                                    CHECK (severity IN ('low','medium','high','critical')),
+      status                      TEXT NOT NULL DEFAULT 'observation'
+                                    CHECK (status IN (
+                                      'observation','hypothesis','candidate_pattern',
+                                      'validated_alert','stale','archived'
+                                    )),
+      detected_at                 INTEGER NOT NULL,
+      created_at                  INTEGER NOT NULL,
+      updated_at                  INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
@@ -1155,6 +1181,10 @@ function migrate(d: Database.Database): void {
       ON workflow_events(workflow_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_workflow_events_owner
       ON workflow_events(owner_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_d12_findings_owner
+      ON d12_missed_trigger_findings(owner_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_d12_findings_project
+      ON d12_missed_trigger_findings(project_id, status, updated_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -1913,6 +1943,27 @@ export interface TaskModelProfileRow {
   created_at: number;
   updated_at: number;
   updated_by: string | null;
+}
+
+export interface D12MissedTriggerFindingRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  source_ref: string;
+  expected_process: string;
+  actual_runtime_response: string;
+  missing_runtime_piece: string;
+  user_impact: string;
+  domain_refs_json: string;
+  output_family_refs_json: string;
+  evidence_refs_json: string;
+  blocked_actions_json: string;
+  recommended_queue_task_json: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'observation' | 'hypothesis' | 'candidate_pattern' | 'validated_alert' | 'stale' | 'archived';
+  detected_at: number;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface PreCorrectionRunRow {

@@ -2090,6 +2090,61 @@ export const ProcessActivationReadModelSchema = z.object({
 });
 export type ProcessActivationReadModel = z.infer<typeof ProcessActivationReadModelSchema>;
 
+// ───────────────────────── D12 missed trigger findings ─────────────────────────
+
+export const D12FindingSeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
+export type D12FindingSeverity = z.infer<typeof D12FindingSeveritySchema>;
+
+export const D12FindingStatusSchema = z.enum([
+  'observation',
+  'hypothesis',
+  'candidate_pattern',
+  'validated_alert',
+  'stale',
+  'archived',
+]);
+export type D12FindingStatus = z.infer<typeof D12FindingStatusSchema>;
+
+export const D12RecommendedQueueTaskSchema = z.object({
+  task: z.string().min(1).max(240),
+  impact: z.string().min(1).max(500),
+  risk: z.string().min(1).max(120),
+  source_of_truth: z.string().min(1).max(160),
+  truth_status: z.string().min(1).max(120),
+  validation_required: z.boolean(),
+  suggested_owner: z.string().min(1).max(120),
+  forbidden_actions: z.array(z.string().min(1).max(120)).default([]),
+});
+export type D12RecommendedQueueTask = z.infer<typeof D12RecommendedQueueTaskSchema>;
+
+export const CreateD12MissedTriggerFindingSchema = z.object({
+  source_ref: z.string().min(1).max(240),
+  expected_process: z.string().min(1).max(160),
+  actual_runtime_response: z.string().min(1).max(500),
+  missing_runtime_piece: z.string().min(1).max(160),
+  user_impact: z.string().min(1).max(500),
+  domain_refs: z.array(z.string().min(1).max(120)).default([]),
+  output_family_refs: z.array(z.string().min(1).max(120)).default([]),
+  evidence_refs: z.array(z.string().min(1).max(240)).default([]),
+  blocked_actions: z.array(z.string().min(1).max(120)).default(['auto_fix', 'auto_patch', 'auto_canon']),
+  recommended_queue_task: D12RecommendedQueueTaskSchema,
+  severity: D12FindingSeveritySchema.default('medium'),
+  project_id: z.string().min(1).nullable().optional(),
+});
+export type CreateD12MissedTriggerFinding = z.infer<typeof CreateD12MissedTriggerFindingSchema>;
+
+export const D12MissedTriggerFindingSchema = CreateD12MissedTriggerFindingSchema.extend({
+  finding_id: z.string().min(1),
+  detected_at: z.number().int().nonnegative(),
+  owner_id: z.string().min(1),
+  project_id: z.string().nullable(),
+  status: D12FindingStatusSchema,
+  audit_trace: z.array(z.string().min(1)),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type D12MissedTriggerFinding = z.infer<typeof D12MissedTriggerFindingSchema>;
+
 // ───────────────────────── RAG permissionné PR-7 ─────────────────────────
 
 export const RagResourceStatusSchema = z.enum([

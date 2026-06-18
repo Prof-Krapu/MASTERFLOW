@@ -9,7 +9,15 @@ import {
 import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
 import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
 import {diagnoseProcessActivation} from '../services/process_activation.ts';
-import {ProcessActivationRequestSchema} from '@masterflow/shared';
+import {
+  CreateD12MissedTriggerFindingSchema,
+  D12FindingStatusSchema,
+  ProcessActivationRequestSchema,
+} from '@masterflow/shared';
+import {
+  createD12MissedTriggerFinding,
+  listD12MissedTriggerFindings,
+} from '../services/d12_findings.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -163,6 +171,31 @@ export function createDiagnosticsRouter(): Router {
       return;
     }
     res.json(diagnoseProcessActivation(parsed.data));
+  });
+
+  router.get('/diagnostics/d12/findings', (req: Request, res: Response): void => {
+    const status = req.query.status === undefined
+      ? undefined
+      : D12FindingStatusSchema.safeParse(req.query.status);
+    if (status !== undefined && !status.success) {
+      res.status(400).json({error: 'invalid_status'});
+      return;
+    }
+    res.json(listD12MissedTriggerFindings({status: status?.data}));
+  });
+
+  router.post('/diagnostics/d12/findings', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    const parsed = CreateD12MissedTriggerFindingSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    res.status(201).json(createD12MissedTriggerFinding(user, parsed.data));
   });
 
   return router;
