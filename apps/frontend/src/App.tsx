@@ -43,6 +43,7 @@ import {ActionAudit} from './action-audit.tsx';
 import {AdminConsole} from './admin-console.tsx';
 import {RegisterWithCode} from './register-form.tsx';
 import {InventoryWorkspace} from './inventory-workspace.tsx';
+import {JobObservability} from './job-observability.tsx';
 import {
   buildModeView,
   canUseMode,
@@ -1581,6 +1582,8 @@ function App(): ReactElement {
           {canAdmin && context && auth ? (
             <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
           ) : null}
+
+          {canAdmin && auth ? <JobObservability token={auth.token} /> : null}
         </section>
       )}
     </main>
