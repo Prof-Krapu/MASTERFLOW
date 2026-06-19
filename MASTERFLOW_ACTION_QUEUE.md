@@ -9,7 +9,7 @@ Dernière mise à jour : 2026-06-19
 - Tâche : confirmer un domaine uniquement parmi les recommandations V6E.
 - Impact : route une candidate sans la promouvoir en canon ou runtime.
 - Risque : moyen, contenu par admin/godmode et whitelist de recommandations.
-- Statut : local vérifié ; publication GitHub à faire.
+- Statut : mergé sur `main` via PR #47 (`2c39511`) ; pont Drive synchronisé.
 - Validation requise : GO MALEX reçu.
 
 ### Vague 6E — Recommandation de routage factory
@@ -18,7 +18,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : rend les candidate updates lisibles sans inventer de règle de routage.
 - Risque : faible ; lecture seule, domaine cible toujours vide.
 - Source de vérité concernée : D11 Factory Passport Backflow Contract.
-- Statut : local vérifié ; publication GitHub à faire.
+- Statut : mergé sur `main` via PR #46 (`c23c33d`) ; pont Drive synchronisé.
 - Validation requise : GO MALEX reçu.
 
 ### Vague 6D — Candidate updates factory après revue
@@ -27,7 +27,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : rend la sortie d'une revue exploitable sans choisir ou modifier automatiquement un domaine MasterFlow.
 - Risque : faible à moyen, contenu par `candidate_only`, l'absence de domaine cible et la lecture admin/godmode.
 - Source de vérité concernée : D11 Factory Passport Backflow Contract + Shared Validation Inbox.
-- Statut : local vérifié ; publication GitHub à faire. Routage métier, Usage Harvester et canon restent exclus.
+- Statut : mergé sur `main` via PR #45 (`17e57f8`) ; pont Drive synchronisé. Routage métier reste candidate-only.
 - Validation requise : GO MALEX reçu ; publication autorisée par la consigne continue.
 
 ### Vague 6C — Factory Backflow Intake manuel
