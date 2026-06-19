@@ -6,6 +6,7 @@ import type {
   CurrentContext,
   GuidedQuestion,
   GuidedSession,
+  IdentityMatchReviewItem,
   Job,
   Project,
   Resource,
@@ -18,8 +19,10 @@ import {
   createGuidedSession,
   getGuides,
   getGuidedSessions,
+  getIdentityMatchReviews,
   getJobs,
   submitGuidedAnswer,
+  decideIdentityMatchReview,
 } from './api.ts';
 
 type TeachingReadinessProps = {
@@ -85,6 +88,9 @@ export function TeachingReadiness({
   const [jobs, setJobs] = useState<Job[]>([]);
   const [guides, setGuides] = useState<ConversationGuide[]>([]);
   const [sessions, setSessions] = useState<GuidedSession[]>([]);
+  const [identityReviews, setIdentityReviews] = useState<IdentityMatchReviewItem[]>([]);
+  const [identitySelections, setIdentitySelections] = useState<Record<string, string>>({});
+  const [identityMutatingId, setIdentityMutatingId] = useState<string | null>(null);
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -97,24 +103,53 @@ export function TeachingReadiness({
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions] = await Promise.all([
+      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews] = await Promise.all([
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
+        getIdentityMatchReviews(project?.project_id, token),
       ]);
       setJobs(nextJobs);
       setGuides(nextGuides);
       setSessions(nextSessions);
+      setIdentityReviews(nextIdentityReviews);
       setStatus('État synchronisé depuis les surfaces runtime existantes.');
     } catch (error) {
       setJobs([]);
       setGuides([]);
       setSessions([]);
+      setIdentityReviews([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [project?.project_id, token]);
+
+  const decideIdentity = useCallback(async (
+    review: IdentityMatchReviewItem,
+    decision: 'confirm' | 'reject',
+  ): Promise<void> => {
+    const selectedIdentityId = identitySelections[review.candidate.candidate_id];
+    if (decision === 'confirm' && !selectedIdentityId) {
+      setStatus('Choisis un étudiant avant de confirmer le rapprochement.');
+      return;
+    }
+    setIdentityMutatingId(review.candidate.candidate_id);
+    try {
+      await decideIdentityMatchReview(review.candidate.candidate_id, {
+        decision,
+        selected_identity_id: decision === 'confirm' ? selectedIdentityId : null,
+      }, token);
+      await refresh();
+      setStatus(decision === 'confirm'
+        ? 'Identité confirmée par le professeur et liée à la submission.'
+        : 'Rapprochement rejeté. Aucune identité n’a été liée.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Décision identité impossible.');
+    } finally {
+      setIdentityMutatingId(null);
+    }
+  }, [identitySelections, refresh, token]);
 
   useEffect(() => {
     void refresh();
@@ -316,6 +351,64 @@ export function TeachingReadiness({
           </section>
         ))}
       </div>
+
+      <section className="identity-review" aria-label="Identités étudiantes à confirmer">
+        <div className="identity-review__heading">
+          <div>
+            <strong>Identités à confirmer</strong>
+            <span>{identityReviews.length} en attente</span>
+          </div>
+          <small>Aucun rapprochement n’est appliqué automatiquement.</small>
+        </div>
+        {identityReviews.length === 0 ? (
+          <p className="muted compact">Aucune ambiguïté d’identité dans le périmètre Teaching actif.</p>
+        ) : (
+          <div className="identity-review__list">
+            {identityReviews.map((review) => (
+              <article className="identity-review__card" key={review.candidate.candidate_id}>
+                <div>
+                  <strong>Libellé observé : {review.candidate.observed_label}</strong>
+                  <small>Submission {review.candidate.submission_id}</small>
+                </div>
+                <label>
+                  <span>Étudiant du roster</span>
+                  <select
+                    onChange={(event) => setIdentitySelections((current) => ({
+                      ...current,
+                      [review.candidate.candidate_id]: event.target.value,
+                    }))}
+                    value={identitySelections[review.candidate.candidate_id] ?? ''}
+                  >
+                    <option value="">Choisir après vérification</option>
+                    {review.options.map((option) => (
+                      <option key={option.student_identity_id} value={option.student_identity_id}>
+                        {option.display_name}{option.aliases.length > 0 ? ` · ${option.aliases.join(', ')}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="identity-review__actions">
+                  <button
+                    disabled={identityMutatingId !== null}
+                    onClick={() => void decideIdentity(review, 'confirm')}
+                    type="button"
+                  >
+                    Confirmer l’identité
+                  </button>
+                  <button
+                    className="secondary"
+                    disabled={identityMutatingId !== null}
+                    onClick={() => void decideIdentity(review, 'reject')}
+                    type="button"
+                  >
+                    Rejeter le rapprochement
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <section className="teaching-guided" aria-label="Sujet et session guidée">
         <div className="teaching-guided__heading">

@@ -1,17 +1,26 @@
 # MasterFlow — Action Queue
 
-Dernière mise à jour : 2026-06-19
+Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
-### Verticale correction contextualisée — UI professeur
+### Verticale correction contextualisée — publier l'UI professeur
 
-- Tâche : afficher les `identity_match_candidate` et les gestes confirmer/rejeter.
+- Tâche : publier l'écran Teaching des `identity_match_candidate` et ses gestes confirmer/rejeter.
 - Impact : rend les ambiguïtés compréhensibles et actionnables sans décision automatique.
 - Risque : moyen ; données pédagogiques privées et compatibilité historique.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : liaison sur main ; candidates backend locales vérifiées ; UI future immédiate.
+- Statut : code, tests et recette navigateur vérifiés localement ; publication GitHub en cours.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
+
+### Verticale correction contextualisée — gestion manuelle cohortes/rosters
+
+- Tâche : permettre au professeur de créer une cohorte et une nouvelle version de roster depuis Teaching.
+- Impact : rend le contexte de correction administrable sans intervention technique.
+- Risque : moyen ; données privées, version append-only et périmètre projet à conserver.
+- Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
+- Statut : backend fondation sur main ; UI future immédiate après publication de la revue d'identité.
+- Validation requise : non pour code/tests isolés ; oui avant import ou migration d'une base réelle.
 
 ### Phase 1 — Première release privée vérifiable
 

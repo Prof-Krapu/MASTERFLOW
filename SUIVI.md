@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Identity Review UI V1 — LOCAL VÉRIFIÉ
+
+- écran Teaching dédié aux ambiguïtés d'identité ;
+- choix limité au roster figé du contexte de correction ;
+- confirmation ou rejet toujours explicite par le professeur ;
+- état vide compréhensible, aucun rapprochement automatique ;
+- isolation backend conservée et aucun effet sur transcript, note ou feedback final.
+
+Recette : backend 363/363 ; TypeScript backend/frontend et build Vite verts ; navigateur
+desktop/mobile sans débordement horizontal ; console sans erreur ; diff-check OK.
+
+Statut : publication GitHub en cours depuis `codex/identity-review-ui-v1`.
+Prochaine tranche : gestion manuelle des cohortes et versions de roster dans Teaching.
+
+---
+
 ## 2026-06-20 — Identity Match Candidates V1 — LOCAL VÉRIFIÉ
 
 - noms/alias rapprochés uniquement par égalité normalisée et dans le roster figé ;

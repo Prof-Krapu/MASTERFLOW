@@ -1863,6 +1863,18 @@ export const IdentityMatchCandidateSchema = z.object({
 });
 export type IdentityMatchCandidate = z.infer<typeof IdentityMatchCandidateSchema>;
 
+export const IdentityMatchReviewItemSchema = z.object({
+  candidate: IdentityMatchCandidateSchema,
+  options: z.array(
+    z.object({
+      student_identity_id: z.string().min(1),
+      display_name: z.string().min(1).max(160),
+      aliases: z.array(z.string().min(1).max(160)).max(20),
+    }),
+  ).min(1).max(20),
+});
+export type IdentityMatchReviewItem = z.infer<typeof IdentityMatchReviewItemSchema>;
+
 export const DecideIdentityMatchCandidateRequestSchema = z
   .object({
     decision: z.enum(['confirm', 'reject']),

@@ -11,6 +11,7 @@ import {
   decideIdentityMatchCandidate,
   getCorrectionContextSnapshot,
   linkSubmissionIdentity,
+  listIdentityMatchReviewItems,
 } from '../src/services/correction_context.ts';
 
 const teacher: AuthUser = {id: 'context-teacher', username: 'context_teacher', role: 'teacher'};
@@ -185,6 +186,16 @@ describe('snapshot de contexte correction V1', () => {
       observed_label: 'Alice',
     });
     expect(candidate.candidate_identity_ids).toHaveLength(2);
+    expect(listIdentityMatchReviewItems(teacher)).toEqual([
+      expect.objectContaining({
+        candidate: expect.objectContaining({candidate_id: candidate.candidate_id}),
+        options: expect.arrayContaining([
+          expect.objectContaining({display_name: 'Alice Martin'}),
+          expect.objectContaining({display_name: 'Bob Durand'}),
+        ]),
+      }),
+    ]);
+    expect(listIdentityMatchReviewItems(outsider)).toEqual([]);
     expect(
       getDb()
         .prepare('SELECT student_identity_id, identity_status FROM submissions WHERE id = ?')
