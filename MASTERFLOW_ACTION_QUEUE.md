@@ -4,15 +4,14 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
-### Verticale correction contextualisée — compilateur privé
+### Verticale correction contextualisée — liaison étudiant/preuve
 
-- Tâche : compiler depuis le snapshot le payload privé roster/sujet/barème/sources
-  réellement consommable par le futur runner.
-- Impact : fournit au traitement la bonne liste d'élèves et les bonnes versions,
-  sans rechercher du contexte dans l'historique de conversation.
+- Tâche : relier chaque submission à un `student_identity_id` du roster figé,
+  avec ambiguity candidate/review pour les noms ou alias non univoques.
+- Impact : attribue chaque transcription/copie au bon étudiant sans deviner silencieusement.
 - Risque : moyen ; données pédagogiques privées et compatibilité historique.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : roster et snapshot sur main ; enforcement run local vérifié ; compilateur futur immédiat.
+- Statut : contexte versionné sur main ; payload privé local vérifié ; liaison identité future immédiate.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
 ### Phase 1 — Première release privée vérifiable

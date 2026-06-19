@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Payload privé de contexte correction V1 — LOCAL VÉRIFIÉ
+
+- compile cohorte, période, version de roster, élèves et alias depuis le snapshot ;
+- expose uniquement les refs sujet/barème/sources/process, jamais le transcript brut ;
+- conserve la version historique même après activation d'un nouveau roster ;
+- même isolation owner/projet que le batch ; payload explicitement privé et read-only.
+
+Recette : ciblés 9/9 ; backend 363/363 ; TypeScript backend/frontend et build Vite verts ;
+diff-check OK.
+
+Statut : branche `codex/correction-context-payload-v1`, publication marathon en cours.
+Prochaine tranche : liaison explicite submission → student identity du roster figé.
+
+---
+
 ## 2026-06-20 — Enforcement du contexte pré-correction V1 — LOCAL VÉRIFIÉ
 
 - tout nouveau run exige un `context_snapshot_id` validement porté par son manifest ;
