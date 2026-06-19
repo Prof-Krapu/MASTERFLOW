@@ -2,9 +2,22 @@
 
 Dernière mise à jour : 2026-06-19
 
-## 1. Livré — historique à ne pas relancer
+## 1. À faire maintenant
 
-Les vagues D11 Factory Backflow V6C à V6F sont closes sur `main` à `cff8df4`.
+### Phase 1 — Première release privée vérifiable
+
+- Tâche : démarrer le package Docker sur un serveur choisi, avec volume persistant,
+  secrets hors Git et `MASTERFLOW_RELEASE_SHA` égal au commit livré.
+- Impact : transforme GitHub en instance MasterFlow accessible et vérifiable.
+- Risque : moyen ; exposition réseau, secrets et sauvegarde de base doivent être décidés
+  avec le serveur cible.
+- Source de vérité concernée : GitHub runtime + D12 deployment bridge.
+- Statut : package prêt à vérifier sur hôte Docker ; live non déployé.
+- Validation requise : oui — choix du serveur et autorisation d'accès/de déploiement.
+
+## 2. Livré — historique à ne pas relancer
+
+Les vagues D11 Factory Backflow V6C à V6F sont closes sur `main` à `ca3d3b7`.
 Elles restent ci-dessous comme preuve de périmètre ; elles ne constituent plus
 une tâche active. La recette opérateur unique est
 `docs/d11-d12/FACTORY_BACKFLOW_OPERATOR_RECIPE_V1_2026-06-19.md`.

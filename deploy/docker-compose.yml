@@ -1,0 +1,36 @@
+name: masterflow
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 8000
+      MASTERFLOW_DB_PATH: /data/masterflow.db
+    volumes:
+      - masterflow_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:8000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${MASTERFLOW_BIND:-127.0.0.1}:${MASTERFLOW_HTTP_PORT:-8080}:80"
+
+volumes:
+  masterflow_data:

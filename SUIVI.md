@@ -20,8 +20,8 @@ Les quatre tranches D11 Factory Backflow sont désormais clôturées dans le run
 - V6E recommandations de domaine en lecture seule ;
 - V6F routage manuel whitelisté, toujours `candidate_only`.
 
-Le rafraîchissement de vérité PR #48 place cet état sur GitHub `main` à
-`cff8df4`. La recette opérateur unique est
+La clôture documentaire PR #49 place cet état sur GitHub `main` à
+`ca3d3b7`. La recette opérateur unique est
 `docs/d11-d12/FACTORY_BACKFLOW_OPERATOR_RECIPE_V1_2026-06-19.md`.
 
 **D11 V1 est fermé.** Toute suite — import de fichiers/ZIP/URL, installation,
