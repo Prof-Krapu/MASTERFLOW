@@ -30,7 +30,16 @@ Dernière mise à jour : 2026-06-19
 - Risque : moyen en audit, élevé si invalidation automatique trop large.
 - Source de vérité concernée : `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
 - Statut : mergé sur `main` via PR #29 (`54b97cf`), vérifié 341/341 ; aucune invalidation automatique ouverte.
-- Validation requise : non pour l'audit ; oui avant migration/runtime.
+- Validation requise : acquise pour politique V1 ; aucune mutation runtime supplémentaire.
+
+### Vague 5E — Visibilité owner du comparateur contextuel
+
+- Tâche : afficher `unchanged`, `requires_review` ou `inconclusive` avec la prochaine action sûre.
+- Impact : rend le snapshot utilisable sans automatiser le re-preflight.
+- Risque : faible, lecture seule.
+- Source de vérité concernée : politique V1 context change + Action Context Snapshot.
+- Statut : à faire maintenant.
+- Validation requise : non pour lecture seule.
 
 ### Vague 5A — Preview hard-stop
 
