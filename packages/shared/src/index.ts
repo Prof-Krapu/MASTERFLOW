@@ -1354,7 +1354,7 @@ export const FactoryBackflowCandidateUpdateSchema = z.object({
   source_candidate_id: z.string().min(1).max(160),
   summary: z.string().min(1).max(500),
   classification: FactoryBackflowClassificationSchema,
-  routing_status: z.literal('unrouted'),
+  routing_status: z.enum(['unrouted', 'routed']),
   target_domain: z.string().min(1).max(120).nullable(),
   candidate_status: z.literal('approved_candidate'),
   canon_status: z.literal('candidate_only'),
@@ -1364,6 +1364,12 @@ export const FactoryBackflowCandidateUpdateSchema = z.object({
   updated_at: z.number().int().nonnegative(),
 });
 export type FactoryBackflowCandidateUpdate = z.infer<typeof FactoryBackflowCandidateUpdateSchema>;
+
+export const RouteFactoryBackflowCandidateUpdateRequestSchema = z.object({
+  target_domain: z.enum(['D08_DA_VISUAL_ASSETS', 'D09_MASTERSTORY', 'D05_PEDAGOGY', 'D06_CORRECTION_FEEDBACK_EVALUATION']),
+  note: z.string().max(500).optional(),
+});
+export type RouteFactoryBackflowCandidateUpdateRequest = z.infer<typeof RouteFactoryBackflowCandidateUpdateRequestSchema>;
 
 // ───────────────────────── Registre des adapters ─────────────────────────
 
