@@ -20,6 +20,33 @@ contrats, tests, branches, commits, pushes, PR, merges et ponts Drive/Git.
 Améliorer directement une feature quand cela renforce le canon, la sécurité, la source de vérité,
 la continuité ou l’usage réel. Toute amélioration doit garder sa preuve, son impact et son test.
 
+## Cycle de publication obligatoire
+
+Une vague n'est pas terminée quand les fichiers existent seulement dans le Drive ou sur le disque
+local. Pour chaque lot validé et publiable, le marathon enchaîne automatiquement :
+
+```txt
+preflight canon/Git/inbox
+-> patch canon + miroir Git
+-> tests et diff-check
+-> commit borné
+-> push de branche
+-> PR explicable
+-> merge sur main
+-> fetch/contrôle du SHA main
+-> mise à jour du ledger et de la carte de progression
+```
+
+Règles :
+
+- commit, push, PR et merge font partie du travail normal du marathon ;
+- aucun lot ne peut être annoncé « livré GitHub » avant preuve du SHA sur `main` ;
+- si authentification, réseau, CI ou protection de branche bloque la publication, déclencher une
+  alerte claire et garder le lot prêt sans le présenter comme synchronisé ;
+- après reprise du blocage, publier d'abord les lots locaux en attente avant d'ouvrir une nouvelle
+  vague de code ;
+- ne jamais regrouper silencieusement des modifications étrangères ou sans rapport dans le commit.
+
 ## Non-dérive
 
 - Drive = canon produit ; GitHub = vérité runtime ; legacy = preuve read-only.
