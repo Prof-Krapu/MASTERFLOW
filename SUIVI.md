@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Native Usage Harvester D11-D12 V1 — LOCAL VÉRIFIÉ
+## 2026-06-19 — Native Usage Harvester D11-D12 V1 — MERGÉ SUR MAIN (PR #38)
 
 - les événements workflow d'échec, blocage, rejet ou ressource/permission manquante créent
   automatiquement une candidate privée ;
@@ -19,7 +19,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Recette : ciblés Usage Harvester/D12 43/43 ; backend complet 347/347 ; TypeScript backend OK.
 
-Statut : local vérifié ; aucune conversation brute, action, job, provider ou écriture canon.
+Statut : mergé via PR #38 (`7ec5baa`) ; aucune conversation brute, action, job, provider ou écriture canon.
 
 ---
 
