@@ -15,7 +15,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Recette : backend 363/363 ; TypeScript et build verts ; création navigateur cohorte + roster
 V1 réussie ; desktop/mobile sans débordement ; console sans erreur.
 
-Statut : publication GitHub en cours.
+Statut : mergé sur `main` via PR #69 (`0168a70`).
 Prochaine tranche : lancement manuel d'un lot de correction contextualisé.
 
 ---

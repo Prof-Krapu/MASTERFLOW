@@ -13,13 +13,13 @@ Dernière mise à jour : 2026-06-20
 - Statut : mergé sur `main` via PR #67 (`4ccda9a`) ; preuves Drive synchronisées.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
-### Verticale correction contextualisée — publier la gestion cohortes/rosters
+### Livré — gestion cohortes/rosters
 
 - Tâche : permettre au professeur de créer une cohorte et une nouvelle version de roster depuis Teaching.
 - Impact : rend le contexte de correction administrable sans intervention technique.
 - Risque : moyen ; données privées, version append-only et périmètre projet à conserver.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : code, tests et recette navigateur vérifiés localement ; publication GitHub en cours.
+- Statut : mergé sur `main` via PR #69 (`0168a70`) ; preuves Drive synchronisées.
 - Validation requise : non pour code/tests isolés ; oui avant import ou migration d'une base réelle.
 
 ### Verticale correction contextualisée — lancer un lot manuel

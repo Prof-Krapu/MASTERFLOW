@@ -1,6 +1,8 @@
 # Teaching Roster Management V1 — Delivery
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_ON_MAIN`
+
+Publication : PR #69 — `0168a7078d99c6efc44f7861a963bb42ea5f466f`
 
 ## Intention produit
 
