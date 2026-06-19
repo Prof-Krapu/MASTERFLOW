@@ -27,6 +27,55 @@ Règles de lecture :
 
 ---
 
+## 2026-06-19 — open — REQ-LIVE-RUNTIME-RECOVERY-001
+
+MALEX/Codex → Vincent.
+
+### Contexte vérifié
+
+```yaml
+github_main: ec0728213a4084f21ad1845ba0a1aa6965e71713
+historical_backend: https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443/health
+historical_stack: https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000
+observed_result: 502 from the historical runtime smoke
+```
+
+### Demande
+
+Diagnostiquer l'instance historique et, seulement si la base existante est saine,
+redémarrer le backend/proxy à l'identique. Le but est de récupérer la continuité
+de données, pas de réinstaller MasterFlow ni de lancer la nouvelle release Docker.
+
+Avant toute action qui modifie l'hôte, confirmer :
+
+1. le statut des processus backend, frontend/proxy et Tailscale/Funnel ;
+2. le chemin, la date, la taille et les droits du fichier SQLite existant ;
+3. une sauvegarde ou un checksum vérifiable de cette base ;
+4. le SHA Git réellement lancé, s'il est identifiable ;
+5. la cause précise du 502.
+
+Action autorisée après ces preuves : relancer le processus existant en conservant
+le même fichier SQLite et la même configuration. Toute migration, `git pull`,
+réinstallation, remplacement de base, changement de secret, exposition réseau ou
+déploiement Docker reste interdit sans nouveau GO explicite de MALEX.
+
+### Réponse attendue
+
+```yaml
+request_id: REQ-LIVE-RUNTIME-RECOVERY-001
+host_status: running | stopped | unavailable | unknown
+root_cause_502:
+database_path:
+database_backup_or_checksum:
+runtime_sha:
+action_taken: none | restarted_existing_process
+health_after_action:
+data_preservation: confirmed | not_confirmed
+blocker:
+```
+
+---
+
 ## 2026-06-18 — done — Shared Validation Inbox backend + UI intégrée
 
 MALEX/Codex a repris la fondation `b52fff4` au-dessus du `main` actuel et l'a câblée à la surface
