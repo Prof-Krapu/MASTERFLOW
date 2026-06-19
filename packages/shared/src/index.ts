@@ -1807,6 +1807,9 @@ export const SubmissionRecordSchema = z.object({
   project_id: z.string().min(1).nullable().optional(),
   project_scope: z.string().min(1),
   student_ref: z.string().min(1).nullable(),
+  student_identity_id: z.string().min(1).nullable().optional(),
+  identity_linked_by: z.string().min(1).nullable().optional(),
+  identity_linked_at: z.number().int().nonnegative().nullable().optional(),
   source_evidence_ref: z.string().min(1),
   identity_status: z.enum(['unknown', 'candidate', 'confirmed', 'rejected']),
   status: z.enum(['candidate', 'ready', 'processing', 'review', 'completed', 'rejected']),
@@ -1815,6 +1818,26 @@ export const SubmissionRecordSchema = z.object({
   updated_at: z.number().int().nonnegative(),
 });
 export type SubmissionRecord = z.infer<typeof SubmissionRecordSchema>;
+
+export const LinkSubmissionIdentityRequestSchema = z.object({
+  context_snapshot_id: z.string().min(1),
+  student_identity_id: z.string().min(1),
+});
+export type LinkSubmissionIdentityRequest = z.infer<
+  typeof LinkSubmissionIdentityRequestSchema
+>;
+
+export const SubmissionIdentityLinkSchema = z.object({
+  submission_id: z.string().min(1),
+  batch_id: z.string().min(1),
+  context_snapshot_id: z.string().min(1),
+  roster_version_id: z.string().min(1),
+  student_identity_id: z.string().min(1),
+  identity_status: z.literal('confirmed'),
+  linked_by: z.string().min(1),
+  linked_at: z.number().int().nonnegative(),
+});
+export type SubmissionIdentityLink = z.infer<typeof SubmissionIdentityLinkSchema>;
 
 export const PreCorrectionManifestSchema = z
   .object({

@@ -4,14 +4,13 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
-### Verticale correction contextualisée — liaison étudiant/preuve
+### Verticale correction contextualisée — ambiguïtés et UI professeur
 
-- Tâche : relier chaque submission à un `student_identity_id` du roster figé,
-  avec ambiguity candidate/review pour les noms ou alias non univoques.
-- Impact : attribue chaque transcription/copie au bon étudiant sans deviner silencieusement.
+- Tâche : créer les `identity_match_candidate` et une surface de confirmation professeur.
+- Impact : propose les rapprochements de noms/alias sans jamais les confirmer automatiquement.
 - Risque : moyen ; données pédagogiques privées et compatibilité historique.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : contexte versionné sur main ; payload privé local vérifié ; liaison identité future immédiate.
+- Statut : contexte V1 sur main ; liaison explicite locale vérifiée ; candidates/UI futures immédiates.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
 ### Phase 1 — Première release privée vérifiable

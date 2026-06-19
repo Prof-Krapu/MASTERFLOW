@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Liaison submission → student identity V1 — LOCAL VÉRIFIÉ
+
+- choix manuel d'une identité présente dans le roster figé du snapshot ;
+- aucun matching automatique par nom ou alias ;
+- même choix idempotent, autre identité refusée après confirmation ;
+- identité hors roster et accès godmode extérieur refusés ;
+- preuve auditée, aucune modification de transcript ou feedback final.
+
+Recette : backend 363/363 ; TypeScript backend/frontend et build Vite verts ; diff-check OK.
+
+Statut : branche `codex/submission-identity-link-v1`, publication marathon en cours.
+Prochaine tranche : candidates d'ambiguïté et confirmation professeur.
+
+---
+
 ## 2026-06-20 — Payload privé de contexte correction V1 — LOCAL VÉRIFIÉ
 
 - compile cohorte, période, version de roster, élèves et alias depuis le snapshot ;

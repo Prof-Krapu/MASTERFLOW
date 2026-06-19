@@ -2,10 +2,14 @@ import {
   CorrectionContextPayloadSchema,
   CorrectionContextSnapshotSchema,
   CreateCorrectionContextSnapshotSchema,
+  LinkSubmissionIdentityRequestSchema,
   ROLE_RANK,
+  SubmissionIdentityLinkSchema,
   type CorrectionContextPayload,
   type CorrectionContextSnapshot,
   type CreateCorrectionContextSnapshot,
+  type LinkSubmissionIdentityRequest,
+  type SubmissionIdentityLink,
 } from '@masterflow/shared';
 
 import {
@@ -13,6 +17,7 @@ import {
   type CohortRow,
   type CorrectionContextSnapshotRow,
   type RosterVersionRow,
+  type SubmissionRow,
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
@@ -221,5 +226,88 @@ export function compileCorrectionContextPayload(
     process_context_profile_ref: snapshot.process_context_profile_ref,
     privacy: 'private',
     compiled_at: Date.now(),
+  });
+}
+
+/**
+ * Relie explicitement une preuve/copie à une identité du roster figé.
+ *
+ * Aucun nom ou alias n'est résolu ici : le caller fournit un identifiant interne
+ * déjà visible dans le payload privé, puis le service vérifie son appartenance.
+ */
+export function linkSubmissionIdentity(
+  actor: AuthUser,
+  submissionId: string,
+  input: LinkSubmissionIdentityRequest,
+): SubmissionIdentityLink {
+  requireTeacher(actor);
+  const request = LinkSubmissionIdentityRequestSchema.parse(input);
+  const submission = getDb().prepare('SELECT * FROM submissions WHERE id = ?').get(submissionId) as
+    | SubmissionRow
+    | undefined;
+  if (!submission) throw new Error('submission_not_found');
+  const batch = requireBatch(actor, submission.batch_id);
+  if (!['candidate', 'ready', 'review'].includes(submission.status)) {
+    throw new Error('submission_identity_locked');
+  }
+
+  const snapshot = getDb()
+    .prepare('SELECT * FROM correction_context_snapshots WHERE id = ? AND batch_id = ?')
+    .get(request.context_snapshot_id, batch.id) as CorrectionContextSnapshotRow | undefined;
+  if (!snapshot) throw new Error('correction_context_snapshot_not_found');
+  const membership = getDb()
+    .prepare(
+      `SELECT 1 AS hit FROM roster_members
+       WHERE roster_version_id = ? AND student_identity_id = ?`,
+    )
+    .get(snapshot.roster_version_id, request.student_identity_id) as {hit: number} | undefined;
+  if (!membership) throw new Error('student_identity_not_in_snapshot_roster');
+
+  if (submission.identity_status === 'confirmed' && submission.student_identity_id) {
+    if (submission.student_identity_id !== request.student_identity_id) {
+      throw new Error('submission_identity_locked');
+    }
+    return SubmissionIdentityLinkSchema.parse({
+      submission_id: submission.id,
+      batch_id: submission.batch_id,
+      context_snapshot_id: snapshot.id,
+      roster_version_id: snapshot.roster_version_id,
+      student_identity_id: submission.student_identity_id,
+      identity_status: 'confirmed',
+      linked_by: submission.identity_linked_by,
+      linked_at: submission.identity_linked_at,
+    });
+  }
+
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `UPDATE submissions
+       SET student_identity_id = ?, identity_status = 'confirmed',
+           identity_linked_by = ?, identity_linked_at = ?, updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(request.student_identity_id, actor.id, now, now, submission.id);
+  audit({
+    event_type: 'correction.submission_identity_linked',
+    user_id: actor.id,
+    scope: batch.project_id ?? batch.owner_id,
+    detail: {
+      submission_id: submission.id,
+      batch_id: batch.id,
+      context_snapshot_id: snapshot.id,
+      roster_version_id: snapshot.roster_version_id,
+      student_identity_id: request.student_identity_id,
+    },
+  });
+  return SubmissionIdentityLinkSchema.parse({
+    submission_id: submission.id,
+    batch_id: submission.batch_id,
+    context_snapshot_id: snapshot.id,
+    roster_version_id: snapshot.roster_version_id,
+    student_identity_id: request.student_identity_id,
+    identity_status: 'confirmed',
+    linked_by: actor.id,
+    linked_at: now,
   });
 }
