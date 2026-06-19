@@ -234,7 +234,11 @@ export function getOwnerCockpitStatus(actor: AuthUser): OwnerCockpitStatus {
       high_or_critical: highOrCriticalFindings,
     },
     capabilities: [
-      {id: 'shared_validation_inbox', status: 'partial', note: 'Actions et feedback_draft D06.'},
+      {
+        id: 'shared_validation_inbox',
+        status: 'partial',
+        note: 'Actions, objets D06 et findings D12 privées.',
+      },
       {id: 'd05_guided_runtime', status: 'partial', note: 'Teaching permet session, réponses et fin ; participation élève séparée.'},
       {id: 'd12_owner_cockpit', status: 'partial', note: 'Agrégat runtime disponible, sans lecture Drive live.'},
       {id: 'process_activation', status: 'partial', note: 'Diagnostic observation-only, sans action, job, LLM ni écriture.'},

@@ -10,6 +10,10 @@ import {signToken, type AuthUser} from '../src/middleware/auth.ts';
 import {createProjectsRouter} from '../src/routers/projects.ts';
 import {createValidationInboxRouter} from '../src/routers/validation_inbox.ts';
 import {
+  createD12MissedTriggerFinding,
+  listD12MissedTriggerFindings,
+} from '../src/services/d12_findings.ts';
+import {
   getCorrectionExportPreview,
   getFeedbackDraft,
   recordCorrectionExportPreview,
@@ -28,12 +32,14 @@ const otherTeacher: AuthUser = {
   role: 'teacher',
 };
 const student: AuthUser = {id: 'validation-inbox-student', username: 'validation_inbox_student', role: 'student'};
+const admin: AuthUser = {id: 'validation-inbox-admin', username: 'validation_inbox_admin', role: 'admin'};
 const now = Date.now();
 
 let server: Server;
 let base = '';
 let teacherToken = '';
 let studentToken = '';
+let adminToken = '';
 
 function insertUser(user: AuthUser): void {
   const now = Date.now();
@@ -110,6 +116,31 @@ function createPendingExportPreview(exportId: string, owner: AuthUser = teacher)
     updated_at: now,
   });
   return preview.export_id;
+}
+
+function createD12Finding(sourceRef: string): string {
+  return createD12MissedTriggerFinding(admin, {
+    source_ref: sourceRef,
+    expected_process: 'hard_stop',
+    actual_runtime_response: 'Le stop a été compris sans invalider les suites sensibles.',
+    missing_runtime_piece: 'hard_stop_action_expiry_bridge',
+    user_impact: 'MALEX doit contrôler manuellement les actions encore ouvertes.',
+    domain_refs: ['D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT'],
+    output_family_refs: ['process_control'],
+    evidence_refs: ['diagnostics:process_activation'],
+    blocked_actions: ['auto_fix', 'auto_patch', 'auto_canon'],
+    recommended_queue_task: {
+      task: 'Relier le hard stop à l’expiration contrôlée',
+      impact: 'Éviter une action sensible devenue incohérente.',
+      risk: 'élevé sans validation',
+      source_of_truth: 'canon D12',
+      truth_status: 'hypothèse produit',
+      validation_required: true,
+      suggested_owner: 'MALEX',
+      forbidden_actions: ['auto_execute', 'auto_canon'],
+    },
+    severity: 'high',
+  }).finding_id;
 }
 
 function insertFeedbackFixture(owner: AuthUser): void {
@@ -253,10 +284,12 @@ beforeAll(async () => {
   insertUser(teacher);
   insertUser(otherTeacher);
   insertUser(student);
+  insertUser(admin);
   insertFeedbackFixture(teacher);
   insertFeedbackFixture(otherTeacher);
   teacherToken = signToken(teacher);
   studentToken = signToken(student);
+  adminToken = signToken(admin);
 
   const app = express();
   app.use(express.json());
@@ -471,7 +504,83 @@ describe('Validation Inbox MVP — projection action-based', () => {
       .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
       .get() as {sql: string};
     expect(table.sql).toContain('correction_export_preview');
+    expect(table.sql).toContain('d12_finding');
     expect(listValidationInboxItems(teacher).some((entry) => entry.source_kind === 'action')).toBe(true);
+  });
+
+  it('projette une finding D12 privée seulement pour admin/godmode', () => {
+    const findingId = createD12Finding('process_activation:validation-inbox-private');
+    const adminItem = listValidationInboxItems(admin).find(
+      (entry) => entry.source_kind === 'd12_finding' && entry.source_id === findingId,
+    );
+
+    expect(adminItem).toMatchObject({
+      item_type: 'autonomy_proposal',
+      current_status: 'needs_review',
+      risk_level: 'high',
+      privacy_scope: 'admin_only',
+      decision_options: ['approve', 'park', 'reject', 'archive'],
+      output_readiness_state: 'blocked',
+    });
+    expect(adminItem?.blocked_actions).toEqual(expect.arrayContaining(['auto_fix', 'auto_canon', 'auto_deploy']));
+    expect(listValidationInboxItems(teacher).some((entry) => entry.source_id === findingId)).toBe(false);
+  });
+
+  it.each([
+    ['approve', 'validated_alert', 'approved'],
+    ['park', 'observation', 'parked'],
+    ['reject', 'stale', 'rejected'],
+    ['archive', 'archived', 'archived'],
+  ] as const)('délègue la décision D12 %s sans effet externe', (decision, findingStatus, inboxStatus) => {
+    const findingId = createD12Finding(`process_activation:validation-inbox-${decision}`);
+    const item = listValidationInboxItems(admin).find(
+      (entry) => entry.source_kind === 'd12_finding' && entry.source_id === findingId,
+    );
+    if (!item) throw new Error('finding D12 projetée introuvable');
+    const before = {
+      actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
+      jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
+    };
+
+    const decided = decideValidationInboxItem(admin, item.item_id, {
+      decision,
+      note: `Décision ${decision} via inbox`,
+    });
+    const finding = listD12MissedTriggerFindings({status: findingStatus})
+      .find((entry) => entry.finding_id === findingId);
+    const after = {
+      actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
+      jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
+    };
+
+    expect(decided.current_status).toBe(inboxStatus);
+    expect(finding?.owner_decision?.decision).toBe(
+      decision === 'approve'
+        ? 'validate_alert'
+        : decision === 'park'
+          ? 'keep_observation'
+          : decision === 'reject'
+            ? 'mark_stale'
+            : 'archive',
+    );
+    expect(after).toEqual(before);
+    expect(listValidationInboxItems(admin).some((entry) => entry.source_id === findingId)).toBe(false);
+  });
+
+  it('expose les findings D12 à admin via la route partagée, jamais à teacher', async () => {
+    const findingId = createD12Finding('process_activation:validation-inbox-http');
+    const adminResponse = await fetch(`${base}/validation-inbox`, {
+      headers: {Authorization: `Bearer ${adminToken}`},
+    });
+    const teacherResponse = await fetch(`${base}/validation-inbox`, {
+      headers: {Authorization: `Bearer ${teacherToken}`},
+    });
+    expect(adminResponse.status).toBe(200);
+    expect(teacherResponse.status).toBe(200);
+    const adminItems = await adminResponse.json() as Array<{source_kind: string; source_id: string}>;
+    const teacherItems = await teacherResponse.json() as Array<{source_kind: string; source_id: string}>;
+    expect(adminItems.some((entry) => entry.source_kind === 'd12_finding' && entry.source_id === findingId)).toBe(true);
+    expect(teacherItems.some((entry) => entry.source_id === findingId)).toBe(false);
   });
 
   it('expose /validation-inbox sans bloquer les routeurs suivants montés à la racine', async () => {

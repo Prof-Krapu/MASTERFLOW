@@ -4,7 +4,39 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — D12 finding owner decisions — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — Findings D12 → Shared Validation Inbox — IMPLÉMENTÉ LOCAL
+
+Tranche de revue commune :
+
+- les findings D12 sans décision owner sont projetées comme `autonomy_proposal` ;
+- visibilité strictement admin/godmode ;
+- décisions inbox : `approve` valide l'alerte, `park` garde l'observation, `reject` marque stale,
+  `archive` archive ;
+- les promotions fines hypothèse/pattern restent dans l'autorité D12 dédiée ;
+- aucune décision ne crée action, job, patch, déploiement ou écriture canon.
+
+Recette locale : Validation Inbox 20/20, D12 findings 5/5, Owner Cockpit 4/4 ;
+backend complet 329/329, TypeScript backend/frontend, build Vite et diff-check OK.
+
+Statut : local vérifié, prêt à publication automatique.
+
+## 2026-06-19 — Preuve de publication Vagues 3A→4D — MERGÉ SUR MAIN
+
+Les mentions historiques « local » ci-dessous décrivent leur état au moment de la recette.
+État GitHub actuel vérifié :
+
+- PR #10 process activation : `379f4f8` ;
+- PR #11 action expiry : `c51c97f` ;
+- PR #12 stale actions cockpit : `3e93ad8` ;
+- PR #13 D12 findings : `30a5155` ;
+- PR #14 findings cockpit : `15cd539` ;
+- PR #15 création manuelle finding : `82231d1` ;
+- PR #16 décisions owner : `003c866`.
+
+`HEAD`, `origin/main` et GitHub `main` sont alignés sur `003c866` avant la nouvelle tranche.
+Cela ne prouve pas le déploiement live, qui reste non vérifié sans `MASTERFLOW_RELEASE_SHA`.
+
+## 2026-06-19 — D12 finding owner decisions — MERGÉ SUR MAIN (PR #16)
 
 Tranche décision owner :
 
@@ -16,11 +48,11 @@ Tranche décision owner :
 
 Recette locale : ciblés D12 finding decisions + cockpit 9/9 ; TypeScript backend/frontend OK.
 
-Statut : local, recette complète à exécuter avant publication automatique.
+Statut : mergé sur `main` via PR #16 (`003c866`).
 
 ---
 
-## 2026-06-19 — Process activation → finding D12 manuelle — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — Process activation → finding D12 manuelle — MERGÉ SUR MAIN (PR #15)
 
 Tranche UI manuelle :
 
@@ -33,11 +65,11 @@ Tranche UI manuelle :
 Recette locale : ciblés D12/process/cockpit 12/12 ; TypeScript backend/frontend OK ; build Vite OK ;
 smoke navigateur local OK sur `Stop, ne génère pas` → finding créée → alerte D12 visible.
 
-Statut : local, recette complète à exécuter avant publication automatique.
+Statut : mergé sur `main` via PR #15 (`82231d1`).
 
 ---
 
-## 2026-06-19 — D12 findings dans Owner Cockpit — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — D12 findings dans Owner Cockpit — MERGÉ SUR MAIN (PR #14)
 
 Tranche lecture seule :
 
@@ -48,11 +80,11 @@ Tranche lecture seule :
 
 Recette locale : ciblés owner cockpit + D12 findings 7/7 ; TypeScript backend/frontend OK.
 
-Statut : local, recette complète à exécuter avant publication automatique.
+Statut : mergé sur `main` via PR #14 (`15cd539`).
 
 ---
 
-## 2026-06-19 — D12 missed-trigger findings — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — D12 missed-trigger findings — MERGÉ SUR MAIN (PR #13)
 
 Première tranche observation-only :
 
@@ -66,11 +98,11 @@ Première tranche observation-only :
 Recette locale : ciblés D12 findings / process activation / owner cockpit 11/11 ;
 TypeScript backend/frontend OK.
 
-Statut : local, recette complète à exécuter avant publication automatique.
+Statut : mergé sur `main` via PR #13 (`30a5155`).
 
 ---
 
-## 2026-06-19 — Stale actions dans Owner Cockpit — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — Stale actions dans Owner Cockpit — MERGÉ SUR MAIN (PR #12)
 
 Tranche lecture seule :
 
@@ -82,11 +114,11 @@ Tranche lecture seule :
 Recette : ciblés owner cockpit / action expiry / action lifecycle 13/13 ; backend complet 317/317 ;
 TypeScript backend/frontend OK ; build Vite OK ; diff-check OK.
 
-Statut : local vérifié, prêt à publication automatique.
+Statut : mergé sur `main` via PR #12 (`3e93ad8`).
 
 ---
 
-## 2026-06-18 — Action expiry guard — IMPLÉMENTÉ LOCAL
+## 2026-06-18 — Action expiry guard — MERGÉ SUR MAIN (PR #11)
 
 Première tranche runtime bornée :
 
@@ -100,11 +132,11 @@ Première tranche runtime bornée :
 Recette locale : ciblés action lifecycle / action expiry router / Validation Inbox 24/24 ;
 TypeScript backend/frontend OK.
 
-Statut : local, recette complète à exécuter avant publication automatique.
+Statut : mergé sur `main` via PR #11 (`c51c97f`).
 
 ---
 
-## 2026-06-18 — Process activation read-model — IMPLÉMENTÉ LOCAL
+## 2026-06-18 — Process activation read-model — MERGÉ SUR MAIN (PR #10)
 
 Première tranche observation-only :
 
@@ -119,7 +151,7 @@ Recette : ciblés process activation / owner cockpit / gate-ordering 9/9 ; backe
 TypeScript backend/frontend OK ; build Vite OK ; smoke navigateur cockpit OK sur correction, image
 D08 et stop hard-stop, sans action/job/génération.
 
-Statut : local vérifié, prêt à publication automatique.
+Statut : mergé sur `main` via PR #10 (`379f4f8`).
 
 ---
 
