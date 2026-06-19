@@ -20,8 +20,17 @@ Dernière mise à jour : 2026-06-19
 - Impact : empêcher qu'une nouvelle action sensible soit créée juste après le gel de la sélection.
 - Risque : élevé si le stop bloque trop large ou devient automatique.
 - Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, Process Control Strip.
-- Statut : audit mergé via PR #23 (`d748f4f`) ; recommandation `owner + Room réelle`, code bloqué avant décision produit.
-- Validation requise : non pour l'audit ; oui avant runtime.
+- Statut : implémenté local et vérifié 339/339 après validation MALEX `next`.
+- Validation requise : acquise ; prêt à publication.
+
+### Vague 5D — Context hash snapshots — À mettre en queue
+
+- Tâche : auditer les snapshots de contexte qui imposent re-preflight après changement de source.
+- Impact : complète l'expiration autrement que par un stop manuel.
+- Risque : moyen en audit, élevé si invalidation automatique trop large.
+- Source de vérité concernée : `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
+- Statut : futur, audit avant code.
+- Validation requise : non pour l'audit ; oui avant migration/runtime.
 
 ### Vague 5A — Preview hard-stop
 

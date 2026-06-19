@@ -329,6 +329,24 @@ function migrate(d: Database.Database): void {
       updated_at      INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS hard_stop_control_states (
+      id            TEXT PRIMARY KEY,
+      owner_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      room_id       TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+      status        TEXT NOT NULL CHECK (status IN ('active','released')),
+      reason        TEXT NOT NULL CHECK (reason IN ('manual_owner_stop','hard_stop')),
+      note          TEXT,
+      activated_by  TEXT NOT NULL REFERENCES users(id),
+      released_by   TEXT REFERENCES users(id),
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL,
+      released_at   INTEGER
+    );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_hard_stop_owner_room_active
+      ON hard_stop_control_states(owner_id, room_id)
+      WHERE status = 'active';
+
     -- Trace immuable des décisions (permission, validation, exécution).
     CREATE TABLE IF NOT EXISTS audit_logs (
       id          TEXT PRIMARY KEY,
@@ -1829,6 +1847,20 @@ export interface ActionRow {
   error: string | null;
   created_at: number;
   updated_at: number;
+}
+
+export interface HardStopControlStateRow {
+  id: string;
+  owner_id: string;
+  room_id: string;
+  status: 'active' | 'released';
+  reason: 'manual_owner_stop' | 'hard_stop';
+  note: string | null;
+  activated_by: string;
+  released_by: string | null;
+  created_at: number;
+  updated_at: number;
+  released_at: number | null;
 }
 
 export interface ValidationInboxItemRow {

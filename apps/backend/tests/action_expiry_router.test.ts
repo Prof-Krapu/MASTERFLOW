@@ -25,6 +25,11 @@ beforeAll(async () => {
   );
   insert.run('expiry-god', 'expiry-god', 'Expiry God', 'godmode', now, now);
   insert.run('expiry-student', 'expiry-student', 'Expiry Student', 'student', now, now);
+  getDb().prepare(
+    `INSERT OR IGNORE INTO rooms
+       (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
+     VALUES ('expiry-room', 'Expiry Room', 'home', 'expiry-god', NULL, NULL, 0, ?, ?)`,
+  ).run(now, now);
   godToken = signToken({id: 'expiry-god', username: 'expiry-god', role: 'godmode'});
   studentToken = signToken({id: 'expiry-student', username: 'expiry-student', role: 'student'});
 
@@ -144,5 +149,35 @@ describe('Action expiry router', () => {
       });
       expect(response.status).toBe(400);
     }
+  });
+
+  it('active et lève explicitement le hard-stop de la Room', async () => {
+    const denied = await fetch(`${base}/actions/hard-stop`, {
+      method: 'POST',
+      headers: auth(studentToken),
+      body: JSON.stringify({room_id: 'expiry-room', reason: 'hard_stop'}),
+    });
+    expect(denied.status).toBe(403);
+
+    const activated = await fetch(`${base}/actions/hard-stop`, {
+      method: 'POST',
+      headers: auth(godToken),
+      body: JSON.stringify({room_id: 'expiry-room', reason: 'hard_stop'}),
+    });
+    expect(activated.status).toBe(201);
+    expect(await activated.json()).toMatchObject({
+      owner_id: 'expiry-god', room_id: 'expiry-room', status: 'active',
+    });
+
+    const current = await fetch(`${base}/actions/hard-stop?room_id=expiry-room`, {headers: auth(godToken)});
+    expect(await current.json()).toMatchObject({state: {status: 'active'}});
+
+    const resumed = await fetch(`${base}/actions/hard-stop/resume`, {
+      method: 'POST',
+      headers: auth(godToken),
+      body: JSON.stringify({room_id: 'expiry-room'}),
+    });
+    expect(resumed.status).toBe(200);
+    expect(await resumed.json()).toMatchObject({status: 'released'});
   });
 });

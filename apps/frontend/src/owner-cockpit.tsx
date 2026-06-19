@@ -4,6 +4,7 @@ import type {ReactElement} from 'react';
 import type {
   ContextTier,
   CreateD12MissedTriggerFinding,
+  HardStopControlState,
   OwnerCockpitStatus,
   PreviewActionsExpiryResponse,
   ProcessActivationReadModel,
@@ -11,15 +12,19 @@ import type {
 
 import {
   applyHardStopToSelectedActions,
+  activateRoomHardStop,
   createD12MissedTriggerFinding,
   diagnoseProcessActivation,
   getOwnerCockpitStatus,
+  getActiveRoomHardStop,
   previewHardStopActionExpiry,
+  resumeRoomHardStop,
 } from './api.ts';
 
 type OwnerCockpitProps = {
   activeMode: string;
   contextTier: ContextTier;
+  roomId: string;
   token: string;
 };
 
@@ -31,7 +36,7 @@ const CAPABILITY_LABELS: Record<string, string> = {
   d08_generation: 'D08 génération',
 };
 
-export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps): ReactElement {
+export function OwnerCockpit({activeMode, contextTier, roomId, token}: OwnerCockpitProps): ReactElement {
   const [snapshot, setSnapshot] = useState<OwnerCockpitStatus | null>(null);
   const [status, setStatus] = useState('Chargement du cockpit owner.');
   const [loading, setLoading] = useState(false);
@@ -44,11 +49,18 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
   const [selectedActionIds, setSelectedActionIds] = useState<string[]>([]);
   const [applyingExpiry, setApplyingExpiry] = useState(false);
   const [expiryStatus, setExpiryStatus] = useState('');
+  const [hardStopState, setHardStopState] = useState<HardStopControlState | null>(null);
+  const [changingHardStop, setChangingHardStop] = useState(false);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      setSnapshot(await getOwnerCockpitStatus(token));
+      const [nextSnapshot, nextHardStop] = await Promise.all([
+        getOwnerCockpitStatus(token),
+        getActiveRoomHardStop(roomId, token),
+      ]);
+      setSnapshot(nextSnapshot);
+      setHardStopState(nextHardStop);
       setStatus('Cockpit synchronisé depuis le read-model runtime D12.');
     } catch (error) {
       setSnapshot(null);
@@ -56,7 +68,7 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [roomId, token]);
 
   useEffect(() => {
     void refresh();
@@ -147,6 +159,31 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
       setApplyingExpiry(false);
     }
   }, [refresh, selectedActionIds, token]);
+
+  const activatePersistentHardStop = useCallback(async (): Promise<void> => {
+    setChangingHardStop(true);
+    try {
+      setHardStopState(await activateRoomHardStop(roomId, token));
+      setExpiryStatus('Hard-stop actif dans cette Room. Les nouveaux preflights sensibles sont bloqués.');
+    } catch (error) {
+      setExpiryStatus(error instanceof Error ? error.message : 'Activation du hard-stop impossible.');
+    } finally {
+      setChangingHardStop(false);
+    }
+  }, [roomId, token]);
+
+  const resumePersistentHardStop = useCallback(async (): Promise<void> => {
+    setChangingHardStop(true);
+    try {
+      await resumeRoomHardStop(roomId, token);
+      setHardStopState(null);
+      setExpiryStatus('Hard-stop levé. Les actions stale restent stale et exigent un nouveau cycle.');
+    } catch (error) {
+      setExpiryStatus(error instanceof Error ? error.message : 'Reprise du hard-stop impossible.');
+    } finally {
+      setChangingHardStop(false);
+    }
+  }, [roomId, token]);
 
   return (
     <article className="panel panel--wide owner-cockpit">
@@ -246,7 +283,7 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
                     Créer une finding D12 observation-only
                   </button>
                 ) : null}
-                {activation.missed_trigger_candidate?.expected_process === 'hard_stop' ? (
+                {activation.process_candidates[0]?.process_id === 'control_state' ? (
                   <button
                     className="secondary"
                     disabled={previewingExpiry}
@@ -255,6 +292,28 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
                   >
                     {previewingExpiry ? 'Prévisualisation…' : 'Voir les actions qui seraient gelées'}
                   </button>
+                ) : null}
+                {activation.process_candidates[0]?.process_id === 'control_state' && !hardStopState ? (
+                  <button
+                    disabled={changingHardStop}
+                    onClick={() => void activatePersistentHardStop()}
+                    type="button"
+                  >
+                    {changingHardStop ? 'Activation…' : 'Activer le hard-stop dans cette Room'}
+                  </button>
+                ) : null}
+                {hardStopState ? (
+                  <div className="hard-stop-active">
+                    <p><strong>Hard-stop actif dans cette Room.</strong> Les nouveaux preflights sensibles sont bloqués.</p>
+                    <button
+                      className="secondary"
+                      disabled={changingHardStop}
+                      onClick={() => void resumePersistentHardStop()}
+                      type="button"
+                    >
+                      {changingHardStop ? 'Reprise…' : 'Reprendre explicitement'}
+                    </button>
+                  </div>
                 ) : null}
                 {expiryPreview ? (
                   <div className="hard-stop-selection">

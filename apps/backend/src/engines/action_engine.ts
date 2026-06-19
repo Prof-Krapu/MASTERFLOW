@@ -21,6 +21,7 @@ import type {AuthUser} from '../middleware/auth.ts';
 import {getRegistryEntry, riskLevelFor, isSensitive} from './action_registry.ts';
 import {checkPermission, validatorRoleFor, hasRole} from './permission_runtime.ts';
 import {ACTION_EXECUTORS} from './executors.ts';
+import {getActiveHardStopForOwnerRoom} from '../services/hard_stop.ts';
 
 /**
  * Moteur du cycle de vie des actions.
@@ -48,6 +49,7 @@ export function toActionDTO(row: ActionRow): Action {
     intent: row.intent,
     object_type: row.object_type,
     user_id: row.user_id,
+    room_id: row.room_id,
     project_id: row.project_id,
     status: row.status as Action['status'],
     engine: row.engine,
@@ -219,13 +221,18 @@ export function preflightAction(user: AuthUser, actionId: string): Action {
   const sensitive = entry ? isSensitive(entry) : false;
   const requiresValidation = perm.allowed && sensitive;
   const validatorRole = requiresValidation ? validatorRoleFor(entry) : null;
+  const activeHardStop = sensitive && action.room_id
+    ? getActiveHardStopForOwnerRoom(user.id, action.room_id)
+    : null;
+  const blockedByHardStop = perm.allowed && activeHardStop !== null;
 
   const warnings: string[] = [];
   if (!perm.allowed && perm.reason) warnings.push(perm.reason);
+  if (blockedByHardStop) warnings.push('hard_stop_active');
 
   const preflight: PreflightResult = {
     permission_check: perm.allowed ? 'passed' : 'failed',
-    context_locks: [],
+    context_locks: blockedByHardStop ? [`hard_stop:${action.room_id}`] : [],
     resource_availability: 'ok',
     rate_limit: 'ok',
     warnings,
@@ -237,7 +244,7 @@ export function preflightAction(user: AuthUser, actionId: string): Action {
 
   // Détermination du status cible.
   let nextStatus: Action['status'];
-  if (!perm.allowed) {
+  if (!perm.allowed || blockedByHardStop) {
     nextStatus = 'failed';
   } else if (requiresValidation) {
     nextStatus = 'pending_validation';
@@ -256,7 +263,7 @@ export function preflightAction(user: AuthUser, actionId: string): Action {
       nextStatus,
       risk,
       JSON.stringify(preflight),
-      perm.allowed ? null : (perm.reason ?? 'permission_denied'),
+      blockedByHardStop ? 'hard_stop_active' : (perm.allowed ? null : (perm.reason ?? 'permission_denied')),
       now,
       actionId,
     );
@@ -273,6 +280,7 @@ export function preflightAction(user: AuthUser, actionId: string): Action {
       validator_role: validatorRole,
       risk_level: risk,
       next_status: nextStatus,
+      hard_stop_state_id: activeHardStop?.id ?? null,
     },
   });
 

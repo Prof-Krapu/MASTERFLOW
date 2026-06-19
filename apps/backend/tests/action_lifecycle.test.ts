@@ -14,6 +14,7 @@ import {
 } from '../src/engines/action_engine.ts';
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
+import {activateHardStop, resumeHardStop} from '../src/services/hard_stop.ts';
 
 /**
  * Cœur produit : le cycle de vie d'une action sensible.
@@ -44,6 +45,16 @@ beforeAll(async () => {
   insertUser.run(god.id, 'godmode_test', 'Godmode Test', god.role, ts, ts);
   insertUser.run(student.id, 'student_test', 'Student Test', student.role, ts, ts);
   insertUser.run(otherGod.id, 'other_godmode_test', 'Other Godmode Test', otherGod.role, ts, ts);
+  getDb().prepare(
+    `INSERT OR IGNORE INTO rooms
+       (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
+     VALUES ('hard-stop-room', 'Hard Stop Room', 'home', ?, NULL, NULL, 0, ?, ?)`,
+  ).run(god.id, ts, ts);
+  getDb().prepare(
+    `INSERT OR IGNORE INTO rooms
+       (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
+     VALUES ('hard-stop-shared-room', 'Hard Stop Shared Room', 'home', ?, NULL, NULL, 1, ?, ?)`,
+  ).run(god.id, ts, ts);
 });
 
 describe('action lifecycle — action sensible (approve_validation_item)', () => {
@@ -236,6 +247,56 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     expect(getActionFor(god, lowRisk.id)?.status).toBe('approved');
     const jobsAfter = (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count;
     expect(jobsAfter).toBe(jobsBefore);
+  });
+
+  it('bloque les nouveaux preflights sensibles dans la Room jusqu’à reprise explicite', () => {
+    const active = activateHardStop(god, {room_id: 'hard-stop-room', reason: 'hard_stop'});
+    expect(active.status).toBe('active');
+
+    const sensitive = createAction(god, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      room_id: 'hard-stop-room',
+      payload: {},
+    });
+    const blocked = preflightAction(god, sensitive.id);
+    expect(blocked.status).toBe('failed');
+    expect(blocked.error).toBe('hard_stop_active');
+    expect(blocked.preflight?.context_locks).toContain('hard_stop:hard-stop-room');
+
+    const lowRisk = createAction(god, {
+      registry_id: 'get_current_context',
+      intent: 'get_current_context',
+      object_type: 'context',
+      room_id: 'hard-stop-room',
+      payload: {},
+    });
+    expect(preflightAction(god, lowRisk.id).status).toBe('approved');
+
+    expect(resumeHardStop(god, {room_id: 'hard-stop-room'}).status).toBe('released');
+    const afterResume = createAction(god, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      room_id: 'hard-stop-room',
+      payload: {},
+    });
+    expect(preflightAction(god, afterResume.id).status).toBe('pending_validation');
+    expect(getActionFor(god, sensitive.id)?.status).toBe('failed');
+  });
+
+  it('ne propage jamais le stop d’un owner à un autre dans la même Room', () => {
+    activateHardStop(god, {room_id: 'hard-stop-shared-room', reason: 'hard_stop'});
+    const otherOwnerAction = createAction(otherGod, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      room_id: 'hard-stop-shared-room',
+      payload: {},
+    });
+    expect(preflightAction(otherGod, otherOwnerAction.id).status).toBe('pending_validation');
+    resumeHardStop(god, {room_id: 'hard-stop-shared-room'});
   });
 
   it('rend stale une action approuvée avant exécution si le contexte change', () => {
