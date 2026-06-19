@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Visibilité owner du comparateur contextuel — LOCAL VÉRIFIÉ
+## 2026-06-19 — Visibilité owner du comparateur contextuel — MERGÉ SUR MAIN (PR #32)
 
 - la trace de l'action courante affiche le résultat contextuel read-only ;
 - `unchanged`, `requires_review` et `inconclusive` sont traduits en langage lisible ;
@@ -13,7 +13,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Recette : TypeScript frontend et build Vite OK ; backend 341/341 conservé.
 
-Statut : prêt à publication sur `codex/context-comparison-owner-visibility`.
+Statut : mergé sur `main` via PR #32 (`09140e8`).
 
 ---
 

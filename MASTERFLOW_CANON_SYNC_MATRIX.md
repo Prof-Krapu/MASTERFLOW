@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-19
-Branche de travail : `codex/context-comparison-owner-visibility`
-Base GitHub vérifiée : `56c5a0f`
+Branche de travail : `codex/context-policy-and-visibility-publish-proof`
+Base GitHub vérifiée : `09140e8`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -23,10 +23,10 @@ le runtime GitHub.
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
 | D11 factories/backflow | hors runtime | Factories externes utiles comme terrain, sans absorption canon automatique. | moyen | Auditer Usage Harvester ; garder les factories candidates. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
-| Pont de déploiement Drive | en retard de deux tranches | Drive reflète PR #30 / `1f0b09d`; GitHub `main` contient politique PR #31 et visibilité locale en attente. | moyen | Publier la visibilité puis rafraîchir le pont sur le SHA final. |
+| Pont de déploiement Drive | en retard de deux tranches | Drive reflète PR #30 / `1f0b09d`; GitHub `main` contient politique PR #31 et visibilité PR #32. | moyen | Rafraîchir le pont sur le SHA final. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | implémenté | Garde, preview, sélection et état persistant owner+Room sont sur `main`. Context hashes restent absents. | faible | Auditer les context hash snapshots séparément. |
 | Context hash / re-preflight | partiel implémenté | Snapshot privé et comparateur read-only sont sur `main` ; seules les refs avec révision fiable sont comparées. | faible | Décider les familles qui imposeraient réellement stale ou re-preflight. |
 | Politique changement de contexte V1 | implémenté docs | Toute divergence fiable demande revue/re-preflight ; stale auto interdit hors hard-stop déjà borné. | faible | Conserver la décision humaine. |
-| Visibilité owner du comparateur | partiel local | Trace d'action montre le résultat et les refs, sans action de mutation. | faible | Publier ; garder la décision re-preflight humaine. |
+| Visibilité owner du comparateur | implémenté | Trace d'action montre le résultat et les refs, sans action de mutation. | faible | Garder la décision re-preflight humaine. |
