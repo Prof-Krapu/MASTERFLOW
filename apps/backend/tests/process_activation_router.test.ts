@@ -93,7 +93,9 @@ describe('Process activation read-model', () => {
   it('transforme stop en missed-trigger candidat sans auto-cancel', async () => {
     const body = ProcessActivationReadModelSchema.parse(await (await diagnose('Stop, ne génère pas', 'T1')).json());
     expect(body.status).toBe('missed_trigger_candidate');
-    expect(body.missed_trigger_candidate?.missing_runtime_piece).toBe('control_state_runtime');
+    expect(body.process_candidates[0]?.runtime_status).toBe('partial');
+    expect(body.missed_trigger_candidate?.missing_runtime_piece).toBe('control_state_apply_runtime');
+    expect(body.next_safe_action.label).toContain('Prévisualiser');
     expect(body.next_safe_action.forbidden_followups).toContain('auto_cancel');
   });
 

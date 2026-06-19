@@ -26,3 +26,4 @@ le runtime GitHub.
 | Pont de déploiement Drive | en retard | Drive reflète PR #16 / `003c866`, GitHub est à PR #17 / `a72b809`. | moyen | Rafraîchir le pont Drive sur le SHA final de clôture. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
+| Hard stop / action expiry | partiel+ local | Garde stale sur `main`; preview read-only cockpit vérifiée localement ; application depuis le signal encore absente. | moyen | Publier le preview puis décider la granularité avant tout bouton d'application. |

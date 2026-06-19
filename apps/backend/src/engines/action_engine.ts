@@ -1,10 +1,12 @@
 import {
   ExpireActionsRequestSchema,
   ExpireActionsResponseSchema,
+  PreviewActionsExpiryResponseSchema,
   type Action,
   type CreateAction,
   type ExpireActionsRequest,
   type ExpireActionsResponse,
+  type PreviewActionsExpiryResponse,
   type PreflightResult,
   type RiskLevel,
   type ValidationDecision,
@@ -338,17 +340,10 @@ export function validateAction(
 
 // ───────────────────────── Garde stale / hard-stop borné ─────────────────────────
 
-/**
- * Rend obsolètes des actions sensibles déjà ouvertes dans un scope contrôlé.
- *
- * Ce n'est pas un auto-cancel destructif : on ne supprime rien, on ne touche pas aux actions
- * terminées/en cours, on trace l'obsolescence et `executeAction` refusera naturellement `stale`.
- */
-export function expireOpenSensitiveActions(
+function findOpenSensitiveActionsForExpiry(
   actor: AuthUser,
-  input: ExpireActionsRequest,
-): ExpireActionsResponse {
-  const request = ExpireActionsRequestSchema.parse(input);
+  request: ExpireActionsRequest,
+): Action[] {
   if (request.scope === 'project' && !request.project_id) {
     throw new Error('[action_engine] project_id_required_for_project_scope');
   }
@@ -364,7 +359,7 @@ export function expireOpenSensitiveActions(
     )
     .all() as ActionRow[];
 
-  const candidates = rows
+  return rows
     .filter((row) => {
       if (request.scope === 'mine' && row.user_id !== actor.id) return false;
       if (request.scope === 'project' && row.project_id !== request.project_id) return false;
@@ -373,6 +368,36 @@ export function expireOpenSensitiveActions(
     })
     .map(toActionDTO)
     .filter(isSensitiveForExpiry);
+}
+
+/** Prévisualise les actions qui deviendraient stale, sans aucune écriture. */
+export function previewOpenSensitiveActionsExpiry(
+  actor: AuthUser,
+  input: ExpireActionsRequest,
+): PreviewActionsExpiryResponse {
+  const request = ExpireActionsRequestSchema.parse(input);
+  const candidates = findOpenSensitiveActionsForExpiry(actor, request);
+  return PreviewActionsExpiryResponseSchema.parse({
+    candidate_count: candidates.length,
+    candidate_action_ids: candidates.map((action) => action.id),
+    reason: request.reason,
+    scope_ref: request.scope === 'project' ? `project:${request.project_id}` : `user:${actor.id}`,
+    audit_trace: ['action_expiry_preview_v1', 'read_only', 'no_status_change', 'no_execute'],
+  });
+}
+
+/**
+ * Rend obsolètes des actions sensibles déjà ouvertes dans un scope contrôlé.
+ *
+ * Ce n'est pas un auto-cancel destructif : on ne supprime rien, on ne touche pas aux actions
+ * terminées/en cours, on trace l'obsolescence et `executeAction` refusera naturellement `stale`.
+ */
+export function expireOpenSensitiveActions(
+  actor: AuthUser,
+  input: ExpireActionsRequest,
+): ExpireActionsResponse {
+  const request = ExpireActionsRequestSchema.parse(input);
+  const candidates = findOpenSensitiveActionsForExpiry(actor, request);
 
   const now = Date.now();
   const update = getDb().prepare(

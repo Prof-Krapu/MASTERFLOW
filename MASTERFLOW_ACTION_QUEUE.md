@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 5A — Preview hard-stop
+
+- Tâche : montrer les actions sensibles ouvertes qui seraient rendues stale par un stop.
+- Impact : permet de vérifier le périmètre avant une invalidation réelle.
+- Risque : faible ; lecture seule, aucune mutation.
+- Source de vérité concernée : canon Process Control + Action Expiry + runtime GitHub.
+- Statut : implémenté et vérifié localement sur `codex/action-expiry-preview`.
+- Validation requise : autorisation permanente MALEX reçue pour commit/push/PR/merge.
+
 ### Vague 4E — Findings D12 dans la Shared Validation Inbox
 
 - Tâche : projeter les findings D12 non décidées dans l'inbox commune admin/godmode.
