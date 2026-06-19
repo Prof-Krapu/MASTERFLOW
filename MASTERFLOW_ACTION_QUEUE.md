@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : permet de vérifier le périmètre avant une invalidation réelle.
 - Risque : faible ; lecture seule, aucune mutation.
 - Source de vérité concernée : canon Process Control + Action Expiry + runtime GitHub.
-- Statut : implémenté et vérifié localement sur `codex/action-expiry-preview`.
+- Statut : mergé sur `main` via PR #19 (`0fa4959`).
 - Validation requise : autorisation permanente MALEX reçue pour commit/push/PR/merge.
 
 ### Vague 4E — Findings D12 dans la Shared Validation Inbox
