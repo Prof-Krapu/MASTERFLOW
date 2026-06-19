@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : centralise les décisions owner sans créer une queue D12 parallèle.
 - Risque : faible à moyen ; une approbation ne doit jamais devenir fix, déploiement ou canon.
 - Source de vérité concernée : canon D12 + Shared Validation Inbox + runtime GitHub.
-- Statut : implémenté et vérifié localement sur `codex/d12-findings-validation-inbox`.
+- Statut : mergé sur `main` via PR #17 (`a72b809`).
 - Validation requise : autorisation permanente MALEX reçue pour commit/push/PR/merge.
 
 ### Vague 0 — vérité de pilotage

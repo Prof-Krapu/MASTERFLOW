@@ -1,6 +1,6 @@
 # D12 Missed Trigger Finding Spec — 2026-06-18
 
-Status: `PARTIAL_RUNTIME_REVIEW_LOCAL`
+Status: `PARTIAL_RUNTIME_REVIEW_MAIN`
 
 Mise à jour locale : première tranche implémentée sur `codex/d12-missed-trigger-findings`.
 Elle ajoute une table privée et deux routes diagnostics admin/godmode pour créer et lister des
@@ -211,6 +211,6 @@ migration: true
 auto_fix: false
 safe_to_queue: true
 github_main: findings_and_owner_decisions_merged_pr13_to_pr16
-validation_inbox_projection: local_verified_not_merged
+validation_inbox_projection: merged_pr17
 requires_malex_before_code: fulfilled_by_global_go
 ```
