@@ -2,7 +2,7 @@
 
 | Legacy evidence | Domaine / owner | Canon actuel | GitHub | Statut | Action suivante |
 |---|---|---|---|---|---|
-| `CORRECTOR_APP_RUNTIME` + student monitoring | D05/D06 | contrat classe/cohorte/roster/context ajouté au Living Truth Spine | contexte + liaison + candidates ambiguës sur main (PR #59-65) | implemented_partial | UI professeur de revue des identités |
+| `CORRECTOR_APP_RUNTIME` + student monitoring | D05/D06 | contrat classe/cohorte/roster/context ajouté au Living Truth Spine | contexte + liaison + candidates ambiguës sur main (PR #59-65), UI professeur vérifiée localement | implemented_partial | publier l'UI puis ouvrir la gestion manuelle cohortes/rosters |
 | DA reference resolver + generated asset runtime | D08 | resolver/registre de références cadré, manifest-first conservé | aucun lifecycle asset confirmé | canon_ready | persistance manifest/références puis read model, provider verrouillé |
 | Memory app + context injection | D02 | contrat mémoire/relation/timeline/version ajouté | context packs cités/stale, relations absentes | canon_ready | extension additive et read model de provenance |
 | Versioning app + dataset append-only | transverse | Version Change Ledger défini | absent comme runtime métier | canon_ready | timeline/changement append-only après gate migration |

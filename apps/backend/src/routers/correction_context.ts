@@ -15,6 +15,7 @@ import {
   decideIdentityMatchCandidate,
   getCorrectionContextSnapshot,
   linkSubmissionIdentity,
+  listIdentityMatchReviewItems,
 } from '../services/correction_context.ts';
 
 function actor(req: Request): AuthUser {
@@ -45,6 +46,28 @@ export function createCorrectionContextRouter(): Router {
         res.status(201).json(
           createCorrectionContextSnapshot(actor(req), req.params.id ?? '', parsed.data),
         );
+      } catch (error) {
+        fail(res, error);
+      }
+    },
+  );
+
+  router.get(
+    '/correction/identity-match-candidates',
+    requireUser,
+    requireRole('teacher'),
+    (req, res): void => {
+      try {
+        const projectId = typeof req.query.project_id === 'string'
+          ? req.query.project_id
+          : req.query.project_id === undefined
+            ? undefined
+            : '';
+        if (projectId === '') {
+          res.status(400).json({error: 'invalid_project_id'});
+          return;
+        }
+        res.json(listIdentityMatchReviewItems(actor(req), projectId));
       } catch (error) {
         fail(res, error);
       }

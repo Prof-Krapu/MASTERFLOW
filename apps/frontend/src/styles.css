@@ -1156,6 +1156,54 @@ dd {
   color: var(--text);
 }
 
+.identity-review {
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: 18px;
+  padding: 18px;
+  background: color-mix(in srgb, var(--panel) 94%, var(--accent) 6%);
+}
+
+.identity-review__heading,
+.identity-review__heading > div,
+.identity-review__card > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.identity-review__heading span,
+.identity-review__card small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.identity-review__list {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.identity-review__card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.identity-review__card label {
+  display: grid;
+  gap: 6px;
+}
+
+.identity-review__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .teaching-guided {
   background: #0d1015;
   border: 1px solid var(--line);

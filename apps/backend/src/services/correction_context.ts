@@ -5,6 +5,7 @@ import {
   CreateCorrectionContextSnapshotSchema,
   DecideIdentityMatchCandidateRequestSchema,
   IdentityMatchCandidateSchema,
+  IdentityMatchReviewItemSchema,
   LinkSubmissionIdentityRequestSchema,
   ROLE_RANK,
   SubmissionIdentityLinkSchema,
@@ -14,6 +15,7 @@ import {
   type CreateCorrectionContextSnapshot,
   type DecideIdentityMatchCandidateRequest,
   type IdentityMatchCandidate,
+  type IdentityMatchReviewItem,
   type LinkSubmissionIdentityRequest,
   type SubmissionIdentityLink,
 } from '@masterflow/shared';
@@ -486,4 +488,59 @@ export function decideIdentityMatchCandidate(
     getDb().prepare('SELECT * FROM identity_match_candidates WHERE id = ?').get(candidate.id) as
       IdentityMatchCandidateRow,
   );
+}
+
+export function listIdentityMatchReviewItems(
+  actor: AuthUser,
+  projectId?: string | null,
+): IdentityMatchReviewItem[] {
+  requireTeacher(actor);
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM identity_match_candidates
+       WHERE status = 'pending'
+       ORDER BY created_at ASC, id ASC`,
+    )
+    .all() as IdentityMatchCandidateRow[];
+
+  const results: IdentityMatchReviewItem[] = [];
+  for (const row of rows) {
+    let batch: BatchRow;
+    try {
+      batch = requireBatch(actor, row.batch_id);
+    } catch {
+      continue;
+    }
+    if (projectId !== undefined && batch.project_id !== projectId) continue;
+    const snapshot = getDb()
+      .prepare('SELECT roster_version_id FROM correction_context_snapshots WHERE id = ?')
+      .get(row.context_snapshot_id) as {roster_version_id: string} | undefined;
+    if (!snapshot) continue;
+    const candidateIds = JSON.parse(row.candidate_identity_ids_json) as string[];
+    const options = candidateIds.flatMap((studentIdentityId) => {
+      const member = getDb()
+        .prepare(
+          `SELECT student_identity_id, display_name, aliases_json FROM roster_members
+           WHERE roster_version_id = ? AND student_identity_id = ?`,
+        )
+        .get(snapshot.roster_version_id, studentIdentityId) as
+        | {student_identity_id: string; display_name: string; aliases_json: string}
+        | undefined;
+      return member
+        ? [{
+            student_identity_id: member.student_identity_id,
+            display_name: member.display_name,
+            aliases: JSON.parse(member.aliases_json) as string[],
+          }]
+        : [];
+    });
+    if (options.length === 0) continue;
+    results.push(
+      IdentityMatchReviewItemSchema.parse({
+        candidate: toIdentityMatchCandidate(row),
+        options,
+      }),
+    );
+  }
+  return results;
 }

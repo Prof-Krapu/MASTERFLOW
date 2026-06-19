@@ -21,6 +21,8 @@ import type {
   InventoryNeedMatchResult,
   InventoryProjectNeed,
   InventorySearchResult,
+  IdentityMatchCandidate,
+  IdentityMatchReviewItem,
   Invitation,
   GuidedSession,
   HardStopControlState,
@@ -132,6 +134,32 @@ export async function getPendingActions(token?: string | null): Promise<Action[]
 
 export async function getJobs(token?: string | null): Promise<Job[]> {
   return request<Job[]>('/jobs', {method: 'GET'}, token);
+}
+
+export async function getIdentityMatchReviews(
+  projectId?: string | null,
+  token?: string | null,
+): Promise<IdentityMatchReviewItem[]> {
+  const params = new URLSearchParams();
+  if (projectId) params.set('project_id', projectId);
+  const query = params.size > 0 ? `?${params.toString()}` : '';
+  return request<IdentityMatchReviewItem[]>(
+    `/correction/identity-match-candidates${query}`,
+    {method: 'GET'},
+    token,
+  );
+}
+
+export async function decideIdentityMatchReview(
+  candidateId: string,
+  body: {decision: 'confirm' | 'reject'; selected_identity_id?: string | null},
+  token?: string | null,
+): Promise<IdentityMatchCandidate> {
+  return request<IdentityMatchCandidate>(
+    `/correction/identity-match-candidates/${encodeURIComponent(candidateId)}/decision`,
+    {method: 'POST', body: JSON.stringify(body)},
+    token,
+  );
 }
 
 export async function getOwnerCockpitStatus(token?: string | null): Promise<OwnerCockpitStatus> {
