@@ -29,7 +29,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : complète l'expiration autrement que par un stop manuel.
 - Risque : moyen en audit, élevé si invalidation automatique trop large.
 - Source de vérité concernée : `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
-- Statut : implémenté local et vérifié 341/341 ; aucune invalidation automatique ouverte.
+- Statut : mergé sur `main` via PR #29 (`54b97cf`), vérifié 341/341 ; aucune invalidation automatique ouverte.
 - Validation requise : non pour l'audit ; oui avant migration/runtime.
 
 ### Vague 5A — Preview hard-stop
