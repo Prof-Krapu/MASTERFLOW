@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 6D — Candidate updates factory après revue
+
+- Tâche : matérialiser une fiche candidate non routée seulement après approbation d'un backflow D11 complet.
+- Impact : rend la sortie d'une revue exploitable sans choisir ou modifier automatiquement un domaine MasterFlow.
+- Risque : faible à moyen, contenu par `candidate_only`, l'absence de domaine cible et la lecture admin/godmode.
+- Source de vérité concernée : D11 Factory Passport Backflow Contract + Shared Validation Inbox.
+- Statut : local vérifié ; publication GitHub à faire. Routage métier, Usage Harvester et canon restent exclus.
+- Validation requise : GO MALEX reçu ; publication autorisée par la consigne continue.
+
 ### Vague 6C — Factory Backflow Intake manuel
 
 - Tâche : recevoir un Factory Passport et un export backflow JSON comme candidat traçable, puis les projeter dans l'Inbox partagée.

@@ -12,6 +12,7 @@ import {createFactoryBackflowRouter} from '../src/routers/factory_backflow.ts';
 import {
   createFactoryBackflowIntake,
   getFactoryBackflowIntake,
+  listFactoryBackflowCandidateUpdates,
 } from '../src/services/factory_backflow_intake.ts';
 import {
   decideValidationInboxItem,
@@ -180,9 +181,14 @@ describe('D11 — Factory Backflow Intake V6C', () => {
     });
     expect(validResponse.status).toBe(201);
     expect((await validResponse.json()) as {intake_status: string}).toMatchObject({intake_status: 'candidate'});
+
+    const teacherUpdates = await fetch(`${base}/backflow/candidate-updates`, {
+      headers: {Authorization: `Bearer ${teacherToken}`},
+    });
+    expect(teacherUpdates.status).toBe(403);
   });
 
-  it('classe un candidat complet sans créer action, job, import, canon ou déploiement', () => {
+  it('matérialise seulement des candidate updates non routées après approbation', async () => {
     const intake = createFactoryBackflowIntake(admin, completeBackflow('decision'));
     const item = listValidationInboxItems(admin).find(
       (entry) => entry.source_kind === 'factory_backflow_intake' && entry.source_id === intake.intake_id,
@@ -191,6 +197,7 @@ describe('D11 — Factory Backflow Intake V6C', () => {
     const before = {
       actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
       jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
+      usageLearning: (getDb().prepare('SELECT COUNT(*) AS count FROM usage_learning_candidates').get() as {count: number}).count,
     };
     const decided = decideValidationInboxItem(admin, item.item_id, {
       decision: 'approve',
@@ -199,10 +206,29 @@ describe('D11 — Factory Backflow Intake V6C', () => {
     const after = {
       actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
       jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
+      usageLearning: (getDb().prepare('SELECT COUNT(*) AS count FROM usage_learning_candidates').get() as {count: number}).count,
     };
 
     expect(decided).toMatchObject({current_status: 'approved', output_readiness_state: 'blocked'});
     expect(getFactoryBackflowIntake(intake.intake_id)).toMatchObject({review_status: 'approved'});
+    expect(listFactoryBackflowCandidateUpdates()).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        intake_id: intake.intake_id,
+        source_candidate_id: 'candidate-decision',
+        classification: 'SYSTEM',
+        routing_status: 'unrouted',
+        target_domain: null,
+        candidate_status: 'approved_candidate',
+        canon_status: 'candidate_only',
+      }),
+    ]));
+    const updates = await fetch(`${base}/backflow/candidate-updates`, {
+      headers: {Authorization: `Bearer ${adminToken}`},
+    });
+    expect(updates.status).toBe(200);
+    expect((await updates.json()) as Array<{intake_id: string}>).toEqual(expect.arrayContaining([
+      expect.objectContaining({intake_id: intake.intake_id}),
+    ]));
     expect(after).toEqual(before);
   });
 });

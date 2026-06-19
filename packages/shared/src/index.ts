@@ -1335,6 +1335,28 @@ export const FactoryBackflowIntakeSchema = z.object({
 });
 export type FactoryBackflowIntake = z.infer<typeof FactoryBackflowIntakeSchema>;
 
+/**
+ * Résultat local d'une validation owner. Il attend un routage humain ultérieur ;
+ * il n'est ni une mise à jour de domaine, ni une écriture canon.
+ */
+export const FactoryBackflowCandidateUpdateSchema = z.object({
+  candidate_update_id: z.string().min(1),
+  intake_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  factory_id: z.string().min(1).nullable(),
+  source_candidate_id: z.string().min(1).max(160),
+  summary: z.string().min(1).max(500),
+  classification: FactoryBackflowClassificationSchema,
+  routing_status: z.literal('unrouted'),
+  target_domain: z.string().min(1).max(120).nullable(),
+  candidate_status: z.literal('approved_candidate'),
+  canon_status: z.literal('candidate_only'),
+  audit_trace: z.array(z.string().min(1).max(240)),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type FactoryBackflowCandidateUpdate = z.infer<typeof FactoryBackflowCandidateUpdateSchema>;
+
 // ───────────────────────── Registre des adapters ─────────────────────────
 
 export const AdapterKindSchema = z.enum([

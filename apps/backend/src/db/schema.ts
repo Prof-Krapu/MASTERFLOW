@@ -1178,6 +1178,28 @@ function migrate(d: Database.Database): void {
       updated_at             INTEGER NOT NULL
     );
 
+    -- Une validation owner matérialise un candidat local, jamais une mise à jour de domaine/canon.
+    CREATE TABLE IF NOT EXISTS factory_backflow_candidate_updates (
+      id                  TEXT PRIMARY KEY,
+      intake_id           TEXT NOT NULL REFERENCES factory_backflow_intakes(id) ON DELETE CASCADE,
+      owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      factory_id          TEXT,
+      source_candidate_id TEXT NOT NULL,
+      summary             TEXT NOT NULL,
+      classification      TEXT NOT NULL CHECK (classification IN (
+                            'SYSTEM','PERSONA','DA','PROJECT_LORE','OUTPUT','PLATFORM',
+                            'RESOURCE','PEDAGOGY','PRIVATE'
+                          )),
+      routing_status      TEXT NOT NULL CHECK (routing_status = 'unrouted'),
+      target_domain       TEXT,
+      candidate_status    TEXT NOT NULL CHECK (candidate_status = 'approved_candidate'),
+      canon_status        TEXT NOT NULL DEFAULT 'candidate_only'
+                            CHECK (canon_status = 'candidate_only'),
+      created_at          INTEGER NOT NULL,
+      updated_at          INTEGER NOT NULL,
+      UNIQUE(intake_id, source_candidate_id)
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
@@ -1302,6 +1324,8 @@ function migrate(d: Database.Database): void {
       ON usage_learning_candidates(project_id, review_status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_factory_backflow_owner_review
       ON factory_backflow_intakes(owner_id, review_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_factory_backflow_candidate_updates_owner
+      ON factory_backflow_candidate_updates(owner_id, routing_status, updated_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -2166,6 +2190,31 @@ export interface FactoryBackflowIntakeRow {
   review_status: 'pending' | 'approved' | 'parked' | 'rejected' | 'archived';
   reviewer_id: string | null;
   review_note: string | null;
+  canon_status: 'candidate_only';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface FactoryBackflowCandidateUpdateRow {
+  id: string;
+  intake_id: string;
+  owner_id: string;
+  factory_id: string | null;
+  source_candidate_id: string;
+  summary: string;
+  classification:
+    | 'SYSTEM'
+    | 'PERSONA'
+    | 'DA'
+    | 'PROJECT_LORE'
+    | 'OUTPUT'
+    | 'PLATFORM'
+    | 'RESOURCE'
+    | 'PEDAGOGY'
+    | 'PRIVATE';
+  routing_status: 'unrouted';
+  target_domain: string | null;
+  candidate_status: 'approved_candidate';
   canon_status: 'candidate_only';
   created_at: number;
   updated_at: number;

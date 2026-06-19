@@ -3,7 +3,10 @@ import {Router, type Request, type Response} from 'express';
 import {CreateFactoryBackflowIntakeRequestSchema} from '@masterflow/shared';
 
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
-import {createFactoryBackflowIntake} from '../services/factory_backflow_intake.ts';
+import {
+  createFactoryBackflowIntake,
+  listFactoryBackflowCandidateUpdates,
+} from '../services/factory_backflow_intake.ts';
 
 function authUser(req: Request): AuthUser {
   const user = req.user;
@@ -25,6 +28,10 @@ export function createFactoryBackflowRouter(): Router {
       return;
     }
     res.status(201).json(createFactoryBackflowIntake(authUser(req), parsed.data));
+  });
+
+  router.get('/backflow/candidate-updates', requireUser, requireRole('admin'), (_req: Request, res: Response): void => {
+    res.json(listFactoryBackflowCandidateUpdates());
   });
 
   return router;

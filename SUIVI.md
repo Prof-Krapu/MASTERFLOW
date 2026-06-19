@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Factory Candidate Updates V6D — LOCAL VÉRIFIÉ
+
+- une approbation V6C matérialise une fiche locale par candidat exporté ;
+- la fiche reste `candidate_only`, non routée et sans domaine cible ;
+- quarantaine, précision, park, rejet et archive ne créent aucune fiche ;
+- la lecture est réservée admin/godmode ; aucun Usage Harvester, action, job, import,
+  activation runtime ou écriture canon n'est déclenché.
+
+Recette : Factory Backflow + Inbox 24/24 ; TypeScript backend OK.
+
+Statut : local vérifié ; publication GitHub et pont Drive à faire.
+
+---
+
 ## 2026-06-19 — Factory Backflow Intake V6C — MERGÉ SUR MAIN (PR #42)
 
 - `POST /api/v1/backflow/intake` reçoit uniquement un manifeste JSON admin/godmode ;
