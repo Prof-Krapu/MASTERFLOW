@@ -5,6 +5,7 @@ import {
 } from '@masterflow/shared';
 
 import {getDb, type WorkflowEventRow} from '../db/schema.ts';
+import {harvestUsageFromWorkflowEvent} from './usage_harvester.ts';
 
 const SECRET_PATTERN =
   /(api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization)/i;
@@ -100,7 +101,9 @@ export function recordWorkflowEvent(input: WorkflowEvent): WorkflowEvent {
       event.blocker_category,
       event.created_at,
     );
-  return getWorkflowEvent(event.event_id);
+  const recorded = getWorkflowEvent(event.event_id);
+  harvestUsageFromWorkflowEvent(recorded);
+  return recorded;
 }
 
 export function getWorkflowEvent(eventId: string): WorkflowEvent {

@@ -1202,7 +1202,13 @@ export const ValidationInboxItemSchema = z.object({
   decision_options: z.array(ValidationDecisionValueSchema).min(1),
   decision: ValidationInboxDecisionSchema.nullable(),
   audit_trace: z.array(z.string().min(1).max(240)),
-  source_kind: z.enum(['action', 'feedback_draft', 'correction_export_preview', 'd12_finding']),
+  source_kind: z.enum([
+    'action',
+    'feedback_draft',
+    'correction_export_preview',
+    'd12_finding',
+    'usage_learning_candidate',
+  ]),
   source_id: z.string().min(1),
   created_at: z.number().int().nonnegative(),
   updated_at: z.number().int().nonnegative(),
@@ -2243,6 +2249,84 @@ export const CreateD12MissedTriggerFindingSchema = z.object({
   project_id: z.string().min(1).nullable().optional(),
 });
 export type CreateD12MissedTriggerFinding = z.infer<typeof CreateD12MissedTriggerFindingSchema>;
+
+// ───────────────────────── D11/D12 usage learning candidates ─────────────────────────
+
+export const UsageLearningSignalTypeSchema = z.enum([
+  'repeated_correction',
+  'stable_preference',
+  'recurring_workflow',
+  'new_source_or_stakeholder',
+  'new_validation_or_sensitive_action',
+  'recurring_exception',
+  'failure_or_rework',
+  'contradiction',
+  'missed_trigger',
+  'portable_factory_backflow',
+]);
+export type UsageLearningSignalType = z.infer<typeof UsageLearningSignalTypeSchema>;
+
+export const UsageLearningCandidateStatusSchema = z.enum([
+  'observation',
+  'hypothesis',
+  'user_confirmed_rule',
+  'contradiction',
+  'open_question',
+]);
+export type UsageLearningCandidateStatus = z.infer<typeof UsageLearningCandidateStatusSchema>;
+
+export const UsageLearningPrivacySchema = z.enum(['safe', 'anonymize', 'do_not_export']);
+export type UsageLearningPrivacy = z.infer<typeof UsageLearningPrivacySchema>;
+
+export const UsageLearningRoutingStatusSchema = z.enum([
+  'pending',
+  'routed',
+  'ambiguous',
+  'quarantined',
+]);
+export type UsageLearningRoutingStatus = z.infer<typeof UsageLearningRoutingStatusSchema>;
+
+export const UsageLearningReviewStatusSchema = z.enum([
+  'pending',
+  'approved',
+  'parked',
+  'rejected',
+  'archived',
+]);
+export type UsageLearningReviewStatus = z.infer<typeof UsageLearningReviewStatusSchema>;
+
+export const UsageLearningCandidateSchema = z.object({
+  candidate_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  source_environment: z.enum(['masterflow_native', 'portable_factory']),
+  source_factory_id: z.string().min(1).nullable(),
+  source_session_or_event: z.string().min(1).max(240),
+  detected_at: z.number().int().nonnegative(),
+  signal_type: UsageLearningSignalTypeSchema,
+  summary: z.string().min(1).max(500),
+  affected_process: z.string().min(1).max(160),
+  affected_output_family: z.string().min(1).max(160),
+  domain_refs: z.array(z.string().min(1).max(120)),
+  evidence_summary: z.string().min(1).max(500),
+  evidence_refs: z.array(z.string().min(1).max(240)),
+  repetition_count: z.number().int().positive(),
+  confidence: z.enum(['low', 'medium', 'high']),
+  status: UsageLearningCandidateStatusSchema,
+  privacy: UsageLearningPrivacySchema,
+  scope: z.string().min(1).max(240),
+  godmode_targets: z.array(z.string().min(1).max(120)).min(1),
+  routing_status: UsageLearningRoutingStatusSchema,
+  canon_status: z.literal('candidate_only'),
+  review_status: UsageLearningReviewStatusSchema,
+  reviewer_id: z.string().min(1).nullable(),
+  review_note: z.string().max(500).nullable(),
+  dedupe_key: z.string().length(64),
+  audit_trace: z.array(z.string().min(1).max(240)),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type UsageLearningCandidate = z.infer<typeof UsageLearningCandidateSchema>;
 
 export const D12MissedTriggerFindingSchema = CreateD12MissedTriggerFindingSchema.extend({
   finding_id: z.string().min(1),

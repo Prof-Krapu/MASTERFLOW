@@ -100,6 +100,19 @@ describe('Process activation read-model', () => {
     expect(body.next_safe_action.forbidden_followups).toContain('auto_cancel');
   });
 
+  it('reconnaît la finding D12 existante sans prétendre que la détection est automatique', async () => {
+    const body = ProcessActivationReadModelSchema.parse(
+      await (await diagnose('Cette règle a échoué et le processus a été raté', 'T2')).json(),
+    );
+    expect(body.process_candidates[0]).toMatchObject({
+      process_id: 'd12_backflow_finding',
+      runtime_status: 'partial',
+    });
+    expect(body.next_safe_action.kind).toBe('route_to_validation_inbox');
+    expect(body.missed_trigger_candidate?.missing_runtime_piece).toBe('automatic_missed_trigger_detection');
+    expect(body.next_safe_action.forbidden_followups).toEqual(expect.arrayContaining(['auto_patch', 'auto_canon']));
+  });
+
   it('ne route rien si le signal est insuffisant', async () => {
     const body = ProcessActivationReadModelSchema.parse(await (await diagnose('bonjour', 'T1')).json());
     expect(body).toMatchObject({status: 'diagnostic_only', confidence: 0.2});

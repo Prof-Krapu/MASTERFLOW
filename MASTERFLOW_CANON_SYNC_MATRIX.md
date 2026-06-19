@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-19
-Branche de travail : `codex/context-policy-and-visibility-publish-proof`
-Base GitHub vérifiée : `09140e8`
+Branche de travail : `codex/d11-d12-native-usage-harvester-v1`
+Base GitHub vérifiée : `704acb2`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -17,11 +17,11 @@ le runtime GitHub.
 | D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement ; recette isolée 12/12 validée. | faible | Garder D06 et participation élève séparés. |
 | D06 correction / feedback | partiel | Feedback et preview privée sont dans l'inbox sur `main`; recette isolée D06 + inbox 26/26 ; send reste exclu. | moyen | Prochaine tranche D06 uniquement avec gate séparé. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
-| D12 owner observability | partiel | Cockpit, findings, décisions owner, création manuelle et revue inbox sont sur `main`. | faible | Garder detector, fix et canonisation automatiques absents. |
+| D12 owner observability | partiel | Cockpit, findings, décisions owner et Usage Harvester V1 sont présents localement ; détection automatique des findings reste absente. | faible | Étendre les sources structurées une par une, sans analyse brute ni auto-fix. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
 | D09 MasterStory | absent runtime | Aucun stockage ou workbench MasterStory dédié confirmé. | moyen | Garder les récits en candidats jusqu'à une tranche dédiée. |
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
-| D11 factories/backflow | hors runtime | Factories externes utiles comme terrain, sans absorption canon automatique. | moyen | Auditer Usage Harvester ; garder les factories candidates. |
+| D11 factories/backflow | partiel | Usage Harvester natif V1 implémenté localement sur événements internes nettoyés ; runtime des factories portables toujours absent. | moyen | Garder l'import portable explicite et séparé de l'extraction native. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
 | Pont de déploiement Drive | synchronisé | Le pont est rafraîchi après la dernière PR de preuve ; le SHA exact reste porté par le snapshot Drive. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
