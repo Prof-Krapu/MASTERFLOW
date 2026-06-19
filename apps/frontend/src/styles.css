@@ -1163,6 +1163,19 @@ dd {
   background: color-mix(in srgb, var(--panel) 94%, var(--accent) 6%);
 }
 
+.roster-management {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+.roster-management__grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.roster-management__form { display: grid; gap: 9px; align-content: start; }
+.roster-management__form label { color: var(--muted); display: grid; font-size: 0.8rem; gap: 4px; }
+.roster-management__form textarea { min-width: 0; resize: vertical; }
+@media (max-width: 720px) { .roster-management__grid { grid-template-columns: 1fr; } }
+
 .identity-review__heading,
 .identity-review__heading > div,
 .identity-review__card > div:first-child {

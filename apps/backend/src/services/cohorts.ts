@@ -135,6 +135,17 @@ export function getCohort(actor: AuthUser, id: string): Cohort {
   return toCohort(requireCohort(actor, id));
 }
 
+export function listCohorts(actor: AuthUser, projectId?: string | null): Cohort[] {
+  assertTeacher(actor);
+  const rows = getDb()
+    .prepare("SELECT * FROM cohorts WHERE status = 'active' ORDER BY title COLLATE NOCASE, created_at")
+    .all() as CohortRow[];
+  return rows
+    .filter((row) => canManage(actor, row))
+    .filter((row) => projectId === undefined || row.project_id === projectId)
+    .map(toCohort);
+}
+
 function resolveIdentity(
   cohort: CohortRow,
   member: CreateRosterVersion['members'][number],

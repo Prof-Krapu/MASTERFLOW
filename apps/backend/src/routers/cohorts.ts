@@ -8,6 +8,7 @@ import {
   createRosterVersion,
   getCohort,
   getRosterVersion,
+  listCohorts,
   listRosterVersions,
 } from '../services/cohorts.ts';
 
@@ -24,6 +25,21 @@ function fail(res: Response, error: unknown): void {
 
 export function createCohortsRouter(): Router {
   const router = Router();
+
+  router.get('/cohorts', requireUser, requireRole('teacher'), (req, res): void => {
+    const projectId = typeof req.query.project_id === 'string'
+      ? req.query.project_id
+      : req.query.project_id === undefined ? undefined : '';
+    if (projectId === '') {
+      res.status(400).json({error: 'invalid_project_id'});
+      return;
+    }
+    try {
+      res.json(listCohorts(actor(req), projectId));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
 
   router.post('/cohorts', requireUser, requireRole('teacher'), (req, res): void => {
     const parsed = CreateCohortSchema.safeParse(req.body);

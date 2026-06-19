@@ -8,6 +8,7 @@ import {
   createRosterVersion,
   getCohort,
   getRosterVersion,
+  listCohorts,
   listRosterVersions,
 } from '../src/services/cohorts.ts';
 
@@ -78,6 +79,8 @@ describe('cohortes et rosters versionnés V1', () => {
   it('ne révèle pas une cohorte owner-private à un autre compte, même godmode', () => {
     const cohort = createCohort(teacher, {title: 'Classe privée'});
     expect(() => getCohort(outsider, cohort.cohort_id)).toThrow('cohort_not_found');
+    expect(listCohorts(outsider)).not.toContainEqual(expect.objectContaining({cohort_id: cohort.cohort_id}));
+    expect(listCohorts(teacher)).toContainEqual(expect.objectContaining({cohort_id: cohort.cohort_id}));
   });
 
   it('refuse une identité provenant d’un autre scope', () => {
