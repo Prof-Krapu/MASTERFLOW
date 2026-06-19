@@ -11,6 +11,7 @@ import {
   saveTaskModelProfileDraft,
 } from '../src/services/pedagogical_records.ts';
 import {addProjectMember, createProject} from '../src/services/projects.ts';
+import {listUsageLearningCandidates} from '../src/services/usage_harvester.ts';
 
 const teacherA: AuthUser = {id: 'teacher-records-a', username: 'teacher_records_a', role: 'teacher'};
 const teacherB: AuthUser = {id: 'teacher-records-b', username: 'teacher_records_b', role: 'teacher'};
@@ -195,6 +196,23 @@ describe('PR-CB0 — dépôt interne permissionné', () => {
     });
 
     expect(delta.human_decision_ref).not.toBe(delta.ai_proposal_ref);
+    const learning = listUsageLearningCandidates().find(
+      (candidate) => candidate.evidence_refs.includes('teacher_decision_delta:delta-records-a'),
+    );
+    expect(learning).toMatchObject({
+      signal_type: 'repeated_correction',
+      affected_process: 'teacher_decision_feedback',
+      affected_output_family: 'feedback',
+      privacy: 'do_not_export',
+      canon_status: 'candidate_only',
+      review_status: 'pending',
+      routing_status: 'routed',
+    });
+    expect(learning?.domain_refs).toContain('D06_CORRECTION_FEEDBACK_EVALUATION');
+    expect(learning?.godmode_targets).toEqual(
+      expect.arrayContaining(['CORRECTOR_RUNTIME', 'PEDAGOGY_ENGINE']),
+    );
+    expect(learning?.evidence_summary).not.toContain('precision');
     const enrichmentTables = getDb()
       .prepare(
         `SELECT name FROM sqlite_master

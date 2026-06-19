@@ -9,6 +9,7 @@ import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import {signToken} from '../src/middleware/auth.ts';
 import {createDiagnosticsRouter} from '../src/routers/diagnostics.ts';
+import {listUsageLearningCandidates} from '../src/services/usage_harvester.ts';
 
 let server: Server;
 let base = '';
@@ -128,6 +129,10 @@ describe('D12 missed trigger findings', () => {
     expect(created.status).toBe(201);
     const finding = D12MissedTriggerFindingSchema.parse(await created.json());
 
+    expect(listUsageLearningCandidates().some(
+      (candidate) => candidate.evidence_refs.includes(`d12_finding:${finding.finding_id}`),
+    )).toBe(false);
+
     const before = {
       actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
       jobs: (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count,
@@ -142,6 +147,19 @@ describe('D12 missed trigger findings', () => {
 
     expect(bodyAfterDecision.status).toBe('validated_alert');
     expect(bodyAfterDecision.owner_decision).toMatchObject({decision: 'validate_alert'});
+    const learning = listUsageLearningCandidates().find(
+      (candidate) => candidate.evidence_refs.includes(`d12_finding:${finding.finding_id}`),
+    );
+    expect(learning).toMatchObject({
+      signal_type: 'missed_trigger',
+      privacy: 'do_not_export',
+      canon_status: 'candidate_only',
+      review_status: 'pending',
+    });
+    expect(learning?.domain_refs).toContain('D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT');
+    expect(learning?.godmode_targets).toEqual(
+      expect.arrayContaining(['AUTONOMY_STEP1', 'OBSERVABILITY']),
+    );
 
     const after = {
       actions: (getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}).count,
