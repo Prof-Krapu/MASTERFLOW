@@ -405,7 +405,8 @@ function migrate(d: Database.Database): void {
       decision_json            TEXT,
       audit_trace_json         TEXT NOT NULL DEFAULT '[]',
       source_kind              TEXT NOT NULL CHECK (source_kind IN (
-                                 'action','feedback_draft','correction_export_preview','d12_finding'
+                                 'action','feedback_draft','correction_export_preview','d12_finding',
+                                 'usage_learning_candidate'
                                )),
       source_id                TEXT NOT NULL,
       created_at               INTEGER NOT NULL,
@@ -1105,6 +1106,51 @@ function migrate(d: Database.Database): void {
       updated_at                  INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS usage_learning_candidates (
+      id                         TEXT PRIMARY KEY,
+      owner_id                   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id                 TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      source_environment         TEXT NOT NULL
+                                   CHECK (source_environment IN ('masterflow_native','portable_factory')),
+      source_factory_id          TEXT,
+      source_session_or_event    TEXT NOT NULL,
+      signal_type                TEXT NOT NULL
+                                   CHECK (signal_type IN (
+                                     'repeated_correction','stable_preference','recurring_workflow',
+                                     'new_source_or_stakeholder','new_validation_or_sensitive_action',
+                                     'recurring_exception','failure_or_rework','contradiction',
+                                     'missed_trigger','portable_factory_backflow'
+                                   )),
+      summary                    TEXT NOT NULL,
+      affected_process           TEXT NOT NULL,
+      affected_output_family     TEXT NOT NULL,
+      domain_refs_json           TEXT NOT NULL DEFAULT '[]',
+      evidence_summary           TEXT NOT NULL,
+      evidence_refs_json         TEXT NOT NULL DEFAULT '[]',
+      repetition_count           INTEGER NOT NULL DEFAULT 1 CHECK (repetition_count > 0),
+      confidence                 TEXT NOT NULL CHECK (confidence IN ('low','medium','high')),
+      status                     TEXT NOT NULL
+                                   CHECK (status IN (
+                                     'observation','hypothesis','user_confirmed_rule',
+                                     'contradiction','open_question'
+                                   )),
+      privacy                    TEXT NOT NULL CHECK (privacy IN ('safe','anonymize','do_not_export')),
+      scope                      TEXT NOT NULL,
+      godmode_targets_json       TEXT NOT NULL DEFAULT '[]',
+      routing_status             TEXT NOT NULL
+                                   CHECK (routing_status IN ('pending','routed','ambiguous','quarantined')),
+      canon_status               TEXT NOT NULL DEFAULT 'candidate_only'
+                                   CHECK (canon_status = 'candidate_only'),
+      review_status              TEXT NOT NULL DEFAULT 'pending'
+                                   CHECK (review_status IN ('pending','approved','parked','rejected','archived')),
+      reviewer_id                TEXT REFERENCES users(id),
+      review_note                TEXT,
+      dedupe_key                 TEXT NOT NULL UNIQUE,
+      detected_at                INTEGER NOT NULL,
+      created_at                 INTEGER NOT NULL,
+      updated_at                 INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
@@ -1223,6 +1269,10 @@ function migrate(d: Database.Database): void {
       ON d12_missed_trigger_findings(owner_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_d12_findings_project
       ON d12_missed_trigger_findings(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_usage_learning_owner_review
+      ON usage_learning_candidates(owner_id, review_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_usage_learning_project_review
+      ON usage_learning_candidates(project_id, review_status, updated_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -1376,14 +1426,15 @@ function migrateTaskModelProfilesTaskCheck(d: Database.Database): void {
 /**
  * Migration idempotente du CHECK `source_kind` de la Validation Inbox.
  * La fondation initiale acceptait uniquement `action`; D06 ajoute
- * `feedback_draft`, `correction_export_preview` puis `d12_finding` sans créer d'inbox parallèle
+ * `feedback_draft`, `correction_export_preview`, `d12_finding` puis
+ * `usage_learning_candidate` sans créer d'inbox parallèle
  * et sans perdre les items existants.
  */
 function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
   const row = d
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
     .get() as {sql?: string} | undefined;
-  if (!row?.sql || row.sql.includes('d12_finding')) return;
+  if (!row?.sql || row.sql.includes('usage_learning_candidate')) return;
 
   d.pragma('foreign_keys = OFF');
   try {
@@ -1416,7 +1467,8 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
           decision_json            TEXT,
           audit_trace_json         TEXT NOT NULL DEFAULT '[]',
           source_kind              TEXT NOT NULL CHECK (source_kind IN (
-                                     'action','feedback_draft','correction_export_preview','d12_finding'
+                                     'action','feedback_draft','correction_export_preview','d12_finding',
+                                     'usage_learning_candidate'
                                    )),
           source_id                TEXT NOT NULL,
           created_at               INTEGER NOT NULL,
@@ -1924,7 +1976,7 @@ export interface ValidationInboxItemRow {
   decision_options_json: string;
   decision_json: string | null;
   audit_trace_json: string;
-  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding';
+  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding' | 'usage_learning_candidate';
   source_id: string;
   created_at: number;
   updated_at: number;
@@ -2031,6 +2083,37 @@ export interface D12MissedTriggerFindingRow {
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'observation' | 'hypothesis' | 'candidate_pattern' | 'validated_alert' | 'stale' | 'archived';
   owner_decision_json: string | null;
+  detected_at: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface UsageLearningCandidateRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  source_environment: 'masterflow_native' | 'portable_factory';
+  source_factory_id: string | null;
+  source_session_or_event: string;
+  signal_type: string;
+  summary: string;
+  affected_process: string;
+  affected_output_family: string;
+  domain_refs_json: string;
+  evidence_summary: string;
+  evidence_refs_json: string;
+  repetition_count: number;
+  confidence: 'low' | 'medium' | 'high';
+  status: 'observation' | 'hypothesis' | 'user_confirmed_rule' | 'contradiction' | 'open_question';
+  privacy: 'safe' | 'anonymize' | 'do_not_export';
+  scope: string;
+  godmode_targets_json: string;
+  routing_status: 'pending' | 'routed' | 'ambiguous' | 'quarantined';
+  canon_status: 'candidate_only';
+  review_status: 'pending' | 'approved' | 'parked' | 'rejected' | 'archived';
+  reviewer_id: string | null;
+  review_note: string | null;
+  dedupe_key: string;
   detected_at: number;
   created_at: number;
   updated_at: number;

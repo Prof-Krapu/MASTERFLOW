@@ -4,6 +4,25 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Native Usage Harvester D11-D12 V1 — LOCAL VÉRIFIÉ
+
+- les événements workflow d'échec, blocage, rejet ou ressource/permission manquante créent
+  automatiquement une candidate privée ;
+- les événements neutres ne créent rien ;
+- répétitions et preuves sont dédupliquées dans une vérité candidate unique ;
+- le routeur cible les propriétaires fonctionnels du Domain Map, jamais un compte inventé ;
+- les routages ambigus gardent un seul candidat avec plusieurs reviewers ;
+- la Shared Validation Inbox admin/godmode permet approve, park, reject ou archive ;
+- une approbation ne modifie ni processus, ni canon, ni système externe ;
+- la fausse information « runtime finding absent » est corrigée en `partial` : finding et revue
+  existent, détecteur automatique toujours absent.
+
+Recette : ciblés Usage Harvester/D12 43/43 ; backend complet 347/347 ; TypeScript backend OK.
+
+Statut : local vérifié ; aucune conversation brute, action, job, provider ou écriture canon.
+
+---
+
 ## 2026-06-19 — Vérité de pilotage post-PR #35 — MERGÉE SUR MAIN (PR #36)
 
 - les vagues 0, 1, 2, 5C et 5D ne sont plus présentées comme locales ou en attente ;

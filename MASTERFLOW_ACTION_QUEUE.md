@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 6A — Native Usage Harvester D11-D12
+
+- Tâche : extraire automatiquement des apprentissages candidats depuis des événements internes sourcés, puis les router vers les GodModes fonctionnels.
+- Impact : MasterFlow apprend des échecs, blocages et rejets sans demander une extraction manuelle.
+- Risque : moyen, contenu par métadonnées minimales, confidentialité `do_not_export`, déduplication et revue humaine.
+- Source de vérité concernée : Kernel Usage Learning + D11 + D12 + contrat Usage Harvester.
+- Statut : implémenté localement et vérifié : ciblés 43/43, backend 347/347, TypeScript OK.
+- Validation requise : GO MALEX reçu ; aucune écriture canon ou action externe autorisée.
+
 ### Vague 5B — Appliquer le hard-stop à une sélection explicite
 
 - Tâche : prévisualiser, cocher puis geler uniquement les actions sensibles choisies.
@@ -112,8 +121,8 @@ Dernière mise à jour : 2026-06-19
 - Impact : vérifier que MasterFlow sait extraire, qualifier, dédupliquer et router automatiquement les apprentissages d'usage.
 - Risque : faible en audit ; élevé seulement si une extraction native est confondue avec une écriture automatique du canon ou expose des données privées.
 - Source de vérité concernée : Kernel + D11 + D12 + contrat Usage Harvester.
-- Statut : à auditer.
-- Validation requise : non pour l'audit ; oui avant code.
+- Statut : audit terminé ; V1 native implémentée sur événements workflow nettoyés. Les sources conversationnelles et imports portables restent hors scope.
+- Validation requise : GO MALEX reçu pour la V1 ; oui avant toute source privée supplémentaire.
 
 ### Classer les deux factories Claude Project
 

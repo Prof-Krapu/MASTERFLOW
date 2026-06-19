@@ -4,6 +4,7 @@ import type {
   D12MissedTriggerFinding,
   DecideValidationInboxItemRequest,
   FeedbackDraft,
+  UsageLearningCandidate,
   ValidationDecisionValue,
   ValidationInboxItem,
   ValidationInboxItemType,
@@ -26,11 +27,16 @@ import {
   reviewCorrectionExportPreview,
   reviewFeedbackDraft,
 } from './feedback_exports.ts';
+import {
+  decideUsageLearningCandidate,
+  listUsageLearningCandidates,
+} from './usage_harvester.ts';
 
 const ACTION_ITEM_PREFIX = 'validation_action_';
 const FEEDBACK_DRAFT_ITEM_PREFIX = 'validation_feedback_draft_';
 const EXPORT_PREVIEW_ITEM_PREFIX = 'validation_correction_export_preview_';
 const D12_FINDING_ITEM_PREFIX = 'validation_d12_finding_';
+const USAGE_LEARNING_ITEM_PREFIX = 'validation_usage_learning_';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -124,6 +130,10 @@ function exportPreviewItemId(exportId: string): string {
 
 function d12FindingItemId(findingId: string): string {
   return `${D12_FINDING_ITEM_PREFIX}${findingId}`;
+}
+
+function usageLearningItemId(candidateId: string): string {
+  return `${USAGE_LEARNING_ITEM_PREFIX}${candidateId}`;
 }
 
 function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
@@ -296,6 +306,47 @@ function buildD12FindingProjection(
   };
 }
 
+function buildUsageLearningProjection(
+  candidate: UsageLearningCandidate,
+): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
+  return {
+    item_id: usageLearningItemId(candidate.candidate_id),
+    item_type: 'autonomy_proposal',
+    title: `Apprentissage d'usage : ${candidate.affected_process}`,
+    summary: candidate.summary,
+    domain_refs: candidate.domain_refs,
+    object_refs: [
+      `usage_learning_candidate:${candidate.candidate_id}`,
+      `process:${candidate.affected_process}`,
+      `output_family:${candidate.affected_output_family}`,
+    ],
+    source_refs: candidate.evidence_refs,
+    requester: candidate.owner_id,
+    owner: candidate.owner_id,
+    required_validator: `godmode:${candidate.godmode_targets.join('|')}`,
+    current_status: 'needs_review',
+    risk_level: candidate.status === 'contradiction' ? 'high' : 'medium',
+    privacy_scope: 'admin_only',
+    source_truth_state: candidate.evidence_refs.length > 0 ? 'source_verified' : 'unknown',
+    output_readiness_state: 'blocked',
+    proposed_action: 'review_usage_learning_candidate',
+    impact_summary:
+      "La décision classe un apprentissage candidat. Elle ne modifie ni processus validé, ni canon, ni système externe.",
+    blocked_actions: ['auto_process_update', 'auto_canon', 'auto_patch', 'auto_deploy', 'external_send'],
+    allowed_actions: ['approve', 'park', 'reject', 'archive'],
+    conflicts: candidate.status === 'contradiction' ? ['Contradiction à arbitrer avant toute promotion.'] : [],
+    open_questions: candidate.routing_status === 'ambiguous'
+      ? ['Plusieurs propriétaires fonctionnels doivent arbitrer ce candidat partagé.']
+      : [],
+    recommended_decision: 'park',
+    decision_options: ['approve', 'park', 'reject', 'archive'],
+    decision: null,
+    audit_trace: [`usage_learning_candidate:${candidate.candidate_id}`, ...candidate.audit_trace],
+    source_kind: 'usage_learning_candidate',
+    source_id: candidate.candidate_id,
+  };
+}
+
 function persistValidationInboxProjection(
   projected: Omit<ValidationInboxItem, 'created_at' | 'updated_at'>,
 ): ValidationInboxItem {
@@ -393,6 +444,12 @@ export function syncValidationInboxItemForD12Finding(finding: D12MissedTriggerFi
   return persistValidationInboxProjection(buildD12FindingProjection(finding));
 }
 
+export function syncValidationInboxItemForUsageLearningCandidate(
+  candidate: UsageLearningCandidate,
+): ValidationInboxItem {
+  return persistValidationInboxProjection(buildUsageLearningProjection(candidate));
+}
+
 export function getValidationInboxItemById(itemId: string): ValidationInboxItem {
   const row = getDb()
     .prepare('SELECT * FROM validation_inbox_items WHERE id = ?')
@@ -414,7 +471,11 @@ export function listValidationInboxItems(actor: AuthUser): ValidationInboxItem[]
         && finding.owner_decision === null)
       .map(syncValidationInboxItemForD12Finding)
     : [];
-  return [...actionItems, ...feedbackItems, ...exportPreviewItems, ...d12FindingItems]
+  const usageLearningItems = actor.role === 'admin' || actor.role === 'godmode'
+    ? listUsageLearningCandidates({reviewStatus: 'pending'})
+      .map(syncValidationInboxItemForUsageLearningCandidate)
+    : [];
+  return [...actionItems, ...feedbackItems, ...exportPreviewItems, ...d12FindingItems, ...usageLearningItems]
     .sort((a, b) => a.updated_at - b.updated_at);
 }
 
@@ -617,6 +678,36 @@ function decideD12FindingItem(
   return decidedItem;
 }
 
+function decideUsageLearningItem(
+  actor: AuthUser,
+  item: ValidationInboxItem,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  decideUsageLearningCandidate(actor, item.source_id, request);
+  const decidedItem = updateDecision(
+    item,
+    actor,
+    request,
+    request.decision === 'approve' ? 'ready' : 'blocked',
+  );
+
+  audit({
+    event_type: 'validation_inbox_decision',
+    user_id: actor.id,
+    scope: item.item_type,
+    detail: {
+      item_id: item.item_id,
+      source_kind: item.source_kind,
+      source_id: item.source_id,
+      decision: request.decision,
+      external_effects: [],
+      no_process_update: true,
+      no_auto_canon: true,
+    },
+  });
+  return decidedItem;
+}
+
 export function decideValidationInboxItem(
   actor: AuthUser,
   itemId: string,
@@ -638,5 +729,8 @@ export function decideValidationInboxItem(
     return decideCorrectionExportPreviewItem(actor, item, request);
   }
   if (item.source_kind === 'd12_finding') return decideD12FindingItem(actor, item, request);
+  if (item.source_kind === 'usage_learning_candidate') {
+    return decideUsageLearningItem(actor, item, request);
+  }
   throw new Error('validation_inbox_source_not_supported');
 }
