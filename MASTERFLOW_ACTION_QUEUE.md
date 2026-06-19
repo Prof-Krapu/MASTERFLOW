@@ -22,13 +22,22 @@ Dernière mise à jour : 2026-06-20
 - Statut : mergé sur `main` via PR #69 (`0168a70`) ; preuves Drive synchronisées.
 - Validation requise : non pour code/tests isolés ; oui avant import ou migration d'une base réelle.
 
+### Verticale correction contextualisée — barème et profil de notation
+
+- Tâche : créer et valider manuellement un barème versionné et un profil de notation privé.
+- Impact : fournit les deux références obligatoires avant tout lot de correction.
+- Risque : moyen ; total de points, bandes, seuils protégés et statut validé doivent rester cohérents.
+- Source de vérité concernée : D06 Evaluation Engine + Living Truth Spine.
+- Statut : prérequis absent détecté par audit ; prochaine implémentation.
+- Validation requise : non pour code/tests isolés ; oui avant utilisation live.
+
 ### Verticale correction contextualisée — lancer un lot manuel
 
 - Tâche : créer depuis Teaching un lot de correction relié au projet, au roster actif, au sujet et au barème.
 - Impact : relie enfin le contexte de classe au pipeline de pré-correction déjà présent.
 - Risque : moyen ; aucune correction automatique, aucun feedback final ni provider live.
 - Source de vérité concernée : D05/D06 + Living Truth Spine.
-- Statut : futur immédiat après publication de la gestion roster.
+- Statut : bloqué logiquement jusqu'à livraison des surfaces barème et profil de notation.
 - Validation requise : non pour code/tests isolés ; oui avant toute exécution live réelle.
 
 ### Phase 1 — Première release privée vérifiable

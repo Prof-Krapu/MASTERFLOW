@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Audit prérequis lot de correction — ÉCART IDENTIFIÉ
+
+- un lot exige déjà un barème et un profil de notation validés ;
+- tables et contrôles existent, mais aucune route ou UI de gestion ;
+- base de recette : zéro barème, zéro profil ;
+- création directe du lot interdite pour ne pas contourner le canon.
+
+Décision : restaurer d'abord la surface privée barème + profil, puis reprendre le lot.
+
+---
+
 ## 2026-06-20 — Teaching Roster Management V1 — LOCAL VÉRIFIÉ
 
 - cohorte privée créée depuis Teaching ;
