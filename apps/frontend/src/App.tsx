@@ -1171,7 +1171,7 @@ function App(): ReactElement {
                 </button>
               ) : null}
             </div>
-            {actionRun.action ? <ActionAudit action={actionRun.action} /> : null}
+            {actionRun.action ? <ActionAudit action={actionRun.action} token={auth.token} /> : null}
           </article>
 
           {activeMode.id === 'inventory' && auth && context ? (

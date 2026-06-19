@@ -1,9 +1,13 @@
+import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 
-import type {Action, ActionStatus} from '@masterflow/shared';
+import type {Action, ActionContextComparison, ActionStatus} from '@masterflow/shared';
+
+import {getActionContextComparison} from './api.ts';
 
 type ActionAuditProps = {
   action: Action;
+  token: string;
 };
 
 type AuditStep = {
@@ -83,10 +87,36 @@ function formatTimestamp(value: number): string {
   }).format(new Date(milliseconds));
 }
 
-export function ActionAudit({action}: ActionAuditProps): ReactElement {
+const CONTEXT_LABELS: Record<ActionContextComparison['comparison'], string> = {
+  unchanged: 'Contexte inchangé',
+  requires_review: 'Contexte à revoir',
+  inconclusive: 'Contexte incomplet',
+};
+
+const NEXT_STEP_LABELS: Record<ActionContextComparison['recommended_next_step'], string> = {
+  none: 'Aucune action supplémentaire.',
+  re_preflight: 'Relire puis relancer un nouveau cycle de preflight si nécessaire.',
+  owner_review: 'Vérification owner nécessaire avant toute suite.',
+};
+
+export function ActionAudit({action, token}: ActionAuditProps): ReactElement {
   const risk = action.preflight?.risk_level ?? action.risk_level ?? 'non renseigne';
   const warnings = action.preflight?.warnings ?? [];
   const resultAvailable = action.result && Object.keys(action.result).length > 0;
+  const [contextComparison, setContextComparison] = useState<ActionContextComparison | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setContextComparison(null);
+    void getActionContextComparison(action.id, token)
+      .then((comparison) => {
+        if (active) setContextComparison(comparison);
+      })
+      .catch(() => {
+        if (active) setContextComparison(null);
+      });
+    return () => { active = false; };
+  }, [action.id, token]);
 
   return (
     <section className="action-audit" aria-label="Trace de l'action">
@@ -135,6 +165,18 @@ export function ActionAudit({action}: ActionAuditProps): ReactElement {
           <strong>Erreur backend</strong>
           <span>{action.error}</span>
         </p>
+      ) : null}
+      {contextComparison ? (
+        <section className={`action-context-status action-context-status--${contextComparison.comparison}`}>
+          <strong>{CONTEXT_LABELS[contextComparison.comparison]}</strong>
+          <span>{NEXT_STEP_LABELS[contextComparison.recommended_next_step]}</span>
+          {contextComparison.changed_refs.length > 0 ? (
+            <small>Références modifiées : {contextComparison.changed_refs.join(' · ')}</small>
+          ) : null}
+          {contextComparison.missing_revision_refs.length > 0 ? (
+            <small>Références à vérifier : {contextComparison.missing_revision_refs.join(' · ')}</small>
+          ) : null}
+        </section>
       ) : null}
       {resultAvailable ? (
         <details className="audit-result">

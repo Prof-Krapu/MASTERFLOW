@@ -1,5 +1,6 @@
 import type {
   Action,
+  ActionContextComparison,
   ActionRegistryEntry,
   AdminUser,
   AuthResponse,
@@ -206,6 +207,13 @@ export async function resumeRoomHardStop(
     method: 'POST',
     body: JSON.stringify({room_id: roomId}),
   }, token);
+}
+
+export async function getActionContextComparison(
+  actionId: string,
+  token?: string | null,
+): Promise<ActionContextComparison> {
+  return request<ActionContextComparison>(`/actions/${actionId}/context-comparison`, {method: 'GET'}, token);
 }
 
 export async function getGuides(token?: string | null): Promise<ConversationGuide[]> {

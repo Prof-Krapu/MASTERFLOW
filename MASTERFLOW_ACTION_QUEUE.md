@@ -38,7 +38,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : rend le snapshot utilisable sans automatiser le re-preflight.
 - Risque : faible, lecture seule.
 - Source de vérité concernée : politique V1 context change + Action Context Snapshot.
-- Statut : à faire maintenant.
+- Statut : implémenté local, lecture seule, prêt à publication.
 - Validation requise : non pour lecture seule.
 
 ### Vague 5A — Preview hard-stop
