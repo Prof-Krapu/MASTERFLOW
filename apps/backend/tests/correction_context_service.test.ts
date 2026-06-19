@@ -7,6 +7,8 @@ import {createCohort, createRosterVersion, getRosterVersion} from '../src/servic
 import {
   compileCorrectionContextPayload,
   createCorrectionContextSnapshot,
+  createIdentityMatchCandidate,
+  decideIdentityMatchCandidate,
   getCorrectionContextSnapshot,
   linkSubmissionIdentity,
 } from '../src/services/correction_context.ts';
@@ -86,7 +88,7 @@ describe('snapshot de contexte correction V1', () => {
       source_ref: 'manual://4crea-a/v1',
       members: [
         {display_name: 'Alice Martin', aliases: ['Alice']},
-        {display_name: 'Bob Durand', aliases: ['Bob']},
+        {display_name: 'Bob Durand', aliases: ['Bob', 'Alice']},
       ],
     });
     const snapshot = createCorrectionContextSnapshot(teacher, batchId, {
@@ -164,6 +166,70 @@ describe('snapshot de contexte correction V1', () => {
         student_identity_id: alice!.student_identity_id,
       }),
     ).toThrow('correction_batch_not_found');
+
+    getDb()
+      .prepare(
+        `INSERT INTO submissions
+           (id, batch_id, owner_id, project_scope, source_evidence_ref,
+            identity_status, status, privacy_level, created_at, updated_at)
+         VALUES ('context-submission-candidate', ?, ?, ?, 'context-evidence-link',
+                 'unknown', 'review', 'private', ?, ?)`,
+      )
+      .run(batchId, teacher.id, batchId, now, now);
+    const candidate = createIdentityMatchCandidate(teacher, 'context-submission-candidate', {
+      context_snapshot_id: snapshot.snapshot_id,
+      observed_label: 'Alice',
+    });
+    expect(candidate).toMatchObject({
+      status: 'pending',
+      observed_label: 'Alice',
+    });
+    expect(candidate.candidate_identity_ids).toHaveLength(2);
+    expect(
+      getDb()
+        .prepare('SELECT student_identity_id, identity_status FROM submissions WHERE id = ?')
+        .get('context-submission-candidate'),
+    ).toEqual({student_identity_id: null, identity_status: 'candidate'});
+    expect(() =>
+      decideIdentityMatchCandidate(outsider, candidate.candidate_id, {
+        decision: 'confirm',
+        selected_identity_id: alice!.student_identity_id,
+      }),
+    ).toThrow('correction_batch_not_found');
+    const confirmed = decideIdentityMatchCandidate(teacher, candidate.candidate_id, {
+      decision: 'confirm',
+      selected_identity_id: alice!.student_identity_id,
+    });
+    expect(confirmed).toMatchObject({
+      status: 'confirmed',
+      selected_identity_id: alice!.student_identity_id,
+      decided_by: teacher.id,
+    });
+    expect(() =>
+      decideIdentityMatchCandidate(teacher, candidate.candidate_id, {
+        decision: 'confirm',
+        selected_identity_id: alice!.student_identity_id,
+      }),
+    ).toThrow('identity_match_candidate_decided');
+
+    getDb()
+      .prepare(
+        `INSERT INTO submissions
+           (id, batch_id, owner_id, project_scope, source_evidence_ref,
+            identity_status, status, privacy_level, created_at, updated_at)
+         VALUES ('context-submission-reject', ?, ?, ?, 'context-evidence-link',
+                 'unknown', 'review', 'private', ?, ?)`,
+      )
+      .run(batchId, teacher.id, batchId, now, now);
+    const rejectedCandidate = createIdentityMatchCandidate(teacher, 'context-submission-reject', {
+      context_snapshot_id: snapshot.snapshot_id,
+      observed_label: 'Bob',
+    });
+    expect(
+      decideIdentityMatchCandidate(teacher, rejectedCandidate.candidate_id, {
+        decision: 'reject',
+      }),
+    ).toMatchObject({status: 'rejected', selected_identity_id: null});
   });
 
   it('conserve la version historique après activation d’un nouveau roster', () => {

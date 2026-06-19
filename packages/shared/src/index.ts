@@ -1839,6 +1839,44 @@ export const SubmissionIdentityLinkSchema = z.object({
 });
 export type SubmissionIdentityLink = z.infer<typeof SubmissionIdentityLinkSchema>;
 
+export const CreateIdentityMatchCandidateRequestSchema = z.object({
+  context_snapshot_id: z.string().min(1),
+  observed_label: z.string().min(1).max(160),
+});
+export type CreateIdentityMatchCandidateRequest = z.infer<
+  typeof CreateIdentityMatchCandidateRequestSchema
+>;
+
+export const IdentityMatchCandidateSchema = z.object({
+  candidate_id: z.string().min(1),
+  submission_id: z.string().min(1),
+  batch_id: z.string().min(1),
+  context_snapshot_id: z.string().min(1),
+  observed_label: z.string().min(1).max(160),
+  candidate_identity_ids: z.array(z.string().min(1)).min(1).max(20),
+  status: z.enum(['pending', 'confirmed', 'rejected']),
+  selected_identity_id: z.string().min(1).nullable(),
+  created_by: z.string().min(1),
+  decided_by: z.string().min(1).nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type IdentityMatchCandidate = z.infer<typeof IdentityMatchCandidateSchema>;
+
+export const DecideIdentityMatchCandidateRequestSchema = z
+  .object({
+    decision: z.enum(['confirm', 'reject']),
+    selected_identity_id: z.string().min(1).nullable().optional(),
+  })
+  .refine(
+    (request) =>
+      request.decision === 'reject' || Boolean(request.selected_identity_id),
+    {message: 'Une confirmation exige une identité sélectionnée.', path: ['selected_identity_id']},
+  );
+export type DecideIdentityMatchCandidateRequest = z.infer<
+  typeof DecideIdentityMatchCandidateRequestSchema
+>;
+
 export const PreCorrectionManifestSchema = z
   .object({
     manifest_id: z.string().min(1),

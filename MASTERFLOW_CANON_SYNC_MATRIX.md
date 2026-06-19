@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-20
-Branche de travail : `codex/submission-identity-link-v1`
-Base GitHub vérifiée : `a1abb44`
+Branche de travail : `codex/identity-match-candidates-v1`
+Base GitHub vérifiée : `e0cf578`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -15,7 +15,7 @@ le runtime GitHub.
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Actions, objets D06, findings D12, candidates Usage Learning et intake factory D11 sont sur `main`. | faible | Ajouter les prochains domaines uniquement avec leur autorité métier propre. |
 | D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement ; recette isolée 12/12 validée. | faible | Garder D06 et participation élève séparés. |
-| D06 correction / feedback | partiel | Contexte correction V1 est sur `main`; liaison explicite submission-identité localement vérifiée. | moyen | Merger la liaison puis créer candidates ambiguës et UI professeur. |
+| D06 correction / feedback | partiel | Contexte et liaison explicite sont sur `main`; candidates ambiguës localement vérifiées. | moyen | Merger les candidates puis exposer la décision dans l'UI professeur. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability | partiel | Cockpit, findings, décisions owner et Usage Harvester V1 sont sur `main` ; détection automatique des findings reste absente. | faible | Étendre les sources structurées une par une, sans analyse brute ni auto-fix. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
