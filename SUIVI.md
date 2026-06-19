@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Vérité de pilotage post-PR #35 — RAFRAÎCHIE
+
+- les vagues 0, 1, 2, 5C et 5D ne sont plus présentées comme locales ou en attente ;
+- D06 preview privée est bien marquée mergée, mais export réel et envoi restent verrouillés ;
+- la fausse alerte « context hashes absents » est retirée de la matrice ;
+- GitHub `main` et le pont Drive ont été relus sur `b8c4677` ;
+- l'état live demeure non vérifié sans `MASTERFLOW_RELEASE_SHA`.
+
+Statut : documentation de pilotage uniquement ; aucun runtime modifié.
+
+---
+
 ## 2026-06-19 — Recette isolée D05-D06 — MERGÉE SUR MAIN (PR #34)
 
 - D05 Guided Runtime : service 8/8 et router 4/4 ;

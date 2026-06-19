@@ -14,22 +14,22 @@ Dernière mise à jour : 2026-06-19
 - Statut : mergé sur `main` via PR #21 (`0844358`), vérifié 336/336.
 - Validation requise : acquise par GO global MALEX ; aucune auto-application autorisée.
 
-### Vague 5C — État hard-stop persistant — AUDIT SEULEMENT
+### Vague 5C — État hard-stop persistant
 
-- Tâche : définir comment un stop reste actif et comment l'owner le lève explicitement.
+- Tâche : maintenir un stop owner+Room explicite et une reprise teacher+ sans réactiver les actions stale.
 - Impact : empêcher qu'une nouvelle action sensible soit créée juste après le gel de la sélection.
 - Risque : élevé si le stop bloque trop large ou devient automatique.
 - Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, Process Control Strip.
-- Statut : mergé sur `main` via PR #25 (`64aa5a0`), vérifié 339/339.
-- Validation requise : acquise ; prêt à publication.
+- Statut : mergé sur `main` via PR #25 (`64aa5a0`), vérifié 339/339 et visible dans le cockpit.
+- Validation requise : acquise ; aucune activation automatique autorisée.
 
-### Vague 5D — Context hash snapshots — À mettre en queue
+### Vague 5D — Context hash snapshots
 
-- Tâche : auditer les snapshots de contexte qui imposent re-preflight après changement de source.
+- Tâche : conserver le snapshot privé et le comparateur read-only avant toute politique plus automatique.
 - Impact : complète l'expiration autrement que par un stop manuel.
 - Risque : moyen en audit, élevé si invalidation automatique trop large.
 - Source de vérité concernée : `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
-- Statut : mergé sur `main` via PR #29 (`54b97cf`), vérifié 341/341 ; aucune invalidation automatique ouverte.
+- Statut : mergé sur `main` via PR #29 (`54b97cf`), visible via PR #32 ; vérifié 341/341 ; aucune invalidation automatique ouverte.
 - Validation requise : acquise pour politique V1 ; aucune mutation runtime supplémentaire.
 
 ### Vague 5E — Visibilité owner du comparateur contextuel
@@ -65,8 +65,8 @@ Dernière mise à jour : 2026-06-19
 - Impact : évite de confondre merge GitHub et instance réellement publiée.
 - Risque : faible ; documentation et signalement uniquement.
 - Source de vérité concernée : GitHub `main`, pont Drive, inbox et ledger.
-- Statut : réalisé localement sur `codex/d12-owner-cockpit-runtime` ; Drive à rafraîchir après publication.
-- Validation requise : oui avant commit/push.
+- Statut : fait ; cockpit et vérité de publication mergés depuis PR #7, Drive rafraîchi jusqu'à PR #35.
+- Validation requise : non ; distinction GitHub/live à conserver.
 
 ### Vague 1 — Owner Cockpit D12 runtime
 
@@ -74,8 +74,8 @@ Dernière mise à jour : 2026-06-19
 - Impact : donne une lecture produit de l'état runtime sans parcourir les logs techniques.
 - Risque : faible à moyen ; risque principal = revendiquer une sync GitHub/Drive non prouvée.
 - Source de vérité concernée : canon D12 + runtime GitHub.
-- Statut : implémenté localement ; le runtime affiche `non vérifié` sans SHA de release injecté.
-- Validation requise : oui avant commit/push.
+- Statut : mergé sur `main` via PR #7 ; le runtime affiche toujours `non vérifié` sans SHA de release injecté.
+- Validation requise : non pour la lecture ; oui avant tout déploiement live.
 
 ### Vague 2 — Teaching D05 actions guidées
 
@@ -83,7 +83,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : rend la première verticale D05 réellement utilisable sans ouvrir D06.
 - Risque : moyen ; consentement, scope et frontière D05/D06 doivent rester visibles.
 - Source de vérité concernée : canon D05 + Guided Runtime GitHub.
-- Statut : implémenté et vérifié localement sur `codex/d05-teaching-guided-actions` ; prêt à publier.
+- Statut : mergé sur `main` via PR #8 ; recette isolée publiée via PR #34-35.
 - Validation requise : autorisation permanente MALEX reçue pour commit/push/PR/merge.
 
 ### Queue safe post-Vincent
@@ -101,8 +101,8 @@ Dernière mise à jour : 2026-06-19
 - Impact : prépare la suite logique après `feedback_draft`, sans confondre preview privée et envoi étudiant.
 - Risque : faible en audit/spec ; élevé seulement si implémenté sans garde-fous.
 - Source de vérité concernée : canon D06 + Shared Validation Inbox + GitHub.
-- Statut : implémenté et vérifié localement (`docs/d06/D06_EXPORT_PREVIEW_INBOX_AUDIT_2026-06-18.md`).
-- Validation requise : autorisation permanente MALEX reçue ; publication automatique prête.
+- Statut : mergé sur `main` via PR #9 ; recette D06 + inbox 26/26 publiée via PR #34-35.
+- Validation requise : acquise pour la preview privée ; export réel et envoi restent verrouillés.
 
 ## 2. À mettre en queue
 
@@ -142,11 +142,11 @@ Dernière mise à jour : 2026-06-19
 - Statut : fait ; handoff clôturé, anciennes entrées `open` neutralisées comme historique.
 - Validation requise : non.
 
-- Tâche : vérifier que la matrice canon ↔ GitHub reflète bien `4e0cfbb`.
+- Tâche : vérifier que la matrice canon ↔ GitHub reflète le `main` courant.
 - Impact : évite une alerte de sync fausse après merge D06.
 - Risque : faible.
 - Source de vérité concernée : GitHub `main`, Drive bridge, fichiers de pilotage.
-- Statut : fait, Drive bridge rafraîchi post-PR #6.
+- Statut : fait, GitHub et pont Drive alignés sur `b8c4677` après PR #35.
 - Validation requise : non.
 
 ## 5. À décider plus tard
