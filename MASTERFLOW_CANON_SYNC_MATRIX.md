@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-19
-Branche de travail : `codex/d11-d12-native-usage-harvester-proof`
-Base GitHub vérifiée : `7ec5baa`
+Branche de travail : `codex/d11-d12-structured-sources-proof`
+Base GitHub vérifiée : `5b1acae`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -21,7 +21,7 @@ le runtime GitHub.
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
 | D09 MasterStory | absent runtime | Aucun stockage ou workbench MasterStory dédié confirmé. | moyen | Garder les récits en candidats jusqu'à une tranche dédiée. |
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
-| D11 factories/backflow | partiel | Usage Harvester V6B accepte localement workflow metadata, teacher deltas et findings D12 validées ; runtime des factories portables toujours absent. | moyen | Garder l'import portable explicite et séparé de l'extraction native. |
+| D11 factories/backflow | partiel | Usage Harvester V6B accepte sur `main` workflow metadata, teacher deltas et findings D12 validées ; runtime des factories portables toujours absent. | moyen | Garder l'import portable explicite et séparé de l'extraction native. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
 | Pont de déploiement Drive | synchronisé | Le pont est rafraîchi après la dernière PR de preuve ; le SHA exact reste porté par le snapshot Drive. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |

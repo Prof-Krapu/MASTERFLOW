@@ -19,7 +19,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : apprend des arbitrages réels sans analyser les conversations ou notes libres.
 - Risque : faible à moyen, borné par permission existante, statut validé et références uniquement.
 - Source de vérité concernée : D05-D06 Teacher Decision Delta + D12 findings + D11 Usage Harvester.
-- Statut : implémenté localement et vérifié : ciblés 37/37, backend 347/347, TypeScript et build frontend OK.
+- Statut : mergé sur `main` via PR #40 (`5b1acae`) : ciblés 37/37, backend 347/347, TypeScript et build frontend OK.
 - Validation requise : GO MALEX reçu ; aucune observation D12 non validée ne traverse.
 
 ### Vague 5B — Appliquer le hard-stop à une sélection explicite
