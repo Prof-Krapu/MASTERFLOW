@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Audit context-hash et re-preflight — DÉCISION PRODUIT REQUISE
+## 2026-06-19 — Audit context-hash et re-preflight — MERGÉ SUR MAIN (PR #27)
 
 - le contexte runtime compilé existe, mais aucun snapshot de preflight ni fingerprint stable ;
 - les références RAG dérivées ne peuvent pas déclencher une invalidation automatique ;
@@ -14,6 +14,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - décider ensuite, famille par famille, si un changement fiable impose re-preflight ou `stale`.
 
 Audit : `docs/process-activation/CONTEXT_HASH_SNAPSHOT_AUDIT_2026-06-19.md`.
+
+Statut : audit mergé sur `main` via PR #27 (`593ffba`) ; décision produit requise avant runtime.
 
 ---
 

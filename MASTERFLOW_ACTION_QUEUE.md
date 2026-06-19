@@ -29,7 +29,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : complète l'expiration autrement que par un stop manuel.
 - Risque : moyen en audit, élevé si invalidation automatique trop large.
 - Source de vérité concernée : `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
-- Statut : audit terminé ; snapshot + comparateur read-only recommandés, code bloqué avant décision produit.
+- Statut : audit mergé via PR #27 (`593ffba`) ; snapshot + comparateur read-only recommandés, code bloqué avant décision produit.
 - Validation requise : non pour l'audit ; oui avant migration/runtime.
 
 ### Vague 5A — Preview hard-stop
