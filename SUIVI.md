@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Factory Routing Recommendations V6E — LOCAL VÉRIFIÉ
+
+- recommandations lecture seule : DA→D08, PROJECT_LORE→D09, PEDAGOGY→D05/D06 ;
+- les autres classifications restent sans recommandation sûre ;
+- `target_domain` reste nul, sans routage ni effet runtime.
+
+Statut : local vérifié ; publication GitHub à faire.
+
+---
+
 ## 2026-06-19 — Factory Candidate Updates V6D — LOCAL VÉRIFIÉ
 
 - une approbation V6C matérialise une fiche locale par candidat exporté ;

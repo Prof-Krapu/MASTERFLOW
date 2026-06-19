@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 6E — Recommandation de routage factory
+
+- Tâche : proposer un domaine quand le canon le permet, sans l'appliquer.
+- Impact : rend les candidate updates lisibles sans inventer de règle de routage.
+- Risque : faible ; lecture seule, domaine cible toujours vide.
+- Source de vérité concernée : D11 Factory Passport Backflow Contract.
+- Statut : local vérifié ; publication GitHub à faire.
+- Validation requise : GO MALEX reçu.
+
 ### Vague 6D — Candidate updates factory après revue
 
 - Tâche : matérialiser une fiche candidate non routée seulement après approbation d'un backflow D11 complet.

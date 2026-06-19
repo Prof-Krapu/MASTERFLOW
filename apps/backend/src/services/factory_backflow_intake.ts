@@ -3,6 +3,7 @@ import {
   FactoryBackflowCandidateUpdateSchema,
   type CreateFactoryBackflowIntakeRequest,
   type FactoryBackflowCandidateUpdate,
+  type FactoryCandidateRoutingRecommendation,
   type FactoryBackflowIntake,
   type FactoryBackflowIntakeReviewStatus,
 } from '@masterflow/shared';
@@ -72,6 +73,7 @@ function toCandidateUpdate(row: FactoryBackflowCandidateUpdateRow): FactoryBackf
     target_domain: row.target_domain,
     candidate_status: row.candidate_status,
     canon_status: row.canon_status,
+    routing_recommendation: routingRecommendation(row.classification),
     audit_trace: [
       `factory_backflow_intake:${row.intake_id}`,
       'factory_backflow_candidate_update_v6d',
@@ -84,6 +86,22 @@ function toCandidateUpdate(row: FactoryBackflowCandidateUpdateRow): FactoryBackf
     created_at: row.created_at,
     updated_at: row.updated_at,
   });
+}
+
+/** Proposition canonique en lecture seule : elle ne renseigne jamais target_domain. */
+function routingRecommendation(
+  classification: FactoryBackflowCandidateUpdate['classification'],
+): FactoryCandidateRoutingRecommendation {
+  if (classification === 'DA') {
+    return {recommended_domains: ['D08_DA_VISUAL_ASSETS'], status: 'owner_decision_required', reason: 'Le canon D11 route les sorties visuelles vers D08.'};
+  }
+  if (classification === 'PROJECT_LORE') {
+    return {recommended_domains: ['D09_MASTERSTORY'], status: 'owner_decision_required', reason: 'Le canon D11 route les sorties narratives vers D09.'};
+  }
+  if (classification === 'PEDAGOGY') {
+    return {recommended_domains: ['D05_PEDAGOGY', 'D06_CORRECTION_FEEDBACK_EVALUATION'], status: 'owner_decision_required', reason: 'Le canon D11 exige un arbitrage humain entre pédagogie et correction.'};
+  }
+  return {recommended_domains: [], status: 'no_safe_recommendation', reason: 'Aucune correspondance canonique univoque : une décision owner est requise avant routage.'};
 }
 
 function missing(value: unknown): boolean {

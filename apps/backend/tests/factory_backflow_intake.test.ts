@@ -220,6 +220,10 @@ describe('D11 — Factory Backflow Intake V6C', () => {
         target_domain: null,
         candidate_status: 'approved_candidate',
         canon_status: 'candidate_only',
+        routing_recommendation: expect.objectContaining({
+          recommended_domains: [],
+          status: 'no_safe_recommendation',
+        }),
       }),
     ]));
     const updates = await fetch(`${base}/backflow/candidate-updates`, {
