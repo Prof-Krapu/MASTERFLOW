@@ -4,16 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Factory Manual Routing V6F — LOCAL VÉRIFIÉ
+## 2026-06-19 — Factory Manual Routing V6F — MERGÉ SUR MAIN (PR #47)
 
 - confirmation admin/godmode limitée aux domaines recommandés ;
 - route non recommandée refusée ; candidate-only, sans effet runtime.
 
-Recette : Factory Backflow 5/5 ; TypeScript backend OK.
+Recette : Factory Backflow 5/5 ; TypeScript backend OK. Pont Drive synchronisé sur `2c39511`.
 
 ---
 
-## 2026-06-19 — Factory Routing Recommendations V6E — LOCAL VÉRIFIÉ
+## 2026-06-19 — Factory Routing Recommendations V6E — MERGÉ SUR MAIN (PR #46)
 
 - recommandations lecture seule : DA→D08, PROJECT_LORE→D09, PEDAGOGY→D05/D06 ;
 - les autres classifications restent sans recommandation sûre ;
