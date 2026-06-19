@@ -1,0 +1,42 @@
+# Carte de progression — Réconciliation Legacy → Canon → Git
+
+Mise à jour : `2026-06-20`
+
+## Où on en est vraiment
+
+Le legacy n'est plus traité comme un bloc opaque. Les capacités structurantes
+ont été inventoriées, confrontées au canon propre, puis remises dans des contrats
+opérationnels reliés aux domaines. Rien de cette passe ne prétend que le runtime
+live est déjà complet.
+
+| Bloc | Canon Drive | Git runtime | Étape suivante |
+|---|---|---|---|
+| Sources, versions, identités, contextes | Living Truth Spine raccordé | fondations contextuelles présentes | livrer les objets additifs par verticale |
+| Correction / roster | contrat complet | correction solide, roster absent | migration additive après backup/rollback gate |
+| DA / assets | resolver + registre cadrés | manifest/provider lifecycle absent | persister manifest/références, provider verrouillé |
+| Mémoire / timeline / versioning | contrat rétabli | cards/checkpoints présents, ledger absent | timeline/change ledger additif |
+| Continuité runtime | incident/recovery contract rétabli | observabilité partielle, live non prouvé | receipts + récupération conservatrice |
+| Factories | D11 V1 borné | candidate-only livré | ne pas activer/importer sans nouveau contrat |
+
+## Ce qui bloque vraiment
+
+1. La publication Git de cette passe : authentification GitHub locale expirée et
+   résolution réseau GitHub indisponible lors du contrôle.
+2. Les migrations vers une base réelle : elles demandent une sauvegarde, un
+   rollback et un GO opérationnel au moment d'exécution.
+3. Le live historique : le smoke connu a renvoyé `502`; la demande Vincent est
+   une récupération conservatrice, pas un redéploiement.
+
+## Ce qui n'est pas bloqué
+
+- contrats canon, audits, matrices, queue, tests locaux et documentation Git ;
+- préparation détaillée des tranches backend ;
+- lecture de l'archive et détection des prochaines capacités à raccorder.
+
+## Prochain ordre logique
+
+1. Rétablir GitHub, publier cette passe documentaire et sa matrice.
+2. Préparer puis exécuter la verticale roster/correction sur copie de base.
+3. Implémenter le manifest/read model D08 sans provider.
+4. Ajouter timeline/change ledger et receipts de continuité.
+5. Seulement ensuite, traiter les autres apps legacy et les factories.
