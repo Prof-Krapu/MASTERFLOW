@@ -20,7 +20,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : empêcher qu'une nouvelle action sensible soit créée juste après le gel de la sélection.
 - Risque : élevé si le stop bloque trop large ou devient automatique.
 - Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, Process Control Strip.
-- Statut : implémenté local et vérifié 339/339 après validation MALEX `next`.
+- Statut : mergé sur `main` via PR #25 (`64aa5a0`), vérifié 339/339.
 - Validation requise : acquise ; prêt à publication.
 
 ### Vague 5D — Context hash snapshots — À mettre en queue
