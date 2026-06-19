@@ -347,6 +347,25 @@ function migrate(d: Database.Database): void {
       ON hard_stop_control_states(owner_id, room_id)
       WHERE status = 'active';
 
+    CREATE TABLE IF NOT EXISTS action_context_snapshots (
+      id                         TEXT PRIMARY KEY,
+      action_id                  TEXT NOT NULL UNIQUE REFERENCES actions(id) ON DELETE CASCADE,
+      owner_id                   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id                 TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      room_id                    TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+      room_instance_id           TEXT NOT NULL REFERENCES room_instances(id) ON DELETE CASCADE,
+      action_intent              TEXT NOT NULL,
+      action_payload_fingerprint TEXT NOT NULL,
+      authoritative_refs_json    TEXT NOT NULL,
+      checkpoint_ref_json        TEXT,
+      hard_stop_state_ref        TEXT,
+      context_fingerprint        TEXT NOT NULL,
+      created_at                 INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_action_context_snapshots_owner_room
+      ON action_context_snapshots(owner_id, room_id, created_at DESC);
+
     -- Trace immuable des décisions (permission, validation, exécution).
     CREATE TABLE IF NOT EXISTS audit_logs (
       id          TEXT PRIMARY KEY,
@@ -1861,6 +1880,22 @@ export interface HardStopControlStateRow {
   created_at: number;
   updated_at: number;
   released_at: number | null;
+}
+
+export interface ActionContextSnapshotRow {
+  id: string;
+  action_id: string;
+  owner_id: string;
+  project_id: string | null;
+  room_id: string;
+  room_instance_id: string;
+  action_intent: string;
+  action_payload_fingerprint: string;
+  authoritative_refs_json: string;
+  checkpoint_ref_json: string | null;
+  hard_stop_state_ref: string | null;
+  context_fingerprint: string;
+  created_at: number;
 }
 
 export interface ValidationInboxItemRow {

@@ -180,4 +180,14 @@ describe('Action expiry router', () => {
     expect(resumed.status).toBe(200);
     expect(await resumed.json()).toMatchObject({status: 'released'});
   });
+
+  it('expose seulement au propriétaire la comparaison de contexte read-only', async () => {
+    const action = await createSensitiveAction();
+    const own = await fetch(`${base}/actions/${action.id}/context-comparison`, {headers: auth(godToken)});
+    expect(own.status).toBe(200);
+    expect(await own.json()).toMatchObject({action_id: action.id, mutation: false});
+
+    const forbidden = await fetch(`${base}/actions/${action.id}/context-comparison`, {headers: auth(studentToken)});
+    expect(forbidden.status).toBe(404);
+  });
 });

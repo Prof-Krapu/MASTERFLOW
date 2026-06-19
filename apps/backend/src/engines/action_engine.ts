@@ -22,6 +22,7 @@ import {getRegistryEntry, riskLevelFor, isSensitive} from './action_registry.ts'
 import {checkPermission, validatorRoleFor, hasRole} from './permission_runtime.ts';
 import {ACTION_EXECUTORS} from './executors.ts';
 import {getActiveHardStopForOwnerRoom} from '../services/hard_stop.ts';
+import {captureActionContextSnapshot} from '../services/action_context_snapshots.ts';
 
 /**
  * Moteur du cycle de vie des actions.
@@ -267,6 +268,20 @@ export function preflightAction(user: AuthUser, actionId: string): Action {
       now,
       actionId,
     );
+
+  if (perm.allowed && sensitive && action.room_id && !blockedByHardStop) {
+    try {
+      captureActionContextSnapshot(user, action);
+    } catch (error) {
+      audit({
+        event_type: 'action_context_snapshot_capture_failed',
+        user_id: user.id,
+        action_id: action.id,
+        scope: `room:${action.room_id}`,
+        detail: {message: error instanceof Error ? error.message : String(error)},
+      });
+    }
+  }
 
   // Audit : on trace toujours le preflight, en précisant l'issue.
   audit({

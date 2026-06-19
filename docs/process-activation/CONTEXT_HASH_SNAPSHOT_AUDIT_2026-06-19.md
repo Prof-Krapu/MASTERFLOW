@@ -1,6 +1,9 @@
 # Audit context-hash snapshots et re-preflight — 2026-06-19
 
-Statut : `AUDIT_COMPLETE_RUNTIME_DECISION_REQUIRED_BEFORE_CODE`
+Statut : `READ_ONLY_SNAPSHOT_RUNTIME_IMPLEMENTED_LOCAL`
+
+Mise à jour : MALEX a validé la tranche read-only par `next`. Le runtime capture un snapshot
+privé au preflight sensible avec Room et expose la comparaison sans aucune mutation d'action.
 
 ## Diagnostic simple
 
@@ -100,5 +103,6 @@ réelles, décider séparément les familles éligibles à `stale` automatique.
 
 ## Stop rule
 
-Pas de table, migration, hash, comparateur ni invalidation automatique avant validation de ce
-contrat. Le hard-stop Room déjà déployé reste le seul mécanisme automatique de blocage explicite.
+Le snapshot et le comparateur read-only sont maintenant autorisés et implémentés. Restent interdits
+sans décision produit dédiée : stale automatique, re-preflight automatique et interprétation des
+sources sans révision fiable. Le hard-stop Room reste le seul blocage runtime automatique.

@@ -25,6 +25,7 @@ import {
   validateAction,
 } from '../engines/action_engine.ts';
 import {activateHardStop, getActiveHardStop, resumeHardStop} from '../services/hard_stop.ts';
+import {compareActionContextSnapshot} from '../services/action_context_snapshots.ts';
 
 /**
  * Router des actions — cycle de vie complet du contrat d'action.
@@ -186,6 +187,20 @@ export function createActionsRouter(): Router {
       res.json(resumeHardStop(authUser(req), parsed.data));
     } catch (e) {
       res.status(409).json({error: 'hard_stop_resume_failed', message: errMessage(e)});
+    }
+  });
+
+  router.get('/actions/:id/context-comparison', (req: Request, res: Response): void => {
+    const id = req.params.id;
+    const action = id ? getActionFor(authUser(req), id) : null;
+    if (!action) {
+      res.status(404).json({error: 'action_not_found'});
+      return;
+    }
+    try {
+      res.json(compareActionContextSnapshot(authUser(req), action));
+    } catch (e) {
+      res.status(409).json({error: 'context_comparison_failed', message: errMessage(e)});
     }
   });
 
