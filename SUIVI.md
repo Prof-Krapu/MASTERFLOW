@@ -18,7 +18,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Recette : Factory Backflow + Inbox 24/24 ; backend complet 351/351 ; TypeScript
 backend/frontend et build Vite OK.
 
-Statut : mergé via PR #42 (`b70ec80`) ; pont Drive à rafraîchir après la preuve de publication.
+Statut : PR #42 runtime puis PR #43 preuve, `main` = `c0a98bb`; pont Drive relu et synchronisé.
 Le déploiement live reste non vérifié sans `MASTERFLOW_RELEASE_SHA`.
 
 ---
