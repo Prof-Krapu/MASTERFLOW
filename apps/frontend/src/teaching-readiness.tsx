@@ -3,6 +3,7 @@ import type {ReactElement} from 'react';
 
 import type {
   ConversationGuide,
+  Cohort,
   CurrentContext,
   GuidedQuestion,
   GuidedSession,
@@ -10,17 +11,22 @@ import type {
   Job,
   Project,
   Resource,
+  RosterVersion,
   ValidationInboxItem,
 } from '@masterflow/shared';
 
 import {
   advanceGuidedSession,
   completeGuidedSession,
+  createCohort,
+  createRosterVersion,
   createGuidedSession,
   getGuides,
+  getCohorts,
   getGuidedSessions,
   getIdentityMatchReviews,
   getJobs,
+  getRosterVersions,
   submitGuidedAnswer,
   decideIdentityMatchReview,
 } from './api.ts';
@@ -91,6 +97,12 @@ export function TeachingReadiness({
   const [identityReviews, setIdentityReviews] = useState<IdentityMatchReviewItem[]>([]);
   const [identitySelections, setIdentitySelections] = useState<Record<string, string>>({});
   const [identityMutatingId, setIdentityMutatingId] = useState<string | null>(null);
+  const [cohorts, setCohorts] = useState<Cohort[]>([]);
+  const [selectedCohortId, setSelectedCohortId] = useState('');
+  const [rosterVersions, setRosterVersions] = useState<RosterVersion[]>([]);
+  const [cohortTitle, setCohortTitle] = useState('');
+  const [cohortPeriod, setCohortPeriod] = useState('');
+  const [rosterText, setRosterText] = useState('');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -103,27 +115,75 @@ export function TeachingReadiness({
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews] = await Promise.all([
+      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts] = await Promise.all([
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
         getIdentityMatchReviews(project?.project_id, token),
+        getCohorts(project?.project_id, token),
       ]);
       setJobs(nextJobs);
       setGuides(nextGuides);
       setSessions(nextSessions);
       setIdentityReviews(nextIdentityReviews);
+      setCohorts(nextCohorts);
+      setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setStatus('État synchronisé depuis les surfaces runtime existantes.');
     } catch (error) {
       setJobs([]);
       setGuides([]);
       setSessions([]);
       setIdentityReviews([]);
+      setCohorts([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
     }
   }, [project?.project_id, token]);
+
+  useEffect(() => {
+    if (!selectedCohortId) {
+      setRosterVersions([]);
+      return;
+    }
+    void getRosterVersions(selectedCohortId, token)
+      .then(setRosterVersions)
+      .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Roster indisponible.'));
+  }, [selectedCohortId, token]);
+
+  const addCohort = useCallback(async (): Promise<void> => {
+    if (!cohortTitle.trim()) return setStatus('Donne un nom à la cohorte.');
+    setMutating(true);
+    try {
+      const created = await createCohort({
+        project_id: project?.project_id ?? null,
+        title: cohortTitle.trim(),
+        period_ref: cohortPeriod.trim() || null,
+      }, token);
+      setCohortTitle(''); setCohortPeriod('');
+      await refresh(); setSelectedCohortId(created.cohort_id);
+      setStatus('Cohorte privée créée. Ajoute maintenant sa première version de roster.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Création impossible.'); }
+    finally { setMutating(false); }
+  }, [cohortPeriod, cohortTitle, project?.project_id, refresh, token]);
+
+  const addRoster = useCallback(async (): Promise<void> => {
+    const members = rosterText.split('\n').map((line) => line.trim()).filter(Boolean).map((line) => {
+      const [name = '', aliases = ''] = line.split('|');
+      return {display_name: name.trim(), aliases: aliases.split(',').map((value) => value.trim()).filter(Boolean)};
+    }).filter((member) => member.display_name.length > 0);
+    if (!selectedCohortId || members.length === 0) return setStatus('Choisis une cohorte et saisis au moins un élève.');
+    setMutating(true);
+    try {
+      const created = await createRosterVersion(selectedCohortId, {
+        source_ref: `manual://teaching/${Date.now()}`,
+        members,
+      }, token);
+      setRosterText(''); setRosterVersions(await getRosterVersions(selectedCohortId, token));
+      setStatus(`Roster V${created.version} activé. La version précédente reste archivée.`);
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Roster impossible.'); }
+    finally { setMutating(false); }
+  }, [rosterText, selectedCohortId, token]);
 
   const decideIdentity = useCallback(async (
     review: IdentityMatchReviewItem,
@@ -408,6 +468,26 @@ export function TeachingReadiness({
             ))}
           </div>
         )}
+      </section>
+
+      <section className="roster-management" aria-label="Cohortes et listes d’étudiants">
+        <div className="identity-review__heading">
+          <div><strong>Cohortes et listes d’étudiants</strong><span>{cohorts.length} cohorte(s)</span></div>
+          <small>Chaque nouveau roster crée une version ; l’ancienne reste archivée.</small>
+        </div>
+        <div className="roster-management__grid">
+          <div className="roster-management__form">
+            <label>Nom de la cohorte<input value={cohortTitle} onChange={(event) => setCohortTitle(event.target.value)} placeholder="4CREA A" /></label>
+            <label>Période<input value={cohortPeriod} onChange={(event) => setCohortPeriod(event.target.value)} placeholder="2025-2026" /></label>
+            <button disabled={mutating} onClick={() => void addCohort()} type="button">Créer la cohorte privée</button>
+          </div>
+          <div className="roster-management__form">
+            <label>Cohorte<select value={selectedCohortId} onChange={(event) => setSelectedCohortId(event.target.value)}><option value="">Choisir</option>{cohorts.map((cohort) => <option key={cohort.cohort_id} value={cohort.cohort_id}>{cohort.title}{cohort.period_ref ? ` · ${cohort.period_ref}` : ''}</option>)}</select></label>
+            <label>Élèves — une ligne par élève<textarea rows={6} value={rosterText} onChange={(event) => setRosterText(event.target.value)} placeholder={'Alice Martin | Alice, A. Martin\nBob Durand'} /></label>
+            <button disabled={mutating || !selectedCohortId} onClick={() => void addRoster()} type="button">Créer une nouvelle version du roster</button>
+          </div>
+        </div>
+        {selectedCohortId ? <p className="muted compact">Historique : {rosterVersions.length === 0 ? 'aucun roster' : rosterVersions.map((version) => `V${version.version} ${version.status} · ${version.members.length} élèves`).join(' — ')}</p> : null}
       </section>
 
       <section className="teaching-guided" aria-label="Sujet et session guidée">

@@ -11,6 +11,9 @@ import type {
   CreateD12MissedTriggerFinding,
   CreateInvitation,
   ConversationGuide,
+  Cohort,
+  CreateCohort,
+  CreateRosterVersion,
   CreateGuidedSessionRequest,
   CurrentContext,
   DecideValidationInboxItemRequest,
@@ -42,6 +45,7 @@ import type {
   RagResource,
   Resource,
   ResourceScope,
+  RosterVersion,
   RoomCheckpoint,
   RoomInstance,
   SetCollectionCompletionRequest,
@@ -134,6 +138,29 @@ export async function getPendingActions(token?: string | null): Promise<Action[]
 
 export async function getJobs(token?: string | null): Promise<Job[]> {
   return request<Job[]>('/jobs', {method: 'GET'}, token);
+}
+
+export async function getCohorts(projectId?: string | null, token?: string | null): Promise<Cohort[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+  return request<Cohort[]>(`/cohorts${query}`, {method: 'GET'}, token);
+}
+
+export async function createCohort(body: CreateCohort, token?: string | null): Promise<Cohort> {
+  return request<Cohort>('/cohorts', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+
+export async function getRosterVersions(cohortId: string, token?: string | null): Promise<RosterVersion[]> {
+  return request<RosterVersion[]>(`/cohorts/${encodeURIComponent(cohortId)}/roster-versions`, {method: 'GET'}, token);
+}
+
+export async function createRosterVersion(
+  cohortId: string,
+  body: CreateRosterVersion,
+  token?: string | null,
+): Promise<RosterVersion> {
+  return request<RosterVersion>(`/cohorts/${encodeURIComponent(cohortId)}/roster-versions`, {
+    method: 'POST', body: JSON.stringify(body),
+  }, token);
 }
 
 export async function getIdentityMatchReviews(
