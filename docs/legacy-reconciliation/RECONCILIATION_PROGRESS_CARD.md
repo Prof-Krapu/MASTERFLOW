@@ -20,12 +20,15 @@ live est déjà complet.
 
 ## Ce qui bloque vraiment
 
-1. La publication Git de cette passe : authentification GitHub locale expirée et
-   résolution réseau GitHub indisponible lors du contrôle.
-2. Les migrations vers une base réelle : elles demandent une sauvegarde, un
+1. Les migrations vers une base réelle : elles demandent une sauvegarde, un
    rollback et un GO opérationnel au moment d'exécution.
-3. Le live historique : le smoke connu a renvoyé `502`; la demande Vincent est
+2. Le live historique : le smoke connu a renvoyé `502`; la demande Vincent est
    une récupération conservatrice, pas un redéploiement.
+
+## Preuve GitHub
+
+La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
+`main` au SHA `5278bedd02e0c0ef48291108e62ea51fde3677dc`.
 
 ## Ce qui n'est pas bloqué
 
@@ -35,8 +38,7 @@ live est déjà complet.
 
 ## Prochain ordre logique
 
-1. Rétablir GitHub, publier cette passe documentaire et sa matrice.
-2. Préparer puis exécuter la verticale roster/correction sur copie de base.
-3. Implémenter le manifest/read model D08 sans provider.
-4. Ajouter timeline/change ledger et receipts de continuité.
-5. Seulement ensuite, traiter les autres apps legacy et les factories.
+1. Préparer puis exécuter la verticale roster/correction sur copie de base.
+2. Implémenter le manifest/read model D08 sans provider.
+3. Ajouter timeline/change ledger et receipts de continuité.
+4. Seulement ensuite, traiter les autres apps legacy et les factories.
