@@ -13,6 +13,7 @@ import {
   createFactoryBackflowIntake,
   getFactoryBackflowIntake,
   listFactoryBackflowCandidateUpdates,
+  routeFactoryBackflowCandidateUpdate,
 } from '../src/services/factory_backflow_intake.ts';
 import {
   decideValidationInboxItem,
@@ -234,5 +235,26 @@ describe('D11 — Factory Backflow Intake V6C', () => {
       expect.objectContaining({intake_id: intake.intake_id}),
     ]));
     expect(after).toEqual(before);
+  });
+
+  it('accepte uniquement une confirmation owner parmi les domaines recommandés', () => {
+    const payload = completeBackflow('route-da');
+    const candidate = payload.factory_backflow_export?.candidates?.[0];
+    if (!candidate) throw new Error('candidate de route manquante');
+    candidate.classification = 'DA';
+    const intake = createFactoryBackflowIntake(admin, payload);
+    const item = listValidationInboxItems(admin).find((entry) => entry.source_id === intake.intake_id);
+    if (!item) throw new Error('intake de route introuvable');
+    decideValidationInboxItem(admin, item.item_id, {decision: 'approve'});
+    const update = listFactoryBackflowCandidateUpdates().find((entry) => entry.intake_id === intake.intake_id);
+    if (!update) throw new Error('candidate update de route introuvable');
+    expect(routeFactoryBackflowCandidateUpdate(admin, update.candidate_update_id, 'D08_DA_VISUAL_ASSETS')).toMatchObject({
+      routing_status: 'routed',
+      target_domain: 'D08_DA_VISUAL_ASSETS',
+      canon_status: 'candidate_only',
+    });
+    expect(() => routeFactoryBackflowCandidateUpdate(admin, update.candidate_update_id, 'D09_MASTERSTORY')).toThrow(
+      'factory_backflow_candidate_route_not_recommended',
+    );
   });
 });

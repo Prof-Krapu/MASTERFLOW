@@ -4,6 +4,14 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 6F — Routage manuel factory
+
+- Tâche : confirmer un domaine uniquement parmi les recommandations V6E.
+- Impact : route une candidate sans la promouvoir en canon ou runtime.
+- Risque : moyen, contenu par admin/godmode et whitelist de recommandations.
+- Statut : local vérifié ; publication GitHub à faire.
+- Validation requise : GO MALEX reçu.
+
 ### Vague 6E — Recommandation de routage factory
 
 - Tâche : proposer un domaine quand le canon le permet, sans l'appliquer.

@@ -1200,6 +1200,14 @@ function migrate(d: Database.Database): void {
       UNIQUE(intake_id, source_candidate_id)
     );
 
+    CREATE TABLE IF NOT EXISTS factory_backflow_candidate_routes (
+      candidate_update_id TEXT PRIMARY KEY REFERENCES factory_backflow_candidate_updates(id) ON DELETE CASCADE,
+      target_domain       TEXT NOT NULL,
+      routed_by           TEXT NOT NULL REFERENCES users(id),
+      note                TEXT,
+      created_at          INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);

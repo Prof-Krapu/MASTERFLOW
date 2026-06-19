@@ -61,6 +61,7 @@ function toIntake(row: FactoryBackflowIntakeRow): FactoryBackflowIntake {
 }
 
 function toCandidateUpdate(row: FactoryBackflowCandidateUpdateRow): FactoryBackflowCandidateUpdate {
+  const route = getDb().prepare('SELECT target_domain FROM factory_backflow_candidate_routes WHERE candidate_update_id = ?').get(row.id) as {target_domain: string} | undefined;
   return FactoryBackflowCandidateUpdateSchema.parse({
     candidate_update_id: row.id,
     intake_id: row.intake_id,
@@ -69,8 +70,8 @@ function toCandidateUpdate(row: FactoryBackflowCandidateUpdateRow): FactoryBackf
     source_candidate_id: row.source_candidate_id,
     summary: row.summary,
     classification: row.classification,
-    routing_status: row.routing_status,
-    target_domain: row.target_domain,
+    routing_status: route ? 'routed' : 'unrouted',
+    target_domain: route?.target_domain ?? null,
     candidate_status: row.candidate_status,
     canon_status: row.canon_status,
     routing_recommendation: routingRecommendation(row.classification),
@@ -231,6 +232,17 @@ export function listFactoryBackflowCandidateUpdates(): FactoryBackflowCandidateU
     'SELECT * FROM factory_backflow_candidate_updates ORDER BY updated_at ASC',
   ).all() as FactoryBackflowCandidateUpdateRow[];
   return rows.map(toCandidateUpdate);
+}
+
+export function routeFactoryBackflowCandidateUpdate(actor: AuthUser, candidateUpdateId: string, targetDomain: string, note?: string): FactoryBackflowCandidateUpdate {
+  const row = getDb().prepare('SELECT * FROM factory_backflow_candidate_updates WHERE id = ?').get(candidateUpdateId) as FactoryBackflowCandidateUpdateRow | undefined;
+  if (!row) throw new Error('factory_backflow_candidate_update_not_found');
+  const recommendation = routingRecommendation(row.classification);
+  if (!recommendation.recommended_domains.includes(targetDomain)) throw new Error('factory_backflow_candidate_route_not_recommended');
+  const now = Date.now();
+  getDb().prepare('INSERT INTO factory_backflow_candidate_routes (candidate_update_id, target_domain, routed_by, note, created_at) VALUES (?, ?, ?, ?, ?)').run(candidateUpdateId, targetDomain, actor.id, note ?? null, now);
+  audit({event_type: 'factory_backflow_candidate_routed', user_id: actor.id, scope: targetDomain, detail: {candidate_update_id: candidateUpdateId, target_domain: targetDomain, no_canon_write: true, no_runtime_activation: true}});
+  return toCandidateUpdate(row);
 }
 
 function materializeCandidateUpdates(intake: FactoryBackflowIntake, now: number): number {
