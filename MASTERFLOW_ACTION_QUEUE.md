@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 6C — Factory Backflow Intake manuel
+
+- Tâche : recevoir un Factory Passport et un export backflow JSON comme candidat traçable, puis les projeter dans l'Inbox partagée.
+- Impact : ouvre une frontière de réabsorption contrôlée sans assimiler une factory portable au runtime MasterFlow.
+- Risque : moyen, contenu par JSON strict, admin/godmode, quarantaine obligatoire, privacy/simulation/security gates et absence d'effet externe.
+- Source de vérité concernée : D11 Factory Passport Backflow Contract + Domain Card + Shared Validation Inbox.
+- Statut : local vérifié ; publication GitHub à faire. ZIP, fichiers, URL, import, installation et activation runtime restent futur/verrouillés.
+- Validation requise : GO MALEX reçu ; publication autorisée par la consigne continue.
+
 ### Vague 6A — Native Usage Harvester D11-D12
 
 - Tâche : extraire automatiquement des apprentissages candidats depuis des événements internes sourcés, puis les router vers les GodModes fonctionnels.
@@ -139,7 +148,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : évite que des retours/outils externes deviennent canon automatiquement.
 - Risque : faible en classement ; moyen si installation/export réel.
 - Source de vérité concernée : D11 Factories Backflow.
-- Statut : à garder en queue terrain.
+- Statut : à garder en queue terrain ; une réception JSON V6C ne vaut ni installation ni absorption canon.
 - Validation requise : oui avant absorption canon ou installation risquée.
 
 ## 3. À faire quand j'ai des tokens

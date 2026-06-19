@@ -54,13 +54,14 @@
     },
     {
       "action_id": "submit_backflow_candidate",
-      "label": "Envoyer vers MasterFlow",
+      "label": "Soumettre un manifeste backflow JSON",
       "endpoint": "POST /backflow/intake",
       "risk_level": "medium",
       "preflight_required": false,
       "validation_required": true,
+      "minimum_role": "admin",
       "ui_surface": "backflow_candidate_card",
-      "status": "out_of_scope"
+      "status": "live"
     },
     {
       "action_id": "import_factory_backflow",
@@ -69,6 +70,7 @@
       "risk_level": "medium",
       "preflight_required": true,
       "validation_required": true,
+      "minimum_role": "admin",
       "ui_surface": "backflow_candidate_card",
       "status": "out_of_scope"
     },

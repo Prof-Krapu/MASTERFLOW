@@ -4,6 +4,7 @@ import type {
   D12MissedTriggerFinding,
   DecideValidationInboxItemRequest,
   FeedbackDraft,
+  FactoryBackflowIntake,
   UsageLearningCandidate,
   ValidationDecisionValue,
   ValidationInboxItem,
@@ -31,12 +32,17 @@ import {
   decideUsageLearningCandidate,
   listUsageLearningCandidates,
 } from './usage_harvester.ts';
+import {
+  decideFactoryBackflowIntake,
+  listPendingFactoryBackflowIntakes,
+} from './factory_backflow_intake.ts';
 
 const ACTION_ITEM_PREFIX = 'validation_action_';
 const FEEDBACK_DRAFT_ITEM_PREFIX = 'validation_feedback_draft_';
 const EXPORT_PREVIEW_ITEM_PREFIX = 'validation_correction_export_preview_';
 const D12_FINDING_ITEM_PREFIX = 'validation_d12_finding_';
 const USAGE_LEARNING_ITEM_PREFIX = 'validation_usage_learning_';
+const FACTORY_BACKFLOW_ITEM_PREFIX = 'validation_factory_backflow_';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -134,6 +140,10 @@ function d12FindingItemId(findingId: string): string {
 
 function usageLearningItemId(candidateId: string): string {
   return `${USAGE_LEARNING_ITEM_PREFIX}${candidateId}`;
+}
+
+function factoryBackflowItemId(intakeId: string): string {
+  return `${FACTORY_BACKFLOW_ITEM_PREFIX}${intakeId}`;
 }
 
 function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
@@ -347,6 +357,69 @@ function buildUsageLearningProjection(
   };
 }
 
+function buildFactoryBackflowProjection(
+  intake: FactoryBackflowIntake,
+): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
+  const quarantined = intake.intake_status === 'quarantined';
+  const factoryLabel = intake.factory_id ?? 'Factory non identifiée';
+  const sourceRefs = [
+    intake.factory_id ? `factory:${intake.factory_id}` : null,
+    intake.export_id ? `factory_backflow_export:${intake.export_id}` : null,
+    intake.source_session_ref ? `factory_session:${intake.source_session_ref}` : null,
+  ].filter((entry): entry is string => entry !== null);
+  const openQuestions = quarantined
+    ? intake.quarantine_reasons.map((reason) => `Quarantaine : ${reason}.`)
+    : ['Le manifeste reste une source externe candidate : aucune donnée ne devient canon automatiquement.'];
+
+  return {
+    item_id: factoryBackflowItemId(intake.intake_id),
+    item_type: 'factory_backflow',
+    title: `Backflow factory : ${factoryLabel}`,
+    summary: intake.summary ?? 'Export factory incomplet : retenu en quarantaine pour clarification.',
+    domain_refs: ['D11_FACTORIES_BACKFLOW'],
+    object_refs: [
+      `factory_backflow_intake:${intake.intake_id}`,
+      ...(intake.factory_id ? [`factory:${intake.factory_id}`] : []),
+      ...(intake.export_id ? [`factory_backflow_export:${intake.export_id}`] : []),
+    ],
+    source_refs: sourceRefs,
+    requester: intake.owner_id,
+    owner: intake.owner_id,
+    required_validator: 'godmode:FACTORY_SYSTEM|BACKFLOW_INTAKE|AUTHORITY_KERNEL',
+    current_status: quarantined ? 'blocked' : 'needs_review',
+    risk_level: 'medium',
+    privacy_scope: 'admin_only',
+    source_truth_state: quarantined ? 'missing' : 'unknown',
+    output_readiness_state: 'blocked',
+    proposed_action: quarantined ? 'request_factory_backflow_precision' : 'review_factory_backflow_candidate',
+    impact_summary: quarantined
+      ? 'Le manifeste est conservé sans être importé. Il faut une nouvelle soumission complète avant toute revue.'
+      : 'La décision classe uniquement ce backflow candidat. Elle n’importe ni factory, ni runtime, ni canon.',
+    blocked_actions: [
+      'factory_zip_import',
+      'external_url_fetch',
+      'runtime_activation',
+      'auto_usage_learning',
+      'auto_canon',
+      'auto_deploy',
+      'external_send',
+    ],
+    allowed_actions: quarantined
+      ? ['request_precision', 'park', 'reject', 'archive']
+      : ['approve', 'park', 'reject', 'archive'],
+    conflicts: quarantined ? ['Préconditions Factory Passport / sécurité / simulation incomplètes.'] : [],
+    open_questions: openQuestions,
+    recommended_decision: quarantined ? 'request_precision' : 'park',
+    decision_options: quarantined
+      ? ['request_precision', 'park', 'reject', 'archive']
+      : ['approve', 'park', 'reject', 'archive'],
+    decision: null,
+    audit_trace: [`factory_backflow_intake:${intake.intake_id}`, ...intake.audit_trace],
+    source_kind: 'factory_backflow_intake',
+    source_id: intake.intake_id,
+  };
+}
+
 function persistValidationInboxProjection(
   projected: Omit<ValidationInboxItem, 'created_at' | 'updated_at'>,
 ): ValidationInboxItem {
@@ -450,6 +523,12 @@ export function syncValidationInboxItemForUsageLearningCandidate(
   return persistValidationInboxProjection(buildUsageLearningProjection(candidate));
 }
 
+export function syncValidationInboxItemForFactoryBackflowIntake(
+  intake: FactoryBackflowIntake,
+): ValidationInboxItem {
+  return persistValidationInboxProjection(buildFactoryBackflowProjection(intake));
+}
+
 export function getValidationInboxItemById(itemId: string): ValidationInboxItem {
   const row = getDb()
     .prepare('SELECT * FROM validation_inbox_items WHERE id = ?')
@@ -475,7 +554,10 @@ export function listValidationInboxItems(actor: AuthUser): ValidationInboxItem[]
     ? listUsageLearningCandidates({reviewStatus: 'pending'})
       .map(syncValidationInboxItemForUsageLearningCandidate)
     : [];
-  return [...actionItems, ...feedbackItems, ...exportPreviewItems, ...d12FindingItems, ...usageLearningItems]
+  const factoryBackflowItems = actor.role === 'admin' || actor.role === 'godmode'
+    ? listPendingFactoryBackflowIntakes().map(syncValidationInboxItemForFactoryBackflowIntake)
+    : [];
+  return [...actionItems, ...feedbackItems, ...exportPreviewItems, ...d12FindingItems, ...usageLearningItems, ...factoryBackflowItems]
     .sort((a, b) => a.updated_at - b.updated_at);
 }
 
@@ -500,6 +582,8 @@ function updateDecision(
   const now = Date.now();
   const inboxStatus: ValidationInboxItem['current_status'] = request.decision === 'approve'
     ? 'approved'
+    : request.decision === 'request_precision'
+      ? 'blocked'
     : request.decision === 'park'
       ? 'parked'
       : request.decision === 'archive'
@@ -708,6 +792,45 @@ function decideUsageLearningItem(
   return decidedItem;
 }
 
+function decideFactoryBackflowItem(
+  actor: AuthUser,
+  item: ValidationInboxItem,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  if (!['approve', 'park', 'reject', 'archive', 'request_precision'].includes(request.decision)) {
+    throw new Error('validation_inbox_decision_not_supported_for_factory_backflow_intake');
+  }
+  const intake = decideFactoryBackflowIntake(
+    actor,
+    item.source_id,
+    request.decision as 'approve' | 'park' | 'reject' | 'archive' | 'request_precision',
+    request.note,
+  );
+  const decidedItem = updateDecision(
+    item,
+    actor,
+    request,
+    'blocked',
+  );
+  audit({
+    event_type: 'validation_inbox_decision',
+    user_id: actor.id,
+    scope: item.item_type,
+    detail: {
+      item_id: item.item_id,
+      source_kind: item.source_kind,
+      source_id: item.source_id,
+      decision: request.decision,
+      intake_status: intake.intake_status,
+      no_factory_import: true,
+      no_runtime_activation: true,
+      no_canon_write: true,
+      external_effects: [],
+    },
+  });
+  return decidedItem;
+}
+
 export function decideValidationInboxItem(
   actor: AuthUser,
   itemId: string,
@@ -721,7 +844,9 @@ export function decideValidationInboxItem(
     }
     throw new Error('validation_inbox_item_not_found');
   }
-  if (item.current_status !== 'needs_review') throw new Error('validation_inbox_item_already_decided');
+  if (item.current_status !== 'needs_review' && !(item.source_kind === 'factory_backflow_intake' && item.current_status === 'blocked')) {
+    throw new Error('validation_inbox_item_already_decided');
+  }
 
   if (item.source_kind === 'action') return decideActionItem(actor, item, request);
   if (item.source_kind === 'feedback_draft') return decideFeedbackDraftItem(actor, item, request);
@@ -731,6 +856,9 @@ export function decideValidationInboxItem(
   if (item.source_kind === 'd12_finding') return decideD12FindingItem(actor, item, request);
   if (item.source_kind === 'usage_learning_candidate') {
     return decideUsageLearningItem(actor, item, request);
+  }
+  if (item.source_kind === 'factory_backflow_intake') {
+    return decideFactoryBackflowItem(actor, item, request);
   }
   throw new Error('validation_inbox_source_not_supported');
 }

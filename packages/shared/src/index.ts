@@ -1208,6 +1208,7 @@ export const ValidationInboxItemSchema = z.object({
     'correction_export_preview',
     'd12_finding',
     'usage_learning_candidate',
+    'factory_backflow_intake',
   ]),
   source_id: z.string().min(1),
   created_at: z.number().int().nonnegative(),
@@ -1220,6 +1221,119 @@ export const DecideValidationInboxItemRequestSchema = z.object({
   note: z.string().max(1000).optional(),
 });
 export type DecideValidationInboxItemRequest = z.infer<typeof DecideValidationInboxItemRequestSchema>;
+
+// ───────────────────────── D11 Factory Backflow Intake ─────────────────────────
+
+/**
+ * V6C accepte exclusivement un manifeste JSON relu par un humain. Ces chaînes ne
+ * sont jamais dereferencées : une URL, archive ou fichier externe reste hors scope.
+ */
+function factoryBackflowText(max: number) {
+  return z.string().trim().min(1).max(max).refine(
+    (value) => !/^https?:\/\//i.test(value),
+    'Les URL externes ne sont pas acceptées dans l’intake factory.',
+  );
+}
+
+const FactoryBackflowTextSchema = factoryBackflowText(500);
+
+export const FactoryBackflowClassificationSchema = z.enum([
+  'SYSTEM',
+  'PERSONA',
+  'DA',
+  'PROJECT_LORE',
+  'OUTPUT',
+  'PLATFORM',
+  'RESOURCE',
+  'PEDAGOGY',
+  'PRIVATE',
+]);
+export type FactoryBackflowClassification = z.infer<typeof FactoryBackflowClassificationSchema>;
+
+export const FactoryPassportIntakeSchema = z.object({
+  factory_id: factoryBackflowText(160).optional(),
+  factory_version: factoryBackflowText(120).optional(),
+  target_platform: factoryBackflowText(120).optional(),
+  mission: FactoryBackflowTextSchema.optional(),
+  owner_scope: factoryBackflowText(240).optional(),
+  source_manifest: z.array(factoryBackflowText(240)).min(1).max(50).optional(),
+  capability_profile: z.array(factoryBackflowText(160)).min(1).max(30).optional(),
+  output_routes: z.array(factoryBackflowText(160)).min(1).max(30).optional(),
+  validation_gates: z.array(factoryBackflowText(160)).min(1).max(30).optional(),
+  backflow_target: factoryBackflowText(160).optional(),
+  security_preflight_status: z.enum(['passed', 'pending', 'failed']).optional(),
+  simulation_status: z.enum(['passed', 'pending', 'failed']).optional(),
+  privacy_classification: FactoryBackflowClassificationSchema.optional(),
+}).strict();
+export type FactoryPassportIntake = z.infer<typeof FactoryPassportIntakeSchema>;
+
+export const FactoryBackflowCandidateSummarySchema = z.object({
+  candidate_id: factoryBackflowText(160),
+  summary: FactoryBackflowTextSchema,
+  classification: FactoryBackflowClassificationSchema,
+}).strict();
+export type FactoryBackflowCandidateSummary = z.infer<typeof FactoryBackflowCandidateSummarySchema>;
+
+export const FactoryBackflowExportIntakeSchema = z.object({
+  export_id: factoryBackflowText(160).optional(),
+  factory_id: factoryBackflowText(160).optional(),
+  factory_version: factoryBackflowText(120).optional(),
+  source_session_ref: factoryBackflowText(240).optional(),
+  export_type: factoryBackflowText(120).optional(),
+  summary: FactoryBackflowTextSchema.optional(),
+  candidates: z.array(FactoryBackflowCandidateSummarySchema).min(1).max(30).optional(),
+  private_content_removed: z.boolean().optional(),
+  source_truth: factoryBackflowText(240).optional(),
+  validation_required: z.literal(true).optional(),
+  target_masterflow_owner: factoryBackflowText(160).optional(),
+  blocked_actions: z.array(factoryBackflowText(160)).max(30).optional(),
+  recommended_next_action: FactoryBackflowTextSchema.optional(),
+}).strict();
+export type FactoryBackflowExportIntake = z.infer<typeof FactoryBackflowExportIntakeSchema>;
+
+/** Entrée permissive volontairement : les manques sont tracés en quarantaine, pas perdus. */
+export const CreateFactoryBackflowIntakeRequestSchema = z.object({
+  factory_passport: FactoryPassportIntakeSchema.optional(),
+  factory_backflow_export: FactoryBackflowExportIntakeSchema.optional(),
+}).strict();
+export type CreateFactoryBackflowIntakeRequest = z.infer<typeof CreateFactoryBackflowIntakeRequestSchema>;
+
+export const FactoryBackflowIntakeStatusSchema = z.enum(['candidate', 'quarantined']);
+export type FactoryBackflowIntakeStatus = z.infer<typeof FactoryBackflowIntakeStatusSchema>;
+
+export const FactoryBackflowIntakeReviewStatusSchema = z.enum([
+  'pending',
+  'approved',
+  'parked',
+  'rejected',
+  'archived',
+]);
+export type FactoryBackflowIntakeReviewStatus = z.infer<typeof FactoryBackflowIntakeReviewStatusSchema>;
+
+export const FactoryBackflowIntakeSchema = z.object({
+  intake_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  factory_id: z.string().min(1).nullable(),
+  factory_version: z.string().min(1).nullable(),
+  target_platform: z.string().min(1).nullable(),
+  export_id: z.string().min(1).nullable(),
+  export_type: z.string().min(1).nullable(),
+  source_session_ref: z.string().min(1).nullable(),
+  summary: z.string().min(1).nullable(),
+  candidate_count: z.number().int().nonnegative(),
+  passport: FactoryPassportIntakeSchema.nullable(),
+  backflow_export: FactoryBackflowExportIntakeSchema.nullable(),
+  quarantine_reasons: z.array(z.string().min(1).max(160)),
+  intake_status: FactoryBackflowIntakeStatusSchema,
+  review_status: FactoryBackflowIntakeReviewStatusSchema,
+  reviewer_id: z.string().min(1).nullable(),
+  review_note: z.string().max(1000).nullable(),
+  canon_status: z.literal('candidate_only'),
+  audit_trace: z.array(z.string().min(1).max(240)),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type FactoryBackflowIntake = z.infer<typeof FactoryBackflowIntakeSchema>;
 
 // ───────────────────────── Registre des adapters ─────────────────────────
 
