@@ -8,6 +8,7 @@ import {
   compileCorrectionContextPayload,
   createCorrectionContextSnapshot,
   getCorrectionContextSnapshot,
+  linkSubmissionIdentity,
 } from '../src/services/correction_context.ts';
 
 const teacher: AuthUser = {id: 'context-teacher', username: 'context_teacher', role: 'teacher'};
@@ -83,7 +84,10 @@ describe('snapshot de contexte correction V1', () => {
     const cohort = createCohort(teacher, {title: '4CREA A'});
     const roster = createRosterVersion(teacher, cohort.cohort_id, {
       source_ref: 'manual://4crea-a/v1',
-      members: [{display_name: 'Alice Martin', aliases: ['Alice']}],
+      members: [
+        {display_name: 'Alice Martin', aliases: ['Alice']},
+        {display_name: 'Bob Durand', aliases: ['Bob']},
+      ],
     });
     const snapshot = createCorrectionContextSnapshot(teacher, batchId, {
       cohort_id: cohort.cohort_id,
@@ -108,6 +112,58 @@ describe('snapshot de contexte correction V1', () => {
         process_context_profile_ref: 'process://correction-oral/v1',
       }),
     ).toThrow('correction_context_snapshot_exists');
+
+    const alice = roster.members.find((member) => member.display_name === 'Alice Martin');
+    const bob = roster.members.find((member) => member.display_name === 'Bob Durand');
+    expect(alice).toBeDefined();
+    expect(bob).toBeDefined();
+    const now = Date.now();
+    getDb()
+      .prepare(
+        `INSERT INTO evidence_events
+           (id, source_type, adapter_id, owner_id, project_scope, target_refs_json,
+            payload_ref, extraction_confidence, privacy_level, occurred_at, status, created_at)
+         VALUES ('context-evidence-link', 'transcript', 'manual-v1', ?, ?, '[]',
+                 'storage://private/transcripts/link', 1, 'private', ?, 'candidate', ?)`,
+      )
+      .run(teacher.id, batchId, now, now);
+    getDb()
+      .prepare(
+        `INSERT INTO submissions
+           (id, batch_id, owner_id, project_scope, source_evidence_ref,
+            identity_status, status, privacy_level, created_at, updated_at)
+         VALUES ('context-submission-link', ?, ?, ?, 'context-evidence-link',
+                 'unknown', 'review', 'private', ?, ?)`,
+      )
+      .run(batchId, teacher.id, batchId, now, now);
+
+    const linked = linkSubmissionIdentity(teacher, 'context-submission-link', {
+      context_snapshot_id: snapshot.snapshot_id,
+      student_identity_id: alice!.student_identity_id,
+    });
+    expect(linked).toMatchObject({
+      submission_id: 'context-submission-link',
+      student_identity_id: alice!.student_identity_id,
+      identity_status: 'confirmed',
+    });
+    expect(
+      linkSubmissionIdentity(teacher, 'context-submission-link', {
+        context_snapshot_id: snapshot.snapshot_id,
+        student_identity_id: alice!.student_identity_id,
+      }),
+    ).toEqual(linked);
+    expect(() =>
+      linkSubmissionIdentity(teacher, 'context-submission-link', {
+        context_snapshot_id: snapshot.snapshot_id,
+        student_identity_id: bob!.student_identity_id,
+      }),
+    ).toThrow('submission_identity_locked');
+    expect(() =>
+      linkSubmissionIdentity(outsider, 'context-submission-link', {
+        context_snapshot_id: snapshot.snapshot_id,
+        student_identity_id: alice!.student_identity_id,
+      }),
+    ).toThrow('correction_batch_not_found');
   });
 
   it('conserve la version historique après activation d’un nouveau roster', () => {
@@ -125,7 +181,7 @@ describe('snapshot de contexte correction V1', () => {
       source_refs: ['evidence://history/v1'],
       process_context_profile_ref: 'process://correction/v1',
     });
-    createRosterVersion(teacher, cohort.cohort_id, {
+    const v2 = createRosterVersion(teacher, cohort.cohort_id, {
       source_ref: 'manual://history/v2',
       members: [{display_name: 'Élève V2', aliases: []}],
     });
@@ -149,6 +205,32 @@ describe('snapshot de contexte correction V1', () => {
       source_refs: ['evidence://history/v1'],
     });
     expect(JSON.stringify(payload)).not.toContain('payload_ref');
+
+    const now = Date.now();
+    getDb()
+      .prepare(
+        `INSERT INTO evidence_events
+           (id, source_type, adapter_id, owner_id, project_scope, target_refs_json,
+            payload_ref, extraction_confidence, privacy_level, occurred_at, status, created_at)
+         VALUES ('context-evidence-outside-roster', 'submission', 'manual-v1', ?, ?, '[]',
+                 'storage://private/submissions/outside-roster', 1, 'private', ?, 'candidate', ?)`,
+      )
+      .run(teacher.id, batchId, now, now);
+    getDb()
+      .prepare(
+        `INSERT INTO submissions
+           (id, batch_id, owner_id, project_scope, source_evidence_ref,
+            identity_status, status, privacy_level, created_at, updated_at)
+         VALUES ('context-submission-outside-roster', ?, ?, ?,
+                 'context-evidence-outside-roster', 'unknown', 'review', 'private', ?, ?)`,
+      )
+      .run(batchId, teacher.id, batchId, now, now);
+    expect(() =>
+      linkSubmissionIdentity(teacher, 'context-submission-outside-roster', {
+        context_snapshot_id: snapshot.snapshot_id,
+        student_identity_id: v2.members[0]!.student_identity_id,
+      }),
+    ).toThrow('student_identity_not_in_snapshot_roster');
   });
 
   it('ne révèle pas le snapshot owner-private à un godmode extérieur', () => {

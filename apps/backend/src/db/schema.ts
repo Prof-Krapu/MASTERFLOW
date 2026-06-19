@@ -875,6 +875,9 @@ function migrate(d: Database.Database): void {
       project_id          TEXT REFERENCES projects(id) ON DELETE SET NULL,
       project_scope       TEXT NOT NULL,
       student_ref         TEXT,
+      student_identity_id TEXT REFERENCES student_identities(id),
+      identity_linked_by  TEXT REFERENCES users(id),
+      identity_linked_at  INTEGER,
       source_evidence_ref TEXT NOT NULL REFERENCES evidence_events(id),
       identity_status     TEXT NOT NULL DEFAULT 'unknown'
                             CHECK (identity_status IN ('unknown','candidate','confirmed','rejected')),
@@ -1447,6 +1450,9 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'institutional_grading_profiles', 'project_id', 'TEXT');
   ensureColumn(d, 'correction_batches', 'project_id', 'TEXT');
   ensureColumn(d, 'submissions', 'project_id', 'TEXT');
+  ensureColumn(d, 'submissions', 'student_identity_id', 'TEXT');
+  ensureColumn(d, 'submissions', 'identity_linked_by', 'TEXT');
+  ensureColumn(d, 'submissions', 'identity_linked_at', 'INTEGER');
   ensureColumn(d, 'pre_correction_manifests', 'project_id', 'TEXT');
   ensureColumn(d, 'pre_correction_runs', 'project_id', 'TEXT');
   ensureColumn(d, 'pre_correction_manifests', 'context_snapshot_id', 'TEXT');
@@ -1480,6 +1486,8 @@ function migrate(d: Database.Database): void {
       ON correction_batches(project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_submissions_project
       ON submissions(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_submissions_student_identity
+      ON submissions(student_identity_id, identity_status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_project
       ON pre_correction_manifests(project_id, status, created_at);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_project
@@ -2544,4 +2552,22 @@ export interface CorrectionContextSnapshotRow {
   process_context_profile_ref: string;
   created_by: string;
   created_at: number;
+}
+
+export interface SubmissionRow {
+  id: string;
+  batch_id: string;
+  owner_id: string;
+  project_id: string | null;
+  project_scope: string;
+  student_ref: string | null;
+  student_identity_id: string | null;
+  identity_linked_by: string | null;
+  identity_linked_at: number | null;
+  source_evidence_ref: string;
+  identity_status: 'unknown' | 'candidate' | 'confirmed' | 'rejected';
+  status: 'candidate' | 'ready' | 'processing' | 'review' | 'completed' | 'rejected';
+  privacy_level: 'private';
+  created_at: number;
+  updated_at: number;
 }
