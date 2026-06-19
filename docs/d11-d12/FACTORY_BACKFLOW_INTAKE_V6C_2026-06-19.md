@@ -56,9 +56,14 @@ Les catégories autorisées sont : `SYSTEM`, `PERSONA`, `DA`, `PROJECT_LORE`,
 - transformation automatique en Usage Harvester ;
 - promotion automatique vers le canon ou le runtime.
 
-## Preuve
+## Preuve de runtime GitHub
 
-Tests ciblés : `factory_backflow_intake` + `validation_inbox` : 24/24.
+PR #42 mergée sur `main` : `b70ec80`.
 
-La preuve complète et le SHA final sont ajoutés seulement après merge GitHub ;
+- tests ciblés : `factory_backflow_intake` + `validation_inbox` : 24/24 ;
+- backend complet : 351/351 ;
+- TypeScript backend/frontend et build Vite OK.
+
+La preuve de publication et le SHA final sont ajoutés seulement après le merge de ce
+commit de suivi ;
 le déploiement live reste inconnu sans `MASTERFLOW_RELEASE_SHA`.
