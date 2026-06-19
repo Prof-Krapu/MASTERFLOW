@@ -1,6 +1,6 @@
 # Submission Identity Link V1 — Livraison backend
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_MAIN_PR64_SHA_e0cf578`
 
 ## Livré
 

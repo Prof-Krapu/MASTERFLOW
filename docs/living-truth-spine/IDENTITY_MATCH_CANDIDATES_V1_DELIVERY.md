@@ -1,6 +1,6 @@
 # Identity Match Candidates V1 — Livraison backend
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_MAIN_PR65_SHA_7195a20`
 
 ## Livré
 
