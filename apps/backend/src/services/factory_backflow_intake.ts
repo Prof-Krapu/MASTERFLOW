@@ -1,11 +1,17 @@
 import {
   FactoryBackflowIntakeSchema,
+  FactoryBackflowCandidateUpdateSchema,
   type CreateFactoryBackflowIntakeRequest,
+  type FactoryBackflowCandidateUpdate,
   type FactoryBackflowIntake,
   type FactoryBackflowIntakeReviewStatus,
 } from '@masterflow/shared';
 
-import {getDb, type FactoryBackflowIntakeRow} from '../db/schema.ts';
+import {
+  getDb,
+  type FactoryBackflowCandidateUpdateRow,
+  type FactoryBackflowIntakeRow,
+} from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
@@ -47,6 +53,33 @@ function toIntake(row: FactoryBackflowIntakeRow): FactoryBackflowIntake {
       'candidate_only',
       'no_runtime_activation',
       'no_canon_write',
+    ],
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+}
+
+function toCandidateUpdate(row: FactoryBackflowCandidateUpdateRow): FactoryBackflowCandidateUpdate {
+  return FactoryBackflowCandidateUpdateSchema.parse({
+    candidate_update_id: row.id,
+    intake_id: row.intake_id,
+    owner_id: row.owner_id,
+    factory_id: row.factory_id,
+    source_candidate_id: row.source_candidate_id,
+    summary: row.summary,
+    classification: row.classification,
+    routing_status: row.routing_status,
+    target_domain: row.target_domain,
+    candidate_status: row.candidate_status,
+    canon_status: row.canon_status,
+    audit_trace: [
+      `factory_backflow_intake:${row.intake_id}`,
+      'factory_backflow_candidate_update_v6d',
+      'approved_owner_review_only',
+      'unrouted',
+      'candidate_only',
+      'no_canon_write',
+      'no_runtime_activation',
     ],
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -175,6 +208,39 @@ export function listPendingFactoryBackflowIntakes(): FactoryBackflowIntake[] {
   return rows.map(toIntake);
 }
 
+export function listFactoryBackflowCandidateUpdates(): FactoryBackflowCandidateUpdate[] {
+  const rows = getDb().prepare(
+    'SELECT * FROM factory_backflow_candidate_updates ORDER BY updated_at ASC',
+  ).all() as FactoryBackflowCandidateUpdateRow[];
+  return rows.map(toCandidateUpdate);
+}
+
+function materializeCandidateUpdates(intake: FactoryBackflowIntake, now: number): number {
+  const candidates = intake.backflow_export?.candidates ?? [];
+  const insert = getDb().prepare(
+    `INSERT OR IGNORE INTO factory_backflow_candidate_updates
+       (id, intake_id, owner_id, factory_id, source_candidate_id, summary, classification,
+        routing_status, target_domain, candidate_status, canon_status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 'unrouted', NULL, 'approved_candidate', 'candidate_only', ?, ?)`,
+  );
+  let created = 0;
+  for (const candidate of candidates) {
+    const result = insert.run(
+      uuid(),
+      intake.intake_id,
+      intake.owner_id,
+      intake.factory_id,
+      candidate.candidate_id,
+      candidate.summary,
+      candidate.classification,
+      now,
+      now,
+    );
+    created += result.changes;
+  }
+  return created;
+}
+
 export function decideFactoryBackflowIntake(
   actor: AuthUser,
   intakeId: string,
@@ -197,11 +263,15 @@ export function decideFactoryBackflowIntake(
         ? 'rejected'
         : 'archived';
   const now = Date.now();
-  getDb().prepare(
-    `UPDATE factory_backflow_intakes
-        SET review_status = ?, reviewer_id = ?, review_note = ?, updated_at = ?
-      WHERE id = ?`,
-  ).run(reviewStatus, actor.id, note ?? null, now, intakeId);
+  let candidateUpdatesCreated = 0;
+  getDb().transaction(() => {
+    getDb().prepare(
+      `UPDATE factory_backflow_intakes
+          SET review_status = ?, reviewer_id = ?, review_note = ?, updated_at = ?
+        WHERE id = ?`,
+    ).run(reviewStatus, actor.id, note ?? null, now, intakeId);
+    if (decision === 'approve') candidateUpdatesCreated = materializeCandidateUpdates(intake, now);
+  })();
   audit({
     event_type: 'factory_backflow_intake_decided',
     user_id: actor.id,
@@ -211,6 +281,8 @@ export function decideFactoryBackflowIntake(
       decision,
       review_status: reviewStatus,
       intake_status: intake.intake_status,
+      candidate_updates_created: candidateUpdatesCreated,
+      no_domain_routing: true,
       no_runtime_activation: true,
       no_canon_write: true,
       no_external_action: true,
