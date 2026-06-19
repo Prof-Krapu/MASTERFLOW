@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-19
-Branche de travail : `codex/hard-stop-selected-actions-publish-proof`
-Base GitHub vérifiée : `0844358`
+Branche de travail : `codex/hard-stop-audit-publish-proof`
+Base GitHub vérifiée : `d748f4f`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -23,7 +23,7 @@ le runtime GitHub.
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
 | D11 factories/backflow | hors runtime | Factories externes utiles comme terrain, sans absorption canon automatique. | moyen | Auditer Usage Harvester ; garder les factories candidates. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
-| Pont de déploiement Drive | en retard d'une tranche | Drive reflète PR #20 / `f94d943`; GitHub `main` contient PR #21 / `0844358`. | moyen | Rafraîchir le pont sur le SHA final de clôture. |
+| Pont de déploiement Drive | en retard d'un audit | Drive reflète PR #22 / `6d29a28`; GitHub `main` contient l'audit PR #23 / `d748f4f`. | faible | Rafraîchir le pont sur le SHA final de clôture. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | partiel+ implémenté | Garde, preview et sélection explicite sont sur `main`. Audit persistant recommande `owner + Room réelle`; décision encore requise. | moyen | Valider ou refuser la portée Room avant tout code d'état stop/reprise. |

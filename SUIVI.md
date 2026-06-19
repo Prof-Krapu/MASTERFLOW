@@ -16,6 +16,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Audit : `docs/process-activation/HARD_STOP_PERSISTENT_STATE_AUDIT_2026-06-19.md`.
 
+Statut : audit mergé sur `main` via PR #23 (`d748f4f`) ; décision produit toujours requise avant code.
+
 ---
 
 ## 2026-06-19 — Hard-stop sur sélection explicite — MERGÉ SUR MAIN (PR #21)
