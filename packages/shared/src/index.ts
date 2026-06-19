@@ -997,6 +997,41 @@ export const ResumeHardStopRequestSchema = z.object({
 });
 export type ResumeHardStopRequest = z.infer<typeof ResumeHardStopRequestSchema>;
 
+export const ActionContextSnapshotRefSchema = z.object({
+  ref_type: z.string().min(1),
+  ref_id: z.string().min(1),
+  revision_ref: z.string().min(1).nullable(),
+});
+export type ActionContextSnapshotRef = z.infer<typeof ActionContextSnapshotRefSchema>;
+
+export const ActionContextSnapshotSchema = z.object({
+  snapshot_id: z.string().min(1),
+  action_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  room_id: z.string().min(1),
+  room_instance_id: z.string().min(1),
+  action_intent: z.string().min(1),
+  action_payload_fingerprint: z.string().length(64),
+  authoritative_refs: z.array(ActionContextSnapshotRefSchema),
+  checkpoint_ref: ActionContextSnapshotRefSchema.nullable(),
+  hard_stop_state_ref: z.string().min(1).nullable(),
+  context_fingerprint: z.string().length(64),
+  created_at: z.number().int().nonnegative(),
+});
+export type ActionContextSnapshot = z.infer<typeof ActionContextSnapshotSchema>;
+
+export const ActionContextComparisonSchema = z.object({
+  action_id: z.string().min(1),
+  snapshot_status: z.enum(['found', 'absent']),
+  comparison: z.enum(['unchanged', 'requires_review', 'inconclusive']),
+  changed_refs: z.array(z.string().min(1)),
+  missing_revision_refs: z.array(z.string().min(1)),
+  recommended_next_step: z.enum(['none', 're_preflight', 'owner_review']),
+  mutation: z.literal(false),
+});
+export type ActionContextComparison = z.infer<typeof ActionContextComparisonSchema>;
+
 export const ExpireActionsResponseSchema = z.object({
   expired_count: z.number().int().nonnegative(),
   expired_action_ids: z.array(z.string().min(1)),

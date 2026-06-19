@@ -15,6 +15,7 @@ import {
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import {activateHardStop, resumeHardStop} from '../src/services/hard_stop.ts';
+import {compareActionContextSnapshot, getActionContextSnapshot} from '../src/services/action_context_snapshots.ts';
 
 /**
  * Cœur produit : le cycle de vie d'une action sensible.
@@ -49,6 +50,11 @@ beforeAll(async () => {
     `INSERT OR IGNORE INTO rooms
        (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
      VALUES ('hard-stop-room', 'Hard Stop Room', 'home', ?, NULL, NULL, 0, ?, ?)`,
+  ).run(god.id, ts, ts);
+  getDb().prepare(
+    `INSERT OR IGNORE INTO rooms
+       (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
+     VALUES ('context-snapshot-room', 'Context Snapshot Room', 'home', ?, NULL, NULL, 0, ?, ?)`,
   ).run(god.id, ts, ts);
   getDb().prepare(
     `INSERT OR IGNORE INTO rooms
@@ -297,6 +303,27 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     });
     expect(preflightAction(otherGod, otherOwnerAction.id).status).toBe('pending_validation');
     resumeHardStop(god, {room_id: 'hard-stop-shared-room'});
+  });
+
+  it('capture un snapshot privé puis compare le contexte sans modifier l’action', () => {
+    const created = createAction(god, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      room_id: 'context-snapshot-room',
+      payload: {source_ref: 'validated-source'},
+    });
+    expect(preflightAction(god, created.id).status).toBe('pending_validation');
+    const snapshot = getActionContextSnapshot(created.id);
+    expect(snapshot).toMatchObject({action_id: created.id, room_id: 'context-snapshot-room'});
+    expect(snapshot?.authoritative_refs.length).toBeGreaterThan(0);
+
+    expect(compareActionContextSnapshot(god, getActionFor(god, created.id)!).comparison).toBe('unchanged');
+    getDb().prepare('UPDATE rooms SET updated_at = updated_at + 1 WHERE id = ?').run('context-snapshot-room');
+    const comparison = compareActionContextSnapshot(god, getActionFor(god, created.id)!);
+    expect(comparison).toMatchObject({comparison: 'requires_review', mutation: false});
+    expect(comparison.changed_refs).toContain('room:context-snapshot-room');
+    expect(getActionFor(god, created.id)?.status).toBe('pending_validation');
   });
 
   it('rend stale une action approuvée avant exécution si le contexte change', () => {

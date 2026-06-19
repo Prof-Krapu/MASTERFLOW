@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Snapshot contextuel et comparateur read-only — LOCAL VÉRIFIÉ
+
+- chaque preflight sensible avec Room capture une seule empreinte privée immuable ;
+- l'empreinte ne contient ni contenu RAG, ni conversation, ni champ UI volatile ;
+- `GET /actions/:id/context-comparison` retourne `unchanged`, `requires_review` ou
+  `inconclusive` ;
+- une Room modifiée produit `requires_review` et suggère re-preflight, sans rendre l'action stale ;
+- snapshot absent ou source sans révision fiable = `inconclusive`, jamais mutation automatique ;
+- le hard-stop reste une garde indépendante.
+
+Recette : lifecycle 15/15, API 7/7, activation 5/5 ; backend complet 341/341 ; TypeScript
+backend/frontend, build Vite et diff-check OK.
+
+Statut : prêt à publication sur `codex/action-context-snapshot-preview`.
+
+---
+
 ## 2026-06-19 — Audit context-hash et re-preflight — MERGÉ SUR MAIN (PR #27)
 
 - le contexte runtime compilé existe, mais aucun snapshot de preflight ni fingerprint stable ;
