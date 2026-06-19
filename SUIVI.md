@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Snapshot de contexte correction V1 — LOCAL VÉRIFIÉ
+
+- snapshot unique par batch : cohorte, roster versionné, barème, sujet, sources et profil ;
+- création seulement avant exécution (`draft`/`ready`) ;
+- aucune update/delete API et ancienne version du roster toujours relisible ;
+- isolation owner/projet maintenue, y compris face à un godmode extérieur ;
+- aucun import, matching automatique, feedback final ou migration live.
+
+Recette : ciblés roster+snapshot 7/7 ; backend 362/362 ; TypeScript backend/frontend et
+build Vite verts ; diff-check OK.
+
+Statut : branche `codex/correction-context-snapshot-v1`, publication marathon en cours.
+Prochaine tranche : rendre cette référence obligatoire dans le manifest/run de pré-correction.
+
+---
+
 ## 2026-06-20 — Cohortes et rosters versionnés V1 — LOCAL VÉRIFIÉ
 
 - cohorte privée teacher-scoped, optionnellement reliée à un projet editor+ ;

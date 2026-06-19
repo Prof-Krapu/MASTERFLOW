@@ -1742,6 +1742,33 @@ export const CorrectionBatchSchema = z.object({
 });
 export type CorrectionBatch = z.infer<typeof CorrectionBatchSchema>;
 
+export const CorrectionContextSnapshotSchema = z.object({
+  snapshot_id: z.string().min(1),
+  batch_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  cohort_id: z.string().min(1),
+  roster_version_id: z.string().min(1),
+  rubric_version_id: z.string().min(1),
+  subject_version_ref: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1).max(500)).min(1).max(100),
+  process_context_profile_ref: z.string().min(1).max(500),
+  created_by: z.string().min(1),
+  created_at: z.number().int().nonnegative(),
+});
+export type CorrectionContextSnapshot = z.infer<typeof CorrectionContextSnapshotSchema>;
+
+export const CreateCorrectionContextSnapshotSchema = z.object({
+  cohort_id: z.string().min(1),
+  roster_version_id: z.string().min(1),
+  subject_version_ref: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1).max(500)).min(1).max(100),
+  process_context_profile_ref: z.string().min(1).max(500),
+});
+export type CreateCorrectionContextSnapshot = z.infer<
+  typeof CreateCorrectionContextSnapshotSchema
+>;
+
 export const SubmissionRecordSchema = z.object({
   submission_id: z.string().min(1),
   batch_id: z.string().min(1),

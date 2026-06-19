@@ -851,6 +851,22 @@ function migrate(d: Database.Database): void {
       updated_at         INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS correction_context_snapshots (
+      id                          TEXT PRIMARY KEY,
+      batch_id                    TEXT NOT NULL UNIQUE
+                                      REFERENCES correction_batches(id) ON DELETE CASCADE,
+      owner_id                    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id                  TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      cohort_id                   TEXT NOT NULL REFERENCES cohorts(id),
+      roster_version_id           TEXT NOT NULL REFERENCES roster_versions(id),
+      rubric_version_id           TEXT NOT NULL REFERENCES rubric_versions(id),
+      subject_version_ref         TEXT NOT NULL,
+      source_refs_json            TEXT NOT NULL,
+      process_context_profile_ref TEXT NOT NULL,
+      created_by                  TEXT NOT NULL REFERENCES users(id),
+      created_at                  INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS submissions (
       id                  TEXT PRIMARY KEY,
       batch_id            TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
@@ -1345,6 +1361,10 @@ function migrate(d: Database.Database): void {
       ON institutional_grading_profiles(project_scope, status);
     CREATE INDEX IF NOT EXISTS idx_correction_batches_scope
       ON correction_batches(project_scope, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_correction_context_roster
+      ON correction_context_snapshots(roster_version_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_correction_context_cohort
+      ON correction_context_snapshots(cohort_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_submissions_batch
       ON submissions(batch_id, status);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_batch
@@ -2499,5 +2519,20 @@ export interface RosterMemberRow {
   student_identity_id: string;
   display_name: string;
   aliases_json: string;
+  created_at: number;
+}
+
+export interface CorrectionContextSnapshotRow {
+  id: string;
+  batch_id: string;
+  owner_id: string;
+  project_id: string | null;
+  cohort_id: string;
+  roster_version_id: string;
+  rubric_version_id: string;
+  subject_version_ref: string;
+  source_refs_json: string;
+  process_context_profile_ref: string;
+  created_by: string;
   created_at: number;
 }
