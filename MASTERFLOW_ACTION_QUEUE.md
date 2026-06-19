@@ -2,7 +2,12 @@
 
 Dernière mise à jour : 2026-06-19
 
-## 1. À faire maintenant
+## 1. Livré — historique à ne pas relancer
+
+Les vagues D11 Factory Backflow V6C à V6F sont closes sur `main` à `cff8df4`.
+Elles restent ci-dessous comme preuve de périmètre ; elles ne constituent plus
+une tâche active. La recette opérateur unique est
+`docs/d11-d12/FACTORY_BACKFLOW_OPERATOR_RECIPE_V1_2026-06-19.md`.
 
 ### Vague 6F — Routage manuel factory
 
