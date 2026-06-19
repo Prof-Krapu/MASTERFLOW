@@ -14,7 +14,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Recette : ciblés 9/9 ; backend 363/363 ; TypeScript backend/frontend et build Vite verts ;
 diff-check OK.
 
-Statut : branche `codex/correction-context-payload-v1`, publication marathon en cours.
+Statut : mergé sur `main` via PR #62 (`53efad0`).
 Prochaine tranche : liaison explicite submission → student identity du roster figé.
 
 ---
@@ -30,7 +30,7 @@ Prochaine tranche : liaison explicite submission → student identity du roster 
 Recette : ciblés 11/11 ; backend 363/363 ; TypeScript backend/frontend et build Vite verts ;
 diff-check OK.
 
-Statut : branche `codex/correction-context-enforcement-v1`, publication marathon en cours.
+Statut : mergé sur `main` via PR #61 (`a5fca40`).
 Prochaine tranche : compilateur privé du payload roster/sujet/barème/sources.
 
 ---
@@ -46,7 +46,7 @@ Prochaine tranche : compilateur privé du payload roster/sujet/barème/sources.
 Recette : ciblés roster+snapshot 7/7 ; backend 362/362 ; TypeScript backend/frontend et
 build Vite verts ; diff-check OK.
 
-Statut : branche `codex/correction-context-snapshot-v1`, publication marathon en cours.
+Statut : mergé sur `main` via PR #60 (`c0bad0b`).
 Prochaine tranche : rendre cette référence obligatoire dans le manifest/run de pré-correction.
 
 ---
@@ -62,7 +62,7 @@ Prochaine tranche : rendre cette référence obligatoire dans le manifest/run de
 Recette : ciblés 4/4 ; backend 359/359 ; TypeScript backend/frontend et build Vite verts ;
 diff-check OK.
 
-Statut : branche `codex/roster-foundation-v1`, publication marathon en cours. Prochaine tranche :
+Statut : mergé sur `main` via PR #59 (`236add0`). Prochaine tranche :
 `correction_context_snapshot` immuable roster/sujet/barème/source.
 
 ---
