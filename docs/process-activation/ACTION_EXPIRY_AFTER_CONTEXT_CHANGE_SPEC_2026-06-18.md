@@ -1,6 +1,6 @@
 # Action Expiry After Context Change Spec — 2026-06-18
 
-Status: `PARTIAL_RUNTIME_GUARD_AND_PREVIEW_MAIN`
+Status: `PARTIAL_RUNTIME_GUARD_PREVIEW_MAIN_SELECTED_APPLY_LOCAL`
 
 Mise à jour locale : première tranche implémentée sur `codex/action-expiry-guard`.
 Elle ajoute un garde runtime minimal : `POST /api/v1/actions/expire-context` rend `stale`
@@ -9,6 +9,10 @@ de changement de contexte ni un hard-stop branché automatiquement au signal uti
 
 Mise à jour 2026-06-19 : une prévisualisation read-only utilise les mêmes règles de scope pour
 montrer les actions qui seraient rendues stale, sans aucune mutation.
+
+Mise à jour Vague 5B : l'application explicite accepte une liste d'actions sélectionnées après
+preview. Toutes sont décochées par défaut et l'opération est atomique : une action inéligible
+annule l'ensemble. Le signal texte ne déclenche toujours aucune mutation et aucun job n'est annulé.
 
 ## Intention produit
 
@@ -173,5 +177,8 @@ preview_mutation: false
 safe_to_queue: true
 github_main: expiry_guard_merged_pr11
 preview_status: merged_pr19
+selected_apply_route: POST /api/v1/actions/expire-context/selected
+selected_apply_status: local_verified
+selected_apply_invariants: explicit_selection_only_all_or_nothing
 requires_malex_before_code: fulfilled_by_global_go
 ```

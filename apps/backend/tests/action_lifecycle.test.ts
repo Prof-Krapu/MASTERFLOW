@@ -5,6 +5,7 @@ import {
   createAction,
   executeAction,
   expireOpenSensitiveActions,
+  expireSelectedSensitiveActions,
   getActionFor,
   listPending,
   previewOpenSensitiveActionsExpiry,
@@ -25,6 +26,7 @@ import {seedAll} from '../src/db/seed.ts';
 // Utilisateurs de test (le contrat AuthUser est {id, username, role}).
 const god: AuthUser = {id: 'g1', username: 'vincent', role: 'godmode'};
 const student: AuthUser = {id: 's1', username: 'eleve', role: 'student'};
+const otherGod: AuthUser = {id: 'g2', username: 'autre-godmode', role: 'godmode'};
 
 beforeAll(async () => {
   await seedAll();
@@ -41,6 +43,7 @@ beforeAll(async () => {
   );
   insertUser.run(god.id, 'godmode_test', 'Godmode Test', god.role, ts, ts);
   insertUser.run(student.id, 'student_test', 'Student Test', student.role, ts, ts);
+  insertUser.run(otherGod.id, 'other_godmode_test', 'Other Godmode Test', otherGod.role, ts, ts);
 });
 
 describe('action lifecycle — action sensible (approve_validation_item)', () => {
@@ -170,8 +173,69 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
       reason: 'hard_stop',
     });
     expect(preview.candidate_action_ids).toContain(created.id);
+    expect(preview.candidates).toContainEqual(expect.objectContaining({
+      id: created.id,
+      intent: 'approve',
+      status: 'pending_validation',
+    }));
     expect(preview.audit_trace).toEqual(expect.arrayContaining(['read_only', 'no_status_change']));
     expect(getActionFor(god, created.id)?.status).toBe('pending_validation');
+  });
+
+  it('gèle uniquement la sélection explicite et laisse les autres candidates ouvertes', () => {
+    const first = createAction(god, {
+      registry_id: 'approve_validation_item', intent: 'approve', object_type: 'validation_item', payload: {},
+    });
+    const second = createAction(god, {
+      registry_id: 'approve_validation_item', intent: 'approve', object_type: 'validation_item', payload: {},
+    });
+    preflightAction(god, first.id);
+    preflightAction(god, second.id);
+
+    const result = expireSelectedSensitiveActions(god, {
+      scope: 'mine', reason: 'hard_stop', action_ids: [first.id],
+    });
+    expect(result.expired_action_ids).toEqual([first.id]);
+    expect(result.audit_trace).toContain('explicit_selection_only');
+    expect(getActionFor(god, first.id)?.status).toBe('stale');
+    expect(getActionFor(god, second.id)?.status).toBe('pending_validation');
+  });
+
+  it('refuse atomiquement une sélection contenant une action inaccessible', () => {
+    const owned = createAction(god, {
+      registry_id: 'approve_validation_item', intent: 'approve', object_type: 'validation_item', payload: {},
+    });
+    const inaccessible = createAction(otherGod, {
+      registry_id: 'approve_validation_item', intent: 'approve', object_type: 'validation_item', payload: {},
+    });
+    preflightAction(god, owned.id);
+    preflightAction(otherGod, inaccessible.id);
+
+    expect(() => expireSelectedSensitiveActions(god, {
+      scope: 'mine', reason: 'hard_stop', action_ids: [owned.id, inaccessible.id],
+    })).toThrow(/selected_actions_not_eligible/);
+    expect(getActionFor(god, owned.id)?.status).toBe('pending_validation');
+    expect(getActionFor(otherGod, inaccessible.id)?.status).toBe('pending_validation');
+  });
+
+  it('refuse atomiquement une action low-risk sélectionnée et ne crée aucun job', () => {
+    const sensitive = createAction(god, {
+      registry_id: 'approve_validation_item', intent: 'approve', object_type: 'validation_item', payload: {},
+    });
+    const lowRisk = createAction(god, {
+      registry_id: 'get_current_context', intent: 'get_current_context', object_type: 'context', payload: {},
+    });
+    preflightAction(god, sensitive.id);
+    preflightAction(god, lowRisk.id);
+    const jobsBefore = (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count;
+
+    expect(() => expireSelectedSensitiveActions(god, {
+      scope: 'mine', reason: 'hard_stop', action_ids: [sensitive.id, lowRisk.id],
+    })).toThrow(/selected_actions_not_eligible/);
+    expect(getActionFor(god, sensitive.id)?.status).toBe('pending_validation');
+    expect(getActionFor(god, lowRisk.id)?.status).toBe('approved');
+    const jobsAfter = (getDb().prepare('SELECT COUNT(*) AS count FROM jobs').get() as {count: number}).count;
+    expect(jobsAfter).toBe(jobsBefore);
   });
 
   it('rend stale une action approuvée avant exécution si le contexte change', () => {

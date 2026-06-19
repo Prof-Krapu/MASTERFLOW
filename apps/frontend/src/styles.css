@@ -1034,6 +1034,22 @@ dd {
   margin: 0;
 }
 
+.hard-stop-selection {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.hard-stop-selection label {
+  align-items: center;
+  display: flex;
+  gap: 0.55rem;
+  overflow-wrap: anywhere;
+}
+
+.hard-stop-selection input {
+  flex: 0 0 auto;
+}
+
 .teaching-readiness {
   gap: 14px;
 }

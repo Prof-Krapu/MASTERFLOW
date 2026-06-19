@@ -10,6 +10,7 @@ import type {
 } from '@masterflow/shared';
 
 import {
+  applyHardStopToSelectedActions,
   createD12MissedTriggerFinding,
   diagnoseProcessActivation,
   getOwnerCockpitStatus,
@@ -40,6 +41,9 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
   const [findingStatus, setFindingStatus] = useState('');
   const [expiryPreview, setExpiryPreview] = useState<PreviewActionsExpiryResponse | null>(null);
   const [previewingExpiry, setPreviewingExpiry] = useState(false);
+  const [selectedActionIds, setSelectedActionIds] = useState<string[]>([]);
+  const [applyingExpiry, setApplyingExpiry] = useState(false);
+  const [expiryStatus, setExpiryStatus] = useState('');
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -70,6 +74,8 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
       }, token));
       setFindingStatus('');
       setExpiryPreview(null);
+      setSelectedActionIds([]);
+      setExpiryStatus('');
     } finally {
       setDiagnosing(false);
     }
@@ -112,10 +118,35 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
     setPreviewingExpiry(true);
     try {
       setExpiryPreview(await previewHardStopActionExpiry(token));
+      setSelectedActionIds([]);
+      setExpiryStatus('');
     } finally {
       setPreviewingExpiry(false);
     }
   }, [token]);
+
+  const toggleSelectedAction = useCallback((actionId: string): void => {
+    setSelectedActionIds((current) => current.includes(actionId)
+      ? current.filter((id) => id !== actionId)
+      : [...current, actionId]);
+  }, []);
+
+  const applySelectedExpiry = useCallback(async (): Promise<void> => {
+    if (selectedActionIds.length === 0) return;
+    setApplyingExpiry(true);
+    setExpiryStatus('Application du hard-stop à la sélection…');
+    try {
+      const result = await applyHardStopToSelectedActions(selectedActionIds, token);
+      setExpiryStatus(`${result.expired_count} action(s) sélectionnée(s) gelée(s). Aucune autre action modifiée.`);
+      setExpiryPreview(null);
+      setSelectedActionIds([]);
+      await refresh();
+    } catch (error) {
+      setExpiryStatus(error instanceof Error ? error.message : 'Application du hard-stop impossible.');
+    } finally {
+      setApplyingExpiry(false);
+    }
+  }, [refresh, selectedActionIds, token]);
 
   return (
     <article className="panel panel--wide owner-cockpit">
@@ -226,11 +257,36 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
                   </button>
                 ) : null}
                 {expiryPreview ? (
-                  <p className="muted compact">
-                    Prévisualisation : {expiryPreview.candidate_count} action(s) sensible(s) seraient gelée(s).
-                    Aucune action n’a été modifiée.
-                  </p>
+                  <div className="hard-stop-selection">
+                    <p className="muted compact">
+                      Prévisualisation : {expiryPreview.candidate_count} action(s) sensible(s) pourraient être gelée(s).
+                      Coche uniquement celles à arrêter. Aucune action n’a encore été modifiée.
+                    </p>
+                    {expiryPreview.candidates.map((candidate) => (
+                      <label key={candidate.id}>
+                        <input
+                          checked={selectedActionIds.includes(candidate.id)}
+                          onChange={() => toggleSelectedAction(candidate.id)}
+                          type="checkbox"
+                        />
+                        <span>
+                          <strong>{candidate.intent}</strong> · {candidate.object_type} · {candidate.status}
+                          {' '}· risque {candidate.risk_level}
+                        </span>
+                      </label>
+                    ))}
+                    {expiryPreview.candidate_count > 0 ? (
+                      <button
+                        disabled={applyingExpiry || selectedActionIds.length === 0}
+                        onClick={() => void applySelectedExpiry()}
+                        type="button"
+                      >
+                        {applyingExpiry ? 'Gel en cours…' : `Geler la sélection (${selectedActionIds.length})`}
+                      </button>
+                    ) : null}
+                  </div>
                 ) : null}
+                {expiryStatus ? <p className="muted compact" aria-live="polite">{expiryStatus}</p> : null}
                 {findingStatus ? <p className="muted compact">{findingStatus}</p> : null}
               </div>
             ) : null}

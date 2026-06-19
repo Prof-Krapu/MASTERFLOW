@@ -1,11 +1,13 @@
 import {
   ExpireActionsRequestSchema,
   ExpireActionsResponseSchema,
+  ExpireSelectedActionsRequestSchema,
   PreviewActionsExpiryResponseSchema,
   type Action,
   type CreateAction,
   type ExpireActionsRequest,
   type ExpireActionsResponse,
+  type ExpireSelectedActionsRequest,
   type PreviewActionsExpiryResponse,
   type PreflightResult,
   type RiskLevel,
@@ -380,6 +382,13 @@ export function previewOpenSensitiveActionsExpiry(
   return PreviewActionsExpiryResponseSchema.parse({
     candidate_count: candidates.length,
     candidate_action_ids: candidates.map((action) => action.id),
+    candidates: candidates.map((action) => ({
+      id: action.id,
+      intent: action.intent,
+      object_type: action.object_type,
+      status: action.status,
+      risk_level: action.risk_level,
+    })),
     reason: request.reason,
     scope_ref: request.scope === 'project' ? `project:${request.project_id}` : `user:${actor.id}`,
     audit_trace: ['action_expiry_preview_v1', 'read_only', 'no_status_change', 'no_execute'],
@@ -429,6 +438,74 @@ export function expireOpenSensitiveActions(
     reason: request.reason,
     scope_ref: request.scope === 'project' ? `project:${request.project_id}` : `user:${actor.id}`,
     audit_trace: ['action_expiry_guard_v1', 'sensitive_open_actions_only', 'no_delete', 'no_execute'],
+  });
+}
+
+/**
+ * Rend stale uniquement les actions explicitement sélectionnées après prévisualisation.
+ *
+ * La sélection est atomique : si une seule action est devenue inéligible, inaccessible ou
+ * extérieure au scope, aucune action n'est modifiée. Cela évite qu'un écran périmé applique
+ * silencieusement un hard-stop partiel ou trop large.
+ */
+export function expireSelectedSensitiveActions(
+  actor: AuthUser,
+  input: ExpireSelectedActionsRequest,
+): ExpireActionsResponse {
+  const request = ExpireSelectedActionsRequestSchema.parse(input);
+  const eligibleById = new Map(
+    findOpenSensitiveActionsForExpiry(actor, request).map((action) => [action.id, action]),
+  );
+  const ineligibleIds = request.action_ids.filter((id) => !eligibleById.has(id));
+  if (ineligibleIds.length > 0) {
+    throw new Error(`[action_engine] selected_actions_not_eligible:${ineligibleIds.join(',')}`);
+  }
+
+  const selected = request.action_ids.map((id) => eligibleById.get(id) as Action);
+  const now = Date.now();
+  const reason = `stale:${request.reason}`;
+  const scopeRef = request.scope === 'project' ? `project:${request.project_id}` : `user:${actor.id}`;
+  const db = getDb();
+  const update = db.prepare(
+    `UPDATE actions
+        SET status = 'stale', error = ?, updated_at = ?
+      WHERE id = ? AND status IN ('pending_validation', 'approved')`,
+  );
+
+  db.transaction(() => {
+    for (const action of selected) {
+      const result = update.run(request.note ? `${reason}:${request.note}` : reason, now, action.id);
+      if (result.changes !== 1) {
+        throw new Error(`[action_engine] selected_action_changed:${action.id}`);
+      }
+      audit({
+        event_type: 'action_stale',
+        user_id: actor.id,
+        action_id: action.id,
+        scope: action.registry_id ?? action.intent,
+        detail: {
+          reason: request.reason,
+          note: request.note ?? null,
+          previous_status: action.status,
+          scope_ref: scopeRef,
+          selection_mode: 'explicit',
+        },
+      });
+    }
+  })();
+
+  return ExpireActionsResponseSchema.parse({
+    expired_count: selected.length,
+    expired_action_ids: selected.map((action) => action.id),
+    reason: request.reason,
+    scope_ref: scopeRef,
+    audit_trace: [
+      'action_expiry_selected_v1',
+      'explicit_selection_only',
+      'all_or_nothing',
+      'no_delete',
+      'no_execute',
+    ],
   });
 }
 

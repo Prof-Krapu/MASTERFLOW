@@ -1,7 +1,12 @@
 import {Router} from 'express';
 import type {Request, Response} from 'express';
 
-import {CreateActionSchema, ExpireActionsRequestSchema, ValidationDecisionSchema} from '@masterflow/shared';
+import {
+  CreateActionSchema,
+  ExpireActionsRequestSchema,
+  ExpireSelectedActionsRequestSchema,
+  ValidationDecisionSchema,
+} from '@masterflow/shared';
 
 import {requireRole, requireUser} from '../middleware/auth.ts';
 import type {AuthUser} from '../middleware/auth.ts';
@@ -10,6 +15,7 @@ import {
   createAction,
   executeAction,
   expireOpenSensitiveActions,
+  expireSelectedSensitiveActions,
   getActionFor,
   listPending,
   previewOpenSensitiveActionsExpiry,
@@ -125,6 +131,19 @@ export function createActionsRouter(): Router {
       res.json(expireOpenSensitiveActions(authUser(req), parsed.data));
     } catch (e) {
       res.status(409).json({error: 'expiry_failed', message: errMessage(e)});
+    }
+  });
+
+  router.post('/actions/expire-context/selected', requireRole('teacher'), (req: Request, res: Response): void => {
+    const parsed = ExpireSelectedActionsRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', details: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(expireSelectedSensitiveActions(authUser(req), parsed.data));
+    } catch (e) {
+      res.status(409).json({error: 'selected_expiry_failed', message: errMessage(e)});
     }
   });
 
