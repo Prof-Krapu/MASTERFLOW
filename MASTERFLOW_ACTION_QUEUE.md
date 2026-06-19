@@ -20,7 +20,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : empêcher qu'une nouvelle action sensible soit créée juste après le gel de la sélection.
 - Risque : élevé si le stop bloque trop large ou devient automatique.
 - Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, Process Control Strip.
-- Statut : à auditer, code interdit avant contrat produit clair.
+- Statut : audit terminé ; recommandation `owner + Room réelle`, code bloqué avant décision produit.
 - Validation requise : non pour l'audit ; oui avant runtime.
 
 ### Vague 5A — Preview hard-stop

@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Audit hard-stop persistant — DÉCISION PRODUIT REQUISE
+
+- l'application sur sélection explicite est bien sur `main` ;
+- aucun état stop persistant n'existe encore dans le runtime ;
+- recommandation : portée `owner + Room réelle`, jamais owner/projet global par défaut ;
+- pendant le stop, seuls les nouveaux preflights sensibles de cette Room seraient bloqués ;
+- lectures low-risk, revue et reprise explicite teacher+ resteraient accessibles ;
+- reprendre ne réactive jamais une action stale ;
+- aucun code ou migration ouvert avant validation de cette portée.
+
+Audit : `docs/process-activation/HARD_STOP_PERSISTENT_STATE_AUDIT_2026-06-19.md`.
+
+---
+
 ## 2026-06-19 — Hard-stop sur sélection explicite — MERGÉ SUR MAIN (PR #21)
 
 Tranche d'application bornée :

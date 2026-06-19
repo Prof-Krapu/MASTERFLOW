@@ -26,4 +26,4 @@ le runtime GitHub.
 | Pont de déploiement Drive | en retard d'une tranche | Drive reflète PR #20 / `f94d943`; GitHub `main` contient PR #21 / `0844358`. | moyen | Rafraîchir le pont sur le SHA final de clôture. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
-| Hard stop / action expiry | partiel+ implémenté | Garde, preview et application atomique sur sélection explicite sont sur `main`. L'état hard-stop persistant reste absent. | moyen | Auditer l'état stop/reprise, sans auto-application depuis le texte. |
+| Hard stop / action expiry | partiel+ implémenté | Garde, preview et sélection explicite sont sur `main`. Audit persistant recommande `owner + Room réelle`; décision encore requise. | moyen | Valider ou refuser la portée Room avant tout code d'état stop/reprise. |
