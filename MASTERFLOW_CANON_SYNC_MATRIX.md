@@ -14,9 +14,9 @@ le runtime GitHub.
 | D03 Room OS et commandes | partiel | Rooms, instances, checkpoints et frontend existent ; command surface complète absente. | moyen | Ajouter les contrôles par tranches explicites. |
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Actions, objets D06 et findings D12 sont sur `main`. | faible | Ajouter les prochains domaines uniquement avec leur autorité métier propre. |
-| D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement. | faible | Garder D06 et participation élève séparés. |
-| D06 correction / feedback | partiel | Feedback et preview privée sont dans l'inbox sur `main`; send reste exclu. | moyen | Prochaine tranche D06 uniquement avec gate séparé. |
-| D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode. | faible | Étendre par petites tranches en lecture avant D06. |
+| D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement ; recette isolée 12/12 validée. | faible | Garder D06 et participation élève séparés. |
+| D06 correction / feedback | partiel | Feedback et preview privée sont dans l'inbox sur `main`; recette isolée D06 + inbox 26/26 ; send reste exclu. | moyen | Prochaine tranche D06 uniquement avec gate séparé. |
+| D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability | partiel | Cockpit, findings, décisions owner, création manuelle et revue inbox sont sur `main`. | faible | Garder detector, fix et canonisation automatiques absents. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
 | D09 MasterStory | absent runtime | Aucun stockage ou workbench MasterStory dédié confirmé. | moyen | Garder les récits en candidats jusqu'à une tranche dédiée. |

@@ -1,6 +1,20 @@
 # D05-D06 runtime recipe — 2026-06-18
 
-Status: `SAFE_RECIPE_NO_RUNTIME_MUTATION`
+Status: `SAFE_RECIPE_REPLAYED_ISOLATED_2026_06_19`
+
+## Résultat de la recette isolée — 2026-06-19
+
+La recette a été rejouée dans l'environnement de tests isolé du backend, sur la base GitHub
+`bec7e370` alors alignée avec `main`.
+
+- D05 Guided Runtime : 12/12 tests (`service` 8/8, `router` 4/4) ;
+- D06 feedback + Shared Validation Inbox : 26/26 tests (`feedback` 6/6, `inbox` 20/20) ;
+- backend complet : 341/341 tests ;
+- aucun provider, export, fichier, job, publication, envoi étudiant ni note finale créé.
+
+Le résultat atteste le comportement déjà implémenté ; il ne constitue pas une nouvelle promesse
+produit et n'ouvre aucune capacité externe. La preuve détaillée est dans
+`D05_D06_ISOLATED_RECIPE_RESULT_2026-06-19.md`.
 
 ## But
 
@@ -17,11 +31,11 @@ pas de stockage fichier.
 ## Baseline
 
 ```yaml
-github_main: bb61e4f
+github_main_at_replay: bec7e370
 teaching_readiness: merged_read_only_slice
-guided_subject_read: merged_scoped_read_slice
-validation_inbox: action_and_d06_feedback_draft_slice
-d06_export_preview: spec_ready_no_code
+guided_subject_runtime: merged_bounded_actions
+validation_inbox: action_d06_feedback_and_private_preview_slices
+d06_export_preview: merged_private_inbox_review_only
 storage: absent_or_unconfirmed
 student_send: locked_absent
 ```
@@ -69,10 +83,6 @@ preview privée d'export, mais elle doit rester une étape séparée et verrouil
 
 ## Prochaine action safe
 
-Faire l'audit D12 owner cockpit pour que MALEX voie :
-
-- ce qui est dans `main` ;
-- ce qui est seulement en spec ;
-- ce qui est verrouillé ;
-- ce qui attend validation ;
-- ce qui n'existe pas encore.
+La recette est terminée. Conserver D05 participation élève, stockage réel, export publié et
+envoi étudiant hors scope tant qu'un contrat produit distinct, un gate humain et une validation
+explicite ne les ouvrent pas.
