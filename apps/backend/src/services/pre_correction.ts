@@ -25,6 +25,7 @@ interface ManifestRow {
   project_scope: string;
   rubric_version_id: string;
   grading_profile_id: string;
+  context_snapshot_id: string | null;
   submission_refs_json: string;
   status: string;
   validation_ref: string | null;
@@ -60,6 +61,14 @@ interface GradingProfileRow {
   project_id: string | null;
   project_scope: string;
   status: string;
+}
+
+interface ContextSnapshotRow {
+  id: string;
+  batch_id: string;
+  owner_id: string;
+  project_id: string | null;
+  rubric_version_id: string;
 }
 
 export interface PreCorrectionDraftBundle {
@@ -111,6 +120,7 @@ function toRunDTO(row: PreCorrectionRunRow): PreCorrectionRunDraft {
     project_scope: row.project_scope,
     rubric_version_id: row.rubric_version_id,
     grading_profile_id: row.grading_profile_id,
+    context_snapshot_id: row.context_snapshot_id,
     analysis_type: row.analysis_type,
     evidence_snapshot_ref: row.evidence_snapshot_ref,
     method_version: row.method_version,
@@ -187,6 +197,10 @@ export function recordPreCorrectionDraft(
   if (manifest.status !== 'validated' || !manifest.validation_ref) {
     throw new Error('pre_correction_manifest_not_validated');
   }
+  if (!manifest.context_snapshot_id) throw new Error('correction_context_snapshot_required');
+  if (manifest.context_snapshot_id !== run.context_snapshot_id) {
+    throw new Error('correction_context_snapshot_mismatch');
+  }
 
   const batch = db
     .prepare('SELECT * FROM correction_batches WHERE id = ?')
@@ -206,7 +220,13 @@ export function recordPreCorrectionDraft(
        FROM institutional_grading_profiles WHERE id = ?`,
     )
     .get(run.grading_profile_id) as GradingProfileRow | undefined;
-  if (!batch || !submission || !rubric || !gradingProfile) {
+  const contextSnapshot = db
+    .prepare(
+      `SELECT id, batch_id, owner_id, project_id, rubric_version_id
+       FROM correction_context_snapshots WHERE id = ?`,
+    )
+    .get(run.context_snapshot_id) as ContextSnapshotRow | undefined;
+  if (!batch || !submission || !rubric || !gradingProfile || !contextSnapshot) {
     throw new Error('pre_correction_reference_not_found');
   }
   if (rubric.status !== 'validated') throw new Error('rubric_not_validated');
@@ -234,6 +254,9 @@ export function recordPreCorrectionDraft(
     submission.project_scope === run.project_scope,
     rubric.project_scope === run.project_scope,
     gradingProfile.project_scope === run.project_scope,
+    contextSnapshot.batch_id === run.batch_id,
+    contextSnapshot.owner_id === run.owner_id,
+    contextSnapshot.rubric_version_id === run.rubric_version_id,
   ];
   if (run.project_id) {
     alignedRefs.push(
@@ -242,6 +265,7 @@ export function recordPreCorrectionDraft(
       submission.project_id === run.project_id,
       rubric.project_id === run.project_id,
       gradingProfile.project_id === run.project_id,
+      contextSnapshot.project_id === run.project_id,
     );
   } else {
     alignedRefs.push(
@@ -250,6 +274,7 @@ export function recordPreCorrectionDraft(
       submission.project_id === null,
       rubric.project_id === null,
       gradingProfile.project_id === null,
+      contextSnapshot.project_id === null,
     );
   }
   if (alignedRefs.some((isAligned) => !isAligned)) throw new Error('pre_correction_scope_mismatch');
@@ -263,10 +288,10 @@ export function recordPreCorrectionDraft(
     db.prepare(
       `INSERT INTO pre_correction_runs
          (id, manifest_id, batch_id, submission_id, owner_id, project_id, project_scope,
-          rubric_version_id, grading_profile_id, analysis_type, evidence_snapshot_ref,
-          method_version, model_profile_ref, criterion_score_refs_json,
+         rubric_version_id, grading_profile_id, analysis_type, evidence_snapshot_ref,
+          context_snapshot_id, method_version, model_profile_ref, criterion_score_refs_json,
           review_reasons_json, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'needs_review', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'needs_review', ?, ?)`,
     ).run(
       run.run_id,
       run.manifest_id,
@@ -279,6 +304,7 @@ export function recordPreCorrectionDraft(
       run.grading_profile_id,
       run.analysis_type,
       run.evidence_snapshot_ref,
+      run.context_snapshot_id,
       run.method_version,
       run.model_profile_ref,
       JSON.stringify(run.criterion_score_refs),

@@ -46,6 +46,7 @@ describe('PR-C3 — contrats de pré-correction explicable', () => {
       project_scope: 'course-pre-correction',
       rubric_version_id: 'rubric-pre-correction-v1',
       grading_profile_id: 'grading-pre-correction-v1',
+      context_snapshot_id: 'context-snapshot-pre-correction-v1',
       analysis_type: 'rubric_scoring' as const,
       evidence_snapshot_ref: 'storage://private/evidence-snapshots/run',
       method_version: 'criterion-analysis-v1',

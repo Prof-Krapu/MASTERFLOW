@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Enforcement du contexte pré-correction V1 — LOCAL VÉRIFIÉ
+
+- tout nouveau run exige un `context_snapshot_id` validement porté par son manifest ;
+- snapshot, batch, owner, projet et barème doivent correspondre exactement ;
+- la référence est conservée dans le run et son DTO ;
+- migration additive ordonnée pour les bases existantes ;
+- anciens enregistrements lisibles, aucun feedback final ni provider activé.
+
+Recette : ciblés 11/11 ; backend 363/363 ; TypeScript backend/frontend et build Vite verts ;
+diff-check OK.
+
+Statut : branche `codex/correction-context-enforcement-v1`, publication marathon en cours.
+Prochaine tranche : compilateur privé du payload roster/sujet/barème/sources.
+
+---
+
 ## 2026-06-20 — Snapshot de contexte correction V1 — LOCAL VÉRIFIÉ
 
 - snapshot unique par batch : cohorte, roster versionné, barème, sujet, sources et profil ;
