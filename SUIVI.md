@@ -15,7 +15,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Recette : backend 363/363 ; TypeScript backend/frontend et build Vite verts ; navigateur
 desktop/mobile sans débordement horizontal ; console sans erreur ; diff-check OK.
 
-Statut : publication GitHub en cours depuis `codex/identity-review-ui-v1`.
+Statut : mergé sur `main` via PR #67 (`4ccda9a`).
 Prochaine tranche : gestion manuelle des cohortes et versions de roster dans Teaching.
 
 ---

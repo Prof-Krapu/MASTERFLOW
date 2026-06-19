@@ -1,6 +1,8 @@
 # Identity Review UI V1 — Delivery
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_ON_MAIN`
+
+Publication : PR #67 — `4ccda9a2265de5829a8ade62973a8bc603a76762`
 
 ## Intention produit
 
