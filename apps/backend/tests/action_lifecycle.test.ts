@@ -7,6 +7,7 @@ import {
   expireOpenSensitiveActions,
   getActionFor,
   listPending,
+  previewOpenSensitiveActionsExpiry,
   preflightAction,
   validateAction,
 } from '../src/engines/action_engine.ts';
@@ -153,6 +154,24 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     expect(stale?.error).toContain('stale:hard_stop');
     expect(() => validateAction(god, created.id, {decision: 'approved'})).toThrow(/stale/);
     expect(() => executeAction(god, created.id)).toThrow(/stale/);
+  });
+
+  it('prévisualise le hard stop sans modifier les actions', () => {
+    const created = createAction(god, {
+      registry_id: 'approve_validation_item',
+      intent: 'approve',
+      object_type: 'validation_item',
+      payload: {},
+    });
+    preflightAction(god, created.id);
+
+    const preview = previewOpenSensitiveActionsExpiry(god, {
+      scope: 'mine',
+      reason: 'hard_stop',
+    });
+    expect(preview.candidate_action_ids).toContain(created.id);
+    expect(preview.audit_trace).toEqual(expect.arrayContaining(['read_only', 'no_status_change']));
+    expect(getActionFor(god, created.id)?.status).toBe('pending_validation');
   });
 
   it('rend stale une action approuvée avant exécution si le contexte change', () => {

@@ -969,6 +969,15 @@ export const ExpireActionsResponseSchema = z.object({
 });
 export type ExpireActionsResponse = z.infer<typeof ExpireActionsResponseSchema>;
 
+export const PreviewActionsExpiryResponseSchema = z.object({
+  candidate_count: z.number().int().nonnegative(),
+  candidate_action_ids: z.array(z.string().min(1)),
+  reason: ExpireActionsRequestSchema.shape.reason,
+  scope_ref: z.string().min(1),
+  audit_trace: z.array(z.string().min(1)),
+});
+export type PreviewActionsExpiryResponse = z.infer<typeof PreviewActionsExpiryResponseSchema>;
+
 export const ActionSchema = z.object({
   id: z.string(),
   registry_id: z.string().nullable(),

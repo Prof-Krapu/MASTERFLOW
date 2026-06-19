@@ -1,9 +1,20 @@
 import {useCallback, useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 
-import type {ContextTier, CreateD12MissedTriggerFinding, OwnerCockpitStatus, ProcessActivationReadModel} from '@masterflow/shared';
+import type {
+  ContextTier,
+  CreateD12MissedTriggerFinding,
+  OwnerCockpitStatus,
+  PreviewActionsExpiryResponse,
+  ProcessActivationReadModel,
+} from '@masterflow/shared';
 
-import {createD12MissedTriggerFinding, diagnoseProcessActivation, getOwnerCockpitStatus} from './api.ts';
+import {
+  createD12MissedTriggerFinding,
+  diagnoseProcessActivation,
+  getOwnerCockpitStatus,
+  previewHardStopActionExpiry,
+} from './api.ts';
 
 type OwnerCockpitProps = {
   activeMode: string;
@@ -27,6 +38,8 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
   const [activation, setActivation] = useState<ProcessActivationReadModel | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
   const [findingStatus, setFindingStatus] = useState('');
+  const [expiryPreview, setExpiryPreview] = useState<PreviewActionsExpiryResponse | null>(null);
+  const [previewingExpiry, setPreviewingExpiry] = useState(false);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -56,6 +69,7 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
         loaded_context_tier: contextTier,
       }, token));
       setFindingStatus('');
+      setExpiryPreview(null);
     } finally {
       setDiagnosing(false);
     }
@@ -93,6 +107,15 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
     setFindingStatus('Finding D12 créée en observation. Aucun fix automatique lancé.');
     await refresh();
   }, [activation, refresh, token]);
+
+  const previewExpiry = useCallback(async (): Promise<void> => {
+    setPreviewingExpiry(true);
+    try {
+      setExpiryPreview(await previewHardStopActionExpiry(token));
+    } finally {
+      setPreviewingExpiry(false);
+    }
+  }, [token]);
 
   return (
     <article className="panel panel--wide owner-cockpit">
@@ -191,6 +214,22 @@ export function OwnerCockpit({activeMode, contextTier, token}: OwnerCockpitProps
                   <button onClick={() => void createFinding()} type="button">
                     Créer une finding D12 observation-only
                   </button>
+                ) : null}
+                {activation.missed_trigger_candidate?.expected_process === 'hard_stop' ? (
+                  <button
+                    className="secondary"
+                    disabled={previewingExpiry}
+                    onClick={() => void previewExpiry()}
+                    type="button"
+                  >
+                    {previewingExpiry ? 'Prévisualisation…' : 'Voir les actions qui seraient gelées'}
+                  </button>
+                ) : null}
+                {expiryPreview ? (
+                  <p className="muted compact">
+                    Prévisualisation : {expiryPreview.candidate_count} action(s) sensible(s) seraient gelée(s).
+                    Aucune action n’a été modifiée.
+                  </p>
                 ) : null}
                 {findingStatus ? <p className="muted compact">{findingStatus}</p> : null}
               </div>

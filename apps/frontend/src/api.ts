@@ -27,6 +27,7 @@ import type {
   OwnerCockpitStatus,
   ProcessActivationReadModel,
   ProcessActivationRequest,
+  PreviewActionsExpiryResponse,
   Persona,
   Project,
   ProjectMember,
@@ -151,6 +152,15 @@ export async function createD12MissedTriggerFinding(
   return request<D12MissedTriggerFinding>('/diagnostics/d12/findings', {
     method: 'POST',
     body: JSON.stringify(body),
+  }, token);
+}
+
+export async function previewHardStopActionExpiry(
+  token?: string | null,
+): Promise<PreviewActionsExpiryResponse> {
+  return request<PreviewActionsExpiryResponse>('/actions/expire-context/preview', {
+    method: 'POST',
+    body: JSON.stringify({scope: 'mine', reason: 'hard_stop'}),
   }, token);
 }
 

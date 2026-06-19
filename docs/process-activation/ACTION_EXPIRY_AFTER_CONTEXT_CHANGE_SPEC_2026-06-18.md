@@ -1,11 +1,14 @@
 # Action Expiry After Context Change Spec — 2026-06-18
 
-Status: `PARTIAL_RUNTIME_GUARD_LOCAL`
+Status: `PARTIAL_RUNTIME_GUARD_MAIN_PREVIEW_LOCAL`
 
 Mise à jour locale : première tranche implémentée sur `codex/action-expiry-guard`.
 Elle ajoute un garde runtime minimal : `POST /api/v1/actions/expire-context` rend `stale`
 les actions sensibles ouvertes dans un scope contrôlé. Ce n'est pas encore un détecteur autonome
 de changement de contexte ni un hard-stop branché automatiquement au signal utilisateur.
+
+Mise à jour 2026-06-19 : une prévisualisation read-only utilise les mêmes règles de scope pour
+montrer les actions qui seraient rendues stale, sans aucune mutation.
 
 ## Intention produit
 
@@ -128,7 +131,8 @@ audit:
 
 - pas encore de détection automatique de changement de contexte ;
 - pas encore de hash/snapshot de contexte ;
-- pas encore de hard-stop global branché au signal `stop` ;
+- pas encore d'application du hard-stop depuis le signal `stop` ;
+- granularité reset à confirmer avant application : user, Room, projet ou actions sélectionnées ;
 - pas de retry/re-preflight automatique.
 - publication;
 - final_grade_write.
@@ -161,10 +165,13 @@ Une action sensible ne doit pas survivre silencieusement à un changement import
 ## Statut de déploiement
 
 ```yaml
-runtime_code: false
+runtime_code: true
 migration: false
 job_cancellation: false
+preview_route: POST /api/v1/actions/expire-context/preview
+preview_mutation: false
 safe_to_queue: true
-github_main: not_merged
-requires_malex_before_code: true
+github_main: expiry_guard_merged_pr11
+preview_status: local_verified_not_merged
+requires_malex_before_code: fulfilled_by_global_go
 ```

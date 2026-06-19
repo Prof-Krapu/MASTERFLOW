@@ -12,6 +12,7 @@ import {
   expireOpenSensitiveActions,
   getActionFor,
   listPending,
+  previewOpenSensitiveActionsExpiry,
   preflightAction,
   validateAction,
 } from '../engines/action_engine.ts';
@@ -101,6 +102,19 @@ export function createActionsRouter(): Router {
   });
 
   // ───────────── Expiry contrôlée — rend stale les actions sensibles ouvertes ─────────────
+  router.post('/actions/expire-context/preview', requireRole('teacher'), (req: Request, res: Response): void => {
+    const parsed = ExpireActionsRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', details: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(previewOpenSensitiveActionsExpiry(authUser(req), parsed.data));
+    } catch (e) {
+      res.status(409).json({error: 'expiry_preview_failed', message: errMessage(e)});
+    }
+  });
+
   router.post('/actions/expire-context', requireRole('teacher'), (req: Request, res: Response): void => {
     const parsed = ExpireActionsRequestSchema.safeParse(req.body);
     if (!parsed.success) {

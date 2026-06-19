@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Prévisualisation hard-stop / action expiry — IMPLÉMENTÉ LOCAL
+
+Tranche read-only :
+
+- `POST /api/v1/actions/expire-context/preview` ;
+- mêmes scopes et permissions que le garde d'expiration réel ;
+- retourne uniquement les actions sensibles ouvertes qui seraient rendues stale ;
+- Owner Cockpit propose la prévisualisation après un signal stop/reset ;
+- aucun statut, job, action, validation ou audit métier n'est modifié ;
+- l'application réelle du stop reste séparée jusqu'à validation de la granularité.
+
+Recette locale : action expiry/lifecycle/process activation 17/17 ; backend complet 331/331 ;
+TypeScript backend/frontend, build Vite et diff-check OK.
+
+Statut : local vérifié, prêt à publication automatique.
+
+---
+
 ## 2026-06-19 — Findings D12 → Shared Validation Inbox — MERGÉ SUR MAIN (PR #17)
 
 Tranche de revue commune :
