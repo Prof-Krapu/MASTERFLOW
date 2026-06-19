@@ -1339,6 +1339,13 @@ export type FactoryBackflowIntake = z.infer<typeof FactoryBackflowIntakeSchema>;
  * Résultat local d'une validation owner. Il attend un routage humain ultérieur ;
  * il n'est ni une mise à jour de domaine, ni une écriture canon.
  */
+export const FactoryCandidateRoutingRecommendationSchema = z.object({
+  recommended_domains: z.array(z.string().min(1).max(120)),
+  status: z.enum(['owner_decision_required', 'no_safe_recommendation']),
+  reason: z.string().min(1).max(500),
+});
+export type FactoryCandidateRoutingRecommendation = z.infer<typeof FactoryCandidateRoutingRecommendationSchema>;
+
 export const FactoryBackflowCandidateUpdateSchema = z.object({
   candidate_update_id: z.string().min(1),
   intake_id: z.string().min(1),
@@ -1351,6 +1358,7 @@ export const FactoryBackflowCandidateUpdateSchema = z.object({
   target_domain: z.string().min(1).max(120).nullable(),
   candidate_status: z.literal('approved_candidate'),
   canon_status: z.literal('candidate_only'),
+  routing_recommendation: FactoryCandidateRoutingRecommendationSchema,
   audit_trace: z.array(z.string().min(1).max(240)),
   created_at: z.number().int().nonnegative(),
   updated_at: z.number().int().nonnegative(),
