@@ -1050,6 +1050,14 @@ dd {
   flex: 0 0 auto;
 }
 
+.hard-stop-active {
+  border: 1px solid var(--warning, #c98000);
+  border-radius: 0.75rem;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.8rem;
+}
+
 .teaching-readiness {
   gap: 14px;
 }

@@ -22,6 +22,7 @@ import type {
   InventorySearchResult,
   Invitation,
   GuidedSession,
+  HardStopControlState,
   GuidedContribution,
   Job,
   MatchInventoryProjectNeedRequest,
@@ -172,6 +173,38 @@ export async function applyHardStopToSelectedActions(
   return request<ExpireActionsResponse>('/actions/expire-context/selected', {
     method: 'POST',
     body: JSON.stringify({scope: 'mine', reason: 'hard_stop', action_ids: actionIds}),
+  }, token);
+}
+
+export async function getActiveRoomHardStop(
+  roomId: string,
+  token?: string | null,
+): Promise<HardStopControlState | null> {
+  const response = await request<{state: HardStopControlState | null}>(
+    `/actions/hard-stop?room_id=${encodeURIComponent(roomId)}`,
+    {method: 'GET'},
+    token,
+  );
+  return response.state;
+}
+
+export async function activateRoomHardStop(
+  roomId: string,
+  token?: string | null,
+): Promise<HardStopControlState> {
+  return request<HardStopControlState>('/actions/hard-stop', {
+    method: 'POST',
+    body: JSON.stringify({room_id: roomId, reason: 'hard_stop'}),
+  }, token);
+}
+
+export async function resumeRoomHardStop(
+  roomId: string,
+  token?: string | null,
+): Promise<HardStopControlState> {
+  return request<HardStopControlState>('/actions/hard-stop/resume', {
+    method: 'POST',
+    body: JSON.stringify({room_id: roomId}),
   }, token);
 }
 

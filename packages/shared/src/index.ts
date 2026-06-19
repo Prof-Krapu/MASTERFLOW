@@ -968,6 +968,35 @@ export const ExpireSelectedActionsRequestSchema = ExpireActionsRequestSchema.ext
 });
 export type ExpireSelectedActionsRequest = z.infer<typeof ExpireSelectedActionsRequestSchema>;
 
+export const HardStopReasonSchema = z.enum(['manual_owner_stop', 'hard_stop']);
+export const HardStopControlStateSchema = z.object({
+  id: z.string().min(1),
+  owner_id: z.string().min(1),
+  room_id: z.string().min(1),
+  status: z.enum(['active', 'released']),
+  reason: HardStopReasonSchema,
+  note: z.string().max(500).nullable(),
+  activated_by: z.string().min(1),
+  released_by: z.string().min(1).nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+  released_at: z.number().int().nonnegative().nullable(),
+});
+export type HardStopControlState = z.infer<typeof HardStopControlStateSchema>;
+
+export const ActivateHardStopRequestSchema = z.object({
+  room_id: z.string().min(1),
+  reason: HardStopReasonSchema.default('hard_stop'),
+  note: z.string().max(500).optional(),
+});
+export type ActivateHardStopRequest = z.infer<typeof ActivateHardStopRequestSchema>;
+
+export const ResumeHardStopRequestSchema = z.object({
+  room_id: z.string().min(1),
+  note: z.string().max(500).optional(),
+});
+export type ResumeHardStopRequest = z.infer<typeof ResumeHardStopRequestSchema>;
+
 export const ExpireActionsResponseSchema = z.object({
   expired_count: z.number().int().nonnegative(),
   expired_action_ids: z.array(z.string().min(1)),
@@ -1002,6 +1031,7 @@ export const ActionSchema = z.object({
   intent: z.string(),
   object_type: z.string(),
   user_id: z.string(),
+  room_id: z.string().nullable(),
   project_id: z.string().nullable(),
   status: ActionStatusSchema,
   engine: z.string().nullable(),

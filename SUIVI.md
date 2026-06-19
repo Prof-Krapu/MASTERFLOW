@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Hard-stop persistant owner + Room — LOCAL VÉRIFIÉ
+
+- activation explicite teacher+ sur une Room réelle et accessible ;
+- état borné à l'owner et à cette Room, sans propagation aux autres owners ;
+- les nouveaux preflights sensibles de ce scope passent `failed: hard_stop_active` ;
+- les lectures/actions low-risk continuent ;
+- reprise explicite teacher+ ; aucune action stale ou failed n'est réactivée ;
+- le diagnostic texte reste sans mutation ;
+- aucune suppression, exécution ou annulation de job.
+
+Recette : ciblés hard-stop/action lifecycle/process activation 25/25 ; backend complet 339/339 ;
+TypeScript backend/frontend, build Vite et diff-check OK.
+
+Statut : prêt à publication sur `codex/persistent-room-hard-stop`.
+
+---
+
 ## 2026-06-19 — Audit hard-stop persistant — DÉCISION PRODUIT REQUISE
 
 - l'application sur sélection explicite est bien sur `main` ;
@@ -16,7 +33,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Audit : `docs/process-activation/HARD_STOP_PERSISTENT_STATE_AUDIT_2026-06-19.md`.
 
-Statut : audit mergé sur `main` via PR #23 (`d748f4f`) ; décision produit toujours requise avant code.
+Statut : audit mergé sur `main` via PR #23 (`d748f4f`) ; décision validée par MALEX avec `next`.
 
 ---
 

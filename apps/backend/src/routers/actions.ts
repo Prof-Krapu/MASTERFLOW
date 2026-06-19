@@ -5,6 +5,8 @@ import {
   CreateActionSchema,
   ExpireActionsRequestSchema,
   ExpireSelectedActionsRequestSchema,
+  ActivateHardStopRequestSchema,
+  ResumeHardStopRequestSchema,
   ValidationDecisionSchema,
 } from '@masterflow/shared';
 
@@ -22,6 +24,7 @@ import {
   preflightAction,
   validateAction,
 } from '../engines/action_engine.ts';
+import {activateHardStop, getActiveHardStop, resumeHardStop} from '../services/hard_stop.ts';
 
 /**
  * Router des actions — cycle de vie complet du contrat d'action.
@@ -144,6 +147,45 @@ export function createActionsRouter(): Router {
       res.json(expireSelectedSensitiveActions(authUser(req), parsed.data));
     } catch (e) {
       res.status(409).json({error: 'selected_expiry_failed', message: errMessage(e)});
+    }
+  });
+
+  router.get('/actions/hard-stop', requireRole('teacher'), (req: Request, res: Response): void => {
+    const roomId = typeof req.query.room_id === 'string' ? req.query.room_id : '';
+    if (!roomId) {
+      res.status(400).json({error: 'room_id_required'});
+      return;
+    }
+    try {
+      res.json({state: getActiveHardStop(authUser(req), roomId)});
+    } catch (e) {
+      res.status(403).json({error: 'hard_stop_read_failed', message: errMessage(e)});
+    }
+  });
+
+  router.post('/actions/hard-stop', requireRole('teacher'), (req: Request, res: Response): void => {
+    const parsed = ActivateHardStopRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', details: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.status(201).json(activateHardStop(authUser(req), parsed.data));
+    } catch (e) {
+      res.status(409).json({error: 'hard_stop_activation_failed', message: errMessage(e)});
+    }
+  });
+
+  router.post('/actions/hard-stop/resume', requireRole('teacher'), (req: Request, res: Response): void => {
+    const parsed = ResumeHardStopRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', details: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(resumeHardStop(authUser(req), parsed.data));
+    } catch (e) {
+      res.status(409).json({error: 'hard_stop_resume_failed', message: errMessage(e)});
     }
   });
 

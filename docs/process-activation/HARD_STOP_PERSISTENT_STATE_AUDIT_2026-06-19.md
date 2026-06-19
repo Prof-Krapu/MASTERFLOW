@@ -1,6 +1,9 @@
 # Audit état hard-stop persistant — 2026-06-19
 
-Statut : `AUDIT_COMPLETE_PRODUCT_DECISION_REQUIRED_BEFORE_CODE`
+Statut : `DECISION_VALIDATED_RUNTIME_IMPLEMENTED_LOCAL`
+
+Mise à jour : MALEX a validé la recommandation par `next`. La tranche runtime owner + Room est
+implémentée localement avec activation/reprise explicites et gate preflight sensible-only.
 
 ## Diagnostic simple
 
@@ -75,5 +78,5 @@ Valider ou refuser cette règle :
 
 ## Stop rule
 
-Aucun code, table, migration ou bouton d'activation persistante avant cette décision. L'application
-sur sélection explicite de PR #21 reste le comportement sûr actif.
+Cette stop rule a été levée par validation MALEX. Les interdits restants demeurent : aucun scope
+global implicite, aucune activation depuis le texte brut et aucune réactivation d'action stale.
