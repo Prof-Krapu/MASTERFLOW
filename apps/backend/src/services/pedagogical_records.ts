@@ -20,6 +20,7 @@ import {
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
+import {harvestUsageFromTeacherDecisionDelta} from './usage_harvester.ts';
 
 /**
  * Dépôt interne PR-CB0.
@@ -314,7 +315,9 @@ export function recordTeacherDecisionDelta(
       changed_fields: delta.changed_fields,
     },
   });
-  return getDeltaOrThrow(delta.delta_id);
+  const recorded = getDeltaOrThrow(delta.delta_id);
+  harvestUsageFromTeacherDecisionDelta(recorded);
+  return recorded;
 }
 
 export function saveTaskModelProfileDraft(

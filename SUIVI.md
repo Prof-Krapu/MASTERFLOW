@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Usage Harvester V6B sources structurées — LOCAL VÉRIFIÉ
+
+- chaque teacher decision delta autorisé crée ou renforce une candidate `repeated_correction` ;
+- seuls les types, champs modifiés et références sont utilisés ; proposition, décision et note
+  libre ne sont pas lues ;
+- une finding D12 ne traverse qu'après validation explicite `validated_alert` ;
+- observation, hypothèse, candidate pattern, stale ou archive ne créent aucun apprentissage ;
+- qualification, déduplication, routage GodMode et Shared Validation Inbox sont réutilisés ;
+- aucun process update, canon write, job, provider ou effet externe.
+
+Recette : ciblés 37/37 ; backend 347/347 ; TypeScript backend/frontend et build Vite OK.
+
+Statut : local vérifié ; première suite complète bloquée par les ports sandbox, relance autorisée
+verte 347/347.
+
+---
+
 ## 2026-06-19 — Native Usage Harvester D11-D12 V1 — MERGÉ SUR MAIN (PR #38)
 
 - les événements workflow d'échec, blocage, rejet ou ressource/permission manquante créent

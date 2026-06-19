@@ -21,7 +21,7 @@ le runtime GitHub.
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
 | D09 MasterStory | absent runtime | Aucun stockage ou workbench MasterStory dédié confirmé. | moyen | Garder les récits en candidats jusqu'à une tranche dédiée. |
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
-| D11 factories/backflow | partiel | Usage Harvester natif V1 est sur `main` pour les événements internes nettoyés ; runtime des factories portables toujours absent. | moyen | Garder l'import portable explicite et séparé de l'extraction native. |
+| D11 factories/backflow | partiel | Usage Harvester V6B accepte localement workflow metadata, teacher deltas et findings D12 validées ; runtime des factories portables toujours absent. | moyen | Garder l'import portable explicite et séparé de l'extraction native. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
 | Pont de déploiement Drive | synchronisé | Le pont est rafraîchi après la dernière PR de preuve ; le SHA exact reste porté par le snapshot Drive. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |

@@ -3,6 +3,8 @@ import {createHash} from 'node:crypto';
 import {
   UsageLearningCandidateSchema,
   type DecideValidationInboxItemRequest,
+  type D12MissedTriggerFinding,
+  type TeacherDecisionDelta,
   type UsageLearningCandidate,
   type UsageLearningCandidateStatus,
   type UsageLearningPrivacy,
@@ -365,5 +367,81 @@ export function harvestUsageFromWorkflowEvent(event: WorkflowEvent): UsageLearni
     evidence_refs: [`workflow_event:${event.event_id}`],
     privacy: 'do_not_export',
     scope,
+  });
+}
+
+function domainsForTeacherDelta(delta: TeacherDecisionDelta): string[] {
+  if (['feedback', 'criterion_score', 'rubric', 'calibration'].includes(delta.object_type)) {
+    return ['D06_CORRECTION_FEEDBACK_EVALUATION'];
+  }
+  return ['D05_PEDAGOGY'];
+}
+
+/**
+ * Apprend d'une décision professeur déjà structurée, sans lire la proposition, la décision
+ * humaine ou la note libre pointées par leurs références.
+ */
+export function harvestUsageFromTeacherDecisionDelta(
+  delta: TeacherDecisionDelta,
+): UsageLearningCandidate {
+  const scope = delta.project_id
+    ? `project:${delta.project_id}`
+    : `owner:${delta.teacher_id}`;
+  return harvestUsageSignal({
+    owner_id: delta.teacher_id,
+    project_id: delta.project_id ?? null,
+    source_environment: 'masterflow_native',
+    source_factory_id: null,
+    source_session_or_event: delta.delta_id,
+    signal_type: 'repeated_correction',
+    summary: `Décision professeur sur ${delta.object_type}; ${delta.changed_fields.length} champ(s) ajusté(s).`,
+    affected_process: `teacher_decision_${delta.object_type}`,
+    affected_output_family: delta.object_type,
+    evidence_summary: 'Delta humain structuré distinct de la proposition IA; contenus référencés non lus.',
+    evidence_refs: [
+      `teacher_decision_delta:${delta.delta_id}`,
+      `object:${delta.object_ref}`,
+      `ai_proposal_ref:${delta.ai_proposal_ref}`,
+      `human_decision_ref:${delta.human_decision_ref}`,
+    ],
+    privacy: 'do_not_export',
+    scope,
+    domain_refs: domainsForTeacherDelta(delta),
+  });
+}
+
+/**
+ * Convertit uniquement une finding explicitement validée en apprentissage candidat.
+ * Une observation, hypothèse ou finding archivée ne traverse jamais cette frontière.
+ */
+export function harvestUsageFromValidatedD12Finding(
+  finding: D12MissedTriggerFinding,
+): UsageLearningCandidate | null {
+  if (finding.status !== 'validated_alert') return null;
+  const scope = finding.project_id
+    ? `project:${finding.project_id}`
+    : `owner:${finding.owner_id}`;
+  return harvestUsageSignal({
+    owner_id: finding.owner_id,
+    project_id: finding.project_id,
+    source_environment: 'masterflow_native',
+    source_factory_id: null,
+    source_session_or_event: finding.finding_id,
+    signal_type: 'missed_trigger',
+    summary: `Finding D12 validée pour le processus ${finding.expected_process}.`,
+    affected_process: finding.expected_process,
+    affected_output_family: finding.output_family_refs[0] ?? 'process_activation',
+    evidence_summary: `Alerte ${finding.severity} validée par un owner; contenu source non recopié.`,
+    evidence_refs: [
+      `d12_finding:${finding.finding_id}`,
+      finding.source_ref,
+      ...finding.evidence_refs,
+    ],
+    privacy: 'do_not_export',
+    scope,
+    domain_refs: unique([
+      'D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT',
+      ...finding.domain_refs,
+    ]),
   });
 }

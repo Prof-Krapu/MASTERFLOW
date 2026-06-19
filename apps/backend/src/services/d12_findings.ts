@@ -12,6 +12,7 @@ import {getDb, type D12MissedTriggerFindingRow} from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {harvestUsageFromValidatedD12Finding} from './usage_harvester.ts';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -161,7 +162,9 @@ export function decideD12MissedTriggerFinding(
     .prepare('SELECT * FROM d12_missed_trigger_findings WHERE id = ?')
     .get(findingId) as D12MissedTriggerFindingRow | undefined;
   if (!updated) throw new Error('[d12_findings] finding introuvable après décision');
-  return toFinding(updated);
+  const finding = toFinding(updated);
+  harvestUsageFromValidatedD12Finding(finding);
+  return finding;
 }
 
 /** Liste privée owner/admin des findings D12. */
