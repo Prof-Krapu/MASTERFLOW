@@ -93,7 +93,7 @@ describe('cohortes et rosters versionnés V1', () => {
     const now = Date.now();
     getDb()
       .prepare(
-        `INSERT INTO users
+        `INSERT OR IGNORE INTO users
            (id, username, display_name, password_hash, role, active, created_at, updated_at)
          VALUES (?, ?, ?, 'x', 'teacher', 1, ?, ?)`,
       )
