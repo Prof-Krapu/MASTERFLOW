@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Findings D12 → Shared Validation Inbox — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — Findings D12 → Shared Validation Inbox — MERGÉ SUR MAIN (PR #17)
 
 Tranche de revue commune :
 
@@ -18,7 +18,7 @@ Tranche de revue commune :
 Recette locale : Validation Inbox 20/20, D12 findings 5/5, Owner Cockpit 4/4 ;
 backend complet 329/329, TypeScript backend/frontend, build Vite et diff-check OK.
 
-Statut : local vérifié, prêt à publication automatique.
+Statut : mergé sur `main` via PR #17 (`a72b809`).
 
 ## 2026-06-19 — Preuve de publication Vagues 3A→4D — MERGÉ SUR MAIN
 
