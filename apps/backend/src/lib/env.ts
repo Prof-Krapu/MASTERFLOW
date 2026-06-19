@@ -16,11 +16,15 @@ function readCsv(name: string): string[] {
     .filter(Boolean);
 }
 
-function readSecret(name: string, devFallback: string): string {
-  const v = process.env[name];
-  if (v && v.length > 0) return v;
+function isTemplateValue(value: string | undefined): boolean {
+  return !value || value.trim().length === 0 || value.startsWith('REPLACE_WITH_');
+}
+
+function readSecret(name: string, devFallback: string, minimumLength = 1): string {
+  const v = process.env[name]?.trim() ?? '';
+  if (!isTemplateValue(v) && v.length >= minimumLength) return v;
   if (isProd) {
-    throw new Error(`[env] ${name} requis en production.`);
+    throw new Error(`[env] ${name} requis en production (minimum ${minimumLength} caractères, sans valeur d'exemple).`);
   }
   console.warn(`[env] ${name} absent — fallback DEV utilisé. Définir dans .env avant toute mise en ligne.`);
   return devFallback;
@@ -33,12 +37,12 @@ export const env = {
   /** SHA injecté par l'hébergeur ou l'opérateur ; jamais inféré depuis le checkout local. */
   releaseSha: process.env.MASTERFLOW_RELEASE_SHA?.trim() || null,
 
-  jwtSecret: readSecret('JWT_SECRET', 'dev-masterflow-secret-change-me-32-characters'),
+  jwtSecret: readSecret('JWT_SECRET', 'dev-masterflow-secret-change-me-32-characters', 32),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '30d',
 
   godmode: {
-    username: process.env.GODMODE_USERNAME ?? 'vincent',
-    password: process.env.GODMODE_PASSWORD ?? (isProd ? '' : 'masterflow'),
+    username: readSecret('GODMODE_USERNAME', 'vincent'),
+    password: readSecret('GODMODE_PASSWORD', 'masterflow', 12),
   },
 
   /** Config LLM. `provider=mock` → réponses simulées, aucun appel réseau (dev sans clé). */

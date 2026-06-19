@@ -2,7 +2,7 @@
 
 Dernière vérification : 2026-06-19
 Branche de travail : `main` (clôture D11 V1)
-Base GitHub vérifiée : `cff8df4`
+Base GitHub vérifiée : `ca3d3b7`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.

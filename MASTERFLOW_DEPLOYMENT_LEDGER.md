@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-19 | Package release privée Docker | Rendre le runtime déployable sur un serveur neutre, sans dépendre du Funnel historique. | `deploy/*`, `.dockerignore` | prêt à vérifier sur hôte Docker | GO MALEX ; accès serveur requis pour le live | Frontend same-origin + backend + SQLite persistante + SHA injecté ; provider reste mock ; aucune instance live créée. |
+| 2026-06-19 | Clôture D11 V1 PR #49 | Figer la frontière Factory Backflow après V6C à V6F. | recette opérateur + matrice + queue + suivi | déployé sur `main` GitHub | GO MALEX | GitHub `main` = `ca3d3b7`; pont Drive synchronisé ; D11 n'est plus une tâche active. |
 | 2026-06-18 | Merge PR #2 | Donner une lecture owner des jobs, validations et prochaines actions sûres. | owner cockpit + mappings/queue | déployé sur `main` | obtenue | GitHub `main` = `0970dc4`. |
 | 2026-06-18 | Merge PR #3 | Déployer Teaching readiness pour professeur et godmode. | panneau Teaching + permissions + ledgers | déployé sur `main` | obtenue | GitHub `main` = `ed7c0f1`. |
 | 2026-06-18 | Rafraîchissement pont Drive | Aligner la preuve de déploiement sur GitHub. | `DEPLOYMENT_TO_REBUILD_INBOX.md`, `GITHUB_IMPLEMENTATION_SNAPSHOT.json` | synchronisé | obtenue | Drive relu avec SHA `ed7c0f1`, tests 294/294. |

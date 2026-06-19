@@ -1,0 +1,15 @@
+{
+  # Le TLS est termine par le reverse proxy ou le tunnel choisi par l'operateur.
+  auto_https off
+}
+
+:80 {
+  encode zstd gzip
+
+  # Une seule origine pour le navigateur : REST et WebSocket traversent le meme proxy.
+  @runtime path /api/* /ws/* /health
+  reverse_proxy @runtime backend:8000
+
+  try_files {path} /index.html
+  file_server
+}
