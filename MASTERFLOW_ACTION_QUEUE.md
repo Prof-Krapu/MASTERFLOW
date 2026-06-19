@@ -11,7 +11,7 @@ Dernière mise à jour : 2026-06-19
 - Risque : moyen, contenu par sélection vide par défaut et transaction atomique.
 - Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, `RESET_GRANULARITY`,
   `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
-- Statut : implémenté local, vérifié 336/336, prêt à publication.
+- Statut : mergé sur `main` via PR #21 (`0844358`), vérifié 336/336.
 - Validation requise : acquise par GO global MALEX ; aucune auto-application autorisée.
 
 ### Vague 5C — État hard-stop persistant — AUDIT SEULEMENT

@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Hard-stop sur sélection explicite — LOCAL VÉRIFIÉ
+## 2026-06-19 — Hard-stop sur sélection explicite — MERGÉ SUR MAIN (PR #21)
 
 Tranche d'application bornée :
 
@@ -20,7 +20,7 @@ Tranche d'application bornée :
 Recette locale : action expiry/lifecycle/process activation 22/22 ; backend complet 336/336 ;
 TypeScript backend/frontend, build Vite et diff-check OK.
 
-Statut : prêt à publication sur `codex/hard-stop-selected-actions`.
+Statut : mergé sur `main` via PR #21 (`0844358`).
 
 ---
 
