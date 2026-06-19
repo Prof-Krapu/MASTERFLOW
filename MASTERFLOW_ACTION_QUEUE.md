@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : ouvre une frontière de réabsorption contrôlée sans assimiler une factory portable au runtime MasterFlow.
 - Risque : moyen, contenu par JSON strict, admin/godmode, quarantaine obligatoire, privacy/simulation/security gates et absence d'effet externe.
 - Source de vérité concernée : D11 Factory Passport Backflow Contract + Domain Card + Shared Validation Inbox.
-- Statut : local vérifié ; publication GitHub à faire. ZIP, fichiers, URL, import, installation et activation runtime restent futur/verrouillés.
+- Statut : mergé sur `main` via PR #42 (`b70ec80`) ; preuve de publication et pont Drive à terminer. ZIP, fichiers, URL, import, installation et activation runtime restent futur/verrouillés.
 - Validation requise : GO MALEX reçu ; publication autorisée par la consigne continue.
 
 ### Vague 6A — Native Usage Harvester D11-D12

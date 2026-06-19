@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Factory Backflow Intake V6C — LOCAL VÉRIFIÉ
+## 2026-06-19 — Factory Backflow Intake V6C — MERGÉ SUR MAIN (PR #42)
 
 - `POST /api/v1/backflow/intake` reçoit uniquement un manifeste JSON admin/godmode ;
 - le dossier contient un Factory Passport et un export backflow structurés, sans ZIP,
@@ -15,10 +15,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - l'objet `factory_backflow_intake` est séparé du Usage Harvester et passe par la Shared
   Validation Inbox ; même approuvé, il ne crée ni import, runtime, action, job, canon ou déploiement.
 
-Recette : Factory Backflow + Inbox 24/24 ; TypeScript backend OK.
+Recette : Factory Backflow + Inbox 24/24 ; backend complet 351/351 ; TypeScript
+backend/frontend et build Vite OK.
 
-Statut : local vérifié ; publication GitHub et pont Drive à faire. Le déploiement live reste
-non vérifié sans `MASTERFLOW_RELEASE_SHA`.
+Statut : mergé via PR #42 (`b70ec80`) ; pont Drive à rafraîchir après la preuve de publication.
+Le déploiement live reste non vérifié sans `MASTERFLOW_RELEASE_SHA`.
 
 ---
 
