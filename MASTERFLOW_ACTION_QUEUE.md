@@ -146,7 +146,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : évite une alerte de sync fausse après merge D06.
 - Risque : faible.
 - Source de vérité concernée : GitHub `main`, Drive bridge, fichiers de pilotage.
-- Statut : fait, GitHub et pont Drive alignés sur `b8c4677` après PR #35.
+- Statut : fait ; GitHub et pont Drive réalignés après la dernière PR de preuve, SHA exact dans le snapshot Drive.
 - Validation requise : non.
 
 ## 5. À décider plus tard

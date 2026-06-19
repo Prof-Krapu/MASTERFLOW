@@ -23,7 +23,7 @@ le runtime GitHub.
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
 | D11 factories/backflow | hors runtime | Factories externes utiles comme terrain, sans absorption canon automatique. | moyen | Auditer Usage Harvester ; garder les factories candidates. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
-| Pont de déploiement Drive | synchronisé | Drive et GitHub `main` ont été relus sur `b8c4677` après PR #35. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
+| Pont de déploiement Drive | synchronisé | Le pont est rafraîchi après la dernière PR de preuve ; le SHA exact reste porté par le snapshot Drive. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | implémenté | Garde, preview, sélection et état persistant owner+Room sont sur `main`. | faible | Conserver activation et reprise explicites, sans déclenchement automatique depuis le texte. |
