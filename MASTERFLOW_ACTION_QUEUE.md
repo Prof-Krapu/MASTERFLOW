@@ -4,14 +4,15 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
-### Verticale correction contextualisée — raccord au run
+### Verticale correction contextualisée — compilateur privé
 
-- Tâche : exiger le snapshot immuable dans le manifest/run de pré-correction.
-- Impact : force tout traitement à utiliser la bonne liste d'élèves, le bon sujet,
-  le bon barème et les bonnes sources au lieu de la dernière conversation.
+- Tâche : compiler depuis le snapshot le payload privé roster/sujet/barème/sources
+  réellement consommable par le futur runner.
+- Impact : fournit au traitement la bonne liste d'élèves et les bonnes versions,
+  sans rechercher du contexte dans l'historique de conversation.
 - Risque : moyen ; données pédagogiques privées et compatibilité historique.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : roster sur main ; snapshot local vérifié ; raccord run futur immédiat.
+- Statut : roster et snapshot sur main ; enforcement run local vérifié ; compilateur futur immédiat.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
 ### Phase 1 — Première release privée vérifiable

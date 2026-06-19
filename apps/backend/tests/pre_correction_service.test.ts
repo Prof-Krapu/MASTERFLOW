@@ -9,6 +9,8 @@ import {
   type PreCorrectionDraftBundle,
 } from '../src/services/pre_correction.ts';
 import {addProjectMember, createProject} from '../src/services/projects.ts';
+import {createCohort, createRosterVersion} from '../src/services/cohorts.ts';
+import {createCorrectionContextSnapshot} from '../src/services/correction_context.ts';
 
 const teacher: AuthUser = {
   id: 'teacher-pre-correction',
@@ -33,6 +35,8 @@ const admin: AuthUser = {
 
 const now = Date.now();
 let correctionProjectId = '';
+let ownerContextSnapshotId = '';
+let projectContextSnapshotId = '';
 const baseBundle: PreCorrectionDraftBundle = {
   run: {
     run_id: 'pre-correction-run-valid',
@@ -43,6 +47,7 @@ const baseBundle: PreCorrectionDraftBundle = {
     project_scope: 'course-pre-correction',
     rubric_version_id: 'rubric-pre-correction-v1',
     grading_profile_id: 'grading-pre-correction-v1',
+    context_snapshot_id: 'pending-owner-context-snapshot',
     analysis_type: 'rubric_scoring',
     evidence_snapshot_ref: 'storage://private/evidence-snapshots/pre-correction-valid',
     method_version: 'criterion-analysis-v1',
@@ -164,7 +169,7 @@ beforeAll(async () => {
         status, submission_count, created_at, updated_at)
      VALUES ('batch-pre-correction', ?, 'course-pre-correction',
              'rubric-pre-correction-v1', 'grading-pre-correction-v1',
-             'review', 1, ?, ?)`,
+             'draft', 1, ?, ?)`,
   ).run(teacher.id, now, now);
   db.prepare(
     `INSERT INTO submissions
@@ -174,17 +179,32 @@ beforeAll(async () => {
              'course-pre-correction', 'evidence-pre-correction',
              'confirmed', 'review', 'private', ?, ?)`,
   ).run(teacher.id, now, now);
+  const ownerCohort = createCohort(teacher, {title: 'Pré-correction owner'});
+  const ownerRoster = createRosterVersion(teacher, ownerCohort.cohort_id, {
+    source_ref: 'manual://pre-correction/owner-roster',
+    members: [{display_name: 'Élève owner', aliases: []}],
+  });
+  ownerContextSnapshotId = createCorrectionContextSnapshot(teacher, 'batch-pre-correction', {
+    cohort_id: ownerCohort.cohort_id,
+    roster_version_id: ownerRoster.roster_version_id,
+    subject_version_ref: 'subject://pre-correction/v1',
+    source_refs: ['evidence://pre-correction/v1'],
+    process_context_profile_ref: 'process://pre-correction/v1',
+  }).snapshot_id;
+  baseBundle.run.context_snapshot_id = ownerContextSnapshotId;
+  db.prepare("UPDATE correction_batches SET status = 'review' WHERE id = 'batch-pre-correction'").run();
   const insertManifest = db.prepare(
     `INSERT INTO pre_correction_manifests
-       (id, batch_id, project_scope, rubric_version_id, grading_profile_id,
+       (id, batch_id, project_scope, rubric_version_id, grading_profile_id, context_snapshot_id,
         submission_refs_json, workflow_version, status, created_by,
         validation_ref, created_at)
      VALUES (?, 'batch-pre-correction', 'course-pre-correction',
              'rubric-pre-correction-v1', 'grading-pre-correction-v1',
-             '["submission-pre-correction"]', 'workflow-v1', ?, ?, ?, ?)`,
+             ?, '["submission-pre-correction"]', 'workflow-v1', ?, ?, ?, ?)`,
   );
   insertManifest.run(
     'manifest-pre-correction-valid',
+    ownerContextSnapshotId,
     'validated',
     teacher.id,
     'teacher-validation-pre-correction',
@@ -192,6 +212,7 @@ beforeAll(async () => {
   );
   insertManifest.run(
     'manifest-pre-correction-draft',
+    ownerContextSnapshotId,
     'draft',
     teacher.id,
     null,
@@ -275,7 +296,7 @@ beforeAll(async () => {
        (id, owner_id, project_id, project_scope, rubric_version_id, grading_profile_id,
         status, submission_count, created_at, updated_at)
      VALUES ('batch-project-correction', ?, ?, ?, 'rubric-project-correction-v1',
-             'grading-project-correction-v1', 'review', 1, ?, ?)`,
+             'grading-project-correction-v1', 'draft', 1, ?, ?)`,
   ).run(teacher.id, correctionProjectId, correctionProjectId, now, now);
   db.prepare(
     `INSERT INTO submissions
@@ -284,16 +305,33 @@ beforeAll(async () => {
      VALUES ('submission-project-bridge', 'batch-project-correction', ?, ?, ?,
              'evidence-project-correction-owner', 'confirmed', 'review', 'private', ?, ?)`,
   ).run(teacher.id, correctionProjectId, correctionProjectId, now, now);
+  const projectCohort = createCohort(teacher, {
+    title: 'Pré-correction projet',
+    project_id: correctionProjectId,
+  });
+  const projectRoster = createRosterVersion(teacher, projectCohort.cohort_id, {
+    source_ref: 'manual://pre-correction/project-roster',
+    members: [{display_name: 'Élève projet', aliases: []}],
+  });
+  projectContextSnapshotId = createCorrectionContextSnapshot(teacher, 'batch-project-correction', {
+    cohort_id: projectCohort.cohort_id,
+    roster_version_id: projectRoster.roster_version_id,
+    subject_version_ref: 'subject://project-correction/v1',
+    source_refs: ['evidence://project-correction/v1'],
+    process_context_profile_ref: 'process://pre-correction/v1',
+  }).snapshot_id;
+  db.prepare("UPDATE correction_batches SET status = 'review' WHERE id = 'batch-project-correction'").run();
   db.prepare(
     `INSERT INTO pre_correction_manifests
        (id, batch_id, project_id, project_scope, rubric_version_id, grading_profile_id,
+        context_snapshot_id,
         submission_refs_json, workflow_version, status, created_by,
         validation_ref, created_at)
      VALUES ('manifest-project-correction', 'batch-project-correction', ?, ?,
              'rubric-project-correction-v1', 'grading-project-correction-v1',
-             '["submission-project-bridge"]', 'workflow-project-v1', 'validated', ?,
+             ?, '["submission-project-bridge"]', 'workflow-project-v1', 'validated', ?,
              'validation-project-correction', ?)`,
-  ).run(correctionProjectId, correctionProjectId, teacher.id, now);
+  ).run(correctionProjectId, correctionProjectId, projectContextSnapshotId, teacher.id, now);
 });
 
 describe('PR-C3 — dépôt interne de pré-correction', () => {
@@ -318,6 +356,39 @@ describe('PR-C3 — dépôt interne de pré-correction', () => {
         })),
       }),
     ).toThrow('pre_correction_manifest_not_validated');
+  });
+
+  it('refuse un nouveau run sans snapshot de contexte', () => {
+    getDb()
+      .prepare(
+        "UPDATE pre_correction_manifests SET context_snapshot_id = NULL WHERE id = 'manifest-pre-correction-valid'",
+      )
+      .run();
+    try {
+      expect(() =>
+        recordPreCorrectionDraft(teacher, {
+          ...baseBundle,
+          run: {
+            ...baseBundle.run,
+            run_id: 'pre-correction-run-without-context',
+            criterion_score_refs: baseBundle.run.criterion_score_refs.map(
+              (ref) => `${ref}-without-context`,
+            ),
+          },
+          criterion_scores: baseBundle.criterion_scores.map((score) => ({
+            ...score,
+            draft_id: `${score.draft_id}-without-context`,
+            run_id: 'pre-correction-run-without-context',
+          })),
+        }),
+      ).toThrow('correction_context_snapshot_required');
+    } finally {
+      getDb()
+        .prepare(
+          "UPDATE pre_correction_manifests SET context_snapshot_id = ? WHERE id = 'manifest-pre-correction-valid'",
+        )
+        .run(ownerContextSnapshotId);
+    }
   });
 
   it('refuse un scoring partiel ou un critère étranger à la rubrique', () => {
@@ -372,6 +443,7 @@ describe('PR-C3 — dépôt interne de pré-correction', () => {
         project_scope: correctionProjectId,
         rubric_version_id: 'rubric-project-correction-v1',
         grading_profile_id: 'grading-project-correction-v1',
+        context_snapshot_id: projectContextSnapshotId,
         evidence_snapshot_ref: 'storage://private/evidence-snapshots/project-correction',
         criterion_score_refs: [
           'score-project-correction-clarity',

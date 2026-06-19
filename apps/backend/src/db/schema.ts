@@ -842,6 +842,7 @@ function migrate(d: Database.Database): void {
       project_scope      TEXT NOT NULL,
       rubric_version_id  TEXT NOT NULL REFERENCES rubric_versions(id),
       grading_profile_id TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
+      context_snapshot_id TEXT REFERENCES correction_context_snapshots(id),
       status             TEXT NOT NULL DEFAULT 'draft'
                            CHECK (status IN (
                              'draft','ready','running','review','completed','failed','archived'
@@ -916,6 +917,7 @@ function migrate(d: Database.Database): void {
       project_scope         TEXT NOT NULL,
       rubric_version_id     TEXT NOT NULL REFERENCES rubric_versions(id),
       grading_profile_id    TEXT NOT NULL REFERENCES institutional_grading_profiles(id),
+      context_snapshot_id   TEXT REFERENCES correction_context_snapshots(id),
       analysis_type         TEXT NOT NULL
                               CHECK (analysis_type IN (
                                 'ocr_structured','rubric_scoring','creative_structure',
@@ -1447,6 +1449,8 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'submissions', 'project_id', 'TEXT');
   ensureColumn(d, 'pre_correction_manifests', 'project_id', 'TEXT');
   ensureColumn(d, 'pre_correction_runs', 'project_id', 'TEXT');
+  ensureColumn(d, 'pre_correction_manifests', 'context_snapshot_id', 'TEXT');
+  ensureColumn(d, 'pre_correction_runs', 'context_snapshot_id', 'TEXT');
   ensureColumn(d, 'feedback_drafts', 'project_id', 'TEXT');
   ensureColumn(d, 'correction_export_previews', 'project_id', 'TEXT');
   ensureColumn(d, 'cohort_calibration_reviews', 'project_id', 'TEXT');
@@ -1480,6 +1484,10 @@ function migrate(d: Database.Database): void {
       ON pre_correction_manifests(project_id, status, created_at);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_project
       ON pre_correction_runs(project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_context
+      ON pre_correction_manifests(context_snapshot_id, status);
+    CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_context
+      ON pre_correction_runs(context_snapshot_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_feedback_drafts_project
       ON feedback_drafts(project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_correction_export_previews_project
@@ -2315,6 +2323,7 @@ export interface PreCorrectionRunRow {
   project_scope: string;
   rubric_version_id: string;
   grading_profile_id: string;
+  context_snapshot_id: string | null;
   analysis_type: string;
   evidence_snapshot_ref: string;
   method_version: string;

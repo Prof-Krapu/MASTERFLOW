@@ -134,6 +134,7 @@ describe('PR-C1 — contrats de correction versionnée', () => {
       project_scope: 'course-001',
       rubric_version_id: 'rubric-v1',
       grading_profile_id: 'grading-v1',
+      context_snapshot_id: 'context-snapshot-v1',
       submission_refs: ['submission-001'],
       workflow_version: 'corrector-workflow-v1',
       status: 'draft' as const,
