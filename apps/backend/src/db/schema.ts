@@ -406,7 +406,7 @@ function migrate(d: Database.Database): void {
       audit_trace_json         TEXT NOT NULL DEFAULT '[]',
       source_kind              TEXT NOT NULL CHECK (source_kind IN (
                                  'action','feedback_draft','correction_export_preview','d12_finding',
-                                 'usage_learning_candidate'
+                                 'usage_learning_candidate','factory_backflow_intake'
                                )),
       source_id                TEXT NOT NULL,
       created_at               INTEGER NOT NULL,
@@ -1151,6 +1151,33 @@ function migrate(d: Database.Database): void {
       updated_at                 INTEGER NOT NULL
     );
 
+    -- ───────────────────────── D11 Factory Backflow V6C ──────────────────
+    -- Manifeste JSON contrôlé uniquement. Aucun ZIP, fichier, URL ou activation runtime.
+    CREATE TABLE IF NOT EXISTS factory_backflow_intakes (
+      id                     TEXT PRIMARY KEY,
+      owner_id               TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      factory_id             TEXT,
+      factory_version        TEXT,
+      target_platform        TEXT,
+      export_id              TEXT,
+      export_type            TEXT,
+      source_session_ref     TEXT,
+      summary                TEXT,
+      candidate_count        INTEGER NOT NULL DEFAULT 0 CHECK (candidate_count >= 0),
+      passport_json          TEXT,
+      backflow_export_json   TEXT,
+      quarantine_reasons_json TEXT NOT NULL DEFAULT '[]',
+      intake_status          TEXT NOT NULL CHECK (intake_status IN ('candidate','quarantined')),
+      review_status          TEXT NOT NULL DEFAULT 'pending'
+                               CHECK (review_status IN ('pending','approved','parked','rejected','archived')),
+      reviewer_id            TEXT REFERENCES users(id),
+      review_note            TEXT,
+      canon_status           TEXT NOT NULL DEFAULT 'candidate_only'
+                               CHECK (canon_status = 'candidate_only'),
+      created_at             INTEGER NOT NULL,
+      updated_at             INTEGER NOT NULL
+    );
+
     -- ───────────────────────── Index ───────────────────────────────────────
     CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
     CREATE INDEX IF NOT EXISTS idx_room_instances_user ON room_instances(user_id);
@@ -1273,6 +1300,8 @@ function migrate(d: Database.Database): void {
       ON usage_learning_candidates(owner_id, review_status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_usage_learning_project_review
       ON usage_learning_candidates(project_id, review_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_factory_backflow_owner_review
+      ON factory_backflow_intakes(owner_id, review_status, updated_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -1434,7 +1463,7 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
   const row = d
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
     .get() as {sql?: string} | undefined;
-  if (!row?.sql || row.sql.includes('usage_learning_candidate')) return;
+  if (!row?.sql || row.sql.includes('factory_backflow_intake')) return;
 
   d.pragma('foreign_keys = OFF');
   try {
@@ -1468,7 +1497,7 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
           audit_trace_json         TEXT NOT NULL DEFAULT '[]',
           source_kind              TEXT NOT NULL CHECK (source_kind IN (
                                      'action','feedback_draft','correction_export_preview','d12_finding',
-                                     'usage_learning_candidate'
+                                     'usage_learning_candidate','factory_backflow_intake'
                                    )),
           source_id                TEXT NOT NULL,
           created_at               INTEGER NOT NULL,
@@ -1976,7 +2005,7 @@ export interface ValidationInboxItemRow {
   decision_options_json: string;
   decision_json: string | null;
   audit_trace_json: string;
-  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding' | 'usage_learning_candidate';
+  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding' | 'usage_learning_candidate' | 'factory_backflow_intake';
   source_id: string;
   created_at: number;
   updated_at: number;
@@ -2115,6 +2144,29 @@ export interface UsageLearningCandidateRow {
   review_note: string | null;
   dedupe_key: string;
   detected_at: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface FactoryBackflowIntakeRow {
+  id: string;
+  owner_id: string;
+  factory_id: string | null;
+  factory_version: string | null;
+  target_platform: string | null;
+  export_id: string | null;
+  export_type: string | null;
+  source_session_ref: string | null;
+  summary: string | null;
+  candidate_count: number;
+  passport_json: string | null;
+  backflow_export_json: string | null;
+  quarantine_reasons_json: string;
+  intake_status: 'candidate' | 'quarantined';
+  review_status: 'pending' | 'approved' | 'parked' | 'rejected' | 'archived';
+  reviewer_id: string | null;
+  review_note: string | null;
+  canon_status: 'candidate_only';
   created_at: number;
   updated_at: number;
 }
