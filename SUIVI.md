@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Hard-stop persistant owner + Room — LOCAL VÉRIFIÉ
+## 2026-06-19 — Hard-stop persistant owner + Room — MERGÉ SUR MAIN (PR #25)
 
 - activation explicite teacher+ sur une Room réelle et accessible ;
 - état borné à l'owner et à cette Room, sans propagation aux autres owners ;
@@ -17,7 +17,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Recette : ciblés hard-stop/action lifecycle/process activation 25/25 ; backend complet 339/339 ;
 TypeScript backend/frontend, build Vite et diff-check OK.
 
-Statut : prêt à publication sur `codex/persistent-room-hard-stop`.
+Statut : mergé sur `main` via PR #25 (`64aa5a0`).
 
 ---
 
