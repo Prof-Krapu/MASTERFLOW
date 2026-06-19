@@ -1,7 +1,9 @@
 import {
+  CorrectionContextPayloadSchema,
   CorrectionContextSnapshotSchema,
   CreateCorrectionContextSnapshotSchema,
   ROLE_RANK,
+  type CorrectionContextPayload,
   type CorrectionContextSnapshot,
   type CreateCorrectionContextSnapshot,
 } from '@masterflow/shared';
@@ -161,4 +163,63 @@ export function getCorrectionContextSnapshot(
     .get(batchId) as CorrectionContextSnapshotRow | undefined;
   if (!row) throw new Error('correction_context_snapshot_not_found');
   return toDTO(row);
+}
+
+/**
+ * Compile le contexte privé consommable par un runner sans charger de contenu brut.
+ *
+ * Les sources restent des références ; le payload conserve exactement la version
+ * de roster figée dans le snapshot, même si une version plus récente est active.
+ */
+export function compileCorrectionContextPayload(
+  actor: AuthUser,
+  batchId: string,
+): CorrectionContextPayload {
+  const snapshot = getCorrectionContextSnapshot(actor, batchId);
+  const cohort = getDb()
+    .prepare('SELECT * FROM cohorts WHERE id = ?')
+    .get(snapshot.cohort_id) as CohortRow | undefined;
+  const roster = getDb()
+    .prepare('SELECT * FROM roster_versions WHERE id = ? AND cohort_id = ?')
+    .get(snapshot.roster_version_id, snapshot.cohort_id) as RosterVersionRow | undefined;
+  if (!cohort || !roster) throw new Error('correction_context_reference_not_found');
+
+  const members = getDb()
+    .prepare(
+      `SELECT student_identity_id, display_name, aliases_json
+       FROM roster_members
+       WHERE roster_version_id = ?
+       ORDER BY display_name COLLATE NOCASE, student_identity_id`,
+    )
+    .all(roster.id) as Array<{
+    student_identity_id: string;
+    display_name: string;
+    aliases_json: string;
+  }>;
+
+  return CorrectionContextPayloadSchema.parse({
+    snapshot_id: snapshot.snapshot_id,
+    batch_id: snapshot.batch_id,
+    cohort: {
+      cohort_id: cohort.id,
+      title: cohort.title,
+      period_ref: cohort.period_ref,
+    },
+    roster: {
+      roster_version_id: roster.id,
+      version: roster.version,
+      source_ref: roster.source_ref,
+      members: members.map((member) => ({
+        student_identity_id: member.student_identity_id,
+        display_name: member.display_name,
+        aliases: JSON.parse(member.aliases_json) as unknown,
+      })),
+    },
+    rubric_version_id: snapshot.rubric_version_id,
+    subject_version_ref: snapshot.subject_version_ref,
+    source_refs: snapshot.source_refs,
+    process_context_profile_ref: snapshot.process_context_profile_ref,
+    privacy: 'private',
+    compiled_at: Date.now(),
+  });
 }

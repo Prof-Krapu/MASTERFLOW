@@ -5,6 +5,7 @@ import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
 import {createCohort, createRosterVersion, getRosterVersion} from '../src/services/cohorts.ts';
 import {
+  compileCorrectionContextPayload,
   createCorrectionContextSnapshot,
   getCorrectionContextSnapshot,
 } from '../src/services/correction_context.ts';
@@ -135,6 +136,19 @@ describe('snapshot de contexte correction V1', () => {
       status: 'archived',
       members: v1.members,
     });
+    const payload = compileCorrectionContextPayload(teacher, batchId);
+    expect(payload).toMatchObject({
+      snapshot_id: snapshot.snapshot_id,
+      privacy: 'private',
+      roster: {
+        roster_version_id: v1.roster_version_id,
+        version: 1,
+        members: v1.members,
+      },
+      subject_version_ref: 'subject://history/v1',
+      source_refs: ['evidence://history/v1'],
+    });
+    expect(JSON.stringify(payload)).not.toContain('payload_ref');
   });
 
   it('ne révèle pas le snapshot owner-private à un godmode extérieur', () => {
@@ -153,6 +167,9 @@ describe('snapshot de contexte correction V1', () => {
       process_context_profile_ref: 'process://correction/v1',
     });
     expect(() => getCorrectionContextSnapshot(outsider, batchId)).toThrow(
+      'correction_batch_not_found',
+    );
+    expect(() => compileCorrectionContextPayload(outsider, batchId)).toThrow(
       'correction_batch_not_found',
     );
   });

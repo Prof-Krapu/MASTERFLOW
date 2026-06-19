@@ -4,6 +4,7 @@ import {CreateCorrectionContextSnapshotSchema} from '@masterflow/shared';
 
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
+  compileCorrectionContextPayload,
   createCorrectionContextSnapshot,
   getCorrectionContextSnapshot,
 } from '../services/correction_context.ts';
@@ -49,6 +50,19 @@ export function createCorrectionContextRouter(): Router {
     (req, res): void => {
       try {
         res.json(getCorrectionContextSnapshot(actor(req), req.params.id ?? ''));
+      } catch (error) {
+        fail(res, error);
+      }
+    },
+  );
+
+  router.get(
+    '/correction/batches/:id/context-payload',
+    requireUser,
+    requireRole('teacher'),
+    (req, res): void => {
+      try {
+        res.json(compileCorrectionContextPayload(actor(req), req.params.id ?? ''));
       } catch (error) {
         fail(res, error);
       }

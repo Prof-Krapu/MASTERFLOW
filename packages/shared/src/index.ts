@@ -1769,6 +1769,37 @@ export type CreateCorrectionContextSnapshot = z.infer<
   typeof CreateCorrectionContextSnapshotSchema
 >;
 
+export const CorrectionContextPayloadSchema = z.object({
+  snapshot_id: z.string().min(1),
+  batch_id: z.string().min(1),
+  cohort: z.object({
+    cohort_id: z.string().min(1),
+    title: z.string().min(1).max(160),
+    period_ref: z.string().min(1).max(160).nullable(),
+  }),
+  roster: z.object({
+    roster_version_id: z.string().min(1),
+    version: z.number().int().positive(),
+    source_ref: z.string().min(1).max(500),
+    members: z
+      .array(
+        z.object({
+          student_identity_id: z.string().min(1),
+          display_name: z.string().min(1).max(160),
+          aliases: z.array(z.string().min(1).max(160)).max(20),
+        }),
+      )
+      .max(300),
+  }),
+  rubric_version_id: z.string().min(1),
+  subject_version_ref: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1).max(500)).min(1).max(100),
+  process_context_profile_ref: z.string().min(1).max(500),
+  privacy: z.literal('private'),
+  compiled_at: z.number().int().nonnegative(),
+});
+export type CorrectionContextPayload = z.infer<typeof CorrectionContextPayloadSchema>;
+
 export const SubmissionRecordSchema = z.object({
   submission_id: z.string().min(1),
   batch_id: z.string().min(1),
