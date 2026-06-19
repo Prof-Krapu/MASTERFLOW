@@ -14,7 +14,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Recette : backend 363/363 ; TypeScript backend/frontend et build Vite verts ; diff-check OK.
 
-Statut : branche `codex/identity-match-candidates-v1`, publication marathon en cours.
+Statut : mergé sur `main` via PR #65 (`7195a20`).
 Prochaine tranche : UI professeur de revue des identités.
 
 ---
@@ -29,7 +29,7 @@ Prochaine tranche : UI professeur de revue des identités.
 
 Recette : backend 363/363 ; TypeScript backend/frontend et build Vite verts ; diff-check OK.
 
-Statut : branche `codex/submission-identity-link-v1`, publication marathon en cours.
+Statut : mergé sur `main` via PR #64 (`e0cf578`).
 Prochaine tranche : candidates d'ambiguïté et confirmation professeur.
 
 ---
