@@ -1,6 +1,7 @@
 import type {
   Action,
   CorrectionExportPreview,
+  D12MissedTriggerFinding,
   DecideValidationInboxItemRequest,
   FeedbackDraft,
   ValidationDecisionValue,
@@ -16,6 +17,10 @@ import {listPending, validateAction} from '../engines/action_engine.ts';
 import {audit} from '../lib/audit.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {
+  decideD12MissedTriggerFinding,
+  listD12MissedTriggerFindings,
+} from './d12_findings.ts';
+import {
   listPendingCorrectionExportPreviewsForValidation,
   listPendingFeedbackDraftsForValidation,
   reviewCorrectionExportPreview,
@@ -25,6 +30,7 @@ import {
 const ACTION_ITEM_PREFIX = 'validation_action_';
 const FEEDBACK_DRAFT_ITEM_PREFIX = 'validation_feedback_draft_';
 const EXPORT_PREVIEW_ITEM_PREFIX = 'validation_correction_export_preview_';
+const D12_FINDING_ITEM_PREFIX = 'validation_d12_finding_';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -114,6 +120,10 @@ function feedbackDraftItemId(feedbackId: string): string {
 
 function exportPreviewItemId(exportId: string): string {
   return `${EXPORT_PREVIEW_ITEM_PREFIX}${exportId}`;
+}
+
+function d12FindingItemId(findingId: string): string {
+  return `${D12_FINDING_ITEM_PREFIX}${findingId}`;
 }
 
 function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
@@ -236,6 +246,56 @@ function buildCorrectionExportPreviewProjection(
   };
 }
 
+function buildD12FindingProjection(
+  finding: D12MissedTriggerFinding,
+): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
+  return {
+    item_id: d12FindingItemId(finding.finding_id),
+    item_type: 'autonomy_proposal',
+    title: `Finding D12 : ${finding.expected_process}`,
+    summary: finding.user_impact,
+    domain_refs: finding.domain_refs.length > 0
+      ? finding.domain_refs
+      : ['D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT'],
+    object_refs: [
+      `d12_finding:${finding.finding_id}`,
+      `expected_process:${finding.expected_process}`,
+      `missing_runtime_piece:${finding.missing_runtime_piece}`,
+    ],
+    source_refs: [finding.source_ref, ...finding.evidence_refs],
+    requester: finding.owner_id,
+    owner: finding.owner_id,
+    required_validator: 'admin_owner',
+    current_status: 'needs_review',
+    risk_level: finding.severity,
+    privacy_scope: 'admin_only',
+    source_truth_state: finding.evidence_refs.length > 0 ? 'source_verified' : 'unknown',
+    output_readiness_state: 'blocked',
+    proposed_action: 'review_d12_finding',
+    impact_summary:
+      "La décision classe l'alerte D12 uniquement. Elle ne corrige rien, ne crée aucune action et ne modifie pas le canon.",
+    blocked_actions: [
+      ...finding.blocked_actions,
+      'auto_fix',
+      'auto_patch',
+      'auto_canon',
+      'auto_deploy',
+    ],
+    allowed_actions: ['approve', 'park', 'reject', 'archive'],
+    conflicts: [],
+    open_questions: [
+      `Pièce runtime manquante : ${finding.missing_runtime_piece}`,
+      `Réponse réellement observée : ${finding.actual_runtime_response}`,
+    ],
+    recommended_decision: 'park',
+    decision_options: ['approve', 'park', 'reject', 'archive'],
+    decision: null,
+    audit_trace: [`d12_finding:${finding.finding_id}`, ...finding.audit_trace],
+    source_kind: 'd12_finding',
+    source_id: finding.finding_id,
+  };
+}
+
 function persistValidationInboxProjection(
   projected: Omit<ValidationInboxItem, 'created_at' | 'updated_at'>,
 ): ValidationInboxItem {
@@ -329,6 +389,10 @@ export function syncValidationInboxItemForCorrectionExportPreview(
   return persistValidationInboxProjection(buildCorrectionExportPreviewProjection(preview));
 }
 
+export function syncValidationInboxItemForD12Finding(finding: D12MissedTriggerFinding): ValidationInboxItem {
+  return persistValidationInboxProjection(buildD12FindingProjection(finding));
+}
+
 export function getValidationInboxItemById(itemId: string): ValidationInboxItem {
   const row = getDb()
     .prepare('SELECT * FROM validation_inbox_items WHERE id = ?')
@@ -342,7 +406,15 @@ export function listValidationInboxItems(actor: AuthUser): ValidationInboxItem[]
   const feedbackItems = listPendingFeedbackDraftsForValidation(actor).map(syncValidationInboxItemForFeedbackDraft);
   const exportPreviewItems = listPendingCorrectionExportPreviewsForValidation(actor)
     .map(syncValidationInboxItemForCorrectionExportPreview);
-  return [...actionItems, ...feedbackItems, ...exportPreviewItems]
+  const d12FindingItems = actor.role === 'admin' || actor.role === 'godmode'
+    ? listD12MissedTriggerFindings()
+      .filter((finding) => finding.status !== 'validated_alert'
+        && finding.status !== 'stale'
+        && finding.status !== 'archived'
+        && finding.owner_decision === null)
+      .map(syncValidationInboxItemForD12Finding)
+    : [];
+  return [...actionItems, ...feedbackItems, ...exportPreviewItems, ...d12FindingItems]
     .sort((a, b) => a.updated_at - b.updated_at);
 }
 
@@ -365,6 +437,13 @@ function updateDecision(
   outputReadinessState: ValidationInboxItem['output_readiness_state'],
 ): ValidationInboxItem {
   const now = Date.now();
+  const inboxStatus: ValidationInboxItem['current_status'] = request.decision === 'approve'
+    ? 'approved'
+    : request.decision === 'park'
+      ? 'parked'
+      : request.decision === 'archive'
+        ? 'archived'
+        : 'rejected';
   const decisionValue: ValidationInboxItem['decision'] = {
     value: request.decision,
     decided_by: actor.id,
@@ -379,7 +458,7 @@ function updateDecision(
         WHERE id = ?`,
     )
     .run(
-      request.decision === 'approve' ? 'approved' : 'rejected',
+      inboxStatus,
       outputReadinessState,
       JSON.stringify(decisionValue),
       now,
@@ -492,6 +571,52 @@ function decideCorrectionExportPreviewItem(
   return decidedItem;
 }
 
+function decideD12FindingItem(
+  actor: AuthUser,
+  item: ValidationInboxItem,
+  request: DecideValidationInboxItemRequest,
+): ValidationInboxItem {
+  const decisionMap = {
+    approve: 'validate_alert',
+    park: 'keep_observation',
+    reject: 'mark_stale',
+    archive: 'archive',
+  } as const;
+  if (!(request.decision in decisionMap)) {
+    throw new Error('validation_inbox_decision_not_supported_for_d12_finding');
+  }
+
+  const d12Decision = decisionMap[request.decision as keyof typeof decisionMap];
+  decideD12MissedTriggerFinding(actor, item.source_id, {
+    decision: d12Decision,
+    note: request.note,
+  });
+  const decidedItem = updateDecision(
+    item,
+    actor,
+    request,
+    request.decision === 'approve' ? 'ready' : 'blocked',
+  );
+
+  audit({
+    event_type: 'validation_inbox_decision',
+    user_id: actor.id,
+    scope: item.item_type,
+    detail: {
+      item_id: item.item_id,
+      source_kind: item.source_kind,
+      source_id: item.source_id,
+      decision: request.decision,
+      d12_decision: d12Decision,
+      external_effects: [],
+      no_auto_fix: true,
+      no_canon_write: true,
+    },
+  });
+
+  return decidedItem;
+}
+
 export function decideValidationInboxItem(
   actor: AuthUser,
   itemId: string,
@@ -512,5 +637,6 @@ export function decideValidationInboxItem(
   if (item.source_kind === 'correction_export_preview') {
     return decideCorrectionExportPreviewItem(actor, item, request);
   }
+  if (item.source_kind === 'd12_finding') return decideD12FindingItem(actor, item, request);
   throw new Error('validation_inbox_source_not_supported');
 }

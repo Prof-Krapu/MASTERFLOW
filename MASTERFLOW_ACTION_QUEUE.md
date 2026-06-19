@@ -1,8 +1,17 @@
 # MasterFlow — Action Queue
 
-Dernière mise à jour : 2026-06-18
+Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
+
+### Vague 4E — Findings D12 dans la Shared Validation Inbox
+
+- Tâche : projeter les findings D12 non décidées dans l'inbox commune admin/godmode.
+- Impact : centralise les décisions owner sans créer une queue D12 parallèle.
+- Risque : faible à moyen ; une approbation ne doit jamais devenir fix, déploiement ou canon.
+- Source de vérité concernée : canon D12 + Shared Validation Inbox + runtime GitHub.
+- Statut : implémenté et vérifié localement sur `codex/d12-findings-validation-inbox`.
+- Validation requise : autorisation permanente MALEX reçue pour commit/push/PR/merge.
 
 ### Vague 0 — vérité de pilotage
 
@@ -96,7 +105,7 @@ Dernière mise à jour : 2026-06-18
 
 ## 5. À décider plus tard
 
-- Tâche : stockage fichiers, export étudiant, génération D08 et findings D12.
+- Tâche : stockage fichiers, export étudiant, génération D08 et détecteur D12 automatique.
 - Impact : capacités lourdes et sensibles.
 - Risque : élevé.
 - Source de vérité concernée : D06, D08, D12.

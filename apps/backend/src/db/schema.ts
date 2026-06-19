@@ -368,7 +368,7 @@ function migrate(d: Database.Database): void {
       decision_json            TEXT,
       audit_trace_json         TEXT NOT NULL DEFAULT '[]',
       source_kind              TEXT NOT NULL CHECK (source_kind IN (
-                                 'action','feedback_draft','correction_export_preview'
+                                 'action','feedback_draft','correction_export_preview','d12_finding'
                                )),
       source_id                TEXT NOT NULL,
       created_at               INTEGER NOT NULL,
@@ -1339,14 +1339,14 @@ function migrateTaskModelProfilesTaskCheck(d: Database.Database): void {
 /**
  * Migration idempotente du CHECK `source_kind` de la Validation Inbox.
  * La fondation initiale acceptait uniquement `action`; D06 ajoute
- * `feedback_draft` puis `correction_export_preview` sans créer d'inbox parallèle
+ * `feedback_draft`, `correction_export_preview` puis `d12_finding` sans créer d'inbox parallèle
  * et sans perdre les items existants.
  */
 function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
   const row = d
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
     .get() as {sql?: string} | undefined;
-  if (!row?.sql || row.sql.includes('correction_export_preview')) return;
+  if (!row?.sql || row.sql.includes('d12_finding')) return;
 
   d.pragma('foreign_keys = OFF');
   try {
@@ -1379,7 +1379,7 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
           decision_json            TEXT,
           audit_trace_json         TEXT NOT NULL DEFAULT '[]',
           source_kind              TEXT NOT NULL CHECK (source_kind IN (
-                                     'action','feedback_draft','correction_export_preview'
+                                     'action','feedback_draft','correction_export_preview','d12_finding'
                                    )),
           source_id                TEXT NOT NULL,
           created_at               INTEGER NOT NULL,
@@ -1857,7 +1857,7 @@ export interface ValidationInboxItemRow {
   decision_options_json: string;
   decision_json: string | null;
   audit_trace_json: string;
-  source_kind: 'action' | 'feedback_draft';
+  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding';
   source_id: string;
   created_at: number;
   updated_at: number;

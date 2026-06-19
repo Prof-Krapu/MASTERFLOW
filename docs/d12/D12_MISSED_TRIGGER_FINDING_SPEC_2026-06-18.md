@@ -1,6 +1,6 @@
 # D12 Missed Trigger Finding Spec — 2026-06-18
 
-Status: `PARTIAL_RUNTIME_OBSERVATION_LOCAL`
+Status: `PARTIAL_RUNTIME_REVIEW_LOCAL`
 
 Mise à jour locale : première tranche implémentée sur `codex/d12-missed-trigger-findings`.
 Elle ajoute une table privée et deux routes diagnostics admin/godmode pour créer et lister des
@@ -166,6 +166,23 @@ guards:
   - no_canon_write
 ```
 
+## Projection Shared Validation Inbox
+
+Les findings sans décision owner sont projetées dans l'inbox commune comme `autonomy_proposal`,
+en visibilité admin/godmode uniquement.
+
+Décisions bornées :
+
+```yaml
+approve: validate_alert
+park: keep_observation
+reject: mark_stale
+archive: archive
+```
+
+Les promotions `hypothesis` et `candidate_pattern` restent dans la revue D12 dédiée. Cette
+projection ne crée ni action, ni job, ni patch, ni déploiement, ni candidat canon.
+
 ## Non-objectifs
 
 - Pas de detector runtime maintenant.
@@ -188,11 +205,12 @@ ce qui reste bloqué
 ## Statut de déploiement
 
 ```yaml
-runtime_code: false
+runtime_code: true
 runtime_code_partial_observation: true
 migration: true
 auto_fix: false
 safe_to_queue: true
-github_main: not_merged
+github_main: findings_and_owner_decisions_merged_pr13_to_pr16
+validation_inbox_projection: local_verified_not_merged
 requires_malex_before_code: fulfilled_by_global_go
 ```

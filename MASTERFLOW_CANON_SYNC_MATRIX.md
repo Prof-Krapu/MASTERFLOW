@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
-Dernière vérification : 2026-06-18
-Branche de travail : `main`
-Payload PR #6 vérifié : `4e0cfbb`
+Dernière vérification : 2026-06-19
+Branche de travail : `codex/d12-findings-validation-inbox`
+Base GitHub vérifiée : `003c866`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -13,16 +13,16 @@ le runtime GitHub.
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
 | D03 Room OS et commandes | partiel | Rooms, instances, checkpoints et frontend existent ; command surface complète absente. | moyen | Ajouter les contrôles par tranches explicites. |
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
-| Shared Validation Inbox | partiel+ local | Actions et `feedback_draft` sont sur `main`; `correction_export_preview` est projeté localement owner-only. | moyen | Vérifier puis publier sans job/export/send automatique. |
-| D05 sujet guidé | implémenté local vérifié | Fondation et lecture sont sur `main`; création/réponse/fin Teaching passent une vraie session locale, professeur/godmode uniquement. | faible | Publier sans ouvrir D06 ni participation élève. |
-| D06 correction / feedback | partiel+ local | `feedback_draft` est sur `main`; preview privée est raccordée localement à l'inbox ; send reste exclu. | moyen | Vérifier que approve ne crée ni job ni publication, puis publier. |
+| Shared Validation Inbox | partiel+ local | Actions, `feedback_draft` et `correction_export_preview` sont sur `main`; projection D12 vérifiée localement. | moyen | Publier la projection D12 sans ouvrir fix, canon ou déploiement. |
+| D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement. | faible | Garder D06 et participation élève séparés. |
+| D06 correction / feedback | partiel | Feedback et preview privée sont dans l'inbox sur `main`; send reste exclu. | moyen | Prochaine tranche D06 uniquement avec gate séparé. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode. | faible | Étendre par petites tranches en lecture avant D06. |
-| D12 owner observability | partiel | Cockpit et jobs en lecture seule ; findings/missed triggers absents. | moyen | Ajouter un agrégat backend seulement après la tranche D05-D06. |
+| D12 owner observability | partiel+ local | Cockpit, findings, décisions owner et création manuelle sont sur `main`; projection inbox vérifiée localement. | faible | Publier la revue commune ; garder detector et fix automatiques absents. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
 | D09 MasterStory | absent runtime | Aucun stockage ou workbench MasterStory dédié confirmé. | moyen | Garder les récits en candidats jusqu'à une tranche dédiée. |
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
 | D11 factories/backflow | hors runtime | Factories externes utiles comme terrain, sans absorption canon automatique. | moyen | Auditer Usage Harvester ; garder les factories candidates. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
-| Pont de déploiement Drive | implémenté | Drive rafraîchi après le payload PR #6 ; les commits de pilotage peuvent faire avancer `main` sans changer le runtime. | faible | Rafraîchir après le prochain merge runtime ou docs important. |
+| Pont de déploiement Drive | implémenté | Drive rafraîchi jusqu'à PR #16 / `003c866`. | faible | Rafraîchir après le merge de la projection D12. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
-| D12 Owner Cockpit status | implémenté local | Agrégat runtime privé prêt localement ; aucune lecture automatique GitHub/Drive. | faible | Tester, publier après validation, puis rafraîchir le pont Drive. |
+| D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
