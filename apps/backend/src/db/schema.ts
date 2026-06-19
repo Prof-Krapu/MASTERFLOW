@@ -118,6 +118,55 @@ function migrate(d: Database.Database): void {
       UNIQUE(owner_type, owner_id, object_type, object_id, scope)
     );
 
+    -- ───────────────────────── Cohortes / rosters versionnés ─────────────
+    -- V1 manuelle et privée : aucun import, matching automatique ou écrasement historique.
+    CREATE TABLE IF NOT EXISTS cohorts (
+      id          TEXT PRIMARY KEY,
+      owner_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id  TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      title       TEXT NOT NULL,
+      period_ref  TEXT,
+      status      TEXT NOT NULL DEFAULT 'active'
+                    CHECK (status IN ('active','archived')),
+      privacy     TEXT NOT NULL DEFAULT 'private' CHECK (privacy = 'private'),
+      created_at  INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS student_identities (
+      id           TEXT PRIMARY KEY,
+      owner_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id   TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      display_name TEXT NOT NULL,
+      status       TEXT NOT NULL DEFAULT 'active'
+                     CHECK (status IN ('active','archived')),
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS roster_versions (
+      id           TEXT PRIMARY KEY,
+      cohort_id    TEXT NOT NULL REFERENCES cohorts(id) ON DELETE CASCADE,
+      owner_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      version      INTEGER NOT NULL CHECK (version > 0),
+      source_ref   TEXT NOT NULL,
+      status       TEXT NOT NULL DEFAULT 'active'
+                     CHECK (status IN ('active','archived')),
+      created_by   TEXT NOT NULL REFERENCES users(id),
+      created_at   INTEGER NOT NULL,
+      activated_at INTEGER NOT NULL,
+      UNIQUE(cohort_id, version)
+    );
+
+    CREATE TABLE IF NOT EXISTS roster_members (
+      roster_version_id   TEXT NOT NULL REFERENCES roster_versions(id) ON DELETE CASCADE,
+      student_identity_id TEXT NOT NULL REFERENCES student_identities(id),
+      display_name        TEXT NOT NULL,
+      aliases_json        TEXT NOT NULL DEFAULT '[]',
+      created_at          INTEGER NOT NULL,
+      PRIMARY KEY (roster_version_id, student_identity_id)
+    );
+
     -- ───────────────────────── Inventory Core ─────────────────────────────
     CREATE TABLE IF NOT EXISTS inventory_collections (
       id                TEXT PRIMARY KEY,
@@ -1215,6 +1264,14 @@ function migrate(d: Database.Database): void {
       ON room_checkpoints(room_instance_id, created_at DESC);
     CREATE INDEX IF NOT EXISTS idx_memory_cards_scope
       ON memory_cards(scope, owner_id, project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_cohorts_owner
+      ON cohorts(owner_id, project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_student_identities_scope
+      ON student_identities(owner_id, project_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_roster_versions_cohort
+      ON roster_versions(cohort_id, status, version DESC);
+    CREATE INDEX IF NOT EXISTS idx_roster_members_identity
+      ON roster_members(student_identity_id, roster_version_id);
     CREATE INDEX IF NOT EXISTS idx_persona_blends_ri   ON persona_blends(room_instance_id);
     CREATE INDEX IF NOT EXISTS idx_actions_status      ON actions(status);
     CREATE INDEX IF NOT EXISTS idx_actions_user        ON actions(user_id);
@@ -2400,5 +2457,47 @@ export interface WorkflowEventRow {
   tokens: number | null;
   status: string;
   blocker_category: string | null;
+  created_at: number;
+}
+
+export interface CohortRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  title: string;
+  period_ref: string | null;
+  status: 'active' | 'archived';
+  privacy: 'private';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface StudentIdentityRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  display_name: string;
+  status: 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface RosterVersionRow {
+  id: string;
+  cohort_id: string;
+  owner_id: string;
+  version: number;
+  source_ref: string;
+  status: 'active' | 'archived';
+  created_by: string;
+  created_at: number;
+  activated_at: number;
+}
+
+export interface RosterMemberRow {
+  roster_version_id: string;
+  student_identity_id: string;
+  display_name: string;
+  aliases_json: string;
   created_at: number;
 }

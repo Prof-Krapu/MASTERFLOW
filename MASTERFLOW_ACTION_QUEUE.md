@@ -4,6 +4,16 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Verticale correction contextualisée — snapshot immuable
+
+- Tâche : relier un batch de correction à la version exacte du roster, du sujet,
+  du barème et des sources après merge de la fondation roster.
+- Impact : évite de redemander ou réinterpréter la liste d'élèves à chaque conversation.
+- Risque : moyen ; données pédagogiques privées et compatibilité historique.
+- Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
+- Statut : fondation roster locale vérifiée ; snapshot futur immédiat.
+- Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
+
 ### Phase 1 — Première release privée vérifiable
 
 - Tâche : démarrer le package Docker sur un serveur choisi, avec volume persistant,

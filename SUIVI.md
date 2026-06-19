@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Cohortes et rosters versionnés V1 — LOCAL VÉRIFIÉ
+
+- cohorte privée teacher-scoped, optionnellement reliée à un projet editor+ ;
+- roster manuel append-only par versions, ancienne version conservée et archivée ;
+- identités explicites, sans matching automatique par nom/alias ;
+- isolation owner/projet : un godmode extérieur ne lit pas une cohorte owner-private ;
+- aucun import, sync établissement, suppression, correction finale ou activation live.
+
+Recette : ciblés 4/4 ; backend 359/359 ; TypeScript backend/frontend et build Vite verts ;
+diff-check OK.
+
+Statut : branche `codex/roster-foundation-v1`, publication marathon en cours. Prochaine tranche :
+`correction_context_snapshot` immuable roster/sujet/barème/source.
+
+---
+
 ## 2026-06-19 — Factory Manual Routing V6F — MERGÉ SUR MAIN (PR #47)
 
 - confirmation admin/godmode limitée aux domaines recommandés ;
