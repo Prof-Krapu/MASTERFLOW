@@ -11,6 +11,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Recette : Factory Backflow 5/5 ; TypeScript backend OK. Pont Drive synchronisé sur `2c39511`.
 
+### Clôture D11 V1
+
+Les quatre tranches D11 Factory Backflow sont désormais clôturées dans le runtime :
+
+- V6C intake JSON strict et quarantaine ;
+- V6D candidate updates après approbation owner ;
+- V6E recommandations de domaine en lecture seule ;
+- V6F routage manuel whitelisté, toujours `candidate_only`.
+
+Le rafraîchissement de vérité PR #48 place cet état sur GitHub `main` à
+`cff8df4`. La recette opérateur unique est
+`docs/d11-d12/FACTORY_BACKFLOW_OPERATOR_RECIPE_V1_2026-06-19.md`.
+
+**D11 V1 est fermé.** Toute suite — import de fichiers/ZIP/URL, installation,
+activation runtime, écriture canon, job, provider ou promotion automatique —
+est un nouveau chantier produit, pas une prolongation de D11 V1.
+
 ---
 
 ## 2026-06-19 — Factory Routing Recommendations V6E — MERGÉ SUR MAIN (PR #46)
@@ -19,7 +36,8 @@ Recette : Factory Backflow 5/5 ; TypeScript backend OK. Pont Drive synchronisé 
 - les autres classifications restent sans recommandation sûre ;
 - `target_domain` reste nul, sans routage ni effet runtime.
 
-Statut : local vérifié ; publication GitHub à faire.
+Statut : mergé via PR #46 (`c23c33d`) ; le routage manuel V6F est livré
+séparément via PR #47.
 
 ---
 
@@ -33,7 +51,8 @@ Statut : local vérifié ; publication GitHub à faire.
 
 Recette : Factory Backflow + Inbox 24/24 ; TypeScript backend OK.
 
-Statut : local vérifié ; publication GitHub et pont Drive à faire.
+Statut : mergé via PR #45 (`17e57f8`) ; pont Drive ensuite synchronisé avec les
+tranches V6E/V6F.
 
 ---
 
