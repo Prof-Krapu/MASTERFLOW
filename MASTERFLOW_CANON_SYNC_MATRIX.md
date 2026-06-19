@@ -27,3 +27,4 @@ le runtime GitHub.
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | implémenté | Garde, preview, sélection et état persistant owner+Room sont sur `main`. Context hashes restent absents. | faible | Auditer les context hash snapshots séparément. |
+| Context hash / re-preflight | absent runtime | Audit confirme que le contexte compilé n'a ni fingerprint stable ni registre de révision commun. | moyen | Valider snapshot + comparateur read-only avant toute invalidation automatique. |

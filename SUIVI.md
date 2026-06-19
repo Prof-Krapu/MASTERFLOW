@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Audit context-hash et re-preflight — DÉCISION PRODUIT REQUISE
+
+- le contexte runtime compilé existe, mais aucun snapshot de preflight ni fingerprint stable ;
+- les références RAG dérivées ne peuvent pas déclencher une invalidation automatique ;
+- recommandation : snapshot privé immuable et comparateur read-only `unchanged`,
+  `requires_review` ou `inconclusive` ;
+- aucun status action, job ou hard-stop ne change dans cette tranche ;
+- décider ensuite, famille par famille, si un changement fiable impose re-preflight ou `stale`.
+
+Audit : `docs/process-activation/CONTEXT_HASH_SNAPSHOT_AUDIT_2026-06-19.md`.
+
+---
+
 ## 2026-06-19 — Hard-stop persistant owner + Room — MERGÉ SUR MAIN (PR #25)
 
 - activation explicite teacher+ sur une Room réelle et accessible ;
