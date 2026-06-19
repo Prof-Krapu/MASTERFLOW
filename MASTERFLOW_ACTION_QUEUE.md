@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : MasterFlow apprend des échecs, blocages et rejets sans demander une extraction manuelle.
 - Risque : moyen, contenu par métadonnées minimales, confidentialité `do_not_export`, déduplication et revue humaine.
 - Source de vérité concernée : Kernel Usage Learning + D11 + D12 + contrat Usage Harvester.
-- Statut : implémenté localement et vérifié : ciblés 43/43, backend 347/347, TypeScript OK.
+- Statut : mergé sur `main` via PR #38 (`7ec5baa`) : ciblés 43/43, backend 347/347, TypeScript OK.
 - Validation requise : GO MALEX reçu ; aucune écriture canon ou action externe autorisée.
 
 ### Vague 5B — Appliquer le hard-stop à une sélection explicite
