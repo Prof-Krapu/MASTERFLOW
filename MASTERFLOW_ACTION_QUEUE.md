@@ -4,13 +4,13 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
-### Verticale correction contextualisée — ambiguïtés et UI professeur
+### Verticale correction contextualisée — UI professeur
 
-- Tâche : créer les `identity_match_candidate` et une surface de confirmation professeur.
-- Impact : propose les rapprochements de noms/alias sans jamais les confirmer automatiquement.
+- Tâche : afficher les `identity_match_candidate` et les gestes confirmer/rejeter.
+- Impact : rend les ambiguïtés compréhensibles et actionnables sans décision automatique.
 - Risque : moyen ; données pédagogiques privées et compatibilité historique.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : contexte V1 sur main ; liaison explicite locale vérifiée ; candidates/UI futures immédiates.
+- Statut : liaison sur main ; candidates backend locales vérifiées ; UI future immédiate.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
 ### Phase 1 — Première release privée vérifiable

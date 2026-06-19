@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Identity Match Candidates V1 — LOCAL VÉRIFIÉ
+
+- noms/alias rapprochés uniquement par égalité normalisée et dans le roster figé ;
+- toute proposition reste pending, même avec un match unique ;
+- ambiguïtés multi-candidates conservées sans liaison ;
+- confirmation/rejet explicites professeur, sélection hors liste et double décision refusées ;
+- aucun matching LLM, fusion automatique ou fuite hors scope.
+
+Recette : backend 363/363 ; TypeScript backend/frontend et build Vite verts ; diff-check OK.
+
+Statut : branche `codex/identity-match-candidates-v1`, publication marathon en cours.
+Prochaine tranche : UI professeur de revue des identités.
+
+---
+
 ## 2026-06-20 — Liaison submission → student identity V1 — LOCAL VÉRIFIÉ
 
 - choix manuel d'une identité présente dans le roster figé du snapshot ;

@@ -891,6 +891,22 @@ function migrate(d: Database.Database): void {
       updated_at          INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS identity_match_candidates (
+      id                          TEXT PRIMARY KEY,
+      submission_id               TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
+      batch_id                    TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
+      context_snapshot_id         TEXT NOT NULL REFERENCES correction_context_snapshots(id),
+      observed_label              TEXT NOT NULL,
+      candidate_identity_ids_json TEXT NOT NULL,
+      status                      TEXT NOT NULL DEFAULT 'pending'
+                                    CHECK (status IN ('pending','confirmed','rejected')),
+      selected_identity_id        TEXT REFERENCES student_identities(id),
+      created_by                  TEXT NOT NULL REFERENCES users(id),
+      decided_by                  TEXT REFERENCES users(id),
+      created_at                  INTEGER NOT NULL,
+      updated_at                  INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS pre_correction_manifests (
       id                 TEXT PRIMARY KEY,
       batch_id           TEXT NOT NULL REFERENCES correction_batches(id) ON DELETE CASCADE,
@@ -1488,6 +1504,8 @@ function migrate(d: Database.Database): void {
       ON submissions(project_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_submissions_student_identity
       ON submissions(student_identity_id, identity_status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_identity_match_submission
+      ON identity_match_candidates(submission_id, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_manifests_project
       ON pre_correction_manifests(project_id, status, created_at);
     CREATE INDEX IF NOT EXISTS idx_pre_correction_runs_project

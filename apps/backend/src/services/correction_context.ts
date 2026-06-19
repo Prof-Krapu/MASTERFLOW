@@ -1,13 +1,19 @@
 import {
   CorrectionContextPayloadSchema,
   CorrectionContextSnapshotSchema,
+  CreateIdentityMatchCandidateRequestSchema,
   CreateCorrectionContextSnapshotSchema,
+  DecideIdentityMatchCandidateRequestSchema,
+  IdentityMatchCandidateSchema,
   LinkSubmissionIdentityRequestSchema,
   ROLE_RANK,
   SubmissionIdentityLinkSchema,
   type CorrectionContextPayload,
   type CorrectionContextSnapshot,
+  type CreateIdentityMatchCandidateRequest,
   type CreateCorrectionContextSnapshot,
+  type DecideIdentityMatchCandidateRequest,
+  type IdentityMatchCandidate,
   type LinkSubmissionIdentityRequest,
   type SubmissionIdentityLink,
 } from '@masterflow/shared';
@@ -31,6 +37,21 @@ interface BatchRow {
   project_scope: string;
   rubric_version_id: string;
   status: string;
+}
+
+interface IdentityMatchCandidateRow {
+  id: string;
+  submission_id: string;
+  batch_id: string;
+  context_snapshot_id: string;
+  observed_label: string;
+  candidate_identity_ids_json: string;
+  status: 'pending' | 'confirmed' | 'rejected';
+  selected_identity_id: string | null;
+  created_by: string;
+  decided_by: string | null;
+  created_at: number;
+  updated_at: number;
 }
 
 function requireTeacher(actor: AuthUser): void {
@@ -310,4 +331,159 @@ export function linkSubmissionIdentity(
     linked_by: actor.id,
     linked_at: now,
   });
+}
+
+function normalizeIdentityLabel(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLocaleLowerCase('fr-FR')
+    .replace(/\s+/g, ' ');
+}
+
+function toIdentityMatchCandidate(row: IdentityMatchCandidateRow): IdentityMatchCandidate {
+  return IdentityMatchCandidateSchema.parse({
+    candidate_id: row.id,
+    submission_id: row.submission_id,
+    batch_id: row.batch_id,
+    context_snapshot_id: row.context_snapshot_id,
+    observed_label: row.observed_label,
+    candidate_identity_ids: JSON.parse(row.candidate_identity_ids_json) as unknown,
+    status: row.status,
+    selected_identity_id: row.selected_identity_id,
+    created_by: row.created_by,
+    decided_by: row.decided_by,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+}
+
+export function createIdentityMatchCandidate(
+  actor: AuthUser,
+  submissionId: string,
+  input: CreateIdentityMatchCandidateRequest,
+): IdentityMatchCandidate {
+  requireTeacher(actor);
+  const request = CreateIdentityMatchCandidateRequestSchema.parse(input);
+  const submission = getDb().prepare('SELECT * FROM submissions WHERE id = ?').get(submissionId) as
+    | SubmissionRow
+    | undefined;
+  if (!submission) throw new Error('submission_not_found');
+  const batch = requireBatch(actor, submission.batch_id);
+  if (submission.identity_status === 'confirmed') throw new Error('submission_identity_locked');
+  const snapshot = getDb()
+    .prepare('SELECT * FROM correction_context_snapshots WHERE id = ? AND batch_id = ?')
+    .get(request.context_snapshot_id, batch.id) as CorrectionContextSnapshotRow | undefined;
+  if (!snapshot) throw new Error('correction_context_snapshot_not_found');
+
+  const normalized = normalizeIdentityLabel(request.observed_label);
+  const rows = getDb()
+    .prepare(
+      `SELECT student_identity_id, display_name, aliases_json
+       FROM roster_members WHERE roster_version_id = ?`,
+    )
+    .all(snapshot.roster_version_id) as Array<{
+    student_identity_id: string;
+    display_name: string;
+    aliases_json: string;
+  }>;
+  const candidateIdentityIds = rows
+    .filter((row) => {
+      const labels = [row.display_name, ...(JSON.parse(row.aliases_json) as string[])];
+      return labels.some((label) => normalizeIdentityLabel(label) === normalized);
+    })
+    .map((row) => row.student_identity_id);
+  if (candidateIdentityIds.length === 0) throw new Error('identity_match_no_candidate');
+
+  const existing = getDb()
+    .prepare(
+      `SELECT * FROM identity_match_candidates
+       WHERE submission_id = ? AND status = 'pending'
+       ORDER BY created_at DESC LIMIT 1`,
+    )
+    .get(submission.id) as IdentityMatchCandidateRow | undefined;
+  if (existing) return toIdentityMatchCandidate(existing);
+
+  const now = Date.now();
+  const id = uuid();
+  getDb()
+    .prepare(
+      `INSERT INTO identity_match_candidates
+         (id, submission_id, batch_id, context_snapshot_id, observed_label,
+          candidate_identity_ids_json, status, selected_identity_id, created_by,
+          decided_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, 'pending', NULL, ?, NULL, ?, ?)`,
+    )
+    .run(
+      id,
+      submission.id,
+      batch.id,
+      snapshot.id,
+      request.observed_label,
+      JSON.stringify(candidateIdentityIds),
+      actor.id,
+      now,
+      now,
+    );
+  getDb()
+    .prepare("UPDATE submissions SET identity_status = 'candidate', updated_at = ? WHERE id = ?")
+    .run(now, submission.id);
+  return toIdentityMatchCandidate(
+    getDb().prepare('SELECT * FROM identity_match_candidates WHERE id = ?').get(id) as
+      IdentityMatchCandidateRow,
+  );
+}
+
+export function decideIdentityMatchCandidate(
+  actor: AuthUser,
+  candidateId: string,
+  input: DecideIdentityMatchCandidateRequest,
+): IdentityMatchCandidate {
+  requireTeacher(actor);
+  const request = DecideIdentityMatchCandidateRequestSchema.parse(input);
+  const candidate = getDb()
+    .prepare('SELECT * FROM identity_match_candidates WHERE id = ?')
+    .get(candidateId) as IdentityMatchCandidateRow | undefined;
+  if (!candidate) throw new Error('identity_match_candidate_not_found');
+  requireBatch(actor, candidate.batch_id);
+  if (candidate.status !== 'pending') throw new Error('identity_match_candidate_decided');
+  const allowedIds = JSON.parse(candidate.candidate_identity_ids_json) as string[];
+  if (
+    request.decision === 'confirm' &&
+    (!request.selected_identity_id || !allowedIds.includes(request.selected_identity_id))
+  ) {
+    throw new Error('identity_match_selection_invalid');
+  }
+
+  const now = Date.now();
+  if (request.decision === 'confirm') {
+    linkSubmissionIdentity(actor, candidate.submission_id, {
+      context_snapshot_id: candidate.context_snapshot_id,
+      student_identity_id: request.selected_identity_id!,
+    });
+  } else {
+    getDb()
+      .prepare(
+        "UPDATE submissions SET identity_status = 'rejected', updated_at = ? WHERE id = ?",
+      )
+      .run(now, candidate.submission_id);
+  }
+  getDb()
+    .prepare(
+      `UPDATE identity_match_candidates
+       SET status = ?, selected_identity_id = ?, decided_by = ?, updated_at = ?
+       WHERE id = ?`,
+    )
+    .run(
+      request.decision === 'confirm' ? 'confirmed' : 'rejected',
+      request.decision === 'confirm' ? request.selected_identity_id : null,
+      actor.id,
+      now,
+      candidate.id,
+    );
+  return toIdentityMatchCandidate(
+    getDb().prepare('SELECT * FROM identity_match_candidates WHERE id = ?').get(candidate.id) as
+      IdentityMatchCandidateRow,
+  );
 }
