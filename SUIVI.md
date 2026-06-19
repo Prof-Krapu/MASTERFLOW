@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Usage Harvester V6B sources structurées — LOCAL VÉRIFIÉ
+## 2026-06-19 — Usage Harvester V6B sources structurées — MERGÉ SUR MAIN (PR #40)
 
 - chaque teacher decision delta autorisé crée ou renforce une candidate `repeated_correction` ;
 - seuls les types, champs modifiés et références sont utilisés ; proposition, décision et note
@@ -16,8 +16,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Recette : ciblés 37/37 ; backend 347/347 ; TypeScript backend/frontend et build Vite OK.
 
-Statut : local vérifié ; première suite complète bloquée par les ports sandbox, relance autorisée
-verte 347/347.
+Statut : mergé via PR #40 (`5b1acae`) ; première suite complète bloquée par les ports sandbox,
+relance autorisée verte 347/347.
 
 ---
 
