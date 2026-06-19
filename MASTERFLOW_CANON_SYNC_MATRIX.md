@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-20
-Branche de travail : `codex/identity-review-ui-v1`
-Base GitHub vérifiée : `3ff628c` (main après clôture Identity Resolution V1)
+Branche de travail : `main` après PR #67
+Base GitHub vérifiée : `4ccda9a`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -15,7 +15,7 @@ le runtime GitHub.
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Actions, objets D06, findings D12, candidates Usage Learning et intake factory D11 sont sur `main`. | faible | Ajouter les prochains domaines uniquement avec leur autorité métier propre. |
 | D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement ; recette isolée 12/12 validée. | faible | Garder D06 et participation élève séparés. |
-| D06 correction / feedback | partiel | Contexte, liaison explicite et candidates ambiguës sont sur `main` ; l'UI professeur de revue est vérifiée localement. | faible à moyen | Publier l'UI puis ouvrir la gestion manuelle cohortes/rosters. |
+| D06 correction / feedback | partiel | Contexte, liaison explicite, candidates ambiguës et UI professeur de revue sont sur `main` (PR #59-67). | faible à moyen | Ouvrir la gestion manuelle cohortes/rosters. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability | partiel | Cockpit, findings, décisions owner et Usage Harvester V1 sont sur `main` ; détection automatique des findings reste absente. | faible | Étendre les sources structurées une par une, sans analyse brute ni auto-fix. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |

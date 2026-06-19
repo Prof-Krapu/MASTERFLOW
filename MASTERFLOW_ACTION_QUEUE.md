@@ -4,13 +4,13 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
-### Verticale correction contextualisée — publier l'UI professeur
+### Livré — UI professeur de revue d'identité
 
-- Tâche : publier l'écran Teaching des `identity_match_candidate` et ses gestes confirmer/rejeter.
+- Tâche : écran Teaching des `identity_match_candidate` et gestes confirmer/rejeter.
 - Impact : rend les ambiguïtés compréhensibles et actionnables sans décision automatique.
 - Risque : moyen ; données pédagogiques privées et compatibilité historique.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : code, tests et recette navigateur vérifiés localement ; publication GitHub en cours.
+- Statut : mergé sur `main` via PR #67 (`4ccda9a`) ; preuves Drive synchronisées.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
 ### Verticale correction contextualisée — gestion manuelle cohortes/rosters
