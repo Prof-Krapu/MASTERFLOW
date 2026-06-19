@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Prévisualisation hard-stop / action expiry — IMPLÉMENTÉ LOCAL
+## 2026-06-19 — Prévisualisation hard-stop / action expiry — MERGÉ SUR MAIN (PR #19)
 
 Tranche read-only :
 
@@ -18,7 +18,7 @@ Tranche read-only :
 Recette locale : action expiry/lifecycle/process activation 17/17 ; backend complet 331/331 ;
 TypeScript backend/frontend, build Vite et diff-check OK.
 
-Statut : local vérifié, prêt à publication automatique.
+Statut : mergé sur `main` via PR #19 (`0fa4959`).
 
 ---
 

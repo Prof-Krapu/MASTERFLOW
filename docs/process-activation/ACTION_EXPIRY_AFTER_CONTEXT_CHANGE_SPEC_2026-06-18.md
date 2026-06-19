@@ -1,6 +1,6 @@
 # Action Expiry After Context Change Spec — 2026-06-18
 
-Status: `PARTIAL_RUNTIME_GUARD_MAIN_PREVIEW_LOCAL`
+Status: `PARTIAL_RUNTIME_GUARD_AND_PREVIEW_MAIN`
 
 Mise à jour locale : première tranche implémentée sur `codex/action-expiry-guard`.
 Elle ajoute un garde runtime minimal : `POST /api/v1/actions/expire-context` rend `stale`
@@ -172,6 +172,6 @@ preview_route: POST /api/v1/actions/expire-context/preview
 preview_mutation: false
 safe_to_queue: true
 github_main: expiry_guard_merged_pr11
-preview_status: local_verified_not_merged
+preview_status: merged_pr19
 requires_malex_before_code: fulfilled_by_global_go
 ```
