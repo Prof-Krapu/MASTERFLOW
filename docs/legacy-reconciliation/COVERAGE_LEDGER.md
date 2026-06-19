@@ -9,6 +9,10 @@
 | Incident response + state recovery | D12 / release | observabilité sans recovery | release non prouvée | restore_candidate | créer Runtime Continuity & Recovery Contract |
 | Organization + multi-tenant | D01/D05/D06 | project scope seulement | projets/membres | restore_candidate | ouvrir classe/cohorte puis organisation, sans multi-tenant prématuré |
 | Active Contract Index / app registry | Kernel | owners/domain map, pas d’index actif complet | action registry partiel | reduced | créer Active Contract & Process Registry |
+| Student monitoring / pédagogical signals | D06 | signaux prudents sans dossier étudiant | feedback/signaux partiels | reduced | créer Student Longitudinal Record teacher-scoped |
+| Comfy canonical reference resolver | D08 | manifest-first sans resolver | références/assets absents | reduced | créer Canonical Asset & Reference Registry |
+| Generated asset runtime | D08/D07 | candidate/review prévu | persistence asset absente | canon_ready | implémenter lifecycle asset après registre de références |
+| Multi-tenant architecture | D01 | scope organisation seulement | aucun tenant | deprecated | garder hors V1 jusqu’au besoin multi-structure réel |
 
 Le ledger est enrichi par vague. Une ligne ne devient `absorbed` qu’avec références canon et preuve Git,
 ou `deprecated` avec décision explicite.
