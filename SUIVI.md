@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Teaching Roster Management V1 — LOCAL VÉRIFIÉ
+
+- cohorte privée créée depuis Teaching ;
+- roster saisi manuellement, avec alias optionnels ;
+- nouvelle version active et ancienne version archivée ;
+- historique visible et isolation owner/projet conservée ;
+- aucun import automatique, suppression ou effet de correction.
+
+Recette : backend 363/363 ; TypeScript et build verts ; création navigateur cohorte + roster
+V1 réussie ; desktop/mobile sans débordement ; console sans erreur.
+
+Statut : publication GitHub en cours.
+Prochaine tranche : lancement manuel d'un lot de correction contextualisé.
+
+---
+
 ## 2026-06-20 — Identity Review UI V1 — LOCAL VÉRIFIÉ
 
 - écran Teaching dédié aux ambiguïtés d'identité ;

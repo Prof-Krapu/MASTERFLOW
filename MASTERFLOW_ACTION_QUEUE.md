@@ -13,14 +13,23 @@ Dernière mise à jour : 2026-06-20
 - Statut : mergé sur `main` via PR #67 (`4ccda9a`) ; preuves Drive synchronisées.
 - Validation requise : non pour code/tests isolés ; oui avant migration d'une base réelle.
 
-### Verticale correction contextualisée — gestion manuelle cohortes/rosters
+### Verticale correction contextualisée — publier la gestion cohortes/rosters
 
 - Tâche : permettre au professeur de créer une cohorte et une nouvelle version de roster depuis Teaching.
 - Impact : rend le contexte de correction administrable sans intervention technique.
 - Risque : moyen ; données privées, version append-only et périmètre projet à conserver.
 - Source de vérité concernée : Living Truth Spine + contrat classe/cohorte/roster.
-- Statut : backend fondation sur main ; UI future immédiate après publication de la revue d'identité.
+- Statut : code, tests et recette navigateur vérifiés localement ; publication GitHub en cours.
 - Validation requise : non pour code/tests isolés ; oui avant import ou migration d'une base réelle.
+
+### Verticale correction contextualisée — lancer un lot manuel
+
+- Tâche : créer depuis Teaching un lot de correction relié au projet, au roster actif, au sujet et au barème.
+- Impact : relie enfin le contexte de classe au pipeline de pré-correction déjà présent.
+- Risque : moyen ; aucune correction automatique, aucun feedback final ni provider live.
+- Source de vérité concernée : D05/D06 + Living Truth Spine.
+- Statut : futur immédiat après publication de la gestion roster.
+- Validation requise : non pour code/tests isolés ; oui avant toute exécution live réelle.
 
 ### Phase 1 — Première release privée vérifiable
 
