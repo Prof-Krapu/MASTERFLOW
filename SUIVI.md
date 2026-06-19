@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-19 — Snapshot contextuel et comparateur read-only — LOCAL VÉRIFIÉ
+## 2026-06-19 — Snapshot contextuel et comparateur read-only — MERGÉ SUR MAIN (PR #29)
 
 - chaque preflight sensible avec Room capture une seule empreinte privée immuable ;
 - l'empreinte ne contient ni contenu RAG, ni conversation, ni champ UI volatile ;
@@ -17,7 +17,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Recette : lifecycle 15/15, API 7/7, activation 5/5 ; backend complet 341/341 ; TypeScript
 backend/frontend, build Vite et diff-check OK.
 
-Statut : prêt à publication sur `codex/action-context-snapshot-preview`.
+Statut : mergé sur `main` via PR #29 (`54b97cf`).
 
 ---
 
