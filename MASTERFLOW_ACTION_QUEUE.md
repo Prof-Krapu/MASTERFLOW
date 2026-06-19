@@ -130,7 +130,7 @@ Dernière mise à jour : 2026-06-19
 - Impact : vérifie le flux réel de bout en bout avec données autorisées.
 - Risque : faible.
 - Source de vérité concernée : canon D05-D06 + runtime GitHub.
-- Statut : à faire.
+- Statut : recette isolée validée le 2026-06-19 : D05 12/12, D06 + inbox 26/26, backend 341/341 ; aucun effet externe.
 - Validation requise : non pour l'audit.
 
 ## 4. À vérifier contre canon / GitHub

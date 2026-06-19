@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Recette isolée D05-D06 — VALIDÉE LOCALEMENT
+
+- D05 Guided Runtime : service 8/8 et router 4/4 ;
+- D06 feedback et Shared Validation Inbox : 26/26 ;
+- backend complet : 341/341 ;
+- aucun provider, export, fichier, job, publication, envoi étudiant ou note finale créé ;
+- le lancement D06 doit rester dans `apps/backend`, afin de garder la base de tests isolée.
+
+Statut : preuve locale sur la base GitHub `bec7e370`; aucune nouvelle capacité produit ouverte.
+
+---
+
 ## 2026-06-19 — Visibilité owner du comparateur contextuel — MERGÉ SUR MAIN (PR #32)
 
 - la trace de l'action courante affiche le résultat contextuel read-only ;
