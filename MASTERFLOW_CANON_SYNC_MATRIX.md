@@ -28,3 +28,4 @@ le runtime GitHub.
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | implémenté | Garde, preview, sélection et état persistant owner+Room sont sur `main`. Context hashes restent absents. | faible | Auditer les context hash snapshots séparément. |
 | Context hash / re-preflight | partiel implémenté | Snapshot privé et comparateur read-only sont sur `main` ; seules les refs avec révision fiable sont comparées. | faible | Décider les familles qui imposeraient réellement stale ou re-preflight. |
+| Politique changement de contexte V1 | implémenté docs | Toute divergence fiable demande revue/re-preflight ; stale auto interdit hors hard-stop déjà borné. | faible | Exposer le comparateur en lecture owner. |

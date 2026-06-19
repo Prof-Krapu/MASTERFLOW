@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Politique V1 changement de contexte — VALIDÉE
+
+- une divergence fiable retourne `requires_review` et recommande un re-preflight humain ;
+- aucune famille D05, D06, D08, export ou canon-write n'obtient un stale automatique en V1 ;
+- le stale demeure réservé aux hard-stops explicites déjà implémentés ;
+- prochain geste sûr : visibilité owner du comparateur, lecture seule.
+
+Politique : `docs/process-activation/CONTEXT_CHANGE_RESPONSE_POLICY_V1_2026-06-19.md`.
+
+---
+
 ## 2026-06-19 — Snapshot contextuel et comparateur read-only — MERGÉ SUR MAIN (PR #29)
 
 - chaque preflight sensible avec Room capture une seule empreinte privée immuable ;
