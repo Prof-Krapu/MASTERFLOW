@@ -2726,6 +2726,62 @@ export const UserRuntimeLoadoutSchema = z.object({
 });
 export type UserRuntimeLoadout = z.infer<typeof UserRuntimeLoadoutSchema>;
 
+// ───────────────────────── Cohortes et rosters versionnés ─────────────────────────
+
+export const CohortSchema = z.object({
+  cohort_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  title: z.string().min(1).max(160),
+  period_ref: z.string().min(1).max(160).nullable(),
+  status: z.enum(['active', 'archived']),
+  privacy: z.literal('private'),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type Cohort = z.infer<typeof CohortSchema>;
+
+export const CreateCohortSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  title: z.string().min(1).max(160),
+  period_ref: z.string().min(1).max(160).nullable().optional(),
+});
+export type CreateCohort = z.infer<typeof CreateCohortSchema>;
+
+export const RosterMemberSchema = z.object({
+  student_identity_id: z.string().min(1),
+  display_name: z.string().min(1).max(160),
+  aliases: z.array(z.string().min(1).max(160)).max(20),
+});
+export type RosterMember = z.infer<typeof RosterMemberSchema>;
+
+export const CreateRosterMemberSchema = z.object({
+  student_identity_id: z.string().min(1).nullable().optional(),
+  display_name: z.string().min(1).max(160),
+  aliases: z.array(z.string().min(1).max(160)).max(20).default([]),
+});
+export type CreateRosterMember = z.infer<typeof CreateRosterMemberSchema>;
+
+export const RosterVersionSchema = z.object({
+  roster_version_id: z.string().min(1),
+  cohort_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  version: z.number().int().positive(),
+  source_ref: z.string().min(1).max(500),
+  status: z.enum(['active', 'archived']),
+  members: z.array(RosterMemberSchema),
+  created_by: z.string().min(1),
+  created_at: z.number().int().nonnegative(),
+  activated_at: z.number().int().nonnegative(),
+});
+export type RosterVersion = z.infer<typeof RosterVersionSchema>;
+
+export const CreateRosterVersionSchema = z.object({
+  source_ref: z.string().min(1).max(500),
+  members: z.array(CreateRosterMemberSchema).min(1).max(300),
+});
+export type CreateRosterVersion = z.infer<typeof CreateRosterVersionSchema>;
+
 // ───────────────────────── Contexte courant ─────────────────────────
 
 export const CurrentContextSchema = z.object({

@@ -19,6 +19,7 @@ import {createSchemaTemplatesRouter} from './routers/schema_templates.ts';
 import {createGuidedRuntimeRouter} from './routers/guided_runtime.ts';
 import {createRagRouter} from './routers/rag.ts';
 import {createMemoryRouter} from './routers/memory.ts';
+import {createCohortsRouter} from './routers/cohorts.ts';
 import {createInventoryRouter} from './routers/inventory.ts';
 import {createValidationInboxRouter} from './routers/validation_inbox.ts';
 import {createFactoryBackflowRouter} from './routers/factory_backflow.ts';
@@ -78,6 +79,7 @@ async function main(): Promise<void> {
   app.use(api, createGuidedRuntimeRouter());
   app.use(api, createRagRouter());
   app.use(api, createMemoryRouter());
+  app.use(api, createCohortsRouter());
   app.use(api, createInventoryRouter());
   app.use(api, createValidationInboxRouter());
   app.use(api, createFactoryBackflowRouter());
