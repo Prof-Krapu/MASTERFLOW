@@ -73,9 +73,15 @@ describe('Action expiry router', () => {
     expect(response.status).toBe(200);
     const body = await response.json() as {
       candidate_action_ids: string[];
+      candidates: Array<{id: string; intent: string; status: string}>;
       audit_trace: string[];
     };
     expect(body.candidate_action_ids).toContain(action.id);
+    expect(body.candidates).toContainEqual(expect.objectContaining({
+      id: action.id,
+      intent: 'approve',
+      status: 'pending_validation',
+    }));
     expect(body.audit_trace).toEqual(expect.arrayContaining(['read_only', 'no_status_change']));
 
     const unchanged = await fetch(`${base}/actions/${action.id}`, {headers: auth(godToken)});
@@ -107,5 +113,36 @@ describe('Action expiry router', () => {
 
     const stale = await fetch(`${base}/actions/${action.id}`, {headers: auth(godToken)});
     expect(await stale.json()).toMatchObject({id: action.id, status: 'stale'});
+  });
+
+  it('applique le hard-stop uniquement aux actions sélectionnées', async () => {
+    const selected = await createSensitiveAction();
+    const untouched = await createSensitiveAction();
+    const response = await fetch(`${base}/actions/expire-context/selected`, {
+      method: 'POST',
+      headers: auth(godToken),
+      body: JSON.stringify({scope: 'mine', reason: 'hard_stop', action_ids: [selected.id]}),
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      expired_count: 1,
+      expired_action_ids: [selected.id],
+    });
+
+    const stale = await fetch(`${base}/actions/${selected.id}`, {headers: auth(godToken)});
+    expect(await stale.json()).toMatchObject({status: 'stale'});
+    const stillOpen = await fetch(`${base}/actions/${untouched.id}`, {headers: auth(godToken)});
+    expect(await stillOpen.json()).toMatchObject({status: 'pending_validation'});
+  });
+
+  it('refuse une sélection vide ou dupliquée', async () => {
+    for (const actionIds of [[], ['same-id', 'same-id']]) {
+      const response = await fetch(`${base}/actions/expire-context/selected`, {
+        method: 'POST',
+        headers: auth(godToken),
+        body: JSON.stringify({scope: 'mine', reason: 'hard_stop', action_ids: actionIds}),
+      });
+      expect(response.status).toBe(400);
+    }
   });
 });

@@ -4,6 +4,25 @@ Dernière mise à jour : 2026-06-19
 
 ## 1. À faire maintenant
 
+### Vague 5B — Appliquer le hard-stop à une sélection explicite
+
+- Tâche : prévisualiser, cocher puis geler uniquement les actions sensibles choisies.
+- Impact : rend le stop réellement actionnable sans invalidation de masse cachée.
+- Risque : moyen, contenu par sélection vide par défaut et transaction atomique.
+- Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, `RESET_GRANULARITY`,
+  `ACTION_EXPIRES_AFTER_CONTEXT_CHANGE`.
+- Statut : implémenté local, vérifié 336/336, prêt à publication.
+- Validation requise : acquise par GO global MALEX ; aucune auto-application autorisée.
+
+### Vague 5C — État hard-stop persistant — AUDIT SEULEMENT
+
+- Tâche : définir comment un stop reste actif et comment l'owner le lève explicitement.
+- Impact : empêcher qu'une nouvelle action sensible soit créée juste après le gel de la sélection.
+- Risque : élevé si le stop bloque trop large ou devient automatique.
+- Source de vérité concernée : `HARD_STOP_ACTION_PRIORITY`, Process Control Strip.
+- Statut : à auditer, code interdit avant contrat produit clair.
+- Validation requise : non pour l'audit ; oui avant runtime.
+
 ### Vague 5A — Preview hard-stop
 
 - Tâche : montrer les actions sensibles ouvertes qui seraient rendues stale par un stop.

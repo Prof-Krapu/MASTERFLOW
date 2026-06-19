@@ -14,6 +14,7 @@ import type {
   CurrentContext,
   DecideValidationInboxItemRequest,
   D12MissedTriggerFinding,
+  ExpireActionsResponse,
   InventoryCollection,
   InventoryItem,
   InventoryNeedMatchResult,
@@ -161,6 +162,16 @@ export async function previewHardStopActionExpiry(
   return request<PreviewActionsExpiryResponse>('/actions/expire-context/preview', {
     method: 'POST',
     body: JSON.stringify({scope: 'mine', reason: 'hard_stop'}),
+  }, token);
+}
+
+export async function applyHardStopToSelectedActions(
+  actionIds: string[],
+  token?: string | null,
+): Promise<ExpireActionsResponse> {
+  return request<ExpireActionsResponse>('/actions/expire-context/selected', {
+    method: 'POST',
+    body: JSON.stringify({scope: 'mine', reason: 'hard_stop', action_ids: actionIds}),
   }, token);
 }
 

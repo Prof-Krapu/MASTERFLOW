@@ -960,6 +960,14 @@ export const ExpireActionsRequestSchema = z.object({
 });
 export type ExpireActionsRequest = z.infer<typeof ExpireActionsRequestSchema>;
 
+export const ExpireSelectedActionsRequestSchema = ExpireActionsRequestSchema.extend({
+  action_ids: z.array(z.string().min(1)).min(1).max(100).refine(
+    (ids) => new Set(ids).size === ids.length,
+    'duplicate_action_ids',
+  ),
+});
+export type ExpireSelectedActionsRequest = z.infer<typeof ExpireSelectedActionsRequestSchema>;
+
 export const ExpireActionsResponseSchema = z.object({
   expired_count: z.number().int().nonnegative(),
   expired_action_ids: z.array(z.string().min(1)),
@@ -969,9 +977,19 @@ export const ExpireActionsResponseSchema = z.object({
 });
 export type ExpireActionsResponse = z.infer<typeof ExpireActionsResponseSchema>;
 
+export const PreviewActionExpiryCandidateSchema = z.object({
+  id: z.string().min(1),
+  intent: z.string().min(1),
+  object_type: z.string().min(1),
+  status: z.enum(['pending_validation', 'approved']),
+  risk_level: RiskLevelSchema,
+});
+export type PreviewActionExpiryCandidate = z.infer<typeof PreviewActionExpiryCandidateSchema>;
+
 export const PreviewActionsExpiryResponseSchema = z.object({
   candidate_count: z.number().int().nonnegative(),
   candidate_action_ids: z.array(z.string().min(1)),
+  candidates: z.array(PreviewActionExpiryCandidateSchema),
   reason: ExpireActionsRequestSchema.shape.reason,
   scope_ref: z.string().min(1),
   audit_trace: z.array(z.string().min(1)),

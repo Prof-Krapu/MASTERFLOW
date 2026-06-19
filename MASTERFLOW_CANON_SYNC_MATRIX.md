@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-19
-Branche de travail : `codex/action-expiry-preview-publish-proof`
-Base GitHub vérifiée : `0fa4959`
+Branche de travail : `codex/hard-stop-selected-actions`
+Base GitHub vérifiée : `f94d943`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -23,7 +23,7 @@ le runtime GitHub.
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
 | D11 factories/backflow | hors runtime | Factories externes utiles comme terrain, sans absorption canon automatique. | moyen | Auditer Usage Harvester ; garder les factories candidates. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
-| Pont de déploiement Drive | en retard | Drive reflète PR #16 / `003c866`, GitHub est à PR #17 / `a72b809`. | moyen | Rafraîchir le pont Drive sur le SHA final de clôture. |
+| Pont de déploiement Drive | synchronisé avant tranche | Drive et dernier `origin/main` connu reflètent PR #20 / `f94d943`. | faible | Rafraîchir le pont sur le SHA final après publication. |
 | Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
-| Hard stop / action expiry | partiel | Garde stale et preview read-only cockpit sur `main`; application depuis le signal encore absente. | moyen | Décider la granularité avant tout bouton d'application. |
+| Hard stop / action expiry | partiel+ local | Garde et preview sont sur `main`; application atomique sur sélection explicite est vérifiée localement. L'état hard-stop persistant reste absent. | moyen | Publier la sélection explicite puis auditer l'état stop/reprise, sans auto-application depuis le texte. |

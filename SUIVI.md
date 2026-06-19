@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Hard-stop sur sélection explicite — LOCAL VÉRIFIÉ
+
+Tranche d'application bornée :
+
+- `POST /api/v1/actions/expire-context/selected` ;
+- l'Owner Cockpit prévisualise puis laisse toutes les actions décochées par défaut ;
+- chaque candidate affiche intention, objet, statut et risque plutôt qu'un identifiant seul ;
+- seules les actions sensibles ouvertes explicitement cochées passent `stale` ;
+- sélection atomique : un identifiant inaccessible, low-risk, stale ou hors scope annule toute
+  l'opération ;
+- aucun gel automatique depuis le texte, aucune suppression, exécution ou annulation de job ;
+- le prochain écart canon devient l'état hard-stop persistant, pas l'application sélectionnée.
+
+Recette locale : action expiry/lifecycle/process activation 22/22 ; backend complet 336/336 ;
+TypeScript backend/frontend, build Vite et diff-check OK.
+
+Statut : prêt à publication sur `codex/hard-stop-selected-actions`.
+
+---
+
 ## 2026-06-19 — Prévisualisation hard-stop / action expiry — MERGÉ SUR MAIN (PR #19)
 
 Tranche read-only :
