@@ -1058,6 +1058,26 @@ dd {
   padding: 0.8rem;
 }
 
+.action-context-status {
+  border-left: 3px solid var(--accent, #536dfe);
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.8rem;
+  padding: 0.65rem 0.8rem;
+}
+
+.action-context-status--requires_review {
+  border-color: var(--warning, #c98000);
+}
+
+.action-context-status--inconclusive {
+  border-color: var(--muted, #687078);
+}
+
+.action-context-status small {
+  overflow-wrap: anywhere;
+}
+
 .teaching-readiness {
   gap: 14px;
 }

@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-19 — Visibilité owner du comparateur contextuel — LOCAL VÉRIFIÉ
+
+- la trace de l'action courante affiche le résultat contextuel read-only ;
+- `unchanged`, `requires_review` et `inconclusive` sont traduits en langage lisible ;
+- les refs modifiées ou à vérifier sont visibles ;
+- aucun bouton ne relance, ne valide, ne stale ou n'exécute l'action.
+
+Recette : TypeScript frontend et build Vite OK ; backend 341/341 conservé.
+
+Statut : prêt à publication sur `codex/context-comparison-owner-visibility`.
+
+---
+
 ## 2026-06-19 — Politique V1 changement de contexte — VALIDÉE
 
 - une divergence fiable retourne `requires_review` et recommande un re-preflight humain ;
@@ -12,6 +25,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - prochain geste sûr : visibilité owner du comparateur, lecture seule.
 
 Politique : `docs/process-activation/CONTEXT_CHANGE_RESPONSE_POLICY_V1_2026-06-19.md`.
+
+Statut : mergée sur `main` via PR #31 (`56c5a0f`).
 
 ---
 
