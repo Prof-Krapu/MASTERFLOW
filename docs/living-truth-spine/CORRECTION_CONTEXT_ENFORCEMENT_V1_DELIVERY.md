@@ -1,6 +1,6 @@
 # Correction Context Enforcement V1 — Livraison backend
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_MAIN_PR61_SHA_a5fca40`
 
 ## Livré
 

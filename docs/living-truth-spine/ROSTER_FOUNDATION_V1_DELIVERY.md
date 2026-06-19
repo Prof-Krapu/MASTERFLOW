@@ -1,6 +1,6 @@
 # Roster Foundation V1 — Livraison backend
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_MAIN_PR59_SHA_236add0`
 
 ## Intention produit
 

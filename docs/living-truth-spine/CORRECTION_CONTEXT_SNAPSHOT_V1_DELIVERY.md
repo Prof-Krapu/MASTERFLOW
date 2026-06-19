@@ -1,6 +1,6 @@
 # Correction Context Snapshot V1 — Livraison backend
 
-Statut : `LOCAL_VERIFIED_PENDING_MERGE`
+Statut : `MERGED_MAIN_PR60_SHA_c0bad0b`
 
 ## Livré
 

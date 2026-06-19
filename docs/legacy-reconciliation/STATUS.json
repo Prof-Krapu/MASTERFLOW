@@ -4,7 +4,7 @@
   "legacy_file_count": 4714,
   "canon_authority": "Google Drive MASTERFLOW",
   "github_repository": "Prof-Krapu/MASTERFLOW",
-  "current_wave": "wave_11_correction_context_payload_local_verified_pending_merge",
+  "current_wave": "wave_11_correction_context_payload_merged",
   "completed_waves": [
     "wave_1_inventory_and_active_index",
     "wave_2_contract_map",
@@ -12,8 +12,17 @@
     "wave_4_correction_context_contract_and_runtime_readiness",
     "wave_5_d08_reference_resolver_contract_and_runtime_readiness",
     "wave_6_memory_versioning_continuity_contracts_and_runtime_readiness",
-    "wave_7_active_contract_and_process_registry"
+    "wave_7_active_contract_and_process_registry",
+    "wave_8_roster_foundation",
+    "wave_9_correction_context_snapshot",
+    "wave_10_correction_context_enforcement",
+    "wave_11_correction_context_payload"
   ],
+  "correction_context_v1_publication": {
+    "status": "merged",
+    "pull_requests": [59, 60, 61, 62],
+    "main_sha": "53efad0f5047e903ea24868ab1f5c755af8e8e35"
+  },
   "github_publication": {
     "status": "merged",
     "pull_request": 57,
