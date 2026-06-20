@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Personas et événements Legacy — 36/36 ARBITRÉS
+
+- 24 personas classés avec activation manuelle, scoped et réversible ;
+- 12 événements classés comme signaux sans effet sensible automatique ;
+- persona, identité, permission et vérité restent séparées ;
+- aucun branchement runtime ou affectation utilisateur effectué.
+
+Statut : preuve locale prête à publier. Suite : déploiements/audits historiques.
+
 ## 2026-06-20 — Datasets Legacy — 69/69 ARBITRÉS
 
 - 10 règles absorbées, 40 registres canon-ready, 12 réduits et 3 sources candidates ;

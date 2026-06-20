@@ -12878,7 +12878,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12888,7 +12888,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-BOT-RUNTIME-AND-CONVERSATIONAL-LAYER-MD",
@@ -12898,7 +12901,7 @@
       "sha256": "d6b0d499d095e75ba95554a30663fac5ad6018acfca8fc95cd55411013a6d069",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12908,7 +12911,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-COGNITIVE-GUIDANCE-MODEL-MD",
@@ -12920,7 +12926,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12930,7 +12936,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-CONTEXTUAL-PERSONA-BEHAVIOR-AND-ADAPTIVE-GUIDANCE-SYSTEM-MD",
@@ -12943,7 +12952,7 @@
         "D04"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12953,7 +12962,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-CORRECTOR-RUNTIME-PROFILE-MD",
@@ -12965,7 +12977,7 @@
         "D06"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12975,7 +12987,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-INCUBATOR-RUNTIME-AND-GAMIFIED-ORCHESTRATION-SYSTEM-MD",
@@ -12987,7 +13002,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12997,7 +13012,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERBUILDER-RUNTIME-PROFILE-MD",
@@ -13009,7 +13027,7 @@
         "D11"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13019,7 +13037,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D11_FACTORY_BACKFLOW",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERFLEX-BEHAVIORAL-SOURCE-PROFILE-MD",
@@ -13029,7 +13050,7 @@
       "sha256": "0da273e8d5f86d39551609f95b9d66b3d17df83816b14c1d7c754a33fe389cfb",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13039,7 +13060,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERFLEX-RUNTIME-PROFILE-MD",
@@ -13049,7 +13073,7 @@
       "sha256": "ffbf48ce077767079ff8dcab2b11633e87680b95f9ab27215353d6cc92fe4cb4",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13059,7 +13083,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERFLOW-SYSTEM-FALLBACK-PERSONA-MD",
@@ -13071,7 +13098,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13081,7 +13108,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERHELP-RUNTIME-PROFILE-MD",
@@ -13091,7 +13121,7 @@
       "sha256": "91c6c099b05b2efa7b863126e9aedcba781568ee33f92e3d83eb57896c5ee9f5",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13101,7 +13131,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERSCORE-RUNTIME-AND-RIVALRY-ORCHESTRATION-MD",
@@ -13114,7 +13147,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13124,7 +13157,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERSTORY-RUNTIME-AND-NARRATIVE-ORCHESTRATION-SYSTEM-MD",
@@ -13137,7 +13173,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13147,7 +13183,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-MASTERSTORY-RUNTIME-PROFILE-MD",
@@ -13159,7 +13198,7 @@
         "D09"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13169,7 +13208,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-METHOD-PERSONAS-SYSTEM-MD",
@@ -13181,7 +13223,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13191,7 +13233,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-ACTIVATION-MODEL-MD",
@@ -13203,7 +13248,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13213,7 +13258,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-BEHAVIOR-RUNTIME-MD",
@@ -13225,7 +13273,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13235,7 +13283,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-BEHAVIORAL-PEDAGOGY-AND-INTERACTION-MATRIX-MD",
@@ -13248,7 +13299,7 @@
         "D05"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13258,7 +13309,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-BOUNDARIES-AND-RELATIONAL-SAFETY-MODEL-MD",
@@ -13271,7 +13325,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13281,7 +13335,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-LAYER-ARCHITECTURE-MD",
@@ -13293,7 +13350,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13303,7 +13360,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-POSTURE-AND-INTERACTION-MODEL-MD",
@@ -13315,7 +13375,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13325,7 +13385,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-PERSONA-RUNTIME-SYSTEM-MD",
@@ -13337,7 +13400,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13347,7 +13410,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-SAFETY-PERSONA-RUNTIME-MD",
@@ -13360,7 +13426,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13370,7 +13436,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-VISUAL-PERSONA-AND-THEME-RUNTIME-MD",
@@ -13383,7 +13452,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13393,7 +13462,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "activation_policy": "manual_scoped_no_auto_activation",
+      "arbitration_note": "Persona profile is method/voice behavior, never permission or automatic identity authority."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-AVATAR-ALIAS-AUTHORITY-REGISTRY-MD",
@@ -15106,7 +15178,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15116,7 +15188,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-EVENT-DRIVEN-AUTONOMY-AND-REACTIVE-RUNTIME-SYSTEM-MD",
@@ -15128,7 +15203,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15138,7 +15213,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-EVENT-DRIVEN-RUNTIME-POLICIES-MD",
@@ -15150,7 +15228,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15160,7 +15238,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-EVENT-LISTENER-WIDGET-MAP-MD",
@@ -15173,7 +15254,7 @@
         "D10"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15183,7 +15264,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-MASTERFLOW-COGNITIVE-EVENT-TYPES-MD",
@@ -15195,7 +15279,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15205,7 +15289,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-MASTERFLOW-SIGNAL-SYSTEM-MD",
@@ -15215,7 +15302,7 @@
       "sha256": "3af2e875e8779bc91ac2d94cc5c9cda88eea2ebc55a7a7c2882d992e186ec5c6",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15225,7 +15312,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-SENTINEL-SECURITY-EVENT-ROUTING-MD",
@@ -15237,7 +15327,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15247,7 +15337,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-SIGNAL-AND-ALERT-SYSTEM-MD",
@@ -15257,7 +15350,7 @@
       "sha256": "e72e210e528f63c565b05d4a2e422943a877098499df40dcf6e81a30141b8942",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15267,7 +15360,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-SIGNAL-PRIORITY-AND-CRITICALITY-SYSTEM-MD",
@@ -15277,7 +15373,7 @@
       "sha256": "6886056c66f113b50a2d2abf33fff5abb1c44c1702febf29ee0976b8239745b3",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15287,7 +15383,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-SUPERVISION-SIGNAL-ROUTING-MODEL-MD",
@@ -15297,7 +15396,7 @@
       "sha256": "918c9e0fd52d05cfe945eec8ef2064bf1e1ac7b573fd06fa22862856ee865eb5",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15307,7 +15406,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-WORKFLOW-EVENT-LIFECYCLE-SYSTEM-MD",
@@ -15320,7 +15422,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15330,7 +15432,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-WORKFLOW-QUEUE-AND-RUNTIME-CONTENTION-MANAGEMENT-MODEL-MD",
@@ -15342,7 +15447,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -15352,7 +15457,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "event_effect_policy": "signal_only_no_sensitive_action",
+      "arbitration_note": "Event or signal may route observation; it cannot grant permission or execute sensitive action."
     }
   ]
 }
