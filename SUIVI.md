@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Engines Legacy — 148/148 ARBITRÉS PAR OWNER
+
+- 24 responsabilités absorbées, 59 canon-ready, 51 alias/modèles réduits et 14 candidats futurs ;
+- les 148 fichiers sont consolidés sous 12 owners de domaine ;
+- aucun microservice, super-engine ou runtime n'est déduit d'un nom legacy ;
+- D12 concentre 62 modèles transverses, ramenés aux contrôles Git réels.
+
+Statut : preuve locale prête à publier. Suite : datasets legacy.
+
 ## 2026-06-20 — Contrats Legacy D11-D12 — ARBITRAGE LOCAL VÉRIFIÉ
 
 - 12 contrats confrontés au canon et au runtime ;
