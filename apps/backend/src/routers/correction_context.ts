@@ -20,8 +20,8 @@ import {
   linkSubmissionIdentity,
   listIdentityMatchReviewItems,
 } from '../services/correction_context.ts';
-import {intakeSubmission} from '../services/submission_intake.ts';
-import {createPreCorrectionManifest, validatePreCorrectionManifest} from '../services/pre_correction_manifests.ts';
+import {intakeSubmission, listSubmissions} from '../services/submission_intake.ts';
+import {createPreCorrectionManifest, listPreCorrectionManifests, validatePreCorrectionManifest} from '../services/pre_correction_manifests.ts';
 
 function actor(req: Request): AuthUser {
   if (!req.user) throw new Error('unauthorized');
@@ -56,6 +56,14 @@ export function createCorrectionContextRouter(): Router {
       }
     },
   );
+
+  router.get('/correction/batches/:id/submissions', requireUser, requireRole('teacher'), (req, res): void => {
+    try { res.json(listSubmissions(actor(req), req.params.id ?? '')); } catch (error) { fail(res, error); }
+  });
+
+  router.get('/correction/batches/:id/pre-correction-manifests', requireUser, requireRole('teacher'), (req, res): void => {
+    try { res.json(listPreCorrectionManifests(actor(req), req.params.id ?? '')); } catch (error) { fail(res, error); }
+  });
 
   router.get(
     '/correction/identity-match-candidates',

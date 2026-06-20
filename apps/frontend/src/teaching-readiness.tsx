@@ -12,11 +12,13 @@ import type {
   InstitutionalGradingProfile,
   Job,
   Project,
+  PreCorrectionManifest,
   Resource,
   RubricCriterion,
   RubricTemplate,
   RubricVersion,
   RosterVersion,
+  SubmissionRecord,
   ValidationInboxItem,
 } from '@masterflow/shared';
 
@@ -26,6 +28,7 @@ import {
   createCohort,
   createCorrectionBatch,
   createInstitutionalGradingProfile,
+  createPreCorrectionManifest,
   createRosterVersion,
   createRubricTemplate,
   createRubricVersion,
@@ -36,6 +39,8 @@ import {
   getGuidedSessions,
   getIdentityMatchReviews,
   getInstitutionalGradingProfiles,
+  getCorrectionSubmissions,
+  getPreCorrectionManifests,
   intakeCorrectionSubmission,
   getJobs,
   getRosterVersions,
@@ -44,6 +49,7 @@ import {
   submitGuidedAnswer,
   decideIdentityMatchReview,
   validateInstitutionalGradingProfile,
+  validatePreCorrectionManifest,
   validateRubricVersion,
 } from './api.ts';
 
@@ -162,6 +168,9 @@ export function TeachingReadiness({
   const [selectedBatchId, setSelectedBatchId] = useState('');
   const [submissionSourceRef, setSubmissionSourceRef] = useState('');
   const [submissionObservedLabel, setSubmissionObservedLabel] = useState('');
+  const [batchSubmissions, setBatchSubmissions] = useState<SubmissionRecord[]>([]);
+  const [selectedSubmissionIds, setSelectedSubmissionIds] = useState<string[]>([]);
+  const [preCorrectionManifests, setPreCorrectionManifests] = useState<PreCorrectionManifest[]>([]);
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -234,6 +243,13 @@ export function TeachingReadiness({
       })
       .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Versions du barème indisponibles.'));
   }, [selectedRubricTemplateId, token]);
+
+  useEffect(() => {
+    if (!selectedBatchId) { setBatchSubmissions([]); setPreCorrectionManifests([]); return; }
+    void Promise.all([getCorrectionSubmissions(selectedBatchId, token), getPreCorrectionManifests(selectedBatchId, token)])
+      .then(([submissions, manifests]) => { setBatchSubmissions(submissions); setPreCorrectionManifests(manifests); })
+      .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Revue du lot indisponible.'));
+  }, [selectedBatchId, token]);
 
   const addCohort = useCallback(async (): Promise<void> => {
     if (!cohortTitle.trim()) return setStatus('Donne un nom à la cohorte.');
@@ -427,6 +443,27 @@ export function TeachingReadiness({
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Intake de copie impossible.'); }
     finally { setMutating(false); }
   }, [refresh, selectedBatchId, submissionObservedLabel, submissionSourceRef, token]);
+
+  const createReviewManifest = useCallback(async (): Promise<void> => {
+    if (!selectedBatchId || selectedSubmissionIds.length === 0) { setStatus('Sélectionne au moins une copie à identité confirmée.'); return; }
+    setMutating(true);
+    try {
+      await createPreCorrectionManifest(selectedBatchId, {submission_refs: selectedSubmissionIds, workflow_version: 'teacher-sample-review-v1'}, token);
+      setSelectedSubmissionIds([]); setPreCorrectionManifests(await getPreCorrectionManifests(selectedBatchId, token));
+      setStatus('Manifest brouillon créé. Aucun runner ne démarre avant validation professeur séparée.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Création du manifest impossible.'); }
+    finally { setMutating(false); }
+  }, [selectedBatchId, selectedSubmissionIds, token]);
+
+  const validateReviewManifest = useCallback(async (manifestId: string): Promise<void> => {
+    setMutating(true);
+    try {
+      await validatePreCorrectionManifest(manifestId, {validation_ref: `teacher://${context.user.id}/${Date.now()}`}, token);
+      if (selectedBatchId) setPreCorrectionManifests(await getPreCorrectionManifests(selectedBatchId, token));
+      setStatus('Manifest validé par le professeur. Aucun job ou runner n’a été lancé.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du manifest impossible.'); }
+    finally { setMutating(false); }
+  }, [context.user.id, selectedBatchId, token]);
 
   useEffect(() => {
     void refresh();
@@ -779,6 +816,12 @@ export function TeachingReadiness({
             <label>Référence privée de la copie<input value={submissionSourceRef} onChange={(event) => setSubmissionSourceRef(event.target.value)} placeholder="storage://private/submissions/alice.pdf" /></label>
             <label>Nom observé (optionnel, non confirmé)<input value={submissionObservedLabel} onChange={(event) => setSubmissionObservedLabel(event.target.value)} placeholder="Alice" /></label>
             <button disabled={mutating || !selectedBatchId} onClick={() => void intakeSubmission()} type="button">Ajouter la copie candidate</button>
+            <strong>Échantillon professeur</strong>
+            {batchSubmissions.map((submission) => (
+              <label key={submission.submission_id}><input checked={selectedSubmissionIds.includes(submission.submission_id)} disabled={submission.identity_status !== 'confirmed'} onChange={(event) => setSelectedSubmissionIds((current) => event.target.checked ? [...current, submission.submission_id] : current.filter((id) => id !== submission.submission_id))} type="checkbox" /> {submission.student_ref ?? submission.submission_id.slice(0, 8)} · identité {submission.identity_status}</label>
+            ))}
+            <button className="secondary" disabled={mutating || selectedSubmissionIds.length === 0} onClick={() => void createReviewManifest()} type="button">Créer le manifest brouillon</button>
+            {preCorrectionManifests.map((manifest) => <div className="identity-review__card" key={manifest.manifest_id}><div><strong>Manifest {manifest.manifest_id.slice(0, 8)}</strong><small>{manifest.status} · {manifest.submission_refs.length} copie(s)</small></div>{manifest.status === 'draft' ? <button disabled={mutating} onClick={() => void validateReviewManifest(manifest.manifest_id)} type="button">Valider l’échantillon</button> : <small>Validé, aucun runner lancé.</small>}</div>)}
           </div>
         </div>
       </section>

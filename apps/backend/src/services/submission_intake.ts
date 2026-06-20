@@ -28,3 +28,8 @@ export function intakeSubmission(actor: AuthUser, batchId: string, input: Create
   audit({event_type: 'correction.submission_intaked_candidate', user_id: actor.id, scope: target.project_scope, detail: {batch_id: batchId, submission_id: submissionId, evidence_id: evidenceId, observed_label: request.observed_label ?? null}});
   return dto(db.prepare('SELECT * FROM submissions WHERE id = ?').get(submissionId) as SubmissionRow);
 }
+
+export function listSubmissions(actor: AuthUser, batchId: string): SubmissionRecord[] {
+  teacher(actor); batch(actor, batchId);
+  return (getDb().prepare('SELECT * FROM submissions WHERE batch_id = ? ORDER BY created_at, id').all(batchId) as SubmissionRow[]).map(dto);
+}

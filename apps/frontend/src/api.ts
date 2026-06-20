@@ -8,6 +8,7 @@ import type {
   CreateInventoryCollectionRequest,
   CreateInventoryItemRequest,
   CreateInventoryProjectNeedRequest,
+  CreatePreCorrectionManifestRequest,
   CreateD12MissedTriggerFinding,
   CreateInvitation,
   ConversationGuide,
@@ -44,6 +45,7 @@ import type {
   ProcessActivationReadModel,
   ProcessActivationRequest,
   PreviewActionsExpiryResponse,
+  PreCorrectionManifest,
   Persona,
   Project,
   ProjectMember,
@@ -60,6 +62,7 @@ import type {
   RoomInstance,
   SetCollectionCompletionRequest,
   SubmissionRecord,
+  ValidatePreCorrectionManifestRequest,
   TaskModelProfile,
   SearchResourcesResponse,
   TokenUsageGroupBy,
@@ -269,6 +272,22 @@ export async function intakeCorrectionSubmission(
   return request<SubmissionRecord>(`/correction/batches/${encodeURIComponent(batchId)}/submissions`, {
     method: 'POST', body: JSON.stringify(body),
   }, token);
+}
+
+export async function getCorrectionSubmissions(batchId: string, token?: string | null): Promise<SubmissionRecord[]> {
+  return request<SubmissionRecord[]>(`/correction/batches/${encodeURIComponent(batchId)}/submissions`, {method: 'GET'}, token);
+}
+
+export async function getPreCorrectionManifests(batchId: string, token?: string | null): Promise<PreCorrectionManifest[]> {
+  return request<PreCorrectionManifest[]>(`/correction/batches/${encodeURIComponent(batchId)}/pre-correction-manifests`, {method: 'GET'}, token);
+}
+
+export async function createPreCorrectionManifest(batchId: string, body: CreatePreCorrectionManifestRequest, token?: string | null): Promise<PreCorrectionManifest> {
+  return request<PreCorrectionManifest>(`/correction/batches/${encodeURIComponent(batchId)}/pre-correction-manifests`, {method: 'POST', body: JSON.stringify(body)}, token);
+}
+
+export async function validatePreCorrectionManifest(manifestId: string, body: ValidatePreCorrectionManifestRequest, token?: string | null): Promise<PreCorrectionManifest> {
+  return request<PreCorrectionManifest>(`/correction/pre-correction-manifests/${encodeURIComponent(manifestId)}/validate`, {method: 'POST', body: JSON.stringify(body)}, token);
 }
 
 export async function getIdentityMatchReviews(

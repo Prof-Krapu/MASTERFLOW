@@ -54,3 +54,8 @@ export function validatePreCorrectionManifest(actor: AuthUser, manifestId: strin
   audit({event_type: 'correction.pre_manifest_validated', user_id: actor.id, scope: row.project_scope, detail: {manifest_id: manifestId, validation_ref: request.validation_ref, runner_started: false}});
   return toDTO(db.prepare('SELECT * FROM pre_correction_manifests WHERE id = ?').get(manifestId) as ManifestRow);
 }
+
+export function listPreCorrectionManifests(actor: AuthUser, batchId: string): PreCorrectionManifest[] {
+  requireTeacher(actor); requireBatch(actor, batchId);
+  return (getDb().prepare('SELECT * FROM pre_correction_manifests WHERE batch_id = ? ORDER BY created_at DESC, id').all(batchId) as ManifestRow[]).map(toDTO);
+}
