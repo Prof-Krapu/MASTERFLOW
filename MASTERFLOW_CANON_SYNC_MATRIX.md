@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-20
-Branche de travail : `main` après PR #69
-Base GitHub vérifiée : `0168a70`
+Branche de travail : `codex/teaching-rubric-profile-v1` — audit global, aucun code ajouté
+Base GitHub vérifiée : `ab961df` (`main` après PR #71)
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -30,3 +30,4 @@ le runtime GitHub.
 | Context hash / re-preflight | partiel implémenté | Snapshot privé et comparateur read-only sont sur `main` ; seules les refs avec révision fiable sont comparées. | faible | Décider les familles qui imposeraient réellement stale ou re-preflight. |
 | Politique changement de contexte V1 | implémenté docs | Toute divergence fiable demande revue/re-preflight ; stale auto interdit hors hard-stop déjà borné. | faible | Conserver la décision humaine. |
 | Visibilité owner du comparateur | implémenté | Trace d'action montre le résultat et les refs, sans action de mutation. | faible | Garder la décision re-preflight humaine. |
+| Audit legacy exhaustif | partiel | 4 714 fichiers indexés, mais apps/engines/contracts/datasets ne portent pas encore tous une décision individuelle. | élevé | Terminer les matrices par famille avant de déclarer le legacy absorbé. |

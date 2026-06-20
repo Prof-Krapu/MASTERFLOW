@@ -12,7 +12,7 @@ live est déjà complet.
 | Bloc | Canon Drive | Git runtime | Étape suivante |
 |---|---|---|---|
 | Sources, versions, identités, contextes | Living Truth Spine raccordé | fondations contextuelles présentes | livrer les objets additifs par verticale |
-| Correction / roster | contrat complet | correction solide, roster absent | migration additive après backup/rollback gate |
+| Correction / roster | contrat complet | contexte, identité, UI et roster manuel sur `main` | barème/profil puis lot contextualisé |
 | DA / assets | resolver + registre cadrés | manifest/provider lifecycle absent | persister manifest/références, provider verrouillé |
 | Mémoire / timeline / versioning | contrat rétabli | cards/checkpoints présents, ledger absent | timeline/change ledger additif |
 | Continuité runtime | incident/recovery contract rétabli | observabilité partielle, live non prouvé | receipts + récupération conservatrice |
@@ -38,7 +38,7 @@ La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
 
 ## Prochain ordre logique
 
-1. Préparer puis exécuter la verticale roster/correction sur copie de base.
+1. Terminer l'arbitrage apps/engines/datasets puis poursuivre la verticale correction.
 2. Implémenter le manifest/read model D08 sans provider.
 3. Ajouter timeline/change ledger et receipts de continuité.
 4. Seulement ensuite, traiter les autres apps legacy et les factories.

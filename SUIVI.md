@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Audit global Legacy → Canon → Git — PREMIER PASSAGE
+
+- inventaire confirmé : 4 714 fichiers, dont 2 062 factories isolées ;
+- P0 : 11/11 arbitrés ; queue de 692 artefacts fonctionnels créée ;
+- D05/D06, D08, D09/D10, engines directeurs et datasets critiques confrontés au canon/Git ;
+- anciens snapshots Git et cartes de progression obsolètes corrigés ;
+- aucune capacité legacy n'est déclarée absorbée sans statut et preuve explicites.
+
+Statut : publication GitHub et synchronisation Drive en cours.
+Suite : arbitrage sémantique des contrats/engines/datasets restants, puis reprise D06 seulement
+par tranches dont le prérequis est prouvé.
+
+---
+
 ## 2026-06-20 — Audit prérequis lot de correction — ÉCART IDENTIFIÉ
 
 - un lot exige déjà un barème et un profil de notation validés ;
