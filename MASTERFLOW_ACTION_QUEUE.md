@@ -37,7 +37,7 @@ Dernière mise à jour : 2026-06-20
 - Impact : remplace les références libres `subject://...` par une vraie source de vérité D05.
 - Risque : faible tant que le sujet reste privé et non assigné.
 - Source de vérité concernée : canon D05 Subject As Mission.
-- Statut : backend + Teaching prêts à publier ; assignment scoped dérivé à suivre.
+- Statut : backend + Teaching sujets et backend assignment scoped prêts à publier ; UI assignment à suivre.
 - Validation requise : non pour code/tests privés ; oui avant publication ou assignment étudiant.
 
 ### Vague factories par Passport

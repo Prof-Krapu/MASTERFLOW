@@ -1814,6 +1814,10 @@ export const CreateSubjectTemplateRequestSchema = z.object({project_id: z.string
 export type CreateSubjectTemplateRequest = z.infer<typeof CreateSubjectTemplateRequestSchema>;
 export const CreateSubjectVersionRequestSchema = z.object({manifest: SubjectManifestSchema});
 export type CreateSubjectVersionRequest = z.infer<typeof CreateSubjectVersionRequestSchema>;
+export const SubjectAssignmentSchema = z.object({assignment_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),cohort_id:z.string().min(1),source_subject_version_id:z.string().min(1),title:z.string().min(1),subject_snapshot:SubjectManifestSchema,status:z.enum(['draft','active','archived']),created_by:z.string().min(1),created_at:z.number().int().nonnegative(),activated_at:z.number().int().nonnegative().nullable()});
+export type SubjectAssignment = z.infer<typeof SubjectAssignmentSchema>;
+export const CreateSubjectAssignmentRequestSchema = z.object({project_id:z.string().min(1).nullable().optional(),cohort_id:z.string().min(1),source_subject_version_id:z.string().min(1),title:z.string().min(1).max(160)});
+export type CreateSubjectAssignmentRequest = z.infer<typeof CreateSubjectAssignmentRequestSchema>;
 
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),

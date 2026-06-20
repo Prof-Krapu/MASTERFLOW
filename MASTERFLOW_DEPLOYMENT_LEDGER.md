@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-20 | R2.2 assignment scoped dérivé | Assigner un snapshot de sujet à une cohorte sans modifier le sujet source. | table additive, contrat, service/routes, test, suivi | local vérifié | autorisation marathon MALEX ; aucune action live | Version validée + cohorte active ; snapshot immuable ; activation manuelle. Backend 368/368. |
 | 2026-06-20 | R2.1 Teaching sujets versionnés | Rendre le sujet privé administrable sans le confondre avec publication ou assignment. | API frontend + Teaching + suivi | local vérifié | autorisation marathon MALEX ; aucune action live | Création manifest, historique versions, validation privée ; 368/368, TypeScript et build Vite verts. |
 | 2026-06-20 | R2.1 bibliothèque de sujets versionnés | Rendre le sujet D05 distinct, privé et versionné avant tout assignment. | tables additives, contrats, service/routes, test, suivi | local vérifié | autorisation marathon MALEX ; aucune action live | Manifest mission complet, draft→validation, historique append-only, aucune publication. Backend 368/368. |
 | 2026-06-20 | Audit gate R1.5 correction_prepare | Empêcher qu'une validation de manifest déclenche implicitement le traitement de copies. | suivi + queue | gate maintenu | requise avant provider/traitement live | Service existant confirmé ; aucun endpoint Teaching, job ou runner activé dans cette vague. |

@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R2.2 D05 : assignment de cohorte dérivé
+
+- assignment créé uniquement depuis une version de sujet validée ;
+- snapshot du manifest figé dans l'assignment ;
+- évolution ultérieure du sujet source sans effet sur l'assignment historique ;
+- cohorte active et scope owner/projet obligatoires ; activation manuelle séparée.
+
+Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching de création/activation.
+
 ## 2026-06-20 — R2.1 D05 : bibliothèque de sujets privés et versionnés
 
 - sujet distinct d'une session, d'un PDF et d'un projet étudiant ;
