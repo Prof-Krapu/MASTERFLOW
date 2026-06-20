@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R1.4 Correction : manifest d'échantillon validé par le professeur
+
+- le professeur sélectionne explicitement des copies du lot ;
+- seules les identités confirmées peuvent entrer dans le manifest ;
+- le manifest naît brouillon puis reçoit une validation humaine séparée ;
+- validation du manifest ne lance aucun runner, job, score ou feedback.
+
+Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching de sélection/validation,
+puis préparation contrôlée du job de pré-correction.
+
 ## 2026-06-20 — R1.3 Correction : intake de copies candidates dans Teaching
 
 - une référence privée crée une preuve candidate puis une submission candidate ;
