@@ -15,11 +15,11 @@ Dernière mise à jour : 2026-06-20
 
 ### R1 — Correction complète
 
-- Tâche : barème et profil de notation privés, puis lot contextualisé manuel.
+- Tâche : terminer le lot contextualisé manuel après les prérequis barème/profil.
 - Impact : rend le flux de correction réellement utilisable de bout en bout.
 - Risque : moyen ; scopes, versions et validation professeur obligatoires.
 - Source de vérité concernée : D05/D06 + Living Truth Spine.
-- Statut : prochain chantier logiciel, non démarré.
+- Statut : R1.1 barème/profil privé versionné prêt à publier ; lot manuel reste à faire.
 - Validation requise : non pour code/tests isolés ; oui avant utilisation live ou migration réelle.
 
 ### Vague factories par Passport
@@ -136,7 +136,7 @@ Dernière mise à jour : 2026-06-20
 - Impact : fournit les deux références obligatoires avant tout lot de correction.
 - Risque : moyen ; total de points, bandes, seuils protégés et statut validé doivent rester cohérents.
 - Source de vérité concernée : D06 Evaluation Engine + Living Truth Spine.
-- Statut : prérequis absent détecté par audit ; prochaine implémentation.
+- Statut : implémenté localement et vérifié ; publication GitHub à faire. Création brouillon, validation explicite et historique versionné, sans correction.
 - Validation requise : non pour code/tests isolés ; oui avant utilisation live.
 
 ### Verticale correction contextualisée — lancer un lot manuel
@@ -145,7 +145,7 @@ Dernière mise à jour : 2026-06-20
 - Impact : relie enfin le contexte de classe au pipeline de pré-correction déjà présent.
 - Risque : moyen ; aucune correction automatique, aucun feedback final ni provider live.
 - Source de vérité concernée : D05/D06 + Living Truth Spine.
-- Statut : bloqué logiquement jusqu'à livraison des surfaces barème et profil de notation.
+- Statut : débloqué par R1.1 ; prochain chantier runtime, sans pré-correction automatique.
 - Validation requise : non pour code/tests isolés ; oui avant toute exécution live réelle.
 
 ### Phase 1 — Première release privée vérifiable

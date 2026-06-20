@@ -17,6 +17,17 @@ barème versionné + profil de notation privé
 
 Pourquoi : ferme le parcours que tu utilises déjà avec ton bot de correction.
 
+### R1.1 — prérequis barème/profil
+
+Prêt à publier sur la branche R1 : barème privé versionné et profil de notation privé,
+créés en brouillon puis validés explicitement par le professeur. Les versions validées restent
+historiques. Cette tranche ne crée ni lot, ni score, ni feedback, ni export.
+
+### R1.2 — prochain geste
+
+Créer un lot manuel contextualisé, relié uniquement à un barème et un profil déjà validés,
+puis figer le roster et le sujet avant toute intake de submission.
+
 ## R2 — Contexte pédagogique durable
 
 - subject library versionnée et assignment scoped ;

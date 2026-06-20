@@ -13,7 +13,10 @@ import type {
   ConversationGuide,
   Cohort,
   CreateCohort,
+  CreateInstitutionalGradingProfileRequest,
   CreateRosterVersion,
+  CreateRubricTemplateRequest,
+  CreateRubricVersionRequest,
   CreateGuidedSessionRequest,
   CurrentContext,
   DecideValidationInboxItemRequest,
@@ -24,6 +27,7 @@ import type {
   InventoryNeedMatchResult,
   InventoryProjectNeed,
   InventorySearchResult,
+  InstitutionalGradingProfile,
   IdentityMatchCandidate,
   IdentityMatchReviewItem,
   Invitation,
@@ -45,6 +49,8 @@ import type {
   RagResource,
   Resource,
   ResourceScope,
+  RubricTemplate,
+  RubricVersion,
   RosterVersion,
   RoomCheckpoint,
   RoomInstance,
@@ -161,6 +167,76 @@ export async function createRosterVersion(
   return request<RosterVersion>(`/cohorts/${encodeURIComponent(cohortId)}/roster-versions`, {
     method: 'POST', body: JSON.stringify(body),
   }, token);
+}
+
+export async function getRubricTemplates(projectId?: string | null, token?: string | null): Promise<RubricTemplate[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+  return request<RubricTemplate[]>(`/correction/rubric-templates${query}`, {method: 'GET'}, token);
+}
+
+export async function createRubricTemplate(
+  body: CreateRubricTemplateRequest,
+  token?: string | null,
+): Promise<{template: RubricTemplate; version: RubricVersion}> {
+  return request<{template: RubricTemplate; version: RubricVersion}>('/correction/rubric-templates', {
+    method: 'POST', body: JSON.stringify(body),
+  }, token);
+}
+
+export async function getRubricVersions(templateId: string, token?: string | null): Promise<RubricVersion[]> {
+  return request<RubricVersion[]>(
+    `/correction/rubric-templates/${encodeURIComponent(templateId)}/versions`,
+    {method: 'GET'},
+    token,
+  );
+}
+
+export async function createRubricVersion(
+  templateId: string,
+  body: CreateRubricVersionRequest,
+  token?: string | null,
+): Promise<RubricVersion> {
+  return request<RubricVersion>(
+    `/correction/rubric-templates/${encodeURIComponent(templateId)}/versions`,
+    {method: 'POST', body: JSON.stringify(body)},
+    token,
+  );
+}
+
+export async function validateRubricVersion(versionId: string, token?: string | null): Promise<RubricVersion> {
+  return request<RubricVersion>(
+    `/correction/rubric-versions/${encodeURIComponent(versionId)}/validate`,
+    {method: 'POST'},
+    token,
+  );
+}
+
+export async function getInstitutionalGradingProfiles(
+  projectId?: string | null,
+  token?: string | null,
+): Promise<InstitutionalGradingProfile[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+  return request<InstitutionalGradingProfile[]>(`/correction/grading-profiles${query}`, {method: 'GET'}, token);
+}
+
+export async function createInstitutionalGradingProfile(
+  body: CreateInstitutionalGradingProfileRequest,
+  token?: string | null,
+): Promise<InstitutionalGradingProfile> {
+  return request<InstitutionalGradingProfile>('/correction/grading-profiles', {
+    method: 'POST', body: JSON.stringify(body),
+  }, token);
+}
+
+export async function validateInstitutionalGradingProfile(
+  profileId: string,
+  token?: string | null,
+): Promise<InstitutionalGradingProfile> {
+  return request<InstitutionalGradingProfile>(
+    `/correction/grading-profiles/${encodeURIComponent(profileId)}/validate`,
+    {method: 'POST'},
+    token,
+  );
 }
 
 export async function getIdentityMatchReviews(

@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-20
-Branche de travail : `codex/teaching-rubric-profile-v1` — audit global, aucun code ajouté
-Base GitHub vérifiée : `ab961df` (`main` après PR #71)
+Branche de travail : `codex/r1-rubric-profile-v1` — R1.1 prêt à publier, pas encore sur `main`
+Base GitHub vérifiée : `d318c85` (`main` après PR #86)
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -15,7 +15,7 @@ le runtime GitHub.
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Actions, objets D06, findings D12, candidates Usage Learning et intake factory D11 sont sur `main`. | faible | Ajouter les prochains domaines uniquement avec leur autorité métier propre. |
 | D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement ; recette isolée 12/12 validée. | faible | Garder D06 et participation élève séparés. |
-| D06 correction / feedback | partiel | Contexte, résolution d'identité et gestion manuelle cohortes/rosters sont sur `main` (PR #59-69). | faible à moyen | Ouvrir le lot de correction contextualisé. |
+| D06 correction / feedback | partiel | Sur `main` : contexte, résolution d'identité et cohortes/rosters. Sur la branche R1.1 : barème et profil privés, versionnés et à validation explicite ; aucun lot ni correction automatique. | faible à moyen | Publier R1.1, puis ouvrir le lot de correction contextualisé manuel. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability | partiel | Cockpit, findings, décisions owner et Usage Harvester V1 sont sur `main` ; détection automatique des findings reste absente. | faible | Étendre les sources structurées une par une, sans analyse brute ni auto-fix. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
@@ -30,4 +30,4 @@ le runtime GitHub.
 | Context hash / re-preflight | partiel implémenté | Snapshot privé et comparateur read-only sont sur `main` ; seules les refs avec révision fiable sont comparées. | faible | Décider les familles qui imposeraient réellement stale ou re-preflight. |
 | Politique changement de contexte V1 | implémenté docs | Toute divergence fiable demande revue/re-preflight ; stale auto interdit hors hard-stop déjà borné. | faible | Conserver la décision humaine. |
 | Visibilité owner du comparateur | implémenté | Trace d'action montre le résultat et les refs, sans action de mutation. | faible | Garder la décision re-preflight humaine. |
-| Audit legacy exhaustif | partiel | 4 714 fichiers indexés, mais apps/engines/contracts/datasets ne portent pas encore tous une décision individuelle. | élevé | Terminer les matrices par famille avant de déclarer le legacy absorbé. |
+| Audit legacy exhaustif | réconciliation sémantique close | 4 714 fichiers inventoriés ; 692 artefacts fonctionnels arbitrés, dont 4 sources privées/droits bloquées. Cette clôture ne vaut ni absorption intégrale, ni implémentation runtime, ni preuve live. | moyen | Exécuter les tranches R1→R6 du plan runtime, une à la fois. |

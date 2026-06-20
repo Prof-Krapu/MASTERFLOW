@@ -1728,6 +1728,69 @@ export const InstitutionalGradingProfileSchema = z
   });
 export type InstitutionalGradingProfile = z.infer<typeof InstitutionalGradingProfileSchema>;
 
+/** Création d'un barème privé : la première version reste brouillon. */
+const RubricContentFieldsSchema = z.object({
+  criteria: z.array(RubricCriterionSchema).min(1).max(30),
+  total_points: z.number().positive(),
+});
+
+function validateRubricContent(
+  request: z.infer<typeof RubricContentFieldsSchema>,
+  ctx: z.RefinementCtx,
+): void {
+  const weight = request.criteria.reduce((total, criterion) => total + criterion.weight, 0);
+  const points = request.criteria.reduce((total, criterion) => total + criterion.max_points, 0);
+  if (Math.abs(weight - 1) > 0.0001) {
+    ctx.addIssue({code: z.ZodIssueCode.custom, message: 'La somme des poids doit être égale à 1.', path: ['criteria']});
+  }
+  if (Math.abs(points - request.total_points) > 0.0001) {
+    ctx.addIssue({code: z.ZodIssueCode.custom, message: 'Le total doit correspondre aux critères.', path: ['total_points']});
+  }
+}
+
+const CreateRubricContentSchema = RubricContentFieldsSchema.superRefine(validateRubricContent);
+
+export const CreateRubricTemplateRequestSchema = RubricContentFieldsSchema.extend({
+  project_id: z.string().min(1).nullable().optional(),
+  title: z.string().min(1).max(160),
+  subject_ref: z.string().min(1).max(500).nullable().optional(),
+}).superRefine(validateRubricContent);
+export type CreateRubricTemplateRequest = z.infer<typeof CreateRubricTemplateRequestSchema>;
+
+/** Une version validée est immuable : toute évolution passe par cette demande. */
+export const CreateRubricVersionRequestSchema = CreateRubricContentSchema;
+export type CreateRubricVersionRequest = z.infer<typeof CreateRubricVersionRequestSchema>;
+
+/** Création d'un profil institutionnel privé, toujours brouillon à l'entrée. */
+export const CreateInstitutionalGradingProfileRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  scale: GradeBandSchema,
+  expected_cohort_band: GradeBandSchema,
+  anchors: z.object({
+    insufficient: GradeBandSchema,
+    minimum_met: GradeBandSchema,
+    expected: GradeBandSchema,
+    strong: GradeBandSchema,
+    exceptional: GradeBandSchema,
+  }),
+  max_global_delta: z.number().nonnegative(),
+  protected_thresholds: z.array(z.number()).max(20).default([]),
+  threshold_crossing_requires_validation: z.boolean().default(true),
+}).superRefine((profile, ctx) => {
+  const [scaleMin, scaleMax] = profile.scale;
+  const bands = [profile.expected_cohort_band, ...Object.values(profile.anchors)];
+  if (scaleMin >= scaleMax || bands.some(([min, max]) => min > max || min < scaleMin || max > scaleMax)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Les bandes de notation doivent être ordonnées et incluses dans l’échelle.',
+      path: ['anchors'],
+    });
+  }
+});
+export type CreateInstitutionalGradingProfileRequest = z.input<
+  typeof CreateInstitutionalGradingProfileRequestSchema
+>;
+
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),
   owner_id: z.string().min(1),
