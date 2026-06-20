@@ -799,6 +799,32 @@ function migrate(d: Database.Database): void {
       updated_at          INTEGER NOT NULL
     );
 
+    -- D05 R2.1 : bibliothèque de sujets privés et versionnés, sans publication implicite.
+    CREATE TABLE IF NOT EXISTS subject_templates (
+      id TEXT PRIMARY KEY,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      project_scope TEXT NOT NULL,
+      title TEXT NOT NULL,
+      current_version_ref TEXT,
+      status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','active','archived')),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS subject_versions (
+      id TEXT PRIMARY KEY,
+      template_id TEXT NOT NULL REFERENCES subject_templates(id) ON DELETE CASCADE,
+      version INTEGER NOT NULL CHECK (version > 0),
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      project_scope TEXT NOT NULL,
+      manifest_json TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','validated','archived')),
+      created_by TEXT NOT NULL REFERENCES users(id),
+      created_at INTEGER NOT NULL,
+      UNIQUE(template_id, version)
+    );
+
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,
       template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,

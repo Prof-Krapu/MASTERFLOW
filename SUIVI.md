@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R2.1 D05 : bibliothèque de sujets privés et versionnés
+
+- sujet distinct d'une session, d'un PDF et d'un projet étudiant ;
+- manifest mission : situation, tension, mission, décision, rendus, preuves et progression ;
+- création brouillon, nouvelle version append-only et validation explicite ;
+- `deployment_state=private_draft` obligatoire ; aucune publication ou assignment.
+
+Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching puis assignment scoped.
+
 ## 2026-06-20 — R1.5 Correction : gate d'exécution maintenu
 
 - le service `correction_prepare` existe et exige déjà un manifest validé ;
