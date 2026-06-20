@@ -19,6 +19,8 @@ import type {
   RubricVersion,
   RosterVersion,
   SubmissionRecord,
+  SubjectTemplate,
+  SubjectVersion,
   ValidationInboxItem,
 } from '@masterflow/shared';
 
@@ -32,6 +34,8 @@ import {
   createRosterVersion,
   createRubricTemplate,
   createRubricVersion,
+  createSubject,
+  createSubjectVersion,
   createGuidedSession,
   getGuides,
   getCohorts,
@@ -46,11 +50,14 @@ import {
   getRosterVersions,
   getRubricTemplates,
   getRubricVersions,
+  getSubjects,
+  getSubjectVersions,
   submitGuidedAnswer,
   decideIdentityMatchReview,
   validateInstitutionalGradingProfile,
   validatePreCorrectionManifest,
   validateRubricVersion,
+  validateSubjectVersion,
 } from './api.ts';
 
 type TeachingReadinessProps = {
@@ -171,6 +178,17 @@ export function TeachingReadiness({
   const [batchSubmissions, setBatchSubmissions] = useState<SubmissionRecord[]>([]);
   const [selectedSubmissionIds, setSelectedSubmissionIds] = useState<string[]>([]);
   const [preCorrectionManifests, setPreCorrectionManifests] = useState<PreCorrectionManifest[]>([]);
+  const [subjects, setSubjects] = useState<SubjectTemplate[]>([]);
+  const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const [subjectVersions, setSubjectVersions] = useState<SubjectVersion[]>([]);
+  const [subjectTitle, setSubjectTitle] = useState('');
+  const [subjectSituation, setSubjectSituation] = useState('');
+  const [subjectTension, setSubjectTension] = useState('');
+  const [subjectMission, setSubjectMission] = useState('');
+  const [subjectDecision, setSubjectDecision] = useState('');
+  const [subjectDeliverables, setSubjectDeliverables] = useState('');
+  const [subjectProofs, setSubjectProofs] = useState('');
+  const [subjectProgression, setSubjectProgression] = useState('');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -183,7 +201,7 @@ export function TeachingReadiness({
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles, nextBatches] = await Promise.all([
+      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles, nextBatches, nextSubjects] = await Promise.all([
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
@@ -192,6 +210,7 @@ export function TeachingReadiness({
         getRubricTemplates(project?.project_id, token),
         getInstitutionalGradingProfiles(project?.project_id, token),
         getCorrectionBatches(project?.project_id, token),
+        getSubjects(project?.project_id, token),
       ]);
       setJobs(nextJobs);
       setGuides(nextGuides);
@@ -201,10 +220,12 @@ export function TeachingReadiness({
       setRubricTemplates(nextRubrics);
       setGradingProfiles(nextProfiles);
       setCorrectionBatches(nextBatches);
+      setSubjects(nextSubjects);
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
       setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
       setSelectedBatchId((current) => current || nextBatches.find((batch) => batch.status === 'draft')?.batch_id || '');
+      setSelectedSubjectId((current) => current || nextSubjects[0]?.template_id || '');
       setStatus('État synchronisé depuis les surfaces runtime existantes.');
     } catch (error) {
       setJobs([]);
@@ -215,6 +236,7 @@ export function TeachingReadiness({
       setRubricTemplates([]);
       setGradingProfiles([]);
       setCorrectionBatches([]);
+      setSubjects([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
@@ -250,6 +272,12 @@ export function TeachingReadiness({
       .then(([submissions, manifests]) => { setBatchSubmissions(submissions); setPreCorrectionManifests(manifests); })
       .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Revue du lot indisponible.'));
   }, [selectedBatchId, token]);
+
+  useEffect(() => {
+    if (!selectedSubjectId) { setSubjectVersions([]); return; }
+    void getSubjectVersions(selectedSubjectId, token).then(setSubjectVersions)
+      .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Versions du sujet indisponibles.'));
+  }, [selectedSubjectId, token]);
 
   const addCohort = useCallback(async (): Promise<void> => {
     if (!cohortTitle.trim()) return setStatus('Donne un nom à la cohorte.');
@@ -464,6 +492,36 @@ export function TeachingReadiness({
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du manifest impossible.'); }
     finally { setMutating(false); }
   }, [context.user.id, selectedBatchId, token]);
+
+  const subjectManifest = useCallback(() => ({
+    situation: subjectSituation.trim(), tension: subjectTension.trim(), mission: subjectMission.trim(),
+    decision_to_make: subjectDecision.trim(),
+    observable_deliverables: subjectDeliverables.split('\n').map((v) => v.trim()).filter(Boolean),
+    proofs_of_understanding: subjectProofs.split('\n').map((v) => v.trim()).filter(Boolean),
+    progression_levels: subjectProgression.split('\n').map((v) => v.trim()).filter(Boolean),
+    resource_refs: [], correction_model_candidate_ref: null, deployment_state: 'private_draft' as const,
+  }), [subjectDecision, subjectDeliverables, subjectMission, subjectProgression, subjectProofs, subjectSituation, subjectTension]);
+
+  const createSubjectDraft = useCallback(async (): Promise<void> => {
+    if (!subjectTitle.trim()) { setStatus('Donne un titre au sujet.'); return; }
+    setMutating(true);
+    try { const created = await createSubject({project_id: project?.project_id ?? null, title: subjectTitle.trim(), manifest: subjectManifest()}, token); await refresh(); setSelectedSubjectId(created.template.template_id); setStatus('Sujet V1 créé en brouillon privé.'); }
+    catch (error) { setStatus(error instanceof Error ? error.message : 'Création du sujet impossible.'); }
+    finally { setMutating(false); }
+  }, [project?.project_id, refresh, subjectManifest, subjectTitle, token]);
+
+  const createNextSubjectVersion = useCallback(async (): Promise<void> => {
+    if (!selectedSubjectId) return;
+    setMutating(true);
+    try { await createSubjectVersion(selectedSubjectId, {manifest: subjectManifest()}, token); setSubjectVersions(await getSubjectVersions(selectedSubjectId, token)); setStatus('Nouvelle version privée créée sans modifier les précédentes.'); }
+    catch (error) { setStatus(error instanceof Error ? error.message : 'Version du sujet impossible.'); }
+    finally { setMutating(false); }
+  }, [selectedSubjectId, subjectManifest, token]);
+
+  const validateSubject = useCallback(async (versionId: string): Promise<void> => {
+    setMutating(true); try { await validateSubjectVersion(versionId, token); if (selectedSubjectId) setSubjectVersions(await getSubjectVersions(selectedSubjectId, token)); await refresh(); setStatus('Version du sujet validée en privé ; aucune publication ou assignment.'); }
+    catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du sujet impossible.'); } finally { setMutating(false); }
+  }, [refresh, selectedSubjectId, token]);
 
   useEffect(() => {
     void refresh();
@@ -724,6 +782,28 @@ export function TeachingReadiness({
             ))}
           </div>
         )}
+      </section>
+
+      <section className="roster-management" aria-label="Bibliothèque de sujets versionnés">
+        <div className="identity-review__heading"><div><strong>Sujets privés versionnés</strong><span>{subjects.length} sujet(s)</span></div><small>Un sujet validé reste privé : validation ≠ publication ≠ assignment.</small></div>
+        <div className="roster-management__grid">
+          <div className="roster-management__form">
+            <label>Titre<input value={subjectTitle} onChange={(e) => setSubjectTitle(e.target.value)} /></label>
+            <label>Situation<textarea rows={2} value={subjectSituation} onChange={(e) => setSubjectSituation(e.target.value)} /></label>
+            <label>Tension<textarea rows={2} value={subjectTension} onChange={(e) => setSubjectTension(e.target.value)} /></label>
+            <label>Mission<textarea rows={2} value={subjectMission} onChange={(e) => setSubjectMission(e.target.value)} /></label>
+            <label>Décision à prendre<input value={subjectDecision} onChange={(e) => setSubjectDecision(e.target.value)} /></label>
+            <label>Rendus — une ligne par rendu<textarea rows={3} value={subjectDeliverables} onChange={(e) => setSubjectDeliverables(e.target.value)} /></label>
+            <label>Preuves — une ligne par preuve<textarea rows={3} value={subjectProofs} onChange={(e) => setSubjectProofs(e.target.value)} /></label>
+            <label>Progression — un niveau par ligne<textarea rows={3} value={subjectProgression} onChange={(e) => setSubjectProgression(e.target.value)} /></label>
+            <button disabled={mutating} onClick={() => void createSubjectDraft()} type="button">Créer le sujet V1 privé</button>
+          </div>
+          <div className="roster-management__form">
+            <label>Sujet<select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)}><option value="">Choisir</option>{subjects.map((subject) => <option key={subject.template_id} value={subject.template_id}>{subject.title} · {subject.status}</option>)}</select></label>
+            <button className="secondary" disabled={mutating || !selectedSubjectId} onClick={() => void createNextSubjectVersion()} type="button">Créer la version suivante</button>
+            {subjectVersions.map((version) => <div className="identity-review__card" key={version.version_id}><div><strong>Version {version.version}</strong><small>{version.status} · privé</small></div>{version.status === 'draft' ? <button disabled={mutating} onClick={() => void validateSubject(version.version_id)} type="button">Valider en privé</button> : <small>Validée, non publiée.</small>}</div>)}
+          </div>
+        </div>
       </section>
 
       <section className="roster-management" aria-label="Cohortes et listes d’étudiants">

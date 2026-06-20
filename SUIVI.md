@@ -11,7 +11,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - création brouillon, nouvelle version append-only et validation explicite ;
 - `deployment_state=private_draft` obligatoire ; aucune publication ou assignment.
 
-Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching puis assignment scoped.
+Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : assignment scoped
+dérivé sans modifier le sujet source.
 
 ## 2026-06-20 — R1.5 Correction : gate d'exécution maintenu
 

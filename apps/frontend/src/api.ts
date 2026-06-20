@@ -20,6 +20,8 @@ import type {
   CreateRubricTemplateRequest,
   CreateRubricVersionRequest,
   CreateSubmissionIntakeRequest,
+  CreateSubjectTemplateRequest,
+  CreateSubjectVersionRequest,
   CreateGuidedSessionRequest,
   CorrectionBatch,
   CorrectionContextSnapshot,
@@ -62,6 +64,8 @@ import type {
   RoomInstance,
   SetCollectionCompletionRequest,
   SubmissionRecord,
+  SubjectTemplate,
+  SubjectVersion,
   ValidatePreCorrectionManifestRequest,
   TaskModelProfile,
   SearchResourcesResponse,
@@ -288,6 +292,23 @@ export async function createPreCorrectionManifest(batchId: string, body: CreateP
 
 export async function validatePreCorrectionManifest(manifestId: string, body: ValidatePreCorrectionManifestRequest, token?: string | null): Promise<PreCorrectionManifest> {
   return request<PreCorrectionManifest>(`/correction/pre-correction-manifests/${encodeURIComponent(manifestId)}/validate`, {method: 'POST', body: JSON.stringify(body)}, token);
+}
+
+export async function getSubjects(projectId?: string | null, token?: string | null): Promise<SubjectTemplate[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+  return request<SubjectTemplate[]>(`/subjects${query}`, {method: 'GET'}, token);
+}
+export async function createSubject(body: CreateSubjectTemplateRequest, token?: string | null): Promise<{template: SubjectTemplate; version: SubjectVersion}> {
+  return request<{template: SubjectTemplate; version: SubjectVersion}>('/subjects', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+export async function getSubjectVersions(templateId: string, token?: string | null): Promise<SubjectVersion[]> {
+  return request<SubjectVersion[]>(`/subjects/${encodeURIComponent(templateId)}/versions`, {method: 'GET'}, token);
+}
+export async function createSubjectVersion(templateId: string, body: CreateSubjectVersionRequest, token?: string | null): Promise<SubjectVersion> {
+  return request<SubjectVersion>(`/subjects/${encodeURIComponent(templateId)}/versions`, {method: 'POST', body: JSON.stringify(body)}, token);
+}
+export async function validateSubjectVersion(versionId: string, token?: string | null): Promise<SubjectVersion> {
+  return request<SubjectVersion>(`/subject-versions/${encodeURIComponent(versionId)}/validate`, {method: 'POST'}, token);
 }
 
 export async function getIdentityMatchReviews(
