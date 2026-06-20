@@ -22,6 +22,15 @@ Dernière mise à jour : 2026-06-20
 - Statut : R1.1 barème/profil privé versionné prêt à publier ; lot manuel reste à faire.
 - Validation requise : non pour code/tests isolés ; oui avant utilisation live ou migration réelle.
 
+### R1.5 — Exécution pré-correction
+
+- Tâche : créer le job `correction_prepare` depuis le manifest validé.
+- Impact : lance potentiellement le traitement effectif des copies étudiantes.
+- Risque : élevé ; runner, provider, consentement et environnement live.
+- Source de vérité concernée : D06 + manifest validé + politique provider/runtime.
+- Statut : bloqué au gate d'exécution ; aucun bouton, job ou runner lancé.
+- Validation requise : oui avant activation provider ou traitement live.
+
 ### Vague factories par Passport
 
 - Tâche : publier l'inventaire des 2 062 fichiers et 13 groupes candidats.
