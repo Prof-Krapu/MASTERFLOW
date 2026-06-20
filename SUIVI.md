@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R1.2 Correction : lot manuel contextualisé
+
+- création atomique d'un lot privé et de son snapshot de contexte ;
+- barème et profil obligatoirement validés, mêmes scope/projet que le lot ;
+- roster actif, sujet, sources et profil de processus figés avant toute intake ;
+- lot maintenu en `draft`, zéro submission, zéro score et zéro pré-correction.
+
+Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching du lot puis intake
+de submissions candidates sans rapprochement automatique.
+
 ## 2026-06-20 — R1.1 Correction : barèmes et profils privés/versionnés
 
 - barème créé brouillon, validé explicitement puis conservé dans son historique ;
