@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague contrats D08
+
+- Tâche : publier l'arbitrage exhaustif des 48 contrats DA/assets.
+- Impact : protège la DA complète tout en empêchant Comfy, factories ou exports de devenir l'autorité.
+- Risque : faible pour l'audit ; critique seulement lors d'une future génération/provider.
+- Source de vérité concernée : canon D08 manifest-first + legacy lecture seule + GitHub.
+- Statut : audit local vérifié, publication en cours.
+- Validation requise : non pour audit ; oui avant rendu, stockage, export ou live.
+
 ### Vague contrats D05-D07
 
 - Tâche : publier l'arbitrage de 12 contrats et le reroutage morphologique D07→D08.

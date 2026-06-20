@@ -16,6 +16,7 @@ de provenance, doublons et compatibilité de scope.
 Contrats transverses, vague 1 : `9/9` arbitrés ; les contrats restants sont à traiter par domaine.
 Contrats transverses, vague 2 : `11/11` arbitrés.
 Contrats D05-D07 : `12/12` arbitrés, dont un contrat morphologique rerouté vers D08.
+Contrats D08 : `48/48` arbitrés ; les variantes Comfy/provider/export sont réduites à des adapters derrière le manifest-first.
 
 La suite est ordonnée dans `MARATHON_WAVE_EXECUTION_QUEUE.md` et s'enchaîne sans replanification
 manuelle, sauf gate produit, droit, migration ou déploiement live.
