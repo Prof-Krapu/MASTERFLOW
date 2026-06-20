@@ -18,6 +18,7 @@ import type {
   CreateRosterVersion,
   CreateRubricTemplateRequest,
   CreateRubricVersionRequest,
+  CreateSubmissionIntakeRequest,
   CreateGuidedSessionRequest,
   CorrectionBatch,
   CorrectionContextSnapshot,
@@ -58,6 +59,7 @@ import type {
   RoomCheckpoint,
   RoomInstance,
   SetCollectionCompletionRequest,
+  SubmissionRecord,
   TaskModelProfile,
   SearchResourcesResponse,
   TokenUsageGroupBy,
@@ -255,6 +257,16 @@ export async function createCorrectionBatch(
   token?: string | null,
 ): Promise<{batch: CorrectionBatch; context_snapshot: CorrectionContextSnapshot}> {
   return request<{batch: CorrectionBatch; context_snapshot: CorrectionContextSnapshot}>('/correction/batches', {
+    method: 'POST', body: JSON.stringify(body),
+  }, token);
+}
+
+export async function intakeCorrectionSubmission(
+  batchId: string,
+  body: CreateSubmissionIntakeRequest,
+  token?: string | null,
+): Promise<SubmissionRecord> {
+  return request<SubmissionRecord>(`/correction/batches/${encodeURIComponent(batchId)}/submissions`, {
     method: 'POST', body: JSON.stringify(body),
   }, token);
 }

@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R1.3 Correction : intake de copies candidates dans Teaching
+
+- une référence privée crée une preuve candidate puis une submission candidate ;
+- le lot doit rester brouillon et déjà contextualisé ;
+- le nom observé reste non confirmé ; aucun rapprochement automatique ;
+- Teaching expose l'intake et rafraîchit le compteur du lot ;
+- aucune correction, note, pré-correction, feedback ou export n'est lancé.
+
+Statut : vérifié localement, prêt à publier. Suite : revue professeur d'échantillon et préparation
+du manifest de pré-correction, toujours sans runner automatique.
+
 ## 2026-06-20 — R1.2 Correction : lot manuel contextualisé
 
 - création atomique d'un lot privé et de son snapshot de contexte ;
