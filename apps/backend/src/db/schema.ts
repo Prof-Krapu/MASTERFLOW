@@ -825,6 +825,21 @@ function migrate(d: Database.Database): void {
       UNIQUE(template_id, version)
     );
 
+    CREATE TABLE IF NOT EXISTS subject_assignments (
+      id TEXT PRIMARY KEY,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      project_scope TEXT NOT NULL,
+      cohort_id TEXT NOT NULL REFERENCES cohorts(id),
+      source_subject_version_id TEXT NOT NULL REFERENCES subject_versions(id),
+      title TEXT NOT NULL,
+      subject_snapshot_json TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','active','archived')),
+      created_by TEXT NOT NULL REFERENCES users(id),
+      created_at INTEGER NOT NULL,
+      activated_at INTEGER
+    );
+
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,
       template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,
