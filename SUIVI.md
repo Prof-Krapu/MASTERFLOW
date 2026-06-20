@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Contrats Legacy D09-D10 — ARBITRAGE LOCAL VÉRIFIÉ
+
+- 20 contrats confrontés au canon et au runtime ;
+- 11 règles déjà absorbées, 6 capacités canon prêtes à câbler et 3 adapters réduits ;
+- D09 reste source/reader-state/workbench privé avant tout export ;
+- D10 reste devis privé avant public/event ; facture, envoi et publication demeurent verrouillés.
+
+Statut : preuve locale prête à publier. Suite : contrats D11-D12.
+
 ## 2026-06-20 — Contrats Legacy D08 — ARBITRAGE LOCAL VÉRIFIÉ
 
 - 48 contrats regroupés en six autorités réelles ;
