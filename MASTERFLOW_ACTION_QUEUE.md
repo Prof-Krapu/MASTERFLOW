@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague factories par Passport
+
+- Tâche : publier l'inventaire des 2 062 fichiers et 13 groupes candidats.
+- Impact : conserve les factories sans les confondre avec le runtime MasterFlow.
+- Risque : faible pour audit ; critique avant affectation, installation ou import.
+- Source de vérité concernée : D11 Passport/Backflow + archive lecture seule + GitHub V1 borné.
+- Statut : audit local vérifié ; zéro Passport validé, installation ou activation.
+- Validation requise : non pour audit ; oui avant affectation utilisateur ou installation.
+
 ### Vague déploiements et audits historiques
 
 - Tâche : publier l'index exact et les règles de preuve de 1 691 fichiers historiques.

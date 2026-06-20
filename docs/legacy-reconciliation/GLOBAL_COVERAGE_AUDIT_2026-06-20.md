@@ -58,7 +58,7 @@ intégralement arbitré fichier par fichier.
 4. Restaurer uniquement les registres dataset validés, jamais les 69 artefacts en import global.
 5. Personas `24/24` et événements `12/12` arbitrés ; aucune activation automatique.
 6. Déploiements/audits : 1 691/1 691 lus, 110 groupes de doublons exacts identifiés, aucune suppression.
-7. Traiter les 2 062 fichiers factories par Passport/owner, jamais par import global.
+7. Factories : 2 062/2 062 lus, 13 groupes candidats classés par Passport/owner, aucune activation.
 
 ## Dérives de pilotage détectées
 

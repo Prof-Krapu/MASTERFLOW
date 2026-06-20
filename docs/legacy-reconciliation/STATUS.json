@@ -4,7 +4,7 @@
   "legacy_file_count": 4714,
   "canon_authority": "Google Drive MASTERFLOW",
   "github_repository": "Prof-Krapu/MASTERFLOW",
-  "current_wave": "legacy_deployment_audit_dedup_local_verified_pending_publication",
+  "current_wave": "legacy_factory_passport_inventory_local_verified_pending_publication",
   "coverage_refresh": {
     "inventory_complete": true,
     "semantic_arbitration_complete": false,
@@ -54,7 +54,7 @@
     "sensitive_event_effects": false
   },
   "deployment_audit_dedup": {
-    "status": "local_verified_pending_publication",
+    "status": "merged",
     "deployment_files": 1278,
     "audit_files": 413,
     "missing_files": 0,
@@ -62,6 +62,16 @@
     "redundant_exact_copies": 143,
     "deletion_performed": false,
     "live_verified": false
+  },
+  "factory_passport_audit": {
+    "status": "local_verified_pending_publication",
+    "files": 2062,
+    "missing_files": 0,
+    "factory_candidate_groups": 13,
+    "strict_passports_validated": 0,
+    "installed": 0,
+    "activated": 0,
+    "bulk_import_allowed": false
   },
   "global_coverage_audit_publication": {
     "status": "merged",
