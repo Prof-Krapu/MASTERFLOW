@@ -198,6 +198,15 @@ export function TeachingReadiness({
   const [subjectDeliverables, setSubjectDeliverables] = useState('');
   const [subjectProofs, setSubjectProofs] = useState('');
   const [subjectProgression, setSubjectProgression] = useState('');
+  const [subjectObjectives, setSubjectObjectives] = useState('');
+  const [subjectCriteria, setSubjectCriteria] = useState('');
+  const [subjectCompetencies, setSubjectCompetencies] = useState('');
+  const [subjectBloomLevel, setSubjectBloomLevel] = useState('');
+  const [subjectConstraints, setSubjectConstraints] = useState('');
+  const [subjectCheckpoints, setSubjectCheckpoints] = useState('');
+  const [subjectEvaluationMode, setSubjectEvaluationMode] = useState('');
+  const [subjectAssistanceLevel, setSubjectAssistanceLevel] = useState('');
+  const [subjectDeadlines, setSubjectDeadlines] = useState('');
   const [subjectAssignments, setSubjectAssignments] = useState<SubjectAssignment[]>([]);
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [assignmentSubjectVersionId, setAssignmentSubjectVersionId] = useState('');
@@ -519,8 +528,17 @@ export function TeachingReadiness({
     observable_deliverables: subjectDeliverables.split('\n').map((v) => v.trim()).filter(Boolean),
     proofs_of_understanding: subjectProofs.split('\n').map((v) => v.trim()).filter(Boolean),
     progression_levels: subjectProgression.split('\n').map((v) => v.trim()).filter(Boolean),
+    objectives: subjectObjectives.split('\n').map((v) => v.trim()).filter(Boolean),
+    criteria: subjectCriteria.split('\n').map((v) => v.trim()).filter(Boolean),
+    competencies: subjectCompetencies.split('\n').map((v) => v.trim()).filter(Boolean),
+    bloom_level: subjectBloomLevel.trim() || null,
+    constraints: subjectConstraints.split('\n').map((v) => v.trim()).filter(Boolean),
+    checkpoints: subjectCheckpoints.split('\n').map((v) => v.trim()).filter(Boolean),
+    evaluation_mode: subjectEvaluationMode.trim() || null,
+    assistance_level: subjectAssistanceLevel.trim() || null,
+    deadlines: subjectDeadlines.split('\n').map((v) => v.trim()).filter(Boolean),
     resource_refs: [], correction_model_candidate_ref: null, deployment_state: 'private_draft' as const,
-  }), [subjectDecision, subjectDeliverables, subjectMission, subjectProgression, subjectProofs, subjectSituation, subjectTension]);
+  }), [subjectAssistanceLevel, subjectBloomLevel, subjectCheckpoints, subjectCompetencies, subjectConstraints, subjectCriteria, subjectDeadlines, subjectDecision, subjectDeliverables, subjectEvaluationMode, subjectMission, subjectObjectives, subjectProgression, subjectProofs, subjectSituation, subjectTension]);
 
   const createSubjectDraft = useCallback(async (): Promise<void> => {
     if (!subjectTitle.trim()) { setStatus('Donne un titre au sujet.'); return; }
@@ -828,6 +846,15 @@ export function TeachingReadiness({
             <label>Rendus — une ligne par rendu<textarea rows={3} value={subjectDeliverables} onChange={(e) => setSubjectDeliverables(e.target.value)} /></label>
             <label>Preuves — une ligne par preuve<textarea rows={3} value={subjectProofs} onChange={(e) => setSubjectProofs(e.target.value)} /></label>
             <label>Progression — un niveau par ligne<textarea rows={3} value={subjectProgression} onChange={(e) => setSubjectProgression(e.target.value)} /></label>
+            <label>Objectifs — une ligne par objectif<textarea rows={3} value={subjectObjectives} onChange={(e) => setSubjectObjectives(e.target.value)} /></label>
+            <label>Critères — une ligne par critère<textarea rows={3} value={subjectCriteria} onChange={(e) => setSubjectCriteria(e.target.value)} /></label>
+            <label>Compétences — une ligne par compétence<textarea rows={3} value={subjectCompetencies} onChange={(e) => setSubjectCompetencies(e.target.value)} /></label>
+            <label>Niveau Bloom<input value={subjectBloomLevel} onChange={(e) => setSubjectBloomLevel(e.target.value)} /></label>
+            <label>Contraintes — une ligne par contrainte<textarea rows={2} value={subjectConstraints} onChange={(e) => setSubjectConstraints(e.target.value)} /></label>
+            <label>Checkpoints — une ligne par étape<textarea rows={2} value={subjectCheckpoints} onChange={(e) => setSubjectCheckpoints(e.target.value)} /></label>
+            <label>Mode d’évaluation<input value={subjectEvaluationMode} onChange={(e) => setSubjectEvaluationMode(e.target.value)} /></label>
+            <label>Niveau d’assistance<input value={subjectAssistanceLevel} onChange={(e) => setSubjectAssistanceLevel(e.target.value)} /></label>
+            <label>Échéances — une ligne par échéance<textarea rows={2} value={subjectDeadlines} onChange={(e) => setSubjectDeadlines(e.target.value)} /></label>
             <button disabled={mutating} onClick={() => void createSubjectDraft()} type="button">Créer le sujet V1 privé</button>
           </div>
           <div className="roster-management__form">

@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R2.4 D05→D06 : paramètres pédagogiques complets
+
+- objectifs, critères, compétences, Bloom, contraintes, checkpoints, mode d’évaluation,
+  assistance et échéances rejoignent le manifest sujet versionné ;
+- la fiche les dérive depuis le snapshot exact, sans interprétation ni score ;
+- Teaching expose leur saisie ; anciens manifests relus avec valeurs neutres.
+
+Statut : vérifié localement, prêt à publier ; backend 368/368, TypeScript back/front et build Vite verts.
+
 ## 2026-06-20 — R2.3 D06 : fiche de correction autosynchronisée
 
 - chaque assignment crée automatiquement une fiche brouillon depuis son snapshot de sujet ;
@@ -11,8 +20,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - champs et verrous professeur sont conservés, jamais écrasés par la synchronisation ;
 - validation professeur explicite, sans note, publication, job ni traitement de copies.
 
-Statut : backend et surface Teaching vérifiés localement, prêts à publier ; backend 368/368,
-TypeScript back/front et build Vite verts.
+Statut : déployé sur GitHub `main` via PR #99, merge `2335ffa` ; backend 368/368,
+TypeScript back/front et build Vite verts. Aucun live revendiqué.
 
 ## 2026-06-20 — R2.2 D05 : assignment de cohorte dérivé
 
