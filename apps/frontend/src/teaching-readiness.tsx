@@ -36,6 +36,7 @@ import {
   getGuidedSessions,
   getIdentityMatchReviews,
   getInstitutionalGradingProfiles,
+  intakeCorrectionSubmission,
   getJobs,
   getRosterVersions,
   getRubricTemplates,
@@ -158,6 +159,9 @@ export function TeachingReadiness({
   const [batchSubjectRef, setBatchSubjectRef] = useState('');
   const [batchSourceRefs, setBatchSourceRefs] = useState('');
   const [batchProcessProfileRef, setBatchProcessProfileRef] = useState('process://correction/manual-v1');
+  const [selectedBatchId, setSelectedBatchId] = useState('');
+  const [submissionSourceRef, setSubmissionSourceRef] = useState('');
+  const [submissionObservedLabel, setSubmissionObservedLabel] = useState('');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -191,6 +195,7 @@ export function TeachingReadiness({
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
       setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
+      setSelectedBatchId((current) => current || nextBatches.find((batch) => batch.status === 'draft')?.batch_id || '');
       setStatus('État synchronisé depuis les surfaces runtime existantes.');
     } catch (error) {
       setJobs([]);
@@ -404,6 +409,24 @@ export function TeachingReadiness({
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Création du lot impossible.'); }
     finally { setMutating(false); }
   }, [batchProcessProfileRef, batchSourceRefs, batchSubjectRef, project?.project_id, refresh, rosterVersions, selectedCohortId, selectedGradingProfileId, selectedRubricVersionId, token]);
+
+  const intakeSubmission = useCallback(async (): Promise<void> => {
+    if (!selectedBatchId || !submissionSourceRef.trim()) {
+      setStatus('Choisis un lot brouillon et renseigne la référence privée de la copie.');
+      return;
+    }
+    setMutating(true);
+    try {
+      await intakeCorrectionSubmission(selectedBatchId, {
+        source_ref: submissionSourceRef.trim(),
+        observed_label: submissionObservedLabel.trim() || null,
+      }, token);
+      setSubmissionSourceRef(''); setSubmissionObservedLabel('');
+      await refresh();
+      setStatus('Copie ajoutée comme candidate privée. Son identité reste inconnue jusqu’à la revue professeur.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Intake de copie impossible.'); }
+    finally { setMutating(false); }
+  }, [refresh, selectedBatchId, submissionObservedLabel, submissionSourceRef, token]);
 
   useEffect(() => {
     void refresh();
@@ -752,6 +775,10 @@ export function TeachingReadiness({
                 <small>Intake candidat à venir ; aucune correction automatique.</small>
               </div>
             ))}
+            <label>Lot brouillon pour l’intake<select value={selectedBatchId} onChange={(event) => setSelectedBatchId(event.target.value)}><option value="">Choisir</option>{correctionBatches.filter((batch) => batch.status === 'draft').map((batch) => <option key={batch.batch_id} value={batch.batch_id}>{batch.batch_id.slice(0, 8)} · {batch.submission_count} copie(s)</option>)}</select></label>
+            <label>Référence privée de la copie<input value={submissionSourceRef} onChange={(event) => setSubmissionSourceRef(event.target.value)} placeholder="storage://private/submissions/alice.pdf" /></label>
+            <label>Nom observé (optionnel, non confirmé)<input value={submissionObservedLabel} onChange={(event) => setSubmissionObservedLabel(event.target.value)} placeholder="Alice" /></label>
+            <button disabled={mutating || !selectedBatchId} onClick={() => void intakeSubmission()} type="button">Ajouter la copie candidate</button>
           </div>
         </div>
       </section>
