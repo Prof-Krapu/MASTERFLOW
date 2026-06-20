@@ -4,6 +4,24 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Clôture legacy et plan runtime
+
+- Tâche : publier la clôture des 692 artefacts et le plan R1→R6.
+- Impact : le projet repart d'un backlog logiciel clair plutôt que de l'archive brute.
+- Risque : faible pour audit ; moyen dès R1 car données pédagogiques privées.
+- Source de vérité concernée : canon Drive + GitHub runtime + ledger legacy.
+- Statut : audit local vérifié, aucun artefact fonctionnel non classé.
+- Validation requise : non pour publication documentaire ; oui avant migration/live/provider.
+
+### R1 — Correction complète
+
+- Tâche : barème et profil de notation privés, puis lot contextualisé manuel.
+- Impact : rend le flux de correction réellement utilisable de bout en bout.
+- Risque : moyen ; scopes, versions et validation professeur obligatoires.
+- Source de vérité concernée : D05/D06 + Living Truth Spine.
+- Statut : prochain chantier logiciel, non démarré.
+- Validation requise : non pour code/tests isolés ; oui avant utilisation live ou migration réelle.
+
 ### Vague factories par Passport
 
 - Tâche : publier l'inventaire des 2 062 fichiers et 13 groupes candidats.

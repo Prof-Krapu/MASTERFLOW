@@ -22,6 +22,7 @@ live est déjà complet.
 | Personas / événements | 24 + 12 arbitrés | aucune activation/effet sensible | déploiements et audits historiques |
 | Déploiements / audits | 1 691 fichiers lus, 110 groupes exacts | aucune preuve live | factories par Passport |
 | Factories | 2 062 fichiers, 13 groupes candidats | zéro Passport validé/activation | clôture sémantique puis gaps runtime |
+| Clôture sémantique | 692/692 artefacts classés | runtime et live non confondus | R1 correction complète |
 | DA / assets | resolver + registre cadrés | manifest/provider lifecycle absent | persister manifest/références, provider verrouillé |
 | Mémoire / timeline / versioning | contrat rétabli | cards/checkpoints présents, ledger absent | timeline/change ledger additif |
 | Continuité runtime | incident/recovery contract rétabli | observabilité partielle, live non prouvé | receipts + récupération conservatrice |
@@ -47,7 +48,7 @@ La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
 
 ## Prochain ordre logique
 
-1. Publier l'audit Passport puis calculer la clôture sémantique globale.
-2. Produire le plan de gaps runtime priorisé avant tout nouveau code.
+1. Publier la clôture sémantique et le plan runtime R1→R6.
+2. Démarrer R1 : barème/profil, puis lot de correction manuel.
 3. Ajouter timeline/change ledger et receipts de continuité.
 4. Seulement ensuite, traiter les autres apps legacy et les factories.

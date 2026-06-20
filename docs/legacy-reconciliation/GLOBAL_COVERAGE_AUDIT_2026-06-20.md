@@ -1,6 +1,6 @@
 # Audit global Legacy → Canon → GitHub — 2026-06-20
 
-Statut : `AUDIT_REFRESH_IN_PROGRESS`
+Statut : `SEMANTIC_ARBITRATION_COMPLETE_RUNTIME_GAPS_REMAIN`
 
 Progression d'arbitrage : P0 `11/11` terminé ; queue fonctionnelle exhaustive `692` entrées créée,
 dont 333 routées vers un domaine unique, 104 transverses et 255 à router manuellement.
@@ -23,14 +23,14 @@ manuelle, sauf gate produit, droit, migration ou déploiement live.
 
 ## Conclusion vérifiée
 
-Le legacy est intégralement **inventorié**, mais pas intégralement **absorbé** ni même
-intégralement arbitré fichier par fichier.
+Le legacy est intégralement **inventorié** et les 692 artefacts fonctionnels sont désormais
+**arbitrés**. L'absorption canon détaillée, l'implémentation Git et le live restent des états
+séparés, à traiter par le plan runtime.
 
 - 4 714 fichiers indexés en lecture seule ;
 - 147 core, 197 contrats, 95 apps, 148 engines, 69 datasets et 12 événements ;
 - 2 062 artefacts factories isolés dans la voie D11 ;
-- la première confrontation détaillée a couvert les contrats structurants, pas les 668
-  artefacts fonctionnels core/contrats/apps/engines/datasets/événements un par un ;
+- 692 artefacts fonctionnels disposent maintenant d'un owner et d'une décision explicite ;
 - plusieurs cartes canon et cartes de progression portent encore un snapshot Git ancien.
 
 ## Couverture par domaine
@@ -52,13 +52,9 @@ intégralement arbitré fichier par fichier.
 
 ## Dette d'audit restante
 
-1. Affecter les 95 apps legacy à un domaine et une décision explicite.
-2. Consolider les écarts runtime des 12 owners sans recréer les 148 engines legacy.
-3. Classer les 197 contrats par canon actif, fusion, réduction, futur ou rejet.
-4. Restaurer uniquement les registres dataset validés, jamais les 69 artefacts en import global.
-5. Personas `24/24` et événements `12/12` arbitrés ; aucune activation automatique.
-6. Déploiements/audits : 1 691/1 691 lus, 110 groupes de doublons exacts identifiés, aucune suppression.
-7. Factories : 2 062/2 062 lus, 13 groupes candidats classés par Passport/owner, aucune activation.
+1. Exécuter R1 Correction complète avant les autres restores runtime.
+2. Traiter les quatre sources datasets bloquées uniquement avec owner/droits explicites.
+3. Garder le live séparé jusqu'à preuve backup/SHA/502/smoke.
 
 ## Dérives de pilotage détectées
 
