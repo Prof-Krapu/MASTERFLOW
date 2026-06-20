@@ -31,6 +31,15 @@ Dernière mise à jour : 2026-06-20
 - Statut : bloqué au gate d'exécution ; aucun bouton, job ou runner lancé.
 - Validation requise : oui avant activation provider ou traitement live.
 
+### R2.1 — Bibliothèque de sujets D05
+
+- Tâche : créer et valider des sujets privés versionnés, puis les exposer dans Teaching.
+- Impact : remplace les références libres `subject://...` par une vraie source de vérité D05.
+- Risque : faible tant que le sujet reste privé et non assigné.
+- Source de vérité concernée : canon D05 Subject As Mission.
+- Statut : backend prêt à publier ; UI Teaching puis assignment scoped à suivre.
+- Validation requise : non pour code/tests privés ; oui avant publication ou assignment étudiant.
+
 ### Vague factories par Passport
 
 - Tâche : publier l'inventaire des 2 062 fichiers et 13 groupes candidats.

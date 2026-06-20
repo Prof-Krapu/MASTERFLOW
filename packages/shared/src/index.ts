@@ -1791,6 +1791,30 @@ export type CreateInstitutionalGradingProfileRequest = z.input<
   typeof CreateInstitutionalGradingProfileRequestSchema
 >;
 
+// D05 R2.1 — sujet privé comme mission versionnée, jamais publication implicite.
+export const SubjectManifestSchema = z.object({
+  situation: z.string().min(1).max(2000),
+  tension: z.string().min(1).max(2000),
+  mission: z.string().min(1).max(2000),
+  decision_to_make: z.string().min(1).max(1000),
+  observable_deliverables: z.array(z.string().min(1).max(500)).min(1).max(30),
+  proofs_of_understanding: z.array(z.string().min(1).max(500)).min(1).max(30),
+  progression_levels: z.array(z.string().min(1).max(500)).min(1).max(20),
+  resource_refs: z.array(z.string().min(1).max(500)).max(100),
+  correction_model_candidate_ref: z.string().min(1).max(500).nullable(),
+  deployment_state: z.literal('private_draft'),
+});
+export type SubjectManifest = z.infer<typeof SubjectManifestSchema>;
+
+export const SubjectTemplateSchema = z.object({template_id: z.string().min(1), owner_id: z.string().min(1), project_id: z.string().min(1).nullable(), project_scope: z.string().min(1), title: z.string().min(1), current_version_ref: z.string().min(1).nullable(), status: z.enum(['draft','active','archived']), created_at: z.number().int().nonnegative(), updated_at: z.number().int().nonnegative()});
+export type SubjectTemplate = z.infer<typeof SubjectTemplateSchema>;
+export const SubjectVersionSchema = z.object({version_id: z.string().min(1), template_id: z.string().min(1), version: z.number().int().positive(), project_id: z.string().min(1).nullable(), project_scope: z.string().min(1), manifest: SubjectManifestSchema, status: z.enum(['draft','validated','archived']), created_by: z.string().min(1), created_at: z.number().int().nonnegative()});
+export type SubjectVersion = z.infer<typeof SubjectVersionSchema>;
+export const CreateSubjectTemplateRequestSchema = z.object({project_id: z.string().min(1).nullable().optional(), title: z.string().min(1).max(160), manifest: SubjectManifestSchema});
+export type CreateSubjectTemplateRequest = z.infer<typeof CreateSubjectTemplateRequestSchema>;
+export const CreateSubjectVersionRequestSchema = z.object({manifest: SubjectManifestSchema});
+export type CreateSubjectVersionRequest = z.infer<typeof CreateSubjectVersionRequestSchema>;
+
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),
   owner_id: z.string().min(1),
