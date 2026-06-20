@@ -1,6 +1,6 @@
 # Vagues de réconciliation
 
-1. **Inventaire et index actif** — indexer les 4 647 artefacts, lire les contrats directeurs,
+1. **Inventaire et index actif** — 4 714 artefacts indexés ; arbitrage sémantique exhaustif encore en cours,
    rapprocher owners et statuts.
 2. **Living Truth Spine** — sources, datasets, versions, imports, diffs et invalidation. **Canon raccordé** ; livraison runtime par tranches.
 3. **People & Learning Spine** — organisation, classe, cohorte, roster, identité, suivi pédagogique. **Résolution d'identité et UI sur main ; gestion manuelle cohortes/rosters vérifiée localement** ; publication puis lot de correction contextualisé, migration réelle gated.

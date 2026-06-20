@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Réconciliation legacy — arbitrage exhaustif
+
+- Tâche : attribuer à chaque app, engine, contrat et dataset legacy un domaine, un owner et un statut `absorbed/reduced/canon_ready/restore_candidate/deprecated`.
+- Impact : empêche de confondre inventaire complet et absorption complète.
+- Risque : faible pour l'audit ; élevé si le développement reprend avant classement.
+- Source de vérité concernée : archive legacy en lecture seule + canon Drive + GitHub `main`.
+- Statut : audit global en cours ; 4 714 fichiers indexés, arbitrage détaillé incomplet.
+- Validation requise : non pour audit/queue ; oui avant promotion canon d'une nouvelle capacité.
+
 ### Livré — UI professeur de revue d'identité
 
 - Tâche : écran Teaching des `identity_match_candidate` et gestes confirmer/rejeter.

@@ -28,8 +28,8 @@ canon ni une permission d'activer un moteur absent.
 |---|---|---|---|---|
 | Permission & validation | D01 / Permission Engine | `canon` | `implemented` | actions selon registre et gates |
 | Context & Source Truth | D02 | `canon` | `implemented/partial` | Context Pack cité, RAG lexical |
-| Correction | D05/D06 | `canon` | `implemented/partial` | feedback candidat + validation prof |
-| Roster & identité | D05/D06 | `canon_candidate` | `future` | contrat et tests de migration seulement |
+| Correction | D05/D06 | `canon` | `implemented/partial` | contexte/identité/roster ; barème et lot encore incomplets |
+| Roster & identité | D05/D06 | `canon` | `implemented` | gestion manuelle professeur, matching toujours humain |
 | DA manifest & références | D08 | `canon_candidate` | `future` | cadrage/manifest read model, pas de provider |
 | Mémoire/version | D02 transverse | `canon_candidate` | `partial` | cards/checkpoints existants, ledger à livrer |
 | Continuité/runtime | D12 | `canon_candidate` | `partial` | observer/receipts, pas de redéploiement automatique |
