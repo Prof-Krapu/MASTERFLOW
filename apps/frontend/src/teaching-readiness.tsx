@@ -4,6 +4,7 @@ import type {ReactElement} from 'react';
 import type {
   ConversationGuide,
   Cohort,
+  CorrectionBatch,
   CurrentContext,
   GuidedQuestion,
   GuidedSession,
@@ -23,6 +24,7 @@ import {
   advanceGuidedSession,
   completeGuidedSession,
   createCohort,
+  createCorrectionBatch,
   createInstitutionalGradingProfile,
   createRosterVersion,
   createRubricTemplate,
@@ -30,6 +32,7 @@ import {
   createGuidedSession,
   getGuides,
   getCohorts,
+  getCorrectionBatches,
   getGuidedSessions,
   getIdentityMatchReviews,
   getInstitutionalGradingProfiles,
@@ -149,6 +152,12 @@ export function TeachingReadiness({
   const [profileExpectedMin, setProfileExpectedMin] = useState('10');
   const [profileExpectedMax, setProfileExpectedMax] = useState('15');
   const [profileDelta, setProfileDelta] = useState('1');
+  const [correctionBatches, setCorrectionBatches] = useState<CorrectionBatch[]>([]);
+  const [selectedRubricVersionId, setSelectedRubricVersionId] = useState('');
+  const [selectedGradingProfileId, setSelectedGradingProfileId] = useState('');
+  const [batchSubjectRef, setBatchSubjectRef] = useState('');
+  const [batchSourceRefs, setBatchSourceRefs] = useState('');
+  const [batchProcessProfileRef, setBatchProcessProfileRef] = useState('process://correction/manual-v1');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -161,7 +170,7 @@ export function TeachingReadiness({
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles] = await Promise.all([
+      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles, nextBatches] = await Promise.all([
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
@@ -169,6 +178,7 @@ export function TeachingReadiness({
         getCohorts(project?.project_id, token),
         getRubricTemplates(project?.project_id, token),
         getInstitutionalGradingProfiles(project?.project_id, token),
+        getCorrectionBatches(project?.project_id, token),
       ]);
       setJobs(nextJobs);
       setGuides(nextGuides);
@@ -177,8 +187,10 @@ export function TeachingReadiness({
       setCohorts(nextCohorts);
       setRubricTemplates(nextRubrics);
       setGradingProfiles(nextProfiles);
+      setCorrectionBatches(nextBatches);
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
+      setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
       setStatus('État synchronisé depuis les surfaces runtime existantes.');
     } catch (error) {
       setJobs([]);
@@ -188,6 +200,7 @@ export function TeachingReadiness({
       setCohorts([]);
       setRubricTemplates([]);
       setGradingProfiles([]);
+      setCorrectionBatches([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
@@ -210,7 +223,10 @@ export function TeachingReadiness({
       return;
     }
     void getRubricVersions(selectedRubricTemplateId, token)
-      .then(setRubricVersions)
+      .then((versions) => {
+        setRubricVersions(versions);
+        setSelectedRubricVersionId((current) => current || versions.find((version) => version.status === 'validated')?.version_id || '');
+      })
       .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Versions du barème indisponibles.'));
   }, [selectedRubricTemplateId, token]);
 
@@ -362,6 +378,32 @@ export function TeachingReadiness({
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du profil impossible.'); }
     finally { setMutating(false); }
   }, [refresh, token]);
+
+  const createContextualBatch = useCallback(async (): Promise<void> => {
+    const activeRoster = rosterVersions.find((version) => version.status === 'active');
+    const source_refs = batchSourceRefs.split('\n').map((value) => value.trim()).filter(Boolean);
+    if (!selectedCohortId || !activeRoster || !selectedRubricVersionId || !selectedGradingProfileId || !batchSubjectRef.trim() || source_refs.length === 0 || !batchProcessProfileRef.trim()) {
+      setStatus('Choisis cohorte, roster actif, barème/profil validés, sujet et au moins une source.');
+      return;
+    }
+    setMutating(true);
+    try {
+      const created = await createCorrectionBatch({
+        project_id: project?.project_id ?? null,
+        rubric_version_id: selectedRubricVersionId,
+        grading_profile_id: selectedGradingProfileId,
+        cohort_id: selectedCohortId,
+        roster_version_id: activeRoster.roster_version_id,
+        subject_version_ref: batchSubjectRef.trim(),
+        source_refs,
+        process_context_profile_ref: batchProcessProfileRef.trim(),
+      }, token);
+      setBatchSubjectRef(''); setBatchSourceRefs('');
+      await refresh();
+      setStatus(`Lot ${created.batch.batch_id.slice(0, 8)} créé et contextualisé. Il reste vide : aucune correction n’est lancée.`);
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Création du lot impossible.'); }
+    finally { setMutating(false); }
+  }, [batchProcessProfileRef, batchSourceRefs, batchSubjectRef, project?.project_id, refresh, rosterVersions, selectedCohortId, selectedGradingProfileId, selectedRubricVersionId, token]);
 
   useEffect(() => {
     void refresh();
@@ -682,6 +724,32 @@ export function TeachingReadiness({
               <div className="identity-review__card" key={profile.profile_id}>
                 <div><strong>Profil V{profile.version} · {profile.scale[0]}–{profile.scale[1]}</strong><small>{profile.status} · bande attendue {profile.expected_cohort_band[0]}–{profile.expected_cohort_band[1]}</small></div>
                 {profile.status !== 'validated' ? <button disabled={mutating} onClick={() => void validateGradingProfile(profile.profile_id)} type="button">Valider ce profil</button> : <small>Profil verrouillé et éligible à la correction.</small>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="roster-management" aria-label="Lot de correction contextualisé">
+        <div className="identity-review__heading">
+          <div><strong>Lot de correction contextualisé</strong><span>{correctionBatches.length} lot(s)</span></div>
+          <small>Le lot fige le contexte ; il ne charge aucune copie et ne lance aucune correction.</small>
+        </div>
+        <div className="roster-management__grid">
+          <div className="roster-management__form">
+            <label>Version de barème validée<select value={selectedRubricVersionId} onChange={(event) => setSelectedRubricVersionId(event.target.value)}><option value="">Choisir</option>{rubricVersions.filter((version) => version.status === 'validated').map((version) => <option key={version.version_id} value={version.version_id}>V{version.version} · {version.total_points} points</option>)}</select></label>
+            <label>Profil de notation validé<select value={selectedGradingProfileId} onChange={(event) => setSelectedGradingProfileId(event.target.value)}><option value="">Choisir</option>{gradingProfiles.filter((profile) => profile.status === 'validated').map((profile) => <option key={profile.profile_id} value={profile.profile_id}>Profil V{profile.version} · {profile.scale[0]}–{profile.scale[1]}</option>)}</select></label>
+            <label>Sujet versionné<input value={batchSubjectRef} onChange={(event) => setBatchSubjectRef(event.target.value)} placeholder="subject://oral/v1" /></label>
+            <label>Sources — une référence par ligne<textarea rows={3} value={batchSourceRefs} onChange={(event) => setBatchSourceRefs(event.target.value)} placeholder="transcript://debrief/2026-06-20" /></label>
+            <label>Profil de processus<input value={batchProcessProfileRef} onChange={(event) => setBatchProcessProfileRef(event.target.value)} /></label>
+            <button disabled={mutating || !selectedCohortId} onClick={() => void createContextualBatch()} type="button">Créer et figer le lot manuel</button>
+          </div>
+          <div className="roster-management__form">
+            <strong>Lots du périmètre</strong>
+            {correctionBatches.length === 0 ? <p className="muted compact">Aucun lot. Crée d’abord les références validées puis fige le contexte.</p> : correctionBatches.map((batch) => (
+              <div className="identity-review__card" key={batch.batch_id}>
+                <div><strong>Lot {batch.batch_id.slice(0, 8)} · {batch.status}</strong><small>{batch.submission_count} copie(s) · contexte figé</small></div>
+                <small>Intake candidat à venir ; aucune correction automatique.</small>
               </div>
             ))}
           </div>

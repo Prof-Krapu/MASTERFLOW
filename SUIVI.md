@@ -11,8 +11,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - roster actif, sujet, sources et profil de processus figés avant toute intake ;
 - lot maintenu en `draft`, zéro submission, zéro score et zéro pré-correction.
 
-Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching du lot puis intake
-de submissions candidates sans rapprochement automatique.
+Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : intake de
+submissions candidates sans rapprochement automatique.
 
 ## 2026-06-20 — R1.1 Correction : barèmes et profils privés/versionnés
 
