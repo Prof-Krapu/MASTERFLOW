@@ -31,13 +31,13 @@ Dernière mise à jour : 2026-06-20
 - Statut : bloqué au gate d'exécution ; aucun bouton, job ou runner lancé.
 - Validation requise : oui avant activation provider ou traitement live.
 
-### R2.1 — Bibliothèque de sujets D05
+### R2 — Sujet, assignment et fiche de correction
 
-- Tâche : créer et valider des sujets privés versionnés, puis les exposer dans Teaching.
-- Impact : remplace les références libres `subject://...` par une vraie source de vérité D05.
-- Risque : faible tant que le sujet reste privé et non assigné.
-- Source de vérité concernée : canon D05 Subject As Mission.
-- Statut : backend + Teaching sujets et assignment scoped prêts à publier ; correction sheet brouillon à suivre.
+- Tâche : relier sujet privé versionné, assignment de cohorte et fiche de correction brouillon.
+- Impact : remplace les références libres par une chaîne D05→D06 traçable et revue par le professeur.
+- Risque : faible tant que la fiche reste privée, sans note et sans publication.
+- Source de vérité concernée : canon D05 Subject As Mission + D06 Correction Sheet Autosync.
+- Statut : R2.1 sujet et R2.2 assignment sur `main`; R2.3 autosync/locks/revue implémenté localement.
 - Validation requise : non pour code/tests privés ; oui avant publication ou assignment étudiant.
 
 ### Vague factories par Passport

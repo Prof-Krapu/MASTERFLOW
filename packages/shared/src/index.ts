@@ -1819,6 +1819,51 @@ export type SubjectAssignment = z.infer<typeof SubjectAssignmentSchema>;
 export const CreateSubjectAssignmentRequestSchema = z.object({project_id:z.string().min(1).nullable().optional(),cohort_id:z.string().min(1),source_subject_version_id:z.string().min(1),title:z.string().min(1).max(160)});
 export type CreateSubjectAssignmentRequest = z.infer<typeof CreateSubjectAssignmentRequestSchema>;
 
+// D06 R2.3 — brouillon synchronisé depuis le sujet, jamais une note.
+export const CorrectionSheetDerivedFieldsSchema = z.object({
+  mission: z.string().min(1),
+  observable_deliverables: z.array(z.string().min(1)),
+  proofs_of_understanding: z.array(z.string().min(1)),
+  progression_levels: z.array(z.string().min(1)),
+  resource_refs: z.array(z.string().min(1)),
+});
+export type CorrectionSheetDerivedFields = z.infer<typeof CorrectionSheetDerivedFieldsSchema>;
+export const CorrectionSheetDraftSchema = z.object({
+  correction_sheet_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  project_scope: z.string().min(1),
+  assignment_id: z.string().min(1),
+  source_subject_version_id: z.string().min(1),
+  version: z.number().int().positive(),
+  subject_snapshot: SubjectManifestSchema,
+  derived_fields: CorrectionSheetDerivedFieldsSchema,
+  teacher_fields: z.record(z.string(), z.string()),
+  locked_teacher_fields: z.array(z.string()),
+  sync_status: z.enum(['synced', 'needs_teacher_review']),
+  status: z.enum(['draft', 'validated', 'archived']),
+  created_by: z.string().min(1),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+  validated_by: z.string().min(1).nullable(),
+  validated_at: z.number().int().nonnegative().nullable(),
+  validation_ref: z.string().min(1).nullable(),
+});
+export type CorrectionSheetDraft = z.infer<typeof CorrectionSheetDraftSchema>;
+export const UpdateCorrectionSheetDraftRequestSchema = z.object({
+  teacher_fields: z.record(z.string().min(1).max(120), z.string().max(4000)),
+  locked_teacher_fields: z.array(z.string().min(1).max(120)).max(100),
+});
+export type UpdateCorrectionSheetDraftRequest = z.infer<typeof UpdateCorrectionSheetDraftRequestSchema>;
+export const SyncCorrectionSheetDraftRequestSchema = z.object({
+  source_subject_version_id: z.string().min(1),
+});
+export type SyncCorrectionSheetDraftRequest = z.infer<typeof SyncCorrectionSheetDraftRequestSchema>;
+export const ValidateCorrectionSheetDraftRequestSchema = z.object({
+  validation_ref: z.string().min(1).max(500),
+});
+export type ValidateCorrectionSheetDraftRequest = z.infer<typeof ValidateCorrectionSheetDraftRequestSchema>;
+
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),
   owner_id: z.string().min(1),

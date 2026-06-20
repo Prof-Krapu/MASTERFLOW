@@ -840,6 +840,32 @@ function migrate(d: Database.Database): void {
       activated_at INTEGER
     );
 
+    -- D06 R2.3 : fiche de correction brouillon synchronisée, distincte d'une note.
+    CREATE TABLE IF NOT EXISTS correction_sheet_drafts (
+      id TEXT PRIMARY KEY,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      project_scope TEXT NOT NULL,
+      assignment_id TEXT NOT NULL REFERENCES subject_assignments(id) ON DELETE CASCADE,
+      source_subject_version_id TEXT NOT NULL REFERENCES subject_versions(id),
+      version INTEGER NOT NULL CHECK (version > 0),
+      subject_snapshot_json TEXT NOT NULL,
+      derived_fields_json TEXT NOT NULL,
+      teacher_fields_json TEXT NOT NULL DEFAULT '{}',
+      locked_teacher_fields_json TEXT NOT NULL DEFAULT '[]',
+      sync_status TEXT NOT NULL DEFAULT 'synced'
+        CHECK (sync_status IN ('synced','needs_teacher_review')),
+      status TEXT NOT NULL DEFAULT 'draft'
+        CHECK (status IN ('draft','validated','archived')),
+      created_by TEXT NOT NULL REFERENCES users(id),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      validated_by TEXT REFERENCES users(id),
+      validated_at INTEGER,
+      validation_ref TEXT,
+      UNIQUE(assignment_id, version)
+    );
+
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,
       template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,
