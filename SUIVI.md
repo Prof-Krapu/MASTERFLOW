@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R2.3 D06 : fiche de correction autosynchronisée
+
+- chaque assignment crée automatiquement une fiche brouillon depuis son snapshot de sujet ;
+- synchroniser vers une nouvelle version validée crée une version append-only à revoir ;
+- champs et verrous professeur sont conservés, jamais écrasés par la synchronisation ;
+- validation professeur explicite, sans note, publication, job ni traitement de copies.
+
+Statut : backend et surface Teaching vérifiés localement, prêts à publier ; backend 368/368,
+TypeScript back/front et build Vite verts.
+
 ## 2026-06-20 — R2.2 D05 : assignment de cohorte dérivé
 
 - assignment créé uniquement depuis une version de sujet validée ;

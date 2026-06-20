@@ -22,6 +22,8 @@ import type {
   CreateSubmissionIntakeRequest,
   CreateSubjectTemplateRequest,
   CreateSubjectAssignmentRequest,
+  CorrectionSheetDraft,
+  UpdateCorrectionSheetDraftRequest,
   CreateSubjectVersionRequest,
   CreateGuidedSessionRequest,
   CorrectionBatch,
@@ -321,6 +323,18 @@ export async function createSubjectAssignment(body: CreateSubjectAssignmentReque
 }
 export async function activateSubjectAssignment(id: string, token?: string | null): Promise<SubjectAssignment> {
   return request<SubjectAssignment>(`/subject-assignments/${encodeURIComponent(id)}/activate`, {method:'POST'}, token);
+}
+export async function getCorrectionSheets(assignmentId: string, token?: string | null): Promise<CorrectionSheetDraft[]> {
+  return request<CorrectionSheetDraft[]>(`/subject-assignments/${encodeURIComponent(assignmentId)}/correction-sheets`, {method:'GET'}, token);
+}
+export async function updateCorrectionSheet(id: string, body: UpdateCorrectionSheetDraftRequest, token?: string | null): Promise<CorrectionSheetDraft> {
+  return request<CorrectionSheetDraft>(`/correction-sheets/${encodeURIComponent(id)}`, {method:'PATCH', body:JSON.stringify(body)}, token);
+}
+export async function syncCorrectionSheet(id: string, sourceSubjectVersionId: string, token?: string | null): Promise<CorrectionSheetDraft> {
+  return request<CorrectionSheetDraft>(`/correction-sheets/${encodeURIComponent(id)}/sync`, {method:'POST', body:JSON.stringify({source_subject_version_id:sourceSubjectVersionId})}, token);
+}
+export async function validateCorrectionSheet(id: string, validationRef: string, token?: string | null): Promise<CorrectionSheetDraft> {
+  return request<CorrectionSheetDraft>(`/correction-sheets/${encodeURIComponent(id)}/validate`, {method:'POST', body:JSON.stringify({validation_ref:validationRef})}, token);
 }
 
 export async function getIdentityMatchReviews(

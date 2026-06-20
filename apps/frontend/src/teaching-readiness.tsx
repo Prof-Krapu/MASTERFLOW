@@ -5,6 +5,7 @@ import type {
   ConversationGuide,
   Cohort,
   CorrectionBatch,
+  CorrectionSheetDraft,
   CurrentContext,
   GuidedQuestion,
   GuidedSession,
@@ -62,6 +63,10 @@ import {
   validateRubricVersion,
   validateSubjectVersion,
   activateSubjectAssignment,
+  getCorrectionSheets,
+  syncCorrectionSheet,
+  updateCorrectionSheet,
+  validateCorrectionSheet,
 } from './api.ts';
 
 type TeachingReadinessProps = {
@@ -196,6 +201,9 @@ export function TeachingReadiness({
   const [subjectAssignments, setSubjectAssignments] = useState<SubjectAssignment[]>([]);
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [assignmentSubjectVersionId, setAssignmentSubjectVersionId] = useState('');
+  const [correctionSheets, setCorrectionSheets] = useState<CorrectionSheetDraft[]>([]);
+  const [sheetEvaluationMode, setSheetEvaluationMode] = useState('');
+  const [sheetTeacherNotes, setSheetTeacherNotes] = useState('');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -230,6 +238,7 @@ export function TeachingReadiness({
       setCorrectionBatches(nextBatches);
       setSubjects(nextSubjects);
       setSubjectAssignments(nextAssignments);
+      setCorrectionSheets((await Promise.all(nextAssignments.map((assignment) => getCorrectionSheets(assignment.assignment_id, token)))).flat());
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
       setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
@@ -247,6 +256,7 @@ export function TeachingReadiness({
       setCorrectionBatches([]);
       setSubjects([]);
       setSubjectAssignments([]);
+      setCorrectionSheets([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
@@ -535,11 +545,15 @@ export function TeachingReadiness({
 
   const createAssignment = useCallback(async (): Promise<void> => {
     if (!selectedCohortId || !assignmentSubjectVersionId || !assignmentTitle.trim()) { setStatus('Choisis une cohorte, une version validée et un titre d’assignment.'); return; }
-    setMutating(true); try { await createSubjectAssignment({project_id:project?.project_id??null,cohort_id:selectedCohortId,source_subject_version_id:assignmentSubjectVersionId,title:assignmentTitle.trim()},token);setAssignmentTitle('');await refresh();setStatus('Assignment brouillon créé depuis un snapshot du sujet.'); }
+    setMutating(true); try { await createSubjectAssignment({project_id:project?.project_id??null,cohort_id:selectedCohortId,source_subject_version_id:assignmentSubjectVersionId,title:assignmentTitle.trim()},token);setAssignmentTitle('');await refresh();setStatus('Assignment et fiche de correction brouillon créés depuis le sujet.'); }
     catch(error){setStatus(error instanceof Error?error.message:'Assignment impossible.');}finally{setMutating(false);}
   },[assignmentSubjectVersionId,assignmentTitle,project?.project_id,refresh,selectedCohortId,token]);
 
   const activateAssignment = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await activateSubjectAssignment(id,token);await refresh();setStatus('Assignment activé pour la cohorte ; le sujet source reste inchangé.');}catch(error){setStatus(error instanceof Error?error.message:'Activation impossible.');}finally{setMutating(false);}},[refresh,token]);
+
+  const saveSheetTeacherFields = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await updateCorrectionSheet(id,{teacher_fields:{evaluation_mode:sheetEvaluationMode,teacher_notes:sheetTeacherNotes},locked_teacher_fields:['evaluation_mode']},token);await refresh();setStatus('Champs professeur enregistrés ; le mode d’évaluation est verrouillé.');}catch(error){setStatus(error instanceof Error?error.message:'Mise à jour de la fiche impossible.');}finally{setMutating(false);}},[refresh,sheetEvaluationMode,sheetTeacherNotes,token]);
+  const syncSheet = useCallback(async(id:string):Promise<void>=>{if(!assignmentSubjectVersionId)return;setMutating(true);try{await syncCorrectionSheet(id,assignmentSubjectVersionId,token);await refresh();setStatus('Nouvelle version synchronisée ; revue professeur obligatoire.');}catch(error){setStatus(error instanceof Error?error.message:'Synchronisation impossible.');}finally{setMutating(false);}},[assignmentSubjectVersionId,refresh,token]);
+  const validateSheet = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await validateCorrectionSheet(id,`teacher://validation/${Date.now()}`,token);await refresh();setStatus('Fiche validée par le professeur ; aucune note ni publication créée.');}catch(error){setStatus(error instanceof Error?error.message:'Validation de la fiche impossible.');}finally{setMutating(false);}},[refresh,token]);
 
   useEffect(() => {
     void refresh();
@@ -824,7 +838,22 @@ export function TeachingReadiness({
             <label>Version validée<select value={assignmentSubjectVersionId} onChange={(e) => setAssignmentSubjectVersionId(e.target.value)}><option value="">Choisir</option>{subjectVersions.filter((v) => v.status === 'validated').map((v) => <option key={v.version_id} value={v.version_id}>Version {v.version}</option>)}</select></label>
             <label>Titre de l’assignment<input value={assignmentTitle} onChange={(e) => setAssignmentTitle(e.target.value)} /></label>
             <button disabled={mutating || !selectedCohortId} onClick={() => void createAssignment()} type="button">Créer l’assignment brouillon</button>
-            {subjectAssignments.map((assignment) => <div className="identity-review__card" key={assignment.assignment_id}><div><strong>{assignment.title}</strong><small>{assignment.status} · snapshot figé</small></div>{assignment.status === 'draft' ? <button disabled={mutating} onClick={() => void activateAssignment(assignment.assignment_id)} type="button">Activer pour la cohorte</button> : <small>Actif, source inchangée.</small>}</div>)}
+            {subjectAssignments.map((assignment) => {
+              const sheets = correctionSheets.filter((sheet) => sheet.assignment_id === assignment.assignment_id);
+              const latestSheet = sheets[0];
+              return <div className="identity-review__card" key={assignment.assignment_id}>
+                <div><strong>{assignment.title}</strong><small>{assignment.status} · snapshot figé · {sheets.length} version(s) de fiche</small></div>
+                {assignment.status === 'draft' ? <button disabled={mutating} onClick={() => void activateAssignment(assignment.assignment_id)} type="button">Activer pour la cohorte</button> : <small>Actif, source inchangée.</small>}
+                {latestSheet ? <div className="roster-management__form">
+                  <small>Fiche V{latestSheet.version} · {latestSheet.status} · {latestSheet.sync_status === 'needs_teacher_review' ? 'revue professeur requise' : 'synchronisée'} · aucune note</small>
+                  <label>Mode d’évaluation — verrouillé professeur<input value={sheetEvaluationMode} onChange={(event) => setSheetEvaluationMode(event.target.value)} /></label>
+                  <label>Notes professeur<textarea rows={2} value={sheetTeacherNotes} onChange={(event) => setSheetTeacherNotes(event.target.value)} /></label>
+                  <button className="secondary" disabled={mutating} onClick={() => void saveSheetTeacherFields(latestSheet.correction_sheet_id)} type="button">Enregistrer les champs professeur</button>
+                  <button className="secondary" disabled={mutating || !assignmentSubjectVersionId || latestSheet.source_subject_version_id === assignmentSubjectVersionId} onClick={() => void syncSheet(latestSheet.correction_sheet_id)} type="button">Synchroniser vers la version choisie</button>
+                  {latestSheet.status === 'draft' ? <button disabled={mutating} onClick={() => void validateSheet(latestSheet.correction_sheet_id)} type="button">Valider la fiche</button> : <small>Validation professeur enregistrée.</small>}
+                </div> : <small>Alerte : fiche brouillon absente.</small>}
+              </div>;
+            })}
           </div>
         </div>
       </section>

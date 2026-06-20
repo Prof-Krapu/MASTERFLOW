@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-20
-Branche de travail : `codex/r1-rubric-profile-v1` — R1.1 prêt à publier, pas encore sur `main`
-Base GitHub vérifiée : `d318c85` (`main` après PR #86)
+Branche de travail : `codex/r2-correction-sheet-draft` — R2.3 en recette avant publication
+Base GitHub vérifiée : `9e09427` (`main` après PR #98)
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -14,8 +14,8 @@ le runtime GitHub.
 | D03 Room OS et commandes | partiel | Rooms, instances, checkpoints et frontend existent ; command surface complète absente. | moyen | Ajouter les contrôles par tranches explicites. |
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Actions, objets D06, findings D12, candidates Usage Learning et intake factory D11 sont sur `main`. | faible | Ajouter les prochains domaines uniquement avec leur autorité métier propre. |
-| D05 sujet guidé | implémenté | Création/réponse/fin Teaching sont sur `main`, professeur/godmode uniquement ; recette isolée 12/12 validée. | faible | Garder D06 et participation élève séparés. |
-| D06 correction / feedback | partiel | Sur `main` : contexte, résolution d'identité et cohortes/rosters. Sur la branche R1.1 : barème et profil privés, versionnés et à validation explicite ; aucun lot ni correction automatique. | faible à moyen | Publier R1.1, puis ouvrir le lot de correction contextualisé manuel. |
+| D05 sujet guidé | implémenté | Guided Runtime, sujets privés versionnés et assignments de cohorte sont sur `main`, professeur/godmode uniquement. | faible | Garder participation élève et publication séparées. |
+| D06 correction / feedback | partiel | R1 atteint le manifest professeur sans runner ; R2.3 ajoute localement la fiche brouillon autosynchronisée, les verrous professeur et la revue explicite, sans note. | faible à moyen | Publier R2.3 puis poursuivre une tranche privée sans provider ni live. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability | partiel | Cockpit, findings, décisions owner et Usage Harvester V1 sont sur `main` ; détection automatique des findings reste absente. | faible | Étendre les sources structurées une par une, sans analyse brute ni auto-fix. |
 | D08 génération visuelle | futur | Manifest/storage/provenance/review incomplets. | élevé | Maintenir le verrou provider et génération. |
