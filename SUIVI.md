@@ -11,7 +11,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - évolution ultérieure du sujet source sans effet sur l'assignment historique ;
 - cohorte active et scope owner/projet obligatoires ; activation manuelle séparée.
 
-Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching de création/activation.
+Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : correction sheet
+brouillon synchronisée avec champs professeur verrouillés.
 
 ## 2026-06-20 — R2.1 D05 : bibliothèque de sujets privés et versionnés
 

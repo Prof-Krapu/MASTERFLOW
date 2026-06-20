@@ -21,6 +21,7 @@ import type {
   CreateRubricVersionRequest,
   CreateSubmissionIntakeRequest,
   CreateSubjectTemplateRequest,
+  CreateSubjectAssignmentRequest,
   CreateSubjectVersionRequest,
   CreateGuidedSessionRequest,
   CorrectionBatch,
@@ -65,6 +66,7 @@ import type {
   SetCollectionCompletionRequest,
   SubmissionRecord,
   SubjectTemplate,
+  SubjectAssignment,
   SubjectVersion,
   ValidatePreCorrectionManifestRequest,
   TaskModelProfile,
@@ -309,6 +311,16 @@ export async function createSubjectVersion(templateId: string, body: CreateSubje
 }
 export async function validateSubjectVersion(versionId: string, token?: string | null): Promise<SubjectVersion> {
   return request<SubjectVersion>(`/subject-versions/${encodeURIComponent(versionId)}/validate`, {method: 'POST'}, token);
+}
+export async function getSubjectAssignments(projectId?: string | null, token?: string | null): Promise<SubjectAssignment[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+  return request<SubjectAssignment[]>(`/subject-assignments${query}`, {method:'GET'}, token);
+}
+export async function createSubjectAssignment(body: CreateSubjectAssignmentRequest, token?: string | null): Promise<SubjectAssignment> {
+  return request<SubjectAssignment>('/subject-assignments', {method:'POST', body:JSON.stringify(body)}, token);
+}
+export async function activateSubjectAssignment(id: string, token?: string | null): Promise<SubjectAssignment> {
+  return request<SubjectAssignment>(`/subject-assignments/${encodeURIComponent(id)}/activate`, {method:'POST'}, token);
 }
 
 export async function getIdentityMatchReviews(
