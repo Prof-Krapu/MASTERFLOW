@@ -81,6 +81,15 @@ export function deriveCorrectionSheetFields(manifest: SubjectManifest): Correcti
     observable_deliverables: manifest.observable_deliverables,
     proofs_of_understanding: manifest.proofs_of_understanding,
     progression_levels: manifest.progression_levels,
+    objectives: manifest.objectives,
+    criteria: manifest.criteria,
+    competencies: manifest.competencies,
+    bloom_level: manifest.bloom_level,
+    constraints: manifest.constraints,
+    checkpoints: manifest.checkpoints,
+    evaluation_mode: manifest.evaluation_mode,
+    assistance_level: manifest.assistance_level,
+    deadlines: manifest.deadlines,
     resource_refs: manifest.resource_refs,
   };
 }

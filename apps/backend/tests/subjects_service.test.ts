@@ -14,7 +14,7 @@ import {
 
 const teacher:AuthUser={id:'subject-teacher',username:'subject_teacher',role:'teacher'};
 const outsider:AuthUser={id:'subject-outsider',username:'subject_outsider',role:'godmode'};
-const manifest={situation:'Une marque doit évoluer.',tension:'Visibilité contre cohérence.',mission:'Construire une campagne.',decision_to_make:'Choisir un territoire.',observable_deliverables:['Concept','Système'],proofs_of_understanding:['Justification sourcée'],progression_levels:['Diagnostic','Décision','Preuve'],resource_refs:[],correction_model_candidate_ref:null,deployment_state:'private_draft' as const};
+const manifest={situation:'Une marque doit évoluer.',tension:'Visibilité contre cohérence.',mission:'Construire une campagne.',decision_to_make:'Choisir un territoire.',observable_deliverables:['Concept','Système'],proofs_of_understanding:['Justification sourcée'],progression_levels:['Diagnostic','Décision','Preuve'],objectives:['Argumenter une décision'],criteria:['Cohérence du système'],competencies:['Direction artistique'],bloom_level:'Évaluer',constraints:['Deux formats'],checkpoints:['Diagnostic validé'],evaluation_mode:'Formative',assistance_level:'Guidage léger',deadlines:['Vendredi 18h'],resource_refs:[],correction_model_candidate_ref:null,deployment_state:'private_draft' as const};
 beforeAll(async()=>{await seedAll();const now=Date.now(),q=getDb().prepare("INSERT OR IGNORE INTO users(id,username,display_name,password_hash,role,active,created_at,updated_at)VALUES(?,?,?,'x',?,1,?,?)");q.run(teacher.id,teacher.username,teacher.username,teacher.role,now,now);q.run(outsider.id,outsider.username,outsider.username,outsider.role,now,now);});
 describe('bibliothèque de sujets versionnés R2',()=>{
   it('crée l’assignment et sa fiche brouillon sans muter le sujet',()=>{
@@ -28,6 +28,7 @@ describe('bibliothèque de sujets versionnés R2',()=>{
     const [sheetV1]=listCorrectionSheetDrafts(teacher,assignment.assignment_id);
     expect(sheetV1).toMatchObject({version:1,status:'draft',sync_status:'synced'});
     expect(sheetV1?.derived_fields.mission).toBe(manifest.mission);
+    expect(sheetV1?.derived_fields).toMatchObject({criteria:manifest.criteria,bloom_level:'Évaluer',evaluation_mode:'Formative'});
     expect(Object.keys(sheetV1??{})).not.toContain('grade');
     expect(()=>listCorrectionSheetDrafts(outsider,assignment.assignment_id)).toThrow('correction_sheet_not_found');
     expect(activateSubjectAssignment(teacher,assignment.assignment_id).status).toBe('active');
