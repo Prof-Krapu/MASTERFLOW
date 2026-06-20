@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Legacy → Canon → Git — CLÔTURE SÉMANTIQUE
+
+- 692/692 artefacts fonctionnels disposent d'un statut ; aucune entrée sémantique en attente ;
+- 108 absorbés, 294 canon-ready, 234 réduits, 52 restaurables plus tard et 4 sources bloquées ;
+- le legacy n'est pas déclaré intégralement implémenté ou live ;
+- le développement repart désormais de R1 Correction complète, pas de l'archive.
+
+Statut : preuve locale prête à publier. Suite : R1 barème/profil puis lot manuel de correction.
+
 ## 2026-06-20 — Factories Legacy — 2 062/2 062 INVENTORIÉES PAR PASSPORT
 
 - 13 groupes de factories candidates rattachés à des owners ;
