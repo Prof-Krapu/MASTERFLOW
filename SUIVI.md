@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Factories Legacy — 2 062/2 062 INVENTORIÉES PAR PASSPORT
+
+- 13 groupes de factories candidates rattachés à des owners ;
+- 233 groupes de doublons exacts couvrent 768 fichiers ;
+- passerelles Vincent, archives, templates et ZIPs séparés des factories actives ;
+- zéro Passport strict validé, installation, activation ou import.
+
+Statut : preuve locale prête à publier. Suite : clôture sémantique et plan runtime.
+
 ## 2026-06-20 — Déploiements et audits historiques — INDEXÉS ET DÉDUPLIQUÉS
 
 - 1 278 artefacts de déploiement et 413 fichiers d'audit lus ; aucun manquant ;
