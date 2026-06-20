@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague contrats D11-D12
+
+- Tâche : publier l'arbitrage de 12 contrats factories, backflow et observabilité.
+- Impact : ferme la passe contrats sans activer de factory ou d'action autonome.
+- Risque : faible pour audit ; élevé pour import/recovery/live.
+- Source de vérité concernée : canon D11/D12 + legacy lecture seule + GitHub.
+- Statut : audit local vérifié, publication en cours.
+- Validation requise : non pour audit ; oui avant installation, import, recovery ou live.
+
 ### Vague contrats D09-D10
 
 - Tâche : publier l'arbitrage des 20 contrats récit, devis, export et event/public.
