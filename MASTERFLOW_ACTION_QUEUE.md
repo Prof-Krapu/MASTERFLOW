@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague personas et événements
+
+- Tâche : publier l'arbitrage de 24 personas et 12 événements.
+- Impact : conserve voix/méthodes/signaux sans permission ni action implicite.
+- Risque : faible pour audit ; élevé avant affectation ou effet automatisé.
+- Source de vérité concernée : D04/D12 + archive lecture seule + runtime GitHub.
+- Statut : audit local vérifié, aucune activation.
+- Validation requise : non pour audit ; oui avant affectation réelle ou effet sensible.
+
 ### Vague datasets legacy
 
 - Tâche : publier l'arbitrage des 69 datasets par vérité, provenance et accès.

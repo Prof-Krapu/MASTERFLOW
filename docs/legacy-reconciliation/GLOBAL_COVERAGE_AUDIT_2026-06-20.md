@@ -56,7 +56,7 @@ intégralement arbitré fichier par fichier.
 2. Consolider les écarts runtime des 12 owners sans recréer les 148 engines legacy.
 3. Classer les 197 contrats par canon actif, fusion, réduction, futur ou rejet.
 4. Restaurer uniquement les registres dataset validés, jamais les 69 artefacts en import global.
-5. Vérifier les 12 événements et les 24 personas sans les confondre avec le runtime.
+5. Personas `24/24` et événements `12/12` arbitrés ; aucune activation automatique.
 6. Dédupliquer les 1 278 artefacts de déploiement et 413 audits avant extraction.
 7. Traiter les 2 062 fichiers factories par Passport/owner, jamais par import global.
 
