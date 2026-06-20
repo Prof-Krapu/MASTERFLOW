@@ -2,6 +2,7 @@ import {Router, type Request, type Response} from 'express';
 
 import {
   CreateCorrectionContextSnapshotSchema,
+  CreateSubmissionIntakeRequestSchema,
   CreateIdentityMatchCandidateRequestSchema,
   DecideIdentityMatchCandidateRequestSchema,
   LinkSubmissionIdentityRequestSchema,
@@ -17,6 +18,7 @@ import {
   linkSubmissionIdentity,
   listIdentityMatchReviewItems,
 } from '../services/correction_context.ts';
+import {intakeSubmission} from '../services/submission_intake.ts';
 
 function actor(req: Request): AuthUser {
   if (!req.user) throw new Error('unauthorized');
@@ -71,6 +73,20 @@ export function createCorrectionContextRouter(): Router {
       } catch (error) {
         fail(res, error);
       }
+    },
+  );
+
+  router.post(
+    '/correction/batches/:id/submissions',
+    requireUser,
+    requireRole('teacher'),
+    (req, res): void => {
+      const parsed = CreateSubmissionIntakeRequestSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+        return;
+      }
+      try { res.status(201).json(intakeSubmission(actor(req), req.params.id ?? '', parsed.data)); } catch (error) { fail(res, error); }
     },
   );
 
