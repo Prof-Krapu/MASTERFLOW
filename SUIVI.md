@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Contrats Legacy D08 — ARBITRAGE LOCAL VÉRIFIÉ
+
+- 48 contrats regroupés en six autorités réelles ;
+- 10 règles déjà absorbées par le canon, 18 capacités canon prêtes à câbler,
+  19 variantes réduites à des adapters et 1 capture conversationnelle à restaurer ;
+- Comfy, provider, export social et propagation factory restent subordonnés au manifest ;
+- aucun runtime D08, rendu, stockage ou génération déclaré actif.
+
+Statut : preuve locale prête à publier. Suite : contrats D09-D10.
+
 ## 2026-06-20 — Contrats Legacy D05-D07 — ARBITRAGE LOCAL VÉRIFIÉ
 
 - 12 contrats confrontés au canon Drive et au runtime GitHub ;
