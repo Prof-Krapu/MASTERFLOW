@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Déploiements et audits historiques — INDEXÉS ET DÉDUPLIQUÉS
+
+- 1 278 artefacts de déploiement et 413 fichiers d'audit lus ; aucun manquant ;
+- 110 groupes SHA-256 contiennent 143 copies exactes redondantes ;
+- aucune suppression, exécution de script ou action hôte ;
+- handoff, ZIP, payload, audit daté, GitHub main et live restent des états distincts.
+
+Statut : preuve locale prête à publier. Suite : factories par Passport.
+
 ## 2026-06-20 — Personas et événements Legacy — 36/36 ARBITRÉS
 
 - 24 personas classés avec activation manuelle, scoped et réversible ;

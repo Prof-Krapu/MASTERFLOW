@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague déploiements et audits historiques
+
+- Tâche : publier l'index exact et les règles de preuve de 1 691 fichiers historiques.
+- Impact : empêche les anciens handoffs/payloads/audits d'être pris pour le live.
+- Risque : faible pour audit ; critique avant suppression, recovery ou déploiement.
+- Source de vérité concernée : archive lecture seule + D12 Runtime Continuity + GitHub actuel.
+- Statut : audit local vérifié ; zéro fichier manquant, zéro suppression, live non vérifié.
+- Validation requise : non pour audit ; oui avant action hôte ou suppression.
+
 ### Vague personas et événements
 
 - Tâche : publier l'arbitrage de 24 personas et 12 événements.
