@@ -1895,6 +1895,12 @@ export const SubmissionRecordSchema = z.object({
 });
 export type SubmissionRecord = z.infer<typeof SubmissionRecordSchema>;
 
+export const CreateSubmissionIntakeRequestSchema = z.object({
+  source_ref: z.string().min(1).max(500),
+  observed_label: z.string().min(1).max(160).nullable().optional(),
+});
+export type CreateSubmissionIntakeRequest = z.infer<typeof CreateSubmissionIntakeRequestSchema>;
+
 export const LinkSubmissionIdentityRequestSchema = z.object({
   context_snapshot_id: z.string().min(1),
   student_identity_id: z.string().min(1),

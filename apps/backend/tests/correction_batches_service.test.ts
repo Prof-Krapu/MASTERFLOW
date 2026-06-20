@@ -5,6 +5,7 @@ import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
 import {createCorrectionBatch, listCorrectionBatches} from '../src/services/correction_batches.ts';
 import {createCohort, createRosterVersion} from '../src/services/cohorts.ts';
+import {intakeSubmission} from '../src/services/submission_intake.ts';
 import {
   createInstitutionalGradingProfile,
   createRubricTemplate,
@@ -57,5 +58,10 @@ describe('lot de correction contextualisé R1.2', () => {
     expect(created.context_snapshot).toMatchObject({batch_id: created.batch.batch_id, roster_version_id: roster.roster_version_id, subject_version_ref: 'subject://oral/v1'});
     expect(listCorrectionBatches(teacher)).toContainEqual(expect.objectContaining({batch_id: created.batch.batch_id}));
     expect(listCorrectionBatches(outsider)).not.toContainEqual(expect.objectContaining({batch_id: created.batch.batch_id}));
+    const submission = intakeSubmission(teacher, created.batch.batch_id, {
+      source_ref: 'storage://private/submissions/alice-oral.pdf', observed_label: 'Alice',
+    });
+    expect(submission).toMatchObject({batch_id: created.batch.batch_id, identity_status: 'unknown', status: 'candidate', privacy_level: 'private'});
+    expect(() => intakeSubmission(outsider, created.batch.batch_id, {source_ref: 'storage://private/other'})).toThrow('correction_batch_not_found');
   });
 });
