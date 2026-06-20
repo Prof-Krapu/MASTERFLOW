@@ -16,6 +16,9 @@ de provenance, doublons et compatibilité de scope.
 Contrats transverses, vague 1 : `9/9` arbitrés ; les contrats restants sont à traiter par domaine.
 Contrats transverses, vague 2 : `11/11` arbitrés.
 
+La suite est ordonnée dans `MARATHON_WAVE_EXECUTION_QUEUE.md` et s'enchaîne sans replanification
+manuelle, sauf gate produit, droit, migration ou déploiement live.
+
 ## Conclusion vérifiée
 
 Le legacy est intégralement **inventorié**, mais pas intégralement **absorbé** ni même
