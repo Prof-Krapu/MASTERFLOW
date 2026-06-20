@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Contrats Legacy D11-D12 — ARBITRAGE LOCAL VÉRIFIÉ
+
+- 12 contrats confrontés au canon et au runtime ;
+- 4 règles absorbées, 5 capacités canon prêtes à câbler et 3 capsules réduites ;
+- backflow D11 confirmé candidate-only ;
+- D12 observe et route, sans mutation autonome ni preuve live implicite.
+
+Statut : preuve locale prête à publier. Suite : engines legacy par owner.
+
 ## 2026-06-20 — Contrats Legacy D09-D10 — ARBITRAGE LOCAL VÉRIFIÉ
 
 - 20 contrats confrontés au canon et au runtime ;

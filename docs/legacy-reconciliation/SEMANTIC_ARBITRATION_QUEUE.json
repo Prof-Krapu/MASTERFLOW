@@ -3525,7 +3525,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -4288,7 +4288,7 @@
         "D11"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -4310,7 +4310,7 @@
         "D11"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -4469,7 +4469,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -4538,7 +4538,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -4561,7 +4561,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -4830,7 +4830,7 @@
         "D11"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -5152,7 +5152,7 @@
         "D11"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -5241,7 +5241,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -5552,7 +5552,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -6087,7 +6087,7 @@
         "D11"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -6260,7 +6260,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",

@@ -18,6 +18,7 @@ Contrats transverses, vague 2 : `11/11` arbitrés.
 Contrats D05-D07 : `12/12` arbitrés, dont un contrat morphologique rerouté vers D08.
 Contrats D08 : `48/48` arbitrés ; les variantes Comfy/provider/export sont réduites à des adapters derrière le manifest-first.
 Contrats D09-D10 : `20/20` arbitrés ; récit privé/reader state avant export, devis privé avant public/event.
+Contrats D11-D12 : `12/12` arbitrés ; factories candidate-only et observabilité sans mutation autonome.
 
 La suite est ordonnée dans `MARATHON_WAVE_EXECUTION_QUEUE.md` et s'enchaîne sans replanification
 manuelle, sauf gate produit, droit, migration ou déploiement live.
