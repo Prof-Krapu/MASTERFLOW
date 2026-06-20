@@ -13,11 +13,14 @@ import type {
   ConversationGuide,
   Cohort,
   CreateCohort,
+  CreateCorrectionBatchRequest,
   CreateInstitutionalGradingProfileRequest,
   CreateRosterVersion,
   CreateRubricTemplateRequest,
   CreateRubricVersionRequest,
   CreateGuidedSessionRequest,
+  CorrectionBatch,
+  CorrectionContextSnapshot,
   CurrentContext,
   DecideValidationInboxItemRequest,
   D12MissedTriggerFinding,
@@ -237,6 +240,23 @@ export async function validateInstitutionalGradingProfile(
     {method: 'POST'},
     token,
   );
+}
+
+export async function getCorrectionBatches(
+  projectId?: string | null,
+  token?: string | null,
+): Promise<CorrectionBatch[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+  return request<CorrectionBatch[]>(`/correction/batches${query}`, {method: 'GET'}, token);
+}
+
+export async function createCorrectionBatch(
+  body: CreateCorrectionBatchRequest,
+  token?: string | null,
+): Promise<{batch: CorrectionBatch; context_snapshot: CorrectionContextSnapshot}> {
+  return request<{batch: CorrectionBatch; context_snapshot: CorrectionContextSnapshot}>('/correction/batches', {
+    method: 'POST', body: JSON.stringify(body),
+  }, token);
 }
 
 export async function getIdentityMatchReviews(
