@@ -1805,6 +1805,19 @@ export const CorrectionBatchSchema = z.object({
 });
 export type CorrectionBatch = z.infer<typeof CorrectionBatchSchema>;
 
+/** Création atomique d'un lot privé et de son contexte figé, sans intake ni correction. */
+export const CreateCorrectionBatchRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(),
+  rubric_version_id: z.string().min(1),
+  grading_profile_id: z.string().min(1),
+  cohort_id: z.string().min(1),
+  roster_version_id: z.string().min(1),
+  subject_version_ref: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1).max(500)).min(1).max(100),
+  process_context_profile_ref: z.string().min(1).max(500),
+});
+export type CreateCorrectionBatchRequest = z.infer<typeof CreateCorrectionBatchRequestSchema>;
+
 export const CorrectionContextSnapshotSchema = z.object({
   snapshot_id: z.string().min(1),
   batch_id: z.string().min(1),
