@@ -20,6 +20,7 @@ import type {
   RosterVersion,
   SubmissionRecord,
   SubjectTemplate,
+  SubjectAssignment,
   SubjectVersion,
   ValidationInboxItem,
 } from '@masterflow/shared';
@@ -35,6 +36,7 @@ import {
   createRubricTemplate,
   createRubricVersion,
   createSubject,
+  createSubjectAssignment,
   createSubjectVersion,
   createGuidedSession,
   getGuides,
@@ -51,6 +53,7 @@ import {
   getRubricTemplates,
   getRubricVersions,
   getSubjects,
+  getSubjectAssignments,
   getSubjectVersions,
   submitGuidedAnswer,
   decideIdentityMatchReview,
@@ -58,6 +61,7 @@ import {
   validatePreCorrectionManifest,
   validateRubricVersion,
   validateSubjectVersion,
+  activateSubjectAssignment,
 } from './api.ts';
 
 type TeachingReadinessProps = {
@@ -189,6 +193,9 @@ export function TeachingReadiness({
   const [subjectDeliverables, setSubjectDeliverables] = useState('');
   const [subjectProofs, setSubjectProofs] = useState('');
   const [subjectProgression, setSubjectProgression] = useState('');
+  const [subjectAssignments, setSubjectAssignments] = useState<SubjectAssignment[]>([]);
+  const [assignmentTitle, setAssignmentTitle] = useState('');
+  const [assignmentSubjectVersionId, setAssignmentSubjectVersionId] = useState('');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -201,7 +208,7 @@ export function TeachingReadiness({
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles, nextBatches, nextSubjects] = await Promise.all([
+      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles, nextBatches, nextSubjects, nextAssignments] = await Promise.all([
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
@@ -211,6 +218,7 @@ export function TeachingReadiness({
         getInstitutionalGradingProfiles(project?.project_id, token),
         getCorrectionBatches(project?.project_id, token),
         getSubjects(project?.project_id, token),
+        getSubjectAssignments(project?.project_id, token),
       ]);
       setJobs(nextJobs);
       setGuides(nextGuides);
@@ -221,6 +229,7 @@ export function TeachingReadiness({
       setGradingProfiles(nextProfiles);
       setCorrectionBatches(nextBatches);
       setSubjects(nextSubjects);
+      setSubjectAssignments(nextAssignments);
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
       setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
@@ -237,6 +246,7 @@ export function TeachingReadiness({
       setGradingProfiles([]);
       setCorrectionBatches([]);
       setSubjects([]);
+      setSubjectAssignments([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
@@ -275,7 +285,7 @@ export function TeachingReadiness({
 
   useEffect(() => {
     if (!selectedSubjectId) { setSubjectVersions([]); return; }
-    void getSubjectVersions(selectedSubjectId, token).then(setSubjectVersions)
+    void getSubjectVersions(selectedSubjectId, token).then((versions) => { setSubjectVersions(versions); setAssignmentSubjectVersionId((current) => current || versions.find((version) => version.status === 'validated')?.version_id || ''); })
       .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Versions du sujet indisponibles.'));
   }, [selectedSubjectId, token]);
 
@@ -522,6 +532,14 @@ export function TeachingReadiness({
     setMutating(true); try { await validateSubjectVersion(versionId, token); if (selectedSubjectId) setSubjectVersions(await getSubjectVersions(selectedSubjectId, token)); await refresh(); setStatus('Version du sujet validée en privé ; aucune publication ou assignment.'); }
     catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du sujet impossible.'); } finally { setMutating(false); }
   }, [refresh, selectedSubjectId, token]);
+
+  const createAssignment = useCallback(async (): Promise<void> => {
+    if (!selectedCohortId || !assignmentSubjectVersionId || !assignmentTitle.trim()) { setStatus('Choisis une cohorte, une version validée et un titre d’assignment.'); return; }
+    setMutating(true); try { await createSubjectAssignment({project_id:project?.project_id??null,cohort_id:selectedCohortId,source_subject_version_id:assignmentSubjectVersionId,title:assignmentTitle.trim()},token);setAssignmentTitle('');await refresh();setStatus('Assignment brouillon créé depuis un snapshot du sujet.'); }
+    catch(error){setStatus(error instanceof Error?error.message:'Assignment impossible.');}finally{setMutating(false);}
+  },[assignmentSubjectVersionId,assignmentTitle,project?.project_id,refresh,selectedCohortId,token]);
+
+  const activateAssignment = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await activateSubjectAssignment(id,token);await refresh();setStatus('Assignment activé pour la cohorte ; le sujet source reste inchangé.');}catch(error){setStatus(error instanceof Error?error.message:'Activation impossible.');}finally{setMutating(false);}},[refresh,token]);
 
   useEffect(() => {
     void refresh();
@@ -802,6 +820,11 @@ export function TeachingReadiness({
             <label>Sujet<select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)}><option value="">Choisir</option>{subjects.map((subject) => <option key={subject.template_id} value={subject.template_id}>{subject.title} · {subject.status}</option>)}</select></label>
             <button className="secondary" disabled={mutating || !selectedSubjectId} onClick={() => void createNextSubjectVersion()} type="button">Créer la version suivante</button>
             {subjectVersions.map((version) => <div className="identity-review__card" key={version.version_id}><div><strong>Version {version.version}</strong><small>{version.status} · privé</small></div>{version.status === 'draft' ? <button disabled={mutating} onClick={() => void validateSubject(version.version_id)} type="button">Valider en privé</button> : <small>Validée, non publiée.</small>}</div>)}
+            <strong>Assignment de cohorte</strong>
+            <label>Version validée<select value={assignmentSubjectVersionId} onChange={(e) => setAssignmentSubjectVersionId(e.target.value)}><option value="">Choisir</option>{subjectVersions.filter((v) => v.status === 'validated').map((v) => <option key={v.version_id} value={v.version_id}>Version {v.version}</option>)}</select></label>
+            <label>Titre de l’assignment<input value={assignmentTitle} onChange={(e) => setAssignmentTitle(e.target.value)} /></label>
+            <button disabled={mutating || !selectedCohortId} onClick={() => void createAssignment()} type="button">Créer l’assignment brouillon</button>
+            {subjectAssignments.map((assignment) => <div className="identity-review__card" key={assignment.assignment_id}><div><strong>{assignment.title}</strong><small>{assignment.status} · snapshot figé</small></div>{assignment.status === 'draft' ? <button disabled={mutating} onClick={() => void activateAssignment(assignment.assignment_id)} type="button">Activer pour la cohorte</button> : <small>Actif, source inchangée.</small>}</div>)}
           </div>
         </div>
       </section>
