@@ -873,6 +873,7 @@ export function TeachingReadiness({
                 {assignment.status === 'draft' ? <button disabled={mutating} onClick={() => void activateAssignment(assignment.assignment_id)} type="button">Activer pour la cohorte</button> : <small>Actif, source inchangée.</small>}
                 {latestSheet ? <div className="roster-management__form">
                   <small>Fiche V{latestSheet.version} · {latestSheet.status} · {latestSheet.sync_status === 'needs_teacher_review' ? 'revue professeur requise' : 'synchronisée'} · aucune note</small>
+                  {latestSheet.changed_fields.length > 0 ? <small>Champs modifiés depuis la version précédente : {latestSheet.changed_fields.join(', ')}.</small> : <small>Aucune divergence dérivée détectée.</small>}
                   <label>Mode d’évaluation — verrouillé professeur<input value={sheetEvaluationMode} onChange={(event) => setSheetEvaluationMode(event.target.value)} /></label>
                   <label>Notes professeur<textarea rows={2} value={sheetTeacherNotes} onChange={(event) => setSheetTeacherNotes(event.target.value)} /></label>
                   <button className="secondary" disabled={mutating} onClick={() => void saveSheetTeacherFields(latestSheet.correction_sheet_id)} type="button">Enregistrer les champs professeur</button>

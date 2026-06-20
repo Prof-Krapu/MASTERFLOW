@@ -95,6 +95,15 @@ export function deriveCorrectionSheetFields(manifest: SubjectManifest): Correcti
 }
 
 function toDto(row: CorrectionSheetRow): CorrectionSheetDraft {
+  const derivedFields = JSON.parse(row.derived_fields_json) as Record<string, unknown>;
+  const previous = getDb().prepare(`
+    SELECT derived_fields_json FROM correction_sheet_drafts
+    WHERE assignment_id = ? AND version < ? ORDER BY version DESC LIMIT 1
+  `).get(row.assignment_id, row.version) as {derived_fields_json: string} | undefined;
+  const previousFields = previous ? JSON.parse(previous.derived_fields_json) as Record<string, unknown> : null;
+  const changedFields = previousFields
+    ? Object.keys(derivedFields).filter((key) => JSON.stringify(derivedFields[key]) !== JSON.stringify(previousFields[key]))
+    : [];
   return CorrectionSheetDraftSchema.parse({
     correction_sheet_id: row.id,
     owner_id: row.owner_id,
@@ -104,9 +113,10 @@ function toDto(row: CorrectionSheetRow): CorrectionSheetDraft {
     source_subject_version_id: row.source_subject_version_id,
     version: row.version,
     subject_snapshot: JSON.parse(row.subject_snapshot_json),
-    derived_fields: JSON.parse(row.derived_fields_json),
+    derived_fields: derivedFields,
     teacher_fields: JSON.parse(row.teacher_fields_json),
     locked_teacher_fields: JSON.parse(row.locked_teacher_fields_json),
+    changed_fields: changedFields,
     sync_status: row.sync_status,
     status: row.status,
     created_by: row.created_by,
