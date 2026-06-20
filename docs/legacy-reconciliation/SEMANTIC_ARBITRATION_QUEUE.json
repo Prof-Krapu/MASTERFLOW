@@ -13405,7 +13405,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13415,7 +13415,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-BEHAVIORAL-SOURCE-REGISTRY-JSON",
@@ -13425,7 +13428,7 @@
       "sha256": "f7b1d44be42c97dde6018c98d98dd8c2e964afd3c159d01e5fa514bec197f2ce",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13435,7 +13438,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "truth_role": "candidate_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-CANON-PASSPORT-MEMORY-AND-ASSET-SCHEMA-REGISTRY-MD",
@@ -13448,7 +13454,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13458,7 +13464,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-COMFY-RENDER-QUEUE-STATE-MD",
@@ -13471,7 +13480,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13481,7 +13490,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "runtime_state_projection",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-CONDITIONAL-SUB-PERSONA-INSTANCE-REGISTRY-MD",
@@ -13493,7 +13505,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13503,7 +13515,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-CONTEXTUAL-RECALL-AND-SCOPE-FILTERING-MD",
@@ -13515,7 +13530,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13525,7 +13540,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-CROSS-PROJECT-RUNTIME-AND-SHARED-CONTEXT-SYSTEM-MD",
@@ -13537,7 +13555,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13547,7 +13565,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-DATA-MUTATION-AND-RUNTIME-CONSISTENCY-MODEL-MD",
@@ -13557,7 +13578,7 @@
       "sha256": "25791d95d6fe0e18efa9bc40f6138e013700476571d63d6ce64c5b1345dbe1a9",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13567,7 +13588,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-DATA-SCHEMA-AND-MUTATION-RULES-MD",
@@ -13577,7 +13601,7 @@
       "sha256": "8041ebfd175a30db3d8f6dec7f22fb58b9b90b9266bfb6244940337735d96a0e",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13587,7 +13611,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-DATASET-ACCESS-MATRIX-MD",
@@ -13599,7 +13626,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13609,7 +13636,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-DATASET-SYSTEM-ARCHITECTURE-MD",
@@ -13619,7 +13649,7 @@
       "sha256": "c638a6c1a329b171b4fab34ea7b85bb28af380d9ba19cc8d74e64b3f26a97f6a",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13629,7 +13659,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-DATASET-VERSIONING-AND-APPEND-ONLY-SYSTEM-MD",
@@ -13641,7 +13674,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13651,7 +13684,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-EXTENSIBLE-OUTPUT-TEMPLATE-REGISTRY-MD",
@@ -13661,7 +13697,7 @@
       "sha256": "0ab93daf46514061eb26d805c571a4502732882e02c9969739a2792870548eb9",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13671,7 +13707,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-FICTIONAL-UNIVERSE-MEMORY-ORCHESTRATION-MD",
@@ -13684,7 +13723,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13694,7 +13733,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-FILTER-LEDGER-AND-POST-GENERATION-REPORT-SCHEMA-MD",
@@ -13704,7 +13746,7 @@
       "sha256": "fc952e79bc5b85d9532c0a8007afdf30115ef87e03afeadbd856866b5b78c920",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13714,7 +13756,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "runtime_state_projection",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-GENERATED-ASSET-TYPE-AND-UI-SPEC-REGISTRY-MD",
@@ -13727,7 +13772,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13737,7 +13782,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-GLOBAL-ACCESS-PACK-FEATURE-UNLOCK-MATRIX-MD",
@@ -13749,7 +13797,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13759,7 +13807,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-GRAPHIC-PREFERENCE-PROFILE-AND-RENDER-FEEDBACK-REGISTRY-MD",
@@ -13772,7 +13823,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13782,7 +13833,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-KEYBOARD-SHORTCUT-AND-COMMAND-REGISTRY-MD",
@@ -13794,7 +13848,7 @@
         "D03"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13804,7 +13858,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-KNOWLEDGE-RUNTIME-AND-CONTEXT-RETENTION-MODEL-MD",
@@ -13816,7 +13873,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13826,7 +13883,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-LONG-TERM-ARCHIVAL-AND-HISTORICAL-INTELLIGENCE-SYSTEM-MD",
@@ -13836,7 +13896,7 @@
       "sha256": "cbf016db903e2ca882174215500746c57428e19d98f4e2e4fcf9bb490debfb43",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13846,7 +13906,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MALEX-OWNER-PROFILE-LOCK-MD",
@@ -13856,7 +13919,7 @@
       "sha256": "0a905bbe26a278c88f545b95bbd7695fabd8b2ce3c9c972f6c3edb0bbce25ee5",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "blocked",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13866,7 +13929,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "truth_role": "private_or_rights_sensitive_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLEX-CANON-CLEAN-RELOCK-2026-MD",
@@ -13876,7 +13942,7 @@
       "sha256": "517b731baafdb9d709e59d1cffa9b6dc8beb220117f32c9f37b7e68d41d7468c",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13886,7 +13952,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLEX-GRAPHIC-CANON-V2-STYLE-PROPORTION-CLOTHING-ACTING-MD",
@@ -13898,7 +13967,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13908,7 +13977,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLEX-PRIVATE-MORPH-AUTHORITY-CARD-MD",
@@ -13920,7 +13992,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "blocked",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13930,7 +14002,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "truth_role": "private_or_rights_sensitive_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLEX-PROPRIETARY-DA-ROOT-REGISTRY-MD",
@@ -13942,7 +14017,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13952,7 +14027,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLEX-TRANSFERABLE-CANON-FOR-FACTORIES-MD",
@@ -13962,7 +14040,7 @@
       "sha256": "9419eaf8fab9a2ebb2f10245ad8582911881ca752b6cfce8d15132ea63329a85",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13972,7 +14050,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-ACTIVE-CONTRACT-INDEX-JSON",
@@ -13982,7 +14063,7 @@
       "sha256": "b3070ed7a4829c0176f0d6d128685ac703cac8b96609cb23112106122f129740",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -13992,7 +14073,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-BACKFLOW-BDD-SCHEMA-REGISTRY-MD",
@@ -14004,7 +14088,7 @@
         "D11"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14014,7 +14098,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D11_FACTORY_BACKFLOW",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-CAST-CONTINUITY-REGISTRY-MD",
@@ -14024,7 +14111,7 @@
       "sha256": "634d40f759e07d3b5d2cff6d5ff9f899521c9424897058af9dc7125fdd966cf2",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14034,7 +14121,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-CORE-DA-ROOT-REGISTRY-MD",
@@ -14046,7 +14136,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14056,7 +14146,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-DA-ATOMIC-BRICKS-AND-PIPELINE-SLICES-REGISTRY-MD",
@@ -14068,7 +14161,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14078,7 +14171,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-DA-COMPONENT-FILTER-LIBRARY-REGISTRY-MD",
@@ -14090,7 +14186,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14100,7 +14196,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-DA-GAUGE-FILTER-ARCHETYPE-MATRIX-REGISTRY-MD",
@@ -14112,7 +14211,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14122,7 +14221,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-GRAPH-FAMILY-REGISTRY-MD",
@@ -14132,7 +14234,7 @@
       "sha256": "1d8eeebe3f1725a9c661a20ce72927283e6eced665d84ebe0b67bde40541d85f",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14142,7 +14244,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-GRAPHIC-DIALECTS-BY-LAYER-AND-FACTORY-MD",
@@ -14155,7 +14260,7 @@
         "D11"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14165,7 +14270,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D11_FACTORY_BACKFLOW",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-GRAPHIC-REFINEMENT-V2-GAUGE-REGISTRY-MD",
@@ -14177,7 +14285,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14187,7 +14295,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-LORE-ENTITY-CANON-REGISTRY-MD",
@@ -14199,7 +14310,7 @@
         "D09"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14209,7 +14320,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-LORE-VISUAL-CLASS-REGISTRY-MD",
@@ -14222,7 +14336,7 @@
         "D09"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14232,7 +14346,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-PEDAGOGICAL-VISUAL-FORMAT-ROUTING-MATRIX-MD",
@@ -14245,7 +14362,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14255,7 +14372,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERFLOW-SENTINEL-SIGNAL-RISK-AND-RESPONSE-REGISTRY-MD",
@@ -14265,7 +14385,7 @@
       "sha256": "2013ce9e8e8038e484d6e1780a238d2673d907a07d1cab9b6d4497afafba3ee6",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14275,7 +14395,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MASTERSTORY-CHARACTER-PROFILE-AND-ASSET-REGISTRY-MD",
@@ -14288,7 +14411,7 @@
         "D09"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14298,7 +14421,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MEMORY-AND-KNOWLEDGE-GOVERNANCE-SYSTEM-MD",
@@ -14310,7 +14436,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14320,7 +14446,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MEMORY-GRAPH-AND-RELATION-RUNTIME-MD",
@@ -14332,7 +14461,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14342,7 +14471,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MEMORY-HIERARCHY-AND-CONTEXT-PERSISTENCE-SYSTEM-MD",
@@ -14354,7 +14486,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14364,7 +14496,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-MEMORY-RETENTION-AND-INVALIDATION-MD",
@@ -14376,7 +14511,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14386,7 +14521,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-OURS-DOR-BIBLE-VISUAL-REFERENCE-ROUTING-20260613-MD",
@@ -14398,7 +14536,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14408,7 +14546,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-OURS-DOR-EVENT-DA-REFERENCE-AND-PIPELINE-REGISTRY-MD",
@@ -14421,7 +14562,7 @@
         "D10"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14431,7 +14572,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-OURS-DOR-LAYER-RELOCK-2026-MD",
@@ -14441,7 +14585,7 @@
       "sha256": "7e0ce287016948a74860451daaa5e8f482a7f113615a7a6a8460e7c2692ac2ca",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14451,7 +14595,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "governance_contract",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-OUTPUT-SURFACE-EXPORT-REGISTRY-MD",
@@ -14463,7 +14610,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14473,7 +14620,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PEDAGO-RESOURCE-LEVEL-SCALE-N1-N5-MD",
@@ -14485,7 +14635,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14495,7 +14645,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PEDAGOGICAL-RESOURCE-ROUTING-AND-EXAMPLE-GRAPH-REGISTRY-MD",
@@ -14508,7 +14661,7 @@
         "D05"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14518,7 +14671,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PERSONA-METHOD-RELATION-AND-BEHAVIORAL-VISUAL-PROFILE-REGISTRY-MD",
@@ -14531,7 +14687,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14541,7 +14697,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PERSONA-VISUAL-STORYTELLING-CANON-REGISTRY-MD",
@@ -14555,7 +14714,7 @@
         "D09"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14565,7 +14724,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PERSONAL-LEARNING-PROFILE-AND-HELP-CONTEXT-REGISTRY-MD",
@@ -14578,7 +14740,7 @@
         "D04"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14588,7 +14750,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PERSONAL-PERSONA-ASSIGNMENT-AND-CHATBOT-PROFILE-REGISTRY-MD",
@@ -14601,7 +14766,7 @@
         "D05"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14611,7 +14776,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-PROF-KRAPU-DA-REFERENCE-AND-PIPELINE-REGISTRY-MD",
@@ -14623,7 +14791,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14633,7 +14801,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-RESOURCE-TYPE-TAXONOMY-AND-FILTERING-MODEL-MD",
@@ -14645,7 +14816,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14655,7 +14826,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-RUNTIME-PATTERN-LIBRARY-AND-RECIPE-REGISTRY-MD",
@@ -14665,7 +14839,7 @@
       "sha256": "81794d58ee0d13cd98bc747d036c0e89c4679d0dd3a5e4d7bebf5e77fe56b760",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14675,7 +14849,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-STUDENT-PROFILE-AND-AVATAR-ROSTER-REGISTRY-MD",
@@ -14685,7 +14862,7 @@
       "sha256": "9b22d99ba5d9e7c326007d68110ec5030b0b86ccd94f76570091749eeff5ae09",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "blocked",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14695,7 +14872,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "truth_role": "private_or_rights_sensitive_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-SYSTEM-INDEXES-AND-RUNTIME-REFERENCING-MODEL-MD",
@@ -14705,7 +14885,7 @@
       "sha256": "47331a0395619f07078a8c29de6f47eef5238c6b2f72f47270e18df06937ece4",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14715,7 +14895,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "truth_role": "derived_model",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-TUTORIAL-VIDEO-EDITORIAL-TRIAGE-QUEUE-JSON",
@@ -14727,7 +14910,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14737,7 +14920,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "candidate_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-TUTORIAL-VIDEO-SOURCE-AND-TRANSCRIPT-MANIFEST-JSON",
@@ -14747,7 +14933,7 @@
       "sha256": "352b84c8c11b6a5b54ac15b8a0705412b3a80d9587b7721c600b2defe80762fc",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14757,7 +14943,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "candidate_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-USER-UI-PREFERENCE-AND-ROOM-LAYOUT-STATE-MD",
@@ -14769,7 +14958,7 @@
         "D03"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14779,7 +14968,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "truth_role": "runtime_state_projection",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-VISUAL-DA-RESOLUTION-STATUS-AND-GAUGE-REGISTRY-MD",
@@ -14791,7 +14983,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14801,7 +14993,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-VISUAL-ELEMENT-FAMILY-DA-TRANSLATION-REGISTRY-MD",
@@ -14813,7 +15008,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14823,7 +15018,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-VISUAL-REFERENCE-BOARD-REGISTRY-V5-MD",
@@ -14835,7 +15033,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14845,7 +15043,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-VISUAL-REFERENCE-STATUS-REGISTRY-MD",
@@ -14857,7 +15058,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14867,7 +15068,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "truth_role": "authority_registry_candidate",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-08-DATASETS-VISUAL-REFERENCES-OURS-D-OR-BIBLE-PDF",
@@ -14877,7 +15081,7 @@
       "sha256": "0426e28eb75260c005e5fba1c50c821197d54a4a8e00365f814028e367805ad4",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "blocked",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -14887,7 +15091,10 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "truth_role": "private_or_rights_sensitive_source",
+      "arbitration_note": "Registry or source classified by authority, provenance, privacy and mutation role; no bulk import implied."
     },
     {
       "legacy_id": "LEGACY-09-EVENTS-ALERT-ORCHESTRATION-AND-RUNTIME-ESCALATION-MODEL-MD",

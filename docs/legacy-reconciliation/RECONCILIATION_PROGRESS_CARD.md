@@ -18,6 +18,7 @@ live est déjà complet.
 | Contrats D09-D10 | 20 contrats arbitrés | runtimes dédiés absents | D09 privé puis Quote Builder privé |
 | Contrats D11-D12 | 12 contrats arbitrés | backflow borné, live inconnu | engines puis preuves continuité |
 | Engines legacy | 148 engines consolidés sous 12 owners | parité runtime variable | datasets puis gaps par owner |
+| Datasets legacy | 69 artefacts arbitrés | 4 sources privées/droits bloquées | personas/events sans activation |
 | DA / assets | resolver + registre cadrés | manifest/provider lifecycle absent | persister manifest/références, provider verrouillé |
 | Mémoire / timeline / versioning | contrat rétabli | cards/checkpoints présents, ledger absent | timeline/change ledger additif |
 | Continuité runtime | incident/recovery contract rétabli | observabilité partielle, live non prouvé | receipts + récupération conservatrice |
@@ -43,7 +44,7 @@ La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
 
 ## Prochain ordre logique
 
-1. Publier la consolidation engines puis enchaîner les datasets.
-2. Revenir aux tranches runtime seulement après datasets/personas/events.
+1. Publier l'arbitrage datasets puis enchaîner personas et événements.
+2. Revenir aux tranches runtime seulement après personas/events et preuves historiques.
 3. Ajouter timeline/change ledger et receipts de continuité.
 4. Seulement ensuite, traiter les autres apps legacy et les factories.

@@ -10,8 +10,7 @@ Grappes D09/D10 applicatives : `12/12` arbitrées.
 Familles applicatives restantes : arbitrage de niveau famille terminé ; les objets individuels
 restent dans la queue de 692 lignes jusqu'à leur décision et preuve propres.
 Engines : `148/148` arbitrés et consolidés sous 12 owners ; aucun micro-engine implicite.
-Datasets critiques de vérité : `7/7` arbitrés ; les autres restent dans la queue pour contrôle
-de provenance, doublons et compatibilité de scope.
+Datasets : `69/69` arbitrés par vérité, provenance, privacy et owner ; 4 sources sensibles bloquées.
 Contrats transverses, vague 1 : `9/9` arbitrés ; les contrats restants sont à traiter par domaine.
 Contrats transverses, vague 2 : `11/11` arbitrés.
 Contrats D05-D07 : `12/12` arbitrés, dont un contrat morphologique rerouté vers D08.
@@ -56,7 +55,7 @@ intégralement arbitré fichier par fichier.
 1. Affecter les 95 apps legacy à un domaine et une décision explicite.
 2. Consolider les écarts runtime des 12 owners sans recréer les 148 engines legacy.
 3. Classer les 197 contrats par canon actif, fusion, réduction, futur ou rejet.
-4. Vérifier les 69 datasets/registries comme sources de vérité potentielles.
+4. Restaurer uniquement les registres dataset validés, jamais les 69 artefacts en import global.
 5. Vérifier les 12 événements et les 24 personas sans les confondre avec le runtime.
 6. Dédupliquer les 1 278 artefacts de déploiement et 413 audits avant extraction.
 7. Traiter les 2 062 fichiers factories par Passport/owner, jamais par import global.

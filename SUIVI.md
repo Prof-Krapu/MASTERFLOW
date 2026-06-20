@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Datasets Legacy — 69/69 ARBITRÉS
+
+- 10 règles absorbées, 40 registres canon-ready, 12 réduits et 3 sources candidates ;
+- 4 sources privées ou à droits sensibles restent bloquées et non absorbées ;
+- chaque artefact reçoit un owner et un rôle de vérité ;
+- aucun import, déplacement, indexation ou exposition effectué.
+
+Statut : preuve locale prête à publier. Suite : personas et événements legacy.
+
 ## 2026-06-20 — Engines Legacy — 148/148 ARBITRÉS PAR OWNER
 
 - 24 responsabilités absorbées, 59 canon-ready, 51 alias/modèles réduits et 14 candidats futurs ;

@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague datasets legacy
+
+- Tâche : publier l'arbitrage des 69 datasets par vérité, provenance et accès.
+- Impact : empêche qu'un snapshot ou fichier privé devienne source de vérité.
+- Risque : faible pour audit ; élevé pour données étudiantes, morphologie et droits visuels.
+- Source de vérité concernée : Living Truth Spine + Dataset Access Matrix + archive lecture seule.
+- Statut : audit local vérifié ; 4 sources bloquées et exclues de l'absorption.
+- Validation requise : non pour audit ; oui avant usage d'une source bloquée.
+
 ### Vague engines legacy
 
 - Tâche : publier la consolidation des 148 engines sous 12 owners.
