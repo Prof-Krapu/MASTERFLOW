@@ -4,6 +4,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R1.5 Correction : gate d'exécution maintenu
+
+- le service `correction_prepare` existe et exige déjà un manifest validé ;
+- créer le job peut être consommé par un runner et traiter des données étudiantes ;
+- aucun bouton Teaching ni job n'est créé sans décision provider, consentement et runtime live ;
+- R1 reste implémenté jusqu'au manifest professeur, mais l'exécution n'est pas déclarée active.
+
+Statut : gate réel, non contourné. Le marathon poursuit les tranches sûres hors provider/live.
+
 ## 2026-06-20 — R1.4 Correction : manifest d'échantillon validé par le professeur
 
 - le professeur sélectionne explicitement des copies du lot ;
