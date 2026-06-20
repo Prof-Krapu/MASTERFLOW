@@ -13,6 +13,7 @@ Engines directeurs : `13` owners arbitrés ; les `135` engines restants restent 
 à classer par tranche, pas à implémenter individuellement.
 Datasets critiques de vérité : `7/7` arbitrés ; les autres restent dans la queue pour contrôle
 de provenance, doublons et compatibilité de scope.
+Contrats transverses, vague 1 : `9/9` arbitrés ; les contrats restants sont à traiter par domaine.
 
 ## Conclusion vérifiée
 
