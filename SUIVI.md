@@ -4,6 +4,14 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R2.5 D06 : diff de fiche pour revue professeur
+
+- chaque fiche compare ses champs dérivés à la version précédente du même assignment ;
+- Teaching affiche les champs réellement modifiés avant validation ;
+- aucune décision, gravité, note ou publication n’est inférée.
+
+Statut : vérifié localement, prêt à publier ; backend 368/368, TypeScript back/front et build Vite verts.
+
 ## 2026-06-20 — R2.4 D05→D06 : paramètres pédagogiques complets
 
 - objectifs, critères, compétences, Bloom, contraintes, checkpoints, mode d’évaluation,
@@ -11,7 +19,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - la fiche les dérive depuis le snapshot exact, sans interprétation ni score ;
 - Teaching expose leur saisie ; anciens manifests relus avec valeurs neutres.
 
-Statut : vérifié localement, prêt à publier ; backend 368/368, TypeScript back/front et build Vite verts.
+Statut : déployé sur GitHub `main` via PR #100, merge `4f04c0a` ; backend 368/368,
+TypeScript back/front et build Vite verts. Aucun live revendiqué.
 
 ## 2026-06-20 — R2.3 D06 : fiche de correction autosynchronisée
 

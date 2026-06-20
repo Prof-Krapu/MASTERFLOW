@@ -43,6 +43,7 @@ describe('bibliothèque de sujets versionnés R2',()=>{
     expect(validateSubjectVersion(teacher,v2.version_id).status).toBe('validated');
     const sheetV2=syncCorrectionSheetDraft(teacher,updated.correction_sheet_id,{source_subject_version_id:v2.version_id});
     expect(sheetV2).toMatchObject({version:2,sync_status:'needs_teacher_review',status:'draft'});
+    expect(sheetV2.changed_fields).toEqual(['mission']);
     expect(sheetV2.derived_fields.mission).toBe('Construire une campagne V2.');
     expect(sheetV2.teacher_fields.evaluation_mode).toBe('Évaluation formative');
     expect(sheetV2.locked_teacher_fields).toEqual(['evaluation_mode']);

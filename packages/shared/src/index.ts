@@ -1858,6 +1858,7 @@ export const CorrectionSheetDraftSchema = z.object({
   derived_fields: CorrectionSheetDerivedFieldsSchema,
   teacher_fields: z.record(z.string(), z.string()),
   locked_teacher_fields: z.array(z.string()),
+  changed_fields: z.array(z.string()),
   sync_status: z.enum(['synced', 'needs_teacher_review']),
   status: z.enum(['draft', 'validated', 'archived']),
   created_by: z.string().min(1),
