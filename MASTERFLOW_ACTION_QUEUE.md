@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague contrats D05-D07
+
+- Tâche : publier l'arbitrage de 12 contrats et le reroutage morphologique D07→D08.
+- Impact : transforme des artefacts legacy en décisions traçables sans promettre un runtime absent.
+- Risque : faible ; aucun code, OCR, migration ou live.
+- Source de vérité concernée : legacy lecture seule + canon D02/D05/D06/D07/D08 + GitHub `main`.
+- Statut : audit local vérifié, publication en cours.
+- Validation requise : non pour audit/queue ; oui avant activation des capacités gated.
+
 ### Réconciliation legacy — arbitrage exhaustif
 
 - Tâche : attribuer à chaque app, engine, contrat et dataset legacy un domaine, un owner et un statut `absorbed/reduced/canon_ready/restore_candidate/deprecated`.
