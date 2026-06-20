@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — Contrats Legacy D05-D07 — ARBITRAGE LOCAL VÉRIFIÉ
+
+- 12 contrats confrontés au canon Drive et au runtime GitHub ;
+- séparation explicite entre absorption canon et implémentation effective ;
+- chaîne prioritaire D05/D06 confirmée : sujet versionné, barème/profil, fiche brouillon,
+  assignment scoped, submissions et revue professeur ;
+- D07 confirmé substantiel sans ingestion OCR/photo réelle ;
+- contrat morphologique rerouté de D07 vers D08 pour interdire toute confusion avec
+  identité ou biométrie.
+
+Statut : documentation locale prête à publier ; aucun code, provider, migration ou live modifié.
+Suite : vague contrats D08.
+
 ## 2026-06-20 — Audit global Legacy → Canon → Git — PREMIER PASSAGE
 
 - inventaire confirmé : 4 714 fichiers, dont 2 062 factories isolées ;

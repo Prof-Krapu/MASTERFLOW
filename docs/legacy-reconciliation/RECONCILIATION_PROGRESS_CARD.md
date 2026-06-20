@@ -13,6 +13,7 @@ live est déjà complet.
 |---|---|---|---|
 | Sources, versions, identités, contextes | Living Truth Spine raccordé | fondations contextuelles présentes | livrer les objets additifs par verticale |
 | Correction / roster | contrat complet | contexte, identité, UI et roster manuel sur `main` | barème/profil puis lot contextualisé |
+| Contrats D05-D07 | 12 contrats arbitrés | runtime variable, aucun faux statut `absorbed` | publier la preuve puis traiter D08 |
 | DA / assets | resolver + registre cadrés | manifest/provider lifecycle absent | persister manifest/références, provider verrouillé |
 | Mémoire / timeline / versioning | contrat rétabli | cards/checkpoints présents, ledger absent | timeline/change ledger additif |
 | Continuité runtime | incident/recovery contract rétabli | observabilité partielle, live non prouvé | receipts + récupération conservatrice |
@@ -38,7 +39,7 @@ La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
 
 ## Prochain ordre logique
 
-1. Terminer l'arbitrage apps/engines/datasets puis poursuivre la verticale correction.
-2. Implémenter le manifest/read model D08 sans provider.
+1. Publier l'arbitrage D05-D07 puis enchaîner les contrats D08.
+2. Implémenter ensuite le manifest/read model D08 sans provider.
 3. Ajouter timeline/change ledger et receipts de continuité.
 4. Seulement ensuite, traiter les autres apps legacy et les factories.

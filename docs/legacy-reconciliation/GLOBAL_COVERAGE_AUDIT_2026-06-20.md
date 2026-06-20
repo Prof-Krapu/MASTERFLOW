@@ -15,6 +15,7 @@ Datasets critiques de vérité : `7/7` arbitrés ; les autres restent dans la qu
 de provenance, doublons et compatibilité de scope.
 Contrats transverses, vague 1 : `9/9` arbitrés ; les contrats restants sont à traiter par domaine.
 Contrats transverses, vague 2 : `11/11` arbitrés.
+Contrats D05-D07 : `12/12` arbitrés, dont un contrat morphologique rerouté vers D08.
 
 La suite est ordonnée dans `MARATHON_WAVE_EXECUTION_QUEUE.md` et s'enchaîne sans replanification
 manuelle, sauf gate produit, droit, migration ou déploiement live.
