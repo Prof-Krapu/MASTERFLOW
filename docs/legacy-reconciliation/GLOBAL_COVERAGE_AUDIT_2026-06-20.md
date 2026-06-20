@@ -9,8 +9,7 @@ Grappe D08 (apps et contrats directeurs) : `9/9` arbitrée.
 Grappes D09/D10 applicatives : `12/12` arbitrées.
 Familles applicatives restantes : arbitrage de niveau famille terminé ; les objets individuels
 restent dans la queue de 692 lignes jusqu'à leur décision et preuve propres.
-Engines directeurs : `13` owners arbitrés ; les `135` engines restants restent à dédoublonner et
-à classer par tranche, pas à implémenter individuellement.
+Engines : `148/148` arbitrés et consolidés sous 12 owners ; aucun micro-engine implicite.
 Datasets critiques de vérité : `7/7` arbitrés ; les autres restent dans la queue pour contrôle
 de provenance, doublons et compatibilité de scope.
 Contrats transverses, vague 1 : `9/9` arbitrés ; les contrats restants sont à traiter par domaine.
@@ -55,7 +54,7 @@ intégralement arbitré fichier par fichier.
 ## Dette d'audit restante
 
 1. Affecter les 95 apps legacy à un domaine et une décision explicite.
-2. Affecter les 148 engines à un owner, un successeur et un statut Git.
+2. Consolider les écarts runtime des 12 owners sans recréer les 148 engines legacy.
 3. Classer les 197 contrats par canon actif, fusion, réduction, futur ou rejet.
 4. Vérifier les 69 datasets/registries comme sources de vérité potentielles.
 5. Vérifier les 12 événements et les 24 personas sans les confondre avec le runtime.

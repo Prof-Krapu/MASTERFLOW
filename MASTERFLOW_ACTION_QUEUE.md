@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague engines legacy
+
+- Tâche : publier la consolidation des 148 engines sous 12 owners.
+- Impact : conserve les responsabilités sans recréer 148 services.
+- Risque : faible pour audit ; élevé si un nom legacy devient une promesse runtime.
+- Source de vérité concernée : Domain Map canon + runtime GitHub + archive lecture seule.
+- Statut : audit local vérifié, publication en cours.
+- Validation requise : non pour audit ; oui avant toute nouvelle autorité runtime.
+
 ### Vague contrats D11-D12
 
 - Tâche : publier l'arbitrage de 12 contrats factories, backflow et observabilité.

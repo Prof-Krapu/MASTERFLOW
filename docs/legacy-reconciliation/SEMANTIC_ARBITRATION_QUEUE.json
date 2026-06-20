@@ -9416,7 +9416,7 @@
       "sha256": "2d6d67f1c06843efc0bd95dc413591bcf6e5046d822042d80188e1015c691428",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9426,7 +9426,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-AI-ORCHESTRATION-LAYER-MD",
@@ -9438,7 +9440,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9448,7 +9450,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-AI-SAFETY-AND-ALIGNMENT-MD",
@@ -9460,7 +9464,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9470,7 +9474,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ANALYTICS-ENGINE-MD",
@@ -9482,7 +9488,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9492,7 +9498,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ARCHIVE-ENGINE-MD",
@@ -9504,7 +9512,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9514,7 +9522,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ASSET-RUNTIME-ENGINE-MD",
@@ -9526,7 +9536,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9536,7 +9546,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ATTENTION-ENGINE-MD",
@@ -9546,7 +9558,7 @@
       "sha256": "608816a5a079691641df58f5ee53614def1d5523141f0832b88225c3a34a6196",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9556,7 +9568,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-AUDIT-ENGINE-MD",
@@ -9566,7 +9580,7 @@
       "sha256": "2bf93dae0a74d078cae10fcbb171d3bb2e980c08216df51305509744b7499d70",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9576,7 +9590,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-AUTH-ENGINE-MD",
@@ -9588,7 +9604,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9598,7 +9614,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-AUTOMATION-AND-TRIGGER-RUNTIME-MD",
@@ -9610,7 +9628,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9620,7 +9638,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-AVATAR-AUTHORITY-AND-CROSS-CANON-RESOLVER-ENGINE-MD",
@@ -9632,7 +9652,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9642,7 +9662,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-BACKGROUND-LEARNING-PROGRAM-AND-RESOURCE-QUEUE-ORCHESTRATION-MD",
@@ -9655,7 +9677,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9665,7 +9687,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-BATCH-CORRECTION-AND-REVIEW-PIPELINE-SYSTEM-MD",
@@ -9677,7 +9701,7 @@
         "D06"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9687,7 +9711,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-BDD-READY-BACKFLOW-CLASSIFIER-AND-DA-COMPILER-ENGINE-MD",
@@ -9700,7 +9726,7 @@
         "D11"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9710,7 +9736,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D11_FACTORY_BACKFLOW",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-BRIDGE-ENGINE-MD",
@@ -9720,7 +9748,7 @@
       "sha256": "bdc865e7304e5026c44742308e42cd0835fe1f4ad13a65ac6d917fa497dbf28b",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9730,7 +9758,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CACHE-ENGINE-MD",
@@ -9740,7 +9770,7 @@
       "sha256": "cabc379815b8401601192708e837ce67edfef97356a8747bac1e4b69e11be458",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9750,7 +9780,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CANON-ENGINE-MD",
@@ -9760,7 +9792,7 @@
       "sha256": "0ba2c2f0a73b6692403d720a459c47e313d93fe1b1a5c77ff08077c5fa82df5f",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9770,7 +9802,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CLASSIFICATION-ENGINE-MD",
@@ -9782,7 +9816,7 @@
         "D07"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9792,7 +9826,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D07_INVENTORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-COLLECTION-ENGINE-MD",
@@ -9804,7 +9840,7 @@
         "D07"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9814,7 +9850,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D07_INVENTORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-COMIC-BOARD-SCENE-SELECTOR-AND-PANEL-CONTINUITY-ENGINE-MD",
@@ -9826,7 +9864,7 @@
         "D09"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9836,7 +9874,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-COMMUNITY-ENGINE-MD",
@@ -9848,7 +9888,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9858,7 +9898,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-COMPETENCY-ENGINE-MD",
@@ -9870,7 +9912,7 @@
         "D05"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9880,7 +9922,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-COMPLEXITY-BUDGET-AND-COGNITIVE-OVERHEAD-CONTROL-MODEL-MD",
@@ -9890,7 +9934,7 @@
       "sha256": "f10f6c970315df292cc07ac31d96efc5fee1b893405d2bd38b54f8b5583ba4cf",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9900,7 +9944,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CONFIG-ENGINE-MD",
@@ -9912,7 +9958,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9922,7 +9968,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CONNECTOR-RUNTIME-ENGINE-MD",
@@ -9932,7 +9980,7 @@
       "sha256": "3d0de6be1fab4257c5e890d200a46eece3d1b55a2a586dfe2403683145bee353",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9942,7 +9990,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CONSCIOUS-IMAGE-ACTION-READY-ENGINE-MD",
@@ -9954,7 +10004,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9964,7 +10014,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CONTEST-ENGINE-MD",
@@ -9976,7 +10028,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -9986,7 +10038,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CONTEXTUAL-REASONING-RUNTIME-MD",
@@ -9998,7 +10052,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10008,7 +10062,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CONVERSATION-HARVEST-AND-FACTORY-BACKFLOW-ENGINE-MD",
@@ -10020,7 +10076,7 @@
         "D11"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10030,7 +10086,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D11_FACTORY_BACKFLOW",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CORRECTOR-QUALITY-CONTROL-AND-SAMPLE-REVIEW-SYSTEM-MD",
@@ -10042,7 +10100,7 @@
         "D06"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10052,7 +10110,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CORRECTOR-RUNTIME-AND-FEEDBACK-ENGINE-MD",
@@ -10064,7 +10124,7 @@
         "D06"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10074,7 +10134,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CREATIVE-WORLD-BUILDING-RUNTIME-SYSTEM-MD",
@@ -10084,7 +10146,7 @@
       "sha256": "7f5950483e075a8cccfd89d562bf0832d7e030f91b003f34ba0f06645db54a4c",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10094,7 +10156,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-CREATOR-PROFILE-ENGINE-MD",
@@ -10104,7 +10168,7 @@
       "sha256": "11f89e71b940b73e748c8c570b27a091f2637a0353178d5e10a9703138489144",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10114,7 +10178,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DA-COMPILER-VISUAL-REFERENCE-ROUTER-ENGINE-MD",
@@ -10126,7 +10192,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10136,7 +10202,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DA-CORE-LAYER-FILTER-GAUGE-AND-VISUAL-CONSOLE-ENGINE-MD",
@@ -10148,7 +10216,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10158,7 +10226,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DASHBOARD-RUNTIME-ENGINE-MD",
@@ -10170,7 +10240,7 @@
         "D03"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10180,7 +10250,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DEPENDENCY-ENGINE-MD",
@@ -10190,7 +10262,7 @@
       "sha256": "c6fac4bd25e8c087b410b0210e6d50c272343802016b70ce0724864c65e2838b",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10200,7 +10272,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DERIVED-STATE-ENGINE-MD",
@@ -10210,7 +10284,7 @@
       "sha256": "871a19c14e1c55790b66076db7a496529c7cc2e18504e60919e0dc0b4b65000f",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10220,7 +10294,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DISCOVERY-ENGINE-MD",
@@ -10230,7 +10306,7 @@
       "sha256": "03a32d2934d58c5e2eedccfe9367bf7648df5a5f91c276e52a8eeb198c9992f2",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10240,7 +10316,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-DRIVE-BRIDGE-AND-EXTERNAL-CONNECTOR-SYSTEM-MD",
@@ -10250,7 +10328,7 @@
       "sha256": "0db6c31d0f95745216c294daafb846b768951c720d5ba315e41fe187f97583b8",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10260,7 +10338,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENGINE-ACTION-PROPOSAL-SYSTEM-MD",
@@ -10270,7 +10350,7 @@
       "sha256": "0087b682a11c0791fc8fc0543fac2b961cb3ba43dd5e629a40132111abce7e9e",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10280,7 +10360,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENGINE-EVENT-CONSUMPTION-MODEL-MD",
@@ -10292,7 +10374,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10302,7 +10384,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENGINE-ORCHESTRATION-MODEL-MD",
@@ -10314,7 +10398,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10324,7 +10408,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENGINE-RUNTIME-CONTRACTS-MD",
@@ -10334,7 +10420,7 @@
       "sha256": "ec62e5660869988b93da9f196c1bdbde38fc0790af18097e57df197b942996a9",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10344,7 +10430,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENGINE-RUNTIME-SYSTEM-MD",
@@ -10354,7 +10442,7 @@
       "sha256": "634302be4025881c43455aa9bf33fe3caab62289d1a873ba4a222b700aa237b2",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10364,7 +10452,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENGINE-STATE-PRODUCTION-MODEL-MD",
@@ -10374,7 +10464,7 @@
       "sha256": "d320e295982fe993232e13ffdfde55f78aaa04ad59cd511816c0ebe3556d2374",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10384,7 +10474,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ENVIRONMENT-ABSTRACTION-AND-RUNTIME-ADAPTER-MODEL-MD",
@@ -10394,7 +10486,7 @@
       "sha256": "00599e6f0dc326121a03dd25067b2148f8e3d1c3687192d2decc5216f34466f3",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10404,7 +10496,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-EVENT-ROUTING-ENGINE-MD",
@@ -10416,7 +10510,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10426,7 +10520,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-EXPORT-ENGINE-MD",
@@ -10438,7 +10534,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10448,7 +10544,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-EXTERNAL-AI-CONNECTOR-AND-HYBRID-RUNTIME-MODEL-MD",
@@ -10458,7 +10556,7 @@
       "sha256": "8d377f23d89403c78218f90a0bcec6746169c90eb194089ea213ee8e1630b3ab",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10468,7 +10566,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-EXTERNAL-RECOMMENDATION-LETTER-AND-TRUST-MESSAGE-ENGINE-MD",
@@ -10478,7 +10578,7 @@
       "sha256": "38c2d5c05635a93015b9f8a0c1a30a8db000142bebf6c35f7d8f1606e14e7383",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10488,7 +10588,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-FEEDBACK-ENGINE-MD",
@@ -10500,7 +10602,7 @@
         "D06"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10510,7 +10612,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-FRICTION-ENGINE-MD",
@@ -10520,7 +10624,7 @@
       "sha256": "d9558f4d8df3960cf16b70b153454071e6ee297463de10d888e701d733368a9d",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10530,7 +10634,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-GAMIFICATION-ENGINE-MD",
@@ -10540,7 +10646,7 @@
       "sha256": "e388e1e7a55b855eb1ce40ea422537e2c67b37efdc29f84af6ad4004225f58df",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10550,7 +10656,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-GLOBAL-RUNTIME-ORCHESTRATION-AND-OVERRIDE-MODEL-MD",
@@ -10562,7 +10670,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10572,7 +10680,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-GRAPHIC-REFINEMENT-CANON-DOSING-AND-RETAKE-ENGINE-V2-MD",
@@ -10584,7 +10694,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10594,7 +10704,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-GUIDANCE-ENGINE-MD",
@@ -10606,7 +10718,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10616,7 +10728,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-INCIDENT-RESPONSE-ENGINE-MD",
@@ -10628,7 +10742,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10638,7 +10752,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-INTER-PROJECT-MEMORY-ISOLATION-AND-CONTEXT-BRIDGING-POLICY-MD",
@@ -10651,7 +10767,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10661,7 +10777,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-INVENTORY-ENGINE-MD",
@@ -10673,7 +10791,7 @@
         "D07"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10683,7 +10801,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D07_INVENTORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-JOB-AND-TASK-ORCHESTRATION-MODEL-MD",
@@ -10695,7 +10815,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10705,7 +10825,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-LICENSE-ENGINE-MD",
@@ -10715,7 +10837,7 @@
       "sha256": "33252e25283a99e9dbbea0d87395656d5d71e618d8bf9e94aef09636930fa84d",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10725,7 +10847,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-LINK-ENGINE-MD",
@@ -10737,7 +10861,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10747,7 +10871,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-LLM-PROVIDER-ABSTRACTION-MD",
@@ -10757,7 +10883,7 @@
       "sha256": "f0bd88140b34757ffd3051f734bd38e91ec09b4a32ef8c449d5b3fb415bdc8ee",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10767,7 +10893,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-LOCAL-AI-RUNTIME-AND-PRIVATE-MODEL-SYSTEM-MD",
@@ -10777,7 +10905,7 @@
       "sha256": "dd930a1eba5cd1cf85efd26b823664858080c57dc44af6c24f97d7d2b6982714",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10787,7 +10915,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-LORE-CANON-BUILDER-AND-LIVING-WORLD-ENGINE-MD",
@@ -10800,7 +10930,7 @@
         "D11"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10810,7 +10940,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D11_FACTORY_BACKFLOW",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MARKETPLACE-ENGINE-MD",
@@ -10822,7 +10954,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10832,7 +10964,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MASS-PROCESSING-AND-RUNTIME-QUEUE-MODEL-MD",
@@ -10844,7 +10978,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10854,7 +10988,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MASTERCOMFY-ENGINE-MD",
@@ -10866,7 +11002,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10876,7 +11012,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MASTERFLOW-DA-COMPONENT-ORCHESTRATOR-ENGINE-MD",
@@ -10888,7 +11026,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10898,7 +11036,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MASTERFLOW-RUNTIME-WIRING-AND-INTER-SYSTEM-CONNECTION-MAP-MD",
@@ -10908,7 +11048,7 @@
       "sha256": "cfb3baf10b6ab81963b18ef4d37da4d103bedfaa3a3c6c413551771db41a0646",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10918,7 +11058,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MASTERLAB-ENGINE-MD",
@@ -10930,7 +11072,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10940,7 +11082,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MATCH-ENGINE-MD",
@@ -10950,7 +11094,7 @@
       "sha256": "4cecfe3db43b4aa6088e531675bf9139708f838ad4fb671c08a8cf44d0a5231a",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10960,7 +11104,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D07_INVENTORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MEMORY-ENGINE-MD",
@@ -10972,7 +11118,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -10982,7 +11128,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MIGRATION-ENGINE-MD",
@@ -10992,7 +11140,7 @@
       "sha256": "51966fbc804fc6bb12e2690df4a5fcc866eccc52748a0b7b98289172a82a8f6a",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11002,7 +11150,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MINIMAL-STACK-AND-CRITICAL-RUNTIME-DEPENDENCY-MODEL-MD",
@@ -11012,7 +11162,7 @@
       "sha256": "e6561988a6d3fd2b858f5534bb51609e9978f908ba3868a9189a2b36393d4a20",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11022,7 +11172,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MODERATION-ENGINE-MD",
@@ -11034,7 +11186,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11044,7 +11196,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MONETIZATION-ENGINE-MD",
@@ -11056,7 +11210,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11066,7 +11220,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MULTI-AGENT-COLLABORATION-AND-COORDINATION-RUNTIME-MD",
@@ -11076,7 +11232,7 @@
       "sha256": "6a8bec9a442117a7994e63c71bbc4111cfdf402b1240568cf56d537a30c24b47",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11086,7 +11242,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-MULTI-PHOTO-CASTING-AND-CHARACTER-CONTINUITY-ENGINE-MD",
@@ -11096,7 +11254,7 @@
       "sha256": "74c39277562ba85277c62dc80aa27245ebed21732b91ce1d09be11d06341cf49",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11106,7 +11264,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-NARRATIVE-ENGINE-MD",
@@ -11118,7 +11278,7 @@
         "D09"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11128,7 +11288,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-NARRATIVE-TRUTH-COMPILER-AND-READER-AUDIT-ENGINE-MD",
@@ -11140,7 +11302,7 @@
         "D09"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11150,7 +11312,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-NOTIFICATION-ENGINE-MD",
@@ -11160,7 +11324,7 @@
       "sha256": "f63d5764ee610e205ee70fb24e9f040a635b2fb13b1b5a6a7db0dca4e303aff9",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11170,7 +11334,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-OBSERVABILITY-ENGINE-MD",
@@ -11182,7 +11348,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11192,7 +11358,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ONBOARDING-ENGINE-MD",
@@ -11204,7 +11372,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11214,7 +11382,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ORCHESTRATION-ENGINE-MD",
@@ -11226,7 +11396,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11236,7 +11406,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-OVERLAY-ENGINE-MD",
@@ -11248,7 +11420,7 @@
         "D03"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11258,7 +11430,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PAYMENT-ENGINE-MD",
@@ -11270,7 +11444,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11280,7 +11454,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PEDAGOGICAL-ADAPTATION-ENGINE-MD",
@@ -11292,7 +11468,7 @@
         "D05"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11302,7 +11478,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PEDAGOGICAL-VISUALIZATION-STRIP-AND-FACILITATION-ENGINE-MD",
@@ -11315,7 +11493,7 @@
         "D08"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11325,7 +11503,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PEDAGOGICAL-WEATHER-ENGINE-MD",
@@ -11337,7 +11517,7 @@
         "D05"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11347,7 +11527,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PEDAGOGY-ENGINE-MD",
@@ -11359,7 +11541,7 @@
         "D05"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11369,7 +11551,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PERMISSION-ENGINE-MD",
@@ -11381,7 +11565,7 @@
         "D01"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11391,7 +11575,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D01_IDENTITY_PERMISSION",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PERSONA-ENGINE-MD",
@@ -11403,7 +11589,7 @@
         "D04"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11413,7 +11599,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D04_PERSONA_GUIDANCE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PERSONA-VISUAL-STORYTELLING-AND-SILENT-CANON-RESOLVER-ENGINE-MD",
@@ -11427,7 +11615,7 @@
         "D09"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11437,7 +11625,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D09_NARRATIVE",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-POLICY-ENGINE-MD",
@@ -11449,7 +11639,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11459,7 +11649,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-POST-IMAGE-REVIEW-FILTER-LEDGER-AND-RETAKE-ENGINE-MD",
@@ -11471,7 +11663,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11481,7 +11673,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PREDICTIVE-STABILITY-AND-WORKFLOW-STRESS-ANALYSIS-MODEL-MD",
@@ -11493,7 +11687,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11503,7 +11697,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PRICE-ENGINE-MD",
@@ -11515,7 +11711,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11525,7 +11721,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PROMPT-STACK-ARCHITECTURE-MD",
@@ -11535,7 +11733,7 @@
       "sha256": "31f3c41a6344ed45ee13ccc6f2408d22ae6d35bd6c41d68c956af6747e1e9222",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11545,7 +11743,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-PUBLICATION-ENGINE-MD",
@@ -11557,7 +11757,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11567,7 +11767,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-QUERY-FILTERING-AND-PERMISSION-SEARCH-MD",
@@ -11580,7 +11782,7 @@
         "D02"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11590,7 +11792,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-QUEUE-ENGINE-MD",
@@ -11602,7 +11806,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11612,7 +11816,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-QUOTE-ENGINE-MD",
@@ -11624,7 +11830,7 @@
         "D10"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11634,7 +11840,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-REACTIVE-WORKFLOW-AND-DYNAMIC-TRIGGER-ORCHESTRATION-MODEL-MD",
@@ -11646,7 +11854,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11656,7 +11864,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-REALTIME-PEDAGOGICAL-SIGNAL-ORCHESTRATION-MODEL-MD",
@@ -11669,7 +11879,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11679,7 +11889,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RECOMMENDATION-ENGINE-MD",
@@ -11689,7 +11901,7 @@
       "sha256": "5287e017e973eebcce330c96d10e9f43493e5d8a013085e7c783c96fea4db96e",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11699,7 +11911,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-REPUTATION-ENGINE-MD",
@@ -11709,7 +11923,7 @@
       "sha256": "dc63fde5b513434fe53e7209ffeb2c78c6a8c8896d7ec113b7604e8a8b235c3c",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11719,7 +11933,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RESOURCE-ENGINE-MD",
@@ -11731,7 +11947,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11741,7 +11957,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RESOURCE-QUEUE-AND-LEARNING-PLAYLIST-RUNTIME-MD",
@@ -11754,7 +11972,7 @@
         "D12"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11764,7 +11982,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RESOURCE-RELEVANCE-RANKING-AND-PEDAGOGICAL-MATCHING-MODEL-MD",
@@ -11777,7 +11997,7 @@
         "D05"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11787,7 +12007,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-REVIEW-ENGINE-MD",
@@ -11797,7 +12019,7 @@
       "sha256": "dfd33b314aadc9edf687872241b5121253cd35ed8f2ff53a8b8a938897314296",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11807,7 +12029,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RIVALRY-ENGINE-MD",
@@ -11817,7 +12041,7 @@
       "sha256": "b3822da403ea444eec5a23b833401247283793ec63bcba6767c716e320d015c5",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11827,7 +12051,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ROLLBACK-ENGINE-MD",
@@ -11837,7 +12063,7 @@
       "sha256": "6d645a20df1dc27106774dd5356a7632eb0d225f53ab709160d7eec7bab3f491",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11847,7 +12073,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-ROUTING-ENGINE-MD",
@@ -11857,7 +12085,7 @@
       "sha256": "9cd31f2c44ee6a92d3a8f0542010358b7715df359e76cb6e12d51b7b58a3ae4b",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11867,7 +12095,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RULE-ENGINE-MD",
@@ -11877,7 +12107,7 @@
       "sha256": "23702bf594668ecbbf955e661884fbec0a43df8115f02fac4bd5617dff1f5d2e",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11887,7 +12117,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RUNTIME-EXECUTION-SYSTEM-MD",
@@ -11897,7 +12129,7 @@
       "sha256": "237c82a55f5b2ad710182183251fc717169b4c68040d0174e9c7b884fe0ebef9",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11907,7 +12139,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RUNTIME-HEALTH-ENGINE-MD",
@@ -11919,7 +12153,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11929,7 +12163,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-RUNTIME-RESOURCE-ALLOCATION-AND-PRIORITY-BALANCING-SYSTEM-MD",
@@ -11941,7 +12177,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11951,7 +12187,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SAFETY-GOVERNANCE-ENGINE-MD",
@@ -11963,7 +12201,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11973,7 +12211,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SANDBOX-ENGINE-MD",
@@ -11985,7 +12225,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -11995,7 +12235,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SCORE-ENGINE-MD",
@@ -12007,7 +12249,7 @@
         "D06"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12017,7 +12259,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D06_CORRECTION_FEEDBACK",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SEARCH-AND-INDEXING-RUNTIME-MD",
@@ -12029,7 +12273,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12039,7 +12283,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SEARCH-ENGINE-MD",
@@ -12051,7 +12297,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12061,7 +12307,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SEMANTIC-RETRIEVAL-AND-CONTEXT-LINKING-MD",
@@ -12073,7 +12321,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12083,7 +12331,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SENTINEL-SECURITY-ORCHESTRATION-ENGINE-MD",
@@ -12095,7 +12345,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12105,7 +12355,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SESSION-ENGINE-MD",
@@ -12117,7 +12369,7 @@
         "D03"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12127,7 +12379,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SIGNAL-ENGINE-MD",
@@ -12137,7 +12391,7 @@
       "sha256": "fa29730b60d4eebc9c81040b084c9e96053499dbe1927d8df2f8711da6d8fb18",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12147,7 +12401,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SIMULATION-ENGINE-MD",
@@ -12157,7 +12413,7 @@
       "sha256": "2050b13101fc3afe330161e839b84a8a5839b5b1775478854037ef0371640643",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12167,7 +12423,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SOCIAL-RUNTIME-AND-RELATIONAL-DYNAMICS-SYSTEM-MD",
@@ -12177,7 +12435,7 @@
       "sha256": "5bb266af447b9d4cb20b9d73d50072607e09cb50247c3aee29421567c85a07d2",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12187,7 +12445,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-STATE-MACHINE-ENGINE-MD",
@@ -12197,7 +12457,7 @@
       "sha256": "7474c93f2218bfaed6b97cb449af89a45bdcfbc1da4a7d890d19d6ee5e517446",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12207,7 +12467,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SUBJECT-ENGINE-MD",
@@ -12219,7 +12481,7 @@
         "D05"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12229,7 +12491,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SUBJECT-PERSONALIZED-FOLLOWUP-AND-RECOMMENDATION-ENGINE-MD",
@@ -12242,7 +12506,7 @@
         "D05"
       ],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12252,7 +12516,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D05_PEDAGOGY_SUBJECT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SUBSCRIPTION-ENGINE-MD",
@@ -12262,7 +12528,7 @@
       "sha256": "977a29401be6895a0f1b4d37be37eaccd7c5b526f39fb0b72f5064bfc58108bf",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "restore_candidate",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12272,7 +12538,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D10_EVENT_QUOTE_EXPORT",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SUGGESTION-ENGINE-MD",
@@ -12282,7 +12550,7 @@
       "sha256": "8d4f822af96ea2419d8f7fa200d65e8392868e428329746b88d6e1216810929a",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12292,7 +12560,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SUPERVISED-AUTOMATION-AND-GUARDED-RUNTIME-MODEL-MD",
@@ -12304,7 +12574,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12314,7 +12584,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-SYSTEM-COORDINATION-ENGINE-MD",
@@ -12324,7 +12596,7 @@
       "sha256": "46614f75632980d1f0c7e02915aa22ac1113057e3a3e19cd6869a4f99e1b2835",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12334,7 +12606,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-TASK-ENGINE-MD",
@@ -12346,7 +12620,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12356,7 +12630,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-TEAMSPACE-ENGINE-MD",
@@ -12366,7 +12642,7 @@
       "sha256": "82b589e912d15527a0f5e9e96cae48423f2d2a1d896fb1c71f736817fc5f16ec",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12376,7 +12652,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D03_ROOM_UI",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-TIMELINE-ENGINE-MD",
@@ -12388,7 +12666,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12398,7 +12676,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-TOOL-CALLING-AND-ACTIONS-MD",
@@ -12408,7 +12688,7 @@
       "sha256": "ecaa6a1e85c181cd04dcf7acdf561b2f26e10e3d821cc338bf1948291d3233cb",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "reduced",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12418,7 +12698,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-VALIDATION-ENGINE-MD",
@@ -12428,7 +12710,7 @@
       "sha256": "daf7b8b3d2b367a84bc7dbeca7c8157c4069fe63507fe89fc1aa441d1dcc3199",
       "proposed_domains": [],
       "routing_confidence": "manual_review",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12438,7 +12720,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-VERSIONING-ENGINE-MD",
@@ -12450,7 +12734,7 @@
         "D02"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12460,7 +12744,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D02_CONTEXT_RESOURCE_MEMORY",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-VISUAL-DIRECTOR-PREFLIGHT-AND-EXTENSIBLE-OUTPUT-ENGINE-MD",
@@ -12472,7 +12758,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12482,7 +12768,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-VISUAL-REVIEW-STRICT-RETAKE-AND-ANNOTATION-ENGINE-MD",
@@ -12494,7 +12782,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12504,7 +12792,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-VISUAL-RUNTIME-ENGINE-MD",
@@ -12516,7 +12806,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12526,7 +12816,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-VISUAL-STYLE-GOVERNOR-AND-REFERENCE-STATUS-ENGINE-MD",
@@ -12538,7 +12830,7 @@
         "D08"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "canon_ready",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12548,7 +12840,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D08_DA_ASSET",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-04-ENGINES-WORKFLOW-ENGINE-MD",
@@ -12560,7 +12854,7 @@
         "D12"
       ],
       "routing_confidence": "high",
-      "arbitration_status": "pending_semantic_review",
+      "arbitration_status": "absorbed",
       "allowed_decisions": [
         "absorbed",
         "reduced",
@@ -12570,7 +12864,9 @@
         "blocked"
       ],
       "duplicate_count": 1,
-      "duplicate_paths": []
+      "duplicate_paths": [],
+      "arbitrated_owner": "D12_RUNTIME_CONTROL",
+      "arbitration_note": "Consolidated under an existing domain owner; no standalone runtime or microservice implied."
     },
     {
       "legacy_id": "LEGACY-05-PERSONAS-BEHAVIOR-PERSONA-RUNTIME-MD",
