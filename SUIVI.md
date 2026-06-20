@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R1.1 Correction : barèmes et profils privés/versionnés
+
+- barème créé brouillon, validé explicitement puis conservé dans son historique ;
+- profil de notation privé créé brouillon puis validé explicitement ;
+- scopes owner ou projet éditeur vérifiés ; un godmode extérieur ne traverse pas un périmètre privé ;
+- surface Teaching raccordée pour créer, versionner, relire et valider ces deux prérequis ;
+- aucun lot, score, pré-correction, feedback, export, envoi étudiant, provider ou action live n'est lancé.
+
+Statut : vérifié localement, prêt à publier. Suite : création d'un lot manuel contextualisé qui
+ne peut référencer que ces objets validés.
+
 ## 2026-06-20 — Legacy → Canon → Git — CLÔTURE SÉMANTIQUE
 
 - 692/692 artefacts fonctionnels disposent d'un statut ; aucune entrée sémantique en attente ;

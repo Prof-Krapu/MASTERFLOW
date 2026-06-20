@@ -21,6 +21,7 @@ import {createRagRouter} from './routers/rag.ts';
 import {createMemoryRouter} from './routers/memory.ts';
 import {createCohortsRouter} from './routers/cohorts.ts';
 import {createCorrectionContextRouter} from './routers/correction_context.ts';
+import {createCorrectionSetupRouter} from './routers/correction_setup.ts';
 import {createInventoryRouter} from './routers/inventory.ts';
 import {createValidationInboxRouter} from './routers/validation_inbox.ts';
 import {createFactoryBackflowRouter} from './routers/factory_backflow.ts';
@@ -82,6 +83,7 @@ async function main(): Promise<void> {
   app.use(api, createMemoryRouter());
   app.use(api, createCohortsRouter());
   app.use(api, createCorrectionContextRouter());
+  app.use(api, createCorrectionSetupRouter());
   app.use(api, createInventoryRouter());
   app.use(api, createValidationInboxRouter());
   app.use(api, createFactoryBackflowRouter());

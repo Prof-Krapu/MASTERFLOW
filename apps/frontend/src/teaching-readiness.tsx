@@ -8,9 +8,13 @@ import type {
   GuidedQuestion,
   GuidedSession,
   IdentityMatchReviewItem,
+  InstitutionalGradingProfile,
   Job,
   Project,
   Resource,
+  RubricCriterion,
+  RubricTemplate,
+  RubricVersion,
   RosterVersion,
   ValidationInboxItem,
 } from '@masterflow/shared';
@@ -19,16 +23,24 @@ import {
   advanceGuidedSession,
   completeGuidedSession,
   createCohort,
+  createInstitutionalGradingProfile,
   createRosterVersion,
+  createRubricTemplate,
+  createRubricVersion,
   createGuidedSession,
   getGuides,
   getCohorts,
   getGuidedSessions,
   getIdentityMatchReviews,
+  getInstitutionalGradingProfiles,
   getJobs,
   getRosterVersions,
+  getRubricTemplates,
+  getRubricVersions,
   submitGuidedAnswer,
   decideIdentityMatchReview,
+  validateInstitutionalGradingProfile,
+  validateRubricVersion,
 } from './api.ts';
 
 type TeachingReadinessProps = {
@@ -83,6 +95,28 @@ function nextSafeAction(
   return 'Le contexte est exploitable en lecture. Préparer le sujet guidé sans lancer de correction automatique.';
 }
 
+function parseRubricCriteria(source: string): {criteria: RubricCriterion[]; total_points: number} {
+  const rows = source.split('\n').map((line) => line.trim()).filter(Boolean).map((line, index) => {
+    const [label = '', description = '', rawPoints = ''] = line.split('|').map((part) => part.trim());
+    const max_points = Number(rawPoints.replace(',', '.'));
+    if (!label || !description || !Number.isFinite(max_points) || max_points <= 0) {
+      throw new Error('Chaque critère doit suivre « Nom | description | points ».');
+    }
+    return {criterion_id: `criterion-${index + 1}`, label, description, max_points};
+  });
+  if (rows.length === 0) throw new Error('Ajoute au moins un critère de barème.');
+  const total_points = rows.reduce((total, row) => total + row.max_points, 0);
+  return {
+    total_points,
+    criteria: rows.map((row) => ({
+      ...row,
+      weight: row.max_points / total_points,
+      evidence_requirements: [],
+      required: true,
+    })),
+  };
+}
+
 export function TeachingReadiness({
   context,
   project,
@@ -103,6 +137,18 @@ export function TeachingReadiness({
   const [cohortTitle, setCohortTitle] = useState('');
   const [cohortPeriod, setCohortPeriod] = useState('');
   const [rosterText, setRosterText] = useState('');
+  const [rubricTemplates, setRubricTemplates] = useState<RubricTemplate[]>([]);
+  const [selectedRubricTemplateId, setSelectedRubricTemplateId] = useState('');
+  const [rubricVersions, setRubricVersions] = useState<RubricVersion[]>([]);
+  const [gradingProfiles, setGradingProfiles] = useState<InstitutionalGradingProfile[]>([]);
+  const [rubricTitle, setRubricTitle] = useState('');
+  const [rubricSubjectRef, setRubricSubjectRef] = useState('');
+  const [rubricCriteriaText, setRubricCriteriaText] = useState('Analyse | Qualité de l’analyse | 10\nPrésentation | Clarté du rendu | 10');
+  const [profileScaleMin, setProfileScaleMin] = useState('0');
+  const [profileScaleMax, setProfileScaleMax] = useState('20');
+  const [profileExpectedMin, setProfileExpectedMin] = useState('10');
+  const [profileExpectedMax, setProfileExpectedMax] = useState('15');
+  const [profileDelta, setProfileDelta] = useState('1');
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -115,19 +161,24 @@ export function TeachingReadiness({
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts] = await Promise.all([
+      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles] = await Promise.all([
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
         getIdentityMatchReviews(project?.project_id, token),
         getCohorts(project?.project_id, token),
+        getRubricTemplates(project?.project_id, token),
+        getInstitutionalGradingProfiles(project?.project_id, token),
       ]);
       setJobs(nextJobs);
       setGuides(nextGuides);
       setSessions(nextSessions);
       setIdentityReviews(nextIdentityReviews);
       setCohorts(nextCohorts);
+      setRubricTemplates(nextRubrics);
+      setGradingProfiles(nextProfiles);
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
+      setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
       setStatus('État synchronisé depuis les surfaces runtime existantes.');
     } catch (error) {
       setJobs([]);
@@ -135,6 +186,8 @@ export function TeachingReadiness({
       setSessions([]);
       setIdentityReviews([]);
       setCohorts([]);
+      setRubricTemplates([]);
+      setGradingProfiles([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
@@ -150,6 +203,16 @@ export function TeachingReadiness({
       .then(setRosterVersions)
       .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Roster indisponible.'));
   }, [selectedCohortId, token]);
+
+  useEffect(() => {
+    if (!selectedRubricTemplateId) {
+      setRubricVersions([]);
+      return;
+    }
+    void getRubricVersions(selectedRubricTemplateId, token)
+      .then(setRubricVersions)
+      .catch((error: unknown) => setStatus(error instanceof Error ? error.message : 'Versions du barème indisponibles.'));
+  }, [selectedRubricTemplateId, token]);
 
   const addCohort = useCallback(async (): Promise<void> => {
     if (!cohortTitle.trim()) return setStatus('Donne un nom à la cohorte.');
@@ -210,6 +273,95 @@ export function TeachingReadiness({
       setIdentityMutatingId(null);
     }
   }, [identitySelections, refresh, token]);
+
+  const createInitialRubric = useCallback(async (): Promise<void> => {
+    if (!rubricTitle.trim()) {
+      setStatus('Donne un nom au barème.');
+      return;
+    }
+    setMutating(true);
+    try {
+      const content = parseRubricCriteria(rubricCriteriaText);
+      const created = await createRubricTemplate({
+        project_id: project?.project_id ?? null,
+        title: rubricTitle.trim(),
+        subject_ref: rubricSubjectRef.trim() || null,
+        ...content,
+      }, token);
+      setRubricTitle(''); setRubricSubjectRef('');
+      await refresh(); setSelectedRubricTemplateId(created.template.template_id);
+      setStatus('Barème V1 créé en brouillon. Relis-le puis valide explicitement sa version.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Création du barème impossible.'); }
+    finally { setMutating(false); }
+  }, [project?.project_id, refresh, rubricCriteriaText, rubricSubjectRef, rubricTitle, token]);
+
+  const createNextRubricVersion = useCallback(async (): Promise<void> => {
+    if (!selectedRubricTemplateId) {
+      setStatus('Choisis le barème à faire évoluer.');
+      return;
+    }
+    setMutating(true);
+    try {
+      const content = parseRubricCriteria(rubricCriteriaText);
+      await createRubricVersion(selectedRubricTemplateId, content, token);
+      setRubricVersions(await getRubricVersions(selectedRubricTemplateId, token));
+      setStatus('Nouvelle version créée en brouillon. Les versions validées précédentes restent intactes.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Nouvelle version impossible.'); }
+    finally { setMutating(false); }
+  }, [rubricCriteriaText, selectedRubricTemplateId, token]);
+
+  const validateRubric = useCallback(async (versionId: string): Promise<void> => {
+    setMutating(true);
+    try {
+      await validateRubricVersion(versionId, token);
+      if (selectedRubricTemplateId) setRubricVersions(await getRubricVersions(selectedRubricTemplateId, token));
+      await refresh();
+      setStatus('Version de barème validée. Elle ne peut plus être modifiée ; une évolution créera une nouvelle version.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du barème impossible.'); }
+    finally { setMutating(false); }
+  }, [refresh, selectedRubricTemplateId, token]);
+
+  const createGradingProfile = useCallback(async (): Promise<void> => {
+    const scaleMin = Number(profileScaleMin);
+    const scaleMax = Number(profileScaleMax);
+    const expectedMin = Number(profileExpectedMin);
+    const expectedMax = Number(profileExpectedMax);
+    const delta = Number(profileDelta);
+    if (![scaleMin, scaleMax, expectedMin, expectedMax, delta].every(Number.isFinite)) {
+      setStatus('Renseigne des nombres valides pour le profil de notation.');
+      return;
+    }
+    setMutating(true);
+    try {
+      await createInstitutionalGradingProfile({
+        project_id: project?.project_id ?? null,
+        scale: [scaleMin, scaleMax],
+        expected_cohort_band: [expectedMin, expectedMax],
+        anchors: {
+          insufficient: [scaleMin, Math.max(scaleMin, expectedMin - 1)],
+          minimum_met: [Math.max(scaleMin, expectedMin - 2), Math.max(scaleMin, expectedMin - 1)],
+          expected: [expectedMin, expectedMax],
+          strong: [Math.min(scaleMax, expectedMax + 1), Math.min(scaleMax, expectedMax + 2)],
+          exceptional: [Math.min(scaleMax, expectedMax + 3), scaleMax],
+        },
+        max_global_delta: delta,
+        protected_thresholds: [expectedMin, expectedMax],
+      }, token);
+      await refresh();
+      setStatus('Profil de notation créé en brouillon. Il ne sera utilisable par la correction qu’après validation explicite.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Création du profil impossible.'); }
+    finally { setMutating(false); }
+  }, [profileDelta, profileExpectedMax, profileExpectedMin, profileScaleMax, profileScaleMin, project?.project_id, refresh, token]);
+
+  const validateGradingProfile = useCallback(async (profileId: string): Promise<void> => {
+    setMutating(true);
+    try {
+      await validateInstitutionalGradingProfile(profileId, token);
+      await refresh();
+      setStatus('Profil de notation validé. Il devient éligible à un futur lot de correction, sans lancer de correction.');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Validation du profil impossible.'); }
+    finally { setMutating(false); }
+  }, [refresh, token]);
 
   useEffect(() => {
     void refresh();
@@ -361,7 +513,7 @@ export function TeachingReadiness({
     {
       id: 'correction',
       label: 'Correction et feedback',
-      detail: 'Fondations backend présentes ; aucune action D06 n’est ouverte dans cette tranche D05.',
+      detail: `${rubricTemplates.length} barème(s), ${gradingProfiles.length} profil(s) dans le périmètre. Aucun lot ni correction automatique n’est lancé.`,
       level: 'partial',
     },
     {
@@ -378,8 +530,10 @@ export function TeachingReadiness({
     context,
     effectiveResources.length,
     failedJobs.length,
+    gradingProfiles.length,
     project,
     reviewJobs.length,
+    rubricTemplates.length,
     validationItems.length,
   ]);
 
@@ -488,6 +642,50 @@ export function TeachingReadiness({
           </div>
         </div>
         {selectedCohortId ? <p className="muted compact">Historique : {rosterVersions.length === 0 ? 'aucun roster' : rosterVersions.map((version) => `V${version.version} ${version.status} · ${version.members.length} élèves`).join(' — ')}</p> : null}
+      </section>
+
+      <section className="roster-management" aria-label="Barèmes et profils de notation">
+        <div className="identity-review__heading">
+          <div><strong>Barèmes et profils de notation</strong><span>{rubricTemplates.length} barème(s) · {gradingProfiles.length} profil(s)</span></div>
+          <small>Création privée → relecture → validation professeur. Aucun score ni correction n’est produit ici.</small>
+        </div>
+        <div className="roster-management__grid">
+          <div className="roster-management__form">
+            <label>Nom du nouveau barème<input value={rubricTitle} onChange={(event) => setRubricTitle(event.target.value)} placeholder="Débrief oral · semestre 1" /></label>
+            <label>Référence du sujet (optionnelle)<input value={rubricSubjectRef} onChange={(event) => setRubricSubjectRef(event.target.value)} placeholder="subject://debrief/v1" /></label>
+            <label>Critères — une ligne : nom | description | points<textarea rows={5} value={rubricCriteriaText} onChange={(event) => setRubricCriteriaText(event.target.value)} /></label>
+            <button disabled={mutating} onClick={() => void createInitialRubric()} type="button">Créer le barème V1 en brouillon</button>
+          </div>
+          <div className="roster-management__form">
+            <label>Barème existant<select value={selectedRubricTemplateId} onChange={(event) => setSelectedRubricTemplateId(event.target.value)}><option value="">Choisir</option>{rubricTemplates.map((template) => <option key={template.template_id} value={template.template_id}>{template.title} · {template.status}</option>)}</select></label>
+            <p className="muted compact">Pour faire évoluer un barème, adapte les critères à gauche puis crée une nouvelle version. Une version validée reste intacte.</p>
+            <button className="secondary" disabled={mutating || !selectedRubricTemplateId} onClick={() => void createNextRubricVersion()} type="button">Créer une nouvelle version brouillon</button>
+            {rubricVersions.length === 0 ? <p className="muted compact">Aucune version à afficher.</p> : rubricVersions.map((version) => (
+              <div className="identity-review__card" key={version.version_id}>
+                <div><strong>Version {version.version} · {version.total_points} points</strong><small>{version.status} · {version.criteria.length} critère(s)</small></div>
+                {version.status !== 'validated' ? <button disabled={mutating} onClick={() => void validateRubric(version.version_id)} type="button">Valider cette version</button> : <small>Version verrouillée et éligible à la correction.</small>}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="roster-management__grid">
+          <div className="roster-management__form">
+            <strong>Profil de notation institutionnel</strong>
+            <label>Échelle min / max<div><input aria-label="Échelle minimum" type="number" value={profileScaleMin} onChange={(event) => setProfileScaleMin(event.target.value)} /> <input aria-label="Échelle maximum" type="number" value={profileScaleMax} onChange={(event) => setProfileScaleMax(event.target.value)} /></div></label>
+            <label>Bande attendue min / max<div><input aria-label="Bande attendue minimum" type="number" value={profileExpectedMin} onChange={(event) => setProfileExpectedMin(event.target.value)} /> <input aria-label="Bande attendue maximum" type="number" value={profileExpectedMax} onChange={(event) => setProfileExpectedMax(event.target.value)} /></div></label>
+            <label>Écart global maximal<input type="number" min="0" step="0.5" value={profileDelta} onChange={(event) => setProfileDelta(event.target.value)} /></label>
+            <button disabled={mutating} onClick={() => void createGradingProfile()} type="button">Créer le profil en brouillon</button>
+          </div>
+          <div className="roster-management__form">
+            <strong>Historique des profils</strong>
+            {gradingProfiles.length === 0 ? <p className="muted compact">Aucun profil dans le périmètre actif.</p> : gradingProfiles.map((profile) => (
+              <div className="identity-review__card" key={profile.profile_id}>
+                <div><strong>Profil V{profile.version} · {profile.scale[0]}–{profile.scale[1]}</strong><small>{profile.status} · bande attendue {profile.expected_cohort_band[0]}–{profile.expected_cohort_band[1]}</small></div>
+                {profile.status !== 'validated' ? <button disabled={mutating} onClick={() => void validateGradingProfile(profile.profile_id)} type="button">Valider ce profil</button> : <small>Profil verrouillé et éligible à la correction.</small>}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="teaching-guided" aria-label="Sujet et session guidée">
@@ -608,7 +806,7 @@ export function TeachingReadiness({
 
       <div className="teaching-readiness__limits">
         <strong>Verrous maintenus</strong>
-        <span>Session D05 privée uniquement · pas de correction · pas de note · pas de feedback · pas d’export · pas d’envoi étudiant.</span>
+        <span>Configuration D06 privée et versionnée · pas de lot · pas de correction · pas de note · pas de feedback · pas d’export · pas d’envoi étudiant.</span>
       </div>
     </article>
   );
