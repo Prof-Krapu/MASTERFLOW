@@ -6,6 +6,7 @@ import type {AuthUser} from '../src/middleware/auth.ts';
 import {createCorrectionBatch, listCorrectionBatches} from '../src/services/correction_batches.ts';
 import {createCohort, createRosterVersion} from '../src/services/cohorts.ts';
 import {intakeSubmission} from '../src/services/submission_intake.ts';
+import {createPreCorrectionManifest, validatePreCorrectionManifest} from '../src/services/pre_correction_manifests.ts';
 import {
   createInstitutionalGradingProfile,
   createRubricTemplate,
@@ -62,6 +63,11 @@ describe('lot de correction contextualisé R1.2', () => {
       source_ref: 'storage://private/submissions/alice-oral.pdf', observed_label: 'Alice',
     });
     expect(submission).toMatchObject({batch_id: created.batch.batch_id, identity_status: 'unknown', status: 'candidate', privacy_level: 'private'});
+    expect(() => createPreCorrectionManifest(teacher, created.batch.batch_id, {submission_refs: [submission.submission_id], workflow_version: 'manual-review-v1'})).toThrow('submission_identity_not_confirmed');
+    getDb().prepare("UPDATE submissions SET identity_status = 'confirmed' WHERE id = ?").run(submission.submission_id);
+    const manifest = createPreCorrectionManifest(teacher, created.batch.batch_id, {submission_refs: [submission.submission_id], workflow_version: 'manual-review-v1'});
+    expect(manifest).toMatchObject({status: 'draft', validation_ref: null, submission_refs: [submission.submission_id]});
+    expect(validatePreCorrectionManifest(teacher, manifest.manifest_id, {validation_ref: 'teacher://review/1'})).toMatchObject({status: 'validated', validation_ref: 'teacher://review/1'});
     expect(() => intakeSubmission(outsider, created.batch.batch_id, {source_ref: 'storage://private/other'})).toThrow('correction_batch_not_found');
   });
 });

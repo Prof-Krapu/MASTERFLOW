@@ -1996,6 +1996,17 @@ export const PreCorrectionManifestSchema = z
   );
 export type PreCorrectionManifest = z.infer<typeof PreCorrectionManifestSchema>;
 
+export const CreatePreCorrectionManifestRequestSchema = z.object({
+  submission_refs: z.array(z.string().min(1)).min(1).max(100),
+  workflow_version: z.string().min(1).max(160),
+});
+export type CreatePreCorrectionManifestRequest = z.infer<typeof CreatePreCorrectionManifestRequestSchema>;
+
+export const ValidatePreCorrectionManifestRequestSchema = z.object({
+  validation_ref: z.string().min(1).max(500),
+});
+export type ValidatePreCorrectionManifestRequest = z.infer<typeof ValidatePreCorrectionManifestRequestSchema>;
+
 // ───────────────────────── Pré-correction explicable PR-C3 ─────────────────────────
 
 export const PreCorrectionAnalysisTypeSchema = z.enum([

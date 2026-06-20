@@ -145,7 +145,7 @@ Dernière mise à jour : 2026-06-20
 - Impact : relie enfin le contexte de classe au pipeline de pré-correction déjà présent.
 - Risque : moyen ; aucune correction automatique, aucun feedback final ni provider live.
 - Source de vérité concernée : D05/D06 + Living Truth Spine.
-- Statut : lot contextualisé et intake candidate Teaching prêts à publier ; revue d'échantillon professeur reste à raccorder, sans pré-correction automatique.
+- Statut : lot, intake et manifest d'échantillon backend prêts à publier ; surface Teaching du manifest reste à raccorder, sans runner automatique.
 - Validation requise : non pour code/tests isolés ; oui avant toute exécution live réelle.
 
 ### Phase 1 — Première release privée vérifiable

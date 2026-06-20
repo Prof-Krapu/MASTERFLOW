@@ -3,9 +3,11 @@ import {Router, type Request, type Response} from 'express';
 import {
   CreateCorrectionContextSnapshotSchema,
   CreateSubmissionIntakeRequestSchema,
+  CreatePreCorrectionManifestRequestSchema,
   CreateIdentityMatchCandidateRequestSchema,
   DecideIdentityMatchCandidateRequestSchema,
   LinkSubmissionIdentityRequestSchema,
+  ValidatePreCorrectionManifestRequestSchema,
 } from '@masterflow/shared';
 
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
@@ -19,6 +21,7 @@ import {
   listIdentityMatchReviewItems,
 } from '../services/correction_context.ts';
 import {intakeSubmission} from '../services/submission_intake.ts';
+import {createPreCorrectionManifest, validatePreCorrectionManifest} from '../services/pre_correction_manifests.ts';
 
 function actor(req: Request): AuthUser {
   if (!req.user) throw new Error('unauthorized');
@@ -73,6 +76,28 @@ export function createCorrectionContextRouter(): Router {
       } catch (error) {
         fail(res, error);
       }
+    },
+  );
+
+  router.post(
+    '/correction/batches/:id/pre-correction-manifests',
+    requireUser,
+    requireRole('teacher'),
+    (req, res): void => {
+      const parsed = CreatePreCorrectionManifestRequestSchema.safeParse(req.body);
+      if (!parsed.success) { res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()}); return; }
+      try { res.status(201).json(createPreCorrectionManifest(actor(req), req.params.id ?? '', parsed.data)); } catch (error) { fail(res, error); }
+    },
+  );
+
+  router.post(
+    '/correction/pre-correction-manifests/:id/validate',
+    requireUser,
+    requireRole('teacher'),
+    (req, res): void => {
+      const parsed = ValidatePreCorrectionManifestRequestSchema.safeParse(req.body);
+      if (!parsed.success) { res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()}); return; }
+      try { res.json(validatePreCorrectionManifest(actor(req), req.params.id ?? '', parsed.data)); } catch (error) { fail(res, error); }
     },
   );
 
