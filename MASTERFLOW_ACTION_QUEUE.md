@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Vague contrats D09-D10
+
+- Tâche : publier l'arbitrage des 20 contrats récit, devis, export et event/public.
+- Impact : protège sources, spoilers, consentement et engagements commerciaux.
+- Risque : faible pour l'audit ; élevé avant import/publication/envoi.
+- Source de vérité concernée : canon D09/D10 + legacy lecture seule + GitHub.
+- Statut : audit local vérifié, publication en cours.
+- Validation requise : non pour audit ; oui avant import, envoi, publication ou facture.
+
 ### Vague contrats D08
 
 - Tâche : publier l'arbitrage exhaustif des 48 contrats DA/assets.
