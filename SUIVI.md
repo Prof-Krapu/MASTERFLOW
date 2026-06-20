@@ -11,8 +11,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - le manifest naît brouillon puis reçoit une validation humaine séparée ;
 - validation du manifest ne lance aucun runner, job, score ou feedback.
 
-Statut : backend vérifié localement, prêt à publier. Suite : surface Teaching de sélection/validation,
-puis préparation contrôlée du job de pré-correction.
+Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : préparation
+contrôlée du job de pré-correction, sans exécution automatique.
 
 ## 2026-06-20 — R1.3 Correction : intake de copies candidates dans Teaching
 
