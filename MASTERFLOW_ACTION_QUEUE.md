@@ -201,7 +201,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : fournit les deux références obligatoires avant tout lot de correction.
 - Risque : moyen ; total de points, bandes, seuils protégés et statut validé doivent rester cohérents.
 - Source de vérité concernée : D06 Evaluation Engine + Living Truth Spine.
-- Statut : implémenté localement et vérifié ; publication GitHub à faire. Création brouillon, validation explicite et historique versionné, sans correction.
+- Statut : déployé sur GitHub `main` via PR #87 ; création brouillon, validation explicite et historique versionné, sans correction.
 - Validation requise : non pour code/tests isolés ; oui avant utilisation live.
 
 ### Verticale correction contextualisée — lancer un lot manuel
@@ -210,7 +210,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : relie enfin le contexte de classe au pipeline de pré-correction déjà présent.
 - Risque : moyen ; aucune correction automatique, aucun feedback final ni provider live.
 - Source de vérité concernée : D05/D06 + Living Truth Spine.
-- Statut : lot, intake et manifest d'échantillon Teaching prêts à publier ; préparation contrôlée du job reste à raccorder, sans exécution automatique.
+- Statut : lot, intake et manifest d'échantillon déployés sur `main` via PR #88-93 ; préparation contrôlée du job reste gated, sans exécution automatique.
 - Validation requise : non pour code/tests isolés ; oui avant toute exécution live réelle.
 
 ### Phase 1 — Première release privée vérifiable
