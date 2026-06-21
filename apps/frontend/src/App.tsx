@@ -46,6 +46,7 @@ import {InventoryWorkspace} from './inventory-workspace.tsx';
 import {JobObservability} from './job-observability.tsx';
 import {OwnerCockpit} from './owner-cockpit.tsx';
 import {VisualManifestPanel} from './visual-manifest-panel.tsx';
+import {StoryWorkbenchPanel} from './story-workbench-panel.tsx';
 import {TeachingReadiness} from './teaching-readiness.tsx';
 import {
   buildModeView,
@@ -1607,6 +1608,7 @@ function App(): ReactElement {
           ) : null}
 
           {canAdmin && auth ? <VisualManifestPanel token={auth.token} /> : null}
+          {canAdmin && auth ? <StoryWorkbenchPanel token={auth.token} /> : null}
 
           {canAdmin && auth ? <JobObservability token={auth.token} /> : null}
         </section>

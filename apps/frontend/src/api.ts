@@ -84,6 +84,12 @@ import type {
   CreateVisualManifestRequest,
   CreateVisualReferenceRequest,
   UpdateVisualReferenceRequest,
+  StoryWorkbench,
+  StoryPatchCandidate,
+  StoryReaderState,
+  CreateStoryWorkbenchRequest,
+  CreateStoryPatchCandidateRequest,
+  SetStoryReaderStateRequest,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -381,6 +387,11 @@ export async function createVisualReference(body: CreateVisualReferenceRequest, 
 export async function updateVisualReference(id: string, body: UpdateVisualReferenceRequest, token?: string | null): Promise<VisualReference> {
   return request<VisualReference>(`/visual-references/${encodeURIComponent(id)}`, {method: 'PATCH', body: JSON.stringify(body)}, token);
 }
+export async function getStoryWorkbenches(token?:string|null):Promise<StoryWorkbench[]>{return request<StoryWorkbench[]>('/story-workbenches',{method:'GET'},token);}
+export async function createStoryWorkbench(body:CreateStoryWorkbenchRequest,token?:string|null):Promise<StoryWorkbench>{return request<StoryWorkbench>('/story-workbenches',{method:'POST',body:JSON.stringify(body)},token);}
+export async function getStoryPatches(id:string,token?:string|null):Promise<StoryPatchCandidate[]>{return request<StoryPatchCandidate[]>(`/story-workbenches/${encodeURIComponent(id)}/patches`,{method:'GET'},token);}
+export async function createStoryPatch(id:string,body:CreateStoryPatchCandidateRequest,token?:string|null):Promise<StoryPatchCandidate>{return request<StoryPatchCandidate>(`/story-workbenches/${encodeURIComponent(id)}/patches`,{method:'POST',body:JSON.stringify(body)},token);}
+export async function setStoryReaderState(id:string,body:SetStoryReaderStateRequest,token?:string|null):Promise<StoryReaderState>{return request<StoryReaderState>(`/story-workbenches/${encodeURIComponent(id)}/reader-state`,{method:'PUT',body:JSON.stringify(body)},token);}
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
 }

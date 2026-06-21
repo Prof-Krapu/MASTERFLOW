@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R4.4 D09 : panneau auteur privé
+
+- création workbench sans import ; position lecteur anti-spoiler ; patch candidat ;
+- aucune écriture source, export ou canonisation.
+
+Statut : TypeScript frontend et build Vite verts, publication en cours.
+
 ## 2026-06-21 — R4.3 D09 : API workbench auteur privée
 
 - lecture des workbenches owner ;

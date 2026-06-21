@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R4.4 panneau auteur D09 | Rendre intake, reader state et patches utilisables en privé. | frontend API/panel/contrat | local vérifié | autorisation marathon MALEX | TS frontend et build verts ; aucun effet externe. |
 | 2026-06-21 | R4.3 surface workbench D09 | Exposer les workbenches et patches privés sans ouvrir source/canon/export. | service/router/test/contrat | local vérifié | autorisation marathon MALEX | API owner-only ; aucun effet externe. |
 | 2026-06-21 | R4.2 patch candidat D09 | Préserver une proposition auteur sans muter source ni canon. | DB/shared/service/test/contrat | local vérifié | autorisation marathon MALEX ; aucun export/canon | Patch privé `CANDIDATE`; source intacte. |
 | 2026-06-21 | R3.4 revue Inbox D08 | Soumettre manuellement un cadrage visuel à l’owner sans ouvrir d’exécution. | shared/DB/service/route/contrat | local vérifié | autorisation marathon MALEX ; aucun provider/live | Décision cadrage only ; provider, génération, export et canonisation restent bloqués. |
