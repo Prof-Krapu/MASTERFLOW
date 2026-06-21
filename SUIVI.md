@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R4.5 D09 : validation auteur privée
+
+- transition owner-only `candidate → validated_for_canon_delta` ;
+- aucune mutation de source, création de delta canon, export ou publication.
+
+Statut : backend 373/373 et TypeScript verts, publication en cours.
+
 ## 2026-06-21 — R5.4 D10 : contrôle de validation privée
 
 - le owner peut déclencher `draft → validated_private` depuis le panneau devis ;

@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R4.5 validation auteur D09 | Figer l'accord auteur sur un candidat sans muter source ni canon. | service/router/test/contrat/pilotage | local vérifié | autorisation marathon MALEX | Backend 373/373 et TypeScript verts ; transition privée uniquement ; canon delta/export exclus. |
 | 2026-06-21 | Clôture D10 privé R5.1-R5.4 | Publier la vérité du rail devis privé réellement disponible. | suivi/matrice/queue/status | local vérifié | non | PR #115-118 réconciliées ; rail privé clos ; sorties commerciales et public intake gated. |
 | 2026-06-21 | Merge PR #118 — R5.4 | Publier le contrôle owner de validation privée. | frontend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `e59025c`; aucun export/send/invoice ; live non revendiqué. |
 | 2026-06-21 | R5.4 contrôle validation privée | Rendre la validation interne utilisable sans action commerciale externe. | frontend API/panel/contrat/pilotage | local vérifié | autorisation marathon MALEX | TS/build verts ; `draft → validated_private` uniquement ; aucun export/send/invoice. |
