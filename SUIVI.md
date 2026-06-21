@@ -970,7 +970,7 @@ Ajouts locaux sur `codex/d12-owner-cockpit-runtime` :
 Recette : tests HTTP ciblés 4/4, backend complet 301/301, TypeScript backend/frontend et build
 Vite OK. Smoke navigateur godmode OK ; responsive 390 px sans débordement horizontal.
 
-Statut : local ; validation requise avant commit/push.
+Statut : déployé sur GitHub `main` via PR #7 (`cdd2111`), puis enrichi par PR #14-16. Aucun live vérifié sans preuve runtime.
 
 ---
 
