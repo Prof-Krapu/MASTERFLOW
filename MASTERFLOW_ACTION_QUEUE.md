@@ -93,7 +93,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : conserve les factories sans les confondre avec le runtime MasterFlow.
 - Risque : faible pour audit ; critique avant affectation, installation ou import.
 - Source de vérité concernée : D11 Passport/Backflow + archive lecture seule + GitHub V1 borné.
-- Statut : audit local vérifié ; zéro Passport validé, installation ou activation.
+- Statut : audit publié sur GitHub `main` (`c20ffb6`) ; zéro Passport validé, installation ou activation.
 - Validation requise : non pour audit ; oui avant affectation utilisateur ou installation.
 
 ### Vague déploiements et audits historiques
@@ -102,7 +102,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : empêche les anciens handoffs/payloads/audits d'être pris pour le live.
 - Risque : faible pour audit ; critique avant suppression, recovery ou déploiement.
 - Source de vérité concernée : archive lecture seule + D12 Runtime Continuity + GitHub actuel.
-- Statut : audit local vérifié ; zéro fichier manquant, zéro suppression, live non vérifié.
+- Statut : audit publié sur GitHub `main` (`54306ed`) ; zéro fichier manquant, zéro suppression, live non vérifié.
 - Validation requise : non pour audit ; oui avant action hôte ou suppression.
 
 ### Vague personas et événements
@@ -111,7 +111,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : conserve voix/méthodes/signaux sans permission ni action implicite.
 - Risque : faible pour audit ; élevé avant affectation ou effet automatisé.
 - Source de vérité concernée : D04/D12 + archive lecture seule + runtime GitHub.
-- Statut : audit local vérifié, aucune activation.
+- Statut : arbitrage publié sur GitHub `main` (`672e8cf`), aucune activation.
 - Validation requise : non pour audit ; oui avant affectation réelle ou effet sensible.
 
 ### Vague datasets legacy
@@ -120,7 +120,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : empêche qu'un snapshot ou fichier privé devienne source de vérité.
 - Risque : faible pour audit ; élevé pour données étudiantes, morphologie et droits visuels.
 - Source de vérité concernée : Living Truth Spine + Dataset Access Matrix + archive lecture seule.
-- Statut : audit local vérifié ; 4 sources bloquées et exclues de l'absorption.
+- Statut : arbitrage publié sur GitHub `main` (`d7b2f7f`) ; 4 sources bloquées et exclues de l'absorption.
 - Validation requise : non pour audit ; oui avant usage d'une source bloquée.
 
 ### Vague engines legacy
