@@ -992,7 +992,7 @@ Livré localement :
 Recette locale : ciblés Validation Inbox + feedback exports **16/16**, backend complet **299/299**,
 TypeScript backend/frontend OK, build frontend OK.
 
-Statut : prêt à publier après validation MALEX commit/push/PR.
+Statut : déployé sur GitHub `main` via PR #5, merge `bb61e4f`. Aucun export, note finale ou envoi étudiant.
 
 ---
 
