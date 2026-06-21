@@ -5,6 +5,10 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R5.4 contrôle validation privée | Rendre la validation interne utilisable sans action commerciale externe. | frontend API/panel/contrat/pilotage | local vérifié | autorisation marathon MALEX | TS/build verts ; `draft → validated_private` uniquement ; aucun export/send/invoice. |
+| 2026-06-21 | Merge PR #117 — R5.3 | Publier la transition interne du devis sans effet externe. | backend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `776a398`; live non revendiqué. |
+| 2026-06-21 | Merge PR #116 — R5.2 | Publier le panneau de brouillons privés sourcés. | frontend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `9242d6f`; live non revendiqué. |
+| 2026-06-21 | Merge PR #115 — R5.1 | Publier le socle Quote Builder privé. | backend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `0b59dd6`; live non revendiqué. |
 | 2026-06-21 | R5.3 validation devis privée | Figer une revue interne sans action commerciale externe. | service/router/test/contrat | local vérifié | autorisation marathon MALEX | `validated_private`; export/send/invoice absents. |
 | 2026-06-21 | R5.2 panneau D10 | Rendre le brouillon de devis utilisable sans action externe. | frontend API/panel/contrat | local vérifié | autorisation marathon MALEX | TS/build verts ; aucun envoi/export. |
 | 2026-06-21 | R5.1 Quote Builder privé | Structurer un devis sourcé sans engagement externe. | DB/shared/service/router/test/contrat | local vérifié | autorisation marathon MALEX ; aucun export/live | Brouillon privé versionné, total déterministe, sources obligatoires. |

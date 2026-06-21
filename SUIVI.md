@@ -4,19 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R5.4 D10 : contrôle de validation privée
+
+- le owner peut déclencher `draft → validated_private` depuis le panneau devis ;
+- l'action disparaît après validation ; aucun export, envoi, facture ou engagement client.
+
+Statut : TypeScript frontend et build Vite verts, publication en cours.
+
 ## 2026-06-21 — R5.3 D10 : validation interne du devis
 
 - transition explicite `draft → validated_private` ;
 - aucun export, envoi, facture ou engagement client.
 
-Statut : backend vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #117, merge `776a398`. Aucun live revendiqué.
 
 ## 2026-06-21 — R5.2 D10 : panneau devis privé
 
 - création d’une ligne sourcée et lecture du total ;
 - aucun envoi, export ou engagement commercial.
 
-Statut : TypeScript frontend et build Vite verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #116, merge `9242d6f`. Aucun live revendiqué.
 
 ## 2026-06-21 — R5.1 D10 : Quote Builder privé
 
@@ -24,7 +31,7 @@ Statut : TypeScript frontend et build Vite verts, publication en cours.
 - total calculé, hypothèses, exclusions et validité ;
 - aucun envoi, facture ou export client.
 
-Statut : backend vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #115, merge `0b59dd6`. Aucun live revendiqué.
 
 ## 2026-06-21 — R4.4 D09 : panneau auteur privé
 
