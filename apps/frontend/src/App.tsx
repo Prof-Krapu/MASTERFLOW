@@ -50,6 +50,7 @@ import {StoryWorkbenchPanel} from './story-workbench-panel.tsx';
 import {PrivateQuotePanel} from './private-quote-panel.tsx';
 import {ReleaseReceiptPanel} from './release-receipt-panel.tsx';
 import {BackupReceiptPanel} from './backup-receipt-panel.tsx';
+import {IncidentRecordPanel} from './incident-record-panel.tsx';
 import {TeachingReadiness} from './teaching-readiness.tsx';
 import {
   buildModeView,
@@ -1615,6 +1616,7 @@ function App(): ReactElement {
           {canAdmin && auth ? <PrivateQuotePanel token={auth.token} /> : null}
           {canAdmin && auth ? <ReleaseReceiptPanel token={auth.token} /> : null}
           {canAdmin && auth ? <BackupReceiptPanel token={auth.token} /> : null}
+          {canAdmin && auth ? <IncidentRecordPanel token={auth.token} /> : null}
 
           {canAdmin && auth ? <JobObservability token={auth.token} /> : null}
         </section>

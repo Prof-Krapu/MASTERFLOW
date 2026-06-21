@@ -34,6 +34,8 @@ import type {
   DecideValidationInboxItemRequest,
   D12MissedTriggerFinding,
   D12BackupReceipt,
+  D12IncidentRecord,
+  CreateD12IncidentRecord,
   D12ReleaseReceipt,
   ExpireActionsResponse,
   InventoryCollection,
@@ -406,6 +408,8 @@ export async function getD12ReleaseReceipts(token?:string|null):Promise<D12Relea
 export async function createD12ReleaseReceipt(body:CreateD12ReleaseReceipt,token?:string|null):Promise<D12ReleaseReceipt>{return request<D12ReleaseReceipt>('/diagnostics/d12/release-receipts',{method:'POST',body:JSON.stringify(body)},token);}
 export async function getD12BackupReceipts(token?:string|null):Promise<D12BackupReceipt[]>{return request<D12BackupReceipt[]>('/diagnostics/d12/backup-receipts',{method:'GET'},token);}
 export async function createD12BackupReceipt(body:CreateD12BackupReceipt,token?:string|null):Promise<D12BackupReceipt>{return request<D12BackupReceipt>('/diagnostics/d12/backup-receipts',{method:'POST',body:JSON.stringify(body)},token);}
+export async function getD12IncidentRecords(token?:string|null):Promise<D12IncidentRecord[]>{return request<D12IncidentRecord[]>('/diagnostics/d12/incidents',{method:'GET'},token);}
+export async function createD12IncidentRecord(body:CreateD12IncidentRecord,token?:string|null):Promise<D12IncidentRecord>{return request<D12IncidentRecord>('/diagnostics/d12/incidents',{method:'POST',body:JSON.stringify(body)},token);}
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
 }
