@@ -1,6 +1,6 @@
 # Carte de progression — Réconciliation Legacy → Canon → Git
 
-Mise à jour : `2026-06-20`
+Mise à jour : `2026-06-21`
 
 ## Où on en est vraiment
 
@@ -12,16 +12,16 @@ live est déjà complet.
 | Bloc | Canon Drive | Git runtime | Étape suivante |
 |---|---|---|---|
 | Sources, versions, identités, contextes | Living Truth Spine raccordé | fondations contextuelles présentes | livrer les objets additifs par verticale |
-| Correction / roster | contrat complet | contexte, identité, UI et roster manuel sur `main` | barème/profil puis lot contextualisé |
-| Contrats D05-D07 | 12 contrats arbitrés | runtime variable, aucun faux statut `absorbed` | publier la preuve puis traiter D08 |
-| Contrats D08 | 48 contrats arbitrés | lifecycle D08 encore absent | registre read-only puis manifest sans provider |
-| Contrats D09-D10 | 20 contrats arbitrés | runtimes dédiés absents | D09 privé puis Quote Builder privé |
-| Contrats D11-D12 | 12 contrats arbitrés | backflow borné, live inconnu | engines puis preuves continuité |
-| Engines legacy | 148 engines consolidés sous 12 owners | parité runtime variable | datasets puis gaps par owner |
-| Datasets legacy | 69 artefacts arbitrés | 4 sources privées/droits bloquées | personas/events sans activation |
-| Personas / événements | 24 + 12 arbitrés | aucune activation/effet sensible | déploiements et audits historiques |
-| Déploiements / audits | 1 691 fichiers lus, 110 groupes exacts | aucune preuve live | factories par Passport |
-| Factories | 2 062 fichiers, 13 groupes candidats | zéro Passport validé/activation | clôture sémantique puis gaps runtime |
+| Correction / roster | contrat complet | contexte, identité, UI, roster, barème/profil, lot, intake et manifest professeur sur `main` | garder R1.5 fermée tant qu'aucun gate provider/runtime n'est validé |
+| Contrats D05-D07 | 12 contrats arbitrés | publication GitHub close, aucun faux statut `absorbed` | poursuivre R1/R2 sans réouvrir OCR/photo réelle |
+| Contrats D08 | 48 contrats arbitrés | registre, panneau owner, classement et revue Inbox sur `main` | conserver provider, storage et export verrouillés |
+| Contrats D09-D10 | 20 contrats arbitrés | rails privés sur `main`, aucune sortie publique/commerciale | garder delta canon, export, facture et public gated |
+| Contrats D11-D12 | 12 contrats arbitrés | backflow borné et preuves privées sur `main`, live inconnu | continuer les preuves de continuité sans action hôte |
+| Engines legacy | 148 engines consolidés sous 12 owners | publication documentaire close | ouvrir seulement des verticales runtime explicites |
+| Datasets legacy | 69 artefacts arbitrés | 4 sources privées/droits bloquées | ne rien absorber de bloqué sans validation explicite |
+| Personas / événements | 24 + 12 arbitrés | aucune activation/effet sensible | garder toute activation derrière un contrat runtime dédié |
+| Déploiements / audits | 1 691 fichiers lus, 110 groupes exacts | index publié, aucune preuve live | traiter la continuité par receipts/preflight, jamais par supposition |
+| Factories | 2 062 fichiers, 13 groupes candidats | audit Passport publié, zéro activation | ne pas activer/importer sans nouveau contrat |
 | Clôture sémantique | 692/692 artefacts classés | runtime et live non confondus | R1 correction complète |
 | DA / assets | resolver + registre cadrés | manifest/provider lifecycle absent | persister manifest/références, provider verrouillé |
 | Mémoire / timeline / versioning | contrat rétabli | cards/checkpoints présents, ledger absent | timeline/change ledger additif |
@@ -37,8 +37,9 @@ live est déjà complet.
 
 ## Preuve GitHub
 
-La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
-`main` au SHA `5278bedd02e0c0ef48291108e62ea51fde3677dc`.
+La chaîne legacy de publication est désormais mergée sur GitHub : PR `#77` à
+`#86` pour les arbitrages et la clôture, puis réconciliée sur `main` jusqu'au
+SHA `2c547e12df736947c4a3d8ac89e5f7d9903799c4`.
 
 ## Ce qui n'est pas bloqué
 
@@ -48,7 +49,6 @@ La passe Living Truth / contrats opérationnels est mergée par la PR `#57` sur
 
 ## Prochain ordre logique
 
-1. Publier la clôture sémantique et le plan runtime R1→R6.
-2. Démarrer R1 : barème/profil, puis lot de correction manuel.
-3. Ajouter timeline/change ledger et receipts de continuité.
-4. Seulement ensuite, traiter les autres apps legacy et les factories.
+1. Poursuivre R1 sans ouvrir R1.5 tant que le gate provider/consentement/runtime n'est pas validé.
+2. Consolider les preuves privées D12 et la continuité sans action hôte ni live implicite.
+3. Ouvrir une nouvelle verticale seulement si la source canon et le gate legacy sont cités explicitement.
