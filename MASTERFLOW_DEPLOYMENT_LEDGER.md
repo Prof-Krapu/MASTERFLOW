@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | Clôture D12 backup receipt R5.3-R5.4 | Publier la trace de backup sans revendiquer une sauvegarde ou restauration réelle. | suivi/matrice/queue/status | local vérifié | non | PR #126-127 réconciliées ; preuve privée close ; toutes actions hôte gated. |
+| 2026-06-21 | Merge PR #127 — D12 R5.4 | Publier le panneau privé de backup receipts. | frontend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `37fc12f`; restauration non testée ; live non revendiqué. |
 | 2026-06-21 | D12 R5.4 backup receipt panel | Rendre le registre utilisable sans action sur les fichiers ou hôtes. | frontend API/panel/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun hôte | TypeScript/build verts ; aucun backup/recovery exposé ; restauration non testée. |
 | 2026-06-21 | Merge PR #126 — D12 R5.3 | Publier le registre privé de backup receipts. | shared/DB/service/router/test/contrat | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `57b620b`; aucun backup/recovery ; live non revendiqué. |
 | 2026-06-21 | D12 R5.3 backup receipt registry | Consigner une preuve de sauvegarde sans exécuter de backup ou restauration. | shared/DB/service/router/test/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun hôte | Backend 381/381 et TypeScript verts ; checksum obligatoire ; restauration `not_tested`. |

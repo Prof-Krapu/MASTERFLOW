@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - saisie et lecture owner du checksum sans action sur les fichiers ;
 - restauration explicitement non testée, sans bouton de recovery.
 
-Statut : TypeScript frontend et build Vite verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #127, merge `37fc12f`. Aucun backup ou live revendiqué.
 
 ## 2026-06-21 — D12 R5.3 : registre de backup receipts
 

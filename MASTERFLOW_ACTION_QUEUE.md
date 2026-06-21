@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : distingue enfin une déclaration de release d'une preuve runtime vérifiée.
 - Risque : faible à moyen ; aucune action hôte et statut `not_verified` obligatoire.
 - Source de vérité concernée : D12 Domain Card + Runtime Continuity Incident & Recovery Contract.
-- Statut : R5.1-R5.3 sur `main`; R5.4 panneau backup receipt en recette locale. Recovery/smoke/live restent gated.
+- Statut : R5.1-R5.4 sur `main`; rails release et backup receipts clos. Recovery/smoke/live restent gated.
 - Validation requise : non pour registre privé ; oui avant smoke live, backup, recovery, migration ou déploiement.
 
 ### R5 D10 — Quote Builder privé
