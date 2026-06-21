@@ -19,7 +19,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : rend MasterStory exploitable sans spoiler ni canon silencieux.
 - Risque : faible tant que tout reste candidat et privé.
 - Source de vérité concernée : D09 Domain Card + arbitrage legacy MasterStory.
-- Statut : R4.1-R4.4 sur `main`; R4.5 validation auteur privée en recette locale, sans application automatique.
+- Statut : R4.1-R4.5 sur `main`; R4.6 contrôle auteur en recette locale, sans application automatique.
 - Validation requise : non avant validation auteur/canon/export.
 
 ### Gate Legacy → Runtime
