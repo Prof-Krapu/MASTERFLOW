@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R5.3 D10 : validation interne du devis
+
+- transition explicite `draft → validated_private` ;
+- aucun export, envoi, facture ou engagement client.
+
+Statut : backend vérifié localement, publication en cours.
+
 ## 2026-06-21 — R5.2 D10 : panneau devis privé
 
 - création d’une ligne sourcée et lecture du total ;
