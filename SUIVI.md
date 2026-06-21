@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - création workbench sans import ; position lecteur anti-spoiler ; patch candidat ;
 - aucune écriture source, export ou canonisation.
 
-Statut : TypeScript frontend et build Vite verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #113, merge `e74a00c`. Aucun live revendiqué.
 
 ## 2026-06-21 — R4.3 D09 : API workbench auteur privée
 
@@ -17,7 +17,7 @@ Statut : TypeScript frontend et build Vite verts, publication en cours.
 - création et lecture des patches candidats ;
 - aucun export, import ou canon automatique.
 
-Statut : vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #112, merge `6363d45`. Aucun live revendiqué.
 
 ## 2026-06-21 — R4.2 D09 : patch narratif candidat
 
