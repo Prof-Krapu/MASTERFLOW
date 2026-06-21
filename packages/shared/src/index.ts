@@ -1209,6 +1209,7 @@ export const ValidationInboxItemSchema = z.object({
     'd12_finding',
     'usage_learning_candidate',
     'factory_backflow_intake',
+    'visual_manifest',
   ]),
   source_id: z.string().min(1),
   created_at: z.number().int().nonnegative(),
