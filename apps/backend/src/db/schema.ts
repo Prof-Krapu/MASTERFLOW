@@ -1349,6 +1349,20 @@ function migrate(d: Database.Database): void {
       created_at          INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS d12_backup_receipts (
+      id                  TEXT PRIMARY KEY,
+      owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      target_label        TEXT NOT NULL,
+      environment_label   TEXT NOT NULL,
+      checksum_sha256     TEXT NOT NULL,
+      backup_observed_at  INTEGER NOT NULL,
+      evidence_refs_json  TEXT NOT NULL DEFAULT '[]',
+      note                TEXT,
+      proof_state         TEXT NOT NULL CHECK (proof_state IN ('unknown','evidence_attached')),
+      restore_status      TEXT NOT NULL DEFAULT 'not_tested' CHECK (restore_status = 'not_tested'),
+      created_at          INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS usage_learning_candidates (
       id                         TEXT PRIMARY KEY,
       owner_id                   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -2429,6 +2443,12 @@ export interface D12ReleaseReceiptRow {
   proof_state: 'unknown' | 'evidence_attached';
   runtime_status: 'not_verified';
   created_at: number;
+}
+
+export interface D12BackupReceiptRow {
+  id: string; owner_id: string; target_label: string; environment_label: string; checksum_sha256: string;
+  backup_observed_at: number; evidence_refs_json: string; note: string | null;
+  proof_state: 'unknown' | 'evidence_attached'; restore_status: 'not_tested'; created_at: number;
 }
 
 export interface UsageLearningCandidateRow {

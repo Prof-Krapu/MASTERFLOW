@@ -12,6 +12,7 @@ import {diagnoseProcessActivation} from '../services/process_activation.ts';
 import {
   CreateD12MissedTriggerFindingSchema,
   CreateD12ReleaseReceiptSchema,
+  CreateD12BackupReceiptSchema,
   D12FindingDecisionSchema,
   D12FindingStatusSchema,
   ProcessActivationRequestSchema,
@@ -22,6 +23,7 @@ import {
   listD12MissedTriggerFindings,
 } from '../services/d12_findings.ts';
 import {createD12ReleaseReceipt, listD12ReleaseReceipts} from '../services/d12_release_receipts.ts';
+import {createD12BackupReceipt, listD12BackupReceipts} from '../services/d12_backup_receipts.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -235,6 +237,17 @@ export function createDiagnosticsRouter(): Router {
     const parsed = CreateD12ReleaseReceiptSchema.safeParse(req.body);
     if (!parsed.success) return void res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
     res.status(201).json(createD12ReleaseReceipt(user, parsed.data));
+  });
+
+  router.get('/diagnostics/d12/backup-receipts', (_req: Request, res: Response): void => {
+    res.json(listD12BackupReceipts());
+  });
+  router.post('/diagnostics/d12/backup-receipts', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) return void res.status(401).json({error: 'unauthorized'});
+    const parsed = CreateD12BackupReceiptSchema.safeParse(req.body);
+    if (!parsed.success) return void res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+    res.status(201).json(createD12BackupReceipt(user, parsed.data));
   });
 
   return router;
