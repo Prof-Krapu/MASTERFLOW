@@ -866,6 +866,50 @@ function migrate(d: Database.Database): void {
       UNIQUE(assignment_id, version)
     );
 
+    -- D08 R3.1 : références et manifest visuel privés, sans stockage ni génération.
+    CREATE TABLE IF NOT EXISTS visual_references (
+      id TEXT PRIMARY KEY,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      project_scope TEXT NOT NULL,
+      label TEXT NOT NULL,
+      source_ref TEXT NOT NULL,
+      reference_status TEXT NOT NULL CHECK (reference_status IN (
+        'canon_strict','expression_only','outfit_only','world_style','poster_energy',
+        'filter_reference','output_template','anti_pattern','rejected'
+      )),
+      provenance_state TEXT NOT NULL CHECK (provenance_state IN ('declared','validated','weak')),
+      privacy_scope TEXT NOT NULL CHECK (privacy_scope IN ('private','project_private')),
+      created_by TEXT NOT NULL REFERENCES users(id),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS visual_manifests (
+      id TEXT PRIMARY KEY,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      project_scope TEXT NOT NULL,
+      request_title TEXT NOT NULL,
+      intent TEXT NOT NULL,
+      privacy_scope TEXT NOT NULL CHECK (privacy_scope IN ('private','project_private')),
+      canon_entity_refs_json TEXT NOT NULL,
+      da_root_ref TEXT,
+      active_layers_json TEXT NOT NULL,
+      filters_json TEXT NOT NULL,
+      output_family TEXT NOT NULL,
+      output_template TEXT NOT NULL,
+      source_truth_summary TEXT NOT NULL,
+      reference_ids_json TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (status IN (
+        'draft','references_to_classify','da_to_resolve','readiness_blocked',
+        'action_ready_preview','generation_blocked_tech_pending','parked'
+      )),
+      created_by TEXT NOT NULL REFERENCES users(id),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,
       template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,

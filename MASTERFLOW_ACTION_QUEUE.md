@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### R3.1 — D08 registre manifest-first
+
+- Tâche : publier le registre privé de références et manifests visuels, sans exécution.
+- Impact : rend le cadrage et les blocages D08 vérifiables avant tout provider.
+- Risque : faible ; metadata privée uniquement, génération explicitement verrouillée.
+- Source de vérité concernée : D08 Visual Manifest Runtime Contract.
+- Statut : backend en recette locale.
+- Validation requise : non pour code/tests privés ; oui avant provider, stockage, asset ou export.
+
 ### Clôture legacy et plan runtime
 
 - Tâche : publier la clôture des 692 artefacts et le plan R1→R6.

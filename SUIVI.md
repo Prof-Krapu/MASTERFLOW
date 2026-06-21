@@ -4,6 +4,14 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R3.1 D08 : registre visuel manifest-first
+
+- références visuelles privées, typées et avec provenance explicite ;
+- manifest D08 privé avec DA root, layers, filtres, sortie et rapport Action Ready ;
+- génération bloquée de façon explicite : pas de provider, asset, stockage, export ou canonisation.
+
+Statut : vérifié localement, prêt à publier ; backend 369/369 et TypeScript backend vert.
+
 ## 2026-06-20 — R2.6 D06 : édition professeur isolée par fiche
 
 - chaque fiche Teaching possède désormais son propre brouillon d’édition ;

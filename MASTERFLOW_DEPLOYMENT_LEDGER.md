@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R3.1 D08 registre manifest-first | Préparer références et manifest visuel sans ouvrir de génération. | DB/shared/service/routes/tests/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun provider/live | Registre privé, provenance, Action Ready read-only ; provider, stockage, asset et export verrouillés. Backend 369/369 et TypeScript vert. |
+| 2026-06-21 | Merge PR #103 — clôture R2 | Publier la vérité de déploiement D05→D06. | suivi/matrice/queue/closure report | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `0592740`; PR #103 mergée ; live non revendiqué. |
 | 2026-06-21 | Clôture publiée R2 D05→D06 | Retirer les statuts locaux obsolètes et rendre la chaîne réellement publiée lisible. | suivi/matrice/queue/closure report | local vérifié | autorisation marathon MALEX ; aucun live/provider | PR #95→#102 réconciliées avec leurs SHA ; R1.5 reste explicitement fermé. |
 | 2026-06-21 | Merge PR #102 — R2.6 | Publier l’isolation des formulaires professeur par fiche. | Teaching/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `4f99268`; PR #102 mergée ; live non revendiqué. |
 | 2026-06-20 | R2.6 édition professeur sûre | Empêcher un formulaire Teaching de mélanger ou vider les champs de plusieurs fiches. | Teaching/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun live/provider | Brouillon isolé par fiche ; valeurs, autres champs et verrous préservés. Backend 368/368, TypeScript back/front et build Vite verts. |
