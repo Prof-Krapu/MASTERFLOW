@@ -48,7 +48,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : rend le cadrage et les blocages D08 vérifiables avant tout provider.
 - Risque : faible ; metadata privée uniquement, génération explicitement verrouillée.
 - Source de vérité concernée : D08 Visual Manifest Runtime Contract.
-- Statut : R3.1-R3.3 sur `main`; R3.4 soumission Inbox manuelle en recette locale, sans génération.
+- Statut : R3.1-R3.4 sur `main`; rail manifest-first et revue Inbox privée clos. Provider, asset, export et canonisation restent gated.
 - Validation requise : non pour code/tests privés ; oui avant provider, stockage, asset ou export.
 
 ### Clôture legacy et plan runtime
