@@ -4,6 +4,14 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R4.3 D09 : API workbench auteur privée
+
+- lecture des workbenches owner ;
+- création et lecture des patches candidats ;
+- aucun export, import ou canon automatique.
+
+Statut : vérifié localement, publication en cours.
+
 ## 2026-06-21 — R4.2 D09 : patch narratif candidat
 
 - proposition privée rattachée au workbench ;
