@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - le owner classe explicitement ses références plutôt que de les laisser influencer la DA en silence ;
 - aucun classement n’autorise une génération, un asset, un export ou une canonisation.
 
-Statut : vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #106, merge `ab418e1`. Aucun live revendiqué.
 
 ## 2026-06-21 — R3.2 D08 : panneau owner manifest-first
 
@@ -17,7 +17,7 @@ Statut : vérifié localement, publication en cours.
 - le rapport Action Ready rend les gates techniques visibles ;
 - aucune action de génération, export ou canonisation n’est exposée.
 
-Statut : vérifié localement, prêt à publier ; TypeScript backend/frontend et build Vite verts.
+Statut : déployé sur GitHub `main` via PR #105, merge `1a9018e`. Aucun live revendiqué.
 
 ## 2026-06-21 — R3.1 D08 : registre visuel manifest-first
 
