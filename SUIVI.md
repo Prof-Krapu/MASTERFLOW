@@ -4,13 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — D12 R5.2 : panneau release receipts privé
+
+- saisie et lecture des déclarations SHA dans une surface admin/godmode ;
+- l'interface ne propose aucun smoke, backup, recovery, migration ou déploiement.
+
+Statut : TypeScript frontend et build Vite verts, publication en cours.
+
 ## 2026-06-21 — D12 R5.1 : registre de release receipts
 
 - déclaration append-only reliée à un SHA Git complet, environnement et composants ;
 - preuve absente = `unknown`, preuve attachée ≠ runtime vérifié ;
 - aucun déploiement, smoke, backup, recovery ou migration.
 
-Statut : backend 377/377 et TypeScript verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #123, merge `6e9f62e`. Aucun live revendiqué.
 
 ## 2026-06-21 — R4.6 D09 : contrôle de validation auteur
 

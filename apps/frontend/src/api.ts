@@ -10,6 +10,7 @@ import type {
   CreateInventoryProjectNeedRequest,
   CreatePreCorrectionManifestRequest,
   CreateD12MissedTriggerFinding,
+  CreateD12ReleaseReceipt,
   CreateInvitation,
   ConversationGuide,
   Cohort,
@@ -31,6 +32,7 @@ import type {
   CurrentContext,
   DecideValidationInboxItemRequest,
   D12MissedTriggerFinding,
+  D12ReleaseReceipt,
   ExpireActionsResponse,
   InventoryCollection,
   InventoryItem,
@@ -398,6 +400,8 @@ export async function setStoryReaderState(id:string,body:SetStoryReaderStateRequ
 export async function getPrivateQuotes(token?:string|null):Promise<PrivateQuoteDraft[]>{return request<PrivateQuoteDraft[]>('/private-quotes',{method:'GET'},token);}
 export async function createPrivateQuote(body:CreatePrivateQuoteDraftRequest,token?:string|null):Promise<PrivateQuoteDraft>{return request<PrivateQuoteDraft>('/private-quotes',{method:'POST',body:JSON.stringify(body)},token);}
 export async function validatePrivateQuote(id:string,token?:string|null):Promise<PrivateQuoteDraft>{return request<PrivateQuoteDraft>(`/private-quotes/${encodeURIComponent(id)}/validate`,{method:'POST'},token);}
+export async function getD12ReleaseReceipts(token?:string|null):Promise<D12ReleaseReceipt[]>{return request<D12ReleaseReceipt[]>('/diagnostics/d12/release-receipts',{method:'GET'},token);}
+export async function createD12ReleaseReceipt(body:CreateD12ReleaseReceipt,token?:string|null):Promise<D12ReleaseReceipt>{return request<D12ReleaseReceipt>('/diagnostics/d12/release-receipts',{method:'POST',body:JSON.stringify(body)},token);}
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
 }

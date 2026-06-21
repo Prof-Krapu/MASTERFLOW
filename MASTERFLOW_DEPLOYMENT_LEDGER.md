@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | D12 R5.2 release receipt panel | Rendre le registre utilisable sans ajouter d'action sur le runtime. | frontend API/panel/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun live | TypeScript/build verts ; aucun contrôle hôte ou action de recovery exposé. |
+| 2026-06-21 | Merge PR #123 — D12 R5.1 | Publier le registre privé release/SHA append-only. | shared/DB/service/router/test/contrat | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `6e9f62e`; runtime `not_verified`; live non revendiqué. |
 | 2026-06-21 | D12 R5.1 release receipt registry | Relier une déclaration de release à un SHA sans prétendre vérifier le live. | shared/DB/service/router/test/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun live | Backend 377/377 et TypeScript verts ; aucun job/action ; runtime toujours `not_verified`. |
 | 2026-06-21 | Clôture D09 privé R4.1-R4.6 | Publier la vérité du workbench narratif réellement disponible. | suivi/matrice/queue/status | local vérifié | non | PR #110-113 et #120-121 réconciliées ; delta canon/import/export/publication gated. |
 | 2026-06-21 | Merge PR #121 — R4.6 | Publier le contrôle auteur dans le workbench privé. | frontend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `aebda64`; source et canon inchangés ; live non revendiqué. |
