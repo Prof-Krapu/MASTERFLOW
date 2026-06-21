@@ -217,8 +217,7 @@ Statut : gate réel, non contourné. Le marathon poursuit les tranches sûres ho
 - le manifest naît brouillon puis reçoit une validation humaine séparée ;
 - validation du manifest ne lance aucun runner, job, score ou feedback.
 
-Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : préparation
-contrôlée du job de pré-correction, sans exécution automatique.
+Statut : déployé sur GitHub `main` via PR #93, merge `e7626b0`. Runner automatique toujours fermé.
 
 ## 2026-06-20 — R1.3 Correction : intake de copies candidates dans Teaching
 
@@ -228,8 +227,7 @@ contrôlée du job de pré-correction, sans exécution automatique.
 - Teaching expose l'intake et rafraîchit le compteur du lot ;
 - aucune correction, note, pré-correction, feedback ou export n'est lancé.
 
-Statut : vérifié localement, prêt à publier. Suite : revue professeur d'échantillon et préparation
-du manifest de pré-correction, toujours sans runner automatique.
+Statut : déployé sur GitHub `main` via PR #90-91, merges `280da79` et `cb7aa6a`. Aucun runner automatique.
 
 ## 2026-06-20 — R1.2 Correction : lot manuel contextualisé
 
@@ -238,8 +236,7 @@ du manifest de pré-correction, toujours sans runner automatique.
 - roster actif, sujet, sources et profil de processus figés avant toute intake ;
 - lot maintenu en `draft`, zéro submission, zéro score et zéro pré-correction.
 
-Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : intake de
-submissions candidates sans rapprochement automatique.
+Statut : déployé sur GitHub `main` via PR #88-89, merges `82a117a` et `6d55f70`. Aucune pré-correction.
 
 ## 2026-06-20 — R1.1 Correction : barèmes et profils privés/versionnés
 
@@ -249,8 +246,7 @@ submissions candidates sans rapprochement automatique.
 - surface Teaching raccordée pour créer, versionner, relire et valider ces deux prérequis ;
 - aucun lot, score, pré-correction, feedback, export, envoi étudiant, provider ou action live n'est lancé.
 
-Statut : vérifié localement, prêt à publier. Suite : création d'un lot manuel contextualisé qui
-ne peut référencer que ces objets validés.
+Statut : déployé sur GitHub `main` via PR #87, merge `0e52443`. Aucun lot, score ou provider.
 
 ## 2026-06-20 — Legacy → Canon → Git — CLÔTURE SÉMANTIQUE
 
