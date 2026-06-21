@@ -1362,6 +1362,7 @@ function migrate(d: Database.Database): void {
       restore_status      TEXT NOT NULL DEFAULT 'not_tested' CHECK (restore_status = 'not_tested'),
       created_at          INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS d12_incident_records (id TEXT PRIMARY KEY,owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,severity TEXT NOT NULL CHECK(severity IN ('low','medium','high','critical')),impact_summary TEXT NOT NULL,scope_refs_json TEXT NOT NULL,symptom_refs_json TEXT NOT NULL,evidence_refs_json TEXT NOT NULL DEFAULT '[]',observed_at INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'recorded_unresolved' CHECK(status='recorded_unresolved'),created_at INTEGER NOT NULL);
 
     CREATE TABLE IF NOT EXISTS usage_learning_candidates (
       id                         TEXT PRIMARY KEY,
@@ -2450,6 +2451,7 @@ export interface D12BackupReceiptRow {
   backup_observed_at: number; evidence_refs_json: string; note: string | null;
   proof_state: 'unknown' | 'evidence_attached'; restore_status: 'not_tested'; created_at: number;
 }
+export interface D12IncidentRecordRow{id:string;owner_id:string;severity:'low'|'medium'|'high'|'critical';impact_summary:string;scope_refs_json:string;symptom_refs_json:string;evidence_refs_json:string;observed_at:number;status:'recorded_unresolved';created_at:number;}
 
 export interface UsageLearningCandidateRow {
   id: string;

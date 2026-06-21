@@ -2909,6 +2909,10 @@ export const D12BackupReceiptSchema = CreateD12BackupReceiptSchema.extend({
   restore_status: z.literal('not_tested'), created_at: z.number().int().nonnegative(),
 });
 export type D12BackupReceipt = z.infer<typeof D12BackupReceiptSchema>;
+export const CreateD12IncidentRecordSchema=z.object({severity:z.enum(['low','medium','high','critical']),impact_summary:z.string().min(1).max(2000),scope_refs:z.array(z.string().min(1).max(240)).min(1).max(50),symptom_refs:z.array(z.string().min(1).max(500)).min(1).max(50),observed_at:z.number().int().nonnegative(),evidence_refs:z.array(z.string().min(1).max(500)).max(50).default([])});
+export type CreateD12IncidentRecord=z.infer<typeof CreateD12IncidentRecordSchema>;
+export const D12IncidentRecordSchema=CreateD12IncidentRecordSchema.extend({incident_id:z.string().min(1),owner_id:z.string().min(1),status:z.literal('recorded_unresolved'),created_at:z.number().int().nonnegative()});
+export type D12IncidentRecord=z.infer<typeof D12IncidentRecordSchema>;
 
 // ───────────────────────── RAG permissionné PR-7 ─────────────────────────
 
