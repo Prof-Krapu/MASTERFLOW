@@ -11,6 +11,7 @@ import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
 import {diagnoseProcessActivation} from '../services/process_activation.ts';
 import {
   CreateD12MissedTriggerFindingSchema,
+  CreateD12ReleaseReceiptSchema,
   D12FindingDecisionSchema,
   D12FindingStatusSchema,
   ProcessActivationRequestSchema,
@@ -20,6 +21,7 @@ import {
   decideD12MissedTriggerFinding,
   listD12MissedTriggerFindings,
 } from '../services/d12_findings.ts';
+import {createD12ReleaseReceipt, listD12ReleaseReceipts} from '../services/d12_release_receipts.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -221,6 +223,18 @@ export function createDiagnosticsRouter(): Router {
     } catch {
       res.status(404).json({error: 'finding_not_found'});
     }
+  });
+
+  router.get('/diagnostics/d12/release-receipts', (_req: Request, res: Response): void => {
+    res.json(listD12ReleaseReceipts());
+  });
+
+  router.post('/diagnostics/d12/release-receipts', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) return void res.status(401).json({error: 'unauthorized'});
+    const parsed = CreateD12ReleaseReceiptSchema.safeParse(req.body);
+    if (!parsed.success) return void res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+    res.status(201).json(createD12ReleaseReceipt(user, parsed.data));
   });
 
   return router;
