@@ -103,7 +103,7 @@ Statut : déployé sur GitHub `main` via PR #112, merge `6363d45`. Aucun live re
 - proposition privée rattachée au workbench ;
 - état candidat explicite ; aucune réécriture ou canonisation automatique.
 
-Statut : déployé sur GitHub `main` via PR #109, merge `c319106`. Aucun provider/live revendiqué.
+Statut : déployé sur GitHub `main` via PR #111, merge `abea3b9`. Aucun canon/export/live revendiqué.
 
 ## 2026-06-21 — R4.1 D09 : intake privé et reader state
 
@@ -111,14 +111,14 @@ Statut : déployé sur GitHub `main` via PR #109, merge `c319106`. Aucun provide
 - position lecteur obligatoire en mode lecture ;
 - aucun patch ni canonisation automatique.
 
-Statut : vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #110, merge `0016b35`. Aucun import/canon/live revendiqué.
 
 ## 2026-06-21 — R3.4 D08 : revue manuelle Inbox
 
 - soumission explicite du manifest à l’Inbox ;
 - décision de cadrage uniquement ; les blocages de génération restent persistants.
 
-Statut : vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #109, merge `c319106`. Aucun provider/live revendiqué.
 
 ## 2026-06-21 — R3.3 D08 : classification de références
 
