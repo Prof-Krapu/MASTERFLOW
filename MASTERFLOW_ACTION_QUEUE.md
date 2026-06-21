@@ -37,7 +37,7 @@ Dernière mise à jour : 2026-06-20
 - Impact : remplace les références libres par une chaîne D05→D06 traçable et revue par le professeur.
 - Risque : faible tant que la fiche reste privée, sans note et sans publication.
 - Source de vérité concernée : canon D05 Subject As Mission + D06 Correction Sheet Autosync.
-- Statut : R2.1→R2.5 sur `main`; R2.6 durcissement des champs professeur en recette locale.
+- Statut : R2.1→R2.6 déployées sur GitHub `main` ; clôture R2 publiée. R1.5 reste fermé par le gate provider/consentement/runtime.
 - Validation requise : non pour code/tests privés ; oui avant publication ou assignment étudiant.
 
 ### Vague factories par Passport

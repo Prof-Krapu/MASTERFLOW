@@ -10,7 +10,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - les valeurs persistées, champs non édités et verrous existants sont conservés ;
 - aucune mutation n’a lieu avant le clic professeur.
 
-Statut : correctif vérifié localement, prêt à publier ; backend 368/368, TypeScript back/front et build Vite verts.
+Statut : déployé sur GitHub `main` via PR #102, merge `4f99268` ; backend 368/368,
+TypeScript back/front et build Vite verts. Aucun live revendiqué.
 
 ## 2026-06-20 — R2.5 D06 : diff de fiche pour revue professeur
 
@@ -48,8 +49,8 @@ TypeScript back/front et build Vite verts. Aucun live revendiqué.
 - évolution ultérieure du sujet source sans effet sur l'assignment historique ;
 - cohorte active et scope owner/projet obligatoires ; activation manuelle séparée.
 
-Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : correction sheet
-brouillon synchronisée avec champs professeur verrouillés.
+Statut : déployé sur GitHub `main` via PR #97-98, merges `e38c204` et `9e09427`.
+La fiche de correction est désormais traitée par R2.3-R2.6 ; aucun live revendiqué.
 
 ## 2026-06-20 — R2.1 D05 : bibliothèque de sujets privés et versionnés
 
@@ -58,8 +59,8 @@ brouillon synchronisée avec champs professeur verrouillés.
 - création brouillon, nouvelle version append-only et validation explicite ;
 - `deployment_state=private_draft` obligatoire ; aucune publication ou assignment.
 
-Statut : backend et surface Teaching vérifiés localement, prêts à publier. Suite : assignment scoped
-dérivé sans modifier le sujet source.
+Statut : déployé sur GitHub `main` via PR #95-96, merges `130bfea` et `ee3fbd8`.
+L'assignment et la fiche de correction sont désormais traités par R2.2-R2.6 ; aucun live revendiqué.
 
 ## 2026-06-20 — R1.5 Correction : gate d'exécution maintenu
 
