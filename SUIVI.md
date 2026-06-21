@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R3.3 D08 : classification de références
+
+- le owner classe explicitement ses références plutôt que de les laisser influencer la DA en silence ;
+- aucun classement n’autorise une génération, un asset, un export ou une canonisation.
+
+Statut : vérifié localement, publication en cours.
+
 ## 2026-06-21 — R3.2 D08 : panneau owner manifest-first
 
 - le owner peut créer références et manifest D08 privés depuis l’interface ;

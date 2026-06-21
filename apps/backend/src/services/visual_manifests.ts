@@ -1,11 +1,13 @@
 import {
   CreateVisualManifestRequestSchema,
   CreateVisualReferenceRequestSchema,
+  UpdateVisualReferenceRequestSchema,
   ROLE_RANK,
   VisualManifestSchema,
   VisualReferenceSchema,
   type CreateVisualManifestRequest,
   type CreateVisualReferenceRequest,
+  type UpdateVisualReferenceRequest,
   type VisualManifest,
   type VisualReference,
 } from '@masterflow/shared';
@@ -104,6 +106,17 @@ export function listVisualReferences(actor: AuthUser, projectId?: string): Visua
     ? getDb().prepare('SELECT * FROM visual_references WHERE project_id=? ORDER BY updated_at DESC').all(projectId) as VisualReferenceRow[]
     : getDb().prepare('SELECT * FROM visual_references WHERE owner_id=? AND project_id IS NULL ORDER BY updated_at DESC').all(actor.id) as VisualReferenceRow[];
   return rows.filter((row) => canAccess(actor, row)).map(referenceDto);
+}
+export function updateVisualReference(actor: AuthUser, id: string, input: UpdateVisualReferenceRequest): VisualReference {
+  requireTeacher(actor);
+  const request = UpdateVisualReferenceRequestSchema.parse(input);
+  const row = getDb().prepare('SELECT * FROM visual_references WHERE id=?').get(id) as VisualReferenceRow | undefined;
+  if (!row) throw new Error('visual_reference_not_found');
+  assertAccess(actor, row, 'visual_reference_not_found');
+  const now = Date.now();
+  getDb().prepare('UPDATE visual_references SET reference_status=?, provenance_state=?, updated_at=? WHERE id=?').run(request.reference_status, request.provenance_state, now, id);
+  audit({event_type: 'visual_reference.classified', user_id: actor.id, scope: row.project_scope, detail: {reference_id: id, reference_status: request.reference_status}});
+  return referenceDto(getDb().prepare('SELECT * FROM visual_references WHERE id=?').get(id) as VisualReferenceRow);
 }
 export function createVisualManifest(actor: AuthUser, input: CreateVisualManifestRequest): VisualManifest {
   requireTeacher(actor);

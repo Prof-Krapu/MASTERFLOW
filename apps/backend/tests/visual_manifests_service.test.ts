@@ -3,7 +3,7 @@ import {beforeAll, describe, expect, it} from 'vitest';
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
-import {createVisualManifest, createVisualReference, listVisualManifests} from '../src/services/visual_manifests.ts';
+import {createVisualManifest, createVisualReference, listVisualManifests, updateVisualReference} from '../src/services/visual_manifests.ts';
 
 const owner: AuthUser = {id: 'd08-owner', username: 'd08_owner', role: 'teacher'};
 const outsider: AuthUser = {id: 'd08-outsider', username: 'd08_outsider', role: 'godmode'};
@@ -33,5 +33,6 @@ describe('D08 manifest-first', () => {
     expect(manifest.action_ready_report.generation_blockers).toContain('provider_generation_forbidden');
     expect(Object.keys(manifest)).not.toContain('generated_asset_candidate');
     expect(listVisualManifests(outsider)).toHaveLength(0);
+    expect(updateVisualReference(owner, reference.reference_id, {reference_status: 'anti_pattern', provenance_state: 'validated'})).toMatchObject({reference_status: 'anti_pattern', provenance_state: 'validated'});
   });
 });

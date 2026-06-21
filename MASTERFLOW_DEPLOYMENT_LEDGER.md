@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R3.3 classification D08 | Rendre les références visuelles explicitement typées par le owner. | shared/service/router/UI/test/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun provider/live | Classement privé et traçable ; aucun effet de génération ou canonisation. |
+| 2026-06-21 | Merge PR #105 — R3.2 | Publier la surface owner D08 manifest-first. | frontend API/panneau/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `1a9018e`; PR #105 mergée ; live non revendiqué. |
 | 2026-06-21 | R3.2 panneau owner D08 | Rendre le manifest-first utilisable sans ouvrir la génération. | frontend API/panneau/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun provider/live | Création privée de référence/manifest et rapport de blocage lisible ; TypeScript back/front et build Vite verts. |
 | 2026-06-21 | Merge PR #104 — R3.1 | Publier le registre privé D08 manifest-first. | DB/shared/service/routes/tests/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `0baed27`; PR #104 mergée ; live non revendiqué. |
 | 2026-06-21 | R3.1 D08 registre manifest-first | Préparer références et manifest visuel sans ouvrir de génération. | DB/shared/service/routes/tests/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun provider/live | Registre privé, provenance, Action Ready read-only ; provider, stockage, asset et export verrouillés. Backend 369/369 et TypeScript vert. |

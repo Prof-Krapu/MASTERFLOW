@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-20
-Branche de travail : `codex/d08-owner-manifest-panel` — R3.2 UI en recette manifest-first
-Base GitHub vérifiée : `0baed27` (`main` après PR #104)
+Branche de travail : `codex/d08-reference-classification` — R3.3 en recette manifest-first
+Base GitHub vérifiée : `1a9018e` (`main` après PR #105)
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -18,7 +18,7 @@ le runtime GitHub.
 | D06 correction / feedback | partiel | R1 atteint le manifest professeur sans runner ; R2.1-R2.6 sont sur `main` : sujet, assignment, fiche, paramètres, diff et édition professeur privée. | faible à moyen | Garder R1.5 fermé ; passer à D08 manifest-first ou audit D07. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability | partiel | Cockpit, findings, décisions owner et Usage Harvester V1 sont sur `main` ; détection automatique des findings reste absente. | faible | Étendre les sources structurées une par une, sans analyse brute ni auto-fix. |
-| D08 génération visuelle | partiel | R3.1 est sur `main`; R3.2 ajoute localement la surface owner de préparation et de lecture des blocages. Provider, storage, asset lifecycle et review restent absents. | moyen | Publier R3.2, puis poursuivre par une revue D08 sans exécution. |
+| D08 génération visuelle | partiel | R3.1-R3.2 sont sur `main`; R3.3 ajoute localement le classement explicite des références. Provider, storage, asset lifecycle et review restent absents. | moyen | Publier R3.3, puis poursuivre par une revue D08 sans exécution. |
 | D09 MasterStory | absent runtime | Aucun stockage ou workbench MasterStory dédié confirmé. | moyen | Garder les récits en candidats jusqu'à une tranche dédiée. |
 | D10 événements/devis/public | futur | Pas de Quote Builder privé ni de public intake dédié. | élevé | Commencer plus tard par le devis privé, jamais par l'envoi. |
 | D11 factories/backflow | implémenté V1 borné | V6C intake JSON/quarantaine, V6D candidate updates, V6E recommandations lecture seule et V6F routage manuel whitelisté sont sur `main`. Toute route reste `candidate_only`. | faible | D11 V1 est clos ; ne rouvrir que sur une nouvelle décision produit explicitant une frontière encore exclue. |
