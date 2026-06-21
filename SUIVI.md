@@ -4,13 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-20 — R2.6 D06 : édition professeur isolée par fiche
+
+- chaque fiche Teaching possède désormais son propre brouillon d’édition ;
+- les valeurs persistées, champs non édités et verrous existants sont conservés ;
+- aucune mutation n’a lieu avant le clic professeur.
+
+Statut : correctif vérifié localement, prêt à publier ; backend 368/368, TypeScript back/front et build Vite verts.
+
 ## 2026-06-20 — R2.5 D06 : diff de fiche pour revue professeur
 
 - chaque fiche compare ses champs dérivés à la version précédente du même assignment ;
 - Teaching affiche les champs réellement modifiés avant validation ;
 - aucune décision, gravité, note ou publication n’est inférée.
 
-Statut : vérifié localement, prêt à publier ; backend 368/368, TypeScript back/front et build Vite verts.
+Statut : déployé sur GitHub `main` via PR #101, merge `977e870` ; backend 368/368,
+TypeScript back/front et build Vite verts. Aucun live revendiqué.
 
 ## 2026-06-20 — R2.4 D05→D06 : paramètres pédagogiques complets
 
