@@ -129,7 +129,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : conserve les responsabilités sans recréer 148 services.
 - Risque : faible pour audit ; élevé si un nom legacy devient une promesse runtime.
 - Source de vérité concernée : Domain Map canon + runtime GitHub + archive lecture seule.
-- Statut : audit local vérifié, publication en cours.
+- Statut : publié sur GitHub `main` (`ecec4e5`) ; consolidation documentaire, aucune nouvelle autorité runtime.
 - Validation requise : non pour audit ; oui avant toute nouvelle autorité runtime.
 
 ### Vague contrats D11-D12
@@ -138,7 +138,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : ferme la passe contrats sans activer de factory ou d'action autonome.
 - Risque : faible pour audit ; élevé pour import/recovery/live.
 - Source de vérité concernée : canon D11/D12 + legacy lecture seule + GitHub.
-- Statut : audit local vérifié, publication en cours.
+- Statut : publié sur GitHub `main` (`1e445a0`) ; arbitrage documentaire, installation/import/recovery/live restent gated.
 - Validation requise : non pour audit ; oui avant installation, import, recovery ou live.
 
 ### Vague contrats D09-D10
@@ -147,7 +147,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : protège sources, spoilers, consentement et engagements commerciaux.
 - Risque : faible pour l'audit ; élevé avant import/publication/envoi.
 - Source de vérité concernée : canon D09/D10 + legacy lecture seule + GitHub.
-- Statut : audit local vérifié, publication en cours.
+- Statut : publié sur GitHub `main` (`c56216c`) ; arbitrage documentaire, import/envoi/publication/facture restent gated.
 - Validation requise : non pour audit ; oui avant import, envoi, publication ou facture.
 
 ### Vague contrats D08
@@ -156,7 +156,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : protège la DA complète tout en empêchant Comfy, factories ou exports de devenir l'autorité.
 - Risque : faible pour l'audit ; critique seulement lors d'une future génération/provider.
 - Source de vérité concernée : canon D08 manifest-first + legacy lecture seule + GitHub.
-- Statut : audit local vérifié, publication en cours.
+- Statut : publié sur GitHub `main` (`ef04027`) ; arbitrage documentaire, rendu/provider/export/live restent gated.
 - Validation requise : non pour audit ; oui avant rendu, stockage, export ou live.
 
 ### Vague contrats D05-D07
@@ -165,7 +165,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : transforme des artefacts legacy en décisions traçables sans promettre un runtime absent.
 - Risque : faible ; aucun code, OCR, migration ou live.
 - Source de vérité concernée : legacy lecture seule + canon D02/D05/D06/D07/D08 + GitHub `main`.
-- Statut : audit local vérifié, publication en cours.
+- Statut : publié sur GitHub `main` (`c6e5fd8`) ; arbitrage documentaire, capacités gated non activées.
 - Validation requise : non pour audit/queue ; oui avant activation des capacités gated.
 
 ### Réconciliation legacy — arbitrage exhaustif
