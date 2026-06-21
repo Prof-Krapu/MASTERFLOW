@@ -910,6 +910,21 @@ function migrate(d: Database.Database): void {
       updated_at INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS story_workbenches (
+      id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL, project_scope TEXT NOT NULL,
+      title TEXT NOT NULL, source_ref TEXT NOT NULL, intake_mode TEXT NOT NULL CHECK (intake_mode IN ('audit_only','index_only','draft_workbench')),
+      source_truth_state TEXT NOT NULL CHECK (source_truth_state IN ('SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED')),
+      status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','reader_ready','workshop_ready','parked')),
+      created_by TEXT NOT NULL REFERENCES users(id), created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS story_reader_states (
+      id TEXT PRIMARY KEY, workbench_id TEXT NOT NULL REFERENCES story_workbenches(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, current_node TEXT, opening_sequence_lock TEXT,
+      mode TEXT NOT NULL CHECK (mode IN ('MODE_LECTURE','MODE_ATELIER','FULL_SPOILERS','MODE_EXPORT')),
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE(workbench_id, owner_id)
+    );
+
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,
       template_id   TEXT NOT NULL REFERENCES rubric_templates(id) ON DELETE CASCADE,
