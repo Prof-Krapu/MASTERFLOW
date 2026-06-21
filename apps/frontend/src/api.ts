@@ -90,6 +90,8 @@ import type {
   CreateStoryWorkbenchRequest,
   CreateStoryPatchCandidateRequest,
   SetStoryReaderStateRequest,
+  PrivateQuoteDraft,
+  CreatePrivateQuoteDraftRequest,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -392,6 +394,8 @@ export async function createStoryWorkbench(body:CreateStoryWorkbenchRequest,toke
 export async function getStoryPatches(id:string,token?:string|null):Promise<StoryPatchCandidate[]>{return request<StoryPatchCandidate[]>(`/story-workbenches/${encodeURIComponent(id)}/patches`,{method:'GET'},token);}
 export async function createStoryPatch(id:string,body:CreateStoryPatchCandidateRequest,token?:string|null):Promise<StoryPatchCandidate>{return request<StoryPatchCandidate>(`/story-workbenches/${encodeURIComponent(id)}/patches`,{method:'POST',body:JSON.stringify(body)},token);}
 export async function setStoryReaderState(id:string,body:SetStoryReaderStateRequest,token?:string|null):Promise<StoryReaderState>{return request<StoryReaderState>(`/story-workbenches/${encodeURIComponent(id)}/reader-state`,{method:'PUT',body:JSON.stringify(body)},token);}
+export async function getPrivateQuotes(token?:string|null):Promise<PrivateQuoteDraft[]>{return request<PrivateQuoteDraft[]>('/private-quotes',{method:'GET'},token);}
+export async function createPrivateQuote(body:CreatePrivateQuoteDraftRequest,token?:string|null):Promise<PrivateQuoteDraft>{return request<PrivateQuoteDraft>('/private-quotes',{method:'POST',body:JSON.stringify(body)},token);}
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
 }
