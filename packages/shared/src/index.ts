@@ -1933,6 +1933,14 @@ export const CreateVisualManifestRequestSchema = z.object({
   reference_ids: z.array(z.string().min(1)).max(100).default([]),
 });
 export type CreateVisualManifestRequest = z.infer<typeof CreateVisualManifestRequestSchema>;
+export const StoryWorkbenchSchema = z.object({workbench_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),title:z.string().min(1),source_ref:z.string().min(1),intake_mode:z.enum(['audit_only','index_only','draft_workbench']),source_truth_state:z.enum(['SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED']),status:z.enum(['draft','reader_ready','workshop_ready','parked']),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
+export type StoryWorkbench=z.infer<typeof StoryWorkbenchSchema>;
+export const CreateStoryWorkbenchRequestSchema=z.object({project_id:z.string().min(1).nullable().optional(),title:z.string().min(1).max(160),source_ref:z.string().min(1).max(1000),intake_mode:z.enum(['audit_only','index_only','draft_workbench']),source_truth_state:z.enum(['SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED'])});
+export type CreateStoryWorkbenchRequest=z.infer<typeof CreateStoryWorkbenchRequestSchema>;
+export const StoryReaderStateSchema=z.object({reader_state_id:z.string().min(1),workbench_id:z.string().min(1),owner_id:z.string().min(1),current_node:z.string().min(1).nullable(),opening_sequence_lock:z.string().min(1).nullable(),mode:z.enum(['MODE_LECTURE','MODE_ATELIER','FULL_SPOILERS','MODE_EXPORT']),created_at:z.number(),updated_at:z.number()});
+export type StoryReaderState=z.infer<typeof StoryReaderStateSchema>;
+export const SetStoryReaderStateRequestSchema=z.object({current_node:z.string().min(1).nullable().optional(),opening_sequence_lock:z.string().min(1).nullable().optional(),mode:z.enum(['MODE_LECTURE','MODE_ATELIER','FULL_SPOILERS','MODE_EXPORT'])}).refine(v=>v.mode!=='MODE_LECTURE'||Boolean(v.current_node||v.opening_sequence_lock),{message:'reader_position_required'});
+export type SetStoryReaderStateRequest=z.infer<typeof SetStoryReaderStateRequestSchema>;
 
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),

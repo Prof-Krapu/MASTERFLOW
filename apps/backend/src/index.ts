@@ -26,6 +26,7 @@ import {createCorrectionBatchesRouter} from './routers/correction_batches.ts';
 import {createSubjectsRouter} from './routers/subjects.ts';
 import {createCorrectionSheetsRouter} from './routers/correction_sheets.ts';
 import {createVisualManifestsRouter} from './routers/visual_manifests.ts';
+import {createStoryWorkbenchesRouter} from './routers/story_workbenches.ts';
 import {createInventoryRouter} from './routers/inventory.ts';
 import {createValidationInboxRouter} from './routers/validation_inbox.ts';
 import {createFactoryBackflowRouter} from './routers/factory_backflow.ts';
@@ -92,6 +93,7 @@ async function main(): Promise<void> {
   app.use(api, createSubjectsRouter());
   app.use(api, createCorrectionSheetsRouter());
   app.use(api, createVisualManifestsRouter());
+  app.use(api, createStoryWorkbenchesRouter());
   app.use(api, createInventoryRouter());
   app.use(api, createValidationInboxRouter());
   app.use(api, createFactoryBackflowRouter());

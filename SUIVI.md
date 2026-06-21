@@ -4,6 +4,14 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R4.1 D09 : intake privé et reader state
+
+- référence de source externe, sans import ;
+- position lecteur obligatoire en mode lecture ;
+- aucun patch ni canonisation automatique.
+
+Statut : vérifié localement, publication en cours.
+
 ## 2026-06-21 — R3.4 D08 : revue manuelle Inbox
 
 - soumission explicite du manifest à l’Inbox ;
