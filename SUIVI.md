@@ -923,7 +923,7 @@ Deuxième source D06 de l'inbox commune après `feedback_draft` :
 Recette : ciblés D06/inbox/jobs 26/26 ; backend complet 306/306 ; TypeScript backend/frontend et
 build Vite OK. Approve/reject owner-only, aucune référence storage exposée et aucun job implicite.
 
-Statut : local vérifié, prêt à publication automatique.
+Statut : recette publiée sur GitHub `main` via PR #34 (`bcd5535`) et preuve PR #35. Aucun export, job, provider ou effet externe.
 
 ---
 
@@ -949,7 +949,7 @@ orpheline, 0 feedback draft, 0 export preview, 0 job et audit `external_effects:
 Backend complet 302/302, TypeScript backend/frontend et build Vite OK ; smoke godmode et responsive
 390 px sans débordement horizontal.
 
-Statut : local vérifié, prêt à publication automatique.
+Statut : recette publiée sur GitHub `main` via PR #34 (`bcd5535`) et preuve PR #35. Aucun feedback, note, export ou envoi.
 
 ---
 
