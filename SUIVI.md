@@ -103,7 +103,7 @@ Statut : déployé sur GitHub `main` via PR #112, merge `6363d45`. Aucun live re
 - proposition privée rattachée au workbench ;
 - état candidat explicite ; aucune réécriture ou canonisation automatique.
 
-Statut : vérifié localement, publication en cours.
+Statut : déployé sur GitHub `main` via PR #109, merge `c319106`. Aucun provider/live revendiqué.
 
 ## 2026-06-21 — R4.1 D09 : intake privé et reader state
 
