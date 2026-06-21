@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - le owner peut déclencher `draft → validated_private` depuis le panneau devis ;
 - l'action disparaît après validation ; aucun export, envoi, facture ou engagement client.
 
-Statut : TypeScript frontend et build Vite verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #118, merge `e59025c`. Aucun live revendiqué.
 
 ## 2026-06-21 — R5.3 D10 : validation interne du devis
 
