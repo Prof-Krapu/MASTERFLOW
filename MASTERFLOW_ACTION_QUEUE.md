@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : structure le chiffrage avant toute validation commerciale.
 - Risque : faible tant qu’aucun export ou envoi n’existe.
 - Source de vérité concernée : D10 Domain Card + arbitrage legacy Quote Builder.
-- Statut : R5.1-R5.3 sur `main`; R5.4 contrôle de validation privée vérifié localement, publication en cours.
+- Statut : R5.1-R5.4 sur `main`; rail devis privé clos. Export, envoi, facture, paiement et public intake restent gated.
 - Validation requise : oui avant export, facture ou envoi.
 
 ### R4 D09 — Workbench narratif privé
