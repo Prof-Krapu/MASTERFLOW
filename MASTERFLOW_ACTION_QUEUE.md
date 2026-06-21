@@ -13,6 +13,8 @@ Dernière mise à jour : 2026-06-21
 - Statut : R5.1-R5.4 sur `main`; rails release et backup receipts clos. Recovery/smoke/live restent gated.
 - Validation requise : non pour registre privé ; oui avant smoke live, backup, recovery, migration ou déploiement.
 
+- Statut incident : registre et panneau sur `main`; toute action hôte reste gated.
+
 ### R5 D10 — Quote Builder privé
 
 - Tâche : publier des brouillons de devis privés et sourcés.

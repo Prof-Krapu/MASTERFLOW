@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | Clôture D12 incidents | Publier la trace d'incident sans traiter l'hôte. | suivi/queue/status | local vérifié | non | PR #129-130 réconciliées ; action opérateur et live gated. |
 | 2026-06-21 | D12 incident registry | Consigner un incident sans lancer de réponse opérateur. | shared/DB/service/router/test/contrat | local vérifié | autorisation marathon MALEX | Ciblés 2/2 ; état non résolu ; aucune action ou job. |
 | 2026-06-21 | Clôture D12 backup receipt R5.3-R5.4 | Publier la trace de backup sans revendiquer une sauvegarde ou restauration réelle. | suivi/matrice/queue/status | local vérifié | non | PR #126-127 réconciliées ; preuve privée close ; toutes actions hôte gated. |
 | 2026-06-21 | Merge PR #127 — D12 R5.4 | Publier le panneau privé de backup receipts. | frontend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `37fc12f`; restauration non testée ; live non revendiqué. |

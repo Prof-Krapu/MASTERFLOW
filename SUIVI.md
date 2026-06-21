@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - incident append-only, symptômes/traces/scope, sans traitement automatique ;
 - état `recorded_unresolved`, sans smoke, recovery ou déploiement.
 
-Statut : ciblés 2/2 et TypeScript backend verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #129-130. Aucun live ou traitement opérateur revendiqué.
 
 ## 2026-06-21 — D12 R5.4 : panneau backup receipts privé
 
