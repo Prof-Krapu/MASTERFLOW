@@ -174,7 +174,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : empêche de confondre inventaire complet et absorption complète.
 - Risque : faible pour l'audit ; élevé si le développement reprend avant classement.
 - Source de vérité concernée : archive legacy en lecture seule + canon Drive + GitHub `main`.
-- Statut : audit global en cours ; 4 714 fichiers indexés, arbitrage détaillé incomplet.
+- Statut : clôture sémantique publiée sur GitHub `main` (`c0decd7`) : 692/692 artefacts fonctionnels arbitrés, `pending_semantic_review=0`. Les 4 714 fichiers restent un inventaire brut ; absorption canon, runtime et live restent distincts.
 - Validation requise : non pour audit/queue ; oui avant promotion canon d'une nouvelle capacité.
 
 ### Livré — UI professeur de revue d'identité
