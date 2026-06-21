@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | D12 R5.4 backup receipt panel | Rendre le registre utilisable sans action sur les fichiers ou hôtes. | frontend API/panel/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun hôte | TypeScript/build verts ; aucun backup/recovery exposé ; restauration non testée. |
+| 2026-06-21 | Merge PR #126 — D12 R5.3 | Publier le registre privé de backup receipts. | shared/DB/service/router/test/contrat | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `57b620b`; aucun backup/recovery ; live non revendiqué. |
 | 2026-06-21 | D12 R5.3 backup receipt registry | Consigner une preuve de sauvegarde sans exécuter de backup ou restauration. | shared/DB/service/router/test/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun hôte | Backend 381/381 et TypeScript verts ; checksum obligatoire ; restauration `not_tested`. |
 | 2026-06-21 | Clôture D12 release receipt R5.1-R5.2 | Publier la vérité de continuité disponible sans prétendre vérifier un live. | suivi/matrice/queue/status | local vérifié | non | PR #123-124 réconciliées ; release registry privé clos ; host actions restent gated. |
 | 2026-06-21 | Merge PR #124 — D12 R5.2 | Publier le panneau privé de release receipts. | frontend/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `eefd84a`; runtime non vérifié ; live non revendiqué. |
