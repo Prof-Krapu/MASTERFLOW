@@ -211,8 +211,7 @@ export function TeachingReadiness({
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [assignmentSubjectVersionId, setAssignmentSubjectVersionId] = useState('');
   const [correctionSheets, setCorrectionSheets] = useState<CorrectionSheetDraft[]>([]);
-  const [sheetEvaluationMode, setSheetEvaluationMode] = useState('');
-  const [sheetTeacherNotes, setSheetTeacherNotes] = useState('');
+  const [sheetFieldDrafts, setSheetFieldDrafts] = useState<Record<string, {evaluation_mode: string; teacher_notes: string}>>({});
   const [status, setStatus] = useState('Chargement de l’état Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
@@ -569,7 +568,17 @@ export function TeachingReadiness({
 
   const activateAssignment = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await activateSubjectAssignment(id,token);await refresh();setStatus('Assignment activé pour la cohorte ; le sujet source reste inchangé.');}catch(error){setStatus(error instanceof Error?error.message:'Activation impossible.');}finally{setMutating(false);}},[refresh,token]);
 
-  const saveSheetTeacherFields = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await updateCorrectionSheet(id,{teacher_fields:{evaluation_mode:sheetEvaluationMode,teacher_notes:sheetTeacherNotes},locked_teacher_fields:['evaluation_mode']},token);await refresh();setStatus('Champs professeur enregistrés ; le mode d’évaluation est verrouillé.');}catch(error){setStatus(error instanceof Error?error.message:'Mise à jour de la fiche impossible.');}finally{setMutating(false);}},[refresh,sheetEvaluationMode,sheetTeacherNotes,token]);
+  const updateSheetFieldDraft = useCallback((sheet:CorrectionSheetDraft,field:'evaluation_mode'|'teacher_notes',value:string):void=>{
+    setSheetFieldDrafts((current)=>({
+      ...current,
+      [sheet.correction_sheet_id]:{
+        evaluation_mode:current[sheet.correction_sheet_id]?.evaluation_mode??sheet.teacher_fields.evaluation_mode??'',
+        teacher_notes:current[sheet.correction_sheet_id]?.teacher_notes??sheet.teacher_fields.teacher_notes??'',
+        [field]:value,
+      },
+    }));
+  },[]);
+  const saveSheetTeacherFields = useCallback(async(sheet:CorrectionSheetDraft):Promise<void>=>{const draft=sheetFieldDrafts[sheet.correction_sheet_id]??{evaluation_mode:sheet.teacher_fields.evaluation_mode??'',teacher_notes:sheet.teacher_fields.teacher_notes??''};setMutating(true);try{await updateCorrectionSheet(sheet.correction_sheet_id,{teacher_fields:{...sheet.teacher_fields,evaluation_mode:draft.evaluation_mode,teacher_notes:draft.teacher_notes},locked_teacher_fields:[...new Set([...sheet.locked_teacher_fields,'evaluation_mode'])]},token);await refresh();setStatus('Champs professeur enregistrés ; le mode d’évaluation est verrouillé.');}catch(error){setStatus(error instanceof Error?error.message:'Mise à jour de la fiche impossible.');}finally{setMutating(false);}},[refresh,sheetFieldDrafts,token]);
   const syncSheet = useCallback(async(id:string):Promise<void>=>{if(!assignmentSubjectVersionId)return;setMutating(true);try{await syncCorrectionSheet(id,assignmentSubjectVersionId,token);await refresh();setStatus('Nouvelle version synchronisée ; revue professeur obligatoire.');}catch(error){setStatus(error instanceof Error?error.message:'Synchronisation impossible.');}finally{setMutating(false);}},[assignmentSubjectVersionId,refresh,token]);
   const validateSheet = useCallback(async(id:string):Promise<void>=>{setMutating(true);try{await validateCorrectionSheet(id,`teacher://validation/${Date.now()}`,token);await refresh();setStatus('Fiche validée par le professeur ; aucune note ni publication créée.');}catch(error){setStatus(error instanceof Error?error.message:'Validation de la fiche impossible.');}finally{setMutating(false);}},[refresh,token]);
 
@@ -874,9 +883,9 @@ export function TeachingReadiness({
                 {latestSheet ? <div className="roster-management__form">
                   <small>Fiche V{latestSheet.version} · {latestSheet.status} · {latestSheet.sync_status === 'needs_teacher_review' ? 'revue professeur requise' : 'synchronisée'} · aucune note</small>
                   {latestSheet.changed_fields.length > 0 ? <small>Champs modifiés depuis la version précédente : {latestSheet.changed_fields.join(', ')}.</small> : <small>Aucune divergence dérivée détectée.</small>}
-                  <label>Mode d’évaluation — verrouillé professeur<input value={sheetEvaluationMode} onChange={(event) => setSheetEvaluationMode(event.target.value)} /></label>
-                  <label>Notes professeur<textarea rows={2} value={sheetTeacherNotes} onChange={(event) => setSheetTeacherNotes(event.target.value)} /></label>
-                  <button className="secondary" disabled={mutating} onClick={() => void saveSheetTeacherFields(latestSheet.correction_sheet_id)} type="button">Enregistrer les champs professeur</button>
+                  <label>Mode d’évaluation — verrouillé professeur<input value={sheetFieldDrafts[latestSheet.correction_sheet_id]?.evaluation_mode??latestSheet.teacher_fields.evaluation_mode??''} onChange={(event) => updateSheetFieldDraft(latestSheet,'evaluation_mode',event.target.value)} /></label>
+                  <label>Notes professeur<textarea rows={2} value={sheetFieldDrafts[latestSheet.correction_sheet_id]?.teacher_notes??latestSheet.teacher_fields.teacher_notes??''} onChange={(event) => updateSheetFieldDraft(latestSheet,'teacher_notes',event.target.value)} /></label>
+                  <button className="secondary" disabled={mutating} onClick={() => void saveSheetTeacherFields(latestSheet)} type="button">Enregistrer les champs professeur</button>
                   <button className="secondary" disabled={mutating || !assignmentSubjectVersionId || latestSheet.source_subject_version_id === assignmentSubjectVersionId} onClick={() => void syncSheet(latestSheet.correction_sheet_id)} type="button">Synchroniser vers la version choisie</button>
                   {latestSheet.status === 'draft' ? <button disabled={mutating} onClick={() => void validateSheet(latestSheet.correction_sheet_id)} type="button">Valider la fiche</button> : <small>Validation professeur enregistrée.</small>}
                 </div> : <small>Alerte : fiche brouillon absente.</small>}
