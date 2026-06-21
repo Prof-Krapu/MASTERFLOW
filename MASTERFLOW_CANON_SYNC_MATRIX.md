@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-21
-Branche de travail : `main` — queue R1 réconciliée
-Base GitHub vérifiée : `2c547e1` (`main` après PR #141)
+Branche de travail : `main` — cockpit, queue et réconciliation legacy alignés
+Base GitHub vérifiée : `bae55b5`
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
