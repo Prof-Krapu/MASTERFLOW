@@ -924,6 +924,13 @@ function migrate(d: Database.Database): void {
       mode TEXT NOT NULL CHECK (mode IN ('MODE_LECTURE','MODE_ATELIER','FULL_SPOILERS','MODE_EXPORT')),
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE(workbench_id, owner_id)
     );
+    CREATE TABLE IF NOT EXISTS story_patch_candidates (
+      id TEXT PRIMARY KEY, workbench_id TEXT NOT NULL REFERENCES story_workbenches(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, proposal TEXT NOT NULL,
+      truth_state TEXT NOT NULL DEFAULT 'CANDIDATE' CHECK (truth_state IN ('CANDIDATE','TO_VALIDATE','OPEN_QUESTION','CONTRADICTION')),
+      status TEXT NOT NULL DEFAULT 'candidate' CHECK (status IN ('candidate','parked','rejected','validated_for_canon_delta')),
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+    );
 
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,

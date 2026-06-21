@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### R4 D09 — Workbench narratif privé
+
+- Tâche : publier intake, reader state et patches candidats sans muter la source.
+- Impact : rend MasterStory exploitable sans spoiler ni canon silencieux.
+- Risque : faible tant que tout reste candidat et privé.
+- Source de vérité concernée : D09 Domain Card + arbitrage legacy MasterStory.
+- Statut : R4.1 sur `main`; R4.2 patch candidat en recette locale.
+- Validation requise : non avant validation auteur/canon/export.
+
 ### Gate Legacy → Runtime
 
 - Tâche : rattacher chaque vague à son idée legacy/arbitrée et à sa source canon.
