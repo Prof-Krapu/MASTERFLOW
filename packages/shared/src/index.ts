@@ -2877,6 +2877,24 @@ export const D12MissedTriggerFindingSchema = CreateD12MissedTriggerFindingSchema
 });
 export type D12MissedTriggerFinding = z.infer<typeof D12MissedTriggerFindingSchema>;
 
+export const CreateD12ReleaseReceiptSchema = z.object({
+  commit_sha: z.string().regex(/^[0-9a-fA-F]{40}$/).transform((value) => value.toLowerCase()),
+  environment_label: z.string().min(1).max(120),
+  components: z.array(z.string().min(1).max(120)).min(1).max(50),
+  evidence_refs: z.array(z.string().min(1).max(500)).max(50).default([]),
+  observed_at: z.number().int().nonnegative(),
+  note: z.string().max(1000).nullable().optional(),
+});
+export type CreateD12ReleaseReceipt = z.infer<typeof CreateD12ReleaseReceiptSchema>;
+export const D12ReleaseReceiptSchema = CreateD12ReleaseReceiptSchema.extend({
+  receipt_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  proof_state: z.enum(['unknown', 'evidence_attached']),
+  runtime_status: z.literal('not_verified'),
+  created_at: z.number().int().nonnegative(),
+});
+export type D12ReleaseReceipt = z.infer<typeof D12ReleaseReceiptSchema>;
+
 // ───────────────────────── RAG permissionné PR-7 ─────────────────────────
 
 export const RagResourceStatusSchema = z.enum([

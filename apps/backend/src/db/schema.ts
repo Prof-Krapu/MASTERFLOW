@@ -1335,6 +1335,20 @@ function migrate(d: Database.Database): void {
       updated_at                  INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS d12_release_receipts (
+      id                  TEXT PRIMARY KEY,
+      owner_id            TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      commit_sha          TEXT NOT NULL,
+      environment_label   TEXT NOT NULL,
+      components_json     TEXT NOT NULL,
+      evidence_refs_json  TEXT NOT NULL DEFAULT '[]',
+      observed_at         INTEGER NOT NULL,
+      note                TEXT,
+      proof_state         TEXT NOT NULL CHECK (proof_state IN ('unknown','evidence_attached')),
+      runtime_status      TEXT NOT NULL DEFAULT 'not_verified' CHECK (runtime_status = 'not_verified'),
+      created_at          INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS usage_learning_candidates (
       id                         TEXT PRIMARY KEY,
       owner_id                   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -2401,6 +2415,20 @@ export interface D12MissedTriggerFindingRow {
   detected_at: number;
   created_at: number;
   updated_at: number;
+}
+
+export interface D12ReleaseReceiptRow {
+  id: string;
+  owner_id: string;
+  commit_sha: string;
+  environment_label: string;
+  components_json: string;
+  evidence_refs_json: string;
+  observed_at: number;
+  note: string | null;
+  proof_state: 'unknown' | 'evidence_attached';
+  runtime_status: 'not_verified';
+  created_at: number;
 }
 
 export interface UsageLearningCandidateRow {

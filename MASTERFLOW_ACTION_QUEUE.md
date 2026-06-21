@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-21
 
 ## 1. À faire maintenant
 
+### D12 R5 — Continuité runtime privée
+
+- Tâche : publier d'abord le release receipt lié au SHA, sans sonder ni modifier le live.
+- Impact : distingue enfin une déclaration de release d'une preuve runtime vérifiée.
+- Risque : faible à moyen ; aucune action hôte et statut `not_verified` obligatoire.
+- Source de vérité concernée : D12 Domain Card + Runtime Continuity Incident & Recovery Contract.
+- Statut : R5.1 registre de release receipts en recette locale.
+- Validation requise : non pour registre privé ; oui avant smoke live, backup, recovery, migration ou déploiement.
+
 ### R5 D10 — Quote Builder privé
 
 - Tâche : publier des brouillons de devis privés et sourcés.
