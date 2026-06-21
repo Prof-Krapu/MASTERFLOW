@@ -4,6 +4,14 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R5.1 D10 : Quote Builder privé
+
+- lignes sourcées avec quantité, prix unitaire et confiance ;
+- total calculé, hypothèses, exclusions et validité ;
+- aucun envoi, facture ou export client.
+
+Statut : backend vérifié localement, publication en cours.
+
 ## 2026-06-21 — R4.4 D09 : panneau auteur privé
 
 - création workbench sans import ; position lecteur anti-spoiler ; patch candidat ;

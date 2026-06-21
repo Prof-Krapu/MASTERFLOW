@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### R5 D10 — Quote Builder privé
+
+- Tâche : publier des brouillons de devis privés et sourcés.
+- Impact : structure le chiffrage avant toute validation commerciale.
+- Risque : faible tant qu’aucun export ou envoi n’existe.
+- Source de vérité concernée : D10 Domain Card + arbitrage legacy Quote Builder.
+- Statut : R5.1 backend en recette locale.
+- Validation requise : oui avant export, facture ou envoi.
+
 ### R4 D09 — Workbench narratif privé
 
 - Tâche : publier intake, reader state et patches candidats sans muter la source.

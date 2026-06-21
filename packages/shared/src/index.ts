@@ -1945,6 +1945,11 @@ export const StoryPatchCandidateSchema=z.object({patch_id:z.string().min(1),work
 export type StoryPatchCandidate=z.infer<typeof StoryPatchCandidateSchema>;
 export const CreateStoryPatchCandidateRequestSchema=z.object({title:z.string().min(1).max(160),proposal:z.string().min(1).max(10000),truth_state:z.enum(['CANDIDATE','TO_VALIDATE','OPEN_QUESTION','CONTRADICTION']).default('CANDIDATE')});
 export type CreateStoryPatchCandidateRequest=z.infer<typeof CreateStoryPatchCandidateRequestSchema>;
+export const QuoteLineSchema=z.object({label:z.string().min(1),quantity:z.number().positive(),unit_price:z.number().nonnegative(),price_source_ref:z.string().min(1),confidence:z.enum(['low','medium','high']),subtotal:z.number().nonnegative()});
+export const PrivateQuoteDraftSchema=z.object({quote_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),version:z.number().int().positive(),client_label:z.string().min(1),currency:z.string().length(3),lines:z.array(QuoteLineSchema),assumptions:z.array(z.string()),exclusions:z.array(z.string()),validity:z.string().min(1),total:z.number().nonnegative(),status:z.enum(['draft','needs_review','validated_private','archived']),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
+export type PrivateQuoteDraft=z.infer<typeof PrivateQuoteDraftSchema>;
+export const CreatePrivateQuoteDraftRequestSchema=z.object({project_id:z.string().min(1).nullable().optional(),client_label:z.string().min(1).max(200),currency:z.string().length(3).transform(v=>v.toUpperCase()),lines:z.array(z.object({label:z.string().min(1).max(300),quantity:z.number().positive(),unit_price:z.number().nonnegative(),price_source_ref:z.string().min(1).max(1000),confidence:z.enum(['low','medium','high'])})).min(1).max(100),assumptions:z.array(z.string().min(1).max(1000)).max(50).default([]),exclusions:z.array(z.string().min(1).max(1000)).max(50).default([]),validity:z.string().min(1).max(200)});
+export type CreatePrivateQuoteDraftRequest=z.infer<typeof CreatePrivateQuoteDraftRequestSchema>;
 
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),

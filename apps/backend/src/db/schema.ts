@@ -931,6 +931,16 @@ function migrate(d: Database.Database): void {
       status TEXT NOT NULL DEFAULT 'candidate' CHECK (status IN ('candidate','parked','rejected','validated_for_canon_delta')),
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS private_quote_drafts (
+      id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL, project_scope TEXT NOT NULL,
+      version INTEGER NOT NULL CHECK (version > 0), client_label TEXT NOT NULL, currency TEXT NOT NULL,
+      lines_json TEXT NOT NULL, assumptions_json TEXT NOT NULL, exclusions_json TEXT NOT NULL,
+      validity TEXT NOT NULL, total REAL NOT NULL CHECK (total >= 0),
+      status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','needs_review','validated_private','archived')),
+      created_by TEXT NOT NULL REFERENCES users(id), created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+      UNIQUE(owner_id, project_scope, version)
+    );
 
     CREATE TABLE IF NOT EXISTS rubric_versions (
       id            TEXT PRIMARY KEY,
