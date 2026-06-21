@@ -1,6 +1,8 @@
 # Marathon — ordre d'exécution continu
 
-Chaque vague : audit ciblé -> décision explicite -> canon/ledger -> tests si runtime -> commit -> push -> PR -> merge -> receipt.
+Chaque vague : trace legacy/canon -> audit ciblé -> décision explicite -> canon/ledger -> tests si runtime -> commit -> push -> PR -> merge -> receipt.
+
+Le gate `LEGACY_TO_RUNTIME_TRACE_GATE.md` est obligatoire avant chaque nouvelle vague produit.
 
 1. Contrats D05/D06/D07 : sujets, assignments, correction, inventory, OCR.
 2. Contrats D08 : références, DA, assets, review, manifests.
