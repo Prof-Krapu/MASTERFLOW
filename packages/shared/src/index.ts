@@ -1883,6 +1883,54 @@ export const ValidateCorrectionSheetDraftRequestSchema = z.object({
 });
 export type ValidateCorrectionSheetDraftRequest = z.infer<typeof ValidateCorrectionSheetDraftRequestSchema>;
 
+// D08 R3.1 — registre visuel privé et manifest-first ; aucun provider ni asset généré.
+export const VisualReferenceStatusSchema = z.enum([
+  'canon_strict', 'expression_only', 'outfit_only', 'world_style', 'poster_energy',
+  'filter_reference', 'output_template', 'anti_pattern', 'rejected',
+]);
+export type VisualReferenceStatus = z.infer<typeof VisualReferenceStatusSchema>;
+export const VisualReferenceSchema = z.object({
+  reference_id: z.string().min(1), owner_id: z.string().min(1), project_id: z.string().min(1).nullable(),
+  project_scope: z.string().min(1), label: z.string().min(1), source_ref: z.string().min(1),
+  reference_status: VisualReferenceStatusSchema, provenance_state: z.enum(['declared', 'validated', 'weak']),
+  privacy_scope: z.enum(['private', 'project_private']), created_by: z.string().min(1),
+  created_at: z.number().int().nonnegative(), updated_at: z.number().int().nonnegative(),
+});
+export type VisualReference = z.infer<typeof VisualReferenceSchema>;
+export const CreateVisualReferenceRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(), label: z.string().min(1).max(160),
+  source_ref: z.string().min(1).max(1000), reference_status: VisualReferenceStatusSchema,
+  provenance_state: z.enum(['declared', 'validated', 'weak']), privacy_scope: z.enum(['private', 'project_private']),
+});
+export type CreateVisualReferenceRequest = z.infer<typeof CreateVisualReferenceRequestSchema>;
+export const VisualManifestStatusSchema = z.enum([
+  'draft','references_to_classify','da_to_resolve','readiness_blocked',
+  'action_ready_preview','generation_blocked_tech_pending','parked',
+]);
+export const VisualManifestSchema = z.object({
+  manifest_id: z.string().min(1), owner_id: z.string().min(1), project_id: z.string().min(1).nullable(),
+  project_scope: z.string().min(1), request_title: z.string().min(1), intent: z.string().min(1),
+  privacy_scope: z.enum(['private', 'project_private']), canon_entity_refs: z.array(z.string()),
+  da_root_ref: z.string().min(1).nullable(), active_layers: z.array(z.string()), filters: z.array(z.string()),
+  output_family: z.enum(['visual_retake','visual_diagnostic','event_spread','badge_reward','medal_reward','trophy_reward','visual_manifest_candidate']),
+  output_template: z.string().min(1), source_truth_summary: z.string().min(1), reference_ids: z.array(z.string()),
+  status: VisualManifestStatusSchema, action_ready_report: z.object({
+    final_state: z.enum(['not_ready','ready_for_owner_review','generation_blocked_tech_pending','parked']),
+    missing_items: z.array(z.string()), generation_blockers: z.array(z.string()),
+  }), created_by: z.string().min(1), created_at: z.number().int().nonnegative(), updated_at: z.number().int().nonnegative(),
+});
+export type VisualManifest = z.infer<typeof VisualManifestSchema>;
+export const CreateVisualManifestRequestSchema = z.object({
+  project_id: z.string().min(1).nullable().optional(), request_title: z.string().min(1).max(160), intent: z.string().min(1).max(4000),
+  privacy_scope: z.enum(['private', 'project_private']), canon_entity_refs: z.array(z.string().min(1)).max(50).default([]),
+  da_root_ref: z.string().min(1).max(500).nullable().optional(), active_layers: z.array(z.string().min(1)).max(30).default([]),
+  filters: z.array(z.string().min(1)).max(30).default([]),
+  output_family: z.enum(['visual_retake','visual_diagnostic','event_spread','badge_reward','medal_reward','trophy_reward','visual_manifest_candidate']),
+  output_template: z.string().min(1).max(500), source_truth_summary: z.string().min(1).max(2000),
+  reference_ids: z.array(z.string().min(1)).max(100).default([]),
+});
+export type CreateVisualManifestRequest = z.infer<typeof CreateVisualManifestRequestSchema>;
+
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),
   owner_id: z.string().min(1),
