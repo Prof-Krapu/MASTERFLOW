@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - saisie et lecture des déclarations SHA dans une surface admin/godmode ;
 - l'interface ne propose aucun smoke, backup, recovery, migration ou déploiement.
 
-Statut : TypeScript frontend et build Vite verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #124, merge `eefd84a`. Aucun live revendiqué.
 
 ## 2026-06-21 — D12 R5.1 : registre de release receipts
 
