@@ -9,7 +9,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - action visible uniquement sur un patch `candidate` ;
 - confirmation explicite que source et canon restent inchangés.
 
-Statut : TypeScript frontend et build Vite verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #121, merge `aebda64`. Aucun live revendiqué.
 
 ## 2026-06-21 — R4.5 D09 : validation auteur privée
 
