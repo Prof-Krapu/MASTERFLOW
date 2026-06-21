@@ -45,6 +45,7 @@ import {RegisterWithCode} from './register-form.tsx';
 import {InventoryWorkspace} from './inventory-workspace.tsx';
 import {JobObservability} from './job-observability.tsx';
 import {OwnerCockpit} from './owner-cockpit.tsx';
+import {VisualManifestPanel} from './visual-manifest-panel.tsx';
 import {TeachingReadiness} from './teaching-readiness.tsx';
 import {
   buildModeView,
@@ -1604,6 +1605,8 @@ function App(): ReactElement {
               token={auth.token}
             />
           ) : null}
+
+          {canAdmin && auth ? <VisualManifestPanel token={auth.token} /> : null}
 
           {canAdmin && auth ? <JobObservability token={auth.token} /> : null}
         </section>
