@@ -255,7 +255,7 @@ Statut : déployé sur GitHub `main` via PR #87, merge `0e52443`. Aucun lot, sco
 - le legacy n'est pas déclaré intégralement implémenté ou live ;
 - le développement repart désormais de R1 Correction complète, pas de l'archive.
 
-Statut : preuve locale prête à publier. Suite : R1 barème/profil puis lot manuel de correction.
+Statut : déployé sur GitHub `main` via PR #86, merge `d318c85`. Suite : R1 correction complète ; le legacy reste une archive, pas un runtime live.
 
 ## 2026-06-20 — Factories Legacy — 2 062/2 062 INVENTORIÉES PAR PASSPORT
 
@@ -264,7 +264,7 @@ Statut : preuve locale prête à publier. Suite : R1 barème/profil puis lot man
 - passerelles Vincent, archives, templates et ZIPs séparés des factories actives ;
 - zéro Passport strict validé, installation, activation ou import.
 
-Statut : preuve locale prête à publier. Suite : clôture sémantique et plan runtime.
+Statut : déployé sur GitHub `main` via PR #85, merge `33a9da8`. Suite : gaps runtime seulement après R1 et sous gate D11.
 
 ## 2026-06-20 — Déploiements et audits historiques — INDEXÉS ET DÉDUPLIQUÉS
 
@@ -273,7 +273,7 @@ Statut : preuve locale prête à publier. Suite : clôture sémantique et plan r
 - aucune suppression, exécution de script ou action hôte ;
 - handoff, ZIP, payload, audit daté, GitHub main et live restent des états distincts.
 
-Statut : preuve locale prête à publier. Suite : factories par Passport.
+Statut : déployé sur GitHub `main` via PR #84, merge `610e558`. Suite : preuve live séparée ; zéro action hôte sans nouveau GO.
 
 ## 2026-06-20 — Personas et événements Legacy — 36/36 ARBITRÉS
 
@@ -282,7 +282,7 @@ Statut : preuve locale prête à publier. Suite : factories par Passport.
 - persona, identité, permission et vérité restent séparées ;
 - aucun branchement runtime ou affectation utilisateur effectué.
 
-Statut : preuve locale prête à publier. Suite : déploiements/audits historiques.
+Statut : déployé sur GitHub `main` via PR #83, merge `62254bb`. Suite : aucune activation réelle sans contrat runtime dédié.
 
 ## 2026-06-20 — Datasets Legacy — 69/69 ARBITRÉS
 
@@ -291,7 +291,7 @@ Statut : preuve locale prête à publier. Suite : déploiements/audits historiqu
 - chaque artefact reçoit un owner et un rôle de vérité ;
 - aucun import, déplacement, indexation ou exposition effectué.
 
-Statut : preuve locale prête à publier. Suite : personas et événements legacy.
+Statut : déployé sur GitHub `main` via PR #82, merge `6213f81`. Suite : les 4 sources bloquées restent hors absorption.
 
 ## 2026-06-20 — Engines Legacy — 148/148 ARBITRÉS PAR OWNER
 
@@ -300,7 +300,7 @@ Statut : preuve locale prête à publier. Suite : personas et événements legac
 - aucun microservice, super-engine ou runtime n'est déduit d'un nom legacy ;
 - D12 concentre 62 modèles transverses, ramenés aux contrôles Git réels.
 
-Statut : preuve locale prête à publier. Suite : datasets legacy.
+Statut : déployé sur GitHub `main` via PR #81, merge `c4b6e01`. Suite : ouvrir seulement des verticales runtime explicites, pas des sous-apps legacy.
 
 ## 2026-06-20 — Contrats Legacy D11-D12 — ARBITRAGE LOCAL VÉRIFIÉ
 
@@ -309,7 +309,7 @@ Statut : preuve locale prête à publier. Suite : datasets legacy.
 - backflow D11 confirmé candidate-only ;
 - D12 observe et route, sans mutation autonome ni preuve live implicite.
 
-Statut : preuve locale prête à publier. Suite : engines legacy par owner.
+Statut : déployé sur GitHub `main` via PR #80, merge `baba12c`. Suite : continuité runtime sur preuves privées, jamais via live implicite.
 
 ## 2026-06-20 — Contrats Legacy D09-D10 — ARBITRAGE LOCAL VÉRIFIÉ
 
@@ -318,7 +318,7 @@ Statut : preuve locale prête à publier. Suite : engines legacy par owner.
 - D09 reste source/reader-state/workbench privé avant tout export ;
 - D10 reste devis privé avant public/event ; facture, envoi et publication demeurent verrouillés.
 
-Statut : preuve locale prête à publier. Suite : contrats D11-D12.
+Statut : déployé sur GitHub `main` via PR #79, merge `fddb05a`. Suite : rails privés désormais séparés des sorties/export/public.
 
 ## 2026-06-20 — Contrats Legacy D08 — ARBITRAGE LOCAL VÉRIFIÉ
 
@@ -328,7 +328,7 @@ Statut : preuve locale prête à publier. Suite : contrats D11-D12.
 - Comfy, provider, export social et propagation factory restent subordonnés au manifest ;
 - aucun runtime D08, rendu, stockage ou génération déclaré actif.
 
-Statut : preuve locale prête à publier. Suite : contrats D09-D10.
+Statut : déployé sur GitHub `main` via PR #78, merge `a2fbb7e`. Suite : provider, stockage, export et live restent verrouillés derrière le manifest-first.
 
 ## 2026-06-20 — Contrats Legacy D05-D07 — ARBITRAGE LOCAL VÉRIFIÉ
 
@@ -340,8 +340,8 @@ Statut : preuve locale prête à publier. Suite : contrats D09-D10.
 - contrat morphologique rerouté de D07 vers D08 pour interdire toute confusion avec
   identité ou biométrie.
 
-Statut : documentation locale prête à publier ; aucun code, provider, migration ou live modifié.
-Suite : vague contrats D08.
+Statut : déployé sur GitHub `main` via PR #77, merge `8ca761e` ; aucun code, provider, migration ou live modifié.
+Suite : R1/R2 poursuivis sans réouvrir D07 hors gate.
 
 ## 2026-06-20 — Audit global Legacy → Canon → Git — PREMIER PASSAGE
 
@@ -351,9 +351,8 @@ Suite : vague contrats D08.
 - anciens snapshots Git et cartes de progression obsolètes corrigés ;
 - aucune capacité legacy n'est déclarée absorbée sans statut et preuve explicites.
 
-Statut : publication GitHub et synchronisation Drive en cours.
-Suite : arbitrage sémantique des contrats/engines/datasets restants, puis reprise D06 seulement
-par tranches dont le prérequis est prouvé.
+Statut : publié sur GitHub ; cette entrée sert désormais de base historique, pas de tâche active.
+Suite : la chaîne legacy poursuit R1 puis les autres verticales une fois leurs gates prouvés.
 
 ---
 

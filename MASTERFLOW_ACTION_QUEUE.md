@@ -39,7 +39,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : aucune capacité utile classée ne disparaît entre archive, canon et GitHub.
 - Risque : faible ; contrôle documentaire sans changement runtime.
 - Source de vérité concernée : archive legacy + Coverage Ledger + canon Drive.
-- Statut : implémenté localement dans le contrat marathon.
+- Statut : gate documentaire publié sur GitHub `main` via PR #56 ; maintenu comme prérequis avant chaque vague produit.
 - Validation requise : non.
 
 ### R3.1 — D08 registre manifest-first
@@ -57,7 +57,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : le projet repart d'un backlog logiciel clair plutôt que de l'archive brute.
 - Risque : faible pour audit ; moyen dès R1 car données pédagogiques privées.
 - Source de vérité concernée : canon Drive + GitHub runtime + ledger legacy.
-- Statut : audit local vérifié, aucun artefact fonctionnel non classé.
+- Statut : clôture sémantique et arbitrages legacy publiés sur GitHub `main` via PR #77-86 ; le backlog runtime repart désormais de R1.
 - Validation requise : non pour publication documentaire ; oui avant migration/live/provider.
 
 ### R1 — Correction complète
@@ -66,7 +66,7 @@ Dernière mise à jour : 2026-06-21
 - Impact : rend le flux de correction réellement utilisable de bout en bout.
 - Risque : moyen ; scopes, versions et validation professeur obligatoires.
 - Source de vérité concernée : D05/D06 + Living Truth Spine.
-- Statut : R1.1 barème/profil privé versionné prêt à publier ; lot manuel reste à faire.
+- Statut : R1.1-R1.4 et R2.1-R2.6 sont déployées sur GitHub `main` ; R1.5 reste fermé par le gate provider/consentement/runtime.
 - Validation requise : non pour code/tests isolés ; oui avant utilisation live ou migration réelle.
 
 ### R1.5 — Exécution pré-correction
