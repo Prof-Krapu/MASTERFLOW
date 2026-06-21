@@ -396,6 +396,7 @@ export async function createStoryPatch(id:string,body:CreateStoryPatchCandidateR
 export async function setStoryReaderState(id:string,body:SetStoryReaderStateRequest,token?:string|null):Promise<StoryReaderState>{return request<StoryReaderState>(`/story-workbenches/${encodeURIComponent(id)}/reader-state`,{method:'PUT',body:JSON.stringify(body)},token);}
 export async function getPrivateQuotes(token?:string|null):Promise<PrivateQuoteDraft[]>{return request<PrivateQuoteDraft[]>('/private-quotes',{method:'GET'},token);}
 export async function createPrivateQuote(body:CreatePrivateQuoteDraftRequest,token?:string|null):Promise<PrivateQuoteDraft>{return request<PrivateQuoteDraft>('/private-quotes',{method:'POST',body:JSON.stringify(body)},token);}
+export async function validatePrivateQuote(id:string,token?:string|null):Promise<PrivateQuoteDraft>{return request<PrivateQuoteDraft>(`/private-quotes/${encodeURIComponent(id)}/validate`,{method:'POST'},token);}
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
 }
