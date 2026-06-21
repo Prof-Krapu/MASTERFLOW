@@ -4,12 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — D12 R5.4 : panneau backup receipts privé
+
+- saisie et lecture owner du checksum sans action sur les fichiers ;
+- restauration explicitement non testée, sans bouton de recovery.
+
+Statut : TypeScript frontend et build Vite verts, publication en cours.
+
 ## 2026-06-21 — D12 R5.3 : registre de backup receipts
 
 - cible, environnement, checksum SHA-256 et références de preuve consignés en append-only ;
 - restauration invariablement `not_tested` ; aucune lecture, copie, backup ou recovery exécuté.
 
-Statut : backend 381/381 et TypeScript verts, publication en cours.
+Statut : déployé sur GitHub `main` via PR #126, merge `57b620b`. Aucun backup ou live revendiqué.
 
 ## 2026-06-21 — D12 R5.2 : panneau release receipts privé
 
