@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R3.2 panneau owner D08 | Rendre le manifest-first utilisable sans ouvrir la génération. | frontend API/panneau/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun provider/live | Création privée de référence/manifest et rapport de blocage lisible ; TypeScript back/front et build Vite verts. |
+| 2026-06-21 | Merge PR #104 — R3.1 | Publier le registre privé D08 manifest-first. | DB/shared/service/routes/tests/contrat/pilotage | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `0baed27`; PR #104 mergée ; live non revendiqué. |
 | 2026-06-21 | R3.1 D08 registre manifest-first | Préparer références et manifest visuel sans ouvrir de génération. | DB/shared/service/routes/tests/contrat/pilotage | local vérifié | autorisation marathon MALEX ; aucun provider/live | Registre privé, provenance, Action Ready read-only ; provider, stockage, asset et export verrouillés. Backend 369/369 et TypeScript vert. |
 | 2026-06-21 | Merge PR #103 — clôture R2 | Publier la vérité de déploiement D05→D06. | suivi/matrice/queue/closure report | déployé sur `main` GitHub | autorisation marathon MALEX | GitHub `main` = `0592740`; PR #103 mergée ; live non revendiqué. |
 | 2026-06-21 | Clôture publiée R2 D05→D06 | Retirer les statuts locaux obsolètes et rendre la chaîne réellement publiée lisible. | suivi/matrice/queue/closure report | local vérifié | autorisation marathon MALEX ; aucun live/provider | PR #95→#102 réconciliées avec leurs SHA ; R1.5 reste explicitement fermé. |

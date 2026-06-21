@@ -4,13 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R3.2 D08 : panneau owner manifest-first
+
+- le owner peut créer références et manifest D08 privés depuis l’interface ;
+- le rapport Action Ready rend les gates techniques visibles ;
+- aucune action de génération, export ou canonisation n’est exposée.
+
+Statut : vérifié localement, prêt à publier ; TypeScript backend/frontend et build Vite verts.
+
 ## 2026-06-21 — R3.1 D08 : registre visuel manifest-first
 
 - références visuelles privées, typées et avec provenance explicite ;
 - manifest D08 privé avec DA root, layers, filtres, sortie et rapport Action Ready ;
 - génération bloquée de façon explicite : pas de provider, asset, stockage, export ou canonisation.
 
-Statut : vérifié localement, prêt à publier ; backend 369/369 et TypeScript backend vert.
+Statut : déployé sur GitHub `main` via PR #104, merge `0baed27` ; backend 369/369 et TypeScript backend vert. Aucun live revendiqué.
 
 ## 2026-06-20 — R2.6 D06 : édition professeur isolée par fiche
 

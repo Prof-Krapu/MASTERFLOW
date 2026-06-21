@@ -79,6 +79,10 @@ import type {
   UpdateRoomInstance,
   ValidationInboxItem,
   ValidationDecision,
+  VisualManifest,
+  VisualReference,
+  CreateVisualManifestRequest,
+  CreateVisualReferenceRequest,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -365,6 +369,19 @@ export async function decideIdentityMatchReview(
 
 export async function getOwnerCockpitStatus(token?: string | null): Promise<OwnerCockpitStatus> {
   return request<OwnerCockpitStatus>('/diagnostics/owner-cockpit', {method: 'GET'}, token);
+}
+
+export async function getVisualReferences(token?: string | null): Promise<VisualReference[]> {
+  return request<VisualReference[]>('/visual-references', {method: 'GET'}, token);
+}
+export async function createVisualReference(body: CreateVisualReferenceRequest, token?: string | null): Promise<VisualReference> {
+  return request<VisualReference>('/visual-references', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
+  return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
+}
+export async function createVisualManifest(body: CreateVisualManifestRequest, token?: string | null): Promise<VisualManifest> {
+  return request<VisualManifest>('/visual-manifests', {method: 'POST', body: JSON.stringify(body)}, token);
 }
 
 export async function diagnoseProcessActivation(
