@@ -83,6 +83,7 @@ import type {
   VisualReference,
   CreateVisualManifestRequest,
   CreateVisualReferenceRequest,
+  UpdateVisualReferenceRequest,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -376,6 +377,9 @@ export async function getVisualReferences(token?: string | null): Promise<Visual
 }
 export async function createVisualReference(body: CreateVisualReferenceRequest, token?: string | null): Promise<VisualReference> {
   return request<VisualReference>('/visual-references', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+export async function updateVisualReference(id: string, body: UpdateVisualReferenceRequest, token?: string | null): Promise<VisualReference> {
+  return request<VisualReference>(`/visual-references/${encodeURIComponent(id)}`, {method: 'PATCH', body: JSON.stringify(body)}, token);
 }
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);

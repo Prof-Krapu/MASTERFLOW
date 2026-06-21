@@ -1903,6 +1903,8 @@ export const CreateVisualReferenceRequestSchema = z.object({
   provenance_state: z.enum(['declared', 'validated', 'weak']), privacy_scope: z.enum(['private', 'project_private']),
 });
 export type CreateVisualReferenceRequest = z.infer<typeof CreateVisualReferenceRequestSchema>;
+export const UpdateVisualReferenceRequestSchema = z.object({reference_status: VisualReferenceStatusSchema, provenance_state: z.enum(['declared', 'validated', 'weak'])});
+export type UpdateVisualReferenceRequest = z.infer<typeof UpdateVisualReferenceRequestSchema>;
 export const VisualManifestStatusSchema = z.enum([
   'draft','references_to_classify','da_to_resolve','readiness_blocked',
   'action_ready_preview','generation_blocked_tech_pending','parked',
