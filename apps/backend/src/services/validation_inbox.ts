@@ -6,6 +6,7 @@ import type {
   FeedbackDraft,
   FactoryBackflowIntake,
   UsageLearningCandidate,
+  VisualManifest,
   ValidationDecisionValue,
   ValidationInboxItem,
   ValidationInboxItemType,
@@ -43,6 +44,7 @@ const EXPORT_PREVIEW_ITEM_PREFIX = 'validation_correction_export_preview_';
 const D12_FINDING_ITEM_PREFIX = 'validation_d12_finding_';
 const USAGE_LEARNING_ITEM_PREFIX = 'validation_usage_learning_';
 const FACTORY_BACKFLOW_ITEM_PREFIX = 'validation_factory_backflow_';
+const VISUAL_MANIFEST_ITEM_PREFIX = 'validation_visual_manifest_';
 
 function parseJsonArray(value: string): string[] {
   const parsed = JSON.parse(value) as unknown;
@@ -144,6 +146,10 @@ function usageLearningItemId(candidateId: string): string {
 
 function factoryBackflowItemId(intakeId: string): string {
   return `${FACTORY_BACKFLOW_ITEM_PREFIX}${intakeId}`;
+}
+function visualManifestItemId(manifestId: string): string { return `${VISUAL_MANIFEST_ITEM_PREFIX}${manifestId}`; }
+function buildVisualManifestProjection(manifest: VisualManifest): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
+  return {item_id: visualManifestItemId(manifest.manifest_id), item_type: 'visual_asset_candidate', title: `Revue D08 — ${manifest.request_title}`, summary: 'Manifest visuel soumis manuellement à la revue owner. Cette décision ne lance aucune génération.', domain_refs: ['D08_DA_VISUAL_ASSETS'], object_refs: [`visual_manifest:${manifest.manifest_id}`], source_refs: [...manifest.reference_ids.map((id) => `visual_reference:${id}`)], requester: manifest.owner_id, owner: manifest.owner_id, required_validator: 'owner', current_status: 'needs_review', risk_level: 'medium', privacy_scope: manifest.project_id ? 'project' : 'private', source_truth_state: 'source_verified', output_readiness_state: 'blocked', proposed_action: 'review_visual_manifest_only', impact_summary: 'Approuver le cadrage conserve le blocage provider, storage, asset, export et canonisation.', blocked_actions: ['generate_image','provider_generation','export_public','canonize_asset'], allowed_actions: ['approve','edit','reject','park'], conflicts: [], open_questions: manifest.action_ready_report.missing_items, recommended_decision: null, decision_options: ['approve','edit','reject','park'], decision: null, audit_trace: [`visual_manifest:${manifest.manifest_id}`,'manual_inbox_submission'], source_kind: 'visual_manifest', source_id: manifest.manifest_id};
 }
 
 function buildActionProjection(action: Action): Omit<ValidationInboxItem, 'created_at' | 'updated_at'> {
@@ -528,6 +534,7 @@ export function syncValidationInboxItemForFactoryBackflowIntake(
 ): ValidationInboxItem {
   return persistValidationInboxProjection(buildFactoryBackflowProjection(intake));
 }
+export function syncValidationInboxItemForVisualManifest(manifest: VisualManifest): ValidationInboxItem { return persistValidationInboxProjection(buildVisualManifestProjection(manifest)); }
 
 export function getValidationInboxItemById(itemId: string): ValidationInboxItem {
   const row = getDb()
@@ -860,5 +867,6 @@ export function decideValidationInboxItem(
   if (item.source_kind === 'factory_backflow_intake') {
     return decideFactoryBackflowItem(actor, item, request);
   }
+  if (item.source_kind === 'visual_manifest') return updateDecision(item, actor, request, 'blocked');
   throw new Error('validation_inbox_source_not_supported');
 }

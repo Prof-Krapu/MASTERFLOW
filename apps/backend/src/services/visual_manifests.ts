@@ -142,3 +142,10 @@ export function listVisualManifests(actor: AuthUser, projectId?: string): Visual
     : getDb().prepare('SELECT * FROM visual_manifests WHERE owner_id=? AND project_id IS NULL ORDER BY updated_at DESC').all(actor.id) as VisualManifestRow[];
   return rows.filter((row) => canAccess(actor, row)).map(manifestDto);
 }
+export function getVisualManifest(actor: AuthUser, id: string): VisualManifest {
+  requireTeacher(actor);
+  const row = getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow | undefined;
+  if (!row) throw new Error('visual_manifest_not_found');
+  assertAccess(actor, row, 'visual_manifest_not_found');
+  return manifestDto(row);
+}

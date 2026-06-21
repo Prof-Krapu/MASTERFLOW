@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R3.4 D08 : revue manuelle Inbox
+
+- soumission explicite du manifest à l’Inbox ;
+- décision de cadrage uniquement ; les blocages de génération restent persistants.
+
+Statut : vérifié localement, publication en cours.
+
 ## 2026-06-21 — R3.3 D08 : classification de références
 
 - le owner classe explicitement ses références plutôt que de les laisser influencer la DA en silence ;

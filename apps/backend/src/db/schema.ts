@@ -455,7 +455,7 @@ function migrate(d: Database.Database): void {
       audit_trace_json         TEXT NOT NULL DEFAULT '[]',
       source_kind              TEXT NOT NULL CHECK (source_kind IN (
                                  'action','feedback_draft','correction_export_preview','d12_finding',
-                                 'usage_learning_candidate','factory_backflow_intake'
+                                 'usage_learning_candidate','factory_backflow_intake','visual_manifest'
                                )),
       source_id                TEXT NOT NULL,
       created_at               INTEGER NOT NULL,
@@ -1717,7 +1717,7 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
   const row = d
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='validation_inbox_items'")
     .get() as {sql?: string} | undefined;
-  if (!row?.sql || row.sql.includes('factory_backflow_intake')) return;
+  if (!row?.sql || row.sql.includes('visual_manifest')) return;
 
   d.pragma('foreign_keys = OFF');
   try {
@@ -1751,7 +1751,7 @@ function migrateValidationInboxSourceKindCheck(d: Database.Database): void {
           audit_trace_json         TEXT NOT NULL DEFAULT '[]',
           source_kind              TEXT NOT NULL CHECK (source_kind IN (
                                      'action','feedback_draft','correction_export_preview','d12_finding',
-                                     'usage_learning_candidate','factory_backflow_intake'
+                                     'usage_learning_candidate','factory_backflow_intake','visual_manifest'
                                    )),
           source_id                TEXT NOT NULL,
           created_at               INTEGER NOT NULL,
@@ -2259,7 +2259,7 @@ export interface ValidationInboxItemRow {
   decision_options_json: string;
   decision_json: string | null;
   audit_trace_json: string;
-  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding' | 'usage_learning_candidate' | 'factory_backflow_intake';
+  source_kind: 'action' | 'feedback_draft' | 'correction_export_preview' | 'd12_finding' | 'usage_learning_candidate' | 'factory_backflow_intake' | 'visual_manifest';
   source_id: string;
   created_at: number;
   updated_at: number;
