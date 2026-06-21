@@ -2894,6 +2894,21 @@ export const D12ReleaseReceiptSchema = CreateD12ReleaseReceiptSchema.extend({
   created_at: z.number().int().nonnegative(),
 });
 export type D12ReleaseReceipt = z.infer<typeof D12ReleaseReceiptSchema>;
+export const CreateD12BackupReceiptSchema = z.object({
+  target_label: z.string().min(1).max(240),
+  environment_label: z.string().min(1).max(120),
+  checksum_sha256: z.string().regex(/^[0-9a-fA-F]{64}$/).transform((value) => value.toLowerCase()),
+  backup_observed_at: z.number().int().nonnegative(),
+  evidence_refs: z.array(z.string().min(1).max(500)).max(50).default([]),
+  note: z.string().max(1000).nullable().optional(),
+});
+export type CreateD12BackupReceipt = z.infer<typeof CreateD12BackupReceiptSchema>;
+export const D12BackupReceiptSchema = CreateD12BackupReceiptSchema.extend({
+  receipt_id: z.string().min(1), owner_id: z.string().min(1),
+  proof_state: z.enum(['unknown', 'evidence_attached']),
+  restore_status: z.literal('not_tested'), created_at: z.number().int().nonnegative(),
+});
+export type D12BackupReceipt = z.infer<typeof D12BackupReceiptSchema>;
 
 // ───────────────────────── RAG permissionné PR-7 ─────────────────────────
 
