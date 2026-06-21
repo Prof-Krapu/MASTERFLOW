@@ -1941,6 +1941,10 @@ export const StoryReaderStateSchema=z.object({reader_state_id:z.string().min(1),
 export type StoryReaderState=z.infer<typeof StoryReaderStateSchema>;
 export const SetStoryReaderStateRequestSchema=z.object({current_node:z.string().min(1).nullable().optional(),opening_sequence_lock:z.string().min(1).nullable().optional(),mode:z.enum(['MODE_LECTURE','MODE_ATELIER','FULL_SPOILERS','MODE_EXPORT'])}).refine(v=>v.mode!=='MODE_LECTURE'||Boolean(v.current_node||v.opening_sequence_lock),{message:'reader_position_required'});
 export type SetStoryReaderStateRequest=z.infer<typeof SetStoryReaderStateRequestSchema>;
+export const StoryPatchCandidateSchema=z.object({patch_id:z.string().min(1),workbench_id:z.string().min(1),owner_id:z.string().min(1),title:z.string().min(1),proposal:z.string().min(1),truth_state:z.enum(['CANDIDATE','TO_VALIDATE','OPEN_QUESTION','CONTRADICTION']),status:z.enum(['candidate','parked','rejected','validated_for_canon_delta']),created_at:z.number(),updated_at:z.number()});
+export type StoryPatchCandidate=z.infer<typeof StoryPatchCandidateSchema>;
+export const CreateStoryPatchCandidateRequestSchema=z.object({title:z.string().min(1).max(160),proposal:z.string().min(1).max(10000),truth_state:z.enum(['CANDIDATE','TO_VALIDATE','OPEN_QUESTION','CONTRADICTION']).default('CANDIDATE')});
+export type CreateStoryPatchCandidateRequest=z.infer<typeof CreateStoryPatchCandidateRequestSchema>;
 
 export const CorrectionBatchSchema = z.object({
   batch_id: z.string().min(1),

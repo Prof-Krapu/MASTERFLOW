@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-21 | R4.2 patch candidat D09 | Préserver une proposition auteur sans muter source ni canon. | DB/shared/service/test/contrat | local vérifié | autorisation marathon MALEX ; aucun export/canon | Patch privé `CANDIDATE`; source intacte. |
 | 2026-06-21 | R3.4 revue Inbox D08 | Soumettre manuellement un cadrage visuel à l’owner sans ouvrir d’exécution. | shared/DB/service/route/contrat | local vérifié | autorisation marathon MALEX ; aucun provider/live | Décision cadrage only ; provider, génération, export et canonisation restent bloqués. |
 | 2026-06-21 | Gate Legacy→Runtime | Imposer la preuve legacy et canon avant toute nouvelle vague produit. | marathon queue + contrat + action queue | local vérifié | non | Aucun artefact classé ne peut être promu sans statut, source canon et écart GitHub explicites. |
 | 2026-06-21 | Clôture publiée D08 R3.1-R3.3 | Rendre lisible le manifest-first réellement disponible et ses verrouillages. | suivi/matrice/queue/status | local vérifié | autorisation marathon MALEX ; aucun provider/live | PR #104-106 réconciliées ; génération, storage et review Inbox restent explicitement absents. |

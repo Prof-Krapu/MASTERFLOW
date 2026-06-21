@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — R4.2 D09 : patch narratif candidat
+
+- proposition privée rattachée au workbench ;
+- état candidat explicite ; aucune réécriture ou canonisation automatique.
+
+Statut : vérifié localement, publication en cours.
+
 ## 2026-06-21 — R4.1 D09 : intake privé et reader state
 
 - référence de source externe, sans import ;
