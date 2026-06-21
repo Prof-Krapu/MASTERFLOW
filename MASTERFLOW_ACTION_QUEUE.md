@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-20
 
 ## 1. À faire maintenant
 
+### Gate Legacy → Runtime
+
+- Tâche : rattacher chaque vague à son idée legacy/arbitrée et à sa source canon.
+- Impact : aucune capacité utile classée ne disparaît entre archive, canon et GitHub.
+- Risque : faible ; contrôle documentaire sans changement runtime.
+- Source de vérité concernée : archive legacy + Coverage Ledger + canon Drive.
+- Statut : implémenté localement dans le contrat marathon.
+- Validation requise : non.
+
 ### R3.1 — D08 registre manifest-first
 
 - Tâche : publier le registre privé de références et manifests visuels, sans exécution.
