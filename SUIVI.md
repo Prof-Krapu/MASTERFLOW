@@ -4,6 +4,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-21 — D12 : registre incidents privé
+
+- incident append-only, symptômes/traces/scope, sans traitement automatique ;
+- état `recorded_unresolved`, sans smoke, recovery ou déploiement.
+
+Statut : ciblés 2/2 et TypeScript backend verts, publication en cours.
+
 ## 2026-06-21 — D12 R5.4 : panneau backup receipts privé
 
 - saisie et lecture owner du checksum sans action sur les fichiers ;

@@ -13,6 +13,7 @@ import {
   CreateD12MissedTriggerFindingSchema,
   CreateD12ReleaseReceiptSchema,
   CreateD12BackupReceiptSchema,
+  CreateD12IncidentRecordSchema,
   D12FindingDecisionSchema,
   D12FindingStatusSchema,
   ProcessActivationRequestSchema,
@@ -24,6 +25,7 @@ import {
 } from '../services/d12_findings.ts';
 import {createD12ReleaseReceipt, listD12ReleaseReceipts} from '../services/d12_release_receipts.ts';
 import {createD12BackupReceipt, listD12BackupReceipts} from '../services/d12_backup_receipts.ts';
+import {createD12IncidentRecord,listD12IncidentRecords} from '../services/d12_incident_records.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -249,6 +251,8 @@ export function createDiagnosticsRouter(): Router {
     if (!parsed.success) return void res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
     res.status(201).json(createD12BackupReceipt(user, parsed.data));
   });
+  router.get('/diagnostics/d12/incidents',(_req,res)=>res.json(listD12IncidentRecords()));
+  router.post('/diagnostics/d12/incidents',(req,res)=>{const parsed=CreateD12IncidentRecordSchema.safeParse(req.body);if(!parsed.success)return void res.status(400).json({error:'invalid_body'});res.status(201).json(createD12IncidentRecord(req.user!,parsed.data));});
 
   return router;
 }
