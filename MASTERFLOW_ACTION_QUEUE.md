@@ -1,8 +1,17 @@
 # MasterFlow — Action Queue
 
-Dernière mise à jour : 2026-06-21
+Dernière mise à jour : 2026-06-27
 
 ## 1. À faire maintenant
+
+### Interface MasterFlow web / desktop / mobile
+
+- Tâche : exécuter `UI-001`, inventaire des sources et écrans existants, puis consolider une seule interface web-first.
+- Impact : transforme les nombreuses briques déjà fonctionnelles en produit pilotable.
+- Risque : faible pour l'inventaire ; moyen si une refonte visuelle modifie les permissions ou les contrats.
+- Source de vérité concernée : canon UI + `FRONTEND_UI_DOCTRINE.md` + `apps/frontend`.
+- Statut : plan actif publié dans `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`; UI-001 ready.
+- Validation requise : non pour audit/inventaire ; oui avant choix de direction visuelle ou nouveau shell natif.
 
 ### D12 R5 — Continuité runtime privée
 
