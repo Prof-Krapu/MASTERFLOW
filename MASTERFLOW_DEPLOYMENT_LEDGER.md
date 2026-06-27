@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-27 | Merge PR #147 — hardening D08 + storage D07/D08 | Publier le stockage fichier privé et les corrections d'audit sans ouvrir la génération live. | audits D08/OCR/boot, storage, assets, Inventory, tests, pilotage | déployé sur `main` GitHub | GO MALEX | GitHub `main` = `6d8023a`; 534/534 tests ; provider/export/canon/live restent fermés. |
 | 2026-06-27 | Storage fichier réel D07/D08 | Remplacer les références sans backing file par un stockage privé traçable, sans ouvrir la génération live. | storage, assets router/service, Inventory scan, tests, pilotage | local vérifié | validation requise avant commit/push | 97 fichiers, 534/534 tests ; lint et diff-check verts ; provider/export/canon restent fermés. |
 | 2026-06-21 | Réconciliation des preuves legacy et du pilotage | Réaligner `SUIVI`, queue, matrice et status sur les merges legacy réellement publiés. | suivi/queue/matrice/ledger/status/progress card | local vérifié | non | `git fetch` + GitHub `main` = `2c547e12`; aucun runtime, provider ou live modifié. |
 | 2026-06-21 | Clôture D12 incidents | Publier la trace d'incident sans traiter l'hôte. | suivi/queue/status | local vérifié | non | PR #129-130 réconciliées ; action opérateur et live gated. |

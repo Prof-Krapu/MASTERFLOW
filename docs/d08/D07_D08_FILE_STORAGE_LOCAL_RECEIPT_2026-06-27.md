@@ -31,5 +31,11 @@ Base distante vérifiée : `origin/main` = `65d518a`
 - Aucun fichier servi publiquement.
 - Aucun asset promu automatiquement hors statut `candidate`.
 - Aucun export, envoi, écriture canon ou déploiement live.
-- Le snapshot Drive indique encore `file_storage: absent` : il reste exact pour GitHub `main`
-  tant que cette branche n'est pas publiée.
+- Au moment des preuves locales, le snapshot Drive indiquait encore `file_storage: absent`.
+
+## Publication
+
+- PR : #147.
+- Merge GitHub `main` : `6d8023a7f52e0b5a78894248835390ad828cc56a`.
+- État vérifié après merge : `main == origin/main == GitHub main`.
+- Déploiement live : non revendiqué.

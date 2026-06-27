@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-27
-Branche de travail : `assistant/d08-ocr-boot-audit-correction`
-Base GitHub vérifiée : `65d518a` (`origin/main`) ; changements storage encore locaux
+Branche de travail : `main`
+Base GitHub vérifiée : `6d8023a` (`main == origin/main == GitHub main`)
 
 Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
 le runtime GitHub.
@@ -11,7 +11,7 @@ le runtime GitHub.
 |---|---|---|---|---|
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
-| D07 Inventory / scan photo | partiel local | Le scan écrit désormais un fichier privé vérifié sous `storage://` et crée un candidat unique ; changement non publié. OCR provider et UI finale restent absents. | moyen | Publier la tranche storage après revue, puis rafraîchir le snapshot canon sans déclarer l'OCR réel. |
+| D07 Inventory / scan photo | partiel implémenté | Le scan écrit un fichier privé vérifié sous `storage://` et crée un candidat unique sur `main`. OCR provider et UI finale restent absents. | moyen | Rafraîchir le snapshot canon sans déclarer l'OCR réel. |
 | D03 Room OS et commandes | partiel | Rooms, instances, checkpoints et frontend existent ; command surface complète absente. | moyen | Ajouter les contrôles par tranches explicites. |
 | D04 personas et bots contextuels | partiel | Personas/blends existent ; affectations contextuelles et bots bornés incomplets. | moyen | Maintenir persona ≠ permission. |
 | Shared Validation Inbox | partiel | Actions, objets D06, findings D12, candidates Usage Learning et intake factory D11 sont sur `main`. | faible | Ajouter les prochains domaines uniquement avec leur autorité métier propre. |
@@ -19,7 +19,7 @@ le runtime GitHub.
 | D06 correction / feedback | partiel | R1.1-R1.4 et R2.1-R2.6 sont sur `main` : prérequis, lot, intake, manifest professeur, sujet, assignment, fiche, paramètres, diff et édition privée. R1.5 reste fermée : aucun runner/provider ni traitement de copies. | faible à moyen | Garder R1.5 fermée tant qu'un contrat provider/consentement/runtime n'est pas validé explicitement. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability et continuité | partiel | Cockpit, findings, décisions owner, Usage Harvester V1, rails privés release/backup et registre d'incidents sont sur `main`. Live, backup réel, recovery et smoke restent non prouvés. | moyen | Rails de preuves clos ; toute action hôte reste derrière un contrat, un preflight et une validation séparés. |
-| D08 génération visuelle | partiel local | R3.1-R3.4 sont sur `main`. Un lifecycle asset candidat et un stockage fichier privé sont vérifiés localement, mais pas publiés. Provider, export, téléchargement public et canonisation restent absents. | moyen | Publier la tranche storage séparément ; conserver toute génération derrière les gates provider/review/export. |
+| D08 génération visuelle | partiel implémenté | R3.1-R3.4, le lifecycle asset candidat et le stockage fichier privé sont sur `main`. Provider, export, téléchargement public et canonisation restent absents. | moyen | Conserver toute génération derrière les gates provider/review/export. |
 | D09 MasterStory | partiel | R4.1-R4.6 sur `main` : workbench privé, reader state, patches candidats et validation auteur. Canon delta, import, export et publication absents. | moyen | Considérer le lot privé clos ; ne rouvrir delta/import/export qu'après décision produit et gates dédiés. |
 | D10 événements/devis/public | partiel | R5.1-R5.4 publiés sur `main` : devis privé sourcé, panneau owner et validation interne. Public intake, export, envoi et facture absents. | moyen | Considérer le rail devis privé clos ; ne rouvrir une sortie ou le rail public qu'après décision produit et gates dédiés. |
 | D11 factories/backflow | implémenté V1 borné | V6C intake JSON/quarantaine, V6D candidate updates, V6E recommandations lecture seule et V6F routage manuel whitelisté sont sur `main`. Toute route reste `candidate_only`. | faible | D11 V1 est clos ; ne rouvrir que sur une nouvelle décision produit explicitant une frontière encore exclue. |
