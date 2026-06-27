@@ -903,7 +903,8 @@ function migrate(d: Database.Database): void {
       reference_ids_json TEXT NOT NULL,
       status TEXT NOT NULL CHECK (status IN (
         'draft','references_to_classify','da_to_resolve','readiness_blocked',
-        'action_ready_preview','generation_blocked_tech_pending','parked'
+        'action_ready_preview','generation_blocked_tech_pending','parked',
+        'approved','rejected'
       )),
       created_by TEXT NOT NULL REFERENCES users(id),
       created_at INTEGER NOT NULL,

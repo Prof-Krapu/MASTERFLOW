@@ -182,12 +182,21 @@ export function compileSceneVisualContext(actor: AuthUser, input: GenerateSceneV
   const gates = getDb().prepare(
     "SELECT gate_id, phase, severity FROM da_gate_registry WHERE phase = 'preflight'",
   ).all() as Array<{gate_id: string; phase: string; severity: string}>;
-  const gatesCheck = gates.map((g) => ({
-    gate_id: g.gate_id,
-    phase: g.phase,
-    severity: g.severity,
-    status: 'passed' as const,
-  }));
+  const gatesCheck = gates.map((g) => {
+    let status: 'passed' | 'blocked' | 'warning' = 'passed';
+    if (g.gate_id === 'canon_entity_lock') {
+      if (!characterIds || characterIds.length === 0) status = 'warning';
+    } else if (g.gate_id === 'da_root_required') {
+      status = 'warning';
+    } else if (g.gate_id === 'reference_roles_resolved') {
+      status = 'warning';
+    } else if (g.gate_id === 'provider_reference_handoff_truth') {
+      status = 'warning';
+    } else if (g.gate_id === 'scene_isolation') {
+      status = 'warning';
+    }
+    return { gate_id: g.gate_id, phase: g.phase, severity: g.severity, status };
+  });
 
   const manifest = createVisualManifest(actor, {
     workbench_id: workbenchId,
@@ -225,6 +234,14 @@ export function compileSceneVisualContext(actor: AuthUser, input: GenerateSceneV
 }
 
 export function executeSceneVisualGeneration(actor: AuthUser, compiled: CompiledSceneContext): {job_id: string; manifest_id: string} {
+  const manifestId = compiled.manifest!.manifest_id;
+  const manifestRow = getDb().prepare('SELECT status FROM visual_manifests WHERE id = ?').get(manifestId) as {status: string} | undefined;
+  if (!manifestRow) throw new Error('visual_manifest_not_found');
+  if (manifestRow.status === 'parked') throw new Error('manifest_parked');
+
+  const blocked = compiled.gates_check.filter((g) => g.severity === 'block' && g.status === 'blocked');
+  if (blocked.length > 0) throw new Error('scene_visual_gate_blocked');
+
   if (compiled.spoiler_level === 'major' || compiled.spoiler_level === 'critical') {
     const readerState = getDb().prepare(
       'SELECT mode FROM story_reader_states WHERE workbench_id = ? AND owner_id = ?',
@@ -244,7 +261,7 @@ export function executeSceneVisualGeneration(actor: AuthUser, compiled: Compiled
 
   getDb().prepare(
     'UPDATE visual_manifests SET status = ?, da_root_ref = ? WHERE id = ?',
-  ).run('action_ready_preview', job.job_id, compiled.manifest!.manifest_id);
+  ).run('action_ready_preview', job.job_id, manifestId);
 
   audit({
     event_type: 'da.scene_visual_generated',
@@ -252,7 +269,7 @@ export function executeSceneVisualGeneration(actor: AuthUser, compiled: Compiled
     detail: {workbench_id: compiled.workbench_id, node_id: compiled.node_id, job_id: job.job_id},
   });
 
-  return {job_id: job.job_id, manifest_id: compiled.manifest!.manifest_id};
+  return {job_id: job.job_id, manifest_id: manifestId};
 }
 
 interface PostGenGateReport {

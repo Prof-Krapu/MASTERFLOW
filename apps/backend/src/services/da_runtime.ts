@@ -60,6 +60,10 @@ function assertAssetAccess(actor: AuthUser, row: {owner_id: string; project_id: 
 }
 
 export function storeGeneratedAsset(actor: AuthUser, data: StoreGeneratedAssetRequest): GeneratedAsset {
+  if (data.manifest_id) {
+    const manifest = getDb().prepare('SELECT id FROM visual_manifests WHERE id = ?').get(data.manifest_id);
+    if (!manifest) throw new Error('visual_manifest_not_found');
+  }
   const id = uuid();
   const now = Date.now();
   getDb().prepare(`

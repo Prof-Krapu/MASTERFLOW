@@ -1929,6 +1929,7 @@ export type UpdateVisualReferenceRequest = z.infer<typeof UpdateVisualReferenceR
 export const VisualManifestStatusSchema = z.enum([
   'draft','references_to_classify','da_to_resolve','readiness_blocked',
   'action_ready_preview','generation_blocked_tech_pending','parked',
+  'approved','rejected',
 ]);
 export const VisualManifestSchema = z.object({
   manifest_id: z.string().min(1), owner_id: z.string().min(1), project_id: z.string().min(1).nullable(),

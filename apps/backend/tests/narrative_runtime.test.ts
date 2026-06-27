@@ -358,7 +358,8 @@ describe('narrative_runtime', () => {
     expect(context.manifest).not.toBeNull();
     expect(context.active_layers.length).toBeGreaterThan(0);
     expect(context.gates_check.length).toBeGreaterThan(0);
-    expect(context.gates_check.every((g) => g.status === 'passed')).toBe(true);
+    expect(context.gates_check.some((g) => g.status === 'passed')).toBe(true);
+    expect(context.gates_check.filter((g) => g.status === 'blocked')).toHaveLength(0);
     expect(context.spoiler_level).toBe('none');
   });
 

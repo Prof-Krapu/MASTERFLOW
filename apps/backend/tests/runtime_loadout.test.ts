@@ -54,15 +54,12 @@ describe('user_runtime_loadout', () => {
     expect(loadout.disabled_reason_map).toEqual({});
   });
 
-  it('montre a un admin les capacites futures autorisees comme verrouillees', () => {
+  it('montre a un admin les capacites disponibles selon le registre', () => {
     const loadout = deriveUserRuntimeLoadout(admin, room, adminInstance);
     expect(loadout.available_action_ids).toEqual(
-      expect.arrayContaining(['get_current_context', 'approve_validation_item', 'view_users']),
+      expect.arrayContaining(['get_current_context', 'approve_validation_item', 'view_users', 'compile_da_context']),
     );
-    expect(loadout.available_action_ids).not.toContain('compile_da_context');
-    expect(loadout.locked_capabilities).toEqual(
-      expect.arrayContaining([{capability_id: 'compile_da_context', reason: 'capability_not_live'}]),
-    );
+    expect(loadout.locked_capabilities).toEqual([]);
     expect(loadout.active_mode_cycle).toEqual(['teaching', 'review']);
   });
 
