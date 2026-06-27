@@ -28,7 +28,7 @@ Dernière mise à jour : 2026-06-27
 - Impact : évite que chaque nouvelle Factory réinvente ses protocoles et permet à Big Pickle/OpenCode de travailler sans dérive.
 - Risque : faible en documentaire ; moyen si le CDC est utilisé comme autorisation d'import automatique.
 - Source de vérité concernée : D11 Factory Backflow + `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
-- Statut : ready.
+- Statut : publié localement dans `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`.
 - Validation requise : non pour spec ; oui avant patch Factory active.
 
 ### FACTORY-ROUTER-001 — Routeur de primitives Factory
@@ -37,7 +37,7 @@ Dernière mise à jour : 2026-06-27
 - Impact : rend visibles les briques réutilisables et les domaines Git concernés.
 - Risque : faible ; c'est un pilotage documentaire.
 - Source de vérité concernée : Factories actives + registre de primitives externes.
-- Statut : ready.
+- Statut : publié localement dans `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`.
 - Validation requise : non.
 
 ### D08-VISUAL-REFS-001 — Taxonomie des références visuelles

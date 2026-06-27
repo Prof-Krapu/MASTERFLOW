@@ -85,8 +85,8 @@ quelle. Les primitives transversales prioritaires sont :
 
 Nouvelles tâches de queue :
 
-- `FACTORY-CDC-001` ;
-- `FACTORY-ROUTER-001` ;
+- `FACTORY-CDC-001` : publié dans `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md` ;
+- `FACTORY-ROUTER-001` : publié dans `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md` ;
 - `D08-VISUAL-REFS-001` ;
 - `MASTERCLASS-SUBJECTS-001` ;
 - `MASTERINVENTORY-OCR-001` ;

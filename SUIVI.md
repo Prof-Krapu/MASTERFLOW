@@ -10,9 +10,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - confirmation : les Factories restent des bots/extractions autonomes, pas des briques à importer telles quelles ;
 - identification des primitives communes : boot contexte, scope lock, extraction inbox, candidate-not-canon, source truth, rôles de références visuelles, GO IMAGE gate, DA report, jauges, subject packs, brief routing, situation companion, usage harvester et diagnostic non-surveillance ;
 - création d'une matrice Factory → primitive → cible MasterFlow → risque ;
-- recommandation : créer un CDC commun des Factories et un routeur de primitives avant toute nouvelle extraction ou patch massif.
+- création du CDC commun des Factories et du routeur de primitives avant toute nouvelle extraction ou patch massif.
 
-Statut : audit documentaire Git local dans `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
+Statut : audit documentaire Git local dans `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`,
+CDC dans `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`, routeur dans
+`docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`.
 Aucun runtime, provider, migration, Drive ou dossier Factory actif n'a été modifié dans cette passe.
 
 ## 2026-06-27 — Git devient la vérité opérable + récolte de primitives externes

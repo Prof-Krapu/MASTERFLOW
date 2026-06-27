@@ -23,10 +23,14 @@ frozen_by: MALEX « go » 2026-06-27
 - Auditer les 19 Factories actives `CURRENT` en lecture seule.
 - Identifier les primitives utiles sans copier les bots autonomes dans MasterFlow.
 - Produire une matrice Factory → primitive → cible Git → risque.
-- Créer une queue courte pour CDC commun, routeur de primitives, D08 visual refs, Masterclass, MasterInventory, Learning Gauges et MasterHelp.
+- Créer le CDC commun des Factories.
+- Créer le routeur de primitives Factory.
+- Créer une queue courte pour D08 visual refs, Masterclass, MasterInventory, Learning Gauges et MasterHelp.
 
 ### files créés/modifiés
 - `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`
+- `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`
+- `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`
 - `SUIVI.md`
 - `AGENT_TASKS.md`
 - `MASTERFLOW_ACTION_QUEUE.md`
@@ -38,7 +42,7 @@ frozen_by: MALEX « go » 2026-06-27
 - `git diff --check` à exécuter avant publication.
 
 ### updates
-> 2026-06-27 codex → done local. Primitives communes identifiées ; prochaine tranche sûre : `FACTORY-CDC-001` + `FACTORY-ROUTER-001`.
+> 2026-06-27 codex → done local. Primitives communes identifiées ; CDC commun et routeur de primitives créés. Prochaines tranches sûres : `D08-VISUAL-REFS-001`, `MASTERCLASS-SUBJECTS-001`, `MASTERINVENTORY-OCR-001`.
 
 ---
 
