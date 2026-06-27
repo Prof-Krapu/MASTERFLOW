@@ -4,6 +4,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-27 — Plan actif interface multi-surface
+
+- décision : un seul frontend React/Vite web-first ;
+- mobile : PWA responsive avant tout shell natif ;
+- desktop : Tauri comme emballage du frontend partagé ;
+- UI-001 ouvre l'inventaire des maquettes, références web et composants existants ;
+- aucune réécriture métier, permission ou API dans cette tranche documentaire.
+
+Statut : plan et queue prêts dans `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`.
+
 ## 2026-06-27 — Storage fichier réel D07/D08
 
 - uploads privés multipart et base64 vers une racine locale configurable ;
