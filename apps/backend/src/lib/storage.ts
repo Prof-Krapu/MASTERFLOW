@@ -1,5 +1,5 @@
-import {readFileSync, statSync} from 'node:fs';
-import {resolve, sep} from 'node:path';
+import {mkdirSync, readFileSync, statSync, writeFileSync, unlinkSync} from 'node:fs';
+import {dirname, resolve, sep} from 'node:path';
 
 /**
  * Résolution de références `storage://` vers des fichiers locaux.
@@ -15,7 +15,7 @@ import {resolve, sep} from 'node:path';
  *  - type d'image vérifié par les octets magiques (png/jpeg/webp/gif), pas par
  *    l'extension du nom de fichier.
  *
- * Aucune écriture : la résolution est en lecture seule.
+ * Écriture : `storeFile()` écrit sur disque et retourne une ref `storage://<clé>`.
  */
 
 const PREFIX = 'storage://';
@@ -35,7 +35,8 @@ export interface ResolvedStorageImage {
 }
 
 function storageRoot(): string {
-  return process.env.MASTERFLOW_STORAGE_ROOT ?? resolve(process.cwd(), 'data', 'storage');
+  const raw = process.env.MASTERFLOW_STORAGE_ROOT;
+  return raw ? resolve(process.cwd(), raw) : resolve(process.cwd(), 'data', 'storage');
 }
 
 function maxBytes(): number {
@@ -102,4 +103,35 @@ export function resolveStorageImage(ref: string): ResolvedStorageImage {
 /** Construit une data URL base64 prête pour un champ `image_url` OpenAI‑compatible. */
 export function toBase64DataUrl(mime: StorageMime, base64: string): string {
   return `data:${mime};base64,${base64}`;
+}
+
+/**
+ * Écrit un fichier sur disque sous `MASTERFLOW_STORAGE_ROOT/<key>`.
+ * Crée le répertoire parent si nécessaire.
+ * Retourne la ref `storage://<key>`.
+ */
+export function storeFile(key: string, data: Buffer): string {
+  if (!key || key.includes('\0') || key.includes('..')) throw new Error('storage_ref_invalid_key');
+  if (data.length === 0) throw new Error('storage_file_empty');
+  if (data.length > maxBytes()) throw new Error('storage_file_too_large');
+  const root = storageRoot();
+  const target = resolve(root, key);
+  if (target !== root && !target.startsWith(root + sep)) throw new Error('storage_ref_path_escape');
+  mkdirSync(dirname(target), {recursive: true});
+  writeFileSync(target, data);
+  return `${PREFIX}${key}`;
+}
+
+/**
+ * Supprime un fichier du disque à partir d'une ref `storage://<key>`.
+ * Ne lève pas d'erreur si le fichier n'existe pas.
+ */
+export function deleteFile(ref: string): void {
+  if (typeof ref !== 'string' || !ref.startsWith(PREFIX)) return;
+  const key = ref.slice(PREFIX.length);
+  if (!key || key.includes('\0')) return;
+  const root = storageRoot();
+  const target = resolve(root, key);
+  if (target !== root && !target.startsWith(root + sep)) return;
+  try { unlinkSync(target); } catch { /* déjà absent */ }
 }

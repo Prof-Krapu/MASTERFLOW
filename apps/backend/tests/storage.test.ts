@@ -1,10 +1,10 @@
-import {mkdtempSync, writeFileSync} from 'node:fs';
+import {existsSync, mkdtempSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
-import {resolveStorageImage, toBase64DataUrl} from '../src/lib/storage.ts';
+import {deleteFile, resolveStorageImage, storeFile, toBase64DataUrl} from '../src/lib/storage.ts';
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x01]);
 
@@ -45,5 +45,18 @@ describe('resolveStorageImage', () => {
 
   it('refuse un type non-image', () => {
     expect(() => resolveStorageImage('storage://note.txt')).toThrow('storage_ref_unsupported_image');
+  });
+
+  it('écrit et supprime un fichier sous une clé sûre', () => {
+    const ref = storeFile('nested/upload.png', PNG_SIGNATURE);
+    expect(ref).toBe('storage://nested/upload.png');
+    expect(resolveStorageImage(ref).bytes).toBe(PNG_SIGNATURE.length);
+    deleteFile(ref);
+    expect(existsSync(join(root, 'nested', 'upload.png'))).toBe(false);
+  });
+
+  it('refuse les écritures vides ou hors racine', () => {
+    expect(() => storeFile('empty.png', Buffer.alloc(0))).toThrow('storage_file_empty');
+    expect(() => storeFile('../escape.png', PNG_SIGNATURE)).toThrow('storage_ref_invalid_key');
   });
 });

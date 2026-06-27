@@ -1995,11 +1995,25 @@ export const StoreGeneratedAssetRequestSchema = z.object({
 });
 export type StoreGeneratedAssetRequest = z.infer<typeof StoreGeneratedAssetRequestSchema>;
 
+export const UploadBase64AssetRequestSchema = z.object({
+  data: z.string().min(1),
+  mime: z.string().min(1).default('image/png'),
+  asset_type: GeneratedAssetTypeSchema.default('image'),
+});
+export type UploadBase64AssetRequest = z.infer<typeof UploadBase64AssetRequestSchema>;
+
 export const ReviewGeneratedAssetRequestSchema = z.object({
   status: z.enum(['approved', 'rejected']),
   review_note: z.string().max(2000).optional(),
 });
 export type ReviewGeneratedAssetRequest = z.infer<typeof ReviewGeneratedAssetRequestSchema>;
+
+export const ASSETS_API = {
+  list: '/api/v1/assets',
+  get: '/api/v1/assets/:id',
+  upload: '/api/v1/assets/upload',
+  uploadBase64: '/api/v1/assets/upload-base64',
+} as const;
 
 export const DA_RUNTIME_API = {
   assets: {
