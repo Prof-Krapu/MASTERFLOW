@@ -9,7 +9,7 @@ import {
 } from '../services/narrative_runtime.ts';
 import {createCharacter, getCharacter, listAllCharacters, listCharacters, updateCharacter, deleteCharacter} from '../services/story_characters.ts';
 import {setCanonLock} from '../services/story_workbenches.ts';
-import {compileSceneVisualContext, executeSceneVisualGeneration} from '../engines/story_da_bridge.ts';
+import {compileSceneVisualContext} from '../engines/story_da_bridge.ts';
 
 const actor = (r: Request): AuthUser => { if (!r.user) throw new Error('unauthorized'); return r.user; };
 const fail = (s: Response, e: unknown): void => {
@@ -92,13 +92,27 @@ export function createNarrativeRuntimeRouter(): Router {
 
   // Scene visual generation (MasterStory → DA bridge)
   r.post('/narrative/nodes/:id/generate-visual', (q, s) => {
-    const b = GenerateSceneVisualRequestSchema.safeParse(q.body);
+    const b = GenerateSceneVisualRequestSchema.safeParse({...q.body, node_id: q.params.id ?? ''});
     if (!b.success) return void s.status(400).json({error: 'invalid_body', detail: b.error.flatten()});
     try {
-      const context = compileSceneVisualContext(actor(q), {node_id: q.params.id ?? '', additional_prompt: b.data.additional_prompt});
-      const result = executeSceneVisualGeneration(actor(q), context);
-      audit({event_type: 'narrative.visual_generated', user_id: actor(q).id, detail: {node_id: q.params.id, manifest_id: context.manifest!.manifest_id, job_id: result.job_id}});
-      s.status(201).json({...result, prompt: context.prompt, character_intents: context.character_intents, gates_check: context.gates_check});
+      const context = compileSceneVisualContext(actor(q), {node_id: b.data.node_id, additional_prompt: b.data.additional_prompt});
+      audit({
+        event_type: 'narrative.visual_generation_blocked_action_gate',
+        user_id: actor(q).id,
+        detail: {
+          node_id: q.params.id,
+          manifest_id: context.manifest?.manifest_id ?? null,
+          reason: 'image_generation_requires_approved_action',
+        },
+      });
+      s.status(202).json({
+        status: 'generation_blocked_action_gate',
+        manifest_id: context.manifest?.manifest_id ?? null,
+        prompt: context.prompt,
+        character_intents: context.character_intents,
+        gates_check: context.gates_check,
+        next_action: 'submit_approved_create_render_manifest_action',
+      });
     } catch (e) { fail(s, e); }
   });
 

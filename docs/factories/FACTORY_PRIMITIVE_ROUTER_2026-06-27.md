@@ -1,9 +1,9 @@
 # MasterFlow — Routeur de primitives Factory
 
 Date : 2026-06-27  
-Statut : matrice de pilotage documentaire  
+Statut : routeur de primitives MasterFlow, pas audit de Factories
 Autorité : repo Git opérable  
-Base : `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`
+Frontière corrigée : `docs/factories/FACTORY_DESKTOP_WORKSHOP_TO_MASTERFLOW_BRIDGE_2026-06-28.md`
 
 ## Objectif
 
@@ -14,6 +14,9 @@ Ce routeur répond à trois questions :
 1. quelle primitive est en jeu ?
 2. quel domaine MasterFlow est concerné ?
 3. est-ce déjà dans Git, un candidat, un gap runtime, un blocage ou un rejet ?
+
+Il ne sert pas à piloter les versions actives des Factories. Les audits détaillés, CDC de bots,
+archives, prompts et reçus de patch restent dans `/Users/malex/Desktop/FACTORIES/`.
 
 ## Légende
 
@@ -30,7 +33,7 @@ Ce routeur répond à trois questions :
 
 | Primitive | Sources Factory | Domaine MasterFlow cible | Statut | Prochaine action |
 |---|---|---|---|---|
-| Boot contexte | presque toutes | D03 Context Runtime, D11 Factory Backflow, UI onboarding | `primitive_candidate` | Standardiser avec `FACTORY_COMMON_CDC`. |
+| Boot contexte | Factories atelier | D03 Context Runtime, D11 Factory Backflow, UI onboarding | `primitive_candidate` | Extraire seulement si un besoin MasterFlow se répète. |
 | Scope lock/refus | Batrasia, Gestion Projet, Rédaction SEO, HelpLab, MasterInventory, Masterclass, MasterFlex, Esprimed | Permissions, modes, safety | `primitive_candidate` | Créer un template de refus par type de Factory. |
 | Extraction inbox | Batrasia, Stand Up, Gestion Projet, Rédaction SEO, MasterInventory, Roadtrip, Talents | D11 backflow, feedback intake | `already_in_git_runtime` partiel | Aligner le format commun sur D11 V6C-D6F. |
 | Candidate-not-canon | Batrasia, MasterInventory, Roadtrip, Masterclass, Learning Mirror | Living Truth Spine, Validation Inbox | `already_in_git_runtime` partiel | Ajouter bandeau UI/source truth. |
@@ -45,7 +48,7 @@ Ce routeur répond à trois questions :
 | Resource truth timecoded | MasterFlex | Resource Truth / Coaching | `primitive_candidate` | Vérifier source refs et non-invention de timecodes. |
 | OCR candidate status | MasterInventory | D07 Inventory + D08 visual refs | `already_in_git_runtime` partiel | Lancer `MASTERINVENTORY-OCR-001`. |
 | Situation companion | Roadtrip, HelpLab | MasterHelp candidat | `primitive_candidate` | Tester Roadtrip puis décider. |
-| Usage harvester | Gestion Projet, Rédaction SEO, Batrasia | D11/D12 external usage intake | `already_in_git_doc` partiel | Donner protocole à Big Pickle/OpenCode. |
+| Usage harvester | Factories atelier | D11/D12 external usage intake | `already_in_git_doc` partiel | Donner protocole à Big Pickle/OpenCode côté atelier, puis backflow candidat si utile. |
 | Diagnostic non-surveillance | Esprimed | Feedback/analytics/privacy | `primitive_candidate` | Écrire guardrail privacy avant runtime. |
 | Creative material lifecycle | Stand Up, Batrasia, transcription future | D03/D11 intake, D09 MasterStory | `primitive_candidate` | Spécifier statuts matière créative. |
 | Score explicable | MasterScore | D06 competencies/correction | `primitive_candidate` | Interdire score verdict sans validation prof. |
@@ -108,3 +111,6 @@ factory_primitive_routing:
 3. `MASTERINVENTORY-OCR-001` : car il relie Factories, visuels, OCR et Inventory.
 
 Le routeur reste documentaire tant qu'aucune route runtime n'est codée.
+
+Règle : si la sortie ressemble à un audit complet d'une Factory, elle ne va pas ici. Elle reste
+côté Bureau. Ici on ne garde que la primitive utile à MasterFlow.

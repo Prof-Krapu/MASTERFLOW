@@ -4,18 +4,33 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — Correction frontière Factories : atelier Bureau, primitives Git
+
+- correction MALEX : les audits détaillés de Factories ne doivent pas vivre dans Git ;
+- décision : `/Users/malex/Desktop/FACTORIES/` reste l'atelier actif pour versions, CDC de bots, audits détaillés, prompts, archives et patchs ;
+- Git garde seulement le pont Factory → MasterFlow, le routeur de primitives et les specs réellement utiles au logiciel ;
+- suppression de la couche active Git `FACTORY_PRIMITIVES_AUDIT_PASS_1` et du CDC commun de bots ;
+- ajout du pont `docs/factories/FACTORY_DESKTOP_WORKSHOP_TO_MASTERFLOW_BRIDGE_2026-06-28.md` ;
+- `FACTORY_PRIMITIVE_ROUTER` est conservé uniquement comme routeur de primitives MasterFlow, pas comme audit de Factories.
+
+Conséquence : quand une Factory révèle quelque chose d'intéressant, on ne publie pas l'audit de la
+Factory dans Git ; on publie seulement la primitive/contrat/guardrail utile à MasterFlow.
+
 ## 2026-06-27 — FACTORY-PRIMITIVES-001 : audit des Factories actives
 
-- audit lecture seule des 19 Factories actives `CURRENT` ;
-- confirmation : les Factories restent des bots/extractions autonomes, pas des briques à importer telles quelles ;
-- identification des primitives communes : boot contexte, scope lock, extraction inbox, candidate-not-canon, source truth, rôles de références visuelles, GO IMAGE gate, DA report, jauges, subject packs, brief routing, situation companion, usage harvester et diagnostic non-surveillance ;
-- création d'une matrice Factory → primitive → cible MasterFlow → risque ;
-- création du CDC commun des Factories et du routeur de primitives avant toute nouvelle extraction ou patch massif.
+Ancienne passe documentaire, remplacée le 2026-06-28.
 
-Statut : audit documentaire Git local dans `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`,
-CDC dans `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`, routeur dans
-`docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`.
-Aucun runtime, provider, migration, Drive ou dossier Factory actif n'a été modifié dans cette passe.
+Ce qui reste valable :
+
+- les Factories restent des bots/extractions autonomes, pas des briques à importer telles quelles ;
+- certaines primitives sont utiles à MasterFlow : boot contexte, scope lock, extraction inbox, source truth, rôles visuels, GO IMAGE gate, DA report, jauges, subject packs, brief routing, situation companion, usage harvester ;
+- aucun runtime, provider, migration, Drive ou dossier Factory actif n'avait été modifié.
+
+Ce qui est corrigé :
+
+- l'audit détaillé des Factories et le CDC de bots ne doivent pas vivre dans Git ;
+- le travail Factories détaillé reste côté Bureau ;
+- Git ne conserve que le pont et les primitives utiles.
 
 ## 2026-06-27 — D08-VISUAL-REFS-001 : taxonomie références visuelles
 
@@ -29,13 +44,23 @@ Aucun runtime, provider, migration, Drive ou dossier Factory actif n'a été mod
 Statut : spec documentaire dans `docs/d08/D08_VISUAL_REFERENCE_TAXONOMY_AND_FACTORY_REF_GATE_2026-06-27.md`.
 Prochaine action sûre : auditer la route narrative `generate-visual` contre ce gate.
 
+## 2026-06-27 — D08-GATE-001 : route narrative generate-visual neutralisée
+
+- audit code : `POST /api/v1/narrative/nodes/:id/generate-visual` créait un job image directement via le bridge narratif ;
+- patch : la route compile désormais le contexte et le manifest, puis retourne `generation_blocked_action_gate` sans créer de job ;
+- la création de job image reste réservée à l'exécuteur d'action approuvée `create_render_manifest` ;
+- ajout d'un test HTTP prouvant que la route ne crée aucun job `asset_prepare`.
+
+Statut : patch local prêt à publication. Aucun provider image, runner live, Drive ou dossier Factory actif modifié.
+Vérification : test ciblé `narrative_runtime_router` vert, backend complet 98 fichiers / 535 tests, lint TypeScript vert, diff-check vert.
+
 ## 2026-06-27 — Git devient la vérité opérable + récolte de primitives externes
 
 - décision opératoire : le clone Git publiable devient la source de vérité exploitable pour MasterFlow ;
 - Drive, legacy, ex-canon et Factories deviennent des sources candidates à arbitrer, plus des vérités parallèles ;
 - création d'un audit documentaire des familles externes restantes : Dataviz, Factories, MasterHelp, DA/images, OCR/Inventory, pédagogie, jauges, MasterStory, UI ;
 - création d'un registre initial de récolte de primitives externes ;
-- précision produit : les Factories ne sont jamais absorbées telles quelles ; elles servent seulement à repérer des primitives, patterns, verrous ou retours d'usage utiles ;
+- précision produit : les Factories ne sont jamais absorbées telles quelles ; elles servent seulement à repérer des primitives, patterns, verrous ou retours d'usage utiles, puis les audits détaillés restent côté Bureau ;
 - ajout d'un protocole de routage des demandes Factory : extraction préalable, audit d'existant, nouvelle spec, patch, récolte primitive, queue runtime ou blocage ;
 - clarification D08 : le bug statuts manifests visuels est résolu dans Git, mais la route narrative `generate-visual` reste à auditer avant génération image réelle.
 

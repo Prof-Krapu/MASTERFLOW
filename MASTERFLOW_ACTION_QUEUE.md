@@ -13,23 +13,23 @@ Dernière mise à jour : 2026-06-27
 - Statut : documents locaux créés dans `docs/source-truth/`.
 - Validation requise : non pour publication documentaire ; oui avant tout runtime, migration ou promotion canon.
 
-### FACTORY-PRIMITIVES-001 — Récolte des primitives utiles des Factories actives
+### FACTORY-BRIDGE-001 — Pont atelier Factories → MasterFlow
 
-- Tâche : appliquer le protocole de routage Factory, puis passer chaque Factory `CURRENT` dans une matrice `already_in_git / primitive_candidate / runtime_gap / blocked / rejected`.
-- Impact : garantit qu'aucune bonne idée issue d'une Factory ne reste hors Git sans statut, sans importer les bots tels quels.
-- Risque : faible en audit ; moyen si une Factory est copiée au lieu d'être analysée.
-- Source de vérité concernée : `/Users/malex/Desktop/FACTORIES/*/CURRENT` + D11 Git + `docs/factories/FACTORY_REQUEST_ROUTING_PROTOCOL_2026-06-27.md`.
-- Statut : passe 1 audit publiée localement dans `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
-- Validation requise : non pour audit ; oui avant patch Factory active ou runtime Git.
+- Tâche : poser la frontière corrigée : les Factories se travaillent sur le Bureau ; Git ne reçoit que les primitives/contrats/guardrails utiles à MasterFlow.
+- Impact : évite de transformer Git en dépôt d'audits de bots tout en gardant le coup double quand une idée mérite MasterFlow.
+- Risque : faible ; correction documentaire.
+- Source de vérité concernée : `/Users/malex/Desktop/FACTORIES/` comme atelier externe + D11 Git comme backflow candidat.
+- Statut : pont local créé dans `docs/factories/FACTORY_DESKTOP_WORKSHOP_TO_MASTERFLOW_BRIDGE_2026-06-28.md`.
+- Validation requise : non.
 
-### FACTORY-CDC-001 — Cahier des charges commun des Factories
+### FACTORY-PRIMITIVES-001 — Récolte des primitives utiles issues des Factories
 
-- Tâche : formaliser le fonctionnement commun de toutes les Factories : boot contexte, scope lock, source truth, extraction inbox, dataviz, output readiness, backflow et rapport à MasterFlow.
-- Impact : évite que chaque nouvelle Factory réinvente ses protocoles et permet à Big Pickle/OpenCode de travailler sans dérive.
-- Risque : faible en documentaire ; moyen si le CDC est utilisé comme autorisation d'import automatique.
-- Source de vérité concernée : D11 Factory Backflow + `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
-- Statut : publié localement dans `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`.
-- Validation requise : non pour spec ; oui avant patch Factory active.
+- Tâche : quand une Factory révèle une idée utile, créer seulement une fiche primitive courte `source -> primitive -> cible MasterFlow -> risque -> statut`.
+- Impact : garde le meilleur des Factories sans importer leurs audits détaillés dans Git.
+- Risque : faible si on ne remonte pas les prompts/dossiers de bots.
+- Source de vérité concernée : pont Factory → MasterFlow + routeur de primitives.
+- Statut : corrigé ; pas d'audit exhaustif en Git.
+- Validation requise : non pour tri ; oui avant runtime Git.
 
 ### FACTORY-ROUTER-001 — Routeur de primitives Factory
 
@@ -37,7 +37,7 @@ Dernière mise à jour : 2026-06-27
 - Impact : rend visibles les briques réutilisables et les domaines Git concernés.
 - Risque : faible ; c'est un pilotage documentaire.
 - Source de vérité concernée : Factories actives + registre de primitives externes.
-- Statut : publié localement dans `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`.
+- Statut : conservé comme routeur de primitives MasterFlow, pas comme audit de Factories.
 - Validation requise : non.
 
 ### D08-VISUAL-REFS-001 — Taxonomie des références visuelles
@@ -55,7 +55,7 @@ Dernière mise à jour : 2026-06-27
 - Impact : empêche une génération visuelle de contourner `ACTION_READY`, validation inbox ou action registry.
 - Risque : moyen à élevé si provider image réel est branché.
 - Source de vérité concernée : D08 DA Visual Assets + D09 MasterStory + action registry.
-- Statut : écart identifié ; bug statuts manifests déjà résolu dans Git.
+- Statut : route neutralisée localement en `generation_blocked_action_gate`; test HTTP ajouté.
 - Validation requise : oui avant provider image réel ; non pour audit/test local.
 
 ### DATAVIZ-001 — Dataviz / Graph / Widget / Factory→Mode
@@ -63,7 +63,7 @@ Dernière mise à jour : 2026-06-27
 - Tâche : relire puis publier l'audit Dataviz, le contrat portable, l'arbitrage Factory→Mode et la spec MasterHelp.
 - Impact : récupère les briques legacy/factories sans confondre dashboard, widget, graph, source truth et runtime.
 - Risque : faible tant que cela reste documentaire ; moyen si on code l'UI sans contrat validé.
-- Source de vérité concernée : legacy Dataviz/Graph/Widget + canon UI runtime + D11/D12 + Factories actives.
+- Source de vérité concernée : legacy Dataviz/Graph/Widget + canon UI runtime + D11/D12 + primitives issues des Factories.
 - Statut : documents locaux créés dans `docs/dataviz/`, `docs/factories/`, `docs/masterhelp/` et `docs/prompts/`.
 - Validation requise : oui avant promotion canon Drive ou implémentation runtime ; non pour revue documentaire.
 
@@ -72,8 +72,8 @@ Dernière mise à jour : 2026-06-27
 - Tâche : tester la Factory Roadtrip patchée avec `MasterHelp`, extraction Dataviz renforcée, feedback terrain et séparation roadtrip-only vs primitive portable.
 - Impact : transforme Roadtrip en banc d'essai robuste pour Source Truth, Dataviz, checkpoints et Situation Companion.
 - Risque : moyen ; le dossier Factory actif vit hors Git et doit respecter archive avant remplacement + ZIP actif identique.
-- Source de vérité concernée : Factory active Roadtrip V1.3 + CDC commun Factories + contrat Dataviz portable.
-- Statut : patch V1.4 appliqué localement avec archive ; reçu dans `docs/factories/ROADTRIP_MOTO_FACTORY_PATCH_RECEIPT_2026-06-27.md`.
+- Source de vérité concernée : Factory active Roadtrip sur le Bureau + contrat Dataviz portable.
+- Statut : patch V1.4 appliqué hors Git ; les futurs reçus détaillés doivent rester côté Bureau sauf primitive MasterFlow.
 - Validation requise : non pour test pilote privé ; oui avant promotion canon, publication runtime ou généralisation MasterHelp.
 
 ### Big Pickle — audit/extraction déléguée

@@ -14,6 +14,65 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-309 — Correction frontière Factories : atelier Bureau, primitives Git
+target: codex
+status: done
+frozen_by: MALEX « pas besoin des audits de facto sur git » 2026-06-28
+
+### scope
+- Retirer l'audit détaillé des Factories de la couche active Git.
+- Retirer le CDC commun de bots de la couche active Git.
+- Poser la règle : Factories travaillées dans `/Users/malex/Desktop/FACTORIES/`, Git seulement pour primitives/contrats/guardrails utiles à MasterFlow.
+- Conserver un pont Factory → MasterFlow et un routeur de primitives.
+- Ne pas toucher aux dossiers Factories actifs.
+
+### files créés/modifiés
+- `docs/factories/FACTORY_DESKTOP_WORKSHOP_TO_MASTERFLOW_BRIDGE_2026-06-28.md`
+- `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`
+- `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`
+- `docs/source-truth/GIT_OPERABLE_SOURCE_OF_TRUTH_AND_EXTERNAL_PRIMITIVE_HARVEST_AUDIT_2026-06-27.md`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### files retirés de la couche active Git
+- `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`
+- `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`
+
+### updates
+> 2026-06-28 codex → done local. Frontière corrigée : Factories = atelier Bureau ; Git = primitives MasterFlow seulement.
+
+---
+
+## TASK-308 — D08-GATE-001 : neutraliser route narrative generate-visual
+target: codex
+status: done
+frozen_by: audit D08-VISUAL-REFS-001 2026-06-27
+
+### scope
+- Auditer la route `POST /api/v1/narrative/nodes/:id/generate-visual`.
+- Empêcher la création directe d'un job image hors action sensible approuvée.
+- Conserver la compilation de contexte/manifest pour prévisualisation.
+- Ajouter un test HTTP prouvant qu'aucun job `asset_prepare` n'est créé.
+
+### files créés/modifiés
+- `apps/backend/src/routers/narrative_runtime.ts`
+- `apps/backend/tests/narrative_runtime_router.test.ts`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### verification
+- `npx vitest run apps/backend/tests/narrative_runtime_router.test.ts` : 1/1.
+- `npm test` : 98 fichiers, 535/535.
+- `npm run lint` : TypeScript backend vert.
+- `git diff --check` : OK.
+
+### updates
+> 2026-06-27 codex → done local. Route neutralisée en `generation_blocked_action_gate`; job image réservé à `create_render_manifest` après action approuvée.
+
+---
+
 ## TASK-307 — D08-VISUAL-REFS-001 : taxonomie références visuelles
 target: codex
 status: done
@@ -45,33 +104,25 @@ frozen_by: FACTORY-PRIMITIVES-001 2026-06-27
 
 ## TASK-306 — FACTORY-PRIMITIVES-001 : audit des Factories actives
 target: codex
-status: done
+status: superseded
 frozen_by: MALEX « go » 2026-06-27
 
 ### scope
-- Auditer les 19 Factories actives `CURRENT` en lecture seule.
-- Identifier les primitives utiles sans copier les bots autonomes dans MasterFlow.
-- Produire une matrice Factory → primitive → cible Git → risque.
-- Créer le CDC commun des Factories.
-- Créer le routeur de primitives Factory.
-- Créer une queue courte pour D08 visual refs, Masterclass, MasterInventory, Learning Gauges et MasterHelp.
+- Ancienne passe d'audit détaillé, désormais remplacée par `TASK-309`.
+- Garder seulement le principe : identifier des primitives utiles sans copier les bots autonomes dans MasterFlow.
+- Ne plus utiliser cette tâche comme consigne d'audit Git des Factories.
 
-### files créés/modifiés
-- `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`
-- `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`
-- `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`
-- `SUIVI.md`
-- `AGENT_TASKS.md`
-- `MASTERFLOW_ACTION_QUEUE.md`
+### files remplacés
+- Audit détaillé et CDC de bots retirés de la couche active Git par `TASK-309`.
+- `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md` reste comme routeur de primitives MasterFlow uniquement.
 
 ### verification
-- Audit lecture seule des dossiers `/Users/malex/Desktop/FACTORIES/*/CURRENT`.
 - Aucune modification des Factories actives.
-- Aucun runtime, provider, migration ou Drive modifié.
-- `git diff --check` à exécuter avant publication.
+- Aucun runtime, provider, migration ou Drive modifié dans cette ancienne passe.
 
 ### updates
 > 2026-06-27 codex → done local. Primitives communes identifiées ; CDC commun et routeur de primitives créés. Prochaines tranches sûres : `D08-VISUAL-REFS-001`, `MASTERCLASS-SUBJECTS-001`, `MASTERINVENTORY-OCR-001`.
+> 2026-06-28 codex → superseded. MALEX corrige la frontière : pas d'audits détaillés Factories dans Git. Les audits/CDC de bots vivent côté Bureau ; Git garde seulement les primitives utiles.
 
 ---
 
@@ -84,9 +135,9 @@ frozen_by: MALEX « la source de vérité c'est le clone git » 2026-06-27
 - Acter que le repo Git publiable est la vérité opérable.
 - Déclasser legacy, ex-canon Drive et Factories en sources candidates tant qu'elles ne sont pas représentées dans Git.
 - Créer une matrice initiale des familles externes encore à récolter, rejeter, bloquer ou mettre en queue.
-- Inventorier les 19 Factories actives `CURRENT` en statut `primitive_candidate` initial.
+- Corrigé ensuite : ne pas inventorier les Factories actives dans Git ; travailler l'inventaire détaillé côté Bureau.
 - Verrouiller la règle : une Factory est un bot/extraction autonome, jamais une brique à importer telle quelle dans MasterFlow.
-- Identifier les premiers risques restants : D08 gate narratif, Factories actives non toutes arbitrées, UI/source truth transversal.
+- Identifier les premiers risques restants : D08 gate narratif, UI/source truth transversal, primitives Factory à remonter seulement si utiles.
 
 ### files créés/modifiés
 - `docs/source-truth/GIT_OPERABLE_SOURCE_OF_TRUTH_AND_EXTERNAL_PRIMITIVE_HARVEST_AUDIT_2026-06-27.md`

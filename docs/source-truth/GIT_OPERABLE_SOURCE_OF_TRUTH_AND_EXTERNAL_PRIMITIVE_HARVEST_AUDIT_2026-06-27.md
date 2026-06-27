@@ -52,7 +52,7 @@ Une Factory est une extraction autonome pour un bot ou un projet pilote. MasterF
 - les données spécifiques ;
 - les formulations liées à une plateforme précise.
 
-MasterFlow peut reprendre après audit :
+MasterFlow peut reprendre après extraction/arbitrage :
 
 - un protocole de boot ;
 - un verrou de source truth ;
@@ -66,8 +66,8 @@ MasterFlow peut reprendre après audit :
 Pipeline autorisé :
 
 ```txt
-Factory active
--> audit
+Factory active dans /Desktop/FACTORIES
+-> extraction ou audit côté atelier Factories
 -> primitives utiles candidates
 -> arbitrage Git
 -> intégration MasterFlow seulement si pertinente
@@ -86,8 +86,7 @@ Factory active
 |---|---|---|
 | Legacy 14/06/2026 | `/Users/malex/Documents/MASTERFLOW_ARCHIVES/MASTERFLOW_LEGACY_14_06_2026` | archive historique candidate |
 | Drive MasterFlow | `/Users/malex/Library/CloudStorage/GoogleDrive-oursdoriscomlille@gmail.com/Mon Drive/MASTERFLOW` | ex-canon / source lente candidate |
-| Factories actives | `/Users/malex/Desktop/FACTORIES/*/CURRENT` | laboratoires d'usage ; extraction de primitives uniquement |
-| Factories archives | `/Users/malex/Desktop/FACTORIES/*/ARCHIVE` | preuves historiques, non actives |
+| Factories atelier | `/Users/malex/Desktop/FACTORIES/` | laboratoire autonome ; audits détaillés et versions actives restent hors Git |
 | Repo Git | `/Users/malex/Documents/Playground/MASTERFLOW` | vérité opérable |
 
 ## Matrice initiale externe → Git
@@ -95,7 +94,7 @@ Factory active
 | Famille | Sources externes repérées | État Git actuel | Écart restant | Risque | Action recommandée |
 |---|---|---|---|---|---|
 | Dataviz / Graph / Widgets | Legacy `VISUALIZATION_MODE`, `GRAPH_OS`, `WIDGET_COMPOSITION`, Factories Roadtrip/Prof/Batrasia | Audit + contrat portable DATAVIZ-001 créés localement ; graphes/compétences/widgets partiels en runtime | Pas encore publié ; pas encore de primitive runtime commune `visual_datum` / `widget_candidate` | moyen | Publier DATAVIZ-001, puis ouvrir UI-001 avec ces contrats comme garde-fou. |
-| Factories / Backflow | Legacy Factory propagation + Factories CURRENT | D11 intake/backflow existe ; Roadtrip V1.4 patchée hors Git ; reçu local ajouté | Pas de registre Git exhaustif des primitives utiles issues des Factories actives | moyen | Créer un registre de récolte de primitives ; ne jamais importer une Factory entière. |
+| Factories / Backflow | Atelier Factories sur le Bureau | D11 intake/backflow existe ; routeur de primitives Git conservé | Les audits détaillés ne doivent pas être stockés dans Git | moyen | Travailler les Factories côté Bureau ; remonter seulement les primitives utiles. |
 | MasterHelp / Situation Companion | Roadtrip + principes Inventory/Source Truth/Checkpoints | Spec candidate Git locale | Aucun mode runtime ; pas de preuve d'usage hors Roadtrip | moyen | Tester Roadtrip, produire `EXTRACTION MASTERHELP`, puis décider si mode candidat. |
 | DA / images / visual references | Legacy DA orchestration V5, visual boards, Factories DA | DA runtime, visual manifests, assets, storage et seeds existent ; D08 partiel | Route narrative `generate-visual` semble encore bypasser l'action-ready explicite ; OCR refs/boards pas totalement exploitées | élevé | Ouvrir une vague D08 gate audit/fix avant toute génération image ambitieuse. |
 | OCR / Inventory / reference deck | Legacy MasterInventory + Drive D07 + Factory MasterInventory | Inventory, OCR candidates, storage fichier réel et assets privés existent | OCR provider réel / boards / visual reference deck non finalisés ; rester `needs_review` | moyen | Garder provider et export gated ; auditer MasterInventory CURRENT vs D07 Git. |
@@ -132,32 +131,16 @@ Statut : `à auditer/fixer avant génération image réelle`.
 
 ### À faire maintenant
 
-- Publier les docs locales DATAVIZ-001 + Roadtrip receipt dans GitHub.
-- Créer un registre Git des sources externes actives à auditer.
+- Garder les audits détaillés Factories côté Bureau.
+- Ne publier dans Git que le pont Factory → MasterFlow et les primitives validées.
 - Ouvrir une tâche D08 gate pour la route narrative `generate-visual`.
 
 ### À mettre en queue
 
-- Auditer chaque Factory active CURRENT contre Git, uniquement pour récolter des primitives utiles :
-  - BATRASIA ;
-  - ESPRIMED_LEARNING ;
-  - GESTION_PROJET ;
-  - HELPLAB ;
-  - ISCOM_JPO ;
-  - LEARNING_MIRROR ;
-  - MASTERCLASS ;
-  - MASTERFLEX_COACH ;
-  - MASTERINVENTORY ;
-  - MASTERSCORE ;
-  - NICOK ;
-  - OURS_DOR_BADGE_FACTORY ;
-  - OURS_DOR_FACTORY ;
-  - PROF_KRAPU ;
-  - REDACTION_SEO ;
-  - STAND_UP ;
-  - TALENTS_CREATIFS ;
-  - ROADTRIP_MOTO.
-- Classer chaque primitive : `already_in_git`, `primitive_candidate`, `runtime_gap`, `blocked`, `rejected`.
+- Quand une Factory révèle une idée utile, produire une extraction courte :
+  `source -> primitive -> cible MasterFlow -> risque -> statut`.
+- Classer seulement la primitive, pas la Factory complète :
+  `already_in_git`, `primitive_candidate`, `runtime_gap`, `blocked`, `rejected`.
 
 ### À faire quand tokens disponibles
 
@@ -174,4 +157,5 @@ Statut : `à auditer/fixer avant génération image réelle`.
 
 ## Prochaine action recommandée
 
-Publier cette doctrine Git + la vague DATAVIZ-001, puis lancer une vague d'audit `FACTORY-PRIMITIVES-001` pour transformer les Factories actives en lignes de récolte de primitives, sans importer les bots tels quels.
+Ne plus lancer de vague d'audit exhaustif des Factories dans Git. Travailler les Factories dans
+`/Users/malex/Desktop/FACTORIES/`, puis remonter uniquement les primitives vraiment utiles au logiciel.
