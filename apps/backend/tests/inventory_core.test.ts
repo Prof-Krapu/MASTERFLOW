@@ -11,6 +11,7 @@ import {
   getInventoryItem,
   ingestInventoryOcrCandidates,
   listInventoryItems,
+  scanInventoryPhoto,
   validateInventoryItem,
 } from '../src/services/inventory.ts';
 
@@ -185,5 +186,25 @@ describe('PR-INV-1 — Inventory Core', () => {
     expect(listInventoryItems(participant, {project_id: projectId})).not.toContainEqual(
       expect.objectContaining({item_id: firstItem.item_id}),
     );
+  });
+});
+
+describe('photo scan', () => {
+  it('crée des items à partir d’un scan photo', () => {
+    const items = scanInventoryPhoto(owner, {
+      image_data: 'base64-fake-image-data',
+      image_mime: 'image/jpeg',
+      project_scope: owner.id,
+    });
+    expect(items.length).toBeGreaterThanOrEqual(1);
+    expect(items[0]?.item_status).toBe('detected');
+  });
+
+  it('sans project_id, un outsider peut scanner (scope personnel)', () => {
+    const items = scanInventoryPhoto(outsider, {
+      image_data: 'data',
+      project_scope: outsider.id,
+    });
+    expect(items.length).toBeGreaterThanOrEqual(1);
   });
 });

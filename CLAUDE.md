@@ -26,10 +26,12 @@ Avant toute reprise de travail, toute réponse de coordination ou toute modifica
 0bis. Si `gh` est installé et connecté, vérifier aussi GitHub avec `gh auth status`,
    `gh repo view Prof-Krapu/MASTERFLOW` et le SHA de `main`. Si `gh` n'est pas connecté, le dire
    explicitement au lieu de prétendre que le check GitHub est fait.
-1. `SUIVI.md`
-2. `SYNC_THREAD_MALEX_VINCENT.md`
-3. `INBOX_VINCENT.md`
-4. `INBOX_MALEX.md` si présent
+0. `AGENT_TASKS.md` — board des tâches en cours entre agents
+1. `CLAUDE_LOG.md` — journal chronologique des actions Claude/Codex
+2. `SUIVI.md`
+3. `SYNC_THREAD_MALEX_VINCENT.md`
+4. `INBOX_VINCENT.md`
+5. `INBOX_MALEX.md` si présent
 
 Chaque réponse de coordination doit inclure mentalement ou explicitement un `SYNC_PROOF` :
 branche locale, `HEAD`, `origin/main`, `github_main` si disponible, delta `HEAD...origin/main`,

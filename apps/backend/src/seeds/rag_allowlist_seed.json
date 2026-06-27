@@ -1,0 +1,42 @@
+[
+  {
+    "id": "seed-rag-kernel-authority",
+    "resource_id": "kernel_authority_contract",
+    "resource_path": "KERNEL_AUTHORITY_AND_ROUTING_CONTRACT.md",
+    "resource_class": "CANDIDATE_HARD_RULE",
+    "allowed_uses": ["kernel routing", "authority resolution", "image pipeline policy", "factory policy"],
+    "citation_required": true
+  },
+  {
+    "id": "seed-rag-personal-canon",
+    "resource_id": "personal_canon_pipeline",
+    "resource_path": "PERSONAL_CANON_AND_LORE_PIPELINE.md",
+    "resource_class": "CANDIDATE_HARD_RULE",
+    "allowed_uses": ["personal canon onboarding", "photo intake policy", "character lore compilation", "validated reference learning"],
+    "citation_required": true
+  },
+  {
+    "id": "seed-rag-capability-cards",
+    "resource_id": "kernel_capability_cards",
+    "resource_path": "capabilities/CAPABILITY_CARDS.md",
+    "resource_class": "CANDIDATE_ROUTING_INDEX",
+    "allowed_uses": ["capability discovery", "owner resolution"],
+    "citation_required": true
+  },
+  {
+    "id": "seed-rag-kernel-schemas",
+    "resource_id": "kernel_schemas",
+    "resource_path": "schemas/KERNEL_SCHEMAS.json",
+    "resource_class": "CANDIDATE_MACHINE_SCHEMA",
+    "allowed_uses": ["payload compilation", "schema validation", "backend handoff"],
+    "citation_required": true
+  },
+  {
+    "id": "seed-rag-release-manifest",
+    "resource_id": "release_manifest",
+    "resource_path": "RELEASE_MANIFEST.json",
+    "resource_class": "CANDIDATE_SOURCE_LOCK",
+    "allowed_uses": ["source provenance", "source hash verification", "capability version resolution"],
+    "citation_required": true
+  }
+]

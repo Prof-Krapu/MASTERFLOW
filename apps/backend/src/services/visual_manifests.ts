@@ -17,6 +17,7 @@ import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
+import {syncValidationInboxItemForVisualManifest} from './validation_inbox.ts';
 
 interface VisualReferenceRow {
   id: string; owner_id: string; project_id: string | null; project_scope: string; label: string;
@@ -30,6 +31,7 @@ interface VisualManifestRow {
   da_root_ref: string | null; active_layers_json: string; filters_json: string; output_family: VisualManifest['output_family'];
   output_template: string; source_truth_summary: string; reference_ids_json: string; status: VisualManifest['status'];
   created_by: string; created_at: number; updated_at: number;
+  workbench_id: string | null; node_id: string | null;
 }
 
 function requireTeacher(actor: AuthUser): void {
@@ -82,6 +84,7 @@ function manifestDto(row: VisualManifestRow): VisualManifest {
     active_layers: jsonArray(row.active_layers_json), filters: jsonArray(row.filters_json),
     output_family: row.output_family, output_template: row.output_template, source_truth_summary: row.source_truth_summary,
     reference_ids: jsonArray(row.reference_ids_json), status: row.status, action_ready_report: report(row),
+    workbench_id: row.workbench_id, node_id: row.node_id,
     created_by: row.created_by, created_at: row.created_at, updated_at: row.updated_at,
   });
 }
@@ -128,20 +131,53 @@ export function createVisualManifest(actor: AuthUser, input: CreateVisualManifes
   if (references.some((reference) => !reference || !canAccess(actor, reference) || reference.project_id !== (request.project_id ?? null))) throw new Error('visual_reference_not_found');
   const now = Date.now(); const id = uuid(); const status = manifestStatus(request);
   getDb().prepare(`
-    INSERT INTO visual_manifests VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    INSERT INTO visual_manifests VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(id, actor.id, request.project_id ?? null, scope, request.request_title, request.intent, request.privacy_scope,
     JSON.stringify(request.canon_entity_refs), request.da_root_ref ?? null, JSON.stringify(request.active_layers), JSON.stringify(request.filters),
-    request.output_family, request.output_template, request.source_truth_summary, JSON.stringify(request.reference_ids), status, actor.id, now, now);
+    request.output_family, request.output_template, request.source_truth_summary, JSON.stringify(request.reference_ids), status, actor.id, now, now,
+    request.workbench_id ?? null, request.node_id ?? null);
   audit({event_type: 'visual_manifest.created', user_id: actor.id, scope, detail: {manifest_id: id, status, provider_call: false, generation_blocked: true}});
   return manifestDto(getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow);
 }
-export function listVisualManifests(actor: AuthUser, projectId?: string): VisualManifest[] {
+export function listVisualManifests(actor: AuthUser, params?: {projectId?: string; workbenchId?: string; nodeId?: string}): VisualManifest[] {
   requireTeacher(actor);
-  const rows = projectId
-    ? getDb().prepare('SELECT * FROM visual_manifests WHERE project_id=? ORDER BY updated_at DESC').all(projectId) as VisualManifestRow[]
-    : getDb().prepare('SELECT * FROM visual_manifests WHERE owner_id=? AND project_id IS NULL ORDER BY updated_at DESC').all(actor.id) as VisualManifestRow[];
+  const {projectId, workbenchId, nodeId} = params ?? {};
+  let sql = 'SELECT * FROM visual_manifests WHERE 1=1';
+  const binds: unknown[] = [];
+  if (projectId) { sql += ' AND project_id=?'; binds.push(projectId); }
+  else { sql += ' AND owner_id=? AND project_id IS NULL'; binds.push(actor.id); }
+  if (workbenchId) { sql += ' AND workbench_id=?'; binds.push(workbenchId); }
+  if (nodeId) { sql += ' AND node_id=?'; binds.push(nodeId); }
+  sql += ' ORDER BY updated_at DESC';
+  const rows = getDb().prepare(sql).all(...binds) as VisualManifestRow[];
   return rows.filter((row) => canAccess(actor, row)).map(manifestDto);
 }
+export function approveVisualManifest(actor: AuthUser, id: string): VisualManifest {
+  requireTeacher(actor);
+  const row = getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow | undefined;
+  if (!row) throw new Error('visual_manifest_not_found');
+  assertAccess(actor, row, 'visual_manifest_not_found');
+  const now = Date.now();
+  getDb().prepare('UPDATE visual_manifests SET status=?, updated_at=? WHERE id=?').run('approved', now, id);
+  audit({event_type: 'visual_manifest.approved', user_id: actor.id, detail: {manifest_id: id}});
+  const manifest = manifestDto(getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow);
+  syncValidationInboxItemForVisualManifest(manifest);
+  return manifest;
+}
+
+export function rejectVisualManifest(actor: AuthUser, id: string): VisualManifest {
+  requireTeacher(actor);
+  const row = getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow | undefined;
+  if (!row) throw new Error('visual_manifest_not_found');
+  assertAccess(actor, row, 'visual_manifest_not_found');
+  const now = Date.now();
+  getDb().prepare('UPDATE visual_manifests SET status=?, updated_at=? WHERE id=?').run('rejected', now, id);
+  audit({event_type: 'visual_manifest.rejected', user_id: actor.id, detail: {manifest_id: id}});
+  const manifest = manifestDto(getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow);
+  syncValidationInboxItemForVisualManifest(manifest);
+  return manifest;
+}
+
 export function getVisualManifest(actor: AuthUser, id: string): VisualManifest {
   requireTeacher(actor);
   const row = getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow | undefined;

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "seed-da-layer-safety",
+    "layer_id": "safety_privacy",
+    "purpose": "Safety and privacy constraints applied globally.",
+    "priority_order": 0,
+    "layer_data_json": "{\"summary\": \"Contraintes globales de sécurité et de confidentialité appliquées à l'ensemble du pipeline.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/safety_privacy\"}"
+  },
+  {
+    "id": "seed-da-layer-canon-entity",
+    "layer_id": "canon_entity",
+    "purpose": "Entity canon resolution and locking.",
+    "priority_order": 1,
+    "layer_data_json": "{\"summary\": \"Résolution et verrouillage du canon des entités référencées.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/canon_entity\"}"
+  },
+  {
+    "id": "seed-da-layer-masterflow-root",
+    "layer_id": "masterflow_da_root",
+    "purpose": "Root DA for MASTERFLOW_NATIVE mode. Cannot be modified by event/filter/provider layers.",
+    "priority_order": 2,
+    "layer_data_json": "{\"summary\": \"Racine de la direction artistique en mode natif MasterFlow. Non modifiable par les couches inférieures.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/masterflow_da_root\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-personal",
+    "layer_id": "personal_da_layer",
+    "purpose": "Assouplir la DA autour du canon personnel validé. Palette preference, props, attitude, graphic intensity, wardrobe culture.",
+    "priority_order": 3,
+    "layer_data_json": "{\"summary\": \"Assouplissement de la DA autour du canon personnel validé : palette, accessoires, attitude, intensité graphique, culture vestimentaire.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/personal_da_layer\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-factory",
+    "layer_id": "factory_da_layer",
+    "purpose": "Appliquer le dialecte local d'une factory. Overlay manifest required.",
+    "priority_order": 4,
+    "layer_data_json": "{\"summary\": \"Application du dialecte local d'une factory via overlay manifest.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/factory_da_layer\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-event-ours-dor",
+    "layer_id": "event_layer_ours_dor",
+    "purpose": "Concours, Incubator, typo, badges, tension événementielle.",
+    "priority_order": 5,
+    "layer_data_json": "{\"summary\": \"Habillage et contraintes visuelles des événements Ours d'Or : concours, incubateur, typographie, badges, tension événementielle.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/event_layer_ours_dor\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-prof-krapu",
+    "layer_id": "prof_krapu_layer",
+    "purpose": "Science-pulp, pédagogie logique, Molékids, dataviz.",
+    "priority_order": 6,
+    "layer_data_json": "{\"summary\": \"Univers science-pulp et pédagogie logique : Molékids, dataviz, ton professoral.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/prof_krapu_layer\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-batrasia",
+    "layer_id": "batrasia_layer",
+    "purpose": "Story world / noir-blanc / lecture / anti-spoil.",
+    "priority_order": 7,
+    "layer_data_json": "{\"summary\": \"Univers narratif Batrasia : style noir-blanc, lecture, anti-spoil.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/batrasia_layer\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-nicok",
+    "layer_id": "nicok_independent_layer",
+    "purpose": "Travail artiste/produit hors DA MasterFlow si demandé. Remplace masterflow_visual_da_root.",
+    "priority_order": 8,
+    "layer_data_json": "{\"summary\": \"Travail artiste ou produit indépendant de la DA MasterFlow, sur demande.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/nicok_independent_layer\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-filters",
+    "layer_id": "filters",
+    "purpose": "Filter discipline overlay.",
+    "priority_order": 9,
+    "layer_data_json": "{\"summary\": \"Surcharge de discipline par filtres appliqués au rendu.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/filters\", \"prompt_template_hint\": \"Un {character} dans {setting}, style {style_ref}\"}"
+  },
+  {
+    "id": "seed-da-layer-output-template",
+    "layer_id": "output_template",
+    "purpose": "Output template constraints.",
+    "priority_order": 10,
+    "layer_data_json": "{\"summary\": \"Contraintes du gabarit de sortie pour la génération de contenu.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/output_template\"}"
+  },
+  {
+    "id": "seed-da-layer-provider-adapter",
+    "layer_id": "provider_adapter",
+    "purpose": "Provider-specific adapter layer.",
+    "priority_order": 11,
+    "layer_data_json": "{\"summary\": \"Couche d'adaptation spécifique au fournisseur de service de génération.\", \"source_ref\": \"/Drive/MASTERFLOW/DA/provider_adapter\"}"
+  }
+]

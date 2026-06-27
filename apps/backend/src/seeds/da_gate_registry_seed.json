@@ -1,0 +1,156 @@
+[
+  {
+    "id": "seed-da-gate-mode-resolved",
+    "gate_id": "da_mode_resolved",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "every_image_request",
+    "requires": ["mode: MASTERFLOW_NATIVE | INDEPENDENT_ART_DIRECTION"],
+    "blocks_if": ["mode_missing", "independent_art_direction_without_declared_da"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Vérifie que le mode DA est déclaré avant toute génération\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/da_mode_resolved\"}"
+  },
+  {
+    "id": "seed-da-gate-canon-entity",
+    "gate_id": "canon_entity_lock",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "recurring_or_named_entity",
+    "requires": ["entity_id", "canon_version_id_or_candidate_state"],
+    "blocks_if": ["ambiguous_entity", "missing_locked_canon_for_recurring_entity"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Verrouille les entités récurrentes à leur version canon\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/canon_entity_lock\"}"
+  },
+  {
+    "id": "seed-da-gate-root-required",
+    "gate_id": "da_root_required",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "MASTERFLOW_NATIVE",
+    "requires": ["masterflow_da_root_version"],
+    "blocks_if": ["event_layer_used_as_root", "factory_layer_used_as_root"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Impose une racine DA MasterFlow native\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/da_root_required\"}"
+  },
+  {
+    "id": "seed-da-gate-ref-roles",
+    "gate_id": "reference_roles_resolved",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "any_reference_present",
+    "requires": ["role", "status", "allowed_use"],
+    "blocks_if": ["unclassified_reference", "rejected_reference_positive_use", "poster_energy_used_as_morphology"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Classe chaque référence par rôle/statut avant usage\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/reference_roles_resolved\"}"
+  },
+  {
+    "id": "seed-da-gate-provider-ref",
+    "gate_id": "provider_reference_handoff_truth",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "any_mandatory_reference",
+    "requires": ["refs_actually_attached_or_declared_missing"],
+    "blocks_if": ["mandatory_ref_missing_without_decision", "adapter_claims_unsupported_ref"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Vérifie que les références obligatoires sont attachées ou déclarées absentes\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/provider_reference_handoff_truth\"}"
+  },
+  {
+    "id": "seed-da-gate-char-calibration",
+    "gate_id": "single_character_calibration",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "output_goal == canon_calibration",
+    "requires": ["character_count == 1", "image_count == 1", "no_text", "simple_background", "low_or_medium_resolution", "transparency == false"],
+    "blocks_if": ["multi_character_scene", "contact_sheet", "final_asset_request", "transparent_asset_request", "text_in_image"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Isole un personnage pour calibration canon pure\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/single_character_calibration\"}"
+  },
+  {
+    "id": "seed-da-gate-adult-cartoon",
+    "gate_id": "adult_cartoon_not_layette",
+    "phase": "post_generation",
+    "severity": "block",
+    "activation": "character_or_persona_output",
+    "requires": [],
+    "blocks_if": ["childlike_age_read", "chibi_dwarf_body", "generic_cute_mascot", "disney_family_animation_read"],
+    "retake_lever": "restore young/adult cartoon proportions, reduce roundness, increase face architecture and acting",
+    "gate_data_json": "{\"summary\": \"Bloque les dérives layette/enfantin sur les persos adultes\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/adult_cartoon_not_layette\", \"retake_hint\": \"Restaurer proportions adultes, réduire rondeur, augmenter architecture faciale\"}"
+  },
+  {
+    "id": "seed-da-gate-anti-realism",
+    "gate_id": "anti_realism",
+    "phase": "post_generation",
+    "severity": "block",
+    "activation": "character_or_persona_output",
+    "requires": [],
+    "blocks_if": ["photoreal_face", "semi_realistic_concept_art_body", "realistic_fabric_rendering", "cinematic_skin_or_fur_lighting"],
+    "retake_lever": "simplify planes, increase ink and wash, reduce photographic light and fabric simulation",
+    "gate_data_json": "{\"summary\": \"Maintient le style cartoon non-réaliste\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/anti_realism\", \"retake_hint\": \"Simplifier les plans, augmenter encre et lavis, réduire lumière photographique\"}"
+  },
+  {
+    "id": "seed-da-gate-anti-kechua",
+    "gate_id": "anti_kechua_outdoor",
+    "phase": "post_generation",
+    "severity": "block",
+    "activation": "character_or_persona_output",
+    "requires": [],
+    "blocks_if": ["softshell_jacket", "trekking_shoes", "trail_soles", "technical_seams", "expedition_color_blocking", "beige_outdoor_utility_fit"],
+    "retake_lever": "replace outdoor technical cues with actual persona clothing culture and simpler cartoon shapes",
+    "gate_data_json": "{\"summary\": \"Remplace les cues outdoor/randonnée par la culture vestimentaire du personnage\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/anti_kechua_outdoor\", \"retake_hint\": \"Remplacer les vêtements techniques outdoor par la tenue canon du persona\"}"
+  },
+  {
+    "id": "seed-da-gate-acting-silhouette",
+    "gate_id": "acting_and_silhouette",
+    "phase": "post_generation",
+    "severity": "validation_required",
+    "activation": "character_or_persona_output",
+    "requires": ["readable_silhouette", "clear_gaze_or_expression", "active_idle_or_action_intent"],
+    "blocks_if": [],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Valide la lisibilité de la silhouette et l'intention de jeu\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/acting_and_silhouette\"}"
+  },
+  {
+    "id": "seed-da-gate-manual-treatment",
+    "gate_id": "manual_treatment",
+    "phase": "post_generation",
+    "severity": "validation_required",
+    "activation": "MASTERFLOW_NATIVE",
+    "requires": ["line_energy", "manual_imperfection", "light_wash_or_marker_feel"],
+    "blocks_if": [],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Exige un rendu manuel (trait vivant, imperfections, lavis)\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/manual_treatment\"}"
+  },
+  {
+    "id": "seed-da-gate-scene-isolation",
+    "gate_id": "scene_isolation",
+    "phase": "preflight",
+    "severity": "block",
+    "activation": "new_visual_request",
+    "requires": ["inherit_previous_scene == false", "retained_layers_declared", "cleared_layers_declared"],
+    "blocks_if": ["previous_failed_image_used_as_positive_reference", "scene_delta_leaks_into_new_calibration"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Isole chaque scène pour éviter les fuites entre générations\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/scene_isolation\"}"
+  },
+  {
+    "id": "seed-da-gate-canon-promotion",
+    "gate_id": "canon_promotion",
+    "phase": "post_generation",
+    "severity": "block",
+    "activation": "candidate_output",
+    "requires": ["owner_decision_for_canon_lock", "explicit_reference_role_for_any_promotion"],
+    "blocks_if": ["auto_canonize", "reference_pack_update_without_validation"],
+    "retake_lever": null,
+    "gate_data_json": "{\"summary\": \"Empêche la canonisation automatique sans décision explicite du owner\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/canon_promotion\"}"
+  },
+  {
+    "id": "seed-da-gate-text-risk",
+    "gate_id": "text_risk",
+    "phase": "preflight",
+    "severity": "warning",
+    "activation": "text_requested_or_output_template_has_text",
+    "requires": [],
+    "blocks_if": [],
+    "retake_lever": "separate image generation from typography/layout workflow",
+    "gate_data_json": "{\"summary\": \"Signale les risques de texte en image et sépare typographie de génération\", \"source_ref\": \"/Drive/MASTERFLOW/DA/gates/text_risk\"}"
+  }
+]

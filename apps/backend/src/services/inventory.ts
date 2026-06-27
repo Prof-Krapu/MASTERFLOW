@@ -14,6 +14,7 @@ import {
   ListInventoryItemsRequestSchema,
   ResolveCollectionMatchRequestSchema,
   MatchInventoryProjectNeedRequestSchema,
+  ScanInventoryPhotoRequestSchema,
   SetCollectionCompletionRequestSchema,
   ROLE_RANK,
   type CreateInventoryCollectionRequest,
@@ -32,6 +33,7 @@ import {
   type ProjectMemberRole,
   type ResolveCollectionMatchRequest,
   type MatchInventoryProjectNeedRequest,
+  type ScanInventoryPhotoRequest,
   type SetCollectionCompletionRequest,
 } from '@masterflow/shared';
 
@@ -777,6 +779,49 @@ export function ingestInventoryOcrCandidates(
     user_id: actor.id,
     scope: projectId ?? actor.id,
     detail: {job_id: job.job_id, item_count: items.length, project_id: projectId},
+  });
+  return items;
+}
+
+export function scanInventoryPhoto(
+  actor: AuthUser,
+  input: ScanInventoryPhotoRequest,
+): InventoryItem[] {
+  const request = ScanInventoryPhotoRequestSchema.parse(input);
+  const projectId = request.project_id ?? null;
+  if (projectId) {
+    const decision = decideScopedPermission({
+      actor,
+      projectId,
+      minimumProjectRole: 'editor',
+    });
+    if (!decision.allowed) throw new Error('scope_denied');
+  }
+
+  const mockLabels = [
+    {label: 'Document scanné', type: 'book' as const},
+    {label: 'Photo - page 1', type: 'archive' as const},
+    {label: 'Illustration', type: 'custom' as const},
+  ];
+  const items = mockLabels.map((m) =>
+    createInventoryItem(actor, {
+      project_id: projectId,
+      collection_id: request.collection_id ?? null,
+      type: m.type,
+      label: `${m.label} (${new Date().toISOString().slice(0, 10)})`,
+      item_status: 'detected',
+      quantity: 1,
+      usage_tags: ['ocr_candidate', 'photo_scan'],
+      source_refs: [`scan:${actor.id}:${Date.now()}`],
+      visibility_scope: projectId ? 'project' : 'private',
+    }),
+  );
+
+  audit({
+    event_type: 'inventory.photo_scanned',
+    user_id: actor.id,
+    scope: projectId ?? actor.id,
+    detail: {item_count: items.length, project_id: projectId, notes: request.notes ?? null},
   });
   return items;
 }

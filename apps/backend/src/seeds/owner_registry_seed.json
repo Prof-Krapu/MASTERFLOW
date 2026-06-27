@@ -1,0 +1,107 @@
+[
+  {
+    "id": "owner-masterflow-system",
+    "owner_id": "masterflow-system-001",
+    "display_name": "MasterFlow System",
+    "scope": "system",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-profkrapu",
+    "owner_id": "profkrapu-001",
+    "display_name": "ProfKrapu",
+    "scope": "persona",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-masterflex",
+    "owner_id": "masterflex-001",
+    "display_name": "MasterFlex",
+    "scope": "persona",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-batrasia",
+    "owner_id": "batrasia",
+    "display_name": "BATRASIA — Chroniques de l'Équilibre",
+    "scope": "factory",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-profkrapu-factory",
+    "owner_id": "profkrapu_factory",
+    "display_name": "ProfKrapu Factory",
+    "scope": "factory",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-ours-dor",
+    "owner_id": "ours_dor",
+    "display_name": "Ours d'Or",
+    "scope": "factory",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-vincent",
+    "owner_id": "vincent",
+    "display_name": "Vincent (Godmode)",
+    "scope": "user",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-malex",
+    "owner_id": "malex",
+    "display_name": "MALEX",
+    "scope": "user",
+    "owner_data_json": "{}"
+  },
+  {
+    "id": "owner-masterflow-architecture",
+    "owner_id": "masterflow_architecture",
+    "display_name": "Masterflow Architecture",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"runtime resolution and usage routing\", \"canon_ref\": \"02_KERNEL/MASTERFLOW_KERNEL_MANIFEST.md\"}"
+  },
+  {
+    "id": "owner-authority-kernel",
+    "owner_id": "authority_kernel",
+    "display_name": "Authority Kernel",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"source hierarchy and confidence\", \"canon_ref\": \"02_KERNEL/AUTHORITY_AND_SOURCE_CONFIDENCE.md\"}"
+  },
+  {
+    "id": "owner-permission-engine",
+    "owner_id": "permission_engine",
+    "display_name": "Permission Engine",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"roles, scopes, access, privacy, validation locks\", \"canon_ref\": \"02_KERNEL/PERMISSIONS_PRIVACY_AND_VALIDATION_GATES.md\"}"
+  },
+  {
+    "id": "owner-action-ready",
+    "owner_id": "action_ready",
+    "display_name": "Action Ready",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"preflight, validation inbox, action lifecycle\", \"canon_ref\": \"02_KERNEL/ACTION_PREFLIGHT_JOBS_AND_OBSERVABILITY.md\"}"
+  },
+  {
+    "id": "owner-session-engine",
+    "owner_id": "session_engine",
+    "display_name": "Session Engine",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"bootstrap, context pack, user loadout\", \"canon_ref\": \"02_KERNEL/RUNTIME_CONTEXT_AND_LOADOUT.md\"}"
+  },
+  {
+    "id": "owner-queue-engine",
+    "owner_id": "queue_engine",
+    "display_name": "Queue Engine",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"jobs, runners, background execution visibility\", \"canon_ref\": \"02_KERNEL/ACTION_PREFLIGHT_JOBS_AND_OBSERVABILITY.md\"}"
+  },
+  {
+    "id": "owner-deployment-bridge",
+    "owner_id": "deployment_bridge",
+    "display_name": "Deployment Bridge",
+    "scope": "system",
+    "owner_data_json": "{\"original_scope\": \"GitHub implementation truth via snapshot and inbox only\", \"canon_ref\": \"08_ROADMAP/to_create\"}"
+  }
+]

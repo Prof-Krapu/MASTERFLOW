@@ -1,0 +1,2187 @@
+{
+  "version": "2025-2026",
+  "cohorts": [
+    {
+      "id": "cohort-iscom-2026-1a",
+      "tag": "1A",
+      "title": "ISCOM 2025-2026 — 1A",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-ait-bouhou-norah-louisa",
+          "display_name": "AIT BOUHOU Norah-Louisa",
+          "slug": "ait-bouhou-norah-louisa",
+          "legacy_id": "STU-2026-001"
+        },
+        {
+          "id": "stu-bengoa-maria-clara",
+          "display_name": "BENGOA Maria Clara",
+          "slug": "bengoa-maria-clara",
+          "legacy_id": "STU-2026-002"
+        },
+        {
+          "id": "stu-berthelin-eleonore",
+          "display_name": "BERTHELIN Eleonore",
+          "slug": "berthelin-eleonore",
+          "legacy_id": "STU-2026-003"
+        },
+        {
+          "id": "stu-biervoye-leonie",
+          "display_name": "BIERVOYE Léonie",
+          "slug": "biervoye-leonie",
+          "legacy_id": "STU-2026-004"
+        },
+        {
+          "id": "stu-brunet-noemie",
+          "display_name": "BRUNET Noémie",
+          "slug": "brunet-noemie",
+          "legacy_id": "STU-2026-005"
+        },
+        {
+          "id": "stu-buchet-jade",
+          "display_name": "BUCHET Jade",
+          "slug": "buchet-jade",
+          "legacy_id": "STU-2026-006"
+        },
+        {
+          "id": "stu-chedeville-loanne",
+          "display_name": "CHEDEVILLE Loanne",
+          "slug": "chedeville-loanne",
+          "legacy_id": "STU-2026-007"
+        },
+        {
+          "id": "stu-d-halluin-zoe",
+          "display_name": "D HALLUIN Zoé",
+          "slug": "d-halluin-zoe",
+          "legacy_id": "STU-2026-008"
+        },
+        {
+          "id": "stu-dehaudt-elea",
+          "display_name": "DEHAUDT Elea",
+          "slug": "dehaudt-elea",
+          "legacy_id": "STU-2026-009"
+        },
+        {
+          "id": "stu-evelette-noemie",
+          "display_name": "EVELETTE Noëmie",
+          "slug": "evelette-noemie",
+          "legacy_id": "STU-2026-010"
+        },
+        {
+          "id": "stu-felan-elsa",
+          "display_name": "FELAN Elsa",
+          "slug": "felan-elsa",
+          "legacy_id": "STU-2026-011"
+        },
+        {
+          "id": "stu-lamoly-lilwen",
+          "display_name": "LAMOLY Lilwen",
+          "slug": "lamoly-lilwen",
+          "legacy_id": "STU-2026-012"
+        },
+        {
+          "id": "stu-leclere-eloise",
+          "display_name": "LECLERE Eloïse",
+          "slug": "leclere-eloise",
+          "legacy_id": "STU-2026-013"
+        },
+        {
+          "id": "stu-lecoustre-achille",
+          "display_name": "LECOUSTRE Achille",
+          "slug": "lecoustre-achille",
+          "legacy_id": "STU-2026-014"
+        },
+        {
+          "id": "stu-leupe-romane",
+          "display_name": "LEUPE Romane",
+          "slug": "leupe-romane",
+          "legacy_id": "STU-2026-015"
+        },
+        {
+          "id": "stu-loor-clemence",
+          "display_name": "LOOR Clémence",
+          "slug": "loor-clemence",
+          "legacy_id": "STU-2026-016"
+        },
+        {
+          "id": "stu-marcais-juliette",
+          "display_name": "MARCAIS Juliette",
+          "slug": "marcais-juliette",
+          "legacy_id": "STU-2026-017"
+        },
+        {
+          "id": "stu-marzat-elina",
+          "display_name": "MARZAT Elina",
+          "slug": "marzat-elina",
+          "legacy_id": "STU-2026-018"
+        },
+        {
+          "id": "stu-ngamgo-fomena-tatiana-stella",
+          "display_name": "NGAMGO FOMENA Tatiana Stella",
+          "slug": "ngamgo-fomena-tatiana-stella",
+          "legacy_id": "STU-2026-019"
+        },
+        {
+          "id": "stu-parain-sixtine",
+          "display_name": "PARAIN Sixtine",
+          "slug": "parain-sixtine",
+          "legacy_id": "STU-2026-020"
+        },
+        {
+          "id": "stu-pessiot-nolime",
+          "display_name": "PESSIOT Nolimé",
+          "slug": "pessiot-nolime",
+          "legacy_id": "STU-2026-021"
+        },
+        {
+          "id": "stu-poulet-pluvinet-gonzague",
+          "display_name": "POULET-PLUVINET Gonzague",
+          "slug": "poulet-pluvinet-gonzague",
+          "legacy_id": "STU-2026-022"
+        },
+        {
+          "id": "stu-rabouin-charlotte",
+          "display_name": "RABOUIN Charlotte",
+          "slug": "rabouin-charlotte",
+          "legacy_id": "STU-2026-023"
+        },
+        {
+          "id": "stu-rufin-lena",
+          "display_name": "RUFIN Léna",
+          "slug": "rufin-lena",
+          "legacy_id": "STU-2026-024"
+        },
+        {
+          "id": "stu-sanchez-clara",
+          "display_name": "SANCHEZ Clara",
+          "slug": "sanchez-clara",
+          "legacy_id": "STU-2026-025"
+        },
+        {
+          "id": "stu-tas-lilou",
+          "display_name": "TAS Lilou",
+          "slug": "tas-lilou",
+          "legacy_id": "STU-2026-026"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-1b",
+      "tag": "1B",
+      "title": "ISCOM 2025-2026 — 1B",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-bacart-pierre",
+          "display_name": "BACART Pierre",
+          "slug": "bacart-pierre",
+          "legacy_id": "STU-2026-027"
+        },
+        {
+          "id": "stu-benard-mignon-chloe",
+          "display_name": "BENARD MIGNON Chloé",
+          "slug": "benard-mignon-chloe",
+          "legacy_id": "STU-2026-028"
+        },
+        {
+          "id": "stu-brancato-elia",
+          "display_name": "BRANCATO Elia",
+          "slug": "brancato-elia",
+          "legacy_id": "STU-2026-029"
+        },
+        {
+          "id": "stu-caron-satine",
+          "display_name": "CARON Satine",
+          "slug": "caron-satine",
+          "legacy_id": "STU-2026-030"
+        },
+        {
+          "id": "stu-champenois-eva",
+          "display_name": "CHAMPENOIS Eva",
+          "slug": "champenois-eva",
+          "legacy_id": "STU-2026-031"
+        },
+        {
+          "id": "stu-collet-clara",
+          "display_name": "COLLET Clara",
+          "slug": "collet-clara",
+          "legacy_id": "STU-2026-032"
+        },
+        {
+          "id": "stu-debucois-shaina",
+          "display_name": "DEBUCOIS Shaïna",
+          "slug": "debucois-shaina",
+          "legacy_id": "STU-2026-033"
+        },
+        {
+          "id": "stu-dubois-manon",
+          "display_name": "DUBOIS Manon",
+          "slug": "dubois-manon",
+          "legacy_id": "STU-2026-034"
+        },
+        {
+          "id": "stu-duflos-tommy",
+          "display_name": "DUFLOS Tommy",
+          "slug": "duflos-tommy",
+          "legacy_id": "STU-2026-035"
+        },
+        {
+          "id": "stu-fontaine-martin",
+          "display_name": "FONTAINE Martin",
+          "slug": "fontaine-martin",
+          "legacy_id": "STU-2026-036"
+        },
+        {
+          "id": "stu-fosse-romane",
+          "display_name": "FOSSE Romane",
+          "slug": "fosse-romane",
+          "legacy_id": "STU-2026-037"
+        },
+        {
+          "id": "stu-graf-antoine",
+          "display_name": "GRAF Antoine",
+          "slug": "graf-antoine",
+          "legacy_id": "STU-2026-038"
+        },
+        {
+          "id": "stu-lentremy-charly",
+          "display_name": "LENTREMY Charly",
+          "slug": "lentremy-charly",
+          "legacy_id": "STU-2026-039"
+        },
+        {
+          "id": "stu-leveque-candice",
+          "display_name": "LÉVÊQUE Candice",
+          "slug": "leveque-candice",
+          "legacy_id": "STU-2026-040"
+        },
+        {
+          "id": "stu-m-bembo-mathis",
+          "display_name": "M'BEMBO Mathis",
+          "slug": "m-bembo-mathis",
+          "legacy_id": "STU-2026-041"
+        },
+        {
+          "id": "stu-mabriez-constance",
+          "display_name": "MABRIEZ Constance",
+          "slug": "mabriez-constance",
+          "legacy_id": "STU-2026-042"
+        },
+        {
+          "id": "stu-maliet-siloe",
+          "display_name": "MALIET Siloe",
+          "slug": "maliet-siloe",
+          "legacy_id": "STU-2026-043"
+        },
+        {
+          "id": "stu-marchand-garance",
+          "display_name": "MARCHAND Garance",
+          "slug": "marchand-garance",
+          "legacy_id": "STU-2026-044"
+        },
+        {
+          "id": "stu-mills-elora",
+          "display_name": "MILLS Elora",
+          "slug": "mills-elora",
+          "legacy_id": "STU-2026-045"
+        },
+        {
+          "id": "stu-proffit-clementine",
+          "display_name": "PROFFIT Clémentine",
+          "slug": "proffit-clementine",
+          "legacy_id": "STU-2026-046"
+        },
+        {
+          "id": "stu-seitz-leane",
+          "display_name": "SEITZ Léane",
+          "slug": "seitz-leane",
+          "legacy_id": "STU-2026-047"
+        },
+        {
+          "id": "stu-tabary-gabrielle",
+          "display_name": "TABARY Gabrielle",
+          "slug": "tabary-gabrielle",
+          "legacy_id": "STU-2026-048"
+        },
+        {
+          "id": "stu-tamaloult-evann",
+          "display_name": "TAMALOULT Evann",
+          "slug": "tamaloult-evann",
+          "legacy_id": "STU-2026-049"
+        },
+        {
+          "id": "stu-van-bekkum-maia",
+          "display_name": "VAN BEKKUM Maia",
+          "slug": "van-bekkum-maia",
+          "legacy_id": "STU-2026-050"
+        },
+        {
+          "id": "stu-zampol-aidan",
+          "display_name": "ZAMPOL Aïdan",
+          "slug": "zampol-aidan",
+          "legacy_id": "STU-2026-051"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-1c",
+      "tag": "1C",
+      "title": "ISCOM 2025-2026 — 1C",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-boel-lilou",
+          "display_name": "BOEL Lilou",
+          "slug": "boel-lilou",
+          "legacy_id": "STU-2026-052"
+        },
+        {
+          "id": "stu-boulanghien-lilian",
+          "display_name": "BOULANGHIEN Lilian",
+          "slug": "boulanghien-lilian",
+          "legacy_id": "STU-2026-053"
+        },
+        {
+          "id": "stu-couchot-leanne",
+          "display_name": "COUCHOT Léanne",
+          "slug": "couchot-leanne",
+          "legacy_id": "STU-2026-054"
+        },
+        {
+          "id": "stu-da-silva-janelou",
+          "display_name": "DA SILVA Janelou",
+          "slug": "da-silva-janelou",
+          "legacy_id": "STU-2026-055"
+        },
+        {
+          "id": "stu-de-lauzanne-astrid",
+          "display_name": "DE LAUZANNE Astrid",
+          "slug": "de-lauzanne-astrid",
+          "legacy_id": "STU-2026-056"
+        },
+        {
+          "id": "stu-delorme-jeanne",
+          "display_name": "DELORME Jeanne",
+          "slug": "delorme-jeanne",
+          "legacy_id": "STU-2026-057"
+        },
+        {
+          "id": "stu-druart-fantine",
+          "display_name": "DRUART Fantine",
+          "slug": "druart-fantine",
+          "legacy_id": "STU-2026-058"
+        },
+        {
+          "id": "stu-fortez-lola",
+          "display_name": "FORTEZ Lola",
+          "slug": "fortez-lola",
+          "legacy_id": "STU-2026-059"
+        },
+        {
+          "id": "stu-gourmelen-romane",
+          "display_name": "GOURMELEN Romane",
+          "slug": "gourmelen-romane",
+          "legacy_id": "STU-2026-060"
+        },
+        {
+          "id": "stu-herent-margaux",
+          "display_name": "HERENT Margaux",
+          "slug": "herent-margaux",
+          "legacy_id": "STU-2026-061"
+        },
+        {
+          "id": "stu-hespel-houdayer-lyla",
+          "display_name": "HESPEL HOUDAYER Lyla",
+          "slug": "hespel-houdayer-lyla",
+          "legacy_id": "STU-2026-062"
+        },
+        {
+          "id": "stu-hugon-capucine",
+          "display_name": "HUGON Capucine",
+          "slug": "hugon-capucine",
+          "legacy_id": "STU-2026-063"
+        },
+        {
+          "id": "stu-huysseune-emma",
+          "display_name": "HUYSSEUNE Emma",
+          "slug": "huysseune-emma",
+          "legacy_id": "STU-2026-064"
+        },
+        {
+          "id": "stu-kurylak-carels-romie",
+          "display_name": "KURYLAK CARELS Romie",
+          "slug": "kurylak-carels-romie",
+          "legacy_id": "STU-2026-065"
+        },
+        {
+          "id": "stu-lefebvre-marion",
+          "display_name": "LEFEBVRE Marion",
+          "slug": "lefebvre-marion",
+          "legacy_id": "STU-2026-066"
+        },
+        {
+          "id": "stu-mahmoudi-marie",
+          "display_name": "MAHMOUDI Marie",
+          "slug": "mahmoudi-marie",
+          "legacy_id": "STU-2026-067"
+        },
+        {
+          "id": "stu-menuel-noe",
+          "display_name": "MENUEL Noe",
+          "slug": "menuel-noe",
+          "legacy_id": "STU-2026-068"
+        },
+        {
+          "id": "stu-moreel-clemence",
+          "display_name": "MOREEL Clemence",
+          "slug": "moreel-clemence",
+          "legacy_id": "STU-2026-069"
+        },
+        {
+          "id": "stu-motte-prudence",
+          "display_name": "MOTTE Prudence",
+          "slug": "motte-prudence",
+          "legacy_id": "STU-2026-070"
+        },
+        {
+          "id": "stu-norel-manon",
+          "display_name": "NOREL Manon",
+          "slug": "norel-manon",
+          "legacy_id": "STU-2026-071"
+        },
+        {
+          "id": "stu-outreman-gabrielle",
+          "display_name": "OUTREMAN Gabrielle",
+          "slug": "outreman-gabrielle",
+          "legacy_id": "STU-2026-072"
+        },
+        {
+          "id": "stu-pasquali-valentine",
+          "display_name": "PASQUALI Valentine",
+          "slug": "pasquali-valentine",
+          "legacy_id": "STU-2026-073"
+        },
+        {
+          "id": "stu-regnault-emma",
+          "display_name": "REGNAULT Emma",
+          "slug": "regnault-emma",
+          "legacy_id": "STU-2026-074"
+        },
+        {
+          "id": "stu-sigalla-isaure",
+          "display_name": "SIGALLA Isaure",
+          "slug": "sigalla-isaure",
+          "legacy_id": "STU-2026-075"
+        },
+        {
+          "id": "stu-svoboda-axel",
+          "display_name": "SVOBODA Axel",
+          "slug": "svoboda-axel",
+          "legacy_id": "STU-2026-076"
+        },
+        {
+          "id": "stu-vandriessche-neo",
+          "display_name": "VANDRIESSCHE Néo",
+          "slug": "vandriessche-neo",
+          "legacy_id": "STU-2026-077"
+        },
+        {
+          "id": "stu-verniest-clothilde",
+          "display_name": "VERNIEST Clothilde",
+          "slug": "verniest-clothilde",
+          "legacy_id": "STU-2026-078"
+        },
+        {
+          "id": "stu-vuillemin-margaux",
+          "display_name": "VUILLEMIN Margaux",
+          "slug": "vuillemin-margaux",
+          "legacy_id": "STU-2026-079"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-1d",
+      "tag": "1D",
+      "title": "ISCOM 2025-2026 — 1D",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-arlais-suzanne",
+          "display_name": "ARLAIS Suzanne",
+          "slug": "arlais-suzanne",
+          "legacy_id": "STU-2026-080"
+        },
+        {
+          "id": "stu-boranian-alix",
+          "display_name": "BORANIAN Alix",
+          "slug": "boranian-alix",
+          "legacy_id": "STU-2026-081"
+        },
+        {
+          "id": "stu-braem-ines",
+          "display_name": "BRAEM Inès",
+          "slug": "braem-ines",
+          "legacy_id": "STU-2026-082"
+        },
+        {
+          "id": "stu-brillon-marina",
+          "display_name": "BRILLON Marina",
+          "slug": "brillon-marina",
+          "legacy_id": "STU-2026-083"
+        },
+        {
+          "id": "stu-cassel-violette",
+          "display_name": "CASSEL Violette",
+          "slug": "cassel-violette",
+          "legacy_id": "STU-2026-084"
+        },
+        {
+          "id": "stu-celadini-elia",
+          "display_name": "CELADINI Elia",
+          "slug": "celadini-elia",
+          "legacy_id": "STU-2026-085"
+        },
+        {
+          "id": "stu-damie-violette",
+          "display_name": "DAMIE Violette",
+          "slug": "damie-violette",
+          "legacy_id": "STU-2026-086"
+        },
+        {
+          "id": "stu-dardenne-ilona",
+          "display_name": "DARDENNE Ilona",
+          "slug": "dardenne-ilona",
+          "legacy_id": "STU-2026-087"
+        },
+        {
+          "id": "stu-decaestecker-clement",
+          "display_name": "DECAESTECKER Clément",
+          "slug": "decaestecker-clement",
+          "legacy_id": "STU-2026-088"
+        },
+        {
+          "id": "stu-decroos-clemence",
+          "display_name": "DECROOS Clémence",
+          "slug": "decroos-clemence",
+          "legacy_id": "STU-2026-089"
+        },
+        {
+          "id": "stu-delhaye-jeanne",
+          "display_name": "DELHAYE Jeanne",
+          "slug": "delhaye-jeanne",
+          "legacy_id": "STU-2026-090"
+        },
+        {
+          "id": "stu-delmetz-alienor",
+          "display_name": "DELMETZ Alienor",
+          "slug": "delmetz-alienor",
+          "legacy_id": "STU-2026-091"
+        },
+        {
+          "id": "stu-denys-margo",
+          "display_name": "DENYS Margö",
+          "slug": "denys-margo",
+          "legacy_id": "STU-2026-092"
+        },
+        {
+          "id": "stu-derveaux-gwendoline",
+          "display_name": "DERVEAUX Gwendoline",
+          "slug": "derveaux-gwendoline",
+          "legacy_id": "STU-2026-093"
+        },
+        {
+          "id": "stu-desmarest-apolline",
+          "display_name": "DESMAREST Apolline",
+          "slug": "desmarest-apolline",
+          "legacy_id": "STU-2026-094"
+        },
+        {
+          "id": "stu-destombes-lou-anne",
+          "display_name": "DESTOMBES Lou-Anne",
+          "slug": "destombes-lou-anne",
+          "legacy_id": "STU-2026-095"
+        },
+        {
+          "id": "stu-emery-rafael",
+          "display_name": "EMERY Rafael",
+          "slug": "emery-rafael",
+          "legacy_id": "STU-2026-096"
+        },
+        {
+          "id": "stu-fruchart-cloe",
+          "display_name": "FRUCHART Cloé",
+          "slug": "fruchart-cloe",
+          "legacy_id": "STU-2026-097"
+        },
+        {
+          "id": "stu-guisse-awa",
+          "display_name": "GUISSE Awa",
+          "slug": "guisse-awa",
+          "legacy_id": "STU-2026-098"
+        },
+        {
+          "id": "stu-lamorille-lilou",
+          "display_name": "LAMORILLE Lilou",
+          "slug": "lamorille-lilou",
+          "legacy_id": "STU-2026-099"
+        },
+        {
+          "id": "stu-languer-mahe",
+          "display_name": "LANGUER Mahé",
+          "slug": "languer-mahe",
+          "legacy_id": "STU-2026-100"
+        },
+        {
+          "id": "stu-leblanc-iris",
+          "display_name": "LEBLANC Iris",
+          "slug": "leblanc-iris",
+          "legacy_id": "STU-2026-101"
+        },
+        {
+          "id": "stu-loisel-leonie",
+          "display_name": "LOISEL Léonie",
+          "slug": "loisel-leonie",
+          "legacy_id": "STU-2026-102"
+        },
+        {
+          "id": "stu-nicolas-elise",
+          "display_name": "NICOLAS Elise",
+          "slug": "nicolas-elise",
+          "legacy_id": "STU-2026-103"
+        },
+        {
+          "id": "stu-pischedda-julie",
+          "display_name": "PISCHEDDA Julie",
+          "slug": "pischedda-julie",
+          "legacy_id": "STU-2026-104"
+        },
+        {
+          "id": "stu-platukis-lola",
+          "display_name": "PLATUKIS Lola",
+          "slug": "platukis-lola",
+          "legacy_id": "STU-2026-105"
+        },
+        {
+          "id": "stu-sansico-vigin-lia",
+          "display_name": "SANSICO--VIGIN Lia",
+          "slug": "sansico-vigin-lia",
+          "legacy_id": "STU-2026-106"
+        },
+        {
+          "id": "stu-soulier-chloe",
+          "display_name": "SOULIER Chloé",
+          "slug": "soulier-chloe",
+          "legacy_id": "STU-2026-107"
+        },
+        {
+          "id": "stu-walter-fleur",
+          "display_name": "WALTER Fleur",
+          "slug": "walter-fleur",
+          "legacy_id": "STU-2026-108"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-2a",
+      "tag": "2A",
+      "title": "ISCOM 2025-2026 — 2A",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-absalon-daphne",
+          "display_name": "ABSALON Daphnée",
+          "slug": "absalon-daphne",
+          "legacy_id": "STU-2026-109"
+        },
+        {
+          "id": "stu-arsene-chloe",
+          "display_name": "ARSENE Chloé",
+          "slug": "arsene-chloe",
+          "legacy_id": "STU-2026-110"
+        },
+        {
+          "id": "stu-bonadei-angelina",
+          "display_name": "BONADEI Angelina",
+          "slug": "bonadei-angelina",
+          "legacy_id": "STU-2026-111"
+        },
+        {
+          "id": "stu-boniface-oscar",
+          "display_name": "BONIFACE Oscar",
+          "slug": "boniface-oscar",
+          "legacy_id": "STU-2026-112"
+        },
+        {
+          "id": "stu-bonnet-valentine",
+          "display_name": "BONNET Valentine",
+          "slug": "bonnet-valentine",
+          "legacy_id": "STU-2026-113"
+        },
+        {
+          "id": "stu-caron-louise",
+          "display_name": "CARON Louise",
+          "slug": "caron-louise",
+          "legacy_id": "STU-2026-114"
+        },
+        {
+          "id": "stu-decamps-elea",
+          "display_name": "DECAMPS Eléa",
+          "slug": "decamps-elea",
+          "legacy_id": "STU-2026-115"
+        },
+        {
+          "id": "stu-delepouve-capucine",
+          "display_name": "DELEPOUVE Capucine",
+          "slug": "delepouve-capucine",
+          "legacy_id": "STU-2026-116"
+        },
+        {
+          "id": "stu-denoeud-faustine",
+          "display_name": "DENOEUD Faustine",
+          "slug": "denoeud-faustine",
+          "legacy_id": "STU-2026-117"
+        },
+        {
+          "id": "stu-desurmont-rosalie",
+          "display_name": "DESURMONT Rosalie",
+          "slug": "desurmont-rosalie",
+          "legacy_id": "STU-2026-118"
+        },
+        {
+          "id": "stu-devos-lea",
+          "display_name": "DEVOS Léa",
+          "slug": "devos-lea",
+          "legacy_id": "STU-2026-119"
+        },
+        {
+          "id": "stu-greboval-eliott",
+          "display_name": "GREBOVAL Eliott",
+          "slug": "greboval-eliott",
+          "legacy_id": "STU-2026-120"
+        },
+        {
+          "id": "stu-grondin-elisa",
+          "display_name": "GRONDIN Elisa",
+          "slug": "grondin-elisa",
+          "legacy_id": "STU-2026-121"
+        },
+        {
+          "id": "stu-guilbert-gaia",
+          "display_name": "GUILBERT Gaïa",
+          "slug": "guilbert-gaia",
+          "legacy_id": "STU-2026-122"
+        },
+        {
+          "id": "stu-gumienny-clara",
+          "display_name": "GUMIENNY Clara",
+          "slug": "gumienny-clara",
+          "legacy_id": "STU-2026-123"
+        },
+        {
+          "id": "stu-hondermarck-anais",
+          "display_name": "HONDERMARCK Anaïs",
+          "slug": "hondermarck-anais",
+          "legacy_id": "STU-2026-124"
+        },
+        {
+          "id": "stu-huguet-eglantine",
+          "display_name": "HUGUET Eglantine",
+          "slug": "huguet-eglantine",
+          "legacy_id": "STU-2026-125"
+        },
+        {
+          "id": "stu-huvenoit-keliane",
+          "display_name": "HUVENOIT Kéliane",
+          "slug": "huvenoit-keliane",
+          "legacy_id": "STU-2026-126"
+        },
+        {
+          "id": "stu-laude-amanda",
+          "display_name": "LAUDE Amanda",
+          "slug": "laude-amanda",
+          "legacy_id": "STU-2026-127"
+        },
+        {
+          "id": "stu-lienard-fanny",
+          "display_name": "LIENARD Fanny",
+          "slug": "lienard-fanny",
+          "legacy_id": "STU-2026-128"
+        },
+        {
+          "id": "stu-percio-tiziana",
+          "display_name": "PERCIO Tiziana",
+          "slug": "percio-tiziana",
+          "legacy_id": "STU-2026-129"
+        },
+        {
+          "id": "stu-perruffel-victoire",
+          "display_name": "PERRUFFEL Victoire",
+          "slug": "perruffel-victoire",
+          "legacy_id": "STU-2026-130"
+        },
+        {
+          "id": "stu-rapicault-nayah",
+          "display_name": "RAPICAULT Nayah",
+          "slug": "rapicault-nayah",
+          "legacy_id": "STU-2026-131"
+        },
+        {
+          "id": "stu-ravaut-coline",
+          "display_name": "RAVAUT Coline",
+          "slug": "ravaut-coline",
+          "legacy_id": "STU-2026-132"
+        },
+        {
+          "id": "stu-vambenette-louis",
+          "display_name": "VAMBENETTE Louis",
+          "slug": "vambenette-louis",
+          "legacy_id": "STU-2026-133"
+        },
+        {
+          "id": "stu-villedieu-lilou",
+          "display_name": "VILLEDIEU Lilou",
+          "slug": "villedieu-lilou",
+          "legacy_id": "STU-2026-134"
+        },
+        {
+          "id": "stu-weclawiak-thomas",
+          "display_name": "WECLAWIAK Thomas",
+          "slug": "weclawiak-thomas",
+          "legacy_id": "STU-2026-135"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-2b",
+      "tag": "2B",
+      "title": "ISCOM 2025-2026 — 2B",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-aernouts-leonie",
+          "display_name": "AERNOUTS Léonie",
+          "slug": "aernouts-leonie",
+          "legacy_id": "STU-2026-136"
+        },
+        {
+          "id": "stu-bavetta-elise",
+          "display_name": "BAVETTA Elise",
+          "slug": "bavetta-elise",
+          "legacy_id": "STU-2026-137"
+        },
+        {
+          "id": "stu-bonnay-chanelle",
+          "display_name": "BONNAY Chanelle",
+          "slug": "bonnay-chanelle",
+          "legacy_id": "STU-2026-138"
+        },
+        {
+          "id": "stu-cornu-perret-salome",
+          "display_name": "CORNU PERRET Salomé",
+          "slug": "cornu-perret-salome",
+          "legacy_id": "STU-2026-139"
+        },
+        {
+          "id": "stu-de-march-angy",
+          "display_name": "DE MARCH Angy",
+          "slug": "de-march-angy",
+          "legacy_id": "STU-2026-140"
+        },
+        {
+          "id": "stu-debeve-celia",
+          "display_name": "DEBEVE Célia",
+          "slug": "debeve-celia",
+          "legacy_id": "STU-2026-141"
+        },
+        {
+          "id": "stu-decock-elea",
+          "display_name": "DECOCK Eléa",
+          "slug": "decock-elea",
+          "legacy_id": "STU-2026-142"
+        },
+        {
+          "id": "stu-gemgembre-noemie",
+          "display_name": "GEMGEMBRE Noémie",
+          "slug": "gemgembre-noemie",
+          "legacy_id": "STU-2026-143"
+        },
+        {
+          "id": "stu-graffin-marie",
+          "display_name": "GRAFFIN Marie",
+          "slug": "graffin-marie",
+          "legacy_id": "STU-2026-144"
+        },
+        {
+          "id": "stu-hons-marceline",
+          "display_name": "HONS Marceline",
+          "slug": "hons-marceline",
+          "legacy_id": "STU-2026-145"
+        },
+        {
+          "id": "stu-l-higuinen-victoire",
+          "display_name": "L HIGUINEN Victoire",
+          "slug": "l-higuinen-victoire",
+          "legacy_id": "STU-2026-146"
+        },
+        {
+          "id": "stu-lamblin-leonie",
+          "display_name": "LAMBLIN Léonie",
+          "slug": "lamblin-leonie",
+          "legacy_id": "STU-2026-147"
+        },
+        {
+          "id": "stu-le-frene-marjane",
+          "display_name": "LE FRENE Marjane",
+          "slug": "le-frene-marjane",
+          "legacy_id": "STU-2026-148"
+        },
+        {
+          "id": "stu-leoni-lena",
+          "display_name": "LEONI Lena",
+          "slug": "leoni-lena",
+          "legacy_id": "STU-2026-149"
+        },
+        {
+          "id": "stu-marechal-cloe",
+          "display_name": "MARECHAL Cloé",
+          "slug": "marechal-cloe",
+          "legacy_id": "STU-2026-150"
+        },
+        {
+          "id": "stu-marino-alexandre",
+          "display_name": "MARINO Alexandre",
+          "slug": "marino-alexandre",
+          "legacy_id": "STU-2026-151"
+        },
+        {
+          "id": "stu-martin-heloise",
+          "display_name": "MARTIN Héloïse",
+          "slug": "martin-heloise",
+          "legacy_id": "STU-2026-152"
+        },
+        {
+          "id": "stu-musy-juliette",
+          "display_name": "MUSY Juliette",
+          "slug": "musy-juliette",
+          "legacy_id": "STU-2026-153"
+        },
+        {
+          "id": "stu-rhalmi-ahmed",
+          "display_name": "RHALMI Ahmed",
+          "slug": "rhalmi-ahmed",
+          "legacy_id": "STU-2026-154"
+        },
+        {
+          "id": "stu-thierion-de-monclin-laure",
+          "display_name": "THIERION DE MONCLIN Laure",
+          "slug": "thierion-de-monclin-laure",
+          "legacy_id": "STU-2026-155"
+        },
+        {
+          "id": "stu-vasseur-elise",
+          "display_name": "VASSEUR Elise",
+          "slug": "vasseur-elise",
+          "legacy_id": "STU-2026-156"
+        },
+        {
+          "id": "stu-viry-sidonie",
+          "display_name": "VIRY Sidonie",
+          "slug": "viry-sidonie",
+          "legacy_id": "STU-2026-157"
+        },
+        {
+          "id": "stu-wojtas-tom",
+          "display_name": "WOJTAS Tom",
+          "slug": "wojtas-tom",
+          "legacy_id": "STU-2026-158"
+        },
+        {
+          "id": "stu-wojtkowiak-sixtine",
+          "display_name": "WOJTKOWIAK Sixtine",
+          "slug": "wojtkowiak-sixtine",
+          "legacy_id": "STU-2026-159"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-2c",
+      "tag": "2C",
+      "title": "ISCOM 2025-2026 — 2C",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-auvertin-anais",
+          "display_name": "AUVERTIN Anaïs",
+          "slug": "auvertin-anais",
+          "legacy_id": "STU-2026-160"
+        },
+        {
+          "id": "stu-brige-cassandre",
+          "display_name": "BRIGE Cassandre",
+          "slug": "brige-cassandre",
+          "legacy_id": "STU-2026-161"
+        },
+        {
+          "id": "stu-buissart-apolline",
+          "display_name": "BUISSART Apolline",
+          "slug": "buissart-apolline",
+          "legacy_id": "STU-2026-162"
+        },
+        {
+          "id": "stu-castin-charlotte",
+          "display_name": "CASTIN Charlotte",
+          "slug": "castin-charlotte",
+          "legacy_id": "STU-2026-163"
+        },
+        {
+          "id": "stu-deman-sarah",
+          "display_name": "DEMAN Sarah",
+          "slug": "deman-sarah",
+          "legacy_id": "STU-2026-164"
+        },
+        {
+          "id": "stu-deronne-felicie",
+          "display_name": "DERONNE Félicie",
+          "slug": "deronne-felicie",
+          "legacy_id": "STU-2026-165"
+        },
+        {
+          "id": "stu-feuillade-marie",
+          "display_name": "FEUILLADE Marie",
+          "slug": "feuillade-marie",
+          "legacy_id": "STU-2026-166"
+        },
+        {
+          "id": "stu-grah-dere-paul-erwan",
+          "display_name": "GRAH-DERE Paul-Erwan",
+          "slug": "grah-dere-paul-erwan",
+          "legacy_id": "STU-2026-167"
+        },
+        {
+          "id": "stu-guerin-alban",
+          "display_name": "GUERIN Alban",
+          "slug": "guerin-alban",
+          "legacy_id": "STU-2026-168"
+        },
+        {
+          "id": "stu-hagnerelle-ruben",
+          "display_name": "HAGNERELLE Ruben",
+          "slug": "hagnerelle-ruben",
+          "legacy_id": "STU-2026-169"
+        },
+        {
+          "id": "stu-haned-nadine",
+          "display_name": "HANED Nadine",
+          "slug": "haned-nadine",
+          "legacy_id": "STU-2026-170"
+        },
+        {
+          "id": "stu-jakubowski-emma",
+          "display_name": "JAKUBOWSKI Emma",
+          "slug": "jakubowski-emma",
+          "legacy_id": "STU-2026-171"
+        },
+        {
+          "id": "stu-maerten-mila",
+          "display_name": "MAERTEN Mila",
+          "slug": "maerten-mila",
+          "legacy_id": "STU-2026-172"
+        },
+        {
+          "id": "stu-mansion-lena",
+          "display_name": "MANSION Léna",
+          "slug": "mansion-lena",
+          "legacy_id": "STU-2026-173"
+        },
+        {
+          "id": "stu-martin-margaux",
+          "display_name": "MARTIN Margaux",
+          "slug": "martin-margaux",
+          "legacy_id": "STU-2026-174"
+        },
+        {
+          "id": "stu-nivelet-clementine",
+          "display_name": "NIVELET Clémentine",
+          "slug": "nivelet-clementine",
+          "legacy_id": "STU-2026-175"
+        },
+        {
+          "id": "stu-pace-sylia",
+          "display_name": "PACE Sylia",
+          "slug": "pace-sylia",
+          "legacy_id": "STU-2026-176"
+        },
+        {
+          "id": "stu-poirson-corane",
+          "display_name": "POIRSON Corane",
+          "slug": "poirson-corane",
+          "legacy_id": "STU-2026-177"
+        },
+        {
+          "id": "stu-sergent-madeleine",
+          "display_name": "SERGENT Madeleine",
+          "slug": "sergent-madeleine",
+          "legacy_id": "STU-2026-178"
+        },
+        {
+          "id": "stu-tinseaux-honorine",
+          "display_name": "TINSEAUX Honorine",
+          "slug": "tinseaux-honorine",
+          "legacy_id": "STU-2026-179"
+        },
+        {
+          "id": "stu-trainel-taolina",
+          "display_name": "TRAINEL Taolina",
+          "slug": "trainel-taolina",
+          "legacy_id": "STU-2026-180"
+        },
+        {
+          "id": "stu-vanoye-eugenie",
+          "display_name": "VANOYE Eugénie",
+          "slug": "vanoye-eugenie",
+          "legacy_id": "STU-2026-181"
+        },
+        {
+          "id": "stu-watteau-maele",
+          "display_name": "WATTEAU Maële",
+          "slug": "watteau-maele",
+          "legacy_id": "STU-2026-182"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-2d",
+      "tag": "2D",
+      "title": "ISCOM 2025-2026 — 2D",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-aboubaker-houssein",
+          "display_name": "ABOUBAKER Houssein",
+          "slug": "aboubaker-houssein",
+          "legacy_id": "STU-2026-183"
+        },
+        {
+          "id": "stu-briland-constance",
+          "display_name": "BRILAND Constance",
+          "slug": "briland-constance",
+          "legacy_id": "STU-2026-184"
+        },
+        {
+          "id": "stu-buchwald-theo",
+          "display_name": "BUCHWALD Théo",
+          "slug": "buchwald-theo",
+          "legacy_id": "STU-2026-185"
+        },
+        {
+          "id": "stu-carre-maeva",
+          "display_name": "CARRE Maëva",
+          "slug": "carre-maeva",
+          "legacy_id": "STU-2026-186"
+        },
+        {
+          "id": "stu-coffin-ambre",
+          "display_name": "COFFIN Ambre",
+          "slug": "coffin-ambre",
+          "legacy_id": "STU-2026-187"
+        },
+        {
+          "id": "stu-dubois-mathilde",
+          "display_name": "DUBOIS Mathilde",
+          "slug": "dubois-mathilde",
+          "legacy_id": "STU-2026-188"
+        },
+        {
+          "id": "stu-guidez-lili-maud",
+          "display_name": "GUIDEZ Lili-Maud",
+          "slug": "guidez-lili-maud",
+          "legacy_id": "STU-2026-189"
+        },
+        {
+          "id": "stu-harle-thomas",
+          "display_name": "HARLE Thomas",
+          "slug": "harle-thomas",
+          "legacy_id": "STU-2026-190"
+        },
+        {
+          "id": "stu-kozlowski-sacha",
+          "display_name": "KOZLOWSKI Sacha",
+          "slug": "kozlowski-sacha",
+          "legacy_id": "STU-2026-191"
+        },
+        {
+          "id": "stu-laune-chloe",
+          "display_name": "LAUNE Chloé",
+          "slug": "laune-chloe",
+          "legacy_id": "STU-2026-192"
+        },
+        {
+          "id": "stu-lenfant-julie",
+          "display_name": "LENFANT Julie",
+          "slug": "lenfant-julie",
+          "legacy_id": "STU-2026-193"
+        },
+        {
+          "id": "stu-lepot-loane",
+          "display_name": "LEPOT Loane",
+          "slug": "lepot-loane",
+          "legacy_id": "STU-2026-194"
+        },
+        {
+          "id": "stu-levalleux-eliott",
+          "display_name": "LEVALLEUX Eliott",
+          "slug": "levalleux-eliott",
+          "legacy_id": "STU-2026-195"
+        },
+        {
+          "id": "stu-minart-charlotte",
+          "display_name": "MINART Charlotte",
+          "slug": "minart-charlotte",
+          "legacy_id": "STU-2026-196"
+        },
+        {
+          "id": "stu-moreau-maddy-lou",
+          "display_name": "MOREAU Maddy-Lou",
+          "slug": "moreau-maddy-lou",
+          "legacy_id": "STU-2026-197"
+        },
+        {
+          "id": "stu-pocholle-matthieu",
+          "display_name": "POCHOLLE Matthieu",
+          "slug": "pocholle-matthieu",
+          "legacy_id": "STU-2026-198"
+        },
+        {
+          "id": "stu-quentin-maelys",
+          "display_name": "QUENTIN Maëlys",
+          "slug": "quentin-maelys",
+          "legacy_id": "STU-2026-199"
+        },
+        {
+          "id": "stu-ribeiro-noa",
+          "display_name": "RIBEIRO Noa",
+          "slug": "ribeiro-noa",
+          "legacy_id": "STU-2026-200"
+        },
+        {
+          "id": "stu-seret-pauline",
+          "display_name": "SERET Pauline",
+          "slug": "seret-pauline",
+          "legacy_id": "STU-2026-201"
+        },
+        {
+          "id": "stu-tange-mila",
+          "display_name": "TANGE Mila",
+          "slug": "tange-mila",
+          "legacy_id": "STU-2026-202"
+        },
+        {
+          "id": "stu-tapiero-louise",
+          "display_name": "TAPIERO Louise",
+          "slug": "tapiero-louise",
+          "legacy_id": "STU-2026-203"
+        },
+        {
+          "id": "stu-vigneron-mathilde",
+          "display_name": "VIGNERON Mathilde",
+          "slug": "vigneron-mathilde",
+          "legacy_id": "STU-2026-204"
+        },
+        {
+          "id": "stu-yon-anouk",
+          "display_name": "YON Anouk",
+          "slug": "yon-anouk",
+          "legacy_id": "STU-2026-205"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-2e",
+      "tag": "2E",
+      "title": "ISCOM 2025-2026 — 2E",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-bascou-rose",
+          "display_name": "BASCOU Rose",
+          "slug": "bascou-rose",
+          "legacy_id": "STU-2026-206"
+        },
+        {
+          "id": "stu-bassler-tom",
+          "display_name": "BASSLER Tom",
+          "slug": "bassler-tom",
+          "legacy_id": "STU-2026-207"
+        },
+        {
+          "id": "stu-blanchard-mathilde",
+          "display_name": "BLANCHARD Mathilde",
+          "slug": "blanchard-mathilde",
+          "legacy_id": "STU-2026-208"
+        },
+        {
+          "id": "stu-bonaventure-oscar",
+          "display_name": "BONAVENTURE Oscar",
+          "slug": "bonaventure-oscar",
+          "legacy_id": "STU-2026-209"
+        },
+        {
+          "id": "stu-castini-lena",
+          "display_name": "CASTINI Léna",
+          "slug": "castini-lena",
+          "legacy_id": "STU-2026-210"
+        },
+        {
+          "id": "stu-combes-melodie",
+          "display_name": "COMBES Mélodie",
+          "slug": "combes-melodie",
+          "legacy_id": "STU-2026-211"
+        },
+        {
+          "id": "stu-corbier-adelie",
+          "display_name": "CORBIER Adélie",
+          "slug": "corbier-adelie",
+          "legacy_id": "STU-2026-212"
+        },
+        {
+          "id": "stu-dejonghe-wanda",
+          "display_name": "DEJONGHE Wanda",
+          "slug": "dejonghe-wanda",
+          "legacy_id": "STU-2026-213"
+        },
+        {
+          "id": "stu-delannoy-laure",
+          "display_name": "DELANNOY Laure",
+          "slug": "delannoy-laure",
+          "legacy_id": "STU-2026-214"
+        },
+        {
+          "id": "stu-dubois-agnes",
+          "display_name": "DUBOIS Agnès",
+          "slug": "dubois-agnes",
+          "legacy_id": "STU-2026-215"
+        },
+        {
+          "id": "stu-fant-evan",
+          "display_name": "FANT Evan",
+          "slug": "fant-evan",
+          "legacy_id": "STU-2026-216"
+        },
+        {
+          "id": "stu-gautier-clementine",
+          "display_name": "GAUTIER Clémentine",
+          "slug": "gautier-clementine",
+          "legacy_id": "STU-2026-217"
+        },
+        {
+          "id": "stu-jacob-felicie",
+          "display_name": "JACOB Félicie",
+          "slug": "jacob-felicie",
+          "legacy_id": "STU-2026-218"
+        },
+        {
+          "id": "stu-jamin-coline",
+          "display_name": "JAMIN Coline",
+          "slug": "jamin-coline",
+          "legacy_id": "STU-2026-219"
+        },
+        {
+          "id": "stu-jardon-felix",
+          "display_name": "JARDON Félix",
+          "slug": "jardon-felix",
+          "legacy_id": "STU-2026-220"
+        },
+        {
+          "id": "stu-langrognet-melissa",
+          "display_name": "LANGROGNET Mélissa",
+          "slug": "langrognet-melissa",
+          "legacy_id": "STU-2026-221"
+        },
+        {
+          "id": "stu-lavisse-antoine",
+          "display_name": "LAVISSE Antoine",
+          "slug": "lavisse-antoine",
+          "legacy_id": "STU-2026-222"
+        },
+        {
+          "id": "stu-legrain-theo",
+          "display_name": "LEGRAIN Théo",
+          "slug": "legrain-theo",
+          "legacy_id": "STU-2026-223"
+        },
+        {
+          "id": "stu-mariette-louise",
+          "display_name": "MARIETTE Louise",
+          "slug": "mariette-louise",
+          "legacy_id": "STU-2026-224"
+        },
+        {
+          "id": "stu-park-melanie",
+          "display_name": "PARK Mélanie",
+          "slug": "park-melanie",
+          "legacy_id": "STU-2026-225"
+        },
+        {
+          "id": "stu-portier-lilou",
+          "display_name": "PORTIER Lilou",
+          "slug": "portier-lilou",
+          "legacy_id": "STU-2026-226"
+        },
+        {
+          "id": "stu-vivier-axel",
+          "display_name": "VIVIER Axel",
+          "slug": "vivier-axel",
+          "legacy_id": "STU-2026-227"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-3crea",
+      "tag": "3CREA",
+      "title": "ISCOM 2025-2026 — 3CREA",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-alleweireldt-suzanne",
+          "display_name": "ALLEWEIRELDT Suzanne",
+          "slug": "alleweireldt-suzanne",
+          "legacy_id": "STU-2026-228"
+        },
+        {
+          "id": "stu-beyaert-mathilde",
+          "display_name": "BEYAERT Mathilde",
+          "slug": "beyaert-mathilde",
+          "legacy_id": "STU-2026-229"
+        },
+        {
+          "id": "stu-bouguettaya-malika",
+          "display_name": "BOUGUETTAYA Malika",
+          "slug": "bouguettaya-malika",
+          "legacy_id": "STU-2026-230"
+        },
+        {
+          "id": "stu-damarey-paul",
+          "display_name": "DAMAREY Paul",
+          "slug": "damarey-paul",
+          "legacy_id": "STU-2026-231"
+        },
+        {
+          "id": "stu-denoyelle-oceane",
+          "display_name": "DENOYELLE Océane",
+          "slug": "denoyelle-oceane",
+          "legacy_id": "STU-2026-232"
+        },
+        {
+          "id": "stu-dugave-pauline",
+          "display_name": "DUGAVE Pauline",
+          "slug": "dugave-pauline",
+          "legacy_id": "STU-2026-233"
+        },
+        {
+          "id": "stu-flament-camille",
+          "display_name": "FLAMENT Camille",
+          "slug": "flament-camille",
+          "legacy_id": "STU-2026-234"
+        },
+        {
+          "id": "stu-gautier-tiphaine",
+          "display_name": "GAUTIER Tiphaine",
+          "slug": "gautier-tiphaine",
+          "legacy_id": "STU-2026-235"
+        },
+        {
+          "id": "stu-guglielmetti-lena",
+          "display_name": "GUGLIELMETTI Léna",
+          "slug": "guglielmetti-lena",
+          "legacy_id": "STU-2026-236"
+        },
+        {
+          "id": "stu-jaffres-damien",
+          "display_name": "JAFFRES Damien",
+          "slug": "jaffres-damien",
+          "legacy_id": "STU-2026-237"
+        },
+        {
+          "id": "stu-jarroux-oceane",
+          "display_name": "JARROUX Océane",
+          "slug": "jarroux-oceane",
+          "legacy_id": "STU-2026-238"
+        },
+        {
+          "id": "stu-meurillon-jeane",
+          "display_name": "MEURILLON Jeane",
+          "slug": "meurillon-jeane",
+          "legacy_id": "STU-2026-239"
+        },
+        {
+          "id": "stu-morey-anaelle",
+          "display_name": "MOREY Anaëlle",
+          "slug": "morey-anaelle",
+          "legacy_id": "STU-2026-240"
+        },
+        {
+          "id": "stu-nowak-lelong-lou",
+          "display_name": "NOWAK-LELONG Lou",
+          "slug": "nowak-lelong-lou",
+          "legacy_id": "STU-2026-241"
+        },
+        {
+          "id": "stu-sauer-timothee",
+          "display_name": "SAUER Timothée",
+          "slug": "sauer-timothee",
+          "legacy_id": "STU-2026-242"
+        },
+        {
+          "id": "stu-simonet-manon",
+          "display_name": "SIMONET Manon",
+          "slug": "simonet-manon",
+          "legacy_id": "STU-2026-243"
+        },
+        {
+          "id": "stu-spanneut-estelle",
+          "display_name": "SPANNEUT Estelle",
+          "slug": "spanneut-estelle",
+          "legacy_id": "STU-2026-244"
+        },
+        {
+          "id": "stu-tachau-jeanne",
+          "display_name": "TACHAU Jeanne",
+          "slug": "tachau-jeanne",
+          "legacy_id": "STU-2026-245"
+        },
+        {
+          "id": "stu-vassaux-camille",
+          "display_name": "VASSAUX Camille",
+          "slug": "vassaux-camille",
+          "legacy_id": "STU-2026-246"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-4c1",
+      "tag": "4C1",
+      "title": "ISCOM 2025-2026 — 4C1",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-angeli-marie-dominique",
+          "display_name": "ANGELI Marie-Dominique",
+          "slug": "angeli-marie-dominique",
+          "legacy_id": "STU-2026-247"
+        },
+        {
+          "id": "stu-avit-sam",
+          "display_name": "AVIT Sam",
+          "slug": "avit-sam",
+          "legacy_id": "STU-2026-248"
+        },
+        {
+          "id": "stu-bataille-anahe",
+          "display_name": "BATAILLE Anahë",
+          "slug": "bataille-anahe",
+          "legacy_id": "STU-2026-249"
+        },
+        {
+          "id": "stu-boe-amandine",
+          "display_name": "BOE Amandine",
+          "slug": "boe-amandine",
+          "legacy_id": "STU-2026-250"
+        },
+        {
+          "id": "stu-carre-piloy-lili-rose",
+          "display_name": "CARRE-PILOY Lili-Rose",
+          "slug": "carre-piloy-lili-rose",
+          "legacy_id": "STU-2026-251"
+        },
+        {
+          "id": "stu-colle-candice",
+          "display_name": "COLLE Candice",
+          "slug": "colle-candice",
+          "legacy_id": "STU-2026-252"
+        },
+        {
+          "id": "stu-da-silva-lea",
+          "display_name": "DA SILVA Léa",
+          "slug": "da-silva-lea",
+          "legacy_id": "STU-2026-253"
+        },
+        {
+          "id": "stu-decommer-zoe",
+          "display_name": "DECOMMER Zoé",
+          "slug": "decommer-zoe",
+          "legacy_id": "STU-2026-254"
+        },
+        {
+          "id": "stu-delannoy-victor",
+          "display_name": "DELANNOY Victor",
+          "slug": "delannoy-victor",
+          "legacy_id": "STU-2026-255"
+        },
+        {
+          "id": "stu-delorme-paloma",
+          "display_name": "DELORME Paloma",
+          "slug": "delorme-paloma",
+          "legacy_id": "STU-2026-256"
+        },
+        {
+          "id": "stu-dotte-emilie",
+          "display_name": "DOTTE Emilie",
+          "slug": "dotte-emilie",
+          "legacy_id": "STU-2026-257"
+        },
+        {
+          "id": "stu-faelens-mateo",
+          "display_name": "FAELENS Mateo",
+          "slug": "faelens-mateo",
+          "legacy_id": "STU-2026-258"
+        },
+        {
+          "id": "stu-fontaine-florian",
+          "display_name": "FONTAINE Florian",
+          "slug": "fontaine-florian",
+          "legacy_id": "STU-2026-259"
+        },
+        {
+          "id": "stu-genge-jeanne",
+          "display_name": "GENGE Jeanne",
+          "slug": "genge-jeanne",
+          "legacy_id": "STU-2026-260"
+        },
+        {
+          "id": "stu-holuigue-gabrielle",
+          "display_name": "HOLUIGUE Gabrielle",
+          "slug": "holuigue-gabrielle",
+          "legacy_id": "STU-2026-261"
+        },
+        {
+          "id": "stu-laforge-thibaut",
+          "display_name": "LAFORGE Thibaut",
+          "slug": "laforge-thibaut",
+          "legacy_id": "STU-2026-262"
+        },
+        {
+          "id": "stu-laleeu-w-jade",
+          "display_name": "LALEEUW Jade",
+          "slug": "laleeu-w-jade",
+          "legacy_id": "STU-2026-263"
+        },
+        {
+          "id": "stu-ledein-lucie",
+          "display_name": "LEDEIN Lucie",
+          "slug": "ledein-lucie",
+          "legacy_id": "STU-2026-264"
+        },
+        {
+          "id": "stu-loubard-joanne",
+          "display_name": "LOUBARD Joanne",
+          "slug": "loubard-joanne",
+          "legacy_id": "STU-2026-265"
+        },
+        {
+          "id": "stu-osien-tricia",
+          "display_name": "OSIEN Tricia",
+          "slug": "osien-tricia",
+          "legacy_id": "STU-2026-266"
+        },
+        {
+          "id": "stu-pennequin-morgane",
+          "display_name": "PENNEQUIN Morgane",
+          "slug": "pennequin-morgane",
+          "legacy_id": "STU-2026-267"
+        },
+        {
+          "id": "stu-picotin-eve",
+          "display_name": "PICOTIN Eve",
+          "slug": "picotin-eve",
+          "legacy_id": "STU-2026-268"
+        },
+        {
+          "id": "stu-razafimamonjiarison-mirana",
+          "display_name": "RAZAFIMAMONJIARISON Mirana",
+          "slug": "razafimamonjiarison-mirana",
+          "legacy_id": "STU-2026-269"
+        },
+        {
+          "id": "stu-ringard-lily",
+          "display_name": "RINGARD Lily",
+          "slug": "ringard-lily",
+          "legacy_id": "STU-2026-270"
+        },
+        {
+          "id": "stu-salvatore-sacha",
+          "display_name": "SALVATORE Sacha",
+          "slug": "salvatore-sacha",
+          "legacy_id": "STU-2026-271"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-4c2",
+      "tag": "4C2",
+      "title": "ISCOM 2025-2026 — 4C2",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-bernier-adele",
+          "display_name": "BERNIER Adèle",
+          "slug": "bernier-adele",
+          "legacy_id": "STU-2026-272"
+        },
+        {
+          "id": "stu-boual-sabrina",
+          "display_name": "BOUAL Sabrina",
+          "slug": "boual-sabrina",
+          "legacy_id": "STU-2026-273"
+        },
+        {
+          "id": "stu-bourg-lise",
+          "display_name": "BOURG Lise",
+          "slug": "bourg-lise",
+          "legacy_id": "STU-2026-274"
+        },
+        {
+          "id": "stu-colle-aurelien",
+          "display_name": "COLLE Aurélien",
+          "slug": "colle-aurelien",
+          "legacy_id": "STU-2026-275"
+        },
+        {
+          "id": "stu-desmazieres-louis",
+          "display_name": "DESMAZIERES Louis",
+          "slug": "desmazieres-louis",
+          "legacy_id": "STU-2026-276"
+        },
+        {
+          "id": "stu-dragoni-lola",
+          "display_name": "DRAGONI Lola",
+          "slug": "dragoni-lola",
+          "legacy_id": "STU-2026-277"
+        },
+        {
+          "id": "stu-fosset-johanna",
+          "display_name": "FOSSET Johanna",
+          "slug": "fosset-johanna",
+          "legacy_id": "STU-2026-278"
+        },
+        {
+          "id": "stu-germain-charlotte",
+          "display_name": "GERMAIN Charlotte",
+          "slug": "germain-charlotte",
+          "legacy_id": "STU-2026-279"
+        },
+        {
+          "id": "stu-jacq-agathe",
+          "display_name": "JACQ Agathe",
+          "slug": "jacq-agathe",
+          "legacy_id": "STU-2026-280"
+        },
+        {
+          "id": "stu-landas-olivia",
+          "display_name": "LANDAS Olivia",
+          "slug": "landas-olivia",
+          "legacy_id": "STU-2026-281"
+        },
+        {
+          "id": "stu-lecuyer-adelaide",
+          "display_name": "LECUYER Adélaïde",
+          "slug": "lecuyer-adelaide",
+          "legacy_id": "STU-2026-282"
+        },
+        {
+          "id": "stu-mlenzi-lassalle-kimmy-lou",
+          "display_name": "MLENZI-LASSALLE Kimmy-Lou",
+          "slug": "mlenzi-lassalle-kimmy-lou",
+          "legacy_id": "STU-2026-283"
+        },
+        {
+          "id": "stu-mokrani-ania",
+          "display_name": "MOKRANI Ania",
+          "slug": "mokrani-ania",
+          "legacy_id": "STU-2026-284"
+        },
+        {
+          "id": "stu-monnier-simon",
+          "display_name": "MONNIER Simon",
+          "slug": "monnier-simon",
+          "legacy_id": "STU-2026-285"
+        },
+        {
+          "id": "stu-paulin-tom",
+          "display_name": "PAULIN Tom",
+          "slug": "paulin-tom",
+          "legacy_id": "STU-2026-286"
+        },
+        {
+          "id": "stu-peschard-alixe",
+          "display_name": "PESCHARD Alixe",
+          "slug": "peschard-alixe",
+          "legacy_id": "STU-2026-287"
+        },
+        {
+          "id": "stu-poirier-oscar",
+          "display_name": "POIRIER Oscar",
+          "slug": "poirier-oscar",
+          "legacy_id": "STU-2026-288"
+        },
+        {
+          "id": "stu-raguennet-de-saint-albin-noemie",
+          "display_name": "RAGUENET DE SAINT ALBIN Noémie",
+          "slug": "raguennet-de-saint-albin-noemie",
+          "legacy_id": "STU-2026-289"
+        },
+        {
+          "id": "stu-renault-teani",
+          "display_name": "RENAULT Teani",
+          "slug": "renault-teani",
+          "legacy_id": "STU-2026-290"
+        },
+        {
+          "id": "stu-riviere-lucie",
+          "display_name": "RIVIERE Lucie",
+          "slug": "riviere-lucie",
+          "legacy_id": "STU-2026-291"
+        },
+        {
+          "id": "stu-tardy-ponvianne-emma",
+          "display_name": "TARDY PONVIANNE Emma",
+          "slug": "tardy-ponvianne-emma",
+          "legacy_id": "STU-2026-292"
+        },
+        {
+          "id": "stu-ubaldi-jade",
+          "display_name": "UBALDI Jade",
+          "slug": "ubaldi-jade",
+          "legacy_id": "STU-2026-293"
+        },
+        {
+          "id": "stu-vedrune-constance",
+          "display_name": "VEDRUNE Constance",
+          "slug": "vedrune-constance",
+          "legacy_id": "STU-2026-294"
+        },
+        {
+          "id": "stu-verhaeghe-angel",
+          "display_name": "VERHAEGHE Angel",
+          "slug": "verhaeghe-angel",
+          "legacy_id": "STU-2026-295"
+        },
+        {
+          "id": "stu-vincent-ambre",
+          "display_name": "VINCENT Ambre",
+          "slug": "vincent-ambre",
+          "legacy_id": "STU-2026-296"
+        }
+      ]
+    },
+    {
+      "id": "cohort-iscom-2026-5crea",
+      "tag": "5CREA",
+      "title": "ISCOM 2025-2026 — 5CREA",
+      "period_ref": "2025-2026",
+      "status": "archived",
+      "students": [
+        {
+          "id": "stu-bailly-julien",
+          "display_name": "BAILLY Julien",
+          "slug": "bailly-julien",
+          "legacy_id": "STU-2026-297"
+        },
+        {
+          "id": "stu-blaevoet-charles",
+          "display_name": "BLAEVOET Charles",
+          "slug": "blaevoet-charles",
+          "legacy_id": "STU-2026-298"
+        },
+        {
+          "id": "stu-bouret-nouhin-camille",
+          "display_name": "BOURET-NOUHIN Camille",
+          "slug": "bouret-nouhin-camille",
+          "legacy_id": "STU-2026-299"
+        },
+        {
+          "id": "stu-camara-aurilia",
+          "display_name": "CAMARA Aurilia",
+          "slug": "camara-aurilia",
+          "legacy_id": "STU-2026-300"
+        },
+        {
+          "id": "stu-caron-thibault",
+          "display_name": "CARON Thibault",
+          "slug": "caron-thibault",
+          "legacy_id": "STU-2026-301"
+        },
+        {
+          "id": "stu-caudron-emma",
+          "display_name": "CAUDRON Emma",
+          "slug": "caudron-emma",
+          "legacy_id": "STU-2026-302"
+        },
+        {
+          "id": "stu-chandelier-clemence",
+          "display_name": "CHANDELIER Clémence",
+          "slug": "chandelier-clemence",
+          "legacy_id": "STU-2026-303"
+        },
+        {
+          "id": "stu-cunchon-clemence",
+          "display_name": "CUNCHON Clémence",
+          "slug": "cunchon-clemence",
+          "legacy_id": "STU-2026-304"
+        },
+        {
+          "id": "stu-de-gorguette-d-argoeuves-zoe",
+          "display_name": "DE GORGUETTE D ARGOEUVES Zoé",
+          "slug": "de-gorguette-d-argoeuves-zoe",
+          "legacy_id": "STU-2026-305"
+        },
+        {
+          "id": "stu-deleye-eloryan",
+          "display_name": "DELEYE Eloryan",
+          "slug": "deleye-eloryan",
+          "legacy_id": "STU-2026-306"
+        },
+        {
+          "id": "stu-delforge-louise",
+          "display_name": "DELFORGE Louise",
+          "slug": "delforge-louise",
+          "legacy_id": "STU-2026-307"
+        },
+        {
+          "id": "stu-deschamps-matheo",
+          "display_name": "DESCHAMPS Mathéo",
+          "slug": "deschamps-matheo",
+          "legacy_id": "STU-2026-308"
+        },
+        {
+          "id": "stu-duflot-ambre",
+          "display_name": "DUFLOT Ambre",
+          "slug": "duflot-ambre",
+          "legacy_id": "STU-2026-309"
+        },
+        {
+          "id": "stu-duhayon-flavie",
+          "display_name": "DUHAYON Flavie",
+          "slug": "duhayon-flavie",
+          "legacy_id": "STU-2026-310"
+        },
+        {
+          "id": "stu-dumont-romain",
+          "display_name": "DUMONT Romain",
+          "slug": "dumont-romain",
+          "legacy_id": "STU-2026-311"
+        },
+        {
+          "id": "stu-fauconnet-charles",
+          "display_name": "FAUCONNET Charles",
+          "slug": "fauconnet-charles",
+          "legacy_id": "STU-2026-312"
+        },
+        {
+          "id": "stu-fourmaintraux-emma",
+          "display_name": "FOURMAINTRAUX Emma",
+          "slug": "fourmaintraux-emma",
+          "legacy_id": "STU-2026-313"
+        },
+        {
+          "id": "stu-herbay-cannelle",
+          "display_name": "HERBAY Cannelle",
+          "slug": "herbay-cannelle",
+          "legacy_id": "STU-2026-314"
+        },
+        {
+          "id": "stu-karamoy-keisya",
+          "display_name": "KARAMOY Keisya",
+          "slug": "karamoy-keisya",
+          "legacy_id": "STU-2026-315"
+        },
+        {
+          "id": "stu-lacheray-heloise",
+          "display_name": "LACHERAY Héloïse",
+          "slug": "lacheray-heloise",
+          "legacy_id": "STU-2026-316"
+        },
+        {
+          "id": "stu-leclercq-rachel",
+          "display_name": "LECLERCQ Rachel",
+          "slug": "leclercq-rachel",
+          "legacy_id": "STU-2026-317"
+        },
+        {
+          "id": "stu-lecoustre-hugo",
+          "display_name": "LECOUSTRE Hugo",
+          "slug": "lecoustre-hugo",
+          "legacy_id": "STU-2026-318"
+        },
+        {
+          "id": "stu-leeuwerck-jade",
+          "display_name": "LEEUWERCK Jade",
+          "slug": "leeuwerck-jade",
+          "legacy_id": "STU-2026-319"
+        },
+        {
+          "id": "stu-mathey-lise",
+          "display_name": "MATHEY Lise",
+          "slug": "mathey-lise",
+          "legacy_id": "STU-2026-320"
+        },
+        {
+          "id": "stu-mercher-emmy",
+          "display_name": "MERCHER Emmy",
+          "slug": "mercher-emmy",
+          "legacy_id": "STU-2026-321"
+        },
+        {
+          "id": "stu-modolo-baptiste",
+          "display_name": "MODOLO Baptiste",
+          "slug": "modolo-baptiste",
+          "legacy_id": "STU-2026-322"
+        },
+        {
+          "id": "stu-monsauret-juliette",
+          "display_name": "MONSAURET Juliette",
+          "slug": "monsauret-juliette",
+          "legacy_id": "STU-2026-323"
+        },
+        {
+          "id": "stu-petitmangin-lucie",
+          "display_name": "PETITMANGIN Lucie",
+          "slug": "petitmangin-lucie",
+          "legacy_id": "STU-2026-324"
+        },
+        {
+          "id": "stu-petitto-enzo",
+          "display_name": "PETITTO Enzo",
+          "slug": "petitto-enzo",
+          "legacy_id": "STU-2026-325"
+        },
+        {
+          "id": "stu-queva-anais",
+          "display_name": "QUEVA Anaïs",
+          "slug": "queva-anais",
+          "legacy_id": "STU-2026-326"
+        },
+        {
+          "id": "stu-soloch-jean",
+          "display_name": "SOLOCH Jean",
+          "slug": "soloch-jean",
+          "legacy_id": "STU-2026-327"
+        },
+        {
+          "id": "stu-vautravers-paul",
+          "display_name": "VAUTRAVERS Paul",
+          "slug": "vautravers-paul",
+          "legacy_id": "STU-2026-328"
+        },
+        {
+          "id": "stu-vautrelle-margot",
+          "display_name": "VAUTRELLE Margot",
+          "slug": "vautrelle-margot",
+          "legacy_id": "STU-2026-329"
+        },
+        {
+          "id": "stu-vitse-pierine",
+          "display_name": "VITSE Pierine",
+          "slug": "vitse-pierine",
+          "legacy_id": "STU-2026-330"
+        },
+        {
+          "id": "stu-vivien-gauthier",
+          "display_name": "VIVIEN Gauthier",
+          "slug": "vivien-gauthier",
+          "legacy_id": "STU-2026-331"
+        },
+        {
+          "id": "stu-vrand-tristan",
+          "display_name": "VRAND Tristan",
+          "slug": "vrand-tristan",
+          "legacy_id": "STU-2026-332"
+        },
+        {
+          "id": "stu-zakaria-sarah",
+          "display_name": "ZAKARIA Sarah",
+          "slug": "zakaria-sarah",
+          "legacy_id": "STU-2026-333"
+        }
+      ]
+    }
+  ],
+  "incoming_cohorts": [
+    {
+      "id": "cohort-iscom-2027-1a",
+      "title": "ISCOM 2026-2027 — 1A",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-1b",
+      "title": "ISCOM 2026-2027 — 1B",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-1c",
+      "title": "ISCOM 2026-2027 — 1C",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-1d",
+      "title": "ISCOM 2026-2027 — 1D",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-2a",
+      "title": "ISCOM 2026-2027 — 2A",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-2b",
+      "title": "ISCOM 2026-2027 — 2B",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-2c",
+      "title": "ISCOM 2026-2027 — 2C",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-2d",
+      "title": "ISCOM 2026-2027 — 2D",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-2e",
+      "title": "ISCOM 2026-2027 — 2E",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-3crea",
+      "title": "ISCOM 2026-2027 — 3CREA",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-4c1",
+      "title": "ISCOM 2026-2027 — 4C1",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-4c2",
+      "title": "ISCOM 2026-2027 — 4C2",
+      "period_ref": "2026-2027"
+    },
+    {
+      "id": "cohort-iscom-2027-5crea",
+      "title": "ISCOM 2026-2027 — 5CREA",
+      "period_ref": "2026-2027"
+    }
+  ]
+}

@@ -16,8 +16,12 @@ import {createRoomsRouter} from '../src/routers/rooms.ts';
  * supposait `requireUser` « monté en amont » alors qu'index.ts ne le montait pas →
  * `GET /rooms` fuyait sans auth et `PUT /rooms/:id/instance` répondait 401 avec un
  * token pourtant valide (`req.user` jamais posé).
+ *
+ * Fixture isolée : une room dédiée `test-auth-room` est créée en beforeAll pour éviter
+ * la flakiness due aux mutations parallèles des autres tests sur les rooms partagées.
  */
 
+const TEST_ROOM_ID = 'test-auth-room';
 let server: Server;
 let base: string;
 let token: string;
@@ -29,7 +33,14 @@ beforeAll(async () => {
   const db = getDb();
   const userRow = db.prepare("SELECT id, username, role FROM users WHERE username = 'vincent'").get() as AuthUser & {id: string};
   token = signToken({id: userRow.id, username: userRow.username, role: userRow.role});
-  roomId = (db.prepare('SELECT id FROM rooms LIMIT 1').get() as {id: string}).id;
+
+  // Fixture dédiée — pas de SELECT LIMIT 1 (évite les collisions parallèles)
+  const now = Date.now();
+  db.prepare(`
+    INSERT OR IGNORE INTO rooms (id, name, type, owner_id, context_json, is_public, created_at, updated_at)
+    VALUES (?, 'Test Auth Room', 'home', ?, '{}', 0, ?, ?)
+  `).run(TEST_ROOM_ID, userRow.id, now, now);
+  roomId = TEST_ROOM_ID;
 
   const app = express();
   app.use(express.json());

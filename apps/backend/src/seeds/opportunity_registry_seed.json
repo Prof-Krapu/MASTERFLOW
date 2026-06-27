@@ -1,0 +1,173 @@
+[
+  {
+    "id": "seed-opp-20260614-001",
+    "opportunity_id": "OPP-20260614-001",
+    "title": "Source Truth Strip as universal UI primitive",
+    "domain": "D02_CONTEXT_MEMORY_RAG",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"RAG_MEMORY_BRIDGE + UI_BRIDGE\", \"domains\": [\"D02_CONTEXT_MEMORY_RAG\", \"D03_ROOM_OS_EXPERIENCE\", \"D05_PEDAGOGY_SUBJECTS_CDC\"], \"suggestion\": \"Create a compact source truth strip pattern reused anywhere MasterFlow cites a resource, subject, timecode, source, correction evidence or RAG context pack.\", \"why\": \"The same anti-hallucination rule appears in Resource Truth, RAG, pedagogy, correction and UI. A shared UI primitive avoids each domain inventing its own proof badge.\", \"deployment_check\": \"later_when_ui_tranche\"}"
+  },
+  {
+    "id": "seed-opp-20260614-002",
+    "opportunity_id": "OPP-20260614-002",
+    "title": "Context Card as default room boot object",
+    "domain": "D03_ROOM_OS_EXPERIENCE",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"UI_BRIDGE + RUNTIME_BRIDGE\", \"domains\": [\"D03_ROOM_OS_EXPERIENCE\", \"D05_PEDAGOGY_SUBJECTS_CDC\", \"D08_DA_VISUAL_ASSETS\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\"], \"suggestion\": \"Promote room_context_card to the standard first object every domain must define before UI design: purpose, current state, can_do, will_not_do_without_validation, buttons, next action.\", \"why\": \"It prevents giant dashboards, reduces onboarding text and forces each domain to expose permissions and validation gates early.\", \"deployment_check\": \"later_when_frontend_mapping\"}"
+  },
+  {
+    "id": "seed-opp-20260614-003",
+    "opportunity_id": "OPP-20260614-003",
+    "title": "Guided Runtime as first vertical proof, not DA/assets",
+    "domain": "D01_IDENTITY_ACCESS_OWNERSHIP",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"PEDAGOGICAL_BRIDGE + PERMISSION_BRIDGE\", \"domains\": [\"D01_IDENTITY_ACCESS_OWNERSHIP\", \"D04_PERSONAS_CONTEXTUAL_BOTS\", \"D05_PEDAGOGY_SUBJECTS_CDC\"], \"suggestion\": \"Use private MOTH/CDC guided runtime as the first full product proof because it exercises scope, templates, personas, Resource Truth, progress and Room OS without public exposure or asset runtime gaps.\", \"why\": \"DA/assets has major confirmed GitHub gaps. Guided runtime foundations are confirmed and safer to simulate end-to-end.\", \"deployment_check\": \"only_if_requesting_implementation_delta\"}"
+  },
+  {
+    "id": "seed-opp-20260614-004",
+    "opportunity_id": "OPP-20260614-004",
+    "title": "Conversation roster for multi-persona clarity",
+    "domain": "D03_ROOM_OS_EXPERIENCE",
+    "priority": "medium_high",
+    "decision": "no_for_workbench_yes_for_final_ui_tone",
+    "opportunity_data_json": "{\"type\": \"PROMISING_OPPORTUNITY\", \"bridge\": \"UI_BRIDGE + PERMISSION_BRIDGE\", \"domains\": [\"D03_ROOM_OS_EXPERIENCE\", \"D04_PERSONAS_CONTEXTUAL_BOTS\"], \"suggestion\": \"Define a small conversation_roster object: active voice, why present, source/role, permissions, surface, max intervention budget.\", \"why\": \"It prevents persona chaos and makes MOTH/Incubator/personal persona understandable in UI.\", \"deployment_check\": \"needed_before_implementation\"}"
+  },
+  {
+    "id": "seed-opp-20260614-005",
+    "opportunity_id": "OPP-20260614-005",
+    "title": "Class entity should remain a tracked gap, not invented canon",
+    "domain": "D01_IDENTITY_ACCESS_OWNERSHIP",
+    "priority": "medium",
+    "decision": "not_now",
+    "opportunity_data_json": "{\"type\": \"TECHNICAL_CHECK_REQUIRED\", \"bridge\": \"DATA_MODEL_BRIDGE + PEDAGOGICAL_BRIDGE\", \"domains\": [\"D01_IDENTITY_ACCESS_OWNERSHIP\", \"D05_PEDAGOGY_SUBJECTS_CDC\", \"D06_CORRECTION_FEEDBACK_EVALUATION\"], \"suggestion\": \"Keep class/course scope carried by project for now. Ask deployment only when a domain truly needs a distinct class entity.\", \"why\": \"Snapshot explicitly says class_entity absent. Inventing it in canon now would create product/runtime drift.\", \"deployment_check\": \"later_blocking_for_class_specific_runtime\"}"
+  },
+  {
+    "id": "seed-opp-20260614-006",
+    "opportunity_id": "OPP-20260614-006",
+    "title": "Validation Inbox as shared gate across domains",
+    "domain": "D03_ROOM_OS_EXPERIENCE",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"PERMISSION_BRIDGE + RUNTIME_BRIDGE\", \"domains\": [\"D03_ROOM_OS_EXPERIENCE\", \"D05_PEDAGOGY_SUBJECTS_CDC\", \"D06_CORRECTION_FEEDBACK_EVALUATION\", \"D08_DA_VISUAL_ASSETS\", \"D10_EVENTS_QUOTES_PUBLIC_INTAKE\"], \"suggestion\": \"Treat validation inbox as a common domain service instead of one inbox per vertical: canon locks, exports, corrections, asset reviews, public sends, permission changes.\", \"why\": \"Same validation pattern repeats everywhere. Centralizing reduces product confusion and implementation duplication.\", \"deployment_check\": \"later_for_backend_surface\"}"
+  },
+  {
+    "id": "seed-opp-20260614-007",
+    "opportunity_id": "OPP-20260614-007",
+    "title": "D12 Autonomy Step 1 should be reconstructed before heavy asset domains",
+    "domain": "D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"PROMISING_OPPORTUNITY\", \"bridge\": \"JOB_PROVIDER_BRIDGE + VINCENT_FEATURE_BRIDGE\", \"domains\": [\"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\", \"D08_DA_VISUAL_ASSETS\", \"D10_EVENTS_QUOTES_PUBLIC_INTAKE\"], \"suggestion\": \"Reconstruct D12 next so the system can observe, prepare, compare canon/Git, and propose actions before visual/public/export domains multiply checks.\", \"why\": \"Autonomy step 1 is explicitly product-prioritized and reduces risk for all later domains.\", \"deployment_check\": \"likely_needed_after_domain_card\"}"
+  },
+  {
+    "id": "seed-opp-20260614-008",
+    "opportunity_id": "OPP-20260614-008",
+    "title": "Generated asset runtime should not be rebuilt from factories first",
+    "domain": "D08_DA_VISUAL_ASSETS",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"CONFLICTS_WITH_CURRENT_DIRECTION\", \"bridge\": \"VISUAL_CANON_BRIDGE\", \"domains\": [\"D08_DA_VISUAL_ASSETS\", \"D11_FACTORIES_BACKFLOW\"], \"suggestion\": \"Delay factory visual pack absorption until D08 defines global DA/assets owner boundaries and D12 can track deployment gaps.\", \"why\": \"Factories contain heavy duplicated assets and deployment bundles; starting there would recreate historical disorder.\", \"deployment_check\": \"not_now\"}"
+  },
+  {
+    "id": "seed-opp-20260614-009",
+    "opportunity_id": "OPP-20260614-009",
+    "title": "Opportunity Radar Embedded In Rebuild Conversation",
+    "domain": "all",
+    "priority": "high",
+    "decision": "accepted_by_malex_direct_feedback",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"D12_AUTONOMY + REBUILD_WORKFLOW\", \"domains\": [\"all\"], \"suggestion\": \"Surface opportunity detection fluidly during rebuild exchanges, not only stored in separate reports.\", \"why\": \"MALEX wants to arbitrate naturally as the rebuild advances.\", \"deployment_check\": \"not_required\"}"
+  },
+  {
+    "id": "seed-opp-20260614-010",
+    "opportunity_id": "OPP-20260614-010",
+    "title": "Inventory As Candidate Validation UX Testbed",
+    "domain": "D07_INVENTORY_OCR_COLLECTIONS",
+    "priority": "medium_high",
+    "decision": "not_now",
+    "opportunity_data_json": "{\"type\": \"PROMISING_OPPORTUNITY\", \"bridge\": \"DATA_MODEL_BRIDGE + UI_BRIDGE + VISUAL_CANON_BRIDGE\", \"domains\": [\"D07_INVENTORY_OCR_COLLECTIONS\", \"D08_DA_VISUAL_ASSETS\", \"D03_ROOM_OS_EXPERIENCE\", \"D02_CONTEXT_MEMORY_RAG\"], \"suggestion\": \"Use Inventory/OCR as a safe testbed for candidate -> validation -> scoped use UX before heavier DA/generated asset workflows.\", \"why\": \"It exercises privacy, source confidence, user validation, collection ambiguity, dynamic counters and optional generated assets without requiring public export or final visual canon.\", \"deployment_check\": \"later_if_frontend_or_ocr_runtime_requested\"}"
+  },
+  {
+    "id": "seed-opp-20260614-011",
+    "opportunity_id": "OPP-20260614-011",
+    "title": "D08 Manifest-First Visual Runtime",
+    "domain": "D08_DA_VISUAL_ASSETS",
+    "priority": "high",
+    "decision": "not_now",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"VISUAL_CANON_BRIDGE + JOB_PROVIDER_BRIDGE\", \"domains\": [\"D08_DA_VISUAL_ASSETS\", \"D07_INVENTORY_OCR_COLLECTIONS\", \"D11_FACTORIES_BACKFLOW\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\"], \"suggestion\": \"When implementation starts, build D08 manifest/gate/reference-status runtime before provider generation.\", \"why\": \"The snapshot confirms image provider and generated asset runtime are absent. Manifest-first prevents factories and beautiful outputs from becoming accidental canon.\", \"deployment_check\": \"needed_before_implementation\"}"
+  },
+  {
+    "id": "seed-opp-20260614-012",
+    "opportunity_id": "OPP-20260614-012",
+    "title": "Correction As Evidence-To-Feedback Loop",
+    "domain": "D05_PEDAGOGY_SUBJECTS_CDC",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"PEDAGOGICAL_BRIDGE + RAG_MEMORY_BRIDGE + VALIDATION_BRIDGE\", \"domains\": [\"D05_PEDAGOGY_SUBJECTS_CDC\", \"D06_CORRECTION_FEEDBACK_EVALUATION\", \"D02_CONTEXT_MEMORY_RAG\", \"D01_IDENTITY_ACCESS_OWNERSHIP\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\", \"D03_ROOM_OS_EXPERIENCE\"], \"suggestion\": \"Treat D06 as the first visible proof of the whole pedagogical chain: subject intent, source truth, submission evidence, pre-correction manifest, teacher validation and student-safe next action.\", \"why\": \"The correction pipeline foundation exists in the snapshot, and the historical contracts converge on evidence, tone, validation and teacher sovereignty.\", \"deployment_check\": \"later_when_correction_ui_is_mapped\"}"
+  },
+  {
+    "id": "seed-opp-20260614-013",
+    "opportunity_id": "OPP-20260614-013",
+    "title": "Candidate Canon UI Primitive",
+    "domain": "D09_MASTERSTORY_NARRATIVE",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"CANON_VALIDATION_BRIDGE + UI_BRIDGE\", \"domains\": [\"D09_MASTERSTORY_NARRATIVE\", \"D08_DA_VISUAL_ASSETS\", \"D06_CORRECTION_FEEDBACK_EVALUATION\", \"D11_FACTORIES_BACKFLOW\", \"D03_ROOM_OS_EXPERIENCE\"], \"suggestion\": \"Create one shared UI pattern for candidate states and author/owner decisions.\", \"why\": \"MasterStory, DA assets, correction sheets and factories all need the same distinction between source, candidate, patch, version and canon lock.\", \"deployment_check\": \"later_when_validation_inbox_ui_is_mapped\"}"
+  },
+  {
+    "id": "seed-opp-20260614-014",
+    "opportunity_id": "OPP-20260614-014",
+    "title": "Private Quote Builder Before Public Intake",
+    "domain": "D10_EVENTS_QUOTES_PUBLIC_INTAKE",
+    "priority": "medium_high",
+    "decision": "not_now",
+    "opportunity_data_json": "{\"type\": \"PROMISING_OPPORTUNITY\", \"bridge\": \"QUOTE_BRIDGE + RESOURCE_TRUTH_BRIDGE + VALIDATION_BRIDGE\", \"domains\": [\"D10_EVENTS_QUOTES_PUBLIC_INTAKE\", \"D07_INVENTORY_OCR_COLLECTIONS\", \"D02_CONTEXT_MEMORY_RAG\", \"D03_ROOM_OS_EXPERIENCE\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\"], \"suggestion\": \"Use a private Quote Builder workflow as the first D10 proof before opening public intake.\", \"why\": \"It creates real value with lower privacy/public risk while public forms and exports depend on unconfirmed runtime and consent gates.\", \"deployment_check\": \"needed_before_quote_runtime_promise\"}"
+  },
+  {
+    "id": "seed-opp-20260614-015",
+    "opportunity_id": "OPP-20260614-015",
+    "title": "Factory Passport For Portable Capsules",
+    "domain": "D11_FACTORIES_BACKFLOW",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"FACTORY_BACKFLOW_BRIDGE + EXPORT_BRIDGE + VALIDATION_BRIDGE\", \"domains\": [\"D11_FACTORIES_BACKFLOW\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\", \"D08_DA_VISUAL_ASSETS\", \"D09_MASTERSTORY_NARRATIVE\", \"D06_CORRECTION_FEEDBACK_EVALUATION\"], \"suggestion\": \"Define a shared factory_passport object for every autonomous capsule.\", \"why\": \"A passport prevents each bundle from becoming an opaque fork and makes reabsorption possible without bulk-copying historical internals.\", \"deployment_check\": \"not_now_runtime_out_of_scope\"}"
+  },
+  {
+    "id": "seed-opp-20260614-016",
+    "opportunity_id": "OPP-20260614-016",
+    "title": "D05-D06 First Product Proof",
+    "domain": "D01_IDENTITY_ACCESS_OWNERSHIP",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"PEDAGOGICAL_BRIDGE + VALIDATION_BRIDGE + UI_BRIDGE\", \"domains\": [\"D01_IDENTITY_ACCESS_OWNERSHIP\", \"D02_CONTEXT_MEMORY_RAG\", \"D03_ROOM_OS_EXPERIENCE\", \"D04_PERSONAS_CONTEXTUAL_BOTS\", \"D05_PEDAGOGY_SUBJECTS_CDC\", \"D06_CORRECTION_FEEDBACK_EVALUATION\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\"], \"suggestion\": \"Use private guided subject -> correction sheet -> evidence -> teacher validation -> student-safe feedback as the first end-to-end product proof.\", \"why\": \"It exercises the MasterFlow OS spine using confirmed foundations while avoiding visual runtime and public intake gaps.\", \"deployment_check\": \"later_when_mapping_ui_backend_surfaces\"}"
+  },
+  {
+    "id": "seed-opp-20260614-017",
+    "opportunity_id": "OPP-20260614-017",
+    "title": "Teacher Validation Workbench As First UI Slice",
+    "domain": "D03_ROOM_OS_EXPERIENCE",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"UI_BRIDGE + PEDAGOGICAL_BRIDGE + VALIDATION_BRIDGE\", \"domains\": [\"D03_ROOM_OS_EXPERIENCE\", \"D05_PEDAGOGY_SUBJECTS_CDC\", \"D06_CORRECTION_FEEDBACK_EVALUATION\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\"], \"suggestion\": \"Make the first real UI slice a teacher validation workbench.\", \"why\": \"It demonstrates MasterFlow OS value with confirmed foundations and avoids public, visual or factory gaps.\", \"deployment_check\": \"REBUILD-DEPLOY-D05D06-UI-001\"}"
+  },
+  {
+    "id": "seed-opp-20260614-018",
+    "opportunity_id": "OPP-20260614-018",
+    "title": "Primitive Adoption Matrix As Domain Readiness Gate",
+    "domain": "all",
+    "priority": "high",
+    "decision": "no_obvious_yes",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"VALIDATION_BRIDGE + UI_BRIDGE + DOMAIN_STABILITY_BRIDGE\", \"domains\": [\"all\"], \"suggestion\": \"Use the primitive adoption matrix as a readiness gate before any domain is considered stable.\", \"why\": \"The rebuild now has recurring source, validation and output patterns that should not diverge by domain.\", \"deployment_check\": \"later_when_shared_runtime_surfaces_are_mapped\"}"
+  },
+  {
+    "id": "seed-opp-20260614-019",
+    "opportunity_id": "OPP-20260614-019",
+    "title": "Shared Validation Inbox MVP As First Cross-Domain Implementation Surface",
+    "domain": "D06_CORRECTION_FEEDBACK_EVALUATION",
+    "priority": "high",
+    "decision": "no_obvious_yes_for_spec",
+    "opportunity_data_json": "{\"type\": \"EVIDENT_OPTIMIZATION\", \"bridge\": \"VALIDATION_BRIDGE + UI_BRIDGE + IMPLEMENTATION_SEQUENCE_BRIDGE\", \"domains\": [\"D06_CORRECTION_FEEDBACK_EVALUATION\", \"D07_INVENTORY_OCR_COLLECTIONS\", \"D08_DA_VISUAL_ASSETS\", \"D09_MASTERSTORY_NARRATIVE\", \"D10_EVENTS_QUOTES_PUBLIC_INTAKE\", \"D11_FACTORIES_BACKFLOW\", \"D12_AUTONOMY_OBSERVABILITY_DEPLOYMENT\"], \"suggestion\": \"Make shared Validation Inbox MVP the first cross-domain implementation surface.\", \"why\": \"The same decision grammar now repeats across D06-D12.\", \"deployment_check\": \"after_outbox_mapping\"}"
+  }
+]

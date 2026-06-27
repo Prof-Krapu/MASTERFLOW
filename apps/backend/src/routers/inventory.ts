@@ -9,6 +9,7 @@ import {
   InventorySearchRequestSchema,
   MatchInventoryProjectNeedRequestSchema,
   ResolveCollectionMatchRequestSchema,
+  ScanInventoryPhotoRequestSchema,
   SetCollectionCompletionRequestSchema,
 } from '@masterflow/shared';
 
@@ -28,6 +29,7 @@ import {
   listInventoryCollections,
   listCollectionMatches,
   resolveCollectionMatch,
+  scanInventoryPhoto,
   setInventoryCollectionCompletion,
   searchInventory,
   validateInventoryCollection,
@@ -277,6 +279,19 @@ export function createInventoryRouter(): Router {
     }
     try {
       res.status(201).json({results: ingestInventoryOcrCandidates(actor(req), parsed.data)});
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/photo-scan', (req: Request, res: Response): void => {
+    const parsed = ScanInventoryPhotoRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.status(201).json({results: scanInventoryPhoto(actor(req), parsed.data)});
     } catch (error) {
       routeError(res, error);
     }

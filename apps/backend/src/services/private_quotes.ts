@@ -1,6 +1,118 @@
-import{CreatePrivateQuoteDraftRequestSchema,PrivateQuoteDraftSchema,ROLE_RANK,type CreatePrivateQuoteDraftRequest,type PrivateQuoteDraft}from'@masterflow/shared';import{getDb}from'../db/schema.ts';import{uuid}from'../lib/uuid.ts';import type{AuthUser}from'../middleware/auth.ts';
-function teacher(a:AuthUser):void{if(ROLE_RANK[a.role]<ROLE_RANK.teacher)throw new Error('permission_denied');}
-function dto(r:any):PrivateQuoteDraft{return PrivateQuoteDraftSchema.parse({quote_id:r.id,owner_id:r.owner_id,project_id:r.project_id,project_scope:r.project_scope,version:r.version,client_label:r.client_label,currency:r.currency,lines:JSON.parse(r.lines_json),assumptions:JSON.parse(r.assumptions_json),exclusions:JSON.parse(r.exclusions_json),validity:r.validity,total:r.total,status:r.status,created_by:r.created_by,created_at:r.created_at,updated_at:r.updated_at});}
-export function createPrivateQuoteDraft(a:AuthUser,input:CreatePrivateQuoteDraftRequest):PrivateQuoteDraft{teacher(a);const q=CreatePrivateQuoteDraftRequestSchema.parse(input),scope=q.project_id??a.id,db=getDb(),max=db.prepare('SELECT COALESCE(MAX(version),0) version FROM private_quote_drafts WHERE owner_id=? AND project_scope=?').get(a.id,scope)as{version:number},lines=q.lines.map(l=>({...l,subtotal:l.quantity*l.unit_price})),total=lines.reduce((s,l)=>s+l.subtotal,0),now=Date.now(),id=uuid();db.prepare("INSERT INTO private_quote_drafts VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'draft',?,?,?)").run(id,a.id,q.project_id??null,scope,max.version+1,q.client_label,q.currency,JSON.stringify(lines),JSON.stringify(q.assumptions),JSON.stringify(q.exclusions),q.validity,total,a.id,now,now);return dto(db.prepare('SELECT * FROM private_quote_drafts WHERE id=?').get(id));}
-export function listPrivateQuoteDrafts(a:AuthUser):PrivateQuoteDraft[]{teacher(a);return(getDb().prepare('SELECT * FROM private_quote_drafts WHERE owner_id=? ORDER BY updated_at DESC').all(a.id)as any[]).map(dto);}
-export function validatePrivateQuoteDraft(a:AuthUser,id:string):PrivateQuoteDraft{teacher(a);const db=getDb(),r=db.prepare('SELECT * FROM private_quote_drafts WHERE id=? AND owner_id=?').get(id,a.id)as any;if(!r)throw new Error('private_quote_not_found');if(r.status!=='draft')throw new Error('private_quote_not_reviewable');db.prepare("UPDATE private_quote_drafts SET status='validated_private',updated_at=? WHERE id=?").run(Date.now(),id);return dto(db.prepare('SELECT * FROM private_quote_drafts WHERE id=?').get(id));}
+import {
+  CreatePrivateQuoteDraftRequestSchema,
+  PrivateQuoteDraftSchema,
+  ROLE_RANK,
+  type CreatePrivateQuoteDraftRequest,
+  type PrivateQuoteDraft,
+} from '@masterflow/shared';
+
+import {getDb} from '../db/schema.ts';
+import {uuid} from '../lib/uuid.ts';
+import type {AuthUser} from '../middleware/auth.ts';
+
+function teacher(a: AuthUser): void {
+  if (ROLE_RANK[a.role] < ROLE_RANK.teacher) throw new Error('permission_denied');
+}
+
+function computeDraftTotals(lines: PrivateQuoteDraft['lines']): {
+  total: number;
+  margin_total: number;
+  tax_total: number;
+} {
+  const total = lines.reduce((s, l) => s + l.subtotal, 0);
+  const margin_total = lines.reduce((s, l) => s + (l.margin ?? 0), 0);
+  const tax_total = lines.reduce((s, l) => {
+    if (l.tax_mode === 'tva_pleine') return s + l.subtotal * 0.20;
+    if (l.tax_mode === 'tva_reduite') return s + l.subtotal * 0.055;
+    return s;
+  }, 0);
+  return {total, margin_total, tax_total};
+}
+
+function dto(r: any): PrivateQuoteDraft {
+  const lines = JSON.parse(r.lines_json) as PrivateQuoteDraft['lines'];
+  const {total, margin_total, tax_total} = computeDraftTotals(lines);
+  return PrivateQuoteDraftSchema.parse({
+    quote_id: r.id,
+    owner_id: r.owner_id,
+    project_id: r.project_id,
+    project_scope: r.project_scope,
+    version: r.version,
+    client_label: r.client_label,
+    currency: r.currency,
+    lines,
+    assumptions: JSON.parse(r.assumptions_json),
+    exclusions: JSON.parse(r.exclusions_json),
+    validity: r.validity,
+    total,
+    margin_total,
+    tax_total,
+    status: r.status,
+    created_by: r.created_by,
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+  });
+}
+
+export function createPrivateQuoteDraft(a: AuthUser, input: CreatePrivateQuoteDraftRequest): PrivateQuoteDraft {
+  teacher(a);
+  const q = CreatePrivateQuoteDraftRequestSchema.parse(input);
+  const scope = q.project_id ?? a.id;
+  const db = getDb();
+  const max = db
+    .prepare(
+      'SELECT COALESCE(MAX(version),0) version FROM private_quote_drafts WHERE owner_id=? AND project_scope=?',
+    )
+    .get(a.id, scope) as {version: number};
+  const lines = q.lines.map((l) => ({...l, subtotal: l.quantity * l.unit_price}));
+  const {total, margin_total, tax_total} = computeDraftTotals(lines);
+  const now = Date.now();
+  const id = uuid();
+
+  db.prepare(
+    `INSERT INTO private_quote_drafts
+       (id, owner_id, project_id, project_scope, version, client_label, currency,
+        lines_json, assumptions_json, exclusions_json, validity, total,
+        status, created_by, created_at, updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'draft',?,?,?)`,
+  ).run(
+    id,
+    a.id,
+    q.project_id ?? null,
+    scope,
+    max.version + 1,
+    q.client_label,
+    q.currency,
+    JSON.stringify(lines),
+    JSON.stringify(q.assumptions),
+    JSON.stringify(q.exclusions),
+    q.validity,
+    total,
+    a.id,
+    now,
+    now,
+  );
+
+  return dto(db.prepare('SELECT * FROM private_quote_drafts WHERE id=?').get(id));
+}
+
+export function listPrivateQuoteDrafts(a: AuthUser): PrivateQuoteDraft[] {
+  teacher(a);
+  return (getDb()
+    .prepare('SELECT * FROM private_quote_drafts WHERE owner_id=? ORDER BY updated_at DESC')
+    .all(a.id) as any[])
+    .map(dto);
+}
+
+export function validatePrivateQuoteDraft(a: AuthUser, id: string): PrivateQuoteDraft {
+  teacher(a);
+  const db = getDb();
+  const r = db.prepare('SELECT * FROM private_quote_drafts WHERE id=? AND owner_id=?').get(id, a.id) as any;
+  if (!r) throw new Error('private_quote_not_found');
+  if (r.status !== 'draft') throw new Error('private_quote_not_reviewable');
+  db.prepare("UPDATE private_quote_drafts SET status='validated_private',updated_at=? WHERE id=?").run(
+    Date.now(),
+    id,
+  );
+  return dto(db.prepare('SELECT * FROM private_quote_drafts WHERE id=?').get(id));
+}

@@ -2,8 +2,7 @@ import {beforeAll,describe,expect,it} from 'vitest';
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
-import {createSubject,createSubjectVersion,listSubjectVersions,listSubjects,validateSubjectVersion} from '../src/services/subjects.ts';
-import {activateSubjectAssignment,createSubjectAssignment} from '../src/services/subjects.ts';
+import {activateSubjectAssignment,compileSubjectFullStack,createSubject,createSubjectAssignment,createSubjectVersion,listSubjectVersions,listSubjects,validateSubjectVersion} from '../src/services/subjects.ts';
 import {createCohort} from '../src/services/cohorts.ts';
 import {
   listCorrectionSheetDrafts,
@@ -50,5 +49,18 @@ describe('bibliothèque de sujets versionnés R2',()=>{
     expect(validateCorrectionSheetDraft(teacher,sheetV2.correction_sheet_id,{validation_ref:'teacher://review/r2-3'})).toMatchObject({status:'validated',sync_status:'synced'});
     expect(listSubjectVersions(teacher,created.template.template_id)).toHaveLength(2);
     expect(assignment.subject_snapshot.mission).toBe(manifest.mission);
+  });
+
+  it('compileSubjectFullStack produit un fullstack pour un sujet validé', () => {
+    const created=createSubject(teacher,{title:'Fullstack test',manifest});
+    expect(validateSubjectVersion(teacher,created.version.version_id).status).toBe('validated');
+    const full=compileSubjectFullStack(teacher,created.template.template_id);
+    expect(full.template.template_id).toBe(created.template.template_id);
+    expect(full.version.status).toBe('validated');
+    expect(full.compiled_by).toBe(teacher.id);
+  });
+
+  it('compileSubjectFullStack rejette un template inconnu', () => {
+    expect(()=>compileSubjectFullStack(teacher,'nonexistent')).toThrow('subject_not_found');
   });
 });

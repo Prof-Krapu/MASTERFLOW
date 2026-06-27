@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-27 — Absorption Big Pickle + hardening pré-merge Codex
+
+- absorption locale massive : DA runtime, narration, characters, mirrors, compétences, gamification,
+  weather, D12, correction runner, registries et seeds canon/legacy ;
+- MALEX valide que le seed étudiants réels peut être poussé ;
+- hardening Codex avant publication : guards owner/project, routes sensibles en teacher minimum,
+  action registry repassé en mode prudent (`future` ou `validation_required`) pour éviter un faux live ;
+- tests backend complets verts : 96 fichiers, 529/529 ; lint TypeScript vert.
+
+Statut : local prêt à revue/commit après contrôle final Git. Aucun déploiement live revendiqué.
+
 ## 2026-06-21 — D12 : registre incidents privé
 
 - incident append-only, symptômes/traces/scope, sans traitement automatique ;

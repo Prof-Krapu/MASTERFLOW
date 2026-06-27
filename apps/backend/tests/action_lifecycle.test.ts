@@ -77,14 +77,14 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
 
   it('refuse au preflight une action future ou hors scope', () => {
     const created = createAction(god, {
-      registry_id: 'compile_da_context',
-      intent: 'compile_da_context',
-      object_type: 'da_context',
+      registry_id: 'import_factory_backflow',
+      intent: 'import_factory_backflow',
+      object_type: 'backflow',
       payload: {},
     });
     const flighted = preflightAction(god, created.id);
     expect(flighted.status).toBe('failed');
-    expect(flighted.error).toBe('action_not_live:future');
+    expect(flighted.error).toBe('action_not_live:out_of_scope');
   });
 
   it('draft → pending_validation → approved → completed (chemin nominal)', () => {

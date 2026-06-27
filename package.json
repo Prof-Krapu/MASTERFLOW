@@ -19,5 +19,8 @@
     "lint:frontend": "npm run lint --workspace @masterflow/frontend",
     "build:frontend": "npm run build --workspace @masterflow/frontend",
     "smoke:public": "node scripts/smoke-public-runtime.mjs"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9"
   }
 }

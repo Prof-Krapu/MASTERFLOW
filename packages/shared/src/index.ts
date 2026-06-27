@@ -264,6 +264,16 @@ export const InventoryOcrCandidateSchema = CreateInventoryItemRequestSchema.pick
 });
 export type InventoryOcrCandidate = z.input<typeof InventoryOcrCandidateSchema>;
 
+export const ScanInventoryPhotoRequestSchema = z.object({
+  image_data: z.string().min(1),
+  image_mime: z.string().default('image/jpeg'),
+  collection_id: z.string().min(1).nullable().optional(),
+  project_id: z.string().min(1).nullable().optional(),
+  project_scope: z.string().min(1),
+  notes: z.string().max(1000).nullable().optional(),
+});
+export type ScanInventoryPhotoRequest = z.input<typeof ScanInventoryPhotoRequestSchema>;
+
 export const IngestInventoryOcrCandidatesRequestSchema = z.object({
   job_id: z.string().min(1),
   collection_id: z.string().min(1).nullable().optional(),
@@ -1826,6 +1836,16 @@ export const CreateSubjectVersionRequestSchema = z.object({manifest: SubjectMani
 export type CreateSubjectVersionRequest = z.infer<typeof CreateSubjectVersionRequestSchema>;
 export const SubjectAssignmentSchema = z.object({assignment_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),cohort_id:z.string().min(1),source_subject_version_id:z.string().min(1),title:z.string().min(1),subject_snapshot:SubjectManifestSchema,status:z.enum(['draft','active','archived']),created_by:z.string().min(1),created_at:z.number().int().nonnegative(),activated_at:z.number().int().nonnegative().nullable()});
 export type SubjectAssignment = z.infer<typeof SubjectAssignmentSchema>;
+
+export const SubjectFullStackSchema = z.object({
+  template: SubjectTemplateSchema,
+  version: SubjectVersionSchema,
+  compiled_at: z.number().int().nonnegative(),
+  compiled_by: z.string().min(1),
+});
+export type SubjectFullStack = z.infer<typeof SubjectFullStackSchema>;
+
+
 export const CreateSubjectAssignmentRequestSchema = z.object({project_id:z.string().min(1).nullable().optional(),cohort_id:z.string().min(1),source_subject_version_id:z.string().min(1),title:z.string().min(1).max(160)});
 export type CreateSubjectAssignmentRequest = z.infer<typeof CreateSubjectAssignmentRequestSchema>;
 
@@ -1917,6 +1937,7 @@ export const VisualManifestSchema = z.object({
   da_root_ref: z.string().min(1).nullable(), active_layers: z.array(z.string()), filters: z.array(z.string()),
   output_family: z.enum(['visual_retake','visual_diagnostic','event_spread','badge_reward','medal_reward','trophy_reward','visual_manifest_candidate']),
   output_template: z.string().min(1), source_truth_summary: z.string().min(1), reference_ids: z.array(z.string()),
+  workbench_id: z.string().nullable(), node_id: z.string().nullable(),
   status: VisualManifestStatusSchema, action_ready_report: z.object({
     final_state: z.enum(['not_ready','ready_for_owner_review','generation_blocked_tech_pending','parked']),
     missing_items: z.array(z.string()), generation_blockers: z.array(z.string()),
@@ -1931,9 +1952,65 @@ export const CreateVisualManifestRequestSchema = z.object({
   output_family: z.enum(['visual_retake','visual_diagnostic','event_spread','badge_reward','medal_reward','trophy_reward','visual_manifest_candidate']),
   output_template: z.string().min(1).max(500), source_truth_summary: z.string().min(1).max(2000),
   reference_ids: z.array(z.string().min(1)).max(100).default([]),
+  workbench_id: z.string().min(1).nullable().optional(),
+  node_id: z.string().min(1).nullable().optional(),
 });
 export type CreateVisualManifestRequest = z.infer<typeof CreateVisualManifestRequestSchema>;
-export const StoryWorkbenchSchema = z.object({workbench_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),title:z.string().min(1),source_ref:z.string().min(1),intake_mode:z.enum(['audit_only','index_only','draft_workbench']),source_truth_state:z.enum(['SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED']),status:z.enum(['draft','reader_ready','workshop_ready','parked']),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
+
+export const GeneratedAssetTypeSchema = z.enum(['image', 'visual_manifest', 'badge', 'render', 'export']);
+export type GeneratedAssetType = z.infer<typeof GeneratedAssetTypeSchema>;
+
+export const GeneratedAssetStatusSchema = z.enum(['candidate', 'approved', 'rejected', 'archived']);
+export type GeneratedAssetStatus = z.infer<typeof GeneratedAssetStatusSchema>;
+
+export const GeneratedAssetSchema = z.object({
+  id: z.string(),
+  manifest_id: z.string().nullable(),
+  job_id: z.string().nullable(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  asset_type: GeneratedAssetTypeSchema,
+  status: GeneratedAssetStatusSchema,
+  mime_type: z.string().nullable(),
+  storage_ref: z.string().nullable(),
+  thumbnail_ref: z.string().nullable(),
+  metadata: z.record(z.unknown()).default({}),
+  review_note: z.string().nullable(),
+  reviewed_by: z.string().nullable(),
+  reviewed_at: z.number().nullable(),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type GeneratedAsset = z.infer<typeof GeneratedAssetSchema>;
+
+export const StoreGeneratedAssetRequestSchema = z.object({
+  manifest_id: z.string().min(1).nullable().optional(),
+  job_id: z.string().min(1).nullable().optional(),
+  asset_type: GeneratedAssetTypeSchema,
+  mime_type: z.string().min(1).nullable().optional(),
+  storage_ref: z.string().min(1).nullable().optional(),
+  thumbnail_ref: z.string().min(1).nullable().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+export type StoreGeneratedAssetRequest = z.infer<typeof StoreGeneratedAssetRequestSchema>;
+
+export const ReviewGeneratedAssetRequestSchema = z.object({
+  status: z.enum(['approved', 'rejected']),
+  review_note: z.string().max(2000).optional(),
+});
+export type ReviewGeneratedAssetRequest = z.infer<typeof ReviewGeneratedAssetRequestSchema>;
+
+export const DA_RUNTIME_API = {
+  assets: {
+    list: '/api/v1/da/assets',
+    get: '/api/v1/da/assets/:id',
+    store: '/api/v1/da/assets',
+    review: '/api/v1/da/assets/:id/review',
+    byManifest: '/api/v1/da/assets/by-manifest/:manifestId',
+  },
+} as const;
+
+export const StoryWorkbenchSchema = z.object({workbench_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),title:z.string().min(1),source_ref:z.string().min(1),intake_mode:z.enum(['audit_only','index_only','draft_workbench']),source_truth_state:z.enum(['SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED']),status:z.enum(['draft','reader_ready','workshop_ready','parked']),canon_locked:z.number().int().min(0).max(1).default(0),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
 export type StoryWorkbench=z.infer<typeof StoryWorkbenchSchema>;
 export const CreateStoryWorkbenchRequestSchema=z.object({project_id:z.string().min(1).nullable().optional(),title:z.string().min(1).max(160),source_ref:z.string().min(1).max(1000),intake_mode:z.enum(['audit_only','index_only','draft_workbench']),source_truth_state:z.enum(['SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED'])});
 export type CreateStoryWorkbenchRequest=z.infer<typeof CreateStoryWorkbenchRequestSchema>;
@@ -1945,10 +2022,208 @@ export const StoryPatchCandidateSchema=z.object({patch_id:z.string().min(1),work
 export type StoryPatchCandidate=z.infer<typeof StoryPatchCandidateSchema>;
 export const CreateStoryPatchCandidateRequestSchema=z.object({title:z.string().min(1).max(160),proposal:z.string().min(1).max(10000),truth_state:z.enum(['CANDIDATE','TO_VALIDATE','OPEN_QUESTION','CONTRADICTION']).default('CANDIDATE')});
 export type CreateStoryPatchCandidateRequest=z.infer<typeof CreateStoryPatchCandidateRequestSchema>;
-export const QuoteLineSchema=z.object({label:z.string().min(1),quantity:z.number().positive(),unit_price:z.number().nonnegative(),price_source_ref:z.string().min(1),confidence:z.enum(['low','medium','high']),subtotal:z.number().nonnegative()});
-export const PrivateQuoteDraftSchema=z.object({quote_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),version:z.number().int().positive(),client_label:z.string().min(1),currency:z.string().length(3),lines:z.array(QuoteLineSchema),assumptions:z.array(z.string()),exclusions:z.array(z.string()),validity:z.string().min(1),total:z.number().nonnegative(),status:z.enum(['draft','needs_review','validated_private','archived']),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
+
+export const StoryNodeTypeSchema = z.enum(['arc', 'scene', 'beat', 'sequence', 'chapter']);
+export type StoryNodeType = z.infer<typeof StoryNodeTypeSchema>;
+
+export const StoryNodeMetadataSchema = z.object({
+  gate_type: z.enum(['none', 'spoiler', 'prerequisite', 'reveal', 'locked']).optional(),
+  prerequisite_ids: z.array(z.string().min(1)).optional(),
+  reader_visibility: z.enum(['everyone', 'spoilered', 'restricted']).optional(),
+  truth_state: z.enum([
+    'SOURCE_VERIFIED', 'SOURCE_CURRENT', 'CANDIDATE',
+    'CONTRADICTION', 'CANON_LOCKED', 'OPEN_QUESTION',
+  ]).optional(),
+  protagonist_visibility: z.enum(['known', 'unknown', 'suspected', 'revealed']).optional(),
+  confidence: z.enum(['canon', 'probable', 'speculative', 'uncertain', 'contradiction']).optional(),
+  character_ids: z.array(z.string().min(1)).optional(),
+  visual_manifest_ids: z.array(z.string().min(1)).optional(),
+}).catchall(z.unknown());
+export type StoryNodeMetadata = z.infer<typeof StoryNodeMetadataSchema>;
+
+export const StoryNodeSchema = z.object({
+  id: z.string(),
+  workbench_id: z.string(),
+  parent_id: z.string().nullable(),
+  owner_id: z.string(),
+  node_type: StoryNodeTypeSchema,
+  title: z.string(),
+  summary: z.string().nullable(),
+  sort_order: z.number(),
+  spoiler_level: z.enum(['none', 'mild', 'major', 'critical']),
+  status: z.enum(['draft', 'active', 'locked', 'archived']),
+  metadata: StoryNodeMetadataSchema.default({}),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type StoryNode = z.infer<typeof StoryNodeSchema>;
+
+export const CreateStoryNodeRequestSchema = z.object({
+  workbench_id: z.string().min(1),
+  parent_id: z.string().nullable().optional(),
+  node_type: StoryNodeTypeSchema,
+  title: z.string().min(1).max(300),
+  summary: z.string().max(2000).nullable().optional(),
+  sort_order: z.number().int().optional(),
+  spoiler_level: z.enum(['none', 'mild', 'major', 'critical']).optional(),
+  metadata: StoryNodeMetadataSchema.optional(),
+});
+export type CreateStoryNodeRequest = z.infer<typeof CreateStoryNodeRequestSchema>;
+
+export const UpdateStoryNodeRequestSchema = z.object({
+  title: z.string().min(1).max(300).optional(),
+  summary: z.string().max(2000).nullable().optional(),
+  sort_order: z.number().int().optional(),
+  spoiler_level: z.enum(['none', 'mild', 'major', 'critical']).optional(),
+  status: z.enum(['draft', 'active', 'locked', 'archived']).optional(),
+  metadata: StoryNodeMetadataSchema.optional(),
+});
+export type UpdateStoryNodeRequest = z.infer<typeof UpdateStoryNodeRequestSchema>;
+
+export const NarrativeEventSchema = z.object({
+  id: z.string(),
+  workbench_id: z.string(),
+  node_id: z.string().nullable(),
+  owner_id: z.string(),
+  event_type: z.enum(['story_beat','milestone','unlock','character_intro','plot_twist','reveal','decision_point']),
+  title: z.string(),
+  description: z.string().nullable(),
+  payload: z.record(z.unknown()).default({}),
+  occurred_at: z.number(),
+  created_at: z.number(),
+});
+export type NarrativeEvent = z.infer<typeof NarrativeEventSchema>;
+
+export const StoryCharacterArchetypeSchema = z.enum([
+  'protagonist', 'antagonist', 'mentor', 'ally', 'trickster',
+  'guardian', 'herald', 'shadow', 'shapeshifter', 'sidekick',
+  'collective', 'neutral',
+]);
+export type StoryCharacterArchetype = z.infer<typeof StoryCharacterArchetypeSchema>;
+
+export const StoryCharacterSchema = z.object({
+  id: z.string(),
+  workbench_id: z.string(),
+  owner_id: z.string(),
+  name: z.string().min(1),
+  aliases: z.array(z.string()).default([]),
+  role: z.string(),
+  archetype: StoryCharacterArchetypeSchema,
+  status: z.enum(['active', 'inactive', 'deceased', 'unknown', 'concept']),
+  design_notes: z.string().nullable(),
+  behavior_notes: z.string().nullable(),
+  metadata: z.record(z.unknown()).default({}),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type StoryCharacter = z.infer<typeof StoryCharacterSchema>;
+
+export const CreateStoryCharacterRequestSchema = z.object({
+  workbench_id: z.string().min(1),
+  name: z.string().min(1).max(200),
+  aliases: z.array(z.string().min(1)).max(20).optional(),
+  role: z.string().min(1).max(500),
+  archetype: StoryCharacterArchetypeSchema,
+  status: z.enum(['active', 'inactive', 'deceased', 'unknown', 'concept']).optional(),
+  design_notes: z.string().max(5000).nullable().optional(),
+  behavior_notes: z.string().max(5000).nullable().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+export type CreateStoryCharacterRequest = z.infer<typeof CreateStoryCharacterRequestSchema>;
+
+export const UpdateStoryCharacterRequestSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  aliases: z.array(z.string().min(1)).max(20).optional(),
+  role: z.string().min(1).max(500).optional(),
+  archetype: StoryCharacterArchetypeSchema.optional(),
+  status: z.enum(['active', 'inactive', 'deceased', 'unknown', 'concept']).optional(),
+  design_notes: z.string().max(5000).nullable().optional(),
+  behavior_notes: z.string().max(5000).nullable().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+export type UpdateStoryCharacterRequest = z.infer<typeof UpdateStoryCharacterRequestSchema>;
+
+export const GenerateSceneVisualRequestSchema = z.object({
+  node_id: z.string().min(1),
+  additional_prompt: z.string().max(1000).optional(),
+  width: z.number().int().positive().max(4096).optional(),
+  height: z.number().int().positive().max(4096).optional(),
+  n: z.number().int().min(1).max(4).optional(),
+});
+export type GenerateSceneVisualRequest = z.infer<typeof GenerateSceneVisualRequestSchema>;
+
+export const CreateNarrativeEventRequestSchema = z.object({
+  workbench_id: z.string().min(1),
+  node_id: z.string().nullable().optional(),
+  event_type: z.enum(['story_beat','milestone','unlock','character_intro','plot_twist','reveal','decision_point']),
+  title: z.string().min(1).max(300),
+  description: z.string().max(5000).nullable().optional(),
+  payload: z.record(z.unknown()).optional(),
+  occurred_at: z.number().optional(),
+});
+export type CreateNarrativeEventRequest = z.infer<typeof CreateNarrativeEventRequestSchema>;
+
+export const NARRATIVE_RUNTIME_API = {
+  nodes: {
+    list: '/api/v1/narrative/nodes',
+    create: '/api/v1/narrative/nodes',
+    get: '/api/v1/narrative/nodes/:id',
+    update: '/api/v1/narrative/nodes/:id',
+    delete: '/api/v1/narrative/nodes/:id',
+    byWorkbench: '/api/v1/narrative/nodes/by-workbench/:workbenchId',
+    reorder: '/api/v1/narrative/nodes/reorder',
+  },
+  events: {
+    list: '/api/v1/narrative/events',
+    create: '/api/v1/narrative/events',
+    delete: '/api/v1/narrative/events/:id',
+    byWorkbench: '/api/v1/narrative/events/by-workbench/:workbenchId',
+  },
+  workbench: {
+    updateStatus: '/api/v1/narrative/workbench/:id/status',
+    canonLock: '/api/v1/narrative/workbench/:id/canon-lock',
+  },
+  characters: {
+    list: '/api/v1/narrative/characters',
+    create: '/api/v1/narrative/characters',
+    get: '/api/v1/narrative/characters/:id',
+    update: '/api/v1/narrative/characters/:id',
+    delete: '/api/v1/narrative/characters/:id',
+    byWorkbench: '/api/v1/narrative/characters/by-workbench/:workbenchId',
+  },
+  visual: {
+    generate: '/api/v1/narrative/nodes/:id/generate-visual',
+  },
+} as const;
+
+export const STORY_WORKBENCHES_API = {
+  list: '/api/v1/story-workbenches',
+  get: '/api/v1/story-workbenches/:id',
+  create: '/api/v1/story-workbenches',
+  update: '/api/v1/story-workbenches/:id',
+  delete: '/api/v1/story-workbenches/:id',
+  patches: '/api/v1/story-workbenches/:id/patches',
+  validatePatch: '/api/v1/story-workbenches/:id/patches/:patchId/validate',
+  readerState: '/api/v1/story-workbenches/:id/reader-state',
+} as const;
+
+export const VISUAL_MANIFESTS_API = {
+  references: '/api/v1/visual-references',
+  referencesUpdate: '/api/v1/visual-references/:id',
+  manifests: '/api/v1/visual-manifests',
+  get: '/api/v1/visual-manifests/:id',
+  create: '/api/v1/visual-manifests',
+  submitReview: '/api/v1/visual-manifests/:id/submit-review',
+  approve: '/api/v1/visual-manifests/:id/approve',
+  reject: '/api/v1/visual-manifests/:id/reject',
+} as const;
+
+export const QuoteLineCategorySchema=z.enum(['service','production_time','resource','asset','license','hardware','software','travel','contingency','discount','tax_placeholder']);
+export type QuoteLineCategory=z.infer<typeof QuoteLineCategorySchema>;
+export const QuoteLineSchema=z.object({label:z.string().min(1),quantity:z.number().positive(),unit_price:z.number().nonnegative(),price_source_ref:z.string().min(1),confidence:z.enum(['low','medium','high']),category:QuoteLineCategorySchema.optional(),margin:z.number().optional(),tax_mode:z.enum(['ht','tva_reduite','tva_pleine']).optional(),optional:z.boolean().optional(),notes:z.string().max(2000).optional(),subtotal:z.number().nonnegative()});
+export const PrivateQuoteDraftSchema=z.object({quote_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),version:z.number().int().positive(),client_label:z.string().min(1),currency:z.string().length(3),lines:z.array(QuoteLineSchema),assumptions:z.array(z.string()),exclusions:z.array(z.string()),validity:z.string().min(1),total:z.number().nonnegative(),margin_total:z.number().optional(),tax_total:z.number().optional(),status:z.enum(['draft','needs_review','validated_private','archived']),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
 export type PrivateQuoteDraft=z.infer<typeof PrivateQuoteDraftSchema>;
-export const CreatePrivateQuoteDraftRequestSchema=z.object({project_id:z.string().min(1).nullable().optional(),client_label:z.string().min(1).max(200),currency:z.string().length(3).transform(v=>v.toUpperCase()),lines:z.array(z.object({label:z.string().min(1).max(300),quantity:z.number().positive(),unit_price:z.number().nonnegative(),price_source_ref:z.string().min(1).max(1000),confidence:z.enum(['low','medium','high'])})).min(1).max(100),assumptions:z.array(z.string().min(1).max(1000)).max(50).default([]),exclusions:z.array(z.string().min(1).max(1000)).max(50).default([]),validity:z.string().min(1).max(200)});
+export const CreatePrivateQuoteDraftRequestSchema=z.object({project_id:z.string().min(1).nullable().optional(),client_label:z.string().min(1).max(200),currency:z.string().length(3).transform(v=>v.toUpperCase()),lines:z.array(z.object({label:z.string().min(1).max(300),quantity:z.number().positive(),unit_price:z.number().nonnegative(),price_source_ref:z.string().min(1).max(1000),confidence:z.enum(['low','medium','high']),category:QuoteLineCategorySchema.optional(),margin:z.number().optional(),tax_mode:z.enum(['ht','tva_reduite','tva_pleine']).optional(),optional:z.boolean().optional(),notes:z.string().max(2000).optional()})).min(1).max(100),assumptions:z.array(z.string().min(1).max(1000)).max(50).default([]),exclusions:z.array(z.string().min(1).max(1000)).max(50).default([]),validity:z.string().min(1).max(200)});
 export type CreatePrivateQuoteDraftRequest=z.infer<typeof CreatePrivateQuoteDraftRequestSchema>;
 
 export const CorrectionBatchSchema = z.object({
@@ -2236,6 +2511,86 @@ export const PreCorrectionRunDraftSchema = z
   })
   .strict();
 export type PreCorrectionRunDraft = z.infer<typeof PreCorrectionRunDraftSchema>;
+
+// ───────────────────────── Correction session state & scoring (P2 bridge) ─────────────────────────
+
+export const CorrectionSessionStateSchema = z.enum([
+  'created',
+  'sources_partial',
+  'sources_ready',
+  'rubric_generated',
+  'submissions_partial',
+  'submissions_stable',
+  'matching_verified',
+  'ready_for_calibration',
+  'ready_for_batch',
+  'grading_in_progress',
+  'grading_complete',
+  'report_generated',
+  'outdated',
+]);
+export type CorrectionSessionState = z.infer<typeof CorrectionSessionStateSchema>;
+
+export const CORRECTION_SESSION_TRANSITIONS: Record<CorrectionSessionState, CorrectionSessionState[]> = {
+  created: ['sources_partial', 'sources_ready'],
+  sources_partial: ['sources_ready', 'outdated'],
+  sources_ready: ['rubric_generated', 'outdated'],
+  rubric_generated: ['submissions_partial', 'submissions_stable', 'outdated'],
+  submissions_partial: ['submissions_stable', 'outdated'],
+  submissions_stable: ['matching_verified', 'outdated'],
+  matching_verified: ['ready_for_calibration', 'ready_for_batch', 'outdated'],
+  ready_for_calibration: ['ready_for_batch', 'outdated'],
+  ready_for_batch: ['grading_in_progress', 'outdated'],
+  grading_in_progress: ['grading_complete'],
+  grading_complete: ['report_generated', 'outdated'],
+  report_generated: ['outdated'],
+  outdated: [],
+};
+
+export const CorrectionScoringSignalTypeSchema = z.enum([
+  'insight',
+  'mechanic',
+  'benchmark',
+  'activation',
+  'naming',
+  'construction',
+  'coherence',
+  'red_flag_chat',
+  'red_flag_help',
+  'red_flag_generic',
+  'red_flag_instagram',
+  'red_flag_influencer',
+  'red_flag_dating',
+]);
+export type CorrectionScoringSignalType = z.infer<typeof CorrectionScoringSignalTypeSchema>;
+
+export const CorrectionScoringSignalSchema = z.object({
+  type: CorrectionScoringSignalTypeSchema,
+  label: z.string().min(1),
+  evidence: z.string().min(1),
+  weight: z.number().min(-1).max(1),
+});
+export type CorrectionScoringSignal = z.infer<typeof CorrectionScoringSignalSchema>;
+
+export const CorrectionCriterionScoreSchema = z.object({
+  criterion_id: z.string().min(1),
+  draft_score: z.number().nonnegative(),
+  max_points: z.number().positive(),
+  confidence: z.number().min(0).max(1),
+  evidence: z.string().min(1),
+  signals: z.array(CorrectionScoringSignalSchema).min(1),
+});
+export type CorrectionCriterionScore = z.infer<typeof CorrectionCriterionScoreSchema>;
+
+export const CorrectionSubmissionScoreSchema = z.object({
+  submission_id: z.string().min(1),
+  criterion_scores: z.array(CorrectionCriterionScoreSchema).min(1),
+  feedback: z.string().min(1),
+  feedback_tone: z.enum(['supportive', 'clear', 'firm']),
+  total_score: z.number().nonnegative(),
+  review_reasons: z.array(z.string().min(1)),
+});
+export type CorrectionSubmissionScore = z.infer<typeof CorrectionSubmissionScoreSchema>;
 
 // ───────────────────────── Calibration et contrôle qualité PR-C4 ─────────────────────────
 
@@ -3245,3 +3600,565 @@ export const WsServerMessageSchema = z.discriminatedUnion('type', [
   z.object({type: z.literal('pong')}),
 ]);
 export type WsServerMessage = z.infer<typeof WsServerMessageSchema>;
+
+// ───────────────────────── D05 Competency & Gamification ─────────────────────────
+
+export const CompetencyFrameworkStatusSchema = z.enum(['active', 'archived']);
+export type CompetencyFrameworkStatus = z.infer<typeof CompetencyFrameworkStatusSchema>;
+
+export const BloomLevelSchema = z.enum(['remember', 'understand', 'apply', 'analyze', 'evaluate', 'create']);
+export type BloomLevel = z.infer<typeof BloomLevelSchema>;
+
+export const CompetencyDefinitionStatusSchema = z.enum(['active', 'archived']);
+export type CompetencyDefinitionStatus = z.infer<typeof CompetencyDefinitionStatusSchema>;
+
+export const SignalSourceSchema = z.enum(['teacher', 'system', 'self', 'peer', 'workflow']);
+export type SignalSource = z.infer<typeof SignalSourceSchema>;
+
+export const MasteryLevelSchema = z.enum(['discovering', 'guided', 'practicing', 'autonomous', 'mentor_ready']);
+export type MasteryLevel = z.infer<typeof MasteryLevelSchema>;
+
+export const AutonomyLevelSchema = z.enum(['dependent', 'assisted', 'independent', 'initiative', 'mentor']);
+export type AutonomyLevel = z.infer<typeof AutonomyLevelSchema>;
+
+export const SignalStatusSchema = z.enum(['candidate', 'validated', 'rejected', 'superseded']);
+export type SignalStatus = z.infer<typeof SignalStatusSchema>;
+
+export const ProgressMasterySchema = z.enum(['unknown', 'discovering', 'guided', 'practicing', 'autonomous', 'mentor_ready']);
+export type ProgressMastery = z.infer<typeof ProgressMasterySchema>;
+
+export const ProgressAutonomySchema = z.enum(['unknown', 'dependent', 'assisted', 'independent', 'initiative', 'mentor']);
+export type ProgressAutonomy = z.infer<typeof ProgressAutonomySchema>;
+
+export const TrajectorySchema = z.enum(['emerging', 'consolidating', 'unstable', 'transferred', 'blocked', 'needs_review']);
+export type Trajectory = z.infer<typeof TrajectorySchema>;
+
+export const CompetencyFrameworkSchema = z.object({
+  id: z.string(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  label: z.string(),
+  description: z.string().nullable(),
+  domain: z.string(),
+  status: CompetencyFrameworkStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type CompetencyFramework = z.infer<typeof CompetencyFrameworkSchema>;
+
+export const CompetencyDefinitionSchema = z.object({
+  id: z.string(),
+  framework_id: z.string(),
+  parent_id: z.string().nullable(),
+  code: z.string(),
+  label: z.string(),
+  description: z.string().nullable(),
+  bloom_level: BloomLevelSchema.nullable(),
+  icon: z.string().nullable(),
+  sort_order: z.number(),
+  status: CompetencyDefinitionStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type CompetencyDefinition = z.infer<typeof CompetencyDefinitionSchema>;
+
+export const UserCompetencySignalSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  competency_id: z.string(),
+  project_id: z.string().nullable(),
+  evidence_ref: z.string().nullable(),
+  source: SignalSourceSchema,
+  mastery_level: MasteryLevelSchema,
+  autonomy_level: AutonomyLevelSchema.nullable(),
+  confidence: z.number().min(0).max(1),
+  observation: z.string().nullable(),
+  validation_required: z.number(),
+  validator_id: z.string().nullable(),
+  validated_at: z.number().nullable(),
+  status: SignalStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type UserCompetencySignal = z.infer<typeof UserCompetencySignalSchema>;
+
+export const UserCompetencyProgressSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  competency_id: z.string(),
+  project_id: z.string().nullable(),
+  current_mastery: ProgressMasterySchema,
+  current_autonomy: ProgressAutonomySchema.nullable(),
+  confidence: z.number(),
+  signal_count: z.number(),
+  last_signal_at: z.number().nullable(),
+  trajectory: TrajectorySchema.nullable(),
+  validation_required: z.number(),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type UserCompetencyProgress = z.infer<typeof UserCompetencyProgressSchema>;
+
+export const SkillTreeNodeTypeSchema = z.enum([
+  'competency', 'capability', 'app', 'engine', 'widget', 'export',
+  'pack', 'permission', 'asset_render', 'reward_asset',
+  'methodology', 'teacher_persona', 'companion', 'living_idea',
+]);
+export type SkillTreeNodeType = z.infer<typeof SkillTreeNodeTypeSchema>;
+
+export const SkillTreeNodeStatusSchema = z.enum([
+  'locked', 'available', 'active', 'equipped',
+  'validation_required', 'admin_only', 'cooldown',
+  'future_ready', 'deprecated', 'conflict',
+]);
+export type SkillTreeNodeStatus = z.infer<typeof SkillTreeNodeStatusSchema>;
+
+export const CompanionFamilySchema = z.enum([
+  'MOTH', 'MOLEKID', 'INCUBATOR_CREATURE', 'MASTERFLEX_HELPER',
+  'STUDENT_DISCOVERY', 'PROJECT_MONSTER',
+]);
+export type CompanionFamily = z.infer<typeof CompanionFamilySchema>;
+
+export const SkillTreeNodeSchema = z.object({
+  id: z.string(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  label: z.string(),
+  node_type: SkillTreeNodeTypeSchema,
+  status: SkillTreeNodeStatusSchema,
+  unlock_source: z.string().nullable(),
+  required_role: z.string().nullable(),
+  required_pack: z.string().nullable(),
+  required_validation: z.number(),
+  runtime_cost: z.number().nullable(),
+  visible_to_user: z.number(),
+  usable_by_user: z.number(),
+  equipped: z.number(),
+  explanation: z.string().nullable(),
+  companion_family: CompanionFamilySchema.nullable(),
+  sort_order: z.number(),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type SkillTreeNode = z.infer<typeof SkillTreeNodeSchema>;
+
+export const DependencyTypeSchema = z.enum(['requires', 'improves', 'extends', 'blocks', 'unlocks']);
+export type DependencyType = z.infer<typeof DependencyTypeSchema>;
+
+export const SkillTreeNodeDependencySchema = z.object({
+  node_id: z.string(),
+  depends_on_id: z.string(),
+  dependency_type: DependencyTypeSchema,
+  created_at: z.number(),
+});
+export type SkillTreeNodeDependency = z.infer<typeof SkillTreeNodeDependencySchema>;
+
+export const BadgeTypeSchema = z.enum(['progression', 'competency', 'milestone', 'event', 'ritual', 'challenge']);
+export type BadgeType = z.infer<typeof BadgeTypeSchema>;
+
+export const RewardTypeSchema = z.enum(['badge', 'unlock', 'feedback', 'resource', 'output', 'ritual']);
+export type RewardType = z.infer<typeof RewardTypeSchema>;
+
+export const BadgeVisibilitySchema = z.enum(['private', 'teacher_visible', 'project_visible', 'public_candidate']);
+export type BadgeVisibility = z.infer<typeof BadgeVisibilitySchema>;
+
+export const BadgeDefinitionStatusSchema = z.enum(['active', 'archived']);
+export type BadgeDefinitionStatus = z.infer<typeof BadgeDefinitionStatusSchema>;
+
+export const BadgeDefinitionSchema = z.object({
+  id: z.string(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  code: z.string(),
+  label: z.string(),
+  description: z.string().nullable(),
+  badge_type: BadgeTypeSchema,
+  icon: z.string().nullable(),
+  criteria_json: z.string(),
+  unlock_conditions_json: z.string(),
+  reward_type: RewardTypeSchema.nullable(),
+  reward_ref: z.string().nullable(),
+  visibility: BadgeVisibilitySchema,
+  saturation_risk: z.number(),
+  status: BadgeDefinitionStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type BadgeDefinition = z.infer<typeof BadgeDefinitionSchema>;
+
+export const UserBadgeStatusSchema = z.enum(['awarded', 'revoked', 'equipped', 'archived']);
+export type UserBadgeStatus = z.infer<typeof UserBadgeStatusSchema>;
+
+export const UserBadgeSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  badge_id: z.string(),
+  project_id: z.string().nullable(),
+  awarded_by: z.string().nullable(),
+  reason: z.string().nullable(),
+  evidence_ref: z.string().nullable(),
+  visibility: BadgeVisibilitySchema,
+  status: UserBadgeStatusSchema,
+  awarded_at: z.number(),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type UserBadge = z.infer<typeof UserBadgeSchema>;
+
+export const ProgressionEventTypeSchema = z.enum([
+  'signal_ingested', 'milestone_reached', 'badge_awarded',
+  'skill_unlocked', 'level_changed', 'saturation_detected',
+  'ritual_completed', 'challenge_proposed', 'challenge_completed',
+]);
+export type ProgressionEventType = z.infer<typeof ProgressionEventTypeSchema>;
+
+export const UserProgressionEventSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  project_id: z.string().nullable(),
+  event_type: ProgressionEventTypeSchema,
+  ref_type: z.string().nullable(),
+  ref_id: z.string().nullable(),
+  detail_json: z.string(),
+  created_at: z.number(),
+});
+export type UserProgressionEvent = z.infer<typeof UserProgressionEventSchema>;
+
+export const PedagogicalGraphScopeSchema = z.enum(['general', 'personal', 'shared', 'subject']);
+export type PedagogicalGraphScope = z.infer<typeof PedagogicalGraphScopeSchema>;
+
+export const PedagogicalGraphStatusSchema = z.enum(['active', 'archived']);
+export type PedagogicalGraphStatus = z.infer<typeof PedagogicalGraphStatusSchema>;
+
+export const PedagogicalGraphNodeTypeSchema = z.enum([
+  'competency', 'resource', 'workflow', 'persona', 'project',
+  'subject', 'tool', 'methodology', 'discipline', 'exercise', 'feedback',
+]);
+export type PedagogicalGraphNodeType = z.infer<typeof PedagogicalGraphNodeTypeSchema>;
+
+export const EdgeRelationTypeSchema = z.enum([
+  'requires', 'improves', 'extends', 'illustrates', 'contradicts',
+  'simplifies', 'references', 'recommended_for', 'used_in', 'blocks', 'unlocks',
+]);
+export type EdgeRelationType = z.infer<typeof EdgeRelationTypeSchema>;
+
+export const PedagogicalGraphSchema = z.object({
+  id: z.string(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  label: z.string(),
+  description: z.string().nullable(),
+  scope: PedagogicalGraphScopeSchema,
+  status: PedagogicalGraphStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type PedagogicalGraph = z.infer<typeof PedagogicalGraphSchema>;
+
+export const PedagogicalGraphNodeSchema = z.object({
+  id: z.string(),
+  graph_id: z.string(),
+  node_type: PedagogicalGraphNodeTypeSchema,
+  label: z.string(),
+  ref_type: z.string().nullable(),
+  ref_id: z.string().nullable(),
+  metadata_json: z.string(),
+  sort_order: z.number(),
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type PedagogicalGraphNode = z.infer<typeof PedagogicalGraphNodeSchema>;
+
+export const PedagogicalGraphEdgeSchema = z.object({
+  id: z.string(),
+  graph_id: z.string(),
+  source_node_id: z.string(),
+  target_node_id: z.string(),
+  relation_type: EdgeRelationTypeSchema,
+  weight: z.number().nullable(),
+  metadata_json: z.string(),
+  created_at: z.number(),
+});
+export type PedagogicalGraphEdge = z.infer<typeof PedagogicalGraphEdgeSchema>;
+
+// ───────────────────────── Request / Response schemas ─────────────────────────
+
+export const IngestCompetencySignalRequestSchema = z.object({
+  user_id: z.string().min(1),
+  competency_id: z.string().min(1),
+  project_id: z.string().nullable().optional(),
+  evidence_ref: z.string().nullable().optional(),
+  source: SignalSourceSchema,
+  mastery_level: MasteryLevelSchema,
+  autonomy_level: AutonomyLevelSchema.nullable().optional(),
+  confidence: z.number().min(0).max(1).default(0.5),
+  observation: z.string().nullable().optional(),
+});
+export type IngestCompetencySignalRequest = z.infer<typeof IngestCompetencySignalRequestSchema>;
+
+export const AwardBadgeRequestSchema = z.object({
+  user_id: z.string().min(1),
+  badge_id: z.string().min(1),
+  project_id: z.string().nullable().optional(),
+  reason: z.string().nullable().optional(),
+  evidence_ref: z.string().nullable().optional(),
+  visibility: BadgeVisibilitySchema.optional(),
+});
+export type AwardBadgeRequest = z.infer<typeof AwardBadgeRequestSchema>;
+
+export const CreateSkillTreeNodeRequestSchema = z.object({
+  label: z.string().min(1).max(200),
+  node_type: SkillTreeNodeTypeSchema,
+  status: SkillTreeNodeStatusSchema.optional(),
+  parent_id: z.string().nullable().optional(),
+  dependency_type: DependencyTypeSchema.optional(),
+  unlock_source: z.string().nullable().optional(),
+  required_role: z.string().nullable().optional(),
+  sort_order: z.number().optional(),
+});
+export type CreateSkillTreeNodeRequest = z.infer<typeof CreateSkillTreeNodeRequestSchema>;
+
+export const ProgressionSummarySchema = z.object({
+  user_id: z.string(),
+  project_id: z.string().nullable(),
+  badges_count: z.number(),
+  signals_count: z.number(),
+  milestone_count: z.number(),
+  average_mastery: z.number().min(0).max(1),
+  current_milestone: z.string().nullable(),
+  saturation_warnings: z.array(z.object({
+    badge_id: z.string().optional(),
+    reason: z.string(),
+  })),
+  recent_events: z.array(UserProgressionEventSchema),
+});
+export type ProgressionSummary = z.infer<typeof ProgressionSummarySchema>;
+
+// ───────────────────────── D04 Personal Learning Profile ─────────────────────────
+
+export const HelpStyleSchema = z.enum(['direct', 'guided', 'explorative', 'visual', 'step_by_step']);
+export type HelpStyle = z.infer<typeof HelpStyleSchema>;
+
+export const HelpFormatSchema = z.enum(['text', 'bullet', 'example', 'analogy', 'exercise', 'visual']);
+export type HelpFormat = z.infer<typeof HelpFormatSchema>;
+
+export const HelpDensitySchema = z.enum(['concise', 'balanced', 'detailed']);
+export type HelpDensity = z.infer<typeof HelpDensitySchema>;
+
+export const GuidanceModeSchema = z.enum(['auto', 'discovery', 'structured', 'challenge', 'mentor']);
+export type GuidanceMode = z.infer<typeof GuidanceModeSchema>;
+
+export const ProfileStatusSchema = z.enum(['draft', 'proposed', 'user_validated', 'teacher_validated', 'archived']);
+export type ProfileStatus = z.infer<typeof ProfileStatusSchema>;
+
+export const DetectedNeedSchema = z.enum(['concept', 'method', 'blockage', 'validation', 'inspiration', 'orientation', 'practice']);
+export type DetectedNeed = z.infer<typeof DetectedNeedSchema>;
+
+export const PersonalLearningProfileSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  help_style: HelpStyleSchema.nullable(),
+  help_format: HelpFormatSchema.nullable(),
+  help_density: HelpDensitySchema.nullable(),
+  preferred_personas: z.array(z.string()),
+  learning_state: z.object({
+    strengths: z.array(z.string()).optional(),
+    blockers: z.array(z.string()).optional(),
+    autonomy_level: z.string().optional(),
+  }).passthrough(),
+  professional_self: z.object({
+    working_style: z.string().optional(),
+    creative_posture: z.string().optional(),
+    cv_export_preferences: z.object({
+      tone: z.string().optional(),
+      format: z.string().optional(),
+    }).optional(),
+  }).passthrough(),
+  guidance_mode: GuidanceModeSchema,
+  profile_status: ProfileStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type PersonalLearningProfile = z.infer<typeof PersonalLearningProfileSchema>;
+
+export const HelpContextSnapshotSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  profile_id: z.string().nullable(),
+  project_id: z.string().nullable(),
+  detected_need: DetectedNeedSchema,
+  confidence: z.number().min(0).max(1),
+  recommended_mode: z.enum(['discovery', 'structured', 'challenge', 'mentor']),
+  recommended_persona: z.string().nullable(),
+  context: z.record(z.unknown()),
+  resolved_at: z.number().nullable(),
+  created_at: z.number(),
+});
+export type HelpContextSnapshot = z.infer<typeof HelpContextSnapshotSchema>;
+
+export const UpsertProfileRequestSchema = z.object({
+  user_id: z.string().min(1),
+  project_id: z.string().nullable().optional(),
+  help_style: HelpStyleSchema.nullable().optional(),
+  help_format: HelpFormatSchema.nullable().optional(),
+  help_density: HelpDensitySchema.nullable().optional(),
+  preferred_personas: z.array(z.string()).optional(),
+  learning_state: z.record(z.unknown()).optional(),
+  professional_self: z.record(z.unknown()).optional(),
+  guidance_mode: GuidanceModeSchema.optional(),
+});
+export type UpsertProfileRequest = z.infer<typeof UpsertProfileRequestSchema>;
+
+export const RecordHelpContextRequestSchema = z.object({
+  user_id: z.string().min(1),
+  project_id: z.string().nullable().optional(),
+  detected_need: DetectedNeedSchema,
+  confidence: z.number().min(0).max(1).default(0.5),
+  recommended_mode: z.enum(['discovery', 'structured', 'challenge', 'mentor']),
+  recommended_persona: z.string().nullable().optional(),
+  context: z.record(z.unknown()).optional(),
+});
+export type RecordHelpContextRequest = z.infer<typeof RecordHelpContextRequestSchema>;
+
+export const LEARNING_MIRROR_API = {
+  profiles: {
+    get: '/api/v1/learning-mirror/profiles/:userId',
+    upsert: '/api/v1/learning-mirror/profiles',
+    updateStatus: '/api/v1/learning-mirror/profiles/:id/status',
+  },
+  helpContext: {
+    record: '/api/v1/learning-mirror/help-context',
+    list: '/api/v1/learning-mirror/help-context/:userId',
+  },
+} as const;
+
+// ───────────────────────── Style Mirror (D04 — tone adaptation) ─────────────────────────
+
+export const RegisterTargetSchema = z.enum(['auto', 'formal', 'medium', 'casual', 'playful']);
+export type RegisterTarget = z.infer<typeof RegisterTargetSchema>;
+
+export const EnergyTargetSchema = z.enum(['auto', 'calm', 'medium', 'high']);
+export type EnergyTarget = z.infer<typeof EnergyTargetSchema>;
+
+export const LexicalComplexitySchema = z.enum(['auto', 'simple', 'balanced', 'rich']);
+export type LexicalComplexity = z.infer<typeof LexicalComplexitySchema>;
+
+export const StyleMirrorProfileStatusSchema = z.enum(['draft', 'active', 'archived']);
+export type StyleMirrorProfileStatus = z.infer<typeof StyleMirrorProfileStatusSchema>;
+
+export const StyleMirrorProfileSchema = z.object({
+  id: z.string(),
+  user_id: z.string(),
+  owner_id: z.string(),
+  project_id: z.string().nullable(),
+  persona_id: z.string().nullable(),
+  register_target: RegisterTargetSchema.nullable(),
+  energy_target: EnergyTargetSchema.nullable(),
+  lexical_complexity: LexicalComplexitySchema.nullable(),
+  mirror_intensity: z.number().min(0).max(1),
+  lexical_overrides: z.array(z.string()).default([]),
+  signature_moves_override: z.array(z.string()).default([]),
+  tone_rules: z.array(z.string()).default([]),
+  profile_status: StyleMirrorProfileStatusSchema,
+  created_at: z.number(),
+  updated_at: z.number(),
+});
+export type StyleMirrorProfile = z.infer<typeof StyleMirrorProfileSchema>;
+
+export const UpsertStyleMirrorRequestSchema = z.object({
+  user_id: z.string().min(1),
+  project_id: z.string().nullable().optional(),
+  persona_id: z.string().nullable().optional(),
+  register_target: RegisterTargetSchema.nullable().optional(),
+  energy_target: EnergyTargetSchema.nullable().optional(),
+  lexical_complexity: LexicalComplexitySchema.nullable().optional(),
+  mirror_intensity: z.number().min(0).max(1).optional(),
+  lexical_overrides: z.array(z.string()).optional(),
+  signature_moves_override: z.array(z.string()).optional(),
+  tone_rules: z.array(z.string()).optional(),
+});
+export type UpsertStyleMirrorRequest = z.infer<typeof UpsertStyleMirrorRequestSchema>;
+
+export const STYLE_MIRROR_API = {
+  profiles: {
+    get: '/api/v1/style-mirror/profiles/:userId',
+    upsert: '/api/v1/style-mirror/profiles',
+    updateStatus: '/api/v1/style-mirror/profiles/:id/status',
+  },
+} as const;
+
+// ───────────────────────── Weather / Pedagogical Climate (D05) ─────────────────────────
+
+export const WeatherTypeSchema = z.enum(['sunny', 'cloudy', 'rainy', 'stormy']);
+export type WeatherType = z.infer<typeof WeatherTypeSchema>;
+
+export const WeatherTrendSchema = z.enum(['improving', 'stable', 'declining']);
+export type WeatherTrend = z.infer<typeof WeatherTrendSchema>;
+
+export const PedagogicalWeatherSchema = z.object({
+  weather: WeatherTypeSchema,
+  trend: WeatherTrendSchema,
+  composite_score: z.number().min(0).max(100),
+  signals_summary: z.object({
+    total_recent: z.number(),
+    progression: z.number(),
+    blockages: z.number(),
+    overloads: z.number(),
+    drift: z.number(),
+  }),
+  saturation_warnings: z.array(z.string()),
+  suggested_guidance_mode: z.enum(['discovery', 'structured', 'challenge', 'mentor']),
+  generated_at: z.number(),
+});
+export type PedagogicalWeather = z.infer<typeof PedagogicalWeatherSchema>;
+
+export const WEATHER_API = {
+  get: '/api/v1/weather/:userId',
+} as const;
+
+// ───────────────────────── Public API surface ─────────────────────────
+
+export const COMPETENCY_API = {
+  frameworks: {
+    list: '/api/v1/competencies/frameworks',
+    create: '/api/v1/competencies/frameworks',
+    get: '/api/v1/competencies/frameworks/:id',
+    update: '/api/v1/competencies/frameworks/:id',
+  },
+  definitions: {
+    list: '/api/v1/competencies/definitions',
+    create: '/api/v1/competencies/definitions',
+    get: '/api/v1/competencies/definitions/:id',
+    update: '/api/v1/competencies/definitions/:id',
+  },
+  signals: {
+    ingest: '/api/v1/competencies/signals',
+    list: '/api/v1/competencies/signals',
+    validate: '/api/v1/competencies/signals/:id/validate',
+    reject: '/api/v1/competencies/signals/:id/reject',
+  },
+  progress: {
+    getUser: '/api/v1/competencies/progress/:userId',
+  },
+} as const;
+
+export const GAMIFICATION_API = {
+  badges: {
+    list: '/api/v1/gamification/badges',
+    create: '/api/v1/gamification/badges',
+    award: '/api/v1/gamification/badges/award',
+    getUserBadges: '/api/v1/gamification/badges/user/:userId',
+  },
+  skillTree: {
+    list: '/api/v1/gamification/skill-tree',
+    createNode: '/api/v1/gamification/skill-tree/nodes',
+    updateStatus: '/api/v1/gamification/skill-tree/nodes/:id/status',
+    getDependencies: '/api/v1/gamification/skill-tree/nodes/:id/dependencies',
+  },
+  progression: {
+    summary: '/api/v1/gamification/progression/summary/:userId',
+    events: '/api/v1/gamification/progression/events',
+  },
+} as const;
