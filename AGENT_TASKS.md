@@ -14,6 +14,35 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-307 — D08-VISUAL-REFS-001 : taxonomie références visuelles
+target: codex
+status: done
+frozen_by: FACTORY-PRIMITIVES-001 2026-06-27
+
+### scope
+- Auditer D08 Git + Factories visuelles en lecture seule.
+- Formaliser une taxonomie provenance/droits/confiance, rôle visuel autorisé et statut manifest.
+- Mapper la taxonomie avec `VisualReferenceStatusSchema`.
+- Verrouiller `GO IMAGE` exact et le rapport DA post-sortie.
+- Clarifier que storage/assets privés ne valent pas génération image complète.
+
+### files créés/modifiés
+- `docs/d08/D08_VISUAL_REFERENCE_TAXONOMY_AND_FACTORY_REF_GATE_2026-06-27.md`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+- `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`
+
+### verification
+- Lecture des contrats D08 existants, shared schemas et action registry.
+- Aucun code runtime modifié.
+- Aucun provider, runner image, Drive ou dossier Factory actif modifié.
+
+### updates
+> 2026-06-27 codex → done local. Taxonomie D08 refs créée ; prochain audit sûr : `D08-GATE-001` route narrative `generate-visual`.
+
+---
+
 ## TASK-306 — FACTORY-PRIMITIVES-001 : audit des Factories actives
 target: codex
 status: done

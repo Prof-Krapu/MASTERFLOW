@@ -17,6 +17,18 @@ CDC dans `docs/factories/FACTORY_COMMON_CDC_2026-06-27.md`, routeur dans
 `docs/factories/FACTORY_PRIMITIVE_ROUTER_2026-06-27.md`.
 Aucun runtime, provider, migration, Drive ou dossier Factory actif n'a été modifié dans cette passe.
 
+## 2026-06-27 — D08-VISUAL-REFS-001 : taxonomie références visuelles
+
+- audit D08 Git + Factories visuelles ;
+- clarification : storage/assets privés existent désormais, mais cela n'ouvre pas la génération image complète ;
+- création d'une taxonomie provenance/droits/confiance, rôle visuel autorisé et statut manifest ;
+- mapping avec `VisualReferenceStatusSchema` existant ;
+- verrou `GO IMAGE` exact et rapport DA post-sortie documentés ;
+- provider image, canonisation, export public et Drive restent fermés.
+
+Statut : spec documentaire dans `docs/d08/D08_VISUAL_REFERENCE_TAXONOMY_AND_FACTORY_REF_GATE_2026-06-27.md`.
+Prochaine action sûre : auditer la route narrative `generate-visual` contre ce gate.
+
 ## 2026-06-27 — Git devient la vérité opérable + récolte de primitives externes
 
 - décision opératoire : le clone Git publiable devient la source de vérité exploitable pour MasterFlow ;

@@ -46,7 +46,7 @@ Dernière mise à jour : 2026-06-27
 - Impact : prépare OCR/image/ref boards et évite qu'une image inspirante devienne canon silencieux.
 - Risque : moyen ; touche D08 et génération image future.
 - Source de vérité concernée : D08 DA + Factories visuelles.
-- Statut : ready audit.
+- Statut : spec locale créée dans `docs/d08/D08_VISUAL_REFERENCE_TAXONOMY_AND_FACTORY_REF_GATE_2026-06-27.md`.
 - Validation requise : non pour audit ; oui avant provider image ou génération.
 
 ### D08-GATE-001 — Route narrative generate-visual
