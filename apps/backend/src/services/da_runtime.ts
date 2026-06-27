@@ -1,7 +1,9 @@
 import type {GeneratedAsset, ReviewGeneratedAssetRequest, StoreGeneratedAssetRequest} from '@masterflow/shared';
+import {createHash} from 'node:crypto';
 
 import {getDb} from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
+import {deleteFile, storeFile} from '../lib/storage.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
@@ -60,22 +62,64 @@ function assertAssetAccess(actor: AuthUser, row: {owner_id: string; project_id: 
 }
 
 export function storeGeneratedAsset(actor: AuthUser, data: StoreGeneratedAssetRequest): GeneratedAsset {
+  if (data.manifest_id) {
+    const manifest = getDb().prepare('SELECT id FROM visual_manifests WHERE id = ?').get(data.manifest_id);
+    if (!manifest) throw new Error('visual_manifest_not_found');
+  }
   const id = uuid();
   const now = Date.now();
   getDb().prepare(`
-    INSERT INTO generated_assets
-      (id, manifest_id, job_id, owner_id, project_id, asset_type, status, mime_type, storage_ref, thumbnail_ref, metadata_json, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, 'candidate', ?, ?, ?, ?, ?, ?)
-  `).run(
-    id, data.manifest_id ?? null, data.job_id ?? null, actor.id,
-    null, // project_id — set below via ensureColumn if needed
-    data.asset_type,
-    data.mime_type ?? null, data.storage_ref ?? null, data.thumbnail_ref ?? null,
-    JSON.stringify(data.metadata ?? {}), now, now,
-  );
+      INSERT INTO generated_assets
+        (id, manifest_id, job_id, owner_id, project_id, asset_type, status, mime_type, storage_ref, thumbnail_ref, metadata_json, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, 'candidate', ?, ?, ?, ?, ?, ?)
+    `).run(
+      id, data.manifest_id ?? null, data.job_id ?? null, actor.id,
+      null, // project_id — set below via ensureColumn if needed
+      data.asset_type,
+      data.mime_type ?? null, data.storage_ref ?? null, data.thumbnail_ref ?? null,
+      JSON.stringify(data.metadata ?? {}), now, now,
+    );
 
   audit({event_type: 'da.asset_stored', user_id: actor.id, detail: {asset_id: id, asset_type: data.asset_type, manifest_id: data.manifest_id}});
   return toDTO(getDb().prepare('SELECT * FROM generated_assets WHERE id = ?').get(id) as GeneratedAssetRow);
+}
+
+const MIME_EXTENSIONS: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg',
+  'application/json': 'json',
+  'text/plain': 'txt',
+};
+
+/**
+ * Écrit les octets puis crée l'asset candidat. Si l'insertion BDD échoue,
+ * le fichier est retiré afin de ne pas laisser d'orphelin sur disque.
+ */
+export function storeGeneratedAssetFile(
+  actor: AuthUser,
+  data: Omit<StoreGeneratedAssetRequest, 'storage_ref'>,
+  content: Buffer,
+): GeneratedAsset {
+  const ext = data.mime_type ? MIME_EXTENSIONS[data.mime_type] : undefined;
+  if (!ext) throw new Error('asset_mime_unsupported');
+  const storageRef = storeFile(`assets/${actor.id}/${uuid()}.${ext}`, content);
+  try {
+    return storeGeneratedAsset(actor, {
+      ...data,
+      storage_ref: storageRef,
+      metadata: {
+        ...(data.metadata ?? {}),
+        size_bytes: content.length,
+        sha256: createHash('sha256').update(content).digest('hex'),
+      },
+    });
+  } catch (error) {
+    deleteFile(storageRef);
+    throw error;
+  }
 }
 
 export function getAsset(actor: AuthUser, assetId: string): GeneratedAsset {

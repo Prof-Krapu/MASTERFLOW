@@ -47,6 +47,7 @@ import {
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {deleteFile, resolveStorageImage, storeFile} from '../lib/storage.ts';
 import {decideScopedPermission} from './projects.ts';
 import {getJob} from './jobs.ts';
 import {
@@ -798,30 +799,35 @@ export function scanInventoryPhoto(
     if (!decision.allowed) throw new Error('scope_denied');
   }
 
-  const mockLabels = [
-    {label: 'Document scanné', type: 'book' as const},
-    {label: 'Photo - page 1', type: 'archive' as const},
-    {label: 'Illustration', type: 'custom' as const},
-  ];
-  const items = mockLabels.map((m) =>
-    createInventoryItem(actor, {
-      project_id: projectId,
-      collection_id: request.collection_id ?? null,
-      type: m.type,
-      label: `${m.label} (${new Date().toISOString().slice(0, 10)})`,
-      item_status: 'detected',
-      quantity: 1,
-      usage_tags: ['ocr_candidate', 'photo_scan'],
-      source_refs: [`scan:${actor.id}:${Date.now()}`],
-      visibility_scope: projectId ? 'project' : 'private',
-    }),
-  );
+  const ext = request.image_mime === 'image/jpeg' ? 'jpg' : request.image_mime === 'image/webp' ? 'webp' : request.image_mime === 'image/gif' ? 'gif' : 'png';
+  const buf = Buffer.from(request.image_data, 'base64');
+  const key = `scans/${actor.id}/${Date.now()}.${ext}`;
+  const storageRef = storeFile(key, buf);
+  try {
+    const stored = resolveStorageImage(storageRef);
+    if (stored.mime !== request.image_mime) throw new Error('inventory_scan_mime_mismatch');
+  } catch (error) {
+    deleteFile(storageRef);
+    throw error;
+  }
+
+  const item = createInventoryItem(actor, {
+    project_id: projectId,
+    collection_id: request.collection_id ?? null,
+    type: 'custom',
+    label: `Scan photo (${new Date().toISOString().slice(0, 10)})`,
+    item_status: 'detected',
+    quantity: 1,
+    usage_tags: ['ocr_candidate', 'photo_scan'],
+    source_refs: [storageRef],
+    visibility_scope: projectId ? 'project' : 'private',
+  });
 
   audit({
     event_type: 'inventory.photo_scanned',
     user_id: actor.id,
     scope: projectId ?? actor.id,
-    detail: {item_count: items.length, project_id: projectId, notes: request.notes ?? null},
+    detail: {item_id: item.item_id, project_id: projectId, bytes: buf.length, notes: request.notes ?? null},
   });
-  return items;
+  return [item];
 }

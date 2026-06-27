@@ -1,4 +1,8 @@
-import {beforeAll, describe, expect, it} from 'vitest';
+import {mkdtempSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+
+import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
@@ -21,8 +25,11 @@ const participant: AuthUser = {id: 'inv-participant', username: 'inv_participant
 const outsider: AuthUser = {id: 'inv-outsider', username: 'inv_outsider', role: 'student'};
 
 let projectId: string;
+const previousStorageRoot = process.env.MASTERFLOW_STORAGE_ROOT;
+const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x01]);
 
 beforeAll(async () => {
+  process.env.MASTERFLOW_STORAGE_ROOT = mkdtempSync(join(tmpdir(), 'mf-inventory-storage-'));
   await seedAll();
   const now = Date.now();
   const insertUser = getDb().prepare(
@@ -37,6 +44,11 @@ beforeAll(async () => {
   projectId = project.project_id;
   addProjectMember(owner, projectId, {user_id: editor.id, role: 'editor'});
   addProjectMember(owner, projectId, {user_id: participant.id, role: 'participant'});
+});
+
+afterAll(() => {
+  if (previousStorageRoot === undefined) delete process.env.MASTERFLOW_STORAGE_ROOT;
+  else process.env.MASTERFLOW_STORAGE_ROOT = previousStorageRoot;
 });
 
 describe('PR-INV-1 — Inventory Core', () => {
@@ -192,8 +204,8 @@ describe('PR-INV-1 — Inventory Core', () => {
 describe('photo scan', () => {
   it('crée des items à partir d’un scan photo', () => {
     const items = scanInventoryPhoto(owner, {
-      image_data: 'base64-fake-image-data',
-      image_mime: 'image/jpeg',
+      image_data: PNG.toString('base64'),
+      image_mime: 'image/png',
       project_scope: owner.id,
     });
     expect(items.length).toBeGreaterThanOrEqual(1);
@@ -202,7 +214,8 @@ describe('photo scan', () => {
 
   it('sans project_id, un outsider peut scanner (scope personnel)', () => {
     const items = scanInventoryPhoto(outsider, {
-      image_data: 'data',
+      image_data: PNG.toString('base64'),
+      image_mime: 'image/png',
       project_scope: outsider.id,
     });
     expect(items.length).toBeGreaterThanOrEqual(1);

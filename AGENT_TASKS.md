@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-303 — Storage fichier réel D07/D08
+target: codex
+status: done
+frozen_by: MALEX « toutes » 2026-06-27
+
+### scope
+- Upload privé multipart et base64 vers `storage://`.
+- Persistance couplée fichier + ligne `generated_assets`, avec nettoyage en cas d'échec BDD.
+- Scan Inventory écrit et vérifie l'image réelle au lieu de produire des items mockés.
+- Lecture metadata owner-only ; aucun téléchargement public, provider, export ou canon automatique.
+
+### verification
+- `npm test` = 97 fichiers, 534/534 tests.
+- `npm run lint` = OK.
+- `git diff --check` = OK.
+- Reçu : `docs/d08/D07_D08_FILE_STORAGE_LOCAL_RECEIPT_2026-06-27.md`.
+
+### updates
+> 2026-06-27 codex → done local vérifié. Publication GitHub et mise à jour du snapshot canon restent à faire après validation humaine.
+
+---
+
 ## TASK-302 — Codex hardening pré-merge absorption Big Pickle
 target: codex
 status: verified

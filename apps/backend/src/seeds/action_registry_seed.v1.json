@@ -83,7 +83,7 @@
       "validation_required": false,
       "minimum_role": "teacher",
       "ui_surface": "da_inspector_panel",
-      "status": "future"
+      "status": "live"
     },
     {
       "action_id": "preflight_image_action",

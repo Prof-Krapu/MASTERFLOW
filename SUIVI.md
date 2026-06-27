@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-27 — Storage fichier réel D07/D08 (local vérifié)
+
+- uploads privés multipart et base64 vers une racine locale configurable ;
+- création atomique logique fichier + `generated_assets`, avec retrait du fichier si la BDD refuse ;
+- scan Inventory relié au fichier réel et validation des octets image ;
+- accès assets réservé aux rôles professeur+ et isolation owner conservée ;
+- tests backend complets : 97 fichiers, 534/534 ; lint TypeScript et diff-check verts.
+
+Statut : local non commit/non push. Le provider image, l'export, le téléchargement public et la
+canonisation restent verrouillés. Le snapshot canon Drive dit encore `file_storage: absent` et ne
+devra être rafraîchi qu'après publication GitHub prouvée.
+
 ## 2026-06-27 — Absorption Big Pickle + hardening pré-merge Codex
 
 - absorption locale massive : DA runtime, narration, characters, mirrors, compétences, gamification,
