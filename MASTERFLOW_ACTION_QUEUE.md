@@ -4,6 +4,60 @@ Dernière mise à jour : 2026-06-27
 
 ## 1. À faire maintenant
 
+### SOURCE-TRUTH-001 — Git opérable + récolte de primitives externes
+
+- Tâche : publier la doctrine Git comme source de vérité opérable et le registre de récolte des primitives externes.
+- Impact : supprime la zone grise entre Git, ex-canon, legacy et Factories.
+- Risque : faible en documentaire ; moyen si on confond source candidate et runtime validé.
+- Source de vérité concernée : repo Git publiable + archives/Drive/Factories comme sources candidates.
+- Statut : documents locaux créés dans `docs/source-truth/`.
+- Validation requise : non pour publication documentaire ; oui avant tout runtime, migration ou promotion canon.
+
+### FACTORY-PRIMITIVES-001 — Récolte des primitives utiles des Factories actives
+
+- Tâche : appliquer le protocole de routage Factory, puis passer chaque Factory `CURRENT` dans une matrice `already_in_git / primitive_candidate / runtime_gap / blocked / rejected`.
+- Impact : garantit qu'aucune bonne idée issue d'une Factory ne reste hors Git sans statut, sans importer les bots tels quels.
+- Risque : faible en audit ; moyen si une Factory est copiée au lieu d'être analysée.
+- Source de vérité concernée : `/Users/malex/Desktop/FACTORIES/*/CURRENT` + D11 Git + `docs/factories/FACTORY_REQUEST_ROUTING_PROTOCOL_2026-06-27.md`.
+- Statut : initialisé avec 19 Factories actives dans `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`.
+- Validation requise : non pour audit ; oui avant patch Factory active ou runtime Git.
+
+### D08-GATE-001 — Route narrative generate-visual
+
+- Tâche : auditer puis gater ou neutraliser `POST /api/v1/narrative/nodes/:id/generate-visual`.
+- Impact : empêche une génération visuelle de contourner `ACTION_READY`, validation inbox ou action registry.
+- Risque : moyen à élevé si provider image réel est branché.
+- Source de vérité concernée : D08 DA Visual Assets + D09 MasterStory + action registry.
+- Statut : écart identifié ; bug statuts manifests déjà résolu dans Git.
+- Validation requise : oui avant provider image réel ; non pour audit/test local.
+
+### DATAVIZ-001 — Dataviz / Graph / Widget / Factory→Mode
+
+- Tâche : relire puis publier l'audit Dataviz, le contrat portable, l'arbitrage Factory→Mode et la spec MasterHelp.
+- Impact : récupère les briques legacy/factories sans confondre dashboard, widget, graph, source truth et runtime.
+- Risque : faible tant que cela reste documentaire ; moyen si on code l'UI sans contrat validé.
+- Source de vérité concernée : legacy Dataviz/Graph/Widget + canon UI runtime + D11/D12 + Factories actives.
+- Statut : documents locaux créés dans `docs/dataviz/`, `docs/factories/`, `docs/masterhelp/` et `docs/prompts/`.
+- Validation requise : oui avant promotion canon Drive ou implémentation runtime ; non pour revue documentaire.
+
+### Roadtrip Moto — pilote MasterHelp / Dataviz
+
+- Tâche : tester la Factory Roadtrip patchée avec `MasterHelp`, extraction Dataviz renforcée, feedback terrain et séparation roadtrip-only vs primitive portable.
+- Impact : transforme Roadtrip en banc d'essai robuste pour Source Truth, Dataviz, checkpoints et Situation Companion.
+- Risque : moyen ; le dossier Factory actif vit hors Git et doit respecter archive avant remplacement + ZIP actif identique.
+- Source de vérité concernée : Factory active Roadtrip V1.3 + CDC commun Factories + contrat Dataviz portable.
+- Statut : patch V1.4 appliqué localement avec archive ; reçu dans `docs/factories/ROADTRIP_MOTO_FACTORY_PATCH_RECEIPT_2026-06-27.md`.
+- Validation requise : non pour test pilote privé ; oui avant promotion canon, publication runtime ou généralisation MasterHelp.
+
+### Big Pickle — audit/extraction déléguée
+
+- Tâche : faire lancer par Big Pickle le prompt d'audit Dataviz / Factory→Mode / MasterHelp.
+- Impact : économise les tokens Codex et accélère l'inventaire multi-sources.
+- Risque : faible en lecture seule ; moyen si Big Pickle patche sans archivage ou canonise.
+- Source de vérité concernée : `docs/prompts/BIG_PICKLE_DATAVIZ_FACTORY_MASTERHELP_PROMPT_2026-06-27.md`.
+- Statut : prompt prêt.
+- Validation requise : non pour audit lecture seule ; oui avant patch/canon/Git runtime.
+
 ### Interface MasterFlow web / desktop / mobile
 
 - Tâche : exécuter `UI-001`, inventaire des sources et écrans existants, puis consolider une seule interface web-first.

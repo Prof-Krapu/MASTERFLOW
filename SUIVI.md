@@ -4,6 +4,38 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-27 — Git devient la vérité opérable + récolte de primitives externes
+
+- décision opératoire : le clone Git publiable devient la source de vérité exploitable pour MasterFlow ;
+- Drive, legacy, ex-canon et Factories deviennent des sources candidates à arbitrer, plus des vérités parallèles ;
+- création d'un audit documentaire des familles externes restantes : Dataviz, Factories, MasterHelp, DA/images, OCR/Inventory, pédagogie, jauges, MasterStory, UI ;
+- création d'un registre initial de récolte de primitives externes ;
+- précision produit : les Factories ne sont jamais absorbées telles quelles ; elles servent seulement à repérer des primitives, patterns, verrous ou retours d'usage utiles ;
+- ajout d'un protocole de routage des demandes Factory : extraction préalable, audit d'existant, nouvelle spec, patch, récolte primitive, queue runtime ou blocage ;
+- clarification D08 : le bug statuts manifests visuels est résolu dans Git, mais la route narrative `generate-visual` reste à auditer avant génération image réelle.
+
+Statut : doctrine et registre locaux prêts à publication dans `docs/source-truth/`. Aucun runtime,
+provider, migration, Drive ou Factory supplémentaire n'a été modifié.
+
+## 2026-06-27 — DATAVIZ-001 : audit Dataviz, Factory→Mode et MasterHelp
+
+- audit documentaire des écarts Dataviz / Graph / Widget entre legacy, canon Drive, Git et Factories ;
+- création du contrat candidat `visual_datum` + profils `data_viz_control`, `graphic_facilitation`, `hybrid_summary`, `audit_detail` ;
+- création de l'arbitrage Factory → Mode MasterFlow candidat ;
+- abstraction Roadtrip en `MasterHelp / Situation Companion` : situation réelle, inventory, contraintes, variantes, checkpoints, source truth et export ;
+- prompt Big Pickle préparé pour audit/extraction rapide, sans canonisation automatique.
+
+Patch Factory Roadtrip ensuite appliqué localement avec archive préalable :
+
+- active : `/Users/malex/Desktop/FACTORIES/ROADTRIP_MOTO/CURRENT/ROADTRIP_MOTO_COPILOT_V1`
+- archive : `/Users/malex/Desktop/FACTORIES/ROADTRIP_MOTO/ARCHIVE/2026-06-27_v1_3_pre_masterhelp_dataviz`
+- version active : `2026.06.27-v1.4`
+- ZIP SHA-256 : `997bfb4f84c11161c20d3b02ec13d59bfbe7baa6eb7b3a9265d3a04b11da7f03`
+
+Statut : documentaire local prêt à revue dans `docs/dataviz/`, `docs/factories/`, `docs/masterhelp/`
+et `docs/prompts/`. La Factory Roadtrip active est patchée localement et vérifiée statiquement.
+Aucun runtime, provider, migration ou canon Drive n'a été modifié.
+
 ## 2026-06-27 — Plan actif interface multi-surface
 
 - décision : un seul frontend React/Vite web-first ;

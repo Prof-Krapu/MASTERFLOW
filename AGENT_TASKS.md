@@ -14,6 +14,69 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-305 — Source truth : Git opérable + récolte de primitives externes
+target: codex
+status: done
+frozen_by: MALEX « la source de vérité c'est le clone git » 2026-06-27
+
+### scope
+- Acter que le repo Git publiable est la vérité opérable.
+- Déclasser legacy, ex-canon Drive et Factories en sources candidates tant qu'elles ne sont pas représentées dans Git.
+- Créer une matrice initiale des familles externes encore à récolter, rejeter, bloquer ou mettre en queue.
+- Inventorier les 19 Factories actives `CURRENT` en statut `primitive_candidate` initial.
+- Verrouiller la règle : une Factory est un bot/extraction autonome, jamais une brique à importer telle quelle dans MasterFlow.
+- Identifier les premiers risques restants : D08 gate narratif, Factories actives non toutes arbitrées, UI/source truth transversal.
+
+### files créés/modifiés
+- `docs/source-truth/GIT_OPERABLE_SOURCE_OF_TRUTH_AND_EXTERNAL_PRIMITIVE_HARVEST_AUDIT_2026-06-27.md`
+- `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`
+- `docs/factories/FACTORY_REQUEST_ROUTING_PROTOCOL_2026-06-27.md`
+- `CLAUDE.md`
+- `SUIVI.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### verification
+- `git fetch --all --prune` OK.
+- `HEAD == origin/main` avant modifications locales, SHA `0518db30659b8a009aa4fe492ade345e832450a7`.
+- `git diff --check` à exécuter avant publication.
+
+### updates
+> 2026-06-27 codex → done local. Doctrine Git opérable posée ; sources externes transformées en registre de récolte de primitives. Les Factories ne sont pas à absorber telles quelles. Prochaine étape recommandée : publier les docs locales puis lancer FACTORY-PRIMITIVES-001.
+> 2026-06-27 codex → protocole de routage Factory ajouté : extraction-first, audit existant, nouvelle spec, patch, récolte primitive, queue runtime ou blocage.
+
+---
+
+## TASK-304 — DATAVIZ-001 : Dataviz / Factory→Mode / MasterHelp
+target: codex
+status: done
+frozen_by: MALEX « go faire tous les chantiers » 2026-06-27
+
+### scope
+- Auditer documentairement Dataviz / Graph / Widget entre legacy, canon Drive, Git et Factories.
+- Poser un contrat candidat Dataviz portable.
+- Poser l'arbitrage Factory → Mode MasterFlow candidat.
+- Poser `MasterHelp / Situation Companion` comme abstraction de Roadtrip hors GPS.
+- Préparer le prompt Big Pickle pour compléter l'audit/extraction sans canoniser.
+
+### files créés
+- `docs/dataviz/MASTERFLOW_DATAVIZ_GRAPH_WIDGET_AUDIT_2026-06-27.md`
+- `docs/dataviz/MASTERFLOW_DATAVIZ_PORTABLE_PRIMITIVE_CONTRACT_2026-06-27.md`
+- `docs/factories/MASTERFLOW_FACTORY_TO_MODE_ARBITRATION_2026-06-27.md`
+- `docs/factories/ROADTRIP_MOTO_PILOT_DATAVIZ_MASTERHELP_PLAN_2026-06-27.md`
+- `docs/factories/ROADTRIP_MOTO_FACTORY_PATCH_RECEIPT_2026-06-27.md`
+- `docs/masterhelp/MASTERHELP_SITUATION_COMPANION_CANDIDATE_SPEC_2026-06-27.md`
+- `docs/prompts/BIG_PICKLE_DATAVIZ_FACTORY_MASTERHELP_PROMPT_2026-06-27.md`
+
+### verification
+- documentaire Git local uniquement côté repo ; aucun runtime, migration, provider ou canon Drive modifié.
+- Factory Roadtrip active patchée hors Git avec archive préalable, ZIP vérifié et SHA consigné.
+
+### updates
+> 2026-06-27 codex → done local. À relire avant commit/push ; prochaine étape possible : patch Roadtrip Factory avec archivage ou demander l'audit complémentaire à Big Pickle.
+> 2026-06-27 codex → patch Factory Roadtrip V1.4 appliqué localement. Archive créée, ZIP actif vérifié, reçu ajouté. Prochaine étape : test pilote ChatGPT ou publication Git des docs/reçus.
+
+---
+
 ## TASK-303 — Storage fichier réel D07/D08
 target: codex
 status: verified

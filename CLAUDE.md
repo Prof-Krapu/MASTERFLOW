@@ -1,8 +1,16 @@
 # CLAUDE.md
 
 Guide pour Claude Code travaillant dans **ce dépôt de code** (`~/Documents/masterflow/`).
-Le **canon produit** vit dans le Drive MASTERFLOW :
+
+Doctrine active depuis 2026-06-27 : la source de vérité **opérable** est désormais ce repo Git
+publiable. Une idée issue du Drive, d'un ancien canon, d'une archive legacy, d'une Factory ou d'une
+conversation ne devient maîtrisée que lorsqu'elle est représentée dans Git : code, test, seed,
+contrat, matrice, queue, reçu de blocage ou reçu de rejet.
+
+Le Drive MASTERFLOW historique reste une source produit lente et une archive candidate :
 `/Users/malex/Library/CloudStorage/GoogleDrive-oursdoriscomlille@gmail.com/Mon Drive/MASTERFLOW`.
+
+Voir `docs/source-truth/GIT_OPERABLE_SOURCE_OF_TRUTH_AND_EXTERNAL_PRIMITIVE_HARVEST_AUDIT_2026-06-27.md`.
 Ici, on écrit le **code GitHub** et on documente le périmètre V1 consommable.
 
 ## Nature & frontière de travail
@@ -12,7 +20,7 @@ MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), clie
 - **Frontend = MALEX**, dans `apps/frontend` (workspace npm). Ne pas le construire à leur place ; on garantit le contrat qu'il consomme (`packages/shared`). *(Le PoC `packages/poc-frontend` a été retiré : le frontend revient en priorité à MALEX — cf. SUIVI.)*
 - Langue de travail : **français** (JSDoc et termes métier en français : *room*, *persona*, *blend/chimère*, *preflight*, *validation inbox*, *canon*).
 - **Pas obligé de suivre les .md à la lettre** : si une spec est infaisable/incohérente, être agile et le signaler — mais ne jamais violer les invariants ci-dessous.
-- Drive canon != périmètre V1 : les specs longues décrivent MasterFlow complet. Le repo implémente par couches courtes ; toute couche future doit rester `future`/`out_of_scope` tant que contrat + endpoint + permission gate ne sont pas réels.
+- Drive/legacy/factories != périmètre V1 : les sources longues décrivent ou expérimentent MasterFlow complet. Le repo implémente par couches courtes ; toute couche future doit rester `future`/`out_of_scope` tant que contrat + endpoint + permission gate ne sont pas réels.
 
 ## Sync MALEX / Vincent / Codex
 
@@ -55,22 +63,34 @@ check distant rapide (`git fetch --all --prune` + lecture du dernier `origin/mai
 répondre avec un état devenu caduc pendant le tour. Si un agent dit ne pas voir un message, il
 doit d'abord citer le commit exact qu'il lit.
 
-### Check canon obligatoire avant specs
+### Check externe avant specs structurantes
 
-Avant de formaliser, prioriser ou spécifier une idée produit/conceptuelle dans le Git, vérifier
-systématiquement si le Drive canon a déjà traité le sujet. Cela vaut notamment pour personas,
-MasterStory, pédagogie, bots, RAG, jobs, DA/assets, Ours d'Or, devis, correction, cours et UI.
+Avant de formaliser, prioriser ou spécifier une idée produit/conceptuelle dans le Git, vérifier si
+le Drive historique, legacy ou les Factories contiennent déjà une version utile du sujet. Cela vaut
+notamment pour personas, MasterStory, pédagogie, bots, RAG, jobs, DA/assets, Ours d'Or, devis,
+correction, cours et UI.
 
 Procédure minimale :
 
-1. rechercher dans le Drive canon avec `rg` sur les termes métier et synonymes ;
-2. lire les fichiers sources trouvés, pas seulement leurs noms ;
-3. citer les références canon dans la spec/handoff Git ;
-4. distinguer clairement `déjà canonique`, `partiellement implémenté`, `absent du backend` ;
-5. ne créer une spec nouvelle que si elle complète ou clarifie le canon, jamais comme doublon.
+1. chercher d'abord dans Git : code, docs, seeds, tâches, matrices et reçus ;
+2. si Git ne couvre pas clairement le sujet, rechercher dans les sources externes avec `rg` sur les termes métier et synonymes ;
+3. lire les fichiers sources trouvés, pas seulement leurs noms ;
+4. citer les références externes dans la spec/handoff Git comme sources candidates ;
+5. distinguer clairement `déjà représenté dans Git`, `candidat externe`, `runtime_gap`, `blocked` ou `rejected` ;
+6. créer ou mettre à jour une ligne dans `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`.
 
-Règle : pas de spec Git hors-sol. Si une idée existe déjà dans le canon, le livrable Git doit
-l'absorber, la relier aux contrats backend et signaler les écarts d'implémentation.
+Règle : pas de spec Git hors-sol. Si une idée existe déjà hors Git, le livrable Git doit soit
+en extraire une primitive utile, soit la bloquer, soit la rejeter, soit la mettre en queue. Aucune
+source externe ne vaut vérité parallèle sans représentation Git.
+
+Règle spéciale Factories : une Factory est un bot/extraction autonome. Ne jamais l'importer telle
+quelle dans MasterFlow. Auditer uniquement les primitives, patterns, verrous, formats et retours
+d'usage utiles.
+
+Avant toute création ou modification de Factory, appliquer
+`docs/factories/FACTORY_REQUEST_ROUTING_PROTOCOL_2026-06-27.md` : router d'abord la demande
+entre extraction préalable, audit de l'existant, nouvelle spec, patch Factory, récolte de primitive
+MasterFlow, queue runtime ou blocage.
 
 Pour Vincent, ne pas transférer la charge brute du Drive canon par défaut. Si une référence canon
 est nécessaire côté backend, l'embarquer dans Git sous forme de spec/handoff/checklist. Vincent

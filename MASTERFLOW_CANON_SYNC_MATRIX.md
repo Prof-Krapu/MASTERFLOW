@@ -2,13 +2,17 @@
 
 Dernière vérification : 2026-06-27
 Branche de travail : `main`
-Base GitHub vérifiée : `6d8023a` (`main == origin/main == GitHub main`)
+Base GitHub vérifiée : `0518db3` (`main == origin/main == GitHub main` avant travaux documentaires locaux DATAVIZ-001)
 
-Le Drive MasterFlow reste la source de vérité produit. Ce fichier décrit uniquement l'écart avec
-le runtime GitHub.
+Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
+Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
+représentées dans Git par code, test, seed, contrat, matrice, queue, reçu de blocage ou rejet.
+Les Factories ne sont jamais absorbées telles quelles : seules leurs primitives utiles peuvent être
+récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
+| Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
 | D07 Inventory / scan photo | partiel implémenté | Le scan écrit un fichier privé vérifié sous `storage://` et crée un candidat unique sur `main`. OCR provider et UI finale restent absents. | moyen | Rafraîchir le snapshot canon sans déclarer l'OCR réel. |
@@ -20,6 +24,8 @@ le runtime GitHub.
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability et continuité | partiel | Cockpit, findings, décisions owner, Usage Harvester V1, rails privés release/backup et registre d'incidents sont sur `main`. Live, backup réel, recovery et smoke restent non prouvés. | moyen | Rails de preuves clos ; toute action hôte reste derrière un contrat, un preflight et une validation séparés. |
 | D08 génération visuelle | partiel implémenté | R3.1-R3.4, le lifecycle asset candidat et le stockage fichier privé sont sur `main`. Provider, export, téléchargement public et canonisation restent absents. | moyen | Conserver toute génération derrière les gates provider/review/export. |
+| Dataviz / Graph / Widget transversal | partiel documentaire | Legacy contient un système riche ; canon absorbe Source Truth, Output Readiness et Room maps ; Git expose seulement des fragments runtime. DATAVIZ-001 local pose audit, contrat portable et plan Factory→Mode, non encore publié. | moyen | Relire/publier DATAVIZ-001 avant toute refonte UI ou composant Dataviz runtime. |
+| MasterHelp / Situation Companion | futur candidat | Roadtrip révèle une primitive transversale de situation réelle, mais aucun mode Git n'existe. Spec candidate locale créée ; Factory Roadtrip V1.4 patchée hors Git comme pilote. | moyen | Tester le pilote, extraire les sorties `EXTRACTION MASTERHELP`, puis décider si cela devient mode MasterFlow. |
 | D09 MasterStory | partiel | R4.1-R4.6 sur `main` : workbench privé, reader state, patches candidats et validation auteur. Canon delta, import, export et publication absents. | moyen | Considérer le lot privé clos ; ne rouvrir delta/import/export qu'après décision produit et gates dédiés. |
 | D10 événements/devis/public | partiel | R5.1-R5.4 publiés sur `main` : devis privé sourcé, panneau owner et validation interne. Public intake, export, envoi et facture absents. | moyen | Considérer le rail devis privé clos ; ne rouvrir une sortie ou le rail public qu'après décision produit et gates dédiés. |
 | D11 factories/backflow | implémenté V1 borné | V6C intake JSON/quarantaine, V6D candidate updates, V6E recommandations lecture seule et V6F routage manuel whitelisté sont sur `main`. Toute route reste `candidate_only`. | faible | D11 V1 est clos ; ne rouvrir que sur une nouvelle décision produit explicitant une frontière encore exclue. |
