@@ -45,6 +45,11 @@ export const env = {
     password: readSecret('GODMODE_PASSWORD', 'masterflow', 12),
   },
 
+  malex: {
+    username: readSecret('MALEX_USERNAME', 'malex'),
+    password: readSecret('MALEX_PASSWORD', 'masterflow', 12),
+  },
+
   /** Config LLM. `provider=mock` → réponses simulées, aucun appel réseau (dev sans clé). */
   llm: {
     provider: process.env.LLM_PROVIDER ?? 'mock',

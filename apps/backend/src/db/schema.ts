@@ -910,6 +910,30 @@ function migrate(d: Database.Database): void {
       updated_at INTEGER NOT NULL
     );
 
+    -- D08 R5 : assets générés (persistance des résultats de jobs asset_prepare)
+    CREATE TABLE IF NOT EXISTS generated_assets (
+      id TEXT PRIMARY KEY,
+      manifest_id TEXT REFERENCES visual_manifests(id) ON DELETE SET NULL,
+      job_id TEXT REFERENCES jobs(id) ON DELETE SET NULL,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      asset_type TEXT NOT NULL CHECK (asset_type IN (
+        'image','visual_manifest','badge','render','export'
+      )),
+      status TEXT NOT NULL DEFAULT 'candidate' CHECK (status IN (
+        'candidate','approved','rejected','archived'
+      )),
+      mime_type TEXT,
+      storage_ref TEXT,
+      thumbnail_ref TEXT,
+      metadata_json TEXT NOT NULL DEFAULT '{}',
+      review_note TEXT,
+      reviewed_by TEXT REFERENCES users(id),
+      reviewed_at INTEGER,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS story_workbenches (
       id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       project_id TEXT REFERENCES projects(id) ON DELETE SET NULL, project_scope TEXT NOT NULL,
@@ -930,6 +954,37 @@ function migrate(d: Database.Database): void {
       truth_state TEXT NOT NULL DEFAULT 'CANDIDATE' CHECK (truth_state IN ('CANDIDATE','TO_VALIDATE','OPEN_QUESTION','CONTRADICTION')),
       status TEXT NOT NULL DEFAULT 'candidate' CHECK (status IN ('candidate','parked','rejected','validated_for_canon_delta')),
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+    );
+    -- D09 R6 : nœuds de structure narrative (arcs, scènes, beats)
+    CREATE TABLE IF NOT EXISTS story_nodes (
+      id TEXT PRIMARY KEY,
+      workbench_id TEXT NOT NULL REFERENCES story_workbenches(id) ON DELETE CASCADE,
+      parent_id TEXT REFERENCES story_nodes(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      node_type TEXT NOT NULL CHECK (node_type IN ('arc','scene','beat','sequence','chapter')),
+      title TEXT NOT NULL,
+      summary TEXT,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      spoiler_level TEXT NOT NULL DEFAULT 'none' CHECK (spoiler_level IN ('none','mild','major','critical')),
+      status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','active','locked','archived')),
+      metadata_json TEXT NOT NULL DEFAULT '{}',
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+    -- D09 R6 : événements narratifs (story beats, unlocks, plot twists)
+    CREATE TABLE IF NOT EXISTS narrative_events (
+      id TEXT PRIMARY KEY,
+      workbench_id TEXT NOT NULL REFERENCES story_workbenches(id) ON DELETE CASCADE,
+      node_id TEXT REFERENCES story_nodes(id) ON DELETE SET NULL,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      event_type TEXT NOT NULL CHECK (event_type IN (
+        'story_beat','milestone','unlock','character_intro','plot_twist','reveal','decision_point'
+      )),
+      title TEXT NOT NULL,
+      description TEXT,
+      payload_json TEXT NOT NULL DEFAULT '{}',
+      occurred_at INTEGER NOT NULL,
+      created_at INTEGER NOT NULL
     );
     CREATE TABLE IF NOT EXISTS private_quote_drafts (
       id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -1604,6 +1659,322 @@ function migrate(d: Database.Database): void {
       ON factory_backflow_intakes(owner_id, review_status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_factory_backflow_candidate_updates_owner
       ON factory_backflow_candidate_updates(owner_id, routing_status, updated_at);
+
+    -- ───────────────────────── D05 Competency & Gamification ─────────────────
+    -- Frameworks de compétences (ex: «Design Thinking», «Communication visuelle»)
+    CREATE TABLE IF NOT EXISTS competency_frameworks (
+      id            TEXT PRIMARY KEY,
+      owner_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id    TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      label         TEXT NOT NULL,
+      description   TEXT,
+      domain        TEXT NOT NULL,
+      status        TEXT NOT NULL DEFAULT 'active'
+                      CHECK (status IN ('active','archived')),
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL
+    );
+
+    -- Définitions de compétences individuelles
+    CREATE TABLE IF NOT EXISTS competency_definitions (
+      id            TEXT PRIMARY KEY,
+      framework_id  TEXT NOT NULL REFERENCES competency_frameworks(id) ON DELETE CASCADE,
+      parent_id     TEXT REFERENCES competency_definitions(id) ON DELETE SET NULL,
+      code          TEXT NOT NULL,
+      label         TEXT NOT NULL,
+      description   TEXT,
+      bloom_level   TEXT CHECK (bloom_level IN (
+                      'remember','understand','apply','analyze','evaluate','create'
+                    )),
+      icon          TEXT,
+      sort_order    INTEGER NOT NULL DEFAULT 0,
+      status        TEXT NOT NULL DEFAULT 'active'
+                      CHECK (status IN ('active','archived')),
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL
+    );
+
+    -- Signaux observés de compétence (preuves)
+    CREATE TABLE IF NOT EXISTS user_competency_signals (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      competency_id   TEXT NOT NULL REFERENCES competency_definitions(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      evidence_ref    TEXT,
+      source          TEXT NOT NULL CHECK (source IN (
+                        'teacher','system','self','peer','workflow'
+                      )),
+      mastery_level   TEXT NOT NULL CHECK (mastery_level IN (
+                        'discovering','guided','practicing','autonomous','mentor_ready'
+                      )),
+      autonomy_level  TEXT CHECK (autonomy_level IN (
+                        'dependent','assisted','independent','initiative','mentor'
+                      )),
+      confidence      REAL NOT NULL DEFAULT 0.5 CHECK (confidence >= 0 AND confidence <= 1),
+      observation     TEXT,
+      validation_required INTEGER NOT NULL DEFAULT 0,
+      validator_id    TEXT REFERENCES users(id),
+      validated_at    INTEGER,
+      status          TEXT NOT NULL DEFAULT 'candidate'
+                        CHECK (status IN ('candidate','validated','rejected','superseded')),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    -- Progression agrégée par compétence / utilisateur
+    CREATE TABLE IF NOT EXISTS user_competency_progress (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      competency_id   TEXT NOT NULL REFERENCES competency_definitions(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      current_mastery TEXT NOT NULL CHECK (current_mastery IN (
+                        'unknown','discovering','guided','practicing','autonomous','mentor_ready'
+                      )),
+      current_autonomy TEXT CHECK (current_autonomy IN (
+                        'unknown','dependent','assisted','independent','initiative','mentor'
+                      )),
+      confidence      REAL NOT NULL DEFAULT 0,
+      signal_count    INTEGER NOT NULL DEFAULT 0,
+      last_signal_at  INTEGER,
+      trajectory      TEXT CHECK (trajectory IN (
+                        'emerging','consolidating','unstable','transferred','blocked','needs_review'
+                      )),
+      validation_required INTEGER NOT NULL DEFAULT 1,
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(user_id, competency_id, project_id)
+    );
+
+    -- Nœuds d'arbre de compétences
+    CREATE TABLE IF NOT EXISTS skill_tree_nodes (
+      id              TEXT PRIMARY KEY,
+      owner_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      label           TEXT NOT NULL,
+      node_type       TEXT NOT NULL CHECK (node_type IN (
+                        'competency','capability','app','engine','widget','export',
+                        'pack','permission','asset_render','reward_asset',
+                        'methodology','teacher_persona','companion','living_idea'
+                      )),
+      status          TEXT NOT NULL DEFAULT 'locked' CHECK (status IN (
+                        'locked','available','active','equipped',
+                        'validation_required','admin_only','cooldown',
+                        'future_ready','deprecated','conflict'
+                      )),
+      unlock_source   TEXT,
+      required_role   TEXT,
+      required_pack   TEXT,
+      required_validation INTEGER NOT NULL DEFAULT 0,
+      runtime_cost    REAL,
+      visible_to_user INTEGER NOT NULL DEFAULT 1,
+      usable_by_user  INTEGER NOT NULL DEFAULT 0,
+      equipped        INTEGER NOT NULL DEFAULT 0,
+      explanation     TEXT,
+      companion_family TEXT CHECK (companion_family IN (
+                        'MOTH','MOLEKID','INCUBATOR_CREATURE','MASTERFLEX_HELPER',
+                        'STUDENT_DISCOVERY','PROJECT_MONSTER', NULL
+                      )),
+      sort_order      INTEGER NOT NULL DEFAULT 0,
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    -- Dépendances entre nœuds
+    CREATE TABLE IF NOT EXISTS skill_tree_node_dependencies (
+      node_id         TEXT NOT NULL REFERENCES skill_tree_nodes(id) ON DELETE CASCADE,
+      depends_on_id   TEXT NOT NULL REFERENCES skill_tree_nodes(id) ON DELETE CASCADE,
+      dependency_type TEXT NOT NULL DEFAULT 'requires'
+                        CHECK (dependency_type IN ('requires','improves','extends','blocks','unlocks')),
+      created_at      INTEGER NOT NULL,
+      PRIMARY KEY (node_id, depends_on_id)
+    );
+
+    -- Définitions de badges
+    CREATE TABLE IF NOT EXISTS badge_definitions (
+      id              TEXT PRIMARY KEY,
+      owner_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      code            TEXT NOT NULL,
+      label           TEXT NOT NULL,
+      description     TEXT,
+      badge_type      TEXT NOT NULL CHECK (badge_type IN (
+                        'progression','competency','milestone','event','ritual','challenge'
+                      )),
+      icon            TEXT,
+      criteria_json   TEXT NOT NULL DEFAULT '{}',
+      unlock_conditions_json TEXT NOT NULL DEFAULT '[]',
+      reward_type     TEXT CHECK (reward_type IN (
+                        'badge','unlock','feedback','resource','output','ritual'
+                      )),
+      reward_ref      TEXT,
+      visibility      TEXT NOT NULL DEFAULT 'private' CHECK (visibility IN (
+                        'private','teacher_visible','project_visible','public_candidate'
+                      )),
+      saturation_risk INTEGER NOT NULL DEFAULT 0,
+      status          TEXT NOT NULL DEFAULT 'active'
+                        CHECK (status IN ('active','archived')),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    -- Badges attribués
+    CREATE TABLE IF NOT EXISTS user_badges (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      badge_id        TEXT NOT NULL REFERENCES badge_definitions(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      awarded_by      TEXT REFERENCES users(id),
+      reason          TEXT,
+      evidence_ref    TEXT,
+      visibility      TEXT NOT NULL DEFAULT 'private' CHECK (visibility IN (
+                        'private','teacher_visible','project_visible','public_candidate'
+                      )),
+      status          TEXT NOT NULL DEFAULT 'awarded'
+                        CHECK (status IN ('awarded','revoked','equipped','archived')),
+      awarded_at      INTEGER NOT NULL,
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(user_id, badge_id)
+    );
+
+    -- Événements de progression utilisateur
+    CREATE TABLE IF NOT EXISTS user_progression_events (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      event_type      TEXT NOT NULL CHECK (event_type IN (
+                        'signal_ingested','milestone_reached','badge_awarded',
+                        'skill_unlocked','level_changed','saturation_detected',
+                        'ritual_completed','challenge_proposed','challenge_completed'
+                      )),
+      ref_type        TEXT,
+      ref_id          TEXT,
+      detail_json     TEXT NOT NULL DEFAULT '{}',
+      created_at      INTEGER NOT NULL
+    );
+
+    -- Graphes pédagogiques
+    CREATE TABLE IF NOT EXISTS pedagogical_graphs (
+      id              TEXT PRIMARY KEY,
+      owner_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      label           TEXT NOT NULL,
+      description     TEXT,
+      scope           TEXT NOT NULL DEFAULT 'general'
+                        CHECK (scope IN ('general','personal','shared','subject')),
+      status          TEXT NOT NULL DEFAULT 'active'
+                        CHECK (status IN ('active','archived')),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    -- Nœuds de graphe pédagogique
+    CREATE TABLE IF NOT EXISTS pedagogical_graph_nodes (
+      id              TEXT PRIMARY KEY,
+      graph_id        TEXT NOT NULL REFERENCES pedagogical_graphs(id) ON DELETE CASCADE,
+      node_type       TEXT NOT NULL CHECK (node_type IN (
+                        'competency','resource','workflow','persona','project',
+                        'subject','tool','methodology','discipline','exercise','feedback'
+                      )),
+      label           TEXT NOT NULL,
+      ref_type        TEXT,
+      ref_id          TEXT,
+      metadata_json   TEXT NOT NULL DEFAULT '{}',
+      sort_order      INTEGER NOT NULL DEFAULT 0,
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    -- Arêtes du graphe pédagogique
+    CREATE TABLE IF NOT EXISTS pedagogical_graph_edges (
+      id              TEXT PRIMARY KEY,
+      graph_id        TEXT NOT NULL REFERENCES pedagogical_graphs(id) ON DELETE CASCADE,
+      source_node_id  TEXT NOT NULL REFERENCES pedagogical_graph_nodes(id) ON DELETE CASCADE,
+      target_node_id  TEXT NOT NULL REFERENCES pedagogical_graph_nodes(id) ON DELETE CASCADE,
+      relation_type   TEXT NOT NULL CHECK (relation_type IN (
+                        'requires','improves','extends','illustrates','contradicts',
+                        'simplifies','references','recommended_for','used_in','blocks','unlocks'
+                      )),
+      weight          REAL,
+      metadata_json   TEXT NOT NULL DEFAULT '{}',
+      created_at      INTEGER NOT NULL,
+      UNIQUE(source_node_id, target_node_id, relation_type)
+    );
+
+    -- ───────────────────────── D04 Personal Learning Profiles ─────────────────
+    CREATE TABLE IF NOT EXISTS personal_learning_profiles (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      owner_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      help_style      TEXT CHECK (help_style IN (
+                          'direct','guided','explorative','visual','step_by_step'
+                        )),
+      help_format     TEXT CHECK (help_format IN (
+                          'text','bullet','example','analogy','exercise','visual'
+                        )),
+      help_density    TEXT CHECK (help_density IN ('concise','balanced','detailed')),
+      preferred_personas_json TEXT NOT NULL DEFAULT '[]',
+      learning_state_json     TEXT NOT NULL DEFAULT '{}',
+      professional_self_json  TEXT NOT NULL DEFAULT '{}',
+      guidance_mode   TEXT NOT NULL DEFAULT 'auto' CHECK (guidance_mode IN (
+                          'auto','discovery','structured','challenge','mentor'
+                        )),
+      profile_status  TEXT NOT NULL DEFAULT 'draft' CHECK (profile_status IN (
+                          'draft','proposed','user_validated','teacher_validated','archived'
+                        )),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(user_id, project_id)
+    );
+
+    -- Instantanés de contexte d'aide (help context snapshots)
+    CREATE TABLE IF NOT EXISTS help_context_snapshots (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      profile_id      TEXT REFERENCES personal_learning_profiles(id) ON DELETE SET NULL,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      detected_need   TEXT NOT NULL CHECK (detected_need IN (
+                          'concept','method','blockage','validation','inspiration','orientation','practice'
+                        )),
+      confidence      REAL NOT NULL DEFAULT 0.5,
+      recommended_mode TEXT NOT NULL CHECK (recommended_mode IN (
+                          'discovery','structured','challenge','mentor'
+                        )),
+      recommended_persona TEXT,
+      context_json    TEXT NOT NULL DEFAULT '{}',
+      resolved_at     INTEGER,
+      created_at      INTEGER NOT NULL
+    );
+
+    -- ───────────────────────── D04 Style Mirror Profiles ──────────────────
+    CREATE TABLE IF NOT EXISTS style_mirror_profiles (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      owner_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id      TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      persona_id      TEXT REFERENCES personas(id) ON DELETE CASCADE,
+      register_target     TEXT CHECK (register_target IN (
+                              'auto','formal','medium','casual','playful'
+                            )),
+      energy_target       TEXT CHECK (energy_target IN (
+                              'auto','calm','medium','high'
+                            )),
+      lexical_complexity  TEXT CHECK (lexical_complexity IN (
+                              'auto','simple','balanced','rich'
+                            )),
+      mirror_intensity    REAL NOT NULL DEFAULT 0.5
+                            CHECK (mirror_intensity >= 0 AND mirror_intensity <= 1),
+      lexical_overrides_json          TEXT NOT NULL DEFAULT '[]',
+      signature_moves_override_json   TEXT NOT NULL DEFAULT '[]',
+      tone_rules_json                 TEXT NOT NULL DEFAULT '[]',
+      profile_status  TEXT NOT NULL DEFAULT 'draft' CHECK (profile_status IN (
+                          'draft','active','archived'
+                        )),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(user_id, project_id, persona_id)
+    );
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -1649,6 +2020,12 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'correction_export_previews', 'project_id', 'TEXT');
   ensureColumn(d, 'cohort_calibration_reviews', 'project_id', 'TEXT');
   ensureColumn(d, 'd12_missed_trigger_findings', 'owner_decision_json', 'TEXT');
+
+  // Story→DA bridge columns
+  ensureColumn(d, 'visual_manifests', 'workbench_id', 'TEXT REFERENCES story_workbenches(id) ON DELETE SET NULL');
+  ensureColumn(d, 'visual_manifests', 'node_id', 'TEXT REFERENCES story_nodes(id) ON DELETE SET NULL');
+  // Canon lock on workbenches
+  ensureColumn(d, 'story_workbenches', 'canon_locked', 'INTEGER NOT NULL DEFAULT 0');
 
   // SQLite ne sait pas ALTER un CHECK : la colonne `task` a gagné `image_generation`.
   // On reconstruit la table (lignes préservées) sur les colonnes déjà étendues ci-dessus.
@@ -1696,6 +2073,131 @@ function migrate(d: Database.Database): void {
       ON validation_inbox_items(status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_validation_inbox_source
       ON validation_inbox_items(source_kind, source_id);
+  `);
+
+  d.exec(`
+    -- ──────────────────────── Registres seed legacy (P6) ────────────────────────
+    CREATE TABLE IF NOT EXISTS pedagogical_error_patterns (
+      id            TEXT PRIMARY KEY,
+      error_id      TEXT UNIQUE NOT NULL,
+      label         TEXT NOT NULL,
+      category      TEXT NOT NULL,
+      severity      TEXT NOT NULL CHECK(severity IN ('low','medium','high','critical')),
+      confidence_weight REAL NOT NULL DEFAULT 0.7,
+      description   TEXT NOT NULL,
+      symptoms_json TEXT NOT NULL DEFAULT '[]',
+      fix_strategy_json TEXT NOT NULL DEFAULT '[]',
+      monster_archetype TEXT,
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS da_gate_registry (
+      id            TEXT PRIMARY KEY,
+      gate_id       TEXT UNIQUE NOT NULL,
+      phase         TEXT NOT NULL,
+      severity      TEXT NOT NULL,
+      activation    TEXT NOT NULL,
+      requires_json TEXT NOT NULL DEFAULT '[]',
+      blocks_if_json TEXT NOT NULL DEFAULT '[]',
+      retake_lever  TEXT,
+      gate_data_json TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS da_layer_registry (
+      id            TEXT PRIMARY KEY,
+      layer_id      TEXT UNIQUE NOT NULL,
+      purpose       TEXT,
+      priority_order INTEGER NOT NULL DEFAULT 0,
+      layer_data_json TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS rag_allowlist (
+      id            TEXT PRIMARY KEY,
+      resource_id   TEXT UNIQUE NOT NULL,
+      resource_path TEXT NOT NULL,
+      resource_class TEXT NOT NULL,
+      allowed_uses_json TEXT NOT NULL DEFAULT '[]',
+      citation_required INTEGER NOT NULL DEFAULT 1,
+      allowlist_data_json TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS opportunity_registry (
+      id            TEXT PRIMARY KEY,
+      opportunity_id TEXT UNIQUE NOT NULL,
+      title         TEXT NOT NULL,
+      domain        TEXT NOT NULL,
+      priority      TEXT NOT NULL,
+      decision      TEXT NOT NULL DEFAULT 'pending',
+      opportunity_data_json TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS owner_registry (
+      id            TEXT PRIMARY KEY,
+      owner_id      TEXT UNIQUE NOT NULL,
+      display_name  TEXT NOT NULL,
+      scope         TEXT NOT NULL,
+      owner_data_json TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS pedagogical_video_resources (
+      id            TEXT PRIMARY KEY,
+      video_id      TEXT UNIQUE NOT NULL,
+      title         TEXT NOT NULL,
+      duration      TEXT,
+      software_json TEXT NOT NULL DEFAULT '[]',
+      topics_json   TEXT NOT NULL DEFAULT '[]',
+      url           TEXT,
+      data_json     TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS capability_inventory (
+      id              TEXT PRIMARY KEY,
+      feature_id      TEXT UNIQUE NOT NULL,
+      label           TEXT NOT NULL,
+      type            TEXT NOT NULL,
+      owner           TEXT NOT NULL,
+      description_short TEXT NOT NULL,
+      activation_mode TEXT NOT NULL,
+      required_permissions_json TEXT NOT NULL DEFAULT '[]',
+      default_visibility TEXT NOT NULL,
+      status          TEXT NOT NULL DEFAULT 'active_candidate',
+      created_at      INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS room_recipes (
+      id                TEXT PRIMARY KEY,
+      room_type         TEXT UNIQUE NOT NULL,
+      purpose           TEXT NOT NULL,
+      default_widgets_json TEXT NOT NULL DEFAULT '[]',
+      default_actions_json TEXT NOT NULL DEFAULT '[]',
+      created_at        INTEGER NOT NULL
+    );
+
+    -- Story characters (MasterStory → DA bridge)
+    CREATE TABLE IF NOT EXISTS story_characters (
+      id            TEXT PRIMARY KEY,
+      workbench_id  TEXT NOT NULL REFERENCES story_workbenches(id) ON DELETE CASCADE,
+      owner_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name          TEXT NOT NULL,
+      aliases_json  TEXT NOT NULL DEFAULT '[]',
+      role          TEXT NOT NULL,
+      archetype     TEXT NOT NULL DEFAULT 'neutral'
+                    CHECK (archetype IN ('protagonist','antagonist','mentor','ally','trickster',
+                      'guardian','herald','shadow','shapeshifter','sidekick','collective','neutral')),
+      status        TEXT NOT NULL DEFAULT 'active'
+                    CHECK (status IN ('active','inactive','deceased','unknown','concept')),
+      design_notes  TEXT,
+      behavior_notes TEXT,
+      metadata_json TEXT NOT NULL DEFAULT '{}',
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL
+    );
   `);
 }
 
@@ -2779,6 +3281,334 @@ export interface SubmissionRow {
   identity_status: 'unknown' | 'candidate' | 'confirmed' | 'rejected';
   status: 'candidate' | 'ready' | 'processing' | 'review' | 'completed' | 'rejected';
   privacy_level: 'private';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CompetencyFrameworkRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  label: string;
+  description: string | null;
+  domain: string;
+  status: 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CompetencyDefinitionRow {
+  id: string;
+  framework_id: string;
+  parent_id: string | null;
+  code: string;
+  label: string;
+  description: string | null;
+  bloom_level: 'remember' | 'understand' | 'apply' | 'analyze' | 'evaluate' | 'create' | null;
+  icon: string | null;
+  sort_order: number;
+  status: 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface UserCompetencySignalRow {
+  id: string;
+  user_id: string;
+  competency_id: string;
+  project_id: string | null;
+  evidence_ref: string | null;
+  source: 'teacher' | 'system' | 'self' | 'peer' | 'workflow';
+  mastery_level: 'discovering' | 'guided' | 'practicing' | 'autonomous' | 'mentor_ready';
+  autonomy_level: 'dependent' | 'assisted' | 'independent' | 'initiative' | 'mentor' | null;
+  confidence: number;
+  observation: string | null;
+  validation_required: number;
+  validator_id: string | null;
+  validated_at: number | null;
+  status: 'candidate' | 'validated' | 'rejected' | 'superseded';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface UserCompetencyProgressRow {
+  id: string;
+  user_id: string;
+  competency_id: string;
+  project_id: string | null;
+  current_mastery: 'unknown' | 'discovering' | 'guided' | 'practicing' | 'autonomous' | 'mentor_ready';
+  current_autonomy: 'unknown' | 'dependent' | 'assisted' | 'independent' | 'initiative' | 'mentor' | null;
+  confidence: number;
+  signal_count: number;
+  last_signal_at: number | null;
+  trajectory: 'emerging' | 'consolidating' | 'unstable' | 'transferred' | 'blocked' | 'needs_review' | null;
+  validation_required: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface SkillTreeNodeRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  label: string;
+  node_type: 'competency' | 'capability' | 'app' | 'engine' | 'widget' | 'export' | 'pack' | 'permission' | 'asset_render' | 'reward_asset' | 'methodology' | 'teacher_persona' | 'companion' | 'living_idea';
+  status: 'locked' | 'available' | 'active' | 'equipped' | 'validation_required' | 'admin_only' | 'cooldown' | 'future_ready' | 'deprecated' | 'conflict';
+  unlock_source: string | null;
+  required_role: string | null;
+  required_pack: string | null;
+  required_validation: number;
+  runtime_cost: number | null;
+  visible_to_user: number;
+  usable_by_user: number;
+  equipped: number;
+  explanation: string | null;
+  companion_family: 'MOTH' | 'MOLEKID' | 'INCUBATOR_CREATURE' | 'MASTERFLEX_HELPER' | 'STUDENT_DISCOVERY' | 'PROJECT_MONSTER' | null;
+  sort_order: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface SkillTreeNodeDependencyRow {
+  node_id: string;
+  depends_on_id: string;
+  dependency_type: 'requires' | 'improves' | 'extends' | 'blocks' | 'unlocks';
+  created_at: number;
+}
+
+export interface BadgeDefinitionRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  code: string;
+  label: string;
+  description: string | null;
+  badge_type: 'progression' | 'competency' | 'milestone' | 'event' | 'ritual' | 'challenge';
+  icon: string | null;
+  criteria_json: string;
+  unlock_conditions_json: string;
+  reward_type: 'badge' | 'unlock' | 'feedback' | 'resource' | 'output' | 'ritual' | null;
+  reward_ref: string | null;
+  visibility: 'private' | 'teacher_visible' | 'project_visible' | 'public_candidate';
+  saturation_risk: number;
+  status: 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface UserBadgeRow {
+  id: string;
+  user_id: string;
+  badge_id: string;
+  project_id: string | null;
+  awarded_by: string | null;
+  reason: string | null;
+  evidence_ref: string | null;
+  visibility: 'private' | 'teacher_visible' | 'project_visible' | 'public_candidate';
+  status: 'awarded' | 'revoked' | 'equipped' | 'archived';
+  awarded_at: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface UserProgressionEventRow {
+  id: string;
+  user_id: string;
+  project_id: string | null;
+  event_type: 'signal_ingested' | 'milestone_reached' | 'badge_awarded' | 'skill_unlocked' | 'level_changed' | 'saturation_detected' | 'ritual_completed' | 'challenge_proposed' | 'challenge_completed';
+  ref_type: string | null;
+  ref_id: string | null;
+  detail_json: string;
+  created_at: number;
+}
+
+export interface PedagogicalGraphRow {
+  id: string;
+  owner_id: string;
+  project_id: string | null;
+  label: string;
+  description: string | null;
+  scope: 'general' | 'personal' | 'shared' | 'subject';
+  status: 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface PedagogicalGraphNodeRow {
+  id: string;
+  graph_id: string;
+  node_type: 'competency' | 'resource' | 'workflow' | 'persona' | 'project' | 'subject' | 'tool' | 'methodology' | 'discipline' | 'exercise' | 'feedback';
+  label: string;
+  ref_type: string | null;
+  ref_id: string | null;
+  metadata_json: string;
+  sort_order: number;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface PedagogicalGraphEdgeRow {
+  id: string;
+  graph_id: string;
+  source_node_id: string;
+  target_node_id: string;
+  relation_type: 'requires' | 'improves' | 'extends' | 'illustrates' | 'contradicts' | 'simplifies' | 'references' | 'recommended_for' | 'used_in' | 'blocks' | 'unlocks';
+  weight: number | null;
+  metadata_json: string;
+  created_at: number;
+}
+
+export interface PersonalLearningProfileRow {
+  id: string;
+  user_id: string;
+  owner_id: string;
+  project_id: string | null;
+  help_style: 'direct' | 'guided' | 'explorative' | 'visual' | 'step_by_step' | null;
+  help_format: 'text' | 'bullet' | 'example' | 'analogy' | 'exercise' | 'visual' | null;
+  help_density: 'concise' | 'balanced' | 'detailed' | null;
+  preferred_personas_json: string;
+  learning_state_json: string;
+  professional_self_json: string;
+  guidance_mode: 'auto' | 'discovery' | 'structured' | 'challenge' | 'mentor';
+  profile_status: 'draft' | 'proposed' | 'user_validated' | 'teacher_validated' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface HelpContextSnapshotRow {
+  id: string;
+  user_id: string;
+  profile_id: string | null;
+  project_id: string | null;
+  detected_need: 'concept' | 'method' | 'blockage' | 'validation' | 'inspiration' | 'orientation' | 'practice';
+  confidence: number;
+  recommended_mode: 'discovery' | 'structured' | 'challenge' | 'mentor';
+  recommended_persona: string | null;
+  context_json: string;
+  resolved_at: number | null;
+  created_at: number;
+}
+
+export interface StyleMirrorProfileRow {
+  id: string;
+  user_id: string;
+  owner_id: string;
+  project_id: string | null;
+  persona_id: string | null;
+  register_target: 'auto' | 'formal' | 'medium' | 'casual' | 'playful' | null;
+  energy_target: 'auto' | 'calm' | 'medium' | 'high' | null;
+  lexical_complexity: 'auto' | 'simple' | 'balanced' | 'rich' | null;
+  mirror_intensity: number;
+  lexical_overrides_json: string;
+  signature_moves_override_json: string;
+  tone_rules_json: string;
+  profile_status: 'draft' | 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface PedagogicalErrorPatternRow {
+  id: string;
+  error_id: string;
+  label: string;
+  category: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  confidence_weight: number;
+  description: string;
+  symptoms_json: string;
+  fix_strategy_json: string;
+  monster_archetype: string | null;
+  created_at: number;
+}
+
+export interface DaGateRegistryRow {
+  id: string;
+  gate_id: string;
+  phase: string;
+  severity: string;
+  activation: string;
+  requires_json: string;
+  blocks_if_json: string;
+  retake_lever: string | null;
+  gate_data_json: string;
+  created_at: number;
+}
+
+export interface DaLayerRegistryRow {
+  id: string;
+  layer_id: string;
+  purpose: string | null;
+  priority_order: number;
+  layer_data_json: string;
+  created_at: number;
+}
+
+export interface RagAllowlistRow {
+  id: string;
+  resource_id: string;
+  resource_path: string;
+  resource_class: string;
+  allowed_uses_json: string;
+  citation_required: number;
+  allowlist_data_json: string;
+  created_at: number;
+}
+
+export interface OpportunityRegistryRow {
+  id: string;
+  opportunity_id: string;
+  title: string;
+  domain: string;
+  priority: string;
+  decision: string;
+  opportunity_data_json: string;
+  created_at: number;
+}
+
+export interface OwnerRegistryRow {
+  id: string;
+  owner_id: string;
+  display_name: string;
+  scope: string;
+  owner_data_json: string;
+  created_at: number;
+}
+
+export interface CapabilityRow {
+  id: string;
+  feature_id: string;
+  label: string;
+  type: string;
+  owner: string;
+  description_short: string;
+  activation_mode: string;
+  required_permissions_json: string;
+  default_visibility: string;
+  status: string;
+  created_at: number;
+}
+
+export interface RoomRecipeRow {
+  id: string;
+  room_type: string;
+  purpose: string;
+  default_widgets_json: string;
+  default_actions_json: string;
+  created_at: number;
+}
+
+export interface StoryCharacterRow {
+  id: string;
+  workbench_id: string;
+  owner_id: string;
+  name: string;
+  aliases_json: string;
+  role: string;
+  archetype: string;
+  status: string;
+  design_notes: string | null;
+  behavior_notes: string | null;
+  metadata_json: string;
   created_at: number;
   updated_at: number;
 }

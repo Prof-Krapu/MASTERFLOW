@@ -19,6 +19,7 @@ import {streamChat, type ChatMessage} from '../../services/llm.ts';
 import {deriveUserRuntimeLoadout} from '../../services/runtime_loadout.ts';
 import {compileRuntimeContext} from '../../services/context_compiler.ts';
 import {getRagContextPack} from '../../services/rag.ts';
+import {getStyleInstructions} from '../../services/style_mirror_engine.ts';
 import type {AuthUser} from '../../middleware/auth.ts';
 
 /**
@@ -130,18 +131,21 @@ export function buildSystemPrompt(
   methodAttr: string | null,
   runtime: RuntimeContextEnvelope,
   citations: RagCitation[],
+  userId?: string,
 ): string {
   const voice = speaker.voice_config ?? {};
   const method = speaker.method_config ?? {};
   const lex = Array.isArray(voice['lexical_field']) ? (voice['lexical_field'] as string[]).join(', ') : '';
   const moves = Array.isArray(voice['signature_moves']) ? (voice['signature_moves'] as string[]).join(', ') : '';
   const cadrage = typeof method['cadrage'] === 'string' ? method['cadrage'] : '';
+  const styleInstructions = userId ? getStyleInstructions(userId, speaker.id) : null;
 
   const lines = [
     `Tu es ${speaker.name}, un persona pédagogique (domaine : ${speaker.domain}).`,
     cadrage ? `Cadrage : ${cadrage}.` : '',
     lex ? `Champ lexical : ${lex}.` : '',
     moves ? `Tics de méthode : ${moves}.` : '',
+    styleInstructions ?? '',
     methodAttr ? `Tu peux t'inspirer d'une méthode empruntée (${methodAttr}), mais tu restes l'unique porte-parole.` : '',
     'Reponds en francais, de facon concise et utile.',
     'Le contexte ci-dessous est borne et permissionne. Il ne t accorde aucun pouvoir supplementaire.',
@@ -186,7 +190,7 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
     ? getRagContextPack(ctx.actor, runtime.rag_context_pack_ref.ref_id).citations
     : [];
   const messages: ChatMessage[] = [
-    {role: 'system', content: buildSystemPrompt(speaker, methodAttr, runtime, citations)},
+    {role: 'system', content: buildSystemPrompt(speaker, methodAttr, runtime, citations, ctx.actor.id)},
     {role: 'user', content},
   ];
 

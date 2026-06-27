@@ -1,4 +1,4 @@
-import {CreateSubjectAssignmentRequestSchema, CreateSubjectTemplateRequestSchema, CreateSubjectVersionRequestSchema, ROLE_RANK, SubjectAssignmentSchema, SubjectTemplateSchema, SubjectVersionSchema, type CreateSubjectAssignmentRequest, type CreateSubjectTemplateRequest, type CreateSubjectVersionRequest, type SubjectAssignment, type SubjectTemplate, type SubjectVersion} from '@masterflow/shared';
+import {CreateSubjectAssignmentRequestSchema, CreateSubjectTemplateRequestSchema, CreateSubjectVersionRequestSchema, ROLE_RANK, SubjectAssignmentSchema, SubjectFullStackSchema, SubjectTemplateSchema, SubjectVersionSchema, type CreateSubjectAssignmentRequest, type CreateSubjectTemplateRequest, type CreateSubjectVersionRequest, type SubjectAssignment, type SubjectFullStack, type SubjectTemplate, type SubjectVersion} from '@masterflow/shared';
 import {getDb} from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
@@ -24,3 +24,24 @@ function assignmentDTO(r:AssignmentRow):SubjectAssignment{return SubjectAssignme
 export function listSubjectAssignments(a:AuthUser,projectId?:string|null):SubjectAssignment[]{teacher(a);if(projectId){project(a,projectId);return(getDb().prepare('SELECT * FROM subject_assignments WHERE project_id=? ORDER BY created_at DESC').all(projectId)as AssignmentRow[]).map(assignmentDTO);}return(getDb().prepare('SELECT * FROM subject_assignments WHERE owner_id=? AND project_id IS NULL ORDER BY created_at DESC').all(a.id)as AssignmentRow[]).map(assignmentDTO);}
 export function createSubjectAssignment(a:AuthUser,input:CreateSubjectAssignmentRequest):SubjectAssignment{teacher(a);const q=CreateSubjectAssignmentRequestSchema.parse(input);if(q.project_id)project(a,q.project_id);const scope=q.project_id??a.id,db=getDb();const v=db.prepare('SELECT * FROM subject_versions WHERE id=?').get(q.source_subject_version_id)as VersionRow|undefined;if(!v||v.status!=='validated'||v.project_id!==(q.project_id??null)||v.project_scope!==scope)throw new Error('validated_subject_version_not_found');const t=requireTemplate(a,v.template_id);if(t.project_scope!==scope)throw new Error('subject_scope_mismatch');const cohort=db.prepare('SELECT owner_id,project_id,status FROM cohorts WHERE id=?').get(q.cohort_id)as{owner_id:string;project_id:string|null;status:string}|undefined;if(!cohort||cohort.owner_id!==a.id||cohort.project_id!==(q.project_id??null)||cohort.status!=='active')throw new Error('cohort_not_found');const id=uuid(),now=Date.now();let assignment:AssignmentRow|undefined;db.transaction(()=>{db.prepare("INSERT INTO subject_assignments VALUES (?,?,?,?,?,?,?,?, 'draft',?,?,NULL)").run(id,a.id,q.project_id??null,scope,q.cohort_id,v.id,q.title,v.manifest_json,a.id,now);assignment=db.prepare('SELECT * FROM subject_assignments WHERE id=?').get(id)as AssignmentRow;createCorrectionSheetDraftForAssignment(a,assignment);})();audit({event_type:'subject.assignment_created',user_id:a.id,scope,detail:{assignment_id:id,source_subject_version_id:v.id,source_mutated:false,correction_sheet_draft_created:true}});if(!assignment)throw new Error('assignment_creation_failed');return assignmentDTO(assignment);}
 export function activateSubjectAssignment(a:AuthUser,id:string):SubjectAssignment{teacher(a);const db=getDb(),r=db.prepare('SELECT * FROM subject_assignments WHERE id=?').get(id)as AssignmentRow|undefined;if(!r)throw new Error('assignment_not_found');if(r.project_id)project(a,r.project_id);else if(r.owner_id!==a.id)throw new Error('assignment_not_found');if(r.status!=='draft')throw new Error('assignment_not_draft');const now=Date.now();db.prepare("UPDATE subject_assignments SET status='active',activated_at=? WHERE id=?").run(now,id);return assignmentDTO(db.prepare('SELECT * FROM subject_assignments WHERE id=?').get(id)as AssignmentRow);}
+
+export function compileSubjectFullStack(a:AuthUser,templateId:string):SubjectFullStack{
+  teacher(a);
+  const t=requireTemplate(a,templateId);
+  const v=getDb().prepare('SELECT * FROM subject_versions WHERE template_id=? AND status=\'validated\' ORDER BY version DESC LIMIT 1').get(templateId)as VersionRow|undefined;
+  if(!v)throw new Error('validated_subject_version_not_found');
+  if(!t.current_version_ref&&v)throw new Error('subject_not_active');
+  const fullStack=SubjectFullStackSchema.parse({
+    template:templateDTO(t),
+    version:versionDTO(v),
+    compiled_at:Date.now(),
+    compiled_by:a.id,
+  });
+  audit({
+    event_type:'subject.fullstack_compiled',
+    user_id:a.id,
+    scope:t.project_scope,
+    detail:{template_id:templateId,version_id:v.id,version:v.version},
+  });
+  return fullStack;
+}

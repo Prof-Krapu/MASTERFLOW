@@ -31,6 +31,14 @@ import {createPrivateQuotesRouter} from './routers/private_quotes.ts';
 import {createInventoryRouter} from './routers/inventory.ts';
 import {createValidationInboxRouter} from './routers/validation_inbox.ts';
 import {createFactoryBackflowRouter} from './routers/factory_backflow.ts';
+import {createCompetenciesRouter} from './routers/competencies.ts';
+import {createGamificationRouter} from './routers/gamification.ts';
+import {createLearningMirrorRouter} from './routers/learning_mirror.ts';
+import {createStyleMirrorRouter} from './routers/style_mirror.ts';
+import {createPedagogicalSignalsRouter} from './routers/pedagogical_signals.ts';
+import {createWeatherRouter} from './routers/weather.ts';
+import {createDaRuntimeRouter} from './routers/da_runtime.ts';
+import {createNarrativeRuntimeRouter} from './routers/narrative_runtime.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -99,6 +107,14 @@ async function main(): Promise<void> {
   app.use(api, createInventoryRouter());
   app.use(api, createValidationInboxRouter());
   app.use(api, createFactoryBackflowRouter());
+  app.use(api, createCompetenciesRouter());
+  app.use(api, createGamificationRouter());
+  app.use(api, createLearningMirrorRouter());
+  app.use(api, createStyleMirrorRouter());
+  app.use(api, createPedagogicalSignalsRouter());
+  app.use(api, createWeatherRouter());
+  app.use(api, createDaRuntimeRouter());
+  app.use(api, createNarrativeRuntimeRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

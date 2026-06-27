@@ -2,7 +2,7 @@ import {CreateVisualManifestRequestSchema, CreateVisualReferenceRequestSchema, U
 import {Router, type Request, type Response} from 'express';
 
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
-import {createVisualManifest, createVisualReference, getVisualManifest, listVisualManifests, listVisualReferences, updateVisualReference} from '../services/visual_manifests.ts';
+import {approveVisualManifest, createVisualManifest, createVisualReference, getVisualManifest, listVisualManifests, listVisualReferences, rejectVisualManifest, updateVisualReference} from '../services/visual_manifests.ts';
 import {syncValidationInboxItemForVisualManifest} from '../services/validation_inbox.ts';
 
 function actor(req: Request): AuthUser { if (!req.user) throw new Error('unauthenticated'); return req.user; }
@@ -17,8 +17,11 @@ export function createVisualManifestsRouter(): Router {
   router.get('/visual-references', (req, res) => { try { res.json(listVisualReferences(actor(req), typeof req.query.project_id === 'string' ? req.query.project_id : undefined)); } catch (error) { fail(res, error); } });
   router.post('/visual-references', (req, res) => { const body = CreateVisualReferenceRequestSchema.safeParse(req.body); if (!body.success) return void res.status(400).json({error: 'invalid_body', detail: body.error.flatten()}); try { res.status(201).json(createVisualReference(actor(req), body.data)); } catch (error) { fail(res, error); } });
   router.patch('/visual-references/:id', (req, res) => { const body = UpdateVisualReferenceRequestSchema.safeParse(req.body); if (!body.success) return void res.status(400).json({error: 'invalid_body', detail: body.error.flatten()}); try { res.json(updateVisualReference(actor(req), req.params.id ?? '', body.data)); } catch (error) { fail(res, error); } });
-  router.get('/visual-manifests', (req, res) => { try { res.json(listVisualManifests(actor(req), typeof req.query.project_id === 'string' ? req.query.project_id : undefined)); } catch (error) { fail(res, error); } });
+  router.get('/visual-manifests', (req, res) => { try { res.json(listVisualManifests(actor(req), {projectId: typeof req.query.project_id === 'string' ? req.query.project_id : undefined, workbenchId: typeof req.query.workbench_id === 'string' ? req.query.workbench_id : undefined, nodeId: typeof req.query.node_id === 'string' ? req.query.node_id : undefined})); } catch (error) { fail(res, error); } });
+  router.get('/visual-manifests/:id', (req, res) => { try { res.json(getVisualManifest(actor(req), req.params.id ?? '')); } catch (error) { fail(res, error); } });
   router.post('/visual-manifests', (req, res) => { const body = CreateVisualManifestRequestSchema.safeParse(req.body); if (!body.success) return void res.status(400).json({error: 'invalid_body', detail: body.error.flatten()}); try { res.status(201).json(createVisualManifest(actor(req), body.data)); } catch (error) { fail(res, error); } });
   router.post('/visual-manifests/:id/submit-review', (req, res) => { try { res.status(201).json(syncValidationInboxItemForVisualManifest(getVisualManifest(actor(req), req.params.id ?? ''))); } catch (error) { fail(res, error); } });
+  router.post('/visual-manifests/:id/approve', (req, res) => { try { res.json(approveVisualManifest(actor(req), req.params.id ?? '')); } catch (error) { fail(res, error); } });
+  router.post('/visual-manifests/:id/reject', (req, res) => { try { res.json(rejectVisualManifest(actor(req), req.params.id ?? '')); } catch (error) { fail(res, error); } });
   return router;
 }

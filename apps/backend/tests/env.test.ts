@@ -1,6 +1,6 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
 
-const names = ['NODE_ENV', 'JWT_SECRET', 'GODMODE_USERNAME', 'GODMODE_PASSWORD'] as const;
+const names = ['NODE_ENV', 'JWT_SECRET', 'GODMODE_USERNAME', 'GODMODE_PASSWORD', 'MALEX_USERNAME', 'MALEX_PASSWORD'] as const;
 const original = Object.fromEntries(names.map((name) => [name, process.env[name]]));
 
 function restoreEnv(): void {
@@ -16,6 +16,8 @@ async function loadProductionEnv(): Promise<typeof import('../src/lib/env.ts')> 
   process.env.JWT_SECRET = 'a'.repeat(32);
   process.env.GODMODE_USERNAME = 'owner';
   process.env.GODMODE_PASSWORD = 'a-strong-owner-password';
+  process.env.MALEX_USERNAME = 'malex';
+  process.env.MALEX_PASSWORD = 'a-strong-malex-password';
   vi.resetModules();
   return import('../src/lib/env.ts');
 }

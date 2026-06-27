@@ -59,10 +59,10 @@ describe('user_runtime_loadout', () => {
     expect(loadout.available_action_ids).toEqual(
       expect.arrayContaining(['get_current_context', 'approve_validation_item', 'view_users']),
     );
-    expect(loadout.locked_capabilities).toContainEqual({
-      capability_id: 'compile_da_context',
-      reason: 'capability_not_live',
-    });
+    expect(loadout.available_action_ids).not.toContain('compile_da_context');
+    expect(loadout.locked_capabilities).toEqual(
+      expect.arrayContaining([{capability_id: 'compile_da_context', reason: 'capability_not_live'}]),
+    );
     expect(loadout.active_mode_cycle).toEqual(['teaching', 'review']);
   });
 

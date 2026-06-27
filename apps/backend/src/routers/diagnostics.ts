@@ -16,7 +16,9 @@ import {
   CreateD12IncidentRecordSchema,
   D12FindingDecisionSchema,
   D12FindingStatusSchema,
+  DecideValidationInboxItemRequestSchema,
   ProcessActivationRequestSchema,
+  UsageLearningReviewStatusSchema,
 } from '@masterflow/shared';
 import {
   createD12MissedTriggerFinding,
@@ -26,6 +28,11 @@ import {
 import {createD12ReleaseReceipt, listD12ReleaseReceipts} from '../services/d12_release_receipts.ts';
 import {createD12BackupReceipt, listD12BackupReceipts} from '../services/d12_backup_receipts.ts';
 import {createD12IncidentRecord,listD12IncidentRecords} from '../services/d12_incident_records.ts';
+import {
+  decideUsageLearningCandidate,
+  listUsageLearningCandidates,
+} from '../services/usage_harvester.ts';
+import {scanForMissedTriggers} from '../services/d12_auto_detector.ts';
 
 /**
  * Router diagnostic — surfaces de **lecture privées**, gated **admin/godmode**.
@@ -227,6 +234,52 @@ export function createDiagnosticsRouter(): Router {
     } catch {
       res.status(404).json({error: 'finding_not_found'});
     }
+  });
+
+  router.get('/diagnostics/d12/usage-learning', (req: Request, res: Response): void => {
+    const reviewStatus = req.query.review_status === undefined
+      ? undefined
+      : UsageLearningReviewStatusSchema.safeParse(req.query.review_status);
+    if (reviewStatus !== undefined && !reviewStatus.success) {
+      res.status(400).json({error: 'invalid_review_status'});
+      return;
+    }
+    res.json(listUsageLearningCandidates({reviewStatus: reviewStatus?.data}));
+  });
+
+  router.post('/diagnostics/d12/usage-learning/:id/decision', (req: Request, res: Response): void => {
+    const user = req.user;
+    const id = req.params.id;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    if (!id) {
+      res.status(404).json({error: 'candidate_not_found'});
+      return;
+    }
+    const parsed = DecideValidationInboxItemRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(decideUsageLearningCandidate(user, id, parsed.data));
+    } catch {
+      res.status(404).json({error: 'candidate_not_found'});
+    }
+  });
+
+  router.post('/diagnostics/d12/scan', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    const windowMs = typeof req.body?.window_minutes === 'number' && req.body.window_minutes > 0
+      ? req.body.window_minutes * 60 * 1000
+      : undefined;
+    res.json(scanForMissedTriggers(user, windowMs));
   });
 
   router.get('/diagnostics/d12/release-receipts', (_req: Request, res: Response): void => {
