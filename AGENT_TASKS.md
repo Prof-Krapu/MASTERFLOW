@@ -14,6 +14,34 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-306 — FACTORY-PRIMITIVES-001 : audit des Factories actives
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-27
+
+### scope
+- Auditer les 19 Factories actives `CURRENT` en lecture seule.
+- Identifier les primitives utiles sans copier les bots autonomes dans MasterFlow.
+- Produire une matrice Factory → primitive → cible Git → risque.
+- Créer une queue courte pour CDC commun, routeur de primitives, D08 visual refs, Masterclass, MasterInventory, Learning Gauges et MasterHelp.
+
+### files créés/modifiés
+- `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### verification
+- Audit lecture seule des dossiers `/Users/malex/Desktop/FACTORIES/*/CURRENT`.
+- Aucune modification des Factories actives.
+- Aucun runtime, provider, migration ou Drive modifié.
+- `git diff --check` à exécuter avant publication.
+
+### updates
+> 2026-06-27 codex → done local. Primitives communes identifiées ; prochaine tranche sûre : `FACTORY-CDC-001` + `FACTORY-ROUTER-001`.
+
+---
+
 ## TASK-305 — Source truth : Git opérable + récolte de primitives externes
 target: codex
 status: done

@@ -19,8 +19,35 @@ Dernière mise à jour : 2026-06-27
 - Impact : garantit qu'aucune bonne idée issue d'une Factory ne reste hors Git sans statut, sans importer les bots tels quels.
 - Risque : faible en audit ; moyen si une Factory est copiée au lieu d'être analysée.
 - Source de vérité concernée : `/Users/malex/Desktop/FACTORIES/*/CURRENT` + D11 Git + `docs/factories/FACTORY_REQUEST_ROUTING_PROTOCOL_2026-06-27.md`.
-- Statut : initialisé avec 19 Factories actives dans `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`.
+- Statut : passe 1 audit publiée localement dans `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
 - Validation requise : non pour audit ; oui avant patch Factory active ou runtime Git.
+
+### FACTORY-CDC-001 — Cahier des charges commun des Factories
+
+- Tâche : formaliser le fonctionnement commun de toutes les Factories : boot contexte, scope lock, source truth, extraction inbox, dataviz, output readiness, backflow et rapport à MasterFlow.
+- Impact : évite que chaque nouvelle Factory réinvente ses protocoles et permet à Big Pickle/OpenCode de travailler sans dérive.
+- Risque : faible en documentaire ; moyen si le CDC est utilisé comme autorisation d'import automatique.
+- Source de vérité concernée : D11 Factory Backflow + `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
+- Statut : ready.
+- Validation requise : non pour spec ; oui avant patch Factory active.
+
+### FACTORY-ROUTER-001 — Routeur de primitives Factory
+
+- Tâche : créer une matrice exploitable `factory -> primitives -> cible MasterFlow -> statut -> prochaine action`.
+- Impact : rend visibles les briques réutilisables et les domaines Git concernés.
+- Risque : faible ; c'est un pilotage documentaire.
+- Source de vérité concernée : Factories actives + registre de primitives externes.
+- Statut : ready.
+- Validation requise : non.
+
+### D08-VISUAL-REFS-001 — Taxonomie des références visuelles
+
+- Tâche : extraire des Factories Batrasia, Nicok, Ours d'Or, Badge et Prof Krapu les rôles de références visuelles : canon, candidat, aspirationnel, style, contrainte, exemple, interdit.
+- Impact : prépare OCR/image/ref boards et évite qu'une image inspirante devienne canon silencieux.
+- Risque : moyen ; touche D08 et génération image future.
+- Source de vérité concernée : D08 DA + Factories visuelles.
+- Statut : ready audit.
+- Validation requise : non pour audit ; oui avant provider image ou génération.
 
 ### D08-GATE-001 — Route narrative generate-visual
 

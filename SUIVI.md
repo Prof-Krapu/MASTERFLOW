@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-27 — FACTORY-PRIMITIVES-001 : audit des Factories actives
+
+- audit lecture seule des 19 Factories actives `CURRENT` ;
+- confirmation : les Factories restent des bots/extractions autonomes, pas des briques à importer telles quelles ;
+- identification des primitives communes : boot contexte, scope lock, extraction inbox, candidate-not-canon, source truth, rôles de références visuelles, GO IMAGE gate, DA report, jauges, subject packs, brief routing, situation companion, usage harvester et diagnostic non-surveillance ;
+- création d'une matrice Factory → primitive → cible MasterFlow → risque ;
+- recommandation : créer un CDC commun des Factories et un routeur de primitives avant toute nouvelle extraction ou patch massif.
+
+Statut : audit documentaire Git local dans `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
+Aucun runtime, provider, migration, Drive ou dossier Factory actif n'a été modifié dans cette passe.
+
 ## 2026-06-27 — Git devient la vérité opérable + récolte de primitives externes
 
 - décision opératoire : le clone Git publiable devient la source de vérité exploitable pour MasterFlow ;

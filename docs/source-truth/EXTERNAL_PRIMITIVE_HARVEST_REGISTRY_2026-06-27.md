@@ -59,3 +59,36 @@ Une ligne `runtime_gap` doit être reliée à :
 - un test attendu ;
 - un risque ;
 - une tâche `AGENT_TASKS.md`.
+
+## Passe 1 Factories — 2026-06-27
+
+Audit publié : `docs/factories/FACTORY_PRIMITIVES_AUDIT_PASS_1_2026-06-27.md`.
+
+Décision : les 19 Factories actives restent des sources candidates. Aucune n'est absorbée telle
+quelle. Les primitives transversales prioritaires sont :
+
+- boot contexte ;
+- scope lock et refus hors périmètre ;
+- extraction inbox ;
+- candidate-not-canon ;
+- source truth strip ;
+- rôles de références visuelles ;
+- GO IMAGE gate ;
+- rapport DA post-sortie ;
+- jauges pédagogiques ;
+- subject pack schema ;
+- brief routing ;
+- situation companion ;
+- usage harvester ;
+- diagnostic observer non-surveillance ;
+- lifecycle matière créative.
+
+Nouvelles tâches de queue :
+
+- `FACTORY-CDC-001` ;
+- `FACTORY-ROUTER-001` ;
+- `D08-VISUAL-REFS-001` ;
+- `MASTERCLASS-SUBJECTS-001` ;
+- `MASTERINVENTORY-OCR-001` ;
+- `LEARNING-GAUGES-001` ;
+- `MASTERHELP-001`.
