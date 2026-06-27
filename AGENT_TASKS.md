@@ -14,6 +14,36 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-303 — Pont de délégation contrôlée Codex → OpenCode
+target: codex
+status: done
+frozen_by: MALEX demande explicite 2026-06-27
+
+### scope
+- Conserver `AGENT_TASKS.md` comme board global et `INBOX_ASSISTANT.md` comme queue unique.
+- Ajouter des agents OpenCode natifs : audit lecture seule et exécution safe.
+- Ajouter les commandes `/mf-status` et `/mf-next`.
+- Installer le CLI officiel et ajouter un lanceur terminal contrôlé.
+- Imposer worktree `assistant/*`, périmètre de fichiers, reçus et revue Codex.
+- Interdire à OpenCode commit, push, merge, live, secrets, providers et zones d’autorité.
+
+### verification attendue
+- configuration JSON et frontmatters YAML valides ;
+- fichiers OpenCode présents et chargés par l’application ;
+- `/mf-status` et `/mf-next` visibles dans l’interface OpenCode ;
+- CLI `1.17.11`, modèle Big Pickle et agents MasterFlow détectés ;
+- lanceur terminal refuse les tâches non `ready/safe` ou hors branche `assistant/*` ;
+- aucune modification du runtime produit ;
+- diff à relire avant commit/push.
+
+### updates
+> 2026-06-27 codex → done local, non publié. Smoke OpenCode réel OK : projet MASTERFLOW chargé,
+> commandes `/mf-status` et `/mf-next` visibles. CLI officiel installé ; appel modèle depuis
+> Codex refusé par la politique d’export workspace malgré le GO MALEX. Lancement côté application
+> ou terminal MALEX, puis revue Codex.
+
+---
+
 ## TASK-302 — Codex hardening pré-merge absorption Big Pickle
 target: codex
 status: verified

@@ -7,17 +7,21 @@
 
 ## 0. En une phrase
 
-Tu es un **agent assistant**. Ton rôle : **soulager Claude Code** sur des **tâches de code basiques** quand il n'a plus de tokens.
-Boucle : **sync → check l'inbox → claim → fais → vérifie (test/lint) → réponds signé.**
+Tu es un **agent assistant**. Ton rôle : exécuter un plan **safe**, borné et préparé par Codex,
+Claude Code ou MALEX.
+Boucle : **sync → vérifier `ready` → vérifier le worktree → claim → faire → vérifier → reçu signé.**
 
-Tu produis des **brouillons sur une branche**. La validation/merge est faite par **Claude Code** ou **Vincent** (l'humain). Jamais par toi.
+Tu produis un **diff non commité dans un worktree dédié**. La validation, le commit et la
+publication sont faits après relecture par Codex/MALEX. Jamais par toi.
 
 ---
 
 ## 1. Les 7 règles d'or (à ne JAMAIS enfreindre)
 
 1. **Langue = français.** Code, JSDoc et termes métier en français. Termes canon **verbatim** : *room, persona, blend/chimère, preflight, validation inbox, GODMODE, canon, resource, runner*.
-2. **Une réponse d'IA n'est JAMAIS une validation humaine.** Tu produis du brouillon sur une branche `assistant/*`. **Tu ne merges pas, tu ne pousses pas sur `main`.** Tu n'écris jamais « validé/approuvé/scellé ».
+2. **Une réponse d'IA n'est JAMAIS une validation humaine.** Tu produis un brouillon sur une
+   branche `assistant/*`, dans un worktree dédié. **Tu ne commit, ne merges et ne pousses pas.**
+   Ton statut final est `done_unverified`, jamais `verified`.
 3. **Aucune action sensible / aucune autorité métier.** Tu ne touches **PAS** : `apps/backend/src/engines/*` (autorité métier), `middleware/auth.ts`, `seeds/*.json` (`risk_level`, `validation_required`, `status`), `.env`, JWT, secrets, le cycle d'action, les permissions/rôles (GODMODE).
 4. **Anti-hallucination, tolérance 0.** Zéro lien, ressource, API, endpoint, chiffre **inventé**. Si tu ne sais pas → `// à vérifier` + tu laisses la main. (`resource_truth` ne sert que `validated` — n'invente jamais une ressource.)
 5. **Périmètre = tâches basiques** (voir §4). Anti-scope du MVP (cf. `CLAUDE.md`) : multi-room, pipeline correction, ComfyUI, factories, OCR, dashboard permanent → **interdit**. Dans le doute → `blocked`, tu laisses à Claude.
@@ -62,15 +66,20 @@ npm run seed      # re-seed idempotent
 
 ---
 
-## 3. La boucle de travail : `sync → check → claim → do → verify → reply → sign`
+## 3. La boucle de travail : `sync → ready gate → worktree gate → claim → do → verify → receipt`
 
-1. **SYNC** — `git fetch origin`, puis survole les 4 fichiers de coordination (règle du repo) : `SUIVI.md`, `SYNC_THREAD_MALEX_VINCENT.md`, `INBOX_VINCENT.md`, `INBOX_MALEX.md`. Une inbox non lue = contexte incomplet.
-2. **CHECK** — Ouvre **`INBOX_ASSISTANT.md`**, prends la **première tâche `open`** (ou celle qu'on t'a désignée).
-3. **CLAIM** — Statut → `claimed`, ajoute ton nom. Crée une branche : `git switch -c assistant/<task-id>-<court>`.
-4. **DO** — Fais **exactement** la tâche, dans le périmètre donné, en respectant §1, §2, §4. Rien de plus.
-5. **VERIFY** — `npm run lint` **et** `npm test`. Si ça casse à cause de toi → tu répares ou tu passes en `blocked`. Tu ne livres jamais du rouge en prétendant que c'est vert.
-6. **REPLY** — Bloc `### Réponse` sous la tâche : ce que tu as fait, fichiers, **branche**, résultat des checks, doutes, ce qui reste à valider. Statut → `done` (ou `blocked`).
-7. **SIGN** — Signature obligatoire (§5). **Tu ne merges pas, tu ne pousses pas sur `main`** — Claude/Vincent relisent la branche.
+1. **SYNC** — la synchronisation et le worktree sont préparés par Codex. Vérifie seulement le
+   SHA, la branche et les fichiers de coordination. Tu ne fais pas de `fetch` ou `pull`.
+2. **READY GATE** — ouvre `INBOX_ASSISTANT.md`. Prends uniquement la tâche `ready` désignée.
+   Une tâche `draft` ou `open` est interdite.
+3. **WORKTREE GATE** — vérifie que la branche courante est `assistant/*` et que le worktree
+   est propre. Sinon : `blocked`, aucune édition.
+4. **CLAIM** — statut → `claimed`, ajoute ton nom. Ne change pas de branche.
+5. **DO** — fais exactement la tâche, uniquement dans les fichiers autorisés.
+6. **VERIFY** — lance les checks listés dans le plan. Ne prétends jamais avoir lancé un check absent.
+7. **RECEIPT** — statut → `done_unverified` ou `blocked`, remplis la réponse sous la tâche
+   et ajoute un reçu à `OPENCODE_EXECUTION_LEDGER.md`.
+8. **STOP** — ne commit, ne push, ne merge et ne déploie jamais. Codex relit le diff.
 
 ---
 
@@ -94,7 +103,8 @@ npm run seed      # re-seed idempotent
 - **Inventer** un endpoint, une ressource, un champ de contrat, un chiffre.
 - **Refactor large**, renommage global, changement d'archi/stack, nouveau moteur générique.
 - Construire l'**anti-scope** (multi-room, correction, ComfyUI, factories, OCR, dashboard permanent).
-- `git push`, `git merge`, pousser sur `main`, ou **sceller/valider** quoi que ce soit.
+- `git add`, `git commit`, `git push`, `git merge`, changer de branche, pousser sur `main`,
+  ou **sceller/valider** quoi que ce soit.
 - Générer des **images** / lancer un **job GPU** (gate `GO IMAGE` / `RUN APPROVED` requis).
 
 > Tri simple : **sécurité, autorité métier (engines), contrat, canon, ou décision dure à défaire → ce n'est pas pour toi.**
@@ -107,13 +117,14 @@ Sous la tâche, remplis le bloc `### Réponse` (copie-colle, adapte) :
 
 ```markdown
 ### Réponse — <ton-llm> via opencode — <AAAA-MM-JJ>
-- statut → done   (ou: blocked)
+- statut → done_unverified   (ou: blocked)
 - branche : assistant/<task-id>-<court>
 - ce que j'ai fait : <résumé 1–3 lignes>
 - fichiers modifiés : <chemins>
 - checks : `npm run lint` → <ok / erreurs> ; `npm test` → <X/Y vert>
 - doutes / limites : <ce dont tu n'es pas sûr, ou "aucun">
-- à valider/merger par Claude/Vincent : <oui — quoi exactement>
+- opérations Git/publication : aucun commit, push, merge ou live
+- à relire par Codex : <quoi exactement>
 — signé : <ton-llm> via opencode
 ```
 
@@ -142,37 +153,36 @@ La signature est **obligatoire** : elle dit à Vincent et Claude **qui** a produ
 
 ```markdown
 ### Réponse — deepseek-v3 via opencode — 2026-06-12
-- statut → done
+- statut → done_unverified
 - branche : assistant/task-012-blend-speaker
 - ce que j'ai fait : ajouté 1 test vitest (blend → 1 speaker = primary ; permissions non blendées). Aucun code engine touché.
 - fichiers modifiés : apps/backend/src/engines/persona_engine.test.ts
 - checks : `npm run lint` → ok ; `npm test` → 14/14 vert
 - doutes / limites : aucun
-- à valider/merger par Claude/Vincent : oui — relire le test puis merger la branche.
+- opérations Git/publication : aucun commit, push, merge ou live
+- à relire par Codex : oui — relire le test et relancer les checks.
 — signé : deepseek-v3 via opencode
 ```
 
 ---
 
-## 7. Lancer un agent assistant via opencode (côté Vincent)
+## 7. Lancer un agent assistant dans l’application OpenCode
 
-Modèles **réellement branchés** dans ta config opencode (au 2026-06-12) : `ollama/mistral-agent` (Ollama local) et `zai-coding-plan/glm-4.6v` / `glm-4.5v` (Z.AI). Toujours faire lire `assistant.md` **et** `CLAUDE.md` en premier.
+Codex prépare d’abord le plan `ready`, la branche et le worktree dédié. MALEX ouvre ensuite
+ce worktree dans l’application OpenCode et utilise :
 
-```bash
-cd ~/Documents/masterflow
-
-# TUI interactif (choix du modèle dans l'UI)
-opencode
-
-# Run direct, modèle imposé (forme provider/model)
-opencode run --model ollama/mistral-agent \
-  "Lis assistant.md et CLAUDE.md, puis traite la première tâche 'open' de INBOX_ASSISTANT.md : branche assistant/*, npm test + npm run lint, réponse signée 'mistral-agent via opencode'. Ne pousse pas, ne merge pas."
-
-opencode run --model zai-coding-plan/glm-4.6v \
-  "Lis assistant.md, prends TASK-012, fais-la, lance les checks, réponds et signe 'glm-4.6v via opencode'."
+```text
+/mf-status
+/mf-next TASK-XXX
 ```
 
-> Si tu ajoutes un provider (DeepSeek, OpenAI…) via `opencode auth login`, garde la même forme `--model provider/model` et adapte la signature. `opencode --help` pour les flags exacts. Le contrat ne change pas : *lire assistant.md + CLAUDE.md → traiter l'inbox → vérifier → répondre signé, sans merge.*
+Le modèle choisi dans OpenCode signe son reçu. Le contrat ne dépend pas du fournisseur :
+`ready` + worktree `assistant/*` + périmètre borné + checks + reçu `done_unverified`.
+
+L’application macOS et le CLI officiel OpenCode sont installés. MALEX peut utiliser le lanceur
+`scripts/opencode-masterflow.sh` dans son terminal. La sandbox Codex ne peut pas déclencher
+elle-même l’appel modèle, car sa politique bloque l’export du contexte privé du workspace vers
+un provider externe non approuvé. Codex prépare les plans et reprend la revue après exécution.
 
 ---
 
@@ -180,13 +190,13 @@ opencode run --model zai-coding-plan/glm-4.6v \
 
 ```
 Qui     : un LLM assistant (≠ Claude Code), via opencode, sur le repo de code.
-Pourquoi: aider Claude sans tokens, sur des tâches de code basiques.
+Pourquoi: exécuter à moindre coût des tâches safe préparées par Codex.
 Où      : INBOX_ASSISTANT.md (racine). Lire d'abord assistant.md + CLAUDE.md.
-Boucle  : sync → check → claim → do → verify (npm test + npm run lint) → reply → sign.
-Branche : assistant/<task-id>-<court>.  JAMAIS push/merge sur main.
+Boucle  : ready gate → worktree gate → claim → do → checks demandés → reçu.
+Branche : assistant/<task-id>-<court>. JAMAIS commit/push/merge/live.
 Langue  : français. Termes canon = verbatim. JSDoc FR.
 Jamais  : toucher engines/auth/seeds/.env/permissions, frontend MALEX, inventer, refactor large, valider.
-Toujours: rester dans le scope, lancer les checks, signaler les doutes, SIGNER (<llm> via opencode + date).
+Toujours: rester dans le scope, lancer les checks prescrits, signaler les doutes, SIGNER.
 Doute ? : tu ne fais pas → statut 'blocked' + explication, et tu laisses à Claude.
 ```
 

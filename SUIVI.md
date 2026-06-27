@@ -4,6 +4,25 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-27 — Pont de délégation contrôlée Codex → OpenCode — LOCAL
+
+- OpenCode devient un exécutant borné, jamais une autorité produit ou de publication ;
+- `AGENT_TASKS.md` reste le board global et `INBOX_ASSISTANT.md` l’unique queue d’exécution ;
+- statuts séparés : `ready`, `claimed`, `done_unverified`, puis revue Codex avant `verified` ;
+- deux agents natifs ajoutés : audit lecture seule et exécution `safe` ;
+- commandes applicatives : `/mf-status` et `/mf-next TASK-ID` ;
+- CLI officiel OpenCode `1.17.11` installé et lanceur terminal contrôlé ajouté ;
+- exécution uniquement dans un worktree `assistant/*` préparé par Codex ;
+- commit, push, merge, live, réseau, secrets, providers, données réelles et zones d’autorité
+  interdits à OpenCode.
+
+Vérification : JSON et frontmatters valides, `git diff --check` vert, projet local chargé dans
+l’application OpenCode, commandes `/mf-status` et `/mf-next` visibles, modèle Big Pickle et
+agents MasterFlow détectés par le CLI. Appel modèle depuis Codex refusé par la politique
+d’export du workspace malgré le GO MALEX ; lancement possible côté application/terminal MALEX.
+
+Statut : local vérifié, non publié, en attente de validation commit/push MALEX.
+
 ## 2026-06-27 — Absorption Big Pickle + hardening pré-merge Codex
 
 - absorption locale massive : DA runtime, narration, characters, mirrors, compétences, gamification,

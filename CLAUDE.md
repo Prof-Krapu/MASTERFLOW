@@ -78,14 +78,14 @@ doit surtout comparer ces sources Git avec ses propres features/projets/PRs pour
 opportunités d'implémentation, les doublons et les écarts. Voir
 `PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md`.
 
-**Délégation à des agents assistants (tokens épuisés).** Quand Claude Code n'a plus de tokens pour
-des tâches de code **basiques**, il peut déposer des tâches bornées dans `INBOX_ASSISTANT.md`
-(protocole complet : `assistant.md`). Des LLM tiers (via opencode : `ollama/mistral-agent`,
-`zai-coding-plan/glm-4.6v`…) les traitent sur une branche `assistant/*`, lancent `npm test` +
-`npm run lint`, et répondent **signés**. Leur réponse `done` **n'est jamais une validation** :
-Claude/Vincent relisent et mergent la branche. Ne **jamais** déléguer ce qui touche `engines/*`,
-`middleware/auth.ts`, `seeds/*.json`, permissions/rôles, secrets, contrat `packages/shared` ou
-périmètre — ces tâches restent `blocked` et reviennent à Claude/Vincent.
+**Délégation à OpenCode.** Codex peut déléguer en continu les tâches **safe**, mécaniques et
+bornées dans `INBOX_ASSISTANT.md` pour économiser les tokens d’exécution. Le protocole complet
+vit dans `assistant.md` et `docs/agent-coordination/OPENCODE_DELEGATION_PROTOCOL.md`.
+OpenCode ne traite qu’un plan `ready`, dans un worktree dédié sur `assistant/*`, puis rend un
+reçu signé `done_unverified`. Il ne commit, push, merge ou déploie jamais ; Codex relit le diff
+et relance les checks avant toute publication. Ne **jamais** déléguer ce qui touche `engines/*`,
+`middleware/auth.ts`, `seeds/*.json`, permissions/rôles, secrets, contrat `packages/shared`,
+canon ou périmètre produit : ces tâches restent `blocked` et reviennent à Codex/MALEX.
 
 ## Stack & commandes
 
