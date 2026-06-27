@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-06-27 — Storage fichier réel D07/D08 (local vérifié)
+## 2026-06-27 — Storage fichier réel D07/D08
 
 - uploads privés multipart et base64 vers une racine locale configurable ;
 - création atomique logique fichier + `generated_assets`, avec retrait du fichier si la BDD refuse ;
@@ -12,9 +12,9 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - accès assets réservé aux rôles professeur+ et isolation owner conservée ;
 - tests backend complets : 97 fichiers, 534/534 ; lint TypeScript et diff-check verts.
 
-Statut : local non commit/non push. Le provider image, l'export, le téléchargement public et la
-canonisation restent verrouillés. Le snapshot canon Drive dit encore `file_storage: absent` et ne
-devra être rafraîchi qu'après publication GitHub prouvée.
+Statut : publié sur GitHub `main` via PR #147, merge `6d8023a`. Le provider image, l'export, le
+téléchargement public et la canonisation restent verrouillés. Le snapshot canon Drive doit être
+rafraîchi avec cette preuve sans présenter la génération D08 comme complète.
 
 ## 2026-06-27 — Absorption Big Pickle + hardening pré-merge Codex
 

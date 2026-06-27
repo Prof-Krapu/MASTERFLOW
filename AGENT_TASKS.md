@@ -16,7 +16,7 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ## TASK-303 — Storage fichier réel D07/D08
 target: codex
-status: done
+status: verified
 frozen_by: MALEX « toutes » 2026-06-27
 
 ### scope
@@ -32,7 +32,7 @@ frozen_by: MALEX « toutes » 2026-06-27
 - Reçu : `docs/d08/D07_D08_FILE_STORAGE_LOCAL_RECEIPT_2026-06-27.md`.
 
 ### updates
-> 2026-06-27 codex → done local vérifié. Publication GitHub et mise à jour du snapshot canon restent à faire après validation humaine.
+> 2026-06-27 codex → verified. PR #147 mergée sur GitHub `main`, SHA `6d8023a`. Snapshot canon Drive à rafraîchir avec cette preuve.
 
 ---
 
