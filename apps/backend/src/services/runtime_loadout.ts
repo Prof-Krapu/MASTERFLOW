@@ -10,6 +10,7 @@ import {getDb, type PersonaRow, type RoomInstanceRow, type RoomRow} from '../db/
 import {listRegistry} from '../engines/action_registry.ts';
 import {getActiveBlend} from '../engines/persona_engine.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {resolveRuntimePacks} from './runtime_pack_registry.ts';
 
 function parseContext(room: RoomRow): Record<string, unknown> {
   try {
@@ -70,6 +71,28 @@ function resolvePersonaIds(instance: RoomInstanceRow, context: Record<string, un
   return fallback ? [fallback.id] : [];
 }
 
+function acknowledgedGuidanceIds(actor: AuthUser, projectId: string | null): string[] {
+  const row = getDb()
+    .prepare(
+      `SELECT learning_state_json
+       FROM personal_learning_profiles
+       WHERE user_id = ? AND project_id IS ?
+       ORDER BY updated_at DESC
+       LIMIT 1`,
+    )
+    .get(actor.id, projectId) as {learning_state_json: string} | undefined;
+  if (!row) return [];
+  try {
+    const state = JSON.parse(row.learning_state_json ?? '{}') as Record<string, unknown>;
+    return [
+      ...stringList(state['completed_guidance_ids']),
+      ...stringList(state['skipped_guidance_ids']),
+    ];
+  } catch {
+    return [];
+  }
+}
+
 export function deriveUserRuntimeLoadout(
   actor: AuthUser,
   room: RoomRow,
@@ -120,6 +143,11 @@ export function deriveUserRuntimeLoadout(
     availableSet.has(id),
   );
   const apps = [...new Set(available.map((entry) => entry.ui_surface))];
+  const packResolution = resolveRuntimePacks({
+    role: actor.role,
+    available_action_ids: availableIds,
+    acknowledged_guidance_ids: acknowledgedGuidanceIds(actor, room.project_id),
+  });
 
   return UserRuntimeLoadoutSchema.parse({
     user_id: actor.id,
@@ -138,5 +166,6 @@ export function deriveUserRuntimeLoadout(
     suggested_first_action_ids: defaults.slice(0, 3),
     simplified_support_action_ids: defaults.slice(0, 3),
     disabled_reason_map: disabledReasonMap,
+    ...packResolution,
   });
 }

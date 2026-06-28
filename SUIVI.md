@@ -4,6 +4,19 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — Fondations composables clean-room
+
+- ajout d'un registre de packs runtime fondé sur les actions et permissions réelles ;
+- ajout du guidage contextuel et de ponts inter-modes proposés, sans navigation automatique ;
+- fondation Theme Studio avec portées, polices, couleurs, accessibilité et contrôle de licence ;
+- promesse de sortie, quality gate, trace de décision et préflight de coût structurés ;
+- `design.md` (Apache-2.0) absorbé par réimplémentation ; OpenMontage (AGPL-3.0)
+  utilisé uniquement comme source de concepts, sans copie de code ;
+- provider, application de thème, migration de données et déploiement live inchangés.
+
+Vérifications : 104 fichiers de tests, 557 tests OK ; lint backend/frontend, build
+frontend et diff-check OK.
+
 ## 2026-06-28 — UI-001D : chargement progressif des surfaces frontend
 
 - les surfaces lourdes frontend passent en chargement à la demande ;

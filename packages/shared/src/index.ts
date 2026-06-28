@@ -1905,6 +1905,48 @@ export const ValidateCorrectionSheetDraftRequestSchema = z.object({
 export type ValidateCorrectionSheetDraftRequest = z.infer<typeof ValidateCorrectionSheetDraftRequestSchema>;
 
 // D08 R3.1 — registre visuel privé et manifest-first ; aucun provider ni asset généré.
+// ───────────────────────── Promesse de sortie et preuves qualité ─────────────────────────
+
+export const OutputFamilySchema = z.enum([
+  'visual_static',
+  'motion',
+  'document',
+  'dataviz',
+  'audio',
+  'interactive',
+  'export',
+]);
+export type OutputFamily = z.infer<typeof OutputFamilySchema>;
+
+export const OutputPromiseSchema = z.object({
+  promise_id: z.string().min(1),
+  output_family: OutputFamilySchema,
+  quality_floor: z.enum(['draft', 'reviewable', 'presentable', 'publishable']),
+  required_evidence: z.array(z.string().min(1)),
+  forbidden_fallbacks: z.array(z.string().min(1)),
+  approved_fallbacks: z.array(z.string().min(1)),
+  status: z.enum(['candidate', 'locked', 'reviewed']),
+  user_approved: z.boolean(),
+});
+export type OutputPromise = z.infer<typeof OutputPromiseSchema>;
+
+export const OutputQualityEvidenceSchema = z.object({
+  evidence_id: z.string().min(1),
+  evidence_type: z.string().min(1),
+  confidence: z.number().min(0).max(1),
+  source_ref: z.string().min(1),
+});
+export type OutputQualityEvidence = z.infer<typeof OutputQualityEvidenceSchema>;
+
+export const OutputQualityReportSchema = z.object({
+  promise_id: z.string().min(1),
+  verdict: z.enum(['pass', 'warn', 'block']),
+  missing_evidence: z.array(z.string().min(1)),
+  forbidden_fallbacks_used: z.array(z.string().min(1)),
+  reasons: z.array(z.string().min(1)),
+});
+export type OutputQualityReport = z.infer<typeof OutputQualityReportSchema>;
+
 export const VisualReferenceStatusSchema = z.enum([
   'canon_strict', 'expression_only', 'outfit_only', 'world_style', 'poster_energy',
   'filter_reference', 'output_template', 'anti_pattern', 'rejected',
@@ -1938,6 +1980,7 @@ export const VisualManifestSchema = z.object({
   da_root_ref: z.string().min(1).nullable(), active_layers: z.array(z.string()), filters: z.array(z.string()),
   output_family: z.enum(['visual_retake','visual_diagnostic','event_spread','badge_reward','medal_reward','trophy_reward','visual_manifest_candidate']),
   output_template: z.string().min(1), source_truth_summary: z.string().min(1), reference_ids: z.array(z.string()),
+  output_promise: OutputPromiseSchema,
   workbench_id: z.string().nullable(), node_id: z.string().nullable(),
   status: VisualManifestStatusSchema, action_ready_report: z.object({
     final_state: z.enum(['not_ready','ready_for_owner_review','generation_blocked_tech_pending','parked']),
@@ -1953,6 +1996,7 @@ export const CreateVisualManifestRequestSchema = z.object({
   output_family: z.enum(['visual_retake','visual_diagnostic','event_spread','badge_reward','medal_reward','trophy_reward','visual_manifest_candidate']),
   output_template: z.string().min(1).max(500), source_truth_summary: z.string().min(1).max(2000),
   reference_ids: z.array(z.string().min(1)).max(100).default([]),
+  output_promise: OutputPromiseSchema.optional(),
   workbench_id: z.string().min(1).nullable().optional(),
   node_id: z.string().min(1).nullable().optional(),
 });
@@ -3002,6 +3046,68 @@ export const WorkflowEventSchema = z.object({
 });
 export type WorkflowEvent = z.infer<typeof WorkflowEventSchema>;
 
+export const DecisionTraceOptionSchema = z.object({
+  option_id: z.string().min(1),
+  label: z.string().min(1).max(240),
+  score: z.number().min(0).max(1).nullable(),
+  reason: z.string().min(1).max(1000),
+  rejected_because: z.string().min(1).max(1000).nullable(),
+});
+export type DecisionTraceOption = z.infer<typeof DecisionTraceOptionSchema>;
+
+export const DecisionTraceSchema = z.object({
+  decision_id: z.string().min(1),
+  category: z.enum([
+    'pack_selection',
+    'mode_handoff',
+    'provider_selection',
+    'budget_tradeoff',
+    'quality_gate',
+    'fallback',
+    'theme_selection',
+    'guidance_proposal',
+  ]),
+  subject: z.string().min(1).max(500),
+  options_considered: z.array(DecisionTraceOptionSchema).min(1),
+  selected_option_id: z.string().min(1).nullable(),
+  reason: z.string().min(1).max(2000),
+  confidence: z.number().min(0).max(1),
+  human_approval: z.enum(['not_required', 'pending', 'approved', 'rejected']),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type DecisionTrace = z.infer<typeof DecisionTraceSchema>;
+
+export const CostGovernanceModeSchema = z.enum(['observe', 'warn', 'cap']);
+export type CostGovernanceMode = z.infer<typeof CostGovernanceModeSchema>;
+
+export const CostPreflightPolicySchema = z.object({
+  currency: z.literal('EUR'),
+  total_limit: z.number().nonnegative(),
+  reserve_ratio: z.number().min(0).max(1),
+  per_action_approval_threshold: z.number().nonnegative(),
+  require_paid_capability_approval: z.boolean(),
+  mode: CostGovernanceModeSchema,
+});
+export type CostPreflightPolicy = z.infer<typeof CostPreflightPolicySchema>;
+
+export const CostPreflightRequestSchema = z.object({
+  capability_id: z.string().min(1),
+  estimated_cost: z.number().nonnegative(),
+  spent_cost: z.number().nonnegative(),
+  reserved_cost: z.number().nonnegative(),
+  paid_capability_approved: z.boolean(),
+  policy: CostPreflightPolicySchema,
+});
+export type CostPreflightRequest = z.infer<typeof CostPreflightRequestSchema>;
+
+export const CostPreflightResultSchema = z.object({
+  verdict: z.enum(['allow', 'warn', 'approval_required', 'block']),
+  usable_remaining: z.number(),
+  projected_remaining: z.number(),
+  reasons: z.array(z.string().min(1)),
+});
+export type CostPreflightResult = z.infer<typeof CostPreflightResultSchema>;
+
 // ───────────────────────── Ressources (anti-hallucination) ─────────────────────────
 
 export const ResourceStatusSchema = z.enum(['candidate', 'validated', 'deprecated']);
@@ -3499,6 +3605,247 @@ export const LockedCapabilitySchema = z.object({
 });
 export type LockedCapability = z.infer<typeof LockedCapabilitySchema>;
 
+// ───────────────────────── Packs runtime et guidance progressive ─────────────────────────
+
+export const RuntimePackStatusSchema = z.enum([
+  'live',
+  'partial',
+  'future',
+  'blocked',
+]);
+export type RuntimePackStatus = z.infer<typeof RuntimePackStatusSchema>;
+
+export const RuntimePackStageSchema = z.object({
+  stage_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  purpose: z.string().min(1).max(500),
+  activation: z.enum(['always', 'first_use', 'context_signal', 'manual']),
+  required_action_ids: z.array(z.string().min(1)).default([]),
+  input_object_types: z.array(z.string().min(1)).default([]),
+  output_object_types: z.array(z.string().min(1)).default([]),
+  target_mode: z.string().min(1).nullable().default(null),
+  context_tier: ContextTierSchema.default('T1'),
+  checkpoint_policy: z.enum(['none', 'compact', 'review', 'human_required']).default('compact'),
+});
+export type RuntimePackStage = z.infer<typeof RuntimePackStageSchema>;
+
+export const GuidanceTriggerSchema = z.enum([
+  'first_session',
+  'pack_available',
+  'capability_first_use',
+  'context_changed',
+  'friction_detected',
+  'tutorial_stale',
+]);
+export type GuidanceTrigger = z.infer<typeof GuidanceTriggerSchema>;
+
+export const RuntimePackGuidanceSchema = z.object({
+  guidance_id: z.string().min(1),
+  trigger: GuidanceTriggerSchema,
+  title: z.string().min(1).max(160),
+  summary: z.string().min(1).max(500),
+  recommended_mode: z.string().min(1).max(80),
+  tutorial_resource_id: z.string().min(1).nullable().default(null),
+  skippable: z.boolean().default(true),
+});
+export type RuntimePackGuidance = z.infer<typeof RuntimePackGuidanceSchema>;
+
+export const RuntimePackManifestSchema = z
+  .object({
+    pack_id: z.string().min(1),
+    version: z.string().min(1),
+    label: z.string().min(1).max(160),
+    description: z.string().min(1).max(800),
+    minimum_role: RoleSchema.default('student'),
+    status: RuntimePackStatusSchema,
+    active_modes: z.array(z.string().min(1)).min(1),
+    required_action_ids: z.array(z.string().min(1)).default([]),
+    optional_action_ids: z.array(z.string().min(1)).default([]),
+    stages: z.array(RuntimePackStageSchema).min(1),
+    guidance: RuntimePackGuidanceSchema.nullable().default(null),
+    source_refs: z.array(z.string().min(1)).default([]),
+  })
+  .superRefine((pack, ctx) => {
+    const stageIds = pack.stages.map((stage) => stage.stage_id);
+    if (new Set(stageIds).size !== stageIds.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Les stage_id doivent être uniques dans un pack.',
+        path: ['stages'],
+      });
+    }
+    const overlap = pack.required_action_ids.filter((id) => pack.optional_action_ids.includes(id));
+    if (overlap.length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Une action ne peut pas être requise et optionnelle: ${overlap.join(', ')}`,
+        path: ['optional_action_ids'],
+      });
+    }
+    const declaredActions = new Set([...pack.required_action_ids, ...pack.optional_action_ids]);
+    const undeclaredStageActions = pack.stages
+      .flatMap((stage) => stage.required_action_ids)
+      .filter((id) => !declaredActions.has(id));
+    if (undeclaredStageActions.length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Les actions requises par une étape doivent être déclarées par le pack: ${[...new Set(undeclaredStageActions)].join(', ')}`,
+        path: ['stages'],
+      });
+    }
+  });
+export type RuntimePackManifest = z.infer<typeof RuntimePackManifestSchema>;
+
+export const RuntimePackAvailabilitySchema = z.object({
+  pack_id: z.string().min(1),
+  status: z.enum(['active', 'limited', 'locked']),
+  reason: z.string().min(1).max(240).nullable(),
+  missing_action_ids: z.array(z.string().min(1)),
+});
+export type RuntimePackAvailability = z.infer<typeof RuntimePackAvailabilitySchema>;
+
+export const GuidanceCandidateSchema = z.object({
+  guidance_id: z.string().min(1),
+  pack_id: z.string().min(1),
+  trigger: GuidanceTriggerSchema,
+  title: z.string().min(1).max(160),
+  summary: z.string().min(1).max(500),
+  recommended_mode: z.string().min(1).max(80),
+  tutorial_resource_id: z.string().min(1).nullable(),
+  skippable: z.boolean(),
+  confidence: z.number().min(0).max(1),
+});
+export type GuidanceCandidate = z.infer<typeof GuidanceCandidateSchema>;
+
+export const ModeObjectRefSchema = z.object({
+  object_type: z.string().min(1),
+  object_id: z.string().min(1),
+  source_mode: z.string().min(1),
+  source_refs: z.array(z.string().min(1)).min(1),
+  authority: z.enum(['authoritative', 'validated', 'candidate', 'derived']),
+});
+export type ModeObjectRef = z.infer<typeof ModeObjectRefSchema>;
+
+export const ModeHandoffCandidateSchema = z.object({
+  handoff_id: z.string().min(1),
+  source_mode: z.string().min(1),
+  target_mode: z.string().min(1),
+  source_object_type: z.string().min(1),
+  source_object_id: z.string().min(1),
+  target_pack_id: z.string().min(1),
+  target_stage_id: z.string().min(1),
+  expected_output_types: z.array(z.string().min(1)),
+  reason: z.string().min(1).max(800),
+  confidence: z.number().min(0).max(1),
+  risk_level: z.enum(['low', 'medium', 'medium_high', 'high']),
+  validation_required: z.boolean(),
+  status: z.literal('proposed'),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type ModeHandoffCandidate = z.infer<typeof ModeHandoffCandidateSchema>;
+
+// ───────────────────────── Theme Studio : contrat et lint ─────────────────────────
+
+export const ThemeScopeSchema = z.enum([
+  'global',
+  'institution',
+  'user',
+  'project',
+  'room',
+  'event',
+]);
+export type ThemeScope = z.infer<typeof ThemeScopeSchema>;
+
+export const ThemePackStatusSchema = z.enum([
+  'candidate',
+  'validated',
+  'rejected',
+  'archived',
+]);
+export type ThemePackStatus = z.infer<typeof ThemePackStatusSchema>;
+
+export const ThemeFontRefSchema = z.object({
+  family: z.string().min(1).max(160),
+  source_ref: z.string().min(1).max(500).nullable(),
+  license_status: z.enum(['known', 'unknown', 'restricted']),
+  fallback_family: z.string().min(1).max(160),
+});
+export type ThemeFontRef = z.infer<typeof ThemeFontRefSchema>;
+
+export const ThemeColorPairSchema = z.object({
+  pair_id: z.string().min(1),
+  foreground: z.string().min(1),
+  background: z.string().min(1),
+  usage: z.enum(['normal_text', 'large_text', 'ui_control', 'decorative']),
+});
+export type ThemeColorPair = z.infer<typeof ThemeColorPairSchema>;
+
+export const ThemePackSchema = z
+  .object({
+    theme_id: z.string().min(1),
+    version: z.string().min(1),
+    label: z.string().min(1).max(160),
+    scope: ThemeScopeSchema,
+    scope_id: z.string().min(1).nullable(),
+    status: ThemePackStatusSchema,
+    palette: z.object({
+      primary: z.string().min(1),
+      surface: z.string().min(1),
+      text: z.string().min(1),
+      accent: z.string().min(1),
+    }),
+    token_aliases: z.record(z.string().min(1)),
+    fonts: z.object({
+      body: ThemeFontRefSchema,
+      heading: ThemeFontRefSchema,
+      display: ThemeFontRefSchema.nullable(),
+    }),
+    contrast_pairs: z.array(ThemeColorPairSchema),
+    asset_refs: z.array(z.string().min(1)),
+    source_refs: z.array(z.string().min(1)).min(1),
+  })
+  .superRefine((theme, ctx) => {
+    if (theme.scope === 'global' && theme.scope_id !== null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un thème global ne doit pas avoir de scope_id.',
+        path: ['scope_id'],
+      });
+    }
+    if (theme.scope !== 'global' && theme.scope_id === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Un thème non global doit cibler un scope_id.',
+        path: ['scope_id'],
+      });
+    }
+  });
+export type ThemePack = z.infer<typeof ThemePackSchema>;
+
+export const ThemeLintFindingSchema = z.object({
+  severity: z.enum(['error', 'warning', 'info']),
+  code: z.enum([
+    'invalid_color',
+    'broken_token_reference',
+    'cyclic_token_reference',
+    'insufficient_contrast',
+    'font_source_missing',
+    'font_license_unknown',
+    'font_license_restricted',
+  ]),
+  path: z.string().min(1),
+  message: z.string().min(1),
+});
+export type ThemeLintFinding = z.infer<typeof ThemeLintFindingSchema>;
+
+export const ThemeLintReportSchema = z.object({
+  theme_id: z.string().min(1),
+  valid: z.boolean(),
+  findings: z.array(ThemeLintFindingSchema),
+  checked_at: z.number().int().nonnegative(),
+});
+export type ThemeLintReport = z.infer<typeof ThemeLintReportSchema>;
+
 export const UserRuntimeLoadoutSchema = z.object({
   user_id: z.string().min(1),
   room_id: z.string().min(1),
@@ -3516,6 +3863,9 @@ export const UserRuntimeLoadoutSchema = z.object({
   suggested_first_action_ids: z.array(z.string().min(1)),
   simplified_support_action_ids: z.array(z.string().min(1)),
   disabled_reason_map: z.record(z.string().min(1)),
+  available_pack_ids: z.array(z.string().min(1)).default([]),
+  pack_availability: z.array(RuntimePackAvailabilitySchema).default([]),
+  guidance_candidates: z.array(GuidanceCandidateSchema).max(3).default([]),
 });
 export type UserRuntimeLoadout = z.infer<typeof UserRuntimeLoadoutSchema>;
 

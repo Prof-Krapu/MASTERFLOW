@@ -1,8 +1,17 @@
 # MasterFlow — Action Queue
 
-Dernière mise à jour : 2026-06-27
+Dernière mise à jour : 2026-06-28
 
 ## 1. À faire maintenant
+
+### EXTERNAL-FOUNDATIONS-001 — Absorption clean-room
+
+- Tâche : publier la fondation packs, guidage, ponts, thèmes, qualité, décisions et coûts.
+- Impact : rend MasterFlow composable sans ouvrir silencieusement provider, navigation ou déploiement.
+- Risque : faible ; contrats additifs et moteurs purs, testés.
+- Source de vérité concernée : runtime Git + registre des primitives externes.
+- Statut : implémenté localement ; publication GitHub à terminer.
+- Validation requise : non pour cette tranche ; oui avant provider, application de thème ou déploiement live.
 
 ### SOURCE-TRUTH-001 — Git opérable + récolte de primitives externes
 

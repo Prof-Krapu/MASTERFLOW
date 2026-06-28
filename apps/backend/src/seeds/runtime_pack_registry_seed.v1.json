@@ -1,0 +1,200 @@
+{
+  "registry_version": "v1_2026_06_28",
+  "packs": [
+    {
+      "pack_id": "masterflow-core-runtime",
+      "version": "1.0.0",
+      "label": "Socle MasterFlow",
+      "description": "Reprendre un contexte fiable et proposer seulement les actions réellement disponibles.",
+      "minimum_role": "student",
+      "status": "live",
+      "active_modes": ["home", "project", "learning", "story", "teaching", "inventory"],
+      "required_action_ids": ["get_current_context"],
+      "optional_action_ids": ["list_available_actions"],
+      "stages": [
+        {
+          "stage_id": "resume_context",
+          "label": "Reprendre le contexte",
+          "purpose": "Charger le scope actif, les permissions et le dernier checkpoint utile.",
+          "activation": "always",
+          "required_action_ids": ["get_current_context"],
+          "input_object_types": ["user_session"],
+          "output_object_types": ["runtime_context"],
+          "target_mode": "home",
+          "context_tier": "T1",
+          "checkpoint_policy": "compact"
+        },
+        {
+          "stage_id": "orient_next_action",
+          "label": "Orienter la prochaine action",
+          "purpose": "Présenter peu d’actions, toutes issues du loadout autorisé.",
+          "activation": "context_signal",
+          "required_action_ids": [],
+          "input_object_types": ["runtime_context"],
+          "output_object_types": ["action_suggestion"],
+          "target_mode": null,
+          "context_tier": "T1",
+          "checkpoint_policy": "none"
+        }
+      ],
+      "guidance": {
+        "guidance_id": "discover-masterflow-core",
+        "trigger": "first_session",
+        "title": "Découvrir ton espace MasterFlow",
+        "summary": "Une visite courte peut expliquer le contexte actif, les modes disponibles et la prochaine action utile.",
+        "recommended_mode": "learning",
+        "tutorial_resource_id": null,
+        "skippable": true
+      },
+      "source_refs": [
+        "legacy:SESSION_BOOTSTRAP_CONTEXT_PACK_AND_USER_LOADOUT_CONTRACT",
+        "legacy:ONBOARDING_ENGINE"
+      ]
+    },
+    {
+      "pack_id": "masterflow-guided-learning",
+      "version": "1.0.0",
+      "label": "Accompagnement progressif",
+      "description": "Adapter l’aide au profil utilisateur sans imposer un tutoriel permanent.",
+      "minimum_role": "student",
+      "status": "partial",
+      "active_modes": ["learning", "home"],
+      "required_action_ids": ["view_learning_profile"],
+      "optional_action_ids": ["manage_learning_profile", "record_help_context"],
+      "stages": [
+        {
+          "stage_id": "detect_guidance_need",
+          "label": "Détecter le besoin",
+          "purpose": "Qualifier une aide utile depuis le contexte et les signaux connus.",
+          "activation": "context_signal",
+          "required_action_ids": ["view_learning_profile"],
+          "input_object_types": ["runtime_context", "learning_profile"],
+          "output_object_types": ["guidance_candidate"],
+          "target_mode": "learning",
+          "context_tier": "T1",
+          "checkpoint_policy": "none"
+        },
+        {
+          "stage_id": "try_guided_action",
+          "label": "Essayer dans le vrai contexte",
+          "purpose": "Apprendre par une action réelle plutôt que par une démonstration abstraite.",
+          "activation": "first_use",
+          "required_action_ids": [],
+          "input_object_types": ["guidance_candidate"],
+          "output_object_types": ["guided_attempt"],
+          "target_mode": "learning",
+          "context_tier": "T2",
+          "checkpoint_policy": "compact"
+        }
+      ],
+      "guidance": {
+        "guidance_id": "guided-learning-available",
+        "trigger": "pack_available",
+        "title": "Activer une aide adaptée",
+        "summary": "MasterFlow peut proposer une explication courte ou un essai guidé, puis s’effacer quand l’usage est maîtrisé.",
+        "recommended_mode": "learning",
+        "tutorial_resource_id": null,
+        "skippable": true
+      },
+      "source_refs": [
+        "legacy:ONBOARDING_ENGINE",
+        "legacy:TUTORIAL_MEDIA_COMPILER_RUNTIME"
+      ]
+    },
+    {
+      "pack_id": "masterflow-story-visual-bridge",
+      "version": "1.0.0",
+      "label": "Pont Story vers DA",
+      "description": "Transformer un objet narratif en manifest visuel candidat sans lancer de génération automatiquement.",
+      "minimum_role": "teacher",
+      "status": "partial",
+      "active_modes": ["story", "visual-lab"],
+      "required_action_ids": ["manage_story_workbenches", "get_visual_manifest"],
+      "optional_action_ids": ["compile_da_context", "approve_visual_manifest", "reject_visual_manifest"],
+      "stages": [
+        {
+          "stage_id": "frame_project_as_story",
+          "label": "Cadrer un projet en récit",
+          "purpose": "Transformer une vision projet ou un sujet en workbench narratif candidat, sans altérer le projet source.",
+          "activation": "manual",
+          "required_action_ids": ["manage_story_workbenches"],
+          "input_object_types": ["project", "subject", "brief"],
+          "output_object_types": ["story_workbench_candidate"],
+          "target_mode": "story",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        },
+        {
+          "stage_id": "compile_story_refs",
+          "label": "Compiler les références narratives",
+          "purpose": "Préserver les personnages, scènes, sources et verrous de spoiler.",
+          "activation": "manual",
+          "required_action_ids": ["manage_story_workbenches"],
+          "input_object_types": ["story_workbench", "story_node"],
+          "output_object_types": ["visual_manifest_candidate"],
+          "target_mode": "visual-lab",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        },
+        {
+          "stage_id": "route_inventory_reference",
+          "label": "Proposer un asset comme référence",
+          "purpose": "Transformer un asset Inventory validé en référence visuelle candidate avec provenance conservée.",
+          "activation": "manual",
+          "required_action_ids": ["get_visual_manifest"],
+          "input_object_types": ["inventory_asset"],
+          "output_object_types": ["visual_reference_candidate"],
+          "target_mode": "visual-lab",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        }
+      ],
+      "guidance": null,
+      "source_refs": [
+        "git:apps/backend/src/engines/story_da_bridge.ts"
+      ]
+    },
+    {
+      "pack_id": "masterflow-theme-studio",
+      "version": "0.1.0",
+      "label": "Theme Studio",
+      "description": "Piloter thèmes, palettes, typographies et assets par scope sans remplacer la DA canon.",
+      "minimum_role": "godmode",
+      "status": "future",
+      "active_modes": ["theme-studio"],
+      "required_action_ids": ["compile_da_context"],
+      "optional_action_ids": ["view_style_profile", "manage_style_profile"],
+      "stages": [
+        {
+          "stage_id": "inspect_theme_sources",
+          "label": "Inspecter les sources du thème",
+          "purpose": "Vérifier provenance, scope, droits, références et éléments manquants.",
+          "activation": "manual",
+          "required_action_ids": ["compile_da_context"],
+          "input_object_types": ["theme_candidate", "visual_reference"],
+          "output_object_types": ["theme_readiness_report"],
+          "target_mode": "theme-studio",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        },
+        {
+          "stage_id": "lint_theme_tokens",
+          "label": "Contrôler les tokens",
+          "purpose": "Détecter références cassées, contrastes insuffisants et tokens silencieusement ignorés.",
+          "activation": "manual",
+          "required_action_ids": [],
+          "input_object_types": ["theme_tokens"],
+          "output_object_types": ["theme_lint_report"],
+          "target_mode": "theme-studio",
+          "context_tier": "T1",
+          "checkpoint_policy": "review"
+        }
+      ],
+      "guidance": null,
+      "source_refs": [
+        "git:docs/ui/MASTERFLOW_UI_CDC_ACTIVE.md",
+        "external:google-labs-code/design.md"
+      ]
+    }
+  ]
+}

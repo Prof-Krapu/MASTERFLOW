@@ -52,6 +52,10 @@ describe('user_runtime_loadout', () => {
     expect(loadout.default_action_ids).toEqual(['get_current_context']);
     expect(loadout.locked_capabilities).toEqual([]);
     expect(loadout.disabled_reason_map).toEqual({});
+    expect(loadout.available_pack_ids).toContain('masterflow-core-runtime');
+    expect(loadout.guidance_candidates).toContainEqual(
+      expect.objectContaining({guidance_id: 'discover-masterflow-core'}),
+    );
   });
 
   it('montre a un admin les capacites disponibles selon le registre', () => {
@@ -61,6 +65,9 @@ describe('user_runtime_loadout', () => {
     );
     expect(loadout.locked_capabilities).toEqual([]);
     expect(loadout.active_mode_cycle).toEqual(['teaching', 'review']);
+    expect(loadout.pack_availability.map((pack) => pack.pack_id)).not.toContain(
+      'masterflow-theme-studio',
+    );
   });
 
   it('ne charge que le persona explicite de la room', () => {

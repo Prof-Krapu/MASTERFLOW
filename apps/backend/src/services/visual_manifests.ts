@@ -10,6 +10,7 @@ import {
   type UpdateVisualReferenceRequest,
   type VisualManifest,
   type VisualReference,
+  type OutputPromise,
 } from '@masterflow/shared';
 
 import {getDb} from '../db/schema.ts';
@@ -32,6 +33,7 @@ interface VisualManifestRow {
   output_template: string; source_truth_summary: string; reference_ids_json: string; status: VisualManifest['status'];
   created_by: string; created_at: number; updated_at: number;
   workbench_id: string | null; node_id: string | null;
+  output_promise_json: string | null;
 }
 
 function requireTeacher(actor: AuthUser): void {
@@ -48,6 +50,29 @@ function jsonArray(raw: string): string[] {
   const value = JSON.parse(raw) as unknown;
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 }
+function defaultOutputPromise(
+  manifestId: string,
+  outputFamily: VisualManifest['output_family'],
+): OutputPromise {
+  return {
+    promise_id: `${manifestId}:output-promise`,
+    output_family: outputFamily === 'visual_diagnostic' ? 'dataviz' : 'visual_static',
+    quality_floor: 'reviewable',
+    required_evidence: ['reference_provenance', 'owner_visual_review'],
+    forbidden_fallbacks: ['silent_style_downgrade', 'unverified_reference'],
+    approved_fallbacks: [],
+    status: 'candidate',
+    user_approved: false,
+  };
+}
+function outputPromise(row: VisualManifestRow): OutputPromise {
+  if (!row.output_promise_json) return defaultOutputPromise(row.id, row.output_family);
+  try {
+    return JSON.parse(row.output_promise_json) as OutputPromise;
+  } catch {
+    return defaultOutputPromise(row.id, row.output_family);
+  }
+}
 function report(row: VisualManifestRow): VisualManifest['action_ready_report'] {
   const missing: string[] = [];
   if (!row.request_title.trim() || !row.intent.trim()) missing.push('intent');
@@ -55,12 +80,20 @@ function report(row: VisualManifestRow): VisualManifest['action_ready_report'] {
   if (jsonArray(row.reference_ids_json).length === 0) missing.push('references');
   if (!row.output_template.trim()) missing.push('output_template');
   if (!row.source_truth_summary.trim()) missing.push('source_truth');
+  const promise = outputPromise(row);
+  const promiseBlocked = promise.status === 'candidate' || !promise.user_approved;
   if (row.status === 'parked') return {final_state: 'parked', missing_items: missing, generation_blockers: ['manifest_parked']};
   if (missing.length > 0) return {final_state: 'not_ready', missing_items: missing, generation_blockers: ['provider_generation_forbidden']};
   return {
     final_state: 'generation_blocked_tech_pending',
     missing_items: [],
-    generation_blockers: ['visual_storage_absent', 'generated_asset_lifecycle_absent', 'd08_validation_review_absent', 'provider_generation_forbidden'],
+    generation_blockers: [
+      ...(promiseBlocked ? ['output_promise_not_locked'] : []),
+      'visual_storage_absent',
+      'generated_asset_lifecycle_absent',
+      'd08_validation_review_absent',
+      'provider_generation_forbidden',
+    ],
   };
 }
 function manifestStatus(input: CreateVisualManifestRequest): VisualManifest['status'] {
@@ -83,7 +116,8 @@ function manifestDto(row: VisualManifestRow): VisualManifest {
     canon_entity_refs: jsonArray(row.canon_entity_refs_json), da_root_ref: row.da_root_ref,
     active_layers: jsonArray(row.active_layers_json), filters: jsonArray(row.filters_json),
     output_family: row.output_family, output_template: row.output_template, source_truth_summary: row.source_truth_summary,
-    reference_ids: jsonArray(row.reference_ids_json), status: row.status, action_ready_report: report(row),
+    reference_ids: jsonArray(row.reference_ids_json), output_promise: outputPromise(row),
+    status: row.status, action_ready_report: report(row),
     workbench_id: row.workbench_id, node_id: row.node_id,
     created_by: row.created_by, created_at: row.created_at, updated_at: row.updated_at,
   });
@@ -130,13 +164,19 @@ export function createVisualManifest(actor: AuthUser, input: CreateVisualManifes
   const references = request.reference_ids.map((referenceId) => getDb().prepare('SELECT * FROM visual_references WHERE id=?').get(referenceId) as VisualReferenceRow | undefined);
   if (references.some((reference) => !reference || !canAccess(actor, reference) || reference.project_id !== (request.project_id ?? null))) throw new Error('visual_reference_not_found');
   const now = Date.now(); const id = uuid(); const status = manifestStatus(request);
+  const promise = request.output_promise ?? defaultOutputPromise(id, request.output_family);
   getDb().prepare(`
-    INSERT INTO visual_manifests VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    INSERT INTO visual_manifests
+      (id, owner_id, project_id, project_scope, request_title, intent, privacy_scope,
+       canon_entity_refs_json, da_root_ref, active_layers_json, filters_json, output_family,
+       output_template, source_truth_summary, reference_ids_json, status, created_by,
+       created_at, updated_at, workbench_id, node_id, output_promise_json)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(id, actor.id, request.project_id ?? null, scope, request.request_title, request.intent, request.privacy_scope,
     JSON.stringify(request.canon_entity_refs), request.da_root_ref ?? null, JSON.stringify(request.active_layers), JSON.stringify(request.filters),
     request.output_family, request.output_template, request.source_truth_summary, JSON.stringify(request.reference_ids), status, actor.id, now, now,
-    request.workbench_id ?? null, request.node_id ?? null);
-  audit({event_type: 'visual_manifest.created', user_id: actor.id, scope, detail: {manifest_id: id, status, provider_call: false, generation_blocked: true}});
+    request.workbench_id ?? null, request.node_id ?? null, JSON.stringify(promise));
+  audit({event_type: 'visual_manifest.created', user_id: actor.id, scope, detail: {manifest_id: id, status, output_promise_status: promise.status, provider_call: false, generation_blocked: true}});
   return manifestDto(getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow);
 }
 export function listVisualManifests(actor: AuthUser, params?: {projectId?: string; workbenchId?: string; nodeId?: string}): VisualManifest[] {
@@ -158,7 +198,15 @@ export function approveVisualManifest(actor: AuthUser, id: string): VisualManife
   if (!row) throw new Error('visual_manifest_not_found');
   assertAccess(actor, row, 'visual_manifest_not_found');
   const now = Date.now();
-  getDb().prepare('UPDATE visual_manifests SET status=?, updated_at=? WHERE id=?').run('approved', now, id);
+  const promise = outputPromise(row);
+  const lockedPromise: OutputPromise = {
+    ...promise,
+    status: 'locked',
+    user_approved: true,
+  };
+  getDb().prepare(
+    'UPDATE visual_manifests SET status=?, output_promise_json=?, updated_at=? WHERE id=?',
+  ).run('approved', JSON.stringify(lockedPromise), now, id);
   audit({event_type: 'visual_manifest.approved', user_id: actor.id, detail: {manifest_id: id}});
   const manifest = manifestDto(getDb().prepare('SELECT * FROM visual_manifests WHERE id=?').get(id) as VisualManifestRow);
   syncValidationInboxItemForVisualManifest(manifest);

@@ -2025,6 +2025,7 @@ function migrate(d: Database.Database): void {
   // Story→DA bridge columns
   ensureColumn(d, 'visual_manifests', 'workbench_id', 'TEXT REFERENCES story_workbenches(id) ON DELETE SET NULL');
   ensureColumn(d, 'visual_manifests', 'node_id', 'TEXT REFERENCES story_nodes(id) ON DELETE SET NULL');
+  ensureColumn(d, 'visual_manifests', 'output_promise_json', 'TEXT');
   // Canon lock on workbenches
   ensureColumn(d, 'story_workbenches', 'canon_locked', 'INTEGER NOT NULL DEFAULT 0');
 
