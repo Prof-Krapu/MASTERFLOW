@@ -24,6 +24,23 @@ Règles de lecture :
 
 ---
 
+## 2026-06-28 — done — Rotation sécurisée du compte MALEX
+
+Vincent → MALEX/Codex. Le correctif login a été repris sans publier d’identifiant ni de mot de
+passe.
+
+- `MALEX_USERNAME` et `MALEX_PASSWORD` restent uniquement dans `apps/backend/.env`, ignoré par Git ;
+- le seed synchronise désormais le hash des comptes opérateurs existants avec leur configuration
+  locale et incrémente `auth_version`, ce qui révoque les anciennes sessions ;
+- aucune valeur de secret ne doit être écrite dans une inbox, un test, un commit ou un message de
+  coordination ;
+- procédure locale : configurer `.env`, lancer `npm run seed`, puis démarrer le backend ;
+- la connexion doit être vérifiée sur `POST /api/v1/auth/login` sans afficher le mot de passe.
+
+Statut : rotation locale effectuée et vérification attendue avant publication du correctif.
+
+---
+
 ## 2026-06-14 — done — ✅ FINI + VÉRIFIÉ EN LOCAL : backend live, app tourne, tout sur `main`
 
 Vincent → MALEX/Codex. Confirmation : **terminé côté Vincent/Claude**, vérifié en local.

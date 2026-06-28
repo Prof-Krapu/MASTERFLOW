@@ -397,6 +397,10 @@ export async function seedAll(): Promise<{
     password: string,
     envName: string,
   ): Promise<UserRow> {
+    const configuredPassword = process.env[envName]?.trim();
+    const canSyncExistingPassword = Boolean(
+      configuredPassword && !configuredPassword.startsWith('REPLACE_WITH_'),
+    );
     let user = db
       .prepare<[string], UserRow>('SELECT * FROM users WHERE username = ?')
       .get(username);
@@ -410,6 +414,14 @@ export async function seedAll(): Promise<{
       ).run(id, username, displayName, hash, now, now);
       createdUsers++;
       user = db.prepare<[string], UserRow>('SELECT * FROM users WHERE id = ?').get(id)!;
+    } else if (canSyncExistingPassword && !(await bcrypt.compare(password, user.password_hash))) {
+      const hash = await bcrypt.hash(password, BCRYPT_COST);
+      db.prepare(
+        `UPDATE users
+         SET password_hash = ?, auth_version = auth_version + 1, updated_at = ?
+         WHERE id = ?`,
+      ).run(hash, now, user.id);
+      user = db.prepare<[string], UserRow>('SELECT * FROM users WHERE id = ?').get(user.id)!;
     }
     return user;
   }

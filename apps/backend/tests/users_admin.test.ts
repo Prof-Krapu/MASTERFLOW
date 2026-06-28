@@ -14,6 +14,7 @@ import {
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import {createAdminRouter} from '../src/routers/admin.ts';
+import {env} from '../src/lib/env.ts';
 
 /**
  * PR-3 — Administration des comptes : changement de rôle = action sensible `set_user_role`.
@@ -154,7 +155,9 @@ describe('set_user_role — cycle de vie & garde-fous', () => {
     // Le seed crée 2 godmodes (vincent + malex). On rétrograde temporairement malex
     // pour que vincent soit le seul godmode restant et tester le garde-fou.
     const db = getDb();
-    db.prepare("UPDATE users SET role = 'admin', auth_version = auth_version + 1, updated_at = ? WHERE username = 'Malex'").run(Date.now());
+    db.prepare(
+      "UPDATE users SET role = 'admin', auth_version = auth_version + 1, updated_at = ? WHERE username = ?",
+    ).run(Date.now(), env.malex.username);
     try {
       const otherGod: AuthUser = {id: 'ua-other-god', username: 'other_god', role: 'godmode'};
       const flighted = makeRoleAction(otherGod, vincentId, 'student');
@@ -163,7 +166,9 @@ describe('set_user_role — cycle de vie & garde-fous', () => {
       expect(result.status).toBe('failed');
       expect(result.error).toMatch(/dernier godmode/);
     } finally {
-      db.prepare("UPDATE users SET role = 'godmode', auth_version = auth_version + 1, updated_at = ? WHERE username = 'Malex'").run(Date.now());
+      db.prepare(
+        "UPDATE users SET role = 'godmode', auth_version = auth_version + 1, updated_at = ? WHERE username = ?",
+      ).run(Date.now(), env.malex.username);
     }
   });
 });

@@ -1,9 +1,11 @@
 import {beforeAll, describe, expect, it} from 'vitest';
+import bcrypt from 'bcryptjs';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import {authenticateToken, signToken, verifyToken, type AuthUser} from '../src/middleware/auth.ts';
 import {hasRole} from '../src/engines/permission_runtime.ts';
+import {env} from '../src/lib/env.ts';
 
 /**
  * Tests AUTH & RÔLES du backend — sans serveur HTTP, via les modules.
@@ -66,6 +68,32 @@ describe('JWT — identité effective et révocable', () => {
     db.prepare('UPDATE users SET active = 0 WHERE id = ?').run(row.id);
     expect(authenticateToken(token)).toEqual({ok: false, error: 'user_inactive'});
     db.prepare('UPDATE users SET active = 1 WHERE id = ?').run(row.id);
+  });
+});
+
+describe('Seed — synchronisation des comptes opérateurs', () => {
+  it('rehash le mot de passe MALEX existant depuis la configuration et révoque ses sessions', async () => {
+    const db = getDb();
+    const before = db
+      .prepare('SELECT id, auth_version FROM users WHERE username = ?')
+      .get(env.malex.username) as {id: string; auth_version: number};
+    const obsoleteHash = await bcrypt.hash('obsolete-password', 4);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(obsoleteHash, before.id);
+
+    const previousPassword = process.env.MALEX_PASSWORD;
+    process.env.MALEX_PASSWORD = env.malex.password;
+    try {
+      await seedAll();
+    } finally {
+      if (previousPassword === undefined) delete process.env.MALEX_PASSWORD;
+      else process.env.MALEX_PASSWORD = previousPassword;
+    }
+
+    const after = db
+      .prepare('SELECT password_hash, auth_version FROM users WHERE id = ?')
+      .get(before.id) as {password_hash: string; auth_version: number};
+    expect(await bcrypt.compare(env.malex.password, after.password_hash)).toBe(true);
+    expect(after.auth_version).toBe(before.auth_version + 1);
   });
 });
 
