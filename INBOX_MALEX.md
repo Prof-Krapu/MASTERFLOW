@@ -24,6 +24,27 @@ Règles de lecture :
 
 ---
 
+## 2026-06-28 — open — Intégration Edge TTS & Sélecteur de Persona
+
+Vincent/Codex → MALEX.
+Le POC pour l'intégration d'Edge TTS est en ligne sur la branche `codex/deepseek-tui`.
+
+**Ce qui a été fait :**
+1. **Backend streaming** : Installation de `node-edge-tts` et création de la route `POST /api/v1/tts` qui streame l'audio à la volée.
+2. **Couplage DB & Personas** : La voix est désormais dictée par la table `personas` (`voice_config_json`). Le *pitch*, le *rate*, le *volume* et la voix de base s'adaptent selon que tu sélectionnes MasterFlex, ProfKrapu ou System. 
+3. **Frontend UI** : 
+   - Ajout d'un bouton `🔊` dans le chat (`ChatDock`) pour lire les messages.
+   - Ajout d'un **sélecteur déroulant `<select>` dans la barre de navigation (Topbar)** (`MasterFlowShell`) pour changer le Persona actif en temps réel.
+   - Le changement de Persona envoie une requête `POST /api/v1/personas/:id/activate` au backend et rafraîchit le contexte.
+
+**Évolution dynamique de la voix (ton gentil, agacé, etc.) :**
+Actuellement, chaque Persona a sa configuration statique assignée en base de données pour différencier les profils vocaux. Dans un deuxième temps, pour que le ton "évolue" au fil de la discussion, on pourra modifier le backend pour qu'il analyse la réponse du LLM (ex: s'il répond avec un tag `<tone:angry>`) et ajuste dynamiquement le `pitch` ou le style EdgeTTS à la volée avant de générer le flux audio.
+
+**Actions requises :**
+Tu peux tester ça sur la branche `codex/deepseek-tui` (n'oublie pas le `npm ci` car il y a la dépendance `node-edge-tts`). 
+
+---
+
 ## 2026-06-28 — done — Rotation sécurisée du compte MALEX
 
 Vincent → MALEX/Codex. Le correctif login a été repris sans publier d’identifiant ni de mot de
