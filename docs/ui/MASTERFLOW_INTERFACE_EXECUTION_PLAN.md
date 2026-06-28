@@ -26,8 +26,8 @@ Il ne faut pas créer trois frontends ni recopier les écrans. Le backend, les c
 - login MALEX et chargement du contexte : fonctionnels ;
 - Home, Teaching et Inventory sont déjà pilotés par le loadout ;
 - Owner Cockpit, Admin, D08, D09, D10, D12 et Jobs existent déjà ;
-- le principal défaut est l'assemblage : les surfaces admin et métier sont empilées sous la Home ;
-- `App.tsx` concentre encore 1 628 lignes et `styles.css` 2 618 lignes ;
+- le principal défaut restant est la conception produit de l'accueil contextuel et du catalogue de widgets ;
+- `App.tsx` reste le point de congestion principal, mais une première extraction shell et le lazy-load sont publiés ;
 - aucun `apps/desktop` n'existe encore ;
 - le canon impose `situation -> mode -> room -> objet -> détail`, pas un catalogue de fonctions.
 
@@ -47,19 +47,24 @@ Vérifications effectuées :
 - `npm run build:frontend` OK ;
 - smoke 390 px public sur l'écran de connexion : pas de débordement horizontal.
 
-Alertes :
+Alertes résolues :
 
-- les panneaux godmode/admin/ops restent trop empilés sous la Home ;
-- `App.tsx` et `styles.css` sont encore les deux points de congestion principaux ;
-- le build frontend signale un bundle supérieur à 500 kB, cohérent avec le monolithe actuel ;
-- le smoke mobile authentifié reste à faire après extraction du shell ;
+- les panneaux godmode/admin/ops sont séparés dans `Pilotage` ;
+- les messages système sont sortis du fil métier ;
+- le bundle principal n'est plus monolithique après lazy-load (`248.34 kB`, gzip `73.78 kB` au build local).
+
+Alertes restantes :
+
+- l'accueil contextuel n'est pas encore conçu comme cockpit produit ;
+- le catalogue de widgets/panneaux/assets n'existe pas encore ;
+- le smoke mobile complet reste à refaire après chaque nouvelle tranche d'interface ;
 - le runtime local est une preuve de développement, pas une preuve de publication ni de prod.
 
 ## Prochaine vague recommandée
 
 ### Checkpoint UI-001B — 2026-06-28
 
-Statut : fait localement et vérifié.
+Statut : publié sur GitHub `main` via PR #150.
 
 - surface `Pilotage` accessible aux rôles admin/godmode sans ajouter de mode au loadout ;
 - onglets `Contrôle`, `Admin`, `Ops` ;
@@ -72,7 +77,7 @@ WebSocket réellement utilisés.
 
 ### Checkpoint UI-001C — 2026-06-28
 
-Statut : fait localement et vérifié.
+Statut : publié sur GitHub `main` via PR #150.
 
 - le chat métier contient uniquement les tours utilisateur/persona ;
 - les événements système existants ont une surface `État du chat` séparée ;
@@ -83,6 +88,17 @@ Statut : fait localement et vérifié.
 
 Prochaine candidate : auditer une bande commune `source truth` qui expose provenance, statut et
 confiance à partir des contrats existants, sans transformer une inférence en preuve.
+
+### Checkpoint UI-001D — 2026-06-28
+
+Statut : publié sur GitHub `main` via PR #151.
+
+- surfaces lourdes chargées à la demande ;
+- D08, D09 et D10 déclenchés par bouton, pas au boot ;
+- Inventory, Teaching, Pilotage/Admin/Ops et panneaux privés séparés en chunks ;
+- bundle principal réduit à `248.34 kB`, gzip `73.78 kB`.
+
+Prochaine candidate : audit/cadrage du catalogue UI avant nouvelle implémentation lourde.
 
 ### UI-001A — Baseline shell sans changement métier
 

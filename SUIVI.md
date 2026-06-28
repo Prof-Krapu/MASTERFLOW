@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — UI-001D : chargement progressif des surfaces frontend
+
+- les surfaces lourdes frontend passent en chargement à la demande ;
+- D08, D09 et D10 ne sont plus montés automatiquement pour les rôles admin/godmode ;
+- Inventory, Teaching, Pilotage, Admin, Ops et panneaux privés restent disponibles uniquement quand l'utilisateur les ouvre ;
+- aucun endpoint, seed, rôle, permission, provider, migration ou déploiement live modifié ;
+- le bundle principal frontend descend à `248.34 kB` gzip `73.78 kB` au build local.
+
+Vérifications : lint frontend OK, build frontend OK, diff-check OK, smoke local backend/frontend OK.
+
+Statut : publié sur GitHub `main` via PR #151, merge `ed45d74014875b463352fdace29f337ae57ecffd`.
+
 ## 2026-06-28 — UI-001C : conversation métier séparée des messages système
 
 - le fil Chat n'affiche plus que les tours utilisateur/persona ;
@@ -15,7 +27,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   - zéro `.chat-turn--system` dans le fil ;
   - desktop et viewport 390 px sans débordement horizontal.
 
-Statut : tranche locale vérifiée, non commitée et non poussée.
+Statut : publié sur GitHub `main` via PR #150, merge `f6fb1b375d4e21d4a652f030397a9a7e205c1887`.
 
 ## 2026-06-28 — UI-001B : Pilotage Control / Admin / Ops
 
@@ -32,7 +44,7 @@ Statut : tranche locale vérifiée, non commitée et non poussée.
 Vérifications : lint frontend OK, build frontend OK, lint backend OK, diff-check OK, smoke
 navigateur Control/Admin/Ops OK, 390 px sans overflow.
 
-Statut : tranche locale vérifiée, non commitée et non poussée.
+Statut : publié sur GitHub `main` via PR #150, merge `f6fb1b375d4e21d4a652f030397a9a7e205c1887`.
 
 ## 2026-06-28 — UI-001A : première extraction App Shell
 
@@ -46,8 +58,7 @@ Statut : tranche locale vérifiée, non commitée et non poussée.
 - le plan UI actif consigne le checkpoint local et la prochaine direction ;
 - validations : `npm run lint` OK, `npm run build:frontend` OK, `git diff --check` OK.
 
-Statut : tranche locale prête à revue. Prochaine vague sûre : séparer visuellement `Control/Admin/Ops`
-du workspace métier sans réécrire les panneaux existants.
+Statut : publié sur GitHub `main` via PR #150, merge `f6fb1b375d4e21d4a652f030397a9a7e205c1887`.
 
 ## 2026-06-28 — Correction frontière Factories : atelier Bureau, primitives Git
 
