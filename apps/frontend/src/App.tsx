@@ -39,7 +39,7 @@ import {
   updateRoomInstance,
   validateResource,
 } from './api.ts';
-import {MasterFlowShell, ModeRail, SituationPanel} from './app-shell.tsx';
+import {ChatDock, HomeDashboard, MasterFlowShell, ModeRail, SituationPanel} from './app-shell.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
 import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
@@ -1163,7 +1163,13 @@ function App(): ReactElement {
   };
 
   return (
-    <MasterFlowShell state={state}>
+    <MasterFlowShell
+      activePersonaName={activePersona?.name ?? null}
+      auth={auth}
+      context={context}
+      onLogout={handleLogout}
+      state={state}
+    >
       {!auth ? (
         <form className="panel login" onSubmit={handleSubmit}>
           <label>
@@ -1267,6 +1273,41 @@ function App(): ReactElement {
         </form>
       ) : (
         <section className="workspace" aria-label="Contexte courant">
+          {selectedMode === 'home' && !pilotageOpen ? (
+            <>
+              <div className="home-workspace">
+                <ModeRail
+                  activeModeId={activeMode.id}
+                  availableModes={availableModes}
+                  onModeSelect={handleModeSelect}
+                />
+                <div className="home-main">
+                  <HomeDashboard
+                    activePersona={activePersona}
+                    availableModes={availableModes}
+                    canValidate={canValidate}
+                    context={context}
+                    latestCheckpoint={latestCheckpoint}
+                    modeView={modeView}
+                    nextActions={nextActions}
+                    onActionClick={handleActionClick}
+                    onModeSelect={handleModeSelect}
+                    pendingActions={pendingActions}
+                    resources={resources}
+                  />
+                  <ChatDock
+                    chatInput={chatInput}
+                    conversationTurns={conversationTurns}
+                    onChatInputChange={(value) => setChatInput(value)}
+                    onChatSubmit={handleChatSubmit}
+                    wsState={wsState}
+                  />
+                  <SystemMessages messages={systemMessages} />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
           <SituationPanel
             activeModeSignal={activeMode.signal}
             activePersonaName={activePersona?.name ?? null}
@@ -1665,6 +1706,8 @@ function App(): ReactElement {
               ) : null}
             </section>
           ) : null}
+          </>
+          )}
           </>
           )}
         </section>

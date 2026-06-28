@@ -62,6 +62,30 @@ Alertes restantes :
 
 ## Prochaine vague recommandée
 
+### Reset produit UI — 2026-06-28
+
+Statut : actif.
+
+L'interface actuelle est conservée comme preuve fonctionnelle et support de test, mais elle ne doit
+plus guider la direction graphique ni l'organisation finale des écrans. Le prochain chantier repart
+du besoin utilisateur, du contexte actif, des modes et du catalogue widgets/panneaux/assets.
+
+Document de travail unique : `docs/ui/MASTERFLOW_UI_CDC_ACTIVE.md`.
+
+Règle : ne pas supprimer le code frontend existant tant que le nouveau CDC n'a pas validé les
+surfaces à reconstruire. On remplace ensuite par tranches testables, sans casser les contrats
+backend déjà opérationnels.
+
+### Checkpoint UI-001E — Home légère
+
+Statut : vérifié localement, publication à terminer.
+
+- Home limitée à six cartes de reprise et un chat compact ;
+- modes autorisés uniquement, issus du loadout ;
+- outils D08/D09/D10 absents de la Home et toujours chargés à la demande ;
+- aucune donnée, permission ou route backend inventée ;
+- desktop 1280 px et mobile 390 px sans débordement.
+
 ### Checkpoint UI-001B — 2026-06-28
 
 Statut : publié sur GitHub `main` via PR #150.
