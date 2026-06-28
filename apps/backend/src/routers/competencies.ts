@@ -139,7 +139,7 @@ export function createCompetenciesRouter(): Router {
     try { s.status(201).json(createGraph(actor(q), b.data)); } catch (e) { fail(s, e); }
   });
   r.get('/competencies/graphs/:id', (q, s) => {
-    try { s.json(getFullGraph(q.params.id ?? '')); } catch (e) { fail(s, e); }
+    try { s.json(getFullGraph(actor(q), q.params.id ?? '')); } catch (e) { fail(s, e); }
   });
   r.post('/competencies/graphs/:id/nodes', (q, s) => {
     const b = z.object({node_type: z.enum(['competency', 'resource', 'workflow', 'persona', 'project', 'subject', 'tool', 'methodology', 'discipline', 'exercise', 'feedback']), label: z.string().min(1), ref_type: z.string().nullable().optional(), ref_id: z.string().nullable().optional(), metadata_json: z.string().optional(), sort_order: z.number().optional()}).safeParse(q.body);

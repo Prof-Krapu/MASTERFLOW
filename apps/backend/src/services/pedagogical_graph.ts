@@ -9,6 +9,7 @@ import {
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 function toGraphDTO(row: PedagogicalGraphRow): PedagogicalGraph {
   return {
@@ -53,17 +54,59 @@ function toEdgeDTO(row: PedagogicalGraphEdgeRow): PedagogicalGraphEdge {
 }
 
 export function listGraphs(actor: AuthUser, projectId?: string): PedagogicalGraph[] {
-  let sql = 'SELECT * FROM pedagogical_graphs WHERE owner_id = ?';
-  const params: unknown[] = [actor.id];
-  if (projectId) { sql += ' AND project_id = ?'; params.push(projectId); }
-  sql += ' ORDER BY label ASC';
-  return (getDb().prepare(sql).all(...params) as PedagogicalGraphRow[]).map(toGraphDTO);
+  return (getDb()
+    .prepare('SELECT * FROM pedagogical_graphs ORDER BY label ASC')
+    .all() as PedagogicalGraphRow[])
+    .filter((graph) => canReadGraph(actor, graph) && (!projectId || graph.project_id === projectId))
+    .map(toGraphDTO);
 }
 
-export function getGraph(graphId: string): PedagogicalGraph {
-  const row = getDb().prepare('SELECT * FROM pedagogical_graphs WHERE id = ?').get(graphId) as PedagogicalGraphRow | undefined;
-  if (!row) throw new Error('pedagogical_graph_not_found');
-  return toGraphDTO(row);
+function getGraphRow(graphId: string): PedagogicalGraphRow | undefined {
+  return getDb().prepare('SELECT * FROM pedagogical_graphs WHERE id = ?').get(graphId) as
+    | PedagogicalGraphRow
+    | undefined;
+}
+
+function canReadGraph(actor: AuthUser, graph: PedagogicalGraphRow): boolean {
+  if (graph.owner_id === actor.id) return true;
+  if (graph.scope === 'personal') return false;
+  return Boolean(
+    graph.project_id &&
+      decideScopedPermission({
+        actor,
+        projectId: graph.project_id,
+        minimumProjectRole: 'viewer',
+      }).allowed,
+  );
+}
+
+function canManageGraph(actor: AuthUser, graph: PedagogicalGraphRow): boolean {
+  if (graph.owner_id === actor.id) return true;
+  if (graph.scope === 'personal') return false;
+  return Boolean(
+    graph.project_id &&
+      decideScopedPermission({
+        actor,
+        projectId: graph.project_id,
+        minimumProjectRole: 'editor',
+      }).allowed,
+  );
+}
+
+function requireReadableGraph(actor: AuthUser, graphId: string): PedagogicalGraphRow {
+  const graph = getGraphRow(graphId);
+  if (!graph || !canReadGraph(actor, graph)) throw new Error('pedagogical_graph_not_found');
+  return graph;
+}
+
+function requireManageableGraph(actor: AuthUser, graphId: string): PedagogicalGraphRow {
+  const graph = getGraphRow(graphId);
+  if (!graph || !canManageGraph(actor, graph)) throw new Error('pedagogical_graph_not_found');
+  return graph;
+}
+
+export function getGraph(actor: AuthUser, graphId: string): PedagogicalGraph {
+  return toGraphDTO(requireReadableGraph(actor, graphId));
 }
 
 export function createGraph(
@@ -75,6 +118,16 @@ export function createGraph(
     project_id?: string | null;
   },
 ): PedagogicalGraph {
+  if (
+    data.project_id &&
+    !decideScopedPermission({
+      actor,
+      projectId: data.project_id,
+      minimumProjectRole: 'editor',
+    }).allowed
+  ) {
+    throw new Error('project_not_found');
+  }
   const id = uuid();
   const now = Date.now();
   getDb().prepare(`
@@ -82,7 +135,7 @@ export function createGraph(
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(id, actor.id, data.project_id ?? null, data.label, data.description ?? null, data.scope ?? 'general', now, now);
   audit({event_type: 'pedagogical_graph.created', user_id: actor.id, detail: {graph_id: id, label: data.label}});
-  return getGraph(id);
+  return getGraph(actor, id);
 }
 
 export function addGraphNode(
@@ -97,8 +150,7 @@ export function addGraphNode(
     sort_order?: number;
   },
 ): PedagogicalGraphNode {
-  const graph = getGraph(graphId);
-  void graph;
+  requireManageableGraph(actor, graphId);
   const id = uuid();
   const now = Date.now();
   getDb().prepare(`
@@ -106,16 +158,24 @@ export function addGraphNode(
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(id, graphId, data.node_type, data.label, data.ref_type ?? null, data.ref_id ?? null, data.metadata_json ?? '{}', data.sort_order ?? 0, now, now);
   audit({event_type: 'pedagogical_graph_node.created', user_id: actor.id, detail: {graph_id: graphId, node_id: id, label: data.label}});
-  return getGraphNode(id);
+  return getGraphNode(actor, id);
 }
 
-export function getGraphNode(nodeId: string): PedagogicalGraphNode {
-  const row = getDb().prepare('SELECT * FROM pedagogical_graph_nodes WHERE id = ?').get(nodeId) as PedagogicalGraphNodeRow | undefined;
+function getGraphNodeRow(nodeId: string): PedagogicalGraphNodeRow | undefined {
+  return getDb().prepare('SELECT * FROM pedagogical_graph_nodes WHERE id = ?').get(nodeId) as
+    | PedagogicalGraphNodeRow
+    | undefined;
+}
+
+export function getGraphNode(actor: AuthUser, nodeId: string): PedagogicalGraphNode {
+  const row = getGraphNodeRow(nodeId);
   if (!row) throw new Error('pedagogical_graph_node_not_found');
+  requireReadableGraph(actor, row.graph_id);
   return toNodeDTO(row);
 }
 
-export function listGraphNodes(graphId: string): PedagogicalGraphNode[] {
+export function listGraphNodes(actor: AuthUser, graphId: string): PedagogicalGraphNode[] {
+  requireReadableGraph(actor, graphId);
   return (getDb().prepare('SELECT * FROM pedagogical_graph_nodes WHERE graph_id = ? ORDER BY sort_order ASC').all(graphId) as PedagogicalGraphNodeRow[]).map(toNodeDTO);
 }
 
@@ -130,11 +190,12 @@ export function addGraphEdge(
     metadata_json?: string;
   },
 ): PedagogicalGraphEdge {
-  // Vérifier que les nœuds existent dans ce graphe
-  getGraphNode(data.source_node_id);
-  getGraphNode(data.target_node_id);
-  const graph = getGraph(graphId);
-  void graph;
+  requireManageableGraph(actor, graphId);
+  const source = getGraphNodeRow(data.source_node_id);
+  const target = getGraphNodeRow(data.target_node_id);
+  if (!source || !target || source.graph_id !== graphId || target.graph_id !== graphId) {
+    throw new Error('pedagogical_graph_node_not_found');
+  }
 
   const id = uuid();
   const now = Date.now();
@@ -147,14 +208,15 @@ export function addGraphEdge(
   return toEdgeDTO(getDb().prepare('SELECT * FROM pedagogical_graph_edges WHERE id = ?').get(id) as PedagogicalGraphEdgeRow);
 }
 
-export function listGraphEdges(graphId: string): PedagogicalGraphEdge[] {
+export function listGraphEdges(actor: AuthUser, graphId: string): PedagogicalGraphEdge[] {
+  requireReadableGraph(actor, graphId);
   return (getDb().prepare('SELECT * FROM pedagogical_graph_edges WHERE graph_id = ?').all(graphId) as PedagogicalGraphEdgeRow[]).map(toEdgeDTO);
 }
 
-export function getFullGraph(graphId: string): {graph: PedagogicalGraph; nodes: PedagogicalGraphNode[]; edges: PedagogicalGraphEdge[]} {
+export function getFullGraph(actor: AuthUser, graphId: string): {graph: PedagogicalGraph; nodes: PedagogicalGraphNode[]; edges: PedagogicalGraphEdge[]} {
   return {
-    graph: getGraph(graphId),
-    nodes: listGraphNodes(graphId),
-    edges: listGraphEdges(graphId),
+    graph: getGraph(actor, graphId),
+    nodes: listGraphNodes(actor, graphId),
+    edges: listGraphEdges(actor, graphId),
   };
 }

@@ -329,6 +329,36 @@ function migrate(d: Database.Database): void {
       updated_at        INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS memory_card_links (
+      id                TEXT PRIMARY KEY,
+      source_card_id    TEXT NOT NULL REFERENCES memory_cards(id) ON DELETE CASCADE,
+      target_card_id    TEXT NOT NULL REFERENCES memory_cards(id) ON DELETE CASCADE,
+      relation_type     TEXT NOT NULL CHECK (relation_type IN (
+                            'supports','contradicts','extends','illustrates','related_to',
+                            'broader','narrower','derived_from','requires_validation',
+                            'triggers_action','references','used_in','blocks','unlocks'
+                          )),
+      relation_family   TEXT NOT NULL CHECK (relation_family IN (
+                            'semantic','provenance','operational'
+                          )),
+      rationale         TEXT NOT NULL,
+      source_ref        TEXT NOT NULL,
+      confidence        TEXT NOT NULL CHECK (confidence IN ('low','medium','high','validated')),
+      status            TEXT NOT NULL DEFAULT 'candidate'
+                            CHECK (status IN ('candidate','active','rejected','archived')),
+      created_by        TEXT NOT NULL REFERENCES users(id),
+      validated_by      TEXT REFERENCES users(id),
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL,
+      CHECK (source_card_id <> target_card_id),
+      UNIQUE(source_card_id, target_card_id, relation_type)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_memory_card_links_source
+      ON memory_card_links(source_card_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_memory_card_links_target
+      ON memory_card_links(target_card_id, status, updated_at);
+
     -- ───────────────────────── Personas & chimères ─────────────────────────
     CREATE TABLE IF NOT EXISTS personas (
       id            TEXT PRIMARY KEY,
@@ -2717,6 +2747,36 @@ export interface MemoryCardRow {
   compression_level: 'L2' | 'L3' | 'L4';
   invalidation_rule: string;
   next_action: string | null;
+  validated_by: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface MemoryCardLinkRow {
+  id: string;
+  source_card_id: string;
+  target_card_id: string;
+  relation_type:
+    | 'supports'
+    | 'contradicts'
+    | 'extends'
+    | 'illustrates'
+    | 'related_to'
+    | 'broader'
+    | 'narrower'
+    | 'derived_from'
+    | 'requires_validation'
+    | 'triggers_action'
+    | 'references'
+    | 'used_in'
+    | 'blocks'
+    | 'unlocks';
+  relation_family: 'semantic' | 'provenance' | 'operational';
+  rationale: string;
+  source_ref: string;
+  confidence: 'low' | 'medium' | 'high' | 'validated';
+  status: 'candidate' | 'active' | 'rejected' | 'archived';
+  created_by: string;
   validated_by: string | null;
   created_at: number;
   updated_at: number;
