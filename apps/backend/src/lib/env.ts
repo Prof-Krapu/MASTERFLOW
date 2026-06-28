@@ -47,7 +47,7 @@ export const env = {
 
   malex: {
     username: readSecret('MALEX_USERNAME', 'malex'),
-    password: readSecret('MALEX_PASSWORD', 'masterflow', 12),
+    password: readSecret('MALEX_PASSWORD', 'masterflow', 8),
   },
 
   /** Config LLM. `provider=mock` → réponses simulées, aucun appel réseau (dev sans clé). */
