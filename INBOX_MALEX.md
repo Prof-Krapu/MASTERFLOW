@@ -24,6 +24,41 @@ Règles de lecture :
 
 ---
 
+## 2026-06-28 — open — DeepSeek (test) + TUI agentic : à valider + 2 demandes
+
+Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation.** Travail préparé en local
+sur la branche `codex/deepseek-tui`, **non committé** (working tree), en attente de ta validation.
+
+Contexte fait (réversible, inerte par défaut) :
+- **DeepSeek branché pour tester** (OpenAI-compat). `apps/backend/src/db/seed.ts` rendu *conscient du
+  provider* : `LLM_PROVIDER=deepseek` → profils validés `deepseek`/`deepseek-chat` **sans escalade par
+  rôle** ; tout autre provider, y compris `mock`, reste **OpenRouter inchangé / inerte**. Aucune modif
+  de `services/llm.ts`/`llm_pricing.ts` ; routage fail-closed + gate egress (`https://api.deepseek.com`)
+  intacts. Clé jamais commitée (`.env` local).
+- **Nouveau TUI** `apps/tui` (`@masterflow/tui`, Ink/React) = client backend/test/opérateur réutilisant
+  `@masterflow/shared` : login → contexte/loadout → chat streamé WS → cycle d'actions
+  (preflight → validation → execute). `apps/frontend` (ton territoire) **non touché**.
+- Vérifs : vitest **563/563**, `tsc` backend+TUI 0, `npm install` 0 vuln, seed deepseek vérifié, smoke
+  du chemin TUI sur backend réel OK (login godmode → contexte → action → WS chat).
+
+Demandes `open` (validation humaine MALEX requise — provider live = dépense réelle) :
+1. **Autoriser le test DeepSeek en local** et valider l'approche provider-aware (DeepSeek = déviation
+   de test ; OpenRouter reste le provider canonique).
+2. Prochaine étape voulue par Vincent : **clé LLM saisie à la connexion du TUI** (au lieu de `.env`
+   serveur). Implique un chemin backend d'override de clé par session sans casser egress/validation —
+   à arbitrer avec toi.
+
+Note : une **mise à jour pédagogique** de ta part + l'**intégration voix** (Edge TTS déjà amorcé sur
+la branche : `routers/tts.ts`, `voice_config` pitch/rate/volume, `scripts/update_voices_poc.ts`) sont
+attendues côté Claude pour intégration.
+
+SYNC_PROOF : `local_head` branche `codex/deepseek-tui`, `origin/main = github_main = 63381f5`
+(#155 Experience Fabric mergé). Détail daté dans `SUIVI.md` (DEEPSEEK-TUI-001).
+
+Statut : open — en attente de validation MALEX. Rien n'est publié sur `main` hors ce message.
+
+---
+
 ## 2026-06-28 — done — Rotation sécurisée du compte MALEX
 
 Vincent → MALEX/Codex. Le correctif login a été repris sans publier d’identifiant ni de mot de
