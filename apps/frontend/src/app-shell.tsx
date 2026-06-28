@@ -1,3 +1,4 @@
+import React, {useState} from 'react';
 import type {FormEvent, ReactElement, ReactNode} from 'react';
 
 import type {
@@ -11,6 +12,7 @@ import type {
 } from '@masterflow/shared';
 
 import type {ModeView, WorkMode, WorkModeId} from './mode-runtime.ts';
+import {playTts} from './api.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -218,6 +220,7 @@ type ChatDockProps = {
   chatInput: string;
   onChatInputChange: (value: string) => void;
   onChatSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  activePersonaId?: string | null;
 };
 
 export function HomeDashboard(props: HomeDashboardProps): ReactElement {
@@ -322,7 +325,19 @@ export function HomeDashboard(props: HomeDashboardProps): ReactElement {
 }
 
 export function ChatDock(props: ChatDockProps): ReactElement {
-  const {wsState, conversationTurns, chatInput, onChatInputChange, onChatSubmit} = props;
+  const {wsState, conversationTurns, chatInput, onChatInputChange, onChatSubmit, activePersonaId} = props;
+  const [playingId, setPlayingId] = useState<string | null>(null);
+
+  const handlePlayTts = async (turnId: string, text: string) => {
+    try {
+      setPlayingId(turnId);
+      await playTts(text, activePersonaId ?? undefined);
+    } catch (e) {
+      console.error('[tts] playTts failed:', e);
+    } finally {
+      setPlayingId(null);
+    }
+  };
 
   return (
     <div className="chat-dock">
@@ -330,7 +345,21 @@ export function ChatDock(props: ChatDockProps): ReactElement {
         {conversationTurns.length > 0 ? (
           conversationTurns.slice(-3).map((turn) => (
             <span className={`chat-dock__turn chat-dock__turn--${turn.role}`} key={turn.id}>
-              <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}</strong>
+              <strong>
+                {turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}
+                {turn.role !== 'user' && (
+                  <button 
+                    type="button" 
+                    className="tts-btn"
+                    onClick={() => handlePlayTts(turn.id, turn.content)}
+                    disabled={playingId === turn.id}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', marginLeft: '0.5rem', fontSize: '1.2em' }}
+                    title="Écouter ce message"
+                  >
+                    {playingId === turn.id ? '⏳' : '🔊'}
+                  </button>
+                )}
+              </strong>
               <span>{turn.content}</span>
             </span>
           ))

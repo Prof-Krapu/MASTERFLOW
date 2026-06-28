@@ -858,3 +858,38 @@ export async function getTokenUsage(
   if (range?.to !== undefined) params.set('to', String(range.to));
   return request<TokenUsageReport>(`/diagnostics/token-usage?${params.toString()}`, {method: 'GET'}, token);
 }
+
+// ───────────────────────── TTS (Text To Speech) ─────────────────────────
+
+export async function playTts(
+  text: string,
+  personaId?: string,
+  token?: string | null,
+): Promise<void> {
+  const response = await fetch(`${API_BASE}/tts`, {
+    method: 'POST',
+    headers: {
+      ...headers(token),
+    },
+    body: JSON.stringify({ text, personaId }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await errorMessage(response));
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  
+  audio.onended = () => {
+    URL.revokeObjectURL(url);
+  };
+  
+  audio.onerror = () => {
+    console.error('[tts] Erreur de lecture audio');
+    URL.revokeObjectURL(url);
+  };
+
+  await audio.play();
+}

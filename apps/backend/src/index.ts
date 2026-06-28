@@ -40,6 +40,7 @@ import {createWeatherRouter} from './routers/weather.ts';
 import {createDaRuntimeRouter} from './routers/da_runtime.ts';
 import {createNarrativeRuntimeRouter} from './routers/narrative_runtime.ts';
 import {createAssetsRouter} from './routers/assets.ts';
+import {createTtsRouter} from './routers/tts.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -117,6 +118,7 @@ async function main(): Promise<void> {
   app.use(api, createDaRuntimeRouter());
   app.use(api, createNarrativeRuntimeRouter());
   app.use(api, createAssetsRouter());
+  app.use(`${api}/tts`, createTtsRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

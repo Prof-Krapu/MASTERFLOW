@@ -1298,6 +1298,7 @@ function App(): ReactElement {
                   <ChatDock
                     chatInput={chatInput}
                     conversationTurns={conversationTurns}
+                    activePersonaId={activePersona?.id}
                     onChatInputChange={(value) => setChatInput(value)}
                     onChatSubmit={handleChatSubmit}
                     wsState={wsState}
