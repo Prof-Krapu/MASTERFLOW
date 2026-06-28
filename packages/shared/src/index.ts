@@ -2295,6 +2295,91 @@ export const CreateNarrativeEventRequestSchema = z.object({
 });
 export type CreateNarrativeEventRequest = z.infer<typeof CreateNarrativeEventRequestSchema>;
 
+export const NarrativeTruthStateSchema = z.enum(['canon', 'probable', 'candidate', 'contradictory', 'revoked']);
+export type NarrativeTruthState = z.infer<typeof NarrativeTruthStateSchema>;
+
+export const NarrativeFactSchema = z.object({
+  fact_id: z.string().min(1),
+  workbench_id: z.string().min(1),
+  source_kind: z.enum(['story_node', 'narrative_event', 'story_character']),
+  subject_refs: z.array(z.string().min(1)).max(20),
+  summary: z.string().min(1).max(1000),
+  truth_state: NarrativeTruthStateSchema,
+  spoiler_level: z.enum(['none', 'mild', 'major', 'critical']),
+  confidence: z.enum(['canon', 'probable', 'speculative', 'uncertain', 'contradiction']),
+  source_refs: z.array(z.string().min(1)).min(1).max(20),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type NarrativeFact = z.infer<typeof NarrativeFactSchema>;
+
+export const NarrativePresentationModeSchema = z.enum(['reader', 'workshop', 'full_spoilers', 'export']);
+export type NarrativePresentationMode = z.infer<typeof NarrativePresentationModeSchema>;
+
+export const NarrativePresentationSchema = z.object({
+  presentation_id: z.string().min(1),
+  workbench_id: z.string().min(1),
+  mode: NarrativePresentationModeSchema,
+  point_of_view_ref: z.string().min(1).nullable(),
+  audience_ref: z.string().min(1).nullable(),
+  visible_fact_refs: z.array(z.string().min(1)),
+  hidden_spoiler_refs: z.array(z.string().min(1)),
+  ordering_refs: z.array(z.string().min(1)),
+  media_refs: z.array(z.string().min(1)),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type NarrativePresentation = z.infer<typeof NarrativePresentationSchema>;
+
+export const CharacterKnowledgeSchema = z.object({
+  character_ref: z.string().min(1),
+  fact_ref: z.string().min(1),
+  knowledge_state: z.enum(['knows', 'believes', 'ignores', 'conceals']),
+  evidence_refs: z.array(z.string().min(1)).min(1).max(20),
+});
+export type CharacterKnowledge = z.infer<typeof CharacterKnowledgeSchema>;
+
+export const CharacterGoalSchema = z.object({
+  goal_id: z.string().min(1),
+  character_ref: z.string().min(1),
+  summary: z.string().min(1).max(500),
+  status: z.enum(['active', 'blocked', 'completed', 'unknown']),
+  source_refs: z.array(z.string().min(1)).min(1).max(20),
+});
+export type CharacterGoal = z.infer<typeof CharacterGoalSchema>;
+
+export const SetupPayoffSchema = z.object({
+  thread_id: z.string().min(1),
+  workbench_id: z.string().min(1),
+  setup_refs: z.array(z.string().min(1)),
+  payoff_refs: z.array(z.string().min(1)),
+  status: z.enum(['setup_only', 'payoff_ready', 'resolved', 'broken']),
+  explanation: z.string().min(1).max(1000),
+});
+export type SetupPayoff = z.infer<typeof SetupPayoffSchema>;
+
+export const NarrativeCanonGraphQuerySchema = z.object({
+  workbench_id: z.string().min(1),
+  presentation_mode: NarrativePresentationModeSchema.default('workshop'),
+});
+export type NarrativeCanonGraphQuery = z.input<typeof NarrativeCanonGraphQuerySchema>;
+
+export const NarrativeCanonGraphSchema = z.object({
+  workbench_id: z.string().min(1),
+  generated_at: z.number().int().nonnegative(),
+  facts: z.array(NarrativeFactSchema),
+  presentation: NarrativePresentationSchema,
+  character_knowledge: z.array(CharacterKnowledgeSchema),
+  character_goals: z.array(CharacterGoalSchema),
+  setup_payoffs: z.array(SetupPayoffSchema),
+  diagnostics: z.object({
+    contradictions: z.array(z.string().min(1)),
+    spoiler_leaks: z.array(z.string().min(1)),
+    temporal_warnings: z.array(z.string().min(1)),
+    emotion_without_cause: z.array(z.string().min(1)),
+  }),
+});
+export type NarrativeCanonGraph = z.infer<typeof NarrativeCanonGraphSchema>;
+
 export const NARRATIVE_RUNTIME_API = {
   nodes: {
     list: '/api/v1/narrative/nodes',
@@ -2314,6 +2399,7 @@ export const NARRATIVE_RUNTIME_API = {
   workbench: {
     updateStatus: '/api/v1/narrative/workbench/:id/status',
     canonLock: '/api/v1/narrative/workbench/:id/canon-lock',
+    canonGraph: '/api/v1/narrative/workbench/:id/canon-graph',
   },
   characters: {
     list: '/api/v1/narrative/characters',

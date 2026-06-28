@@ -1,5 +1,5 @@
 import {Router, type Request, type Response} from 'express';
-import {CreateNarrativeEventRequestSchema, CreateStoryNodeRequestSchema, UpdateStoryNodeRequestSchema, CreateStoryCharacterRequestSchema, UpdateStoryCharacterRequestSchema, GenerateSceneVisualRequestSchema} from '@masterflow/shared';
+import {CreateNarrativeEventRequestSchema, CreateStoryNodeRequestSchema, UpdateStoryNodeRequestSchema, CreateStoryCharacterRequestSchema, UpdateStoryCharacterRequestSchema, GenerateSceneVisualRequestSchema, NarrativeCanonGraphQuerySchema} from '@masterflow/shared';
 import {z} from 'zod';
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
 import {audit} from '../lib/audit.ts';
@@ -10,6 +10,7 @@ import {
 import {createCharacter, getCharacter, listAllCharacters, listCharacters, updateCharacter, deleteCharacter} from '../services/story_characters.ts';
 import {setCanonLock} from '../services/story_workbenches.ts';
 import {compileSceneVisualContext} from '../engines/story_da_bridge.ts';
+import {buildNarrativeCanonGraph} from '../services/narrative_canon_graph.ts';
 
 const actor = (r: Request): AuthUser => { if (!r.user) throw new Error('unauthorized'); return r.user; };
 const fail = (s: Response, e: unknown): void => {
@@ -31,6 +32,14 @@ export function createNarrativeRuntimeRouter(): Router {
     const b = z.object({locked: z.boolean()}).safeParse(q.body);
     if (!b.success) return void s.status(400).json({error: 'invalid_canon_lock'});
     try { s.json(setCanonLock(actor(q), q.params.id ?? '', b.data.locked)); } catch (e) { fail(s, e); }
+  });
+  r.get('/narrative/workbench/:id/canon-graph', (q, s) => {
+    const b = NarrativeCanonGraphQuerySchema.safeParse({
+      workbench_id: q.params.id,
+      presentation_mode: q.query.presentation_mode,
+    });
+    if (!b.success) return void s.status(400).json({error: 'invalid_query', detail: b.error.flatten()});
+    try { s.json(buildNarrativeCanonGraph(actor(q), b.data)); } catch (e) { fail(s, e); }
   });
 
   // Story nodes

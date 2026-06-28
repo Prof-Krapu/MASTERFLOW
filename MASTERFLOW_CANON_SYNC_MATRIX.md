@@ -14,6 +14,7 @@ récoltées après audit.
 |---|---|---|---|---|
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté local | Recherche de cas depuis mémoire, checkpoints, décisions et événements ; publication GitHub à faire. | faible | Publier la vague 2 puis construire le Narrative Canon Graph. |
+| Experience Fabric / Narrative Canon Graph | implémenté local | Projection des faits, présentations, connaissances personnage et setup/payoff ; publication GitHub à faire. | faible | Publier la vague 3 puis construire les storylets sur ces faits. |
 | Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
