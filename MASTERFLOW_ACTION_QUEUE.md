@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-28
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-004 — Storylet Engine
+
+- Tâche : évaluer des storylets candidates depuis canon narratif, précédents et blockers.
+- Impact : MasterFlow peut proposer le bon événement ou pont contextuel sans agir en douce.
+- Risque : faible ; politique `suggest_only`, aucune exécution automatique.
+- Source de vérité concernée : runtime Git + Experience Fabric.
+- Statut : prêt à publication atomique.
+- Validation requise : non pour cette tranche ; oui avant scheduler, exécution ou UI prescriptive.
+
 ### EXPERIENCE-FABRIC-003 — Narrative Canon Graph
 
 - Tâche : séparer vérité narrative, présentation, connaissance personnage et setup/payoff.
