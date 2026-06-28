@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — UI-001E : Home légère et point de reprise
+
+- reprise et correction de la proposition Home OpenCode avant publication ;
+- six cartes maximum : contexte, prochaine action, reprise, validation, ressources et modes ;
+- chat compact conservant le texte utile, modes réellement cliquables ;
+- outils D08/D09/D10 retirés de la Home et toujours chargés uniquement à la demande ;
+- libellés trompeurs ou techniques retirés ; déconnexion rendue explicite ;
+- aucun backend, endpoint, permission, provider ou contrat réseau modifié.
+
+Vérifications : lint frontend, build frontend et diff-check OK ; smoke navigateur desktop
+1280 px et mobile 390 px sans débordement ; navigation Home → Teaching → Home OK.
+
+Statut : branche `codex/ui-home-lightweight`, PR #153 avant merge.
+
 ## 2026-06-28 — Fondations composables clean-room
 
 - ajout d'un registre de packs runtime fondé sur les actions et permissions réelles ;

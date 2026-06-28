@@ -1,14 +1,25 @@
-import type {ReactElement, ReactNode} from 'react';
+import type {FormEvent, ReactElement, ReactNode} from 'react';
 
 import type {
+  ActionRegistryEntry,
   AuthResponse,
   CurrentContext,
+  Persona,
+  Resource,
   RoomCheckpoint,
+  ValidationInboxItem,
 } from '@masterflow/shared';
 
-import type {WorkMode, WorkModeId} from './mode-runtime.ts';
+import type {ModeView, WorkMode, WorkModeId} from './mode-runtime.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
+
+type ChatTurn = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  speaker?: string;
+};
 
 type RoomSyncState = {
   status: 'idle' | 'syncing' | 'synced' | 'error';
@@ -23,6 +34,10 @@ type SituationStat = {
 type MasterFlowShellProps = {
   children: ReactNode;
   state: LoadState;
+  auth?: AuthResponse | null;
+  context?: CurrentContext | null;
+  activePersonaName?: string | null;
+  onLogout?: () => void;
 };
 
 type SituationPanelProps = {
@@ -45,18 +60,31 @@ type ModeRailProps = {
   onModeSelect: (mode: WorkModeId) => void;
 };
 
-export function MasterFlowShell({children, state}: MasterFlowShellProps): ReactElement {
+export function MasterFlowShell({children, state, auth, context, activePersonaName, onLogout}: MasterFlowShellProps): ReactElement {
   return (
     <main className="shell">
-      <section className="topbar" aria-label="Etat MasterFlow">
-        <div>
+      <header className="topbar" aria-label="Etat MasterFlow">
+        <div className="topbar__brand">
           <p className="eyebrow">MasterFlow</p>
           <h1>Home Room</h1>
         </div>
-        <span className={`status status--${state}`}>
-          {state === 'ready' ? 'connecte' : state}
-        </span>
-      </section>
+        <div className="topbar__meta">
+          {activePersonaName ? (
+            <span className="topbar__persona">{activePersonaName}</span>
+          ) : null}
+          <span className={`status status--${state}`}>
+            {state === 'ready' ? 'connecte' : state}
+          </span>
+          {auth && context ? (
+            <>
+              <span className="topbar__user-name">{context.user.display_name}</span>
+              <button className="secondary topbar__logout" onClick={onLogout} type="button">
+                Se déconnecter
+              </button>
+            </>
+          ) : null}
+        </div>
+      </header>
       {children}
     </main>
   );
@@ -167,5 +195,164 @@ export function ModeRail({activeModeId, availableModes, onModeSelect}: ModeRailP
         </button>
       ))}
     </nav>
+  );
+}
+
+type HomeDashboardProps = {
+  context: CurrentContext | null;
+  activePersona: Persona | null;
+  latestCheckpoint: RoomCheckpoint | null;
+  resources: Resource[];
+  pendingActions: ValidationInboxItem[];
+  availableModes: WorkMode[];
+  nextActions: ActionRegistryEntry[];
+  modeView: ModeView;
+  canValidate: boolean;
+  onActionClick: (entry: ActionRegistryEntry) => void;
+  onModeSelect: (mode: WorkModeId) => void;
+};
+
+type ChatDockProps = {
+  wsState: string;
+  conversationTurns: ChatTurn[];
+  chatInput: string;
+  onChatInputChange: (value: string) => void;
+  onChatSubmit: (event: FormEvent<HTMLFormElement>) => void;
+};
+
+export function HomeDashboard(props: HomeDashboardProps): ReactElement {
+  const {
+    context,
+    activePersona,
+    latestCheckpoint,
+    resources,
+    pendingActions,
+    availableModes,
+    nextActions,
+    modeView,
+    canValidate,
+    onActionClick,
+    onModeSelect,
+  } = props;
+
+  return (
+    <div className="home-dashboard">
+      <article className="home-card home-card--context">
+        <h3 className="home-card__title">Tu es ici</h3>
+        <p className="home-card__main">
+          {typeof context?.room.context?.['purpose'] === 'string'
+            ? context.room.context['purpose']
+            : context?.room.name ?? 'Room active'}
+        </p>
+        <div className="home-card__meta">
+          <span>{activePersona?.name ?? 'persona simple'}</span>
+          <span>{context?.room_instance.active_surface ?? 'home'}</span>
+        </div>
+        <p className="home-card__signal">{modeView.signal}</p>
+      </article>
+
+      <article className="home-card home-card--next-action">
+        <h3 className="home-card__title">Prochaine action</h3>
+        {nextActions.length > 0 ? (
+          <div className="home-card__actions">
+            {nextActions.map((action) => (
+              <button
+                className="action-chip"
+                key={action.action_id}
+                onClick={() => onActionClick(action)}
+                type="button"
+              >
+                <span>{action.label}</span>
+                <small>{action.preflight_required ? 'Vérification requise' : 'Disponible'}</small>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="home-card__empty">Aucune action immédiate</p>
+        )}
+      </article>
+
+      <article className="home-card home-card--resume">
+        <h3 className="home-card__title">À reprendre</h3>
+        {latestCheckpoint ? (
+          <div className="home-card__detail">
+            <p>{latestCheckpoint.summary}</p>
+            {latestCheckpoint.next_recommended_action ? (
+              <small>Ensuite : {latestCheckpoint.next_recommended_action}</small>
+            ) : null}
+          </div>
+        ) : (
+          <p className="home-card__empty">Aucune reprise enregistrée pour cette room.</p>
+        )}
+      </article>
+
+      {canValidate ? (
+        <article className="home-card home-card--watch">
+          <h3 className="home-card__title">À surveiller</h3>
+          <p className="home-card__count">
+            {pendingActions.length > 0
+              ? `${pendingActions.length} validation(s) en attente`
+              : 'Aucune validation en attente'}
+          </p>
+        </article>
+      ) : null}
+
+      <article className="home-card home-card--resources">
+        <h3 className="home-card__title">Ressources utiles</h3>
+        <p className="home-card__count">{resources.length} source(s) validée(s)</p>
+      </article>
+
+      <article className="home-card home-card--modes">
+        <h3 className="home-card__title">Modes utiles</h3>
+        <div className="home-card__chips">
+          {availableModes.map((mode) => (
+            <button
+              className="mode-chip"
+              key={mode.id}
+              onClick={() => onModeSelect(mode.id)}
+              type="button"
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+export function ChatDock(props: ChatDockProps): ReactElement {
+  const {wsState, conversationTurns, chatInput, onChatInputChange, onChatSubmit} = props;
+
+  return (
+    <div className="chat-dock">
+      <div className="chat-dock__log">
+        {conversationTurns.length > 0 ? (
+          conversationTurns.slice(-3).map((turn) => (
+            <span className={`chat-dock__turn chat-dock__turn--${turn.role}`} key={turn.id}>
+              <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}</strong>
+              <span>{turn.content}</span>
+            </span>
+          ))
+        ) : (
+          <span className="chat-dock__placeholder">
+            {wsState === 'connected' ? 'Chat prêt' : 'WebSocket en attente…'}
+          </span>
+        )}
+      </div>
+      <form className="chat-dock__form" onSubmit={onChatSubmit}>
+        <input
+          aria-label="Message"
+          disabled={wsState !== 'connected'}
+          onChange={(event) => onChatInputChange(event.target.value)}
+          placeholder={wsState === 'connected' ? 'Message court…' : 'WebSocket indisponible'}
+          type="text"
+          value={chatInput}
+        />
+        <button disabled={wsState !== 'connected' || chatInput.trim().length === 0} type="submit">
+          Envoyer
+        </button>
+      </form>
+    </div>
   );
 }

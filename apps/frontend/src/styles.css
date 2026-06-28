@@ -93,6 +93,39 @@ textarea:focus {
   padding-bottom: 18px;
 }
 
+.topbar__brand {
+  display: grid;
+  gap: 2px;
+}
+
+.topbar__meta {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.topbar__persona {
+  border: 1px solid rgba(88, 193, 137, 0.6);
+  border-radius: 999px;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.topbar__user-name {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.topbar__logout {
+  font-size: 13px;
+  min-height: 34px;
+  padding: 5px 10px;
+}
+
 .eyebrow {
   color: var(--accent-strong);
   font-size: 12px;
@@ -2466,6 +2499,23 @@ dd {
   .inventory-search button {
     grid-column: 1 / -1;
   }
+
+  .home-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .home-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-dock__form {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-dock__log {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* ───────────────────────── Console d'administration (PoC) ───────────────────────── */
@@ -2688,4 +2738,241 @@ dd {
   display: grid;
   gap: 0.75rem;
   grid-column: 1 / -1;
+}
+
+/* ───────────────────────── Home dashboard V1 ───────────────────────── */
+
+.home-workspace {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: auto 1fr;
+  grid-column: 1 / -1;
+}
+
+.home-main {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.home-dashboard {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+}
+
+.home-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  min-height: 120px;
+  padding: 16px;
+}
+
+.home-card__title {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.home-card__main {
+  font-size: 16px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.home-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.home-card__meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+.home-card__empty {
+  color: var(--muted);
+  margin: 0;
+}
+
+.home-card__signal {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.home-card__count {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.home-card__detail {
+  border-left: 2px solid var(--accent);
+  display: grid;
+  gap: 4px;
+  padding-left: 10px;
+}
+
+.home-card__detail p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.home-card__detail small {
+  color: var(--muted);
+}
+
+.home-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-card--context {
+  border-color: rgba(88, 193, 137, 0.34);
+}
+
+.home-card--next-action {
+  border-color: rgba(126, 183, 255, 0.34);
+}
+
+.home-card--resume {
+  border-color: rgba(240, 195, 107, 0.34);
+}
+
+.home-card--watch {
+  border-color: rgba(255, 143, 143, 0.34);
+}
+
+.home-card--resources {
+  border-color: rgba(126, 183, 255, 0.24);
+}
+
+.home-card--modes {
+  border-color: rgba(88, 193, 137, 0.24);
+}
+
+.home-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mode-chip {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 12px;
+  min-height: 32px;
+  padding: 4px 10px;
+}
+
+/* ───────────────────────── Chat dock compact ───────────────────────── */
+
+.chat-dock {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-column: 1 / -1;
+  padding: 12px 14px;
+}
+
+.chat-dock__log {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-height: 28px;
+  overflow-x: auto;
+}
+
+.chat-dock__placeholder {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.chat-dock__turn {
+  align-items: flex-start;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.chat-dock__turn strong {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.chat-dock__turn span {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 360px;
+  overflow-wrap: anywhere;
+}
+
+.chat-dock__turn--user span {
+  color: var(--blue);
+}
+
+.chat-dock__turn--assistant span {
+  color: var(--accent-strong);
+}
+
+.chat-dock__form {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 1024px) {
+  .home-dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar__meta {
+    flex-wrap: wrap;
+  }
+
+  .home-workspace,
+  .home-dashboard,
+  .chat-dock__form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-main,
+  .home-workspace {
+    min-width: 0;
+  }
+
+  .mode-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chat-dock__log {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .chat-dock__turn {
+    display: grid;
+  }
+
+  .chat-dock__turn span {
+    max-width: none;
+  }
 }

@@ -101,7 +101,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : transforme les nombreuses briques déjà fonctionnelles en produit pilotable.
 - Risque : faible pour l'inventaire ; moyen si une refonte visuelle modifie les permissions ou les contrats.
 - Source de vérité concernée : canon UI + `FRONTEND_UI_DOCTRINE.md` + `apps/frontend`.
-- Statut : plan actif publié dans `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`; UI-001A fait localement avec extraction `App Shell` / `SituationPanel` / `ModeRail`.
+- Statut : UI-001A à UI-001D publiées ; UI-001E Home légère en PR #153 avant merge.
 - Validation requise : non pour audit/inventaire ; oui avant choix de direction visuelle ou nouveau shell natif.
 
 #### Prochaine vague UI sûre — UI-001B
@@ -123,15 +123,14 @@ Dernière mise à jour : 2026-06-28
 - Statut : fait localement et vérifié ; séparation de rendu uniquement, protocole WS inchangé.
 - Validation requise : non pour cette tranche ; oui si la sémantique ou la persistance des événements change.
 
-#### Prochaine vague UI candidate — UI-001D
+#### Vague UI-001E — Home légère
 
-- Tâche : rendre visible la provenance et le niveau de confiance des données dans une bande
-  `source truth`, sans inventer de nouveau contrat backend.
-- Impact : l'utilisateur comprend ce qui est canon, runtime, candidat ou incertain avant d'agir.
-- Risque : moyen si l'interface présente une inférence comme une preuve.
-- Source de vérité concernée : contrats runtime existants, doctrine UI et Dataviz, audit canon.
-- Statut : à auditer avant patch.
-- Validation requise : non pour audit ; oui si un nouveau champ backend devient nécessaire.
+- Tâche : remplacer la Home technique par un point de reprise léger fondé sur le contexte réel.
+- Impact : rend visibles les prochains gestes sans charger ni exposer les outils lourds.
+- Risque : faible ; présentation frontend uniquement.
+- Source de vérité concernée : loadout, checkpoint, inbox, ressources validées et CDC UI actif.
+- Statut : corrigé, vérifié localement et publié en branche `codex/ui-home-lightweight` via PR #153.
+- Validation requise : non pour cette tranche ; oui avant nouveau contrat backend ou génération d'assets.
 
 ### D12 R5 — Continuité runtime privée
 
