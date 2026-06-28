@@ -10,7 +10,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : rend MasterFlow composable sans ouvrir silencieusement provider, navigation ou déploiement.
 - Risque : faible ; contrats additifs et moteurs purs, testés.
 - Source de vérité concernée : runtime Git + registre des primitives externes.
-- Statut : implémenté localement ; publication GitHub à terminer.
+- Statut : publié sur GitHub `main` au commit `661f3fa`.
 - Validation requise : non pour cette tranche ; oui avant provider, application de thème ou déploiement live.
 
 ### SOURCE-TRUTH-001 — Git opérable + récolte de primitives externes

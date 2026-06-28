@@ -17,6 +17,9 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 104 fichiers de tests, 557 tests OK ; lint backend/frontend, build
 frontend et diff-check OK.
 
+Statut : publié sur GitHub `main` au commit `661f3fa` par intégration fast-forward
+directe ; aucune PR revendiquée, les accès API PR étant indisponibles.
+
 ## 2026-06-28 — UI-001D : chargement progressif des surfaces frontend
 
 - les surfaces lourdes frontend passent en chargement à la demande ;
