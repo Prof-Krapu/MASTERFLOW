@@ -4,6 +4,51 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — UI-001C : conversation métier séparée des messages système
+
+- le fil Chat n'affiche plus que les tours utilisateur/persona ;
+- les événements `system` existants sont projetés dans une surface compacte `État du chat` ;
+- aucun événement WebSocket, historique, endpoint, rôle ou permission modifié ;
+- le libellé de secours d'un tour assistant devient `Assistant`, jamais `Système` ;
+- smoke navigateur local :
+  - message utilisateur et réponse ProfKrapu visibles dans le fil ;
+  - zéro `.chat-turn--system` dans le fil ;
+  - desktop et viewport 390 px sans débordement horizontal.
+
+Statut : tranche locale vérifiée, non commitée et non poussée.
+
+## 2026-06-28 — UI-001B : Pilotage Control / Admin / Ops
+
+- surface locale `Pilotage` séparée des modes métier ;
+- `Contrôle` regroupe Owner Cockpit, Validation Inbox, Jobs, mémoire de coordination et Debug godmode ;
+- `Admin` conserve utilisateurs, invitations, routage LLM et coûts ;
+- `Ops` regroupe release, backup et incidents ;
+- aucun mode backend ajouté : le loadout local ne contenait pas `admin`, l'accès reste une surface
+  frontend distincte protégée par `canAdmin` ;
+- Validation Inbox teacher conservée dans Teaching ;
+- D08, D09, D10, Inventory, Teaching, Project et Chat restent hors de Pilotage ;
+- aucun endpoint, seed, rôle, permission ou contrat shared modifié.
+
+Vérifications : lint frontend OK, build frontend OK, lint backend OK, diff-check OK, smoke
+navigateur Control/Admin/Ops OK, 390 px sans overflow.
+
+Statut : tranche locale vérifiée, non commitée et non poussée.
+
+## 2026-06-28 — UI-001A : première extraction App Shell
+
+- environnement local UI vérifié : backend `http://localhost:8000`, frontend `http://localhost:5174` ;
+- extraction d'une première couche shell sans changement métier :
+  - `MasterFlowShell` pour le cadre général ;
+  - `SituationPanel` pour la projection de contexte courant ;
+  - `ModeRail` pour la navigation de modes ;
+- `App.tsx` conserve les handlers, appels API, permissions et comportements existants ;
+- aucun endpoint, seed, action registry, permission, provider, migration ou déploiement modifié ;
+- le plan UI actif consigne le checkpoint local et la prochaine direction ;
+- validations : `npm run lint` OK, `npm run build:frontend` OK, `git diff --check` OK.
+
+Statut : tranche locale prête à revue. Prochaine vague sûre : séparer visuellement `Control/Admin/Ops`
+du workspace métier sans réécrire les panneaux existants.
+
 ## 2026-06-28 — Correction frontière Factories : atelier Bureau, primitives Git
 
 - correction MALEX : les audits détaillés de Factories ne doivent pas vivre dans Git ;

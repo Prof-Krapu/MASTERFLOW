@@ -98,14 +98,13 @@ doit surtout comparer ces sources Git avec ses propres features/projets/PRs pour
 opportunités d'implémentation, les doublons et les écarts. Voir
 `PROTOCOLE_VINCENT_FEATURE_OPPORTUNITY_CHECK.md`.
 
-**Délégation à des agents assistants (tokens épuisés).** Quand Claude Code n'a plus de tokens pour
-des tâches de code **basiques**, il peut déposer des tâches bornées dans `INBOX_ASSISTANT.md`
-(protocole complet : `assistant.md`). Des LLM tiers (via opencode : `ollama/mistral-agent`,
-`zai-coding-plan/glm-4.6v`…) les traitent sur une branche `assistant/*`, lancent `npm test` +
-`npm run lint`, et répondent **signés**. Leur réponse `done` **n'est jamais une validation** :
-Claude/Vincent relisent et mergent la branche. Ne **jamais** déléguer ce qui touche `engines/*`,
-`middleware/auth.ts`, `seeds/*.json`, permissions/rôles, secrets, contrat `packages/shared` ou
-périmètre — ces tâches restent `blocked` et reviennent à Claude/Vincent.
+**Délégation Big Pickle / OpenCode.** Canal unique obligatoire :
+`.opencode/INBOX.md`. Codex y dépose au plus une tâche simple, bornée, consommatrice de lecture
+ou de répétition et facile à vérifier. Big Pickle ne cherche aucune tâche ailleurs, ne crée aucun
+fichier de communication et répond dans cette même inbox. Sans statut `ready_for_big_pickle`,
+il reste en pause. Sa réponse `done_unverified` n'est jamais une validation. Les décisions produit,
+le canon, l'architecture, les permissions, les secrets, les providers, les migrations, les seeds,
+les schémas, les contrats partagés, le Git distant et le live restent pilotés par Codex et MALEX.
 
 ## Stack & commandes
 

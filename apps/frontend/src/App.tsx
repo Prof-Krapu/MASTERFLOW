@@ -41,6 +41,9 @@ import {
 } from './api.ts';
 import {ActionAudit} from './action-audit.tsx';
 import {AdminConsole} from './admin-console.tsx';
+import {MasterFlowShell, ModeRail, SituationPanel} from './app-shell.tsx';
+import {ControlWorkspace} from './control-workspace.tsx';
+import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
 import {InventoryWorkspace} from './inventory-workspace.tsx';
 import {JobObservability} from './job-observability.tsx';
@@ -224,6 +227,7 @@ function App(): ReactElement {
   const [state, setState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [selectedMode, setSelectedMode] = useState<WorkModeId>('home');
+  const [pilotageOpen, setPilotageOpen] = useState(false);
   const [entryIntent, setEntryIntent] = useState<WorkModeId>('learning');
   const [entryDensity, setEntryDensity] = useState<EntryDensity>('medium');
   const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
@@ -293,6 +297,17 @@ function App(): ReactElement {
     if (!activePersonaId) return null;
     return visiblePersonas.find((persona) => persona.id === activePersonaId) ?? null;
   }, [activePersonaId, visiblePersonas]);
+
+  const conversationTurns = useMemo(
+    () => chatTurns.filter((turn) => turn.role !== 'system'),
+    [chatTurns],
+  );
+  const systemMessages = useMemo(
+    () => chatTurns
+      .filter((turn) => turn.role === 'system')
+      .map((turn) => ({id: turn.id, content: turn.content})),
+    [chatTurns],
+  );
 
   const situationStats = useMemo(() => [
     {label: 'Modes', value: availableModes.length.toString()},
@@ -400,6 +415,7 @@ function App(): ReactElement {
     setToken(null);
     setState('idle');
     setSelectedMode('home');
+    setPilotageOpen(false);
     setEntryIntent('learning');
     setEntryDensity('medium');
     setEntryPresence('guided');
@@ -489,6 +505,7 @@ function App(): ReactElement {
   }, [context, entryDensity, entryIntent, entryPresence, persistRoomInstance]);
 
   const handleModeSelect = useCallback((mode: WorkModeId): void => {
+    setPilotageOpen(false);
     setSelectedMode(mode);
     void persistRoomInstance(mode);
   }, [persistRoomInstance]);
@@ -932,18 +949,180 @@ function App(): ReactElement {
     };
   }, [auth, context, showEntryGate]);
 
-  return (
-    <main className="shell">
-      <section className="topbar" aria-label="Etat MasterFlow">
-        <div>
-          <p className="eyebrow">MasterFlow</p>
-          <h1>Home Room</h1>
+  const renderValidationInbox = (): ReactElement | null => {
+    if (!canValidate) return null;
+    return (
+      <article className="panel panel--wide validation-panel">
+        <div className="panel-header">
+          <h2>Validation</h2>
+          <span className="counter">{pendingActions.length}</span>
         </div>
-        <span className={`status status--${state}`}>
-          {state === 'ready' ? 'connecte' : state}
-        </span>
-      </section>
+        <div className={`validation-state validation-state--${validationRun.status}`} aria-live="polite">
+          <strong>{validationRun.status}</strong>
+          <span>{validationRun.message}</span>
+        </div>
+        <div className="validation-list">
+          {pendingActions.length > 0 ? (
+            pendingActions.slice(0, 5).map((item) => (
+              <article className="validation-item" key={item.item_id}>
+                <div className="validation-item__summary">
+                  <div className="validation-item__heading">
+                    <strong>{item.title}</strong>
+                    <span className={`validation-risk validation-risk--${item.risk_level}`}>{item.risk_level}</span>
+                  </div>
+                  <span>{item.summary}</span>
+                  <div className="validation-facts">
+                    <span><strong>Changement</strong>{item.proposed_action}</span>
+                    <span><strong>Impact</strong>{item.impact_summary}</span>
+                    <span><strong>Source</strong>{item.source_truth_state}</span>
+                    <span><strong>Validateur</strong>{item.required_validator}</span>
+                  </div>
+                  <div className="validation-blockers">
+                    <strong>Bloque</strong>
+                    <span>{item.blocked_actions.join(', ') || 'Aucun effet declare'}</span>
+                  </div>
+                  <small>
+                    Prochaine decision : {item.recommended_decision ?? item.decision_options[0] ?? 'demander precision'}
+                  </small>
+                </div>
+                <label className="validation-note">
+                  <span>Note de decision</span>
+                  <textarea
+                    onChange={(event) => setValidationNotes((current) => ({
+                      ...current,
+                      [item.item_id]: event.target.value,
+                    }))}
+                    rows={2}
+                    value={validationNotes[item.item_id] ?? ''}
+                  />
+                </label>
+                <div className="validation-actions">
+                  <button
+                    className="secondary"
+                    disabled={validationRun.status === 'deciding' || !item.decision_options.includes('reject')}
+                    onClick={() => void handleValidationDecision(item, 'reject', validationNotes[item.item_id])}
+                    type="button"
+                  >
+                    Rejeter
+                  </button>
+                  <button
+                    disabled={validationRun.status === 'deciding' || !item.decision_options.includes('approve')}
+                    onClick={() => void handleValidationDecision(item, 'approve', validationNotes[item.item_id])}
+                    type="button"
+                  >
+                    Approuver
+                  </button>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p className="muted compact">Aucune action en attente.</p>
+          )}
+        </div>
+      </article>
+    );
+  };
 
+  const renderRagPanel = (): ReactElement | null => {
+    if (!canAdmin) return null;
+    return (
+      <article className="panel panel--wide rag-panel">
+        <div className="panel-header">
+          <h2>Memoire coordination</h2>
+          <span className="counter">{ragSync.pack?.citations.length ?? 0}</span>
+        </div>
+        <div className={`rag-state rag-state--${ragSync.status}`} aria-live="polite">
+          <strong>{ragSync.status}</strong>
+          <span>{ragSync.message}</span>
+          {ragSync.pack?.pack_id ? <small>{ragSync.pack.pack_id}</small> : null}
+        </div>
+        <div className="rag-actions">
+          <button
+            className="secondary"
+            disabled={ragSync.status === 'syncing'}
+            onClick={() => void handleCoordinationSync()}
+            type="button"
+          >
+            Synchroniser
+          </button>
+          <form className="rag-form" onSubmit={handleCoordinationQuery}>
+            <input
+              aria-label="Question RAG coordination"
+              onChange={(event) => setRagQuestion(event.target.value)}
+              placeholder="Chercher dans SUIVI / inbox / sync thread"
+              type="search"
+              value={ragQuestion}
+            />
+            <button disabled={ragSync.status === 'querying' || ragQuestion.trim().length < 2} type="submit">
+              Chercher
+            </button>
+          </form>
+        </div>
+        {ragSync.pack?.citations.length ? (
+          <div className="rag-citations">
+            {ragSync.pack.citations.map((citation) => (
+              <article className="rag-citation" key={citation.chunk_id}>
+                <div>
+                  <strong>{citation.title}</strong>
+                  <span>{citation.source_uri}</span>
+                </div>
+                <p>{citation.excerpt}</p>
+                <small>{Math.round(citation.score * 100)}% / {citation.trust_status}</small>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="muted compact">Synchronise puis cherche un point ouvert, une decision ou un blocage.</p>
+        )}
+      </article>
+    );
+  };
+
+  const renderDebugPanel = (): ReactElement | null => {
+    if (!isGodmode) return null;
+    return (
+      <article className="panel panel--wide debug-panel">
+        <div className="panel-header">
+          <h2>Debug</h2>
+          <span className="counter">{actionSummary}</span>
+        </div>
+        <div className="locked-grid">
+          {lockedCapabilities.length > 0 ? (
+            lockedCapabilities.map((capability) => (
+              <article className="locked-item" key={capability.capability_id}>
+                <div>
+                  <strong>{capability.capability_id}</strong>
+                  <span>{capability.reason}</span>
+                </div>
+                <small>verrouille</small>
+              </article>
+            ))
+          ) : null}
+        </div>
+        <dl className="facts">
+          <div>
+            <dt>Live</dt>
+            <dd>{actionBuckets.live.length}</dd>
+          </div>
+          <div>
+            <dt>Future</dt>
+            <dd>{actionBuckets.future.length}</dd>
+          </div>
+          <div>
+            <dt>Hors scope</dt>
+            <dd>{actionBuckets.out_of_scope.length}</dd>
+          </div>
+          <div>
+            <dt>API</dt>
+            <dd>/api/v1</dd>
+          </div>
+        </dl>
+      </article>
+    );
+  };
+
+  return (
+    <MasterFlowShell state={state}>
       {!auth ? (
         <form className="panel login" onSubmit={handleSubmit}>
           <label>
@@ -1047,94 +1226,63 @@ function App(): ReactElement {
         </form>
       ) : (
         <section className="workspace" aria-label="Contexte courant">
-          <article className="panel situation-panel">
-            {context ? (
-              <>
-                <div className="room-title">
-                  <div>
-                    <p className="eyebrow">{roomMode} / {activeMode.signal}</p>
-                    <h2>{context.room.name}</h2>
-                  </div>
-                  <button className="secondary" onClick={handleLogout} type="button">
-                    Deconnexion
-                  </button>
-                </div>
-                <div className="room-summary">
-                  <span>{context.user.display_name}</span>
-                  <span>{activePersona?.name ?? 'persona simple'}</span>
-                  <span>{context.room_instance.active_surface}</span>
-                  <span>{context.room_instance.cognitive_density}</span>
-                </div>
-                <section className="context-card" aria-label="Contexte charge">
-                  <div>
-                    <p className="eyebrow">Tu es ici</p>
-                    <strong>
-                      {typeof context.room.context?.['purpose'] === 'string'
-                        ? context.room.context['purpose']
-                        : `${context.room.name} organise le travail utile maintenant.`}
-                    </strong>
-                  </div>
-                  <div className="context-card__meta">
-                    <span>{context.runtime_context.trace.granted_tier}</span>
-                    <span>{context.runtime_context.authoritative_facts.length} sources fiables</span>
-                    <span>{context.user_runtime_loadout.available_action_ids.length} actions</span>
-                  </div>
-                  {latestCheckpoint ? (
-                    <div className="context-resume">
-                      <strong>Reprise</strong>
-                      <span>{latestCheckpoint.summary}</span>
-                      {latestCheckpoint.next_recommended_action ? (
-                        <small>Ensuite : {latestCheckpoint.next_recommended_action}</small>
-                      ) : null}
-                    </div>
-                  ) : null}
-                  {context.runtime_context.trace.uncertainty.length > 0 ? (
-                    <p className="context-warning">
-                      Contexte incomplet : {context.runtime_context.trace.uncertainty.join(', ')}
-                    </p>
-                  ) : null}
-                </section>
-                <div className={`room-sync room-sync--${roomSync.status}`} aria-live="polite">
-                  <strong>{roomSync.status}</strong>
-                  <span>{roomSync.message}</span>
-                </div>
-                <div className="situation-grid" aria-label="Situation">
-                  {situationStats.map((stat) => (
-                    <div className="situation-stat" key={stat.label}>
-                      <span>{stat.label}</span>
-                      <strong>{stat.value}</strong>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="muted">Contexte en attente.</p>
-            )}
-            {error ? (
-              <div className="notice notice--error">
-                <strong>Backend indisponible</strong>
-                <span>{error}</span>
-                <button className="secondary" onClick={() => auth ? void loadContext(auth.token) : undefined} type="button">
-                  Reessayer
-                </button>
-              </div>
-            ) : null}
-          </article>
+          <SituationPanel
+            activeModeSignal={activeMode.signal}
+            activePersonaName={activePersona?.name ?? null}
+            auth={auth}
+            context={context}
+            error={error}
+            latestCheckpoint={latestCheckpoint}
+            onLogout={handleLogout}
+            onReloadContext={(token) => void loadContext(token)}
+            roomMode={roomMode}
+            roomSync={roomSync}
+            situationStats={situationStats}
+          />
 
-          <nav className="panel mode-rail" aria-label="Modes MasterFlow">
-            {availableModes.map((mode) => (
-              <button
-                className={`mode-button${activeMode.id === mode.id ? ' mode-button--active' : ''}`}
-                key={mode.id}
-                onClick={() => handleModeSelect(mode.id)}
-                type="button"
-              >
-                <strong>{mode.label}</strong>
-                <span>{mode.signal}</span>
-              </button>
-            ))}
-          </nav>
+          <ModeRail
+            activeModeId={activeMode.id}
+            availableModes={availableModes}
+            onModeSelect={handleModeSelect}
+          />
 
+          {canAdmin ? (
+            <button
+              aria-pressed={pilotageOpen}
+              className={`pilotage-switch${pilotageOpen ? ' pilotage-switch--active' : ''}`}
+              onClick={() => setPilotageOpen((current) => !current)}
+              type="button"
+            >
+              {pilotageOpen ? 'Fermer le pilotage' : 'Ouvrir le pilotage'}
+            </button>
+          ) : null}
+
+          {pilotageOpen && canAdmin && auth && context ? (
+            <ControlWorkspace
+              admin={<>
+                <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
+              </>}
+              control={<>
+                <OwnerCockpit
+                  activeMode={activeMode.id}
+                  contextTier={context.runtime_context.trace.granted_tier}
+                  roomId={context.room.id}
+                  token={auth.token}
+                />
+                {renderValidationInbox()}
+                {renderRagPanel()}
+                <JobObservability token={auth.token} />
+                {renderDebugPanel()}
+              </>}
+              onClose={() => setPilotageOpen(false)}
+              ops={<>
+                <ReleaseReceiptPanel token={auth.token} />
+                <BackupReceiptPanel token={auth.token} />
+                <IncidentRecordPanel token={auth.token} />
+              </>}
+            />
+          ) : (
+          <>
           <article className="panel panel--wide main-widget">
             <div className="panel-header">
               <h2>{activeMode.label}</h2>
@@ -1403,128 +1551,7 @@ function App(): ReactElement {
             </article>
           ) : null}
 
-          {canValidate ? (
-            <article className="panel panel--wide validation-panel">
-              <div className="panel-header">
-                <h2>Validation</h2>
-                <span className="counter">{pendingActions.length}</span>
-              </div>
-              <div className={`validation-state validation-state--${validationRun.status}`} aria-live="polite">
-                <strong>{validationRun.status}</strong>
-                <span>{validationRun.message}</span>
-              </div>
-              <div className="validation-list">
-                {pendingActions.length > 0 ? (
-                  pendingActions.slice(0, 5).map((item) => (
-                    <article className="validation-item" key={item.item_id}>
-                      <div className="validation-item__summary">
-                        <div className="validation-item__heading">
-                          <strong>{item.title}</strong>
-                          <span className={`validation-risk validation-risk--${item.risk_level}`}>{item.risk_level}</span>
-                        </div>
-                        <span>{item.summary}</span>
-                        <div className="validation-facts">
-                          <span><strong>Changement</strong>{item.proposed_action}</span>
-                          <span><strong>Impact</strong>{item.impact_summary}</span>
-                          <span><strong>Source</strong>{item.source_truth_state}</span>
-                          <span><strong>Validateur</strong>{item.required_validator}</span>
-                        </div>
-                        <div className="validation-blockers">
-                          <strong>Bloque</strong>
-                          <span>{item.blocked_actions.join(', ') || 'Aucun effet declare'}</span>
-                        </div>
-                        <small>
-                          Prochaine decision : {item.recommended_decision ?? item.decision_options[0] ?? 'demander precision'}
-                        </small>
-                      </div>
-                      <label className="validation-note">
-                        <span>Note de decision</span>
-                        <textarea
-                          onChange={(event) => setValidationNotes((current) => ({
-                            ...current,
-                            [item.item_id]: event.target.value,
-                          }))}
-                          rows={2}
-                          value={validationNotes[item.item_id] ?? ''}
-                        />
-                      </label>
-                      <div className="validation-actions">
-                        <button
-                          className="secondary"
-                          disabled={validationRun.status === 'deciding' || !item.decision_options.includes('reject')}
-                          onClick={() => void handleValidationDecision(item, 'reject', validationNotes[item.item_id])}
-                          type="button"
-                        >
-                          Rejeter
-                        </button>
-                        <button
-                          disabled={validationRun.status === 'deciding' || !item.decision_options.includes('approve')}
-                          onClick={() => void handleValidationDecision(item, 'approve', validationNotes[item.item_id])}
-                          type="button"
-                        >
-                          Approuver
-                        </button>
-                      </div>
-                    </article>
-                  ))
-                ) : (
-                  <p className="muted compact">Aucune action en attente.</p>
-                )}
-              </div>
-            </article>
-          ) : null}
-
-          {canAdmin ? (
-            <article className="panel panel--wide rag-panel">
-              <div className="panel-header">
-                <h2>Memoire coordination</h2>
-                <span className="counter">{ragSync.pack?.citations.length ?? 0}</span>
-              </div>
-              <div className={`rag-state rag-state--${ragSync.status}`} aria-live="polite">
-                <strong>{ragSync.status}</strong>
-                <span>{ragSync.message}</span>
-                {ragSync.pack?.pack_id ? <small>{ragSync.pack.pack_id}</small> : null}
-              </div>
-              <div className="rag-actions">
-                <button
-                  className="secondary"
-                  disabled={ragSync.status === 'syncing'}
-                  onClick={() => void handleCoordinationSync()}
-                  type="button"
-                >
-                  Synchroniser
-                </button>
-                <form className="rag-form" onSubmit={handleCoordinationQuery}>
-                  <input
-                    aria-label="Question RAG coordination"
-                    onChange={(event) => setRagQuestion(event.target.value)}
-                    placeholder="Chercher dans SUIVI / inbox / sync thread"
-                    type="search"
-                    value={ragQuestion}
-                  />
-                  <button disabled={ragSync.status === 'querying' || ragQuestion.trim().length < 2} type="submit">
-                    Chercher
-                  </button>
-                </form>
-              </div>
-              {ragSync.pack?.citations.length ? (
-                <div className="rag-citations">
-                  {ragSync.pack.citations.map((citation) => (
-                    <article className="rag-citation" key={citation.chunk_id}>
-                      <div>
-                        <strong>{citation.title}</strong>
-                        <span>{citation.source_uri}</span>
-                      </div>
-                      <p>{citation.excerpt}</p>
-                      <small>{Math.round(citation.score * 100)}% / {citation.trust_status}</small>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <p className="muted compact">Synchronise puis cherche un point ouvert, une decision ou un blocage.</p>
-              )}
-            </article>
-          ) : null}
+          {activeMode.id === 'teaching' && !canAdmin ? renderValidationInbox() : null}
 
           <article className="panel panel--wide chat-panel">
             <div className="panel-header">
@@ -1532,10 +1559,10 @@ function App(): ReactElement {
               <span className={`ws-badge ws-badge--${wsState}`}>{wsState}</span>
             </div>
             <div className="chat-log" aria-live="polite">
-              {chatTurns.length > 0 ? (
-                chatTurns.map((turn) => (
+              {conversationTurns.length > 0 ? (
+                conversationTurns.map((turn) => (
                   <article className={`chat-turn chat-turn--${turn.role}`} key={turn.id}>
-                    <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Systeme')}</strong>
+                    <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}</strong>
                     <p>{turn.content || '...'}</p>
                   </article>
                 ))
@@ -1558,70 +1585,16 @@ function App(): ReactElement {
             </form>
           </article>
 
-          {isGodmode ? (
-            <article className="panel panel--wide debug-panel">
-              <div className="panel-header">
-                <h2>Debug</h2>
-                <span className="counter">{actionSummary}</span>
-              </div>
-              <div className="locked-grid">
-                {lockedCapabilities.length > 0 ? (
-                  lockedCapabilities.map((capability) => (
-                    <article className="locked-item" key={capability.capability_id}>
-                      <div>
-                        <strong>{capability.capability_id}</strong>
-                        <span>{capability.reason}</span>
-                      </div>
-                      <small>verrouille</small>
-                    </article>
-                  ))
-                ) : null}
-              </div>
-              <dl className="facts">
-                <div>
-                  <dt>Live</dt>
-                  <dd>{actionBuckets.live.length}</dd>
-                </div>
-                <div>
-                  <dt>Future</dt>
-                  <dd>{actionBuckets.future.length}</dd>
-                </div>
-                <div>
-                  <dt>Hors scope</dt>
-                  <dd>{actionBuckets.out_of_scope.length}</dd>
-                </div>
-                <div>
-                  <dt>API</dt>
-                  <dd>/api/v1</dd>
-                </div>
-              </dl>
-            </article>
-          ) : null}
-
-          {canAdmin && context && auth ? (
-            <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
-          ) : null}
-
-          {canAdmin && auth && context ? (
-            <OwnerCockpit
-              activeMode={activeMode.id}
-              contextTier={context.runtime_context.trace.granted_tier}
-              roomId={context.room.id}
-              token={auth.token}
-            />
-          ) : null}
+          <SystemMessages messages={systemMessages} />
 
           {canAdmin && auth ? <VisualManifestPanel token={auth.token} /> : null}
           {canAdmin && auth ? <StoryWorkbenchPanel token={auth.token} /> : null}
           {canAdmin && auth ? <PrivateQuotePanel token={auth.token} /> : null}
-          {canAdmin && auth ? <ReleaseReceiptPanel token={auth.token} /> : null}
-          {canAdmin && auth ? <BackupReceiptPanel token={auth.token} /> : null}
-          {canAdmin && auth ? <IncidentRecordPanel token={auth.token} /> : null}
-
-          {canAdmin && auth ? <JobObservability token={auth.token} /> : null}
+          </>
+          )}
         </section>
       )}
-    </main>
+    </MasterFlowShell>
   );
 }
 
