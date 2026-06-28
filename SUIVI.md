@@ -4,6 +4,27 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — KNOWLEDGE-FABRIC-001 : cartes mémoire reliées et graphes permissionnés
+
+- réutilisation de `memory_cards` comme unité atomique, sans nouveau système de notes parallèle ;
+- relations candidates typées en familles sémantiques, provenance et opérationnelles ;
+- justification, source, confiance et validation humaine obligatoires avant activation d'un lien ;
+- consultation des cartes et liens entrants/sortants, plus diagnostic de santé mémoire ;
+- détection des cartes actives orphelines, contradictions, doublons et liens obsolètes ;
+- refus des secrets, auto-liens et relations entre scopes incompatibles ;
+- accès au graphe pédagogique verrouillé par owner et permissions projet.
+
+Sources d'arbitrage : contrat legacy `MASTERFLOW_GRAPH_OS_AND_DEPLOYABLE_KNOWLEDGE_CONTRACT`,
+archive Luhmann, documentation Obsidian et recommandations W3C SKOS / PROV-O / SHACL.
+
+Vérifications : tests ciblés 52/52, backend complet 562/562, lint backend/frontend, build frontend,
+diff-check et smoke HTTP local `GET /api/v1/memory/health` OK.
+
+Hors périmètre : aucune canonisation automatique, nouvelle UI, donnée utilisateur, migration
+destructive, provider, embedding ou activation RAG.
+
+Statut : branche `codex/knowledge-fabric-v1`, publication ouverte via PR #154.
+
 ## 2026-06-28 — UI-001E : Home légère et point de reprise
 
 - reprise et correction de la proposition Home OpenCode avant publication ;
