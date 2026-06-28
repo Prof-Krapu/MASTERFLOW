@@ -36,7 +36,7 @@ interface RawEvent {
 const STREAMS = DomainEventStreamSchema.options;
 const OUTCOMES = DomainEventOutcomeSchema.options;
 
-function assertProjectAccess(actor: AuthUser, projectId: string | undefined): void {
+export function assertExperienceScopeAccess(actor: AuthUser, projectId: string | undefined): void {
   if (!projectId) return;
   const row = getDb()
     .prepare(
@@ -242,7 +242,7 @@ export function listExperienceEvents(
   input: ExperienceTimelineQuery = {},
 ): DomainEventEnvelope[] {
   const query = ExperienceTimelineQuerySchema.parse(input);
-  assertProjectAccess(actor, query.project_id);
+  assertExperienceScopeAccess(actor, query.project_id);
   const selected = new Set<DomainEventStream>(query.streams ?? STREAMS);
   const events = [
     ...(selected.has('audit') ? auditEvents(actor, query.project_id) : []),

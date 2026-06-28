@@ -14,9 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-314 — EXPERIENCE-FABRIC-001 : Event Spine
+## TASK-315 — EXPERIENCE-FABRIC-002 : Precedent Engine
 target: codex
 status: done
+frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
+
+### scope
+- Retrouver des cas comparables depuis mémoire, checkpoints, décisions et timeline.
+- Toujours demander adaptation + validation humaine avant réutilisation.
+- Ne créer ni table de précédents, ni embeddings, ni exécution automatique en V1.
+
+### verification
+- test ciblé Experience Fabric : 8/8.
+- backend complet 570/570, lint backend/frontend, build frontend et diff-check OK.
+
+### updates
+> 2026-06-28 codex → done local. Vague 2 prête à publication.
+
+---
+
+## TASK-314 — EXPERIENCE-FABRIC-001 : Event Spine
+target: codex
+status: verified
 frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### scope
@@ -29,7 +48,7 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 - lint backend/frontend et diff-check : OK.
 
 ### updates
-> 2026-06-28 codex → done local. Vague 1 prête à publication.
+> 2026-06-28 codex → verified. PR #155 mergée sur GitHub main (`63381f5`).
 
 ---
 

@@ -3188,9 +3188,66 @@ export const ExperienceStateSnapshotSchema = z.object({
 });
 export type ExperienceStateSnapshot = z.infer<typeof ExperienceStateSnapshotSchema>;
 
+export const PrecedentCaseSourceSchema = z.enum([
+  'memory_card',
+  'room_checkpoint',
+  'decision_trace',
+  'domain_event',
+]);
+export type PrecedentCaseSource = z.infer<typeof PrecedentCaseSourceSchema>;
+
+export const PrecedentCaseStatusSchema = z.enum([
+  'candidate',
+  'usable',
+  'stale',
+  'rejected',
+]);
+export type PrecedentCaseStatus = z.infer<typeof PrecedentCaseStatusSchema>;
+
+export const PrecedentCaseSchema = z.object({
+  case_id: z.string().min(1),
+  source_kind: PrecedentCaseSourceSchema,
+  scope: z.enum(['user', 'project']),
+  scope_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  title: z.string().min(1).max(240),
+  context_summary: z.string().min(1).max(1000),
+  decision_summary: z.string().min(1).max(1000),
+  outcome_summary: z.string().min(1).max(1000),
+  lesson: z.string().min(1).max(1000),
+  tags: z.array(z.string().min(1).max(80)).max(12),
+  confidence: z.enum(['low', 'medium', 'high', 'validated']),
+  status: PrecedentCaseStatusSchema,
+  source_refs: z.array(z.string().min(1)).min(1).max(20),
+  event_refs: z.array(z.string().min(1)).max(20),
+  requires_human_validation: z.literal(true),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type PrecedentCase = z.infer<typeof PrecedentCaseSchema>;
+
+export const PrecedentSearchQuerySchema = z.object({
+  project_id: z.string().min(1).optional(),
+  q: z.string().min(1).max(240).optional(),
+  tags: z.array(z.string().min(1).max(80)).max(12).optional(),
+  source_kinds: z.array(PrecedentCaseSourceSchema).min(1).optional(),
+  include_candidates: z.boolean().default(false),
+  limit: z.number().int().min(1).max(50).default(20),
+});
+export type PrecedentSearchQuery = z.input<typeof PrecedentSearchQuerySchema>;
+
+export const PrecedentSearchResultSchema = z.object({
+  case: PrecedentCaseSchema,
+  relevance_score: z.number().min(0).max(1),
+  match_reasons: z.array(z.string().min(1).max(240)).min(1).max(6),
+  adaptation_note: z.string().min(1).max(500),
+});
+export type PrecedentSearchResult = z.infer<typeof PrecedentSearchResultSchema>;
+
 export const EXPERIENCE_FABRIC_API = {
   timeline: '/api/v1/experience/events',
   snapshot: '/api/v1/experience/snapshot',
+  precedents: '/api/v1/experience/precedents',
 } as const;
 
 export const DecisionTraceOptionSchema = z.object({
