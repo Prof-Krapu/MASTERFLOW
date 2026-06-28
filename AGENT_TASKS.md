@@ -14,6 +14,25 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-317 — EXPERIENCE-FABRIC-004 : Storylet Engine
+target: codex
+status: done
+frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
+
+### scope
+- Évaluer des storylets candidates depuis Narrative Canon Graph, Precedent Engine et Event Spine.
+- Garder la politique `suggest_only`.
+- Ne pas exécuter, planifier, canoniser, générer ou changer de mode automatiquement.
+
+### verification
+- test ciblé Storylet Engine : 4/4.
+- backend complet 579/579, lint backend/frontend, build frontend et diff-check OK.
+
+### updates
+> 2026-06-28 codex → done local. Vague 4 prête à publication.
+
+---
+
 ## TASK-316 — EXPERIENCE-FABRIC-003 : Narrative Canon Graph
 target: codex
 status: done

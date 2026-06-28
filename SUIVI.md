@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — EXPERIENCE-FABRIC-004 : Storylet Engine
+
+- contrats `StoryletDefinition`, `StoryletInstance` et `StoryletEvaluation` ;
+- évaluateur read-only depuis `NarrativeCanonGraph`, `PrecedentCase` et `DomainEventEnvelope` ;
+- endpoint `GET /experience/storylets` ;
+- storylets narratives, précédents et notifications blockers en V1 ;
+- politique d'exécution stricte `suggest_only` : aucune action, job, canonisation ou changement
+  de mode silencieux.
+
+Vérifications : 4/4 ciblés Storylet Engine, backend complet 579/579, lint backend/frontend,
+build frontend et diff-check.
+
+Statut : vague 4 prête à publication atomique.
+
 ## 2026-06-28 — EXPERIENCE-FABRIC-003 : Narrative Canon Graph
 
 - contrats `NarrativeFact`, `NarrativePresentation`, `CharacterKnowledge`, `CharacterGoal`,

@@ -3,6 +3,7 @@ import {Router, type Request, type Response} from 'express';
 import {
   ExperienceTimelineQuerySchema,
   PrecedentSearchQuerySchema,
+  StoryletEvaluationQuerySchema,
 } from '@masterflow/shared';
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
@@ -14,6 +15,7 @@ import {
   getPrecedentCase,
   searchPrecedentCases,
 } from '../services/precedent_engine.ts';
+import {evaluateStorylets} from '../services/storylet_engine.ts';
 
 function actor(req: Request): AuthUser {
   if (!req.user) throw new Error('unauthorized');
@@ -46,6 +48,18 @@ function precedentQuery(req: Request) {
     tags,
     source_kinds: sourceKinds,
     include_candidates: req.query.include_candidates === 'true',
+    limit: typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined,
+  });
+}
+
+function storyletQuery(req: Request) {
+  const domains = typeof req.query.domains === 'string'
+    ? req.query.domains.split(',').filter(Boolean)
+    : undefined;
+  return StoryletEvaluationQuerySchema.safeParse({
+    project_id: req.query.project_id,
+    workbench_id: req.query.workbench_id,
+    domains,
     limit: typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined,
   });
 }
@@ -106,6 +120,19 @@ export function createExperienceFabricRouter(): Router {
     const projectId = typeof req.query.project_id === 'string' ? req.query.project_id : undefined;
     try {
       res.json(getPrecedentCase(actor(req), req.params.caseId, projectId));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/storylets', (req, res): void => {
+    const parsed = storyletQuery(req);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(evaluateStorylets(actor(req), parsed.data));
     } catch (error) {
       fail(res, error);
     }

@@ -2380,6 +2380,62 @@ export const NarrativeCanonGraphSchema = z.object({
 });
 export type NarrativeCanonGraph = z.infer<typeof NarrativeCanonGraphSchema>;
 
+export const StoryletDomainSchema = z.enum([
+  'onboarding',
+  'narrative',
+  'precedent',
+  'visual',
+  'companion',
+  'teaching',
+  'bridge',
+  'notification',
+]);
+export type StoryletDomain = z.infer<typeof StoryletDomainSchema>;
+
+export const StoryletDefinitionSchema = z.object({
+  storylet_id: z.string().min(1),
+  domain: StoryletDomainSchema,
+  title: z.string().min(1).max(240),
+  description: z.string().min(1).max(1000),
+  appearance_conditions: z.array(z.string().min(1).max(240)).min(1).max(12),
+  proposed_action: z.string().min(1).max(500),
+  expected_effects: z.array(z.string().min(1).max(240)).max(12),
+  priority: z.number().min(0).max(1),
+  validation_required: z.boolean(),
+  scope_ref: z.string().min(1),
+  permission_ref: z.string().min(1).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(20),
+});
+export type StoryletDefinition = z.infer<typeof StoryletDefinitionSchema>;
+
+export const StoryletInstanceSchema = z.object({
+  instance_id: z.string().min(1),
+  definition: StoryletDefinitionSchema,
+  readiness: z.enum(['available', 'pending_validation', 'blocked', 'expired']),
+  reason: z.string().min(1).max(500),
+  context_refs: z.array(z.string().min(1)).max(20),
+  expires_at: z.number().int().nonnegative().nullable(),
+});
+export type StoryletInstance = z.infer<typeof StoryletInstanceSchema>;
+
+export const StoryletEvaluationQuerySchema = z.object({
+  project_id: z.string().min(1).optional(),
+  workbench_id: z.string().min(1).optional(),
+  domains: z.array(StoryletDomainSchema).min(1).optional(),
+  limit: z.number().int().min(1).max(50).default(20),
+});
+export type StoryletEvaluationQuery = z.input<typeof StoryletEvaluationQuerySchema>;
+
+export const StoryletEvaluationSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  scope_refs: z.array(z.string().min(1)).min(1),
+  instances: z.array(StoryletInstanceSchema),
+  blocked_count: z.number().int().nonnegative(),
+  validation_required_count: z.number().int().nonnegative(),
+  execution_policy: z.literal('suggest_only'),
+});
+export type StoryletEvaluation = z.infer<typeof StoryletEvaluationSchema>;
+
 export const NARRATIVE_RUNTIME_API = {
   nodes: {
     list: '/api/v1/narrative/nodes',
@@ -3334,6 +3390,7 @@ export const EXPERIENCE_FABRIC_API = {
   timeline: '/api/v1/experience/events',
   snapshot: '/api/v1/experience/snapshot',
   precedents: '/api/v1/experience/precedents',
+  storylets: '/api/v1/experience/storylets',
 } as const;
 
 export const DecisionTraceOptionSchema = z.object({
