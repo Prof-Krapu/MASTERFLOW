@@ -4,13 +4,22 @@ Dernière mise à jour : 2026-06-28
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-002 — Precedent Engine
+
+- Tâche : retrouver des cas comparables depuis mémoire, checkpoints, décisions et timeline.
+- Impact : MasterFlow peut proposer des précédents sourcés au lieu de repartir de zéro.
+- Risque : faible ; lecture seule, aucune réutilisation automatique.
+- Source de vérité concernée : runtime Git.
+- Statut : prêt à publication atomique.
+- Validation requise : non pour cette tranche ; oui avant rétention automatique, embeddings ou UI prescriptive.
+
 ### EXPERIENCE-FABRIC-001 — Event Spine
 
 - Tâche : projeter les événements existants dans une chronologie explicable et permissionnée.
 - Impact : socle partagé pour précédents, narration et orchestration.
 - Risque : faible ; lecture seule, aucune action ou canonisation.
 - Source de vérité concernée : runtime Git.
-- Statut : vague 1 prête à publication.
+- Statut : publié via PR #155 (`63381f5`).
 - Validation requise : non, GO global MALEX reçu.
 
 ### EXTERNAL-FOUNDATIONS-001 — Absorption clean-room

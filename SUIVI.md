@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — EXPERIENCE-FABRIC-002 : Precedent Engine
+
+- projection read-only des précédents depuis `memory_cards`, `room_checkpoints`,
+  décisions de checkpoint et timeline `DomainEventEnvelope` ;
+- contrat `PrecedentCase` et recherche scorée avec raisons de match et note d'adaptation ;
+- endpoint `GET /experience/precedents` et détail `GET /experience/precedents/:caseId` ;
+- les cas candidats restent masqués sauf demande explicite et chaque cas porte
+  `requires_human_validation: true` ;
+- aucun embedding, table de précédents, exécution automatique, canonisation ou UI nouvelle.
+
+Vérifications : 8/8 ciblés Experience Fabric, backend complet 570/570, lint backend/frontend,
+build frontend et diff-check.
+
+Statut : vague 2 prête à publication atomique.
+
+## 2026-06-28 — EXPERIENCE-FABRIC-001 : Event Spine publiée
+
+PR #155 mergée sur GitHub `main` (`63381f5`) : timeline, snapshot et preuve de provenance
+servent désormais de socle à la vague Precedent Engine.
+
 ## 2026-06-28 — EXPERIENCE-FABRIC-001 : Event Spine permissionnée
 
 - contrat `DomainEventEnvelope` commun aux événements audit, workflow, narration, jobs et progression ;
@@ -11,9 +31,9 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - payloads bruts exclus et projets privés isolés, y compris face à un godmode extérieur ;
 - aucun event store parallèle, replay actif, action, provider ou canonisation.
 
-Vérifications : 4 tests ciblés, lint backend/frontend et diff-check.
+Vérifications : 4 tests ciblés, lint backend/frontend, build frontend et diff-check.
 
-Statut : vague 1 prête à publication atomique.
+Statut : publié via PR #155.
 
 ## 2026-06-28 — KNOWLEDGE-FABRIC-001 : cartes mémoire reliées et graphes permissionnés
 
