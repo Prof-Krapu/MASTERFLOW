@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — EXPERIENCE-FABRIC-003 : Narrative Canon Graph
+
+- contrats `NarrativeFact`, `NarrativePresentation`, `CharacterKnowledge`, `CharacterGoal`,
+  `SetupPayoff` et `NarrativeCanonGraph` ;
+- projection read-only depuis `story_nodes`, `narrative_events` et `story_characters` ;
+- séparation nette entre faits narratifs et présentation `reader`, `workshop`, `full_spoilers`
+  ou `export` ;
+- mode reader sans spoiler : les faits critiques restent dans le graph mais sortent de la
+  présentation visible ;
+- endpoint `GET /narrative/workbench/:id/canon-graph` ;
+- aucun delta canon, storylet, génération visuelle, table nouvelle ou publication externe.
+
+Vérifications : 5/5 ciblés Narrative Canon Graph, backend complet 575/575, lint backend/frontend,
+build frontend et diff-check.
+
+Statut : vague 3 prête à publication atomique.
+
 ## 2026-06-28 — EXPERIENCE-FABRIC-002 : Precedent Engine
 
 - projection read-only des précédents depuis `memory_cards`, `room_checkpoints`,

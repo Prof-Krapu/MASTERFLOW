@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-28 | Experience Fabric Narrative Canon Graph | Séparer vérité narrative et présentation sans modifier le canon existant. | shared, service, router, tests, contrat, pilotage | local vérifié | GO global MALEX | 5/5 ciblés, backend 575/575, lint back/front, build frontend, diff-check ; publication à faire. |
 | 2026-06-28 | Experience Fabric Precedent Engine | Retrouver des situations comparables sans appliquer automatiquement les anciennes solutions. | shared, service, router, tests, contrat, pilotage | local vérifié | GO global MALEX | 8/8 ciblés, backend 570/570, lint back/front, build frontend, diff-check ; publication à faire. |
 | 2026-06-28 | Merge PR #155 — Experience Fabric Event Spine | Publier la timeline/snapshot explicable comme socle des précédents et storylets. | shared, service, router, tests, contrat | déployé sur `main` GitHub | GO global MALEX | GitHub `main` = `63381f5`; 566/566, lint back/front, build frontend, diff-check ; aucune action/provider/canonisation. |
 | 2026-06-27 | Plan interface web / desktop / mobile | Consolider les surfaces existantes dans un produit unique web-first, PWA puis Tauri. | doctrine, plan UI, queue, suivi | local docs vérifiés | GO MALEX | UI-001 ready ; aucun code, endpoint, permission ou live modifié. |

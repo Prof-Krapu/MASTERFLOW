@@ -14,6 +14,25 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-316 — EXPERIENCE-FABRIC-003 : Narrative Canon Graph
+target: codex
+status: done
+frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
+
+### scope
+- Séparer faits narratifs et présentation sans spoiler.
+- Projeter personnages, connaissance, objectifs et setup/payoff.
+- Ne pas créer de delta canon, storylet, génération image ou UI dédiée.
+
+### verification
+- test ciblé Narrative Canon Graph : 5/5.
+- backend complet 575/575, lint backend/frontend, build frontend et diff-check OK.
+
+### updates
+> 2026-06-28 codex → done local. Vague 3 prête à publication.
+
+---
+
 ## TASK-315 — EXPERIENCE-FABRIC-002 : Precedent Engine
 target: codex
 status: done

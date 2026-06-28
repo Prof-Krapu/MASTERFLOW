@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-28
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-003 — Narrative Canon Graph
+
+- Tâche : séparer vérité narrative, présentation, connaissance personnage et setup/payoff.
+- Impact : MasterFlow peut produire une lecture sans spoiler et un atelier complet depuis le même canon.
+- Risque : faible ; projection read-only sans delta canon ni génération.
+- Source de vérité concernée : runtime Git + MasterStory D09.
+- Statut : prêt à publication atomique.
+- Validation requise : non pour cette tranche ; oui avant validation automatique, storylets ou export canon.
+
 ### EXPERIENCE-FABRIC-002 — Precedent Engine
 
 - Tâche : retrouver des cas comparables depuis mémoire, checkpoints, décisions et timeline.
