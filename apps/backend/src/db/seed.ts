@@ -331,6 +331,18 @@ const OR_MID = 'anthropic/claude-sonnet-4.6'; // qualité correction
 const OR_STRONG = 'anthropic/claude-opus-4.8'; // raisonnement lourd / escalade prof-admin
 const OR_IMAGE = 'google/gemini-3-flash-image'; // génération d'image (cf. runner image, gated)
 
+// DeepSeek — déviation de TEST locale (le provider canonique reste OpenRouter). API OpenAI-compat,
+// modèle texte unique `deepseek-chat` (V3). Pas de vision/OCR ni de génération d'image côté DeepSeek :
+// les tâches `ocr`/`image_generation` restent seedées mais non fonctionnelles sous ce provider.
+const DS_CHAT = 'deepseek-chat';
+
+/**
+ * Provider effectif des profils seedés, piloté par `LLM_PROVIDER`.
+ * Tout sauf `deepseek` retombe sur `openrouter` (provider canonique), y compris `mock` (inerte) :
+ * le comportement existant est strictement préservé. `deepseek` n'est activé que via `.env` local.
+ */
+const SEED_PROVIDER = env.llm.provider === 'deepseek' ? 'deepseek' : 'openrouter';
+
 interface SeedProfile {
   task: LLMTask;
   model: string;
@@ -350,9 +362,24 @@ const TASK_MODEL_PROFILE_SEEDS: SeedProfile[] = [
 ];
 
 /**
+ * Modèle + escalade par rôle effectifs d'une tâche selon `SEED_PROVIDER`.
+ * OpenRouter : on garde le modèle et l'escalade par rôle déclarés dans le seed.
+ * DeepSeek : modèle texte unique `deepseek-chat`, aucune escalade par rôle (godmode/teacher
+ * utilisent donc `deepseek-chat`, ce qui évite qu'un ID de modèle OpenRouter parte vers DeepSeek).
+ */
+function resolveSeedModel(p: SeedProfile): {
+  model: string;
+  roleModels: Partial<Record<Role, string>> | undefined;
+} {
+  if (SEED_PROVIDER === 'deepseek') return {model: DS_CHAT, roleModels: undefined};
+  return {model: p.model, roleModels: p.role_models};
+}
+
+/**
  * Seed idempotent des profils de routage par tâche (un profil `validated` par tâche).
  * `INSERT OR REPLACE` sur un id déterministe → exactement un profil validé par tâche
- * (pas d'ambiguïté de routage). Inerte tant que le provider reste `mock`.
+ * (pas d'ambiguïté de routage). Inerte tant que le provider reste `mock`. Le provider et les
+ * modèles seedés suivent `LLM_PROVIDER` (cf. `SEED_PROVIDER`/`resolveSeedModel`).
  */
 function seedTaskModelProfiles(db: Database.Database, now: number): void {
   const insert = db.prepare(
@@ -362,13 +389,14 @@ function seedTaskModelProfiles(db: Database.Database, now: number): void {
      VALUES (?, ?, ?, ?, ?, ?, 'approved_remote', NULL, NULL, 'validated', ?, ?, NULL)`,
   );
   for (const p of TASK_MODEL_PROFILE_SEEDS) {
+    const {model, roleModels} = resolveSeedModel(p);
     insert.run(
       `tmp-${p.task}`,
       p.task,
-      JSON.stringify(['openrouter']),
-      JSON.stringify(['openrouter']),
-      p.model,
-      p.role_models ? JSON.stringify(p.role_models) : null,
+      JSON.stringify([SEED_PROVIDER]),
+      JSON.stringify([SEED_PROVIDER]),
+      model,
+      roleModels ? JSON.stringify(roleModels) : null,
       now,
       now,
     );

@@ -14,11 +14,13 @@ import type {
   RegistryStatus,
   Resource,
   RoomCheckpoint,
+  ValidatePreCorrectionManifestRequest,
   ValidationInboxItem,
   WsServerMessage,
 } from '@masterflow/shared';
 
 import {
+  activateRoomHardStop,
   attachProjectResource,
   createAction,
   decideValidationInboxItem,
@@ -31,6 +33,8 @@ import {
   getProjects,
   getResources,
   login,
+  playTts,
+  activatePersona,
   preflightAction,
   proposeResource,
   queryRag,
@@ -272,7 +276,9 @@ function App(): ReactElement {
   const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
   const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
   const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
-  const [pendingActions, setPendingActions] = useState<ValidationInboxItem[]>([]);
+  const [pendingActions, setPendingActions] = useState<Action[]>([]);
+  const [validationInboxItems, setValidationInboxItems] = useState<ValidationInboxItem[]>([]);
+  const [playingTtsId, setPlayingTtsId] = useState<string | null>(null);
   const [validationNotes, setValidationNotes] = useState<Record<string, string>>({});
   const [validationRun, setValidationRun] = useState<ValidationRunState>({status: 'idle', message: 'Inbox non chargee.'});
   const [resourceTitle, setResourceTitle] = useState('');
@@ -550,6 +556,17 @@ function App(): ReactElement {
     setSelectedMode(mode);
     void persistRoomInstance(mode);
   }, [persistRoomInstance]);
+
+  const handlePersonaChange = useCallback(async (personaId: string): Promise<void> => {
+    if (!auth || !context) return;
+    try {
+      await activatePersona(personaId, context.room_instance.id, auth.token);
+      // Reload context to reflect changes
+      await loadContext(auth.token);
+    } catch (err) {
+      console.error('[persona] Failed to activate persona:', err);
+    }
+  }, [auth, context, loadContext]);
 
   const refreshPendingActions = useCallback(async (): Promise<void> => {
     if (!auth || !canValidate) {
@@ -1165,6 +1182,9 @@ function App(): ReactElement {
   return (
     <MasterFlowShell
       activePersonaName={activePersona?.name ?? null}
+      activePersonaId={activePersona?.id ?? null}
+      personas={visiblePersonas}
+      onPersonaChange={handlePersonaChange}
       auth={auth}
       context={context}
       onLogout={handleLogout}
@@ -1655,7 +1675,30 @@ function App(): ReactElement {
               {conversationTurns.length > 0 ? (
                 conversationTurns.map((turn) => (
                   <article className={`chat-turn chat-turn--${turn.role}`} key={turn.id}>
-                    <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}</strong>
+                    <strong>
+                      {turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}
+                      {turn.role !== 'user' && (
+                        <button 
+                          type="button" 
+                          className="tts-btn"
+                          onClick={async () => {
+                            try {
+                              setPlayingTtsId(turn.id);
+                              await playTts(turn.content, activePersona?.id ?? undefined);
+                            } catch (e) {
+                              console.error('[tts] failed:', e);
+                            } finally {
+                              setPlayingTtsId(null);
+                            }
+                          }}
+                          disabled={playingTtsId === turn.id}
+                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', marginLeft: '0.5rem', fontSize: '1.2em' }}
+                          title="Écouter ce message"
+                        >
+                          {playingTtsId === turn.id ? '⏳' : '🔊'}
+                        </button>
+                      )}
+                    </strong>
                     <p>{turn.content || '...'}</p>
                   </article>
                 ))

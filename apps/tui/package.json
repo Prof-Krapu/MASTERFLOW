@@ -1,0 +1,28 @@
+{
+  "name": "@masterflow/tui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Client TUI agentic de MasterFlow — chat persona (streaming WS) + cycle d'actions, sur le backend réel.",
+  "bin": {
+    "masterflow-tui": "src/index.tsx"
+  },
+  "scripts": {
+    "dev": "tsx src/index.tsx",
+    "start": "tsx src/index.tsx",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@masterflow/shared": "*",
+    "ink": "^7.1.0",
+    "react": "^19.2.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.2.0",
+    "@types/ws": "^8.5.12",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2"
+  }
+}

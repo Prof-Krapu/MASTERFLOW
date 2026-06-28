@@ -7,16 +7,19 @@
   "workspaces": [
     "apps/backend",
     "apps/frontend",
+    "apps/tui",
     "packages/shared"
   ],
   "scripts": {
     "dev": "npm run dev --workspace apps/backend",
     "dev:backend": "npm run dev --workspace apps/backend",
     "dev:frontend": "npm run dev --workspace @masterflow/frontend",
+    "dev:tui": "npm run dev --workspace @masterflow/tui",
     "seed": "npm run seed --workspace apps/backend",
     "test": "npm run test --workspace apps/backend",
     "lint": "npm run lint --workspace apps/backend",
     "lint:frontend": "npm run lint --workspace @masterflow/frontend",
+    "lint:tui": "npm run lint --workspace @masterflow/tui",
     "build:frontend": "npm run build --workspace @masterflow/frontend",
     "smoke:public": "node scripts/smoke-public-runtime.mjs"
   },

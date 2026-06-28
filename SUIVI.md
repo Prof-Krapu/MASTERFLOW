@@ -4,6 +4,44 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — DEEPSEEK-TUI-001 : provider DeepSeek (test) + TUI agentic
+
+- seed de routage LLM rendu **conscient du provider** : `LLM_PROVIDER=deepseek` → profils validés
+  `deepseek` / `deepseek-chat` **sans escalade par rôle** (sinon le `chat` godmode aurait envoyé un
+  ID OpenRouter à DeepSeek) ; tout autre provider, y compris `mock`, reste **OpenRouter inchangé / inerte** ;
+- DeepSeek est OpenAI-compat : **aucune modif** de `services/llm.ts` ni `llm_pricing.ts` ; le routage
+  fail-closed et le gate egress anti-SSRF restent appliqués (`https://api.deepseek.com`) ;
+- nouveau workspace **`apps/tui`** (`@masterflow/tui`, Ink/React) — *notre* client backend/test/opérateur,
+  réutilisant le contrat Zod `@masterflow/shared` : login → contexte/loadout → **chat streamé WS** →
+  **cycle d'actions** (preflight → validation humaine → execute) ; les actions dérivent du **registre
+  filtré par le loadout** (toute action `live` future apparaît seule = couture d'évolutivité) ;
+- `apps/frontend` (territoire MALEX) **non touché** ; clé/secret jamais commités (`.env` local).
+- **Prochaine étape (différée)** : saisie de la clé LLM **à la connexion du TUI** (test local) au lieu de `apps/backend/.env`.
+- **À venir** : intégration de la **mise à jour pédagogique MALEX** + intégration **voix** (Edge TTS déjà
+  amorcé sur la branche : `routers/tts.ts`, `voice_config` pitch/rate/volume, `scripts/update_voices_poc.ts`).
+
+Vérifications : vitest backend **563/563**, lint backend `tsc` 0, `tsc` TUI 0, `npm install` 0 vuln,
+seed deepseek vérifié (profils basculés ; défaut OpenRouter inchangé), smoke du chemin TUI sur backend
+réel (login godmode → contexte Home/ProfKrapu/43 actions live → action draft→preflight `approved` →
+WS `chat_start`/`chat_chunk`/`chat_end`).
+
+Statut : branche locale `codex/deepseek-tui` ; travaux DeepSeek/TUI **non committés** (working tree),
+en attente de validation MALEX (provider live = dépense réelle). Inactif par défaut (`mock`).
+
+Hors périmètre : refonte `apps/frontend` (MALEX), activation DeepSeek en CI/partagé (validation MALEX),
+OCR/vision & génération d'image sous DeepSeek (pas d'équivalent modèle), tool-calling IA→action.
+
+## 2026-06-28 — EXPERIENCE-FABRIC-001 : Event Spine permissionnée
+
+- contrat `DomainEventEnvelope` commun aux événements audit, workflow, narration, jobs et progression ;
+- timeline et snapshot read-only avec provenance, résultat, compteurs et fingerprint déterministe ;
+- payloads bruts exclus et projets privés isolés, y compris face à un godmode extérieur ;
+- aucun event store parallèle, replay actif, action, provider ou canonisation.
+
+Vérifications : 4 tests ciblés, lint backend/frontend et diff-check.
+
+Statut : vague 1 prête à publication atomique.
+
 ## 2026-06-28 — KNOWLEDGE-FABRIC-001 : cartes mémoire reliées et graphes permissionnés
 
 - réutilisation de `memory_cards` comme unité atomique, sans nouveau système de notes parallèle ;
@@ -4648,3 +4686,20 @@ push sans nouveau GO humain. Handoff detaille :
 - Relecture Vincent des migrations, contrats partages et gates de scope.
 - Run reel backend + frontend : login, context/current, checkpoint, RAG, WS et carte memoire.
 - Commit/push seulement apres GO MALEX et dernier check distant.
+
+## 2026-06-28 — Intégration Edge TTS dynamique
+
+**Statut :** PoC validé et intégré.
+
+### Construit
+- Ajout de `node-edge-tts` dans `apps/backend`.
+- Routeur `POST /api/v1/tts` capable de streamer l'audio au client de manière éphémère (aucune persistance disque) via `audio/mpeg`.
+- Lecture dynamique de la configuration de la voix depuis la base SQLite (`personas.voice_config_json`) : `voice`, `pitch`, `rate`, `volume`. Cela permet d'avoir des voix uniques par Persona (ex: ProfKrapu plus grave et ralenti, MasterFlex plus rapide).
+- Côté frontend, `api.ts` expose `playTts` qui génère un Blob URL lisible par l'API HTML5 `<Audio>`.
+- Ajout d'un bouton de lecture (🔊) dans le composant `ChatDock` de `app-shell.tsx` et dans `App.tsx`.
+- Création d'un sélecteur de Persona (PoC) dans l'interface appelant `POST /api/v1/personas/:id/activate` pour basculer dynamiquement le Persona et sa voix associée.
+
+### Vérifications
+- Backend `tsc --noEmit` : OK.
+- Frontend `tsc --noEmit` : OK.
+- Frontend UI testée via Serveur Dev local.

@@ -16,6 +16,16 @@ const remoteConfig: LLMRuntimeConfig = {
   egressAllowlist: ['https://llm.example.test'],
 };
 
+// DeepSeek : déviation de test locale (OpenAI-compat). Vérifie qu'un profil `deepseek` validé
+// route bien vers `deepseek-chat` en franchissant le gate egress de l'origine DeepSeek.
+const deepseekConfig: LLMRuntimeConfig = {
+  provider: 'deepseek',
+  apiKey: 'sk-deepseek-test',
+  baseUrl: 'https://api.deepseek.com',
+  model: 'deepseek-chat',
+  egressAllowlist: ['https://api.deepseek.com'],
+};
+
 beforeAll(async () => {
   await seedAll();
   // Le seed pose des profils OpenRouter validés par tâche ; on isole ce test en
@@ -78,6 +88,27 @@ beforeAll(async () => {
       JSON.stringify(['provider-approved']),
       'chat-base-cheap',
       JSON.stringify({teacher: 'chat-strong-teacher', admin: 'chat-strong-admin'}),
+      'approved_remote',
+      1,
+      30_000,
+      now,
+      now,
+    );
+
+  // Profil DeepSeek validé (provider de test) sur la tâche `ocr`, modèle unique deepseek-chat.
+  getDb()
+    .prepare(
+      `INSERT OR REPLACE INTO task_model_profiles
+         (id, task, allowed_providers_json, fallback_order_json, model, privacy_mode,
+          max_cost_eur, max_latency_ms, status, created_at, updated_at, updated_by)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'validated', ?, ?, NULL)`,
+    )
+    .run(
+      'routing-profile-deepseek',
+      'ocr',
+      JSON.stringify(['deepseek']),
+      JSON.stringify(['deepseek']),
+      'deepseek-chat',
       'approved_remote',
       1,
       30_000,
@@ -166,5 +197,18 @@ describe('PR-CB2 — routage LLM et egress gated', () => {
   it('autorise HTTP uniquement sur loopback quand il est explicitement allowlisté', () => {
     expect(assertAllowedEgress('http://127.0.0.1:11434/v1', ['http://127.0.0.1:11434']).origin)
       .toBe('http://127.0.0.1:11434');
+  });
+
+  it('route un provider DeepSeek validé vers deepseek-chat via le gate egress DeepSeek', () => {
+    const route = resolveLLMRoute('ocr', deepseekConfig);
+
+    expect(route.provider).toBe('deepseek');
+    expect(route.profile?.status).toBe('validated');
+    expect(route.model).toBe('deepseek-chat');
+    expect(route.baseUrl).toBe('https://api.deepseek.com');
+    // L'origine DeepSeek doit franchir le gate anti-SSRF ; une origine hors allowlist échoue.
+    expect(() =>
+      resolveLLMRoute('ocr', {...deepseekConfig, egressAllowlist: ['https://openrouter.ai']}),
+    ).toThrow('llm_egress_origin_denied');
   });
 });

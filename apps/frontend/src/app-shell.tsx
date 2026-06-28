@@ -39,6 +39,9 @@ type MasterFlowShellProps = {
   auth?: AuthResponse | null;
   context?: CurrentContext | null;
   activePersonaName?: string | null;
+  activePersonaId?: string | null;
+  personas?: Persona[];
+  onPersonaChange?: (personaId: string) => void;
   onLogout?: () => void;
 };
 
@@ -62,7 +65,7 @@ type ModeRailProps = {
   onModeSelect: (mode: WorkModeId) => void;
 };
 
-export function MasterFlowShell({children, state, auth, context, activePersonaName, onLogout}: MasterFlowShellProps): ReactElement {
+export function MasterFlowShell({children, state, auth, context, activePersonaName, activePersonaId, personas, onPersonaChange, onLogout}: MasterFlowShellProps): ReactElement {
   return (
     <main className="shell">
       <header className="topbar" aria-label="Etat MasterFlow">
@@ -71,7 +74,20 @@ export function MasterFlowShell({children, state, auth, context, activePersonaNa
           <h1>Home Room</h1>
         </div>
         <div className="topbar__meta">
-          {activePersonaName ? (
+          {(personas && personas.length > 0 && onPersonaChange) ? (
+            <select 
+              className="topbar__persona-select" 
+              value={activePersonaId ?? ''} 
+              onChange={(e) => onPersonaChange(e.target.value)}
+              style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc', background: 'transparent', color: 'inherit', fontWeight: 'bold' }}
+              title="Changer de Persona"
+            >
+              <option value="" disabled>-- Persona --</option>
+              {personas.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          ) : activePersonaName ? (
             <span className="topbar__persona">{activePersonaName}</span>
           ) : null}
           <span className={`status status--${state}`}>

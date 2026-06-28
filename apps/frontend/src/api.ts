@@ -169,6 +169,13 @@ export async function getPersonas(token?: string | null): Promise<Persona[]> {
   return request<Persona[]>('/personas', {method: 'GET'}, token);
 }
 
+export async function activatePersona(personaId: string, roomInstanceId: string, token?: string | null): Promise<void> {
+  await request<unknown>(`/personas/${personaId}/activate`, {
+    method: 'POST',
+    body: JSON.stringify({room_instance_id: roomInstanceId}),
+  }, token);
+}
+
 export async function getAvailableActions(token?: string | null): Promise<ActionRegistryEntry[]> {
   return request<ActionRegistryEntry[]>('/actions/available', {method: 'GET'}, token);
 }
