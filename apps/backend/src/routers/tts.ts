@@ -22,6 +22,9 @@ export function createTtsRouter(): Router {
       }
 
       let voice = requestedVoice || 'fr-FR-HenriNeural'; // Voix par défaut
+      let pitch: string | undefined;
+      let rate: string | undefined;
+      let volume: string | undefined;
 
       // Si un personaId est fourni, on tente de récupérer sa voix en BDD
       if (personaId) {
@@ -33,8 +36,11 @@ export function createTtsRouter(): Router {
         if (personaRow && personaRow.voice_config_json) {
           try {
             const voiceConfig = JSON.parse(personaRow.voice_config_json);
-            if (voiceConfig && voiceConfig.voice) {
-              voice = voiceConfig.voice;
+            if (voiceConfig) {
+              if (voiceConfig.voice) voice = voiceConfig.voice;
+              if (voiceConfig.pitch) pitch = voiceConfig.pitch;
+              if (voiceConfig.rate) rate = voiceConfig.rate;
+              if (voiceConfig.volume) volume = voiceConfig.volume;
             }
           } catch (e) {
             console.error('[tts] Erreur parsing voice_config_json:', e);
@@ -50,7 +56,10 @@ export function createTtsRouter(): Router {
       const tts = new EdgeTTS({
         voice,
         lang: voice.split('-').slice(0, 2).join('-'), // ex: fr-FR
-        outputFormat: 'audio-24khz-48kbitrate-mono-mp3'
+        outputFormat: 'audio-24khz-48kbitrate-mono-mp3',
+        ...(pitch && { pitch }),
+        ...(rate && { rate }),
+        ...(volume && { volume })
       });
 
       // Génération du fichier audio
