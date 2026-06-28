@@ -84,7 +84,6 @@ Créer une vague documentaire `DATAVIZ-001` :
 2. arbitrage Factory → Mode ;
 3. abstraction MasterHelp / Situation Companion ;
 4. Roadtrip comme pilote Dataviz + MasterHelp ;
-5. prompt Big Pickle pour audit/extraction rapide.
+5. délégation éventuelle préparée par Codex dans l'unique canal `.opencode/INBOX.md`.
 
 Ne pas coder de composant UI Dataviz tant que cette base n'est pas validée.
-

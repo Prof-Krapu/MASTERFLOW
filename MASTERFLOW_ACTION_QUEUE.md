@@ -76,14 +76,15 @@ Dernière mise à jour : 2026-06-27
 - Statut : patch V1.4 appliqué hors Git ; les futurs reçus détaillés doivent rester côté Bureau sauf primitive MasterFlow.
 - Validation requise : non pour test pilote privé ; oui avant promotion canon, publication runtime ou généralisation MasterHelp.
 
-### Big Pickle — audit/extraction déléguée
+### PERSONA-HARVEST-001 — Signaux persona, agents, méthodes et sous-modes depuis archives
 
-- Tâche : faire lancer par Big Pickle le prompt d'audit Dataviz / Factory→Mode / MasterHelp.
-- Impact : économise les tokens Codex et accélère l'inventaire multi-sources.
-- Risque : faible en lecture seule ; moyen si Big Pickle patche sans archivage ou canonise.
-- Source de vérité concernée : `docs/prompts/BIG_PICKLE_DATAVIZ_FACTORY_MASTERHELP_PROMPT_2026-06-27.md`.
-- Statut : prompt prêt.
-- Validation requise : non pour audit lecture seule ; oui avant patch/canon/Git runtime.
+- Tâche : extraire des archives les signaux répétés de personas et systèmes associés : MALEX, ProfKrapu, MOTH, Nicok, MasterFlex, coachs, voix DA, méthodes pédagogiques, refus, comportements assistants et sous-modes comme Stand Up.
+- Impact : peut nourrir D04 Personas, les sous-personas, D09 MasterStory, les assistants MasterFlow, les Factories et les modes d'accompagnement sans repartir de zéro.
+- Risque : moyen ; ne pas psychologiser, ne pas mélanger les identités, ne pas canoniser une occurrence isolée, anonymiser toute personne réelle.
+- Source de vérité concernée : archives comme matière candidate + D04 Personas + D09 MasterStory + D03 Context + D11 Backflow.
+- Statut : extraction Big Pickle conservée comme preuve brute archivée ; arbitrage repris par Codex,
+  aucune intégration persona automatique.
+- Validation requise : non pour extraction ; oui avant intégration persona canon, comportement runtime ou Factory active.
 
 ### Interface MasterFlow web / desktop / mobile
 
@@ -91,8 +92,37 @@ Dernière mise à jour : 2026-06-27
 - Impact : transforme les nombreuses briques déjà fonctionnelles en produit pilotable.
 - Risque : faible pour l'inventaire ; moyen si une refonte visuelle modifie les permissions ou les contrats.
 - Source de vérité concernée : canon UI + `FRONTEND_UI_DOCTRINE.md` + `apps/frontend`.
-- Statut : plan actif publié dans `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`; UI-001 ready.
+- Statut : plan actif publié dans `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`; UI-001A fait localement avec extraction `App Shell` / `SituationPanel` / `ModeRail`.
 - Validation requise : non pour audit/inventaire ; oui avant choix de direction visuelle ou nouveau shell natif.
+
+#### Prochaine vague UI sûre — UI-001B
+
+- Tâche : séparer visuellement `Control`, `Admin` et `Ops` du workspace métier sans réécrire les panneaux existants.
+- Impact : MALEX voit enfin ce qui est action métier, pilotage, administration ou opérationnel.
+- Risque : moyen si un panneau change de permission ou disparaît ; faible si on ne fait que router l'affichage.
+- Source de vérité concernée : `apps/frontend`, `mode-runtime`, plan UI actif, contrat Dataviz/source truth.
+- Statut : fait localement et vérifié ; surface `Pilotage` distincte, Control/Admin/Ops accessibles,
+  validation teacher conservée, aucun changement backend ou permission.
+- Validation requise : non pour extraction visuelle sans changement backend ; oui avant nouveau mode, nouveau shell natif ou changement de permission.
+
+#### Vague UI-001C — séparation chat / système
+
+- Tâche : séparer les messages système du chat métier sans multiplier les surfaces.
+- Impact : le dialogue utilisateur/persona reste lisible et les alertes runtime deviennent explicables.
+- Risque : faible si aucun événement WS n'est perdu ou reclassé comme vérité.
+- Source de vérité concernée : frontend, contrat Chat UI Separation legacy, runtime WS actuel.
+- Statut : fait localement et vérifié ; séparation de rendu uniquement, protocole WS inchangé.
+- Validation requise : non pour cette tranche ; oui si la sémantique ou la persistance des événements change.
+
+#### Prochaine vague UI candidate — UI-001D
+
+- Tâche : rendre visible la provenance et le niveau de confiance des données dans une bande
+  `source truth`, sans inventer de nouveau contrat backend.
+- Impact : l'utilisateur comprend ce qui est canon, runtime, candidat ou incertain avant d'agir.
+- Risque : moyen si l'interface présente une inférence comme une preuve.
+- Source de vérité concernée : contrats runtime existants, doctrine UI et Dataviz, audit canon.
+- Statut : à auditer avant patch.
+- Validation requise : non pour audit ; oui si un nouveau champ backend devient nécessaire.
 
 ### D12 R5 — Continuité runtime privée
 

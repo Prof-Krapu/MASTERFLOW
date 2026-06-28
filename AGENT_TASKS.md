@@ -14,6 +14,99 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-313 — UI-001C : séparer conversation et messages système
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-28
+
+### scope
+- Garder le chat métier réservé aux échanges utilisateur/persona.
+- Sortir les événements système existants dans une surface compacte dédiée.
+- Ne modifier ni le protocole WebSocket, ni l'historique, ni les permissions.
+
+### files créés/modifiés
+- `apps/frontend/src/system-messages.tsx`
+- `apps/frontend/src/App.tsx`
+- `apps/frontend/src/styles.css`
+- `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### verification
+- `npm run lint:frontend` : OK.
+- `npm run build:frontend` : OK.
+- smoke navigateur : deux tours métier visibles, zéro tour système dans `.chat-log`.
+- viewport 390 px : `scrollWidth == clientWidth == 390`.
+
+### updates
+> 2026-06-28 codex → done local. Séparation de rendu uniquement ; événements et contrats runtime inchangés.
+
+---
+
+## TASK-311 — UI-001B : Pilotage Control / Admin / Ops
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-28
+
+### scope
+- Séparer les surfaces privées de pilotage des workspaces métier.
+- Ne créer aucun mode backend et ne contourner aucun loadout.
+- Conserver les gates `canAdmin`, `canValidate` et `isGodmode`.
+
+### files créés/modifiés
+- `apps/frontend/src/control-workspace.tsx`
+- `apps/frontend/src/App.tsx`
+- `apps/frontend/src/styles.css`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### verification
+- `npm run lint:frontend` : OK.
+- `npm run build:frontend` : OK.
+- `npm run lint` : OK.
+- `git diff --check` : OK.
+- smoke navigateur Control/Admin/Ops : OK.
+- viewport 390 px : `scrollWidth == clientWidth == 390`.
+
+### updates
+> 2026-06-28 big-pickle → done_unverified. Première séparation locale proposée.
+> 2026-06-28 codex → done local. Accès Pilotage réparé hors mode admin, gates et validation teacher vérifiés.
+
+---
+
+## TASK-310 — UI-001A : première extraction App Shell
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-28
+
+### scope
+- Extraire une première couche App Shell sans changer les comportements runtime.
+- Garder `App.tsx` propriétaire des handlers, appels API et décisions d'état pendant cette tranche.
+- Isoler les composants présentations : cadre général, situation, navigation de modes.
+- Ne pas toucher au backend, aux permissions, aux endpoints, aux seeds, au provider, aux migrations ou au déploiement.
+
+### files créés/modifiés
+- `apps/frontend/src/app-shell.tsx`
+- `apps/frontend/src/App.tsx`
+- `docs/ui/MASTERFLOW_INTERFACE_EXECUTION_PLAN.md`
+- `SUIVI.md`
+- `AGENT_TASKS.md`
+- `MASTERFLOW_ACTION_QUEUE.md`
+
+### verification
+- `npm run lint` : OK.
+- `npm run build:frontend` : OK.
+- `git diff --check` : OK.
+- backend local `/health` : OK.
+- frontend local `http://localhost:5174` : OK.
+
+### updates
+> 2026-06-28 codex → done local. App Shell extrait en composants purement présentations ; aucun contrat backend ou permission modifié.
+
+---
+
 ## TASK-309 — Correction frontière Factories : atelier Bureau, primitives Git
 target: codex
 status: done
@@ -168,7 +261,7 @@ frozen_by: MALEX « go faire tous les chantiers » 2026-06-27
 - Poser un contrat candidat Dataviz portable.
 - Poser l'arbitrage Factory → Mode MasterFlow candidat.
 - Poser `MasterHelp / Situation Companion` comme abstraction de Roadtrip hors GPS.
-- Préparer le prompt Big Pickle pour compléter l'audit/extraction sans canoniser.
+- Préparer, à l'époque, un prompt Big Pickle pour compléter l'audit/extraction sans canoniser.
 
 ### files créés
 - `docs/dataviz/MASTERFLOW_DATAVIZ_GRAPH_WIDGET_AUDIT_2026-06-27.md`
@@ -177,7 +270,7 @@ frozen_by: MALEX « go faire tous les chantiers » 2026-06-27
 - `docs/factories/ROADTRIP_MOTO_PILOT_DATAVIZ_MASTERHELP_PLAN_2026-06-27.md`
 - `docs/factories/ROADTRIP_MOTO_FACTORY_PATCH_RECEIPT_2026-06-27.md`
 - `docs/masterhelp/MASTERHELP_SITUATION_COMPANION_CANDIDATE_SPEC_2026-06-27.md`
-- `docs/prompts/BIG_PICKLE_DATAVIZ_FACTORY_MASTERHELP_PROMPT_2026-06-27.md`
+- `docs/archive/opencode-legacy/2026-06-28/BIG_PICKLE_DATAVIZ_FACTORY_MASTERHELP_PROMPT_2026-06-27.md`
 
 ### verification
 - documentaire Git local uniquement côté repo ; aucun runtime, migration, provider ou canon Drive modifié.
@@ -186,6 +279,7 @@ frozen_by: MALEX « go faire tous les chantiers » 2026-06-27
 ### updates
 > 2026-06-27 codex → done local. À relire avant commit/push ; prochaine étape possible : patch Roadtrip Factory avec archivage ou demander l'audit complémentaire à Big Pickle.
 > 2026-06-27 codex → patch Factory Roadtrip V1.4 appliqué localement. Archive créée, ZIP actif vérifié, reçu ajouté. Prochaine étape : test pilote ChatGPT ou publication Git des docs/reçus.
+> 2026-06-28 codex → ancien prompt archivé ; toute délégation passe désormais uniquement par `.opencode/INBOX.md`.
 
 ---
 

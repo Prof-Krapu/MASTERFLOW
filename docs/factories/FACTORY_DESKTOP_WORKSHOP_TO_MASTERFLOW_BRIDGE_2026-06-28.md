@@ -46,7 +46,8 @@ Runtime MasterFlow = seulement après contrat + test + validation
 - reçus de patch de Factory active ;
 - ZIP actifs ;
 - tests de boot plateforme ;
-- consignes Big Pickle / OpenCode propres aux Factories.
+- anciennes consignes Big Pickle / OpenCode propres aux Factories, uniquement comme archives ;
+  aucune inbox active ne doit vivre côté atelier.
 
 ## Ce qui peut aller dans Git
 

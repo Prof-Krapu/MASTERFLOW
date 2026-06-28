@@ -48,7 +48,7 @@ archives, prompts et reçus de patch restent dans `/Users/malex/Desktop/FACTORIE
 | Resource truth timecoded | MasterFlex | Resource Truth / Coaching | `primitive_candidate` | Vérifier source refs et non-invention de timecodes. |
 | OCR candidate status | MasterInventory | D07 Inventory + D08 visual refs | `already_in_git_runtime` partiel | Lancer `MASTERINVENTORY-OCR-001`. |
 | Situation companion | Roadtrip, HelpLab | MasterHelp candidat | `primitive_candidate` | Tester Roadtrip puis décider. |
-| Usage harvester | Factories atelier | D11/D12 external usage intake | `already_in_git_doc` partiel | Donner protocole à Big Pickle/OpenCode côté atelier, puis backflow candidat si utile. |
+| Usage harvester | Factories atelier | D11/D12 external usage intake | `already_in_git_doc` partiel | Codex peut déléguer une extraction bornée via `.opencode/INBOX.md`, puis arbitrer le backflow candidat. |
 | Diagnostic non-surveillance | Esprimed | Feedback/analytics/privacy | `primitive_candidate` | Écrire guardrail privacy avant runtime. |
 | Creative material lifecycle | Stand Up, Batrasia, transcription future | D03/D11 intake, D09 MasterStory | `primitive_candidate` | Spécifier statuts matière créative. |
 | Score explicable | MasterScore | D06 competencies/correction | `primitive_candidate` | Interdire score verdict sans validation prof. |
@@ -71,14 +71,14 @@ archives, prompts et reçus de patch restent dans `/Users/malex/Desktop/FACTORIE
 
 ## Décision automatique autorisée
 
-Codex, Big Pickle ou OpenCode peuvent classer automatiquement une idée Factory en :
+Codex peut classer une idée Factory en :
 
 - `primitive_candidate` ;
 - `already_in_git_doc` ;
 - `rejected` si doublon évident et déjà couvert ;
 - `blocked` si secret/provider/live/données sensibles.
 
-Ils ne peuvent pas classer automatiquement en :
+Codex ne classe pas automatiquement en :
 
 - `already_in_git_runtime` sans preuve de code/test ;
 - `runtime_gap` prioritaire sans lien à un domaine et une tâche ;

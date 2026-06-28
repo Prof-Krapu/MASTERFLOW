@@ -99,5 +99,6 @@ archive avant remplacement
 ZIP actif identique au dossier actif
 ```
 
-La prochaine action sûre est de donner ce plan à Big Pickle ou de lancer un patch Factory dédié avec archivage.
-
+La prochaine action sûre est un arbitrage Codex. Une extraction mécanique peut ensuite être
+déléguée à Big Pickle uniquement via `.opencode/INBOX.md`, ou un patch Factory dédié peut être
+lancé avec archivage.
