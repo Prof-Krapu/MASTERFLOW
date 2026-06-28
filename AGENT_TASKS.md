@@ -14,6 +14,25 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-314 — EXPERIENCE-FABRIC-001 : Event Spine
+target: codex
+status: done
+frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
+
+### scope
+- Projeter les événements existants dans une timeline commune permissionnée.
+- Ajouter un snapshot explicable sans event store ou replay actif.
+- Ne jamais exposer les payloads bruts ni traverser un projet privé par rang global.
+
+### verification
+- test ciblé Experience Fabric : 4/4 ;
+- lint backend/frontend et diff-check : OK.
+
+### updates
+> 2026-06-28 codex → done local. Vague 1 prête à publication.
+
+---
+
 ## TASK-313 — UI-001C : séparer conversation et messages système
 target: codex
 status: done

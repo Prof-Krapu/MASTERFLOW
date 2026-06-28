@@ -12,6 +12,7 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
+| Experience Fabric / Event Spine | implémenté local | Timeline et snapshot read-only prêts ; publication GitHub à faire. | faible | Publier la vague 1 puis construire les précédents sur les références existantes. |
 | Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |

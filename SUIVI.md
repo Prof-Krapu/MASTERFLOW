@@ -4,6 +4,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-28 — EXPERIENCE-FABRIC-001 : Event Spine permissionnée
+
+- contrat `DomainEventEnvelope` commun aux événements audit, workflow, narration, jobs et progression ;
+- timeline et snapshot read-only avec provenance, résultat, compteurs et fingerprint déterministe ;
+- payloads bruts exclus et projets privés isolés, y compris face à un godmode extérieur ;
+- aucun event store parallèle, replay actif, action, provider ou canonisation.
+
+Vérifications : 4 tests ciblés, lint backend/frontend et diff-check.
+
+Statut : vague 1 prête à publication atomique.
+
 ## 2026-06-28 — KNOWLEDGE-FABRIC-001 : cartes mémoire reliées et graphes permissionnés
 
 - réutilisation de `memory_cards` comme unité atomique, sans nouveau système de notes parallèle ;

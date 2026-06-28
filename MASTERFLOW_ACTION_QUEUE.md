@@ -4,6 +4,15 @@ Dernière mise à jour : 2026-06-28
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-001 — Event Spine
+
+- Tâche : projeter les événements existants dans une chronologie explicable et permissionnée.
+- Impact : socle partagé pour précédents, narration et orchestration.
+- Risque : faible ; lecture seule, aucune action ou canonisation.
+- Source de vérité concernée : runtime Git.
+- Statut : vague 1 prête à publication.
+- Validation requise : non, GO global MALEX reçu.
+
 ### EXTERNAL-FOUNDATIONS-001 — Absorption clean-room
 
 - Tâche : publier la fondation packs, guidage, ponts, thèmes, qualité, décisions et coûts.

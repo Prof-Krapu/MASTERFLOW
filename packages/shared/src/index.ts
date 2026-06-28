@@ -3119,6 +3119,80 @@ export const WorkflowEventSchema = z.object({
 });
 export type WorkflowEvent = z.infer<typeof WorkflowEventSchema>;
 
+// ───────────────────────── Experience Fabric : spine événementielle ─────────────────────────
+
+export const DomainEventStreamSchema = z.enum([
+  'audit',
+  'workflow',
+  'narrative',
+  'job',
+  'progression',
+]);
+export type DomainEventStream = z.infer<typeof DomainEventStreamSchema>;
+
+export const DomainEventOutcomeSchema = z.enum([
+  'observed',
+  'running',
+  'pending_validation',
+  'approved',
+  'completed',
+  'failed',
+  'blocked',
+  'rejected',
+  'cancelled',
+]);
+export type DomainEventOutcome = z.infer<typeof DomainEventOutcomeSchema>;
+
+export const DomainEventEnvelopeSchema = z.object({
+  event_id: z.string().min(1),
+  stream_type: DomainEventStreamSchema,
+  stream_id: z.string().min(1),
+  event_type: z.string().min(1).max(160),
+  actor_id: z.string().min(1).nullable(),
+  project_id: z.string().min(1).nullable(),
+  room_id: z.string().min(1).nullable(),
+  object_ref: z.string().min(1).nullable(),
+  summary: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1)).min(1),
+  cause_ref: z.string().min(1).nullable(),
+  outcome: DomainEventOutcomeSchema,
+  confidence: z.enum(['recorded', 'validated', 'inferred']),
+  provenance: z.object({
+    activity_ref: z.string().min(1),
+    entity_refs: z.array(z.string().min(1)),
+    agent_ref: z.string().min(1).nullable(),
+  }),
+  occurred_at: z.number().int().nonnegative(),
+});
+export type DomainEventEnvelope = z.infer<typeof DomainEventEnvelopeSchema>;
+
+export const ExperienceTimelineQuerySchema = z.object({
+  project_id: z.string().min(1).optional(),
+  streams: z.array(DomainEventStreamSchema).min(1).optional(),
+  from: z.number().int().nonnegative().optional(),
+  to: z.number().int().nonnegative().optional(),
+  limit: z.number().int().min(1).max(200).default(100),
+});
+export type ExperienceTimelineQuery = z.input<typeof ExperienceTimelineQuerySchema>;
+
+export const ExperienceStateSnapshotSchema = z.object({
+  scope: z.enum(['user', 'project']),
+  scope_id: z.string().min(1),
+  up_to: z.number().int().nonnegative(),
+  event_count: z.number().int().nonnegative(),
+  stream_counts: z.record(DomainEventStreamSchema, z.number().int().nonnegative()),
+  outcome_counts: z.record(DomainEventOutcomeSchema, z.number().int().nonnegative()),
+  latest_event: DomainEventEnvelopeSchema.nullable(),
+  open_blockers: z.array(z.string().min(1)),
+  fingerprint: z.string().min(1),
+});
+export type ExperienceStateSnapshot = z.infer<typeof ExperienceStateSnapshotSchema>;
+
+export const EXPERIENCE_FABRIC_API = {
+  timeline: '/api/v1/experience/events',
+  snapshot: '/api/v1/experience/snapshot',
+} as const;
+
 export const DecisionTraceOptionSchema = z.object({
   option_id: z.string().min(1),
   label: z.string().min(1).max(240),
