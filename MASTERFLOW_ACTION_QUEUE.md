@@ -101,7 +101,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : transforme les nombreuses briques déjà fonctionnelles en produit pilotable.
 - Risque : faible pour l'inventaire ; moyen si une refonte visuelle modifie les permissions ou les contrats.
 - Source de vérité concernée : canon UI + `FRONTEND_UI_DOCTRINE.md` + `apps/frontend`.
-- Statut : UI-001A à UI-001D publiées ; UI-001E Home légère vérifiée localement avant publication.
+- Statut : UI-001A à UI-001D publiées ; UI-001E Home légère en PR #153 avant merge.
 - Validation requise : non pour audit/inventaire ; oui avant choix de direction visuelle ou nouveau shell natif.
 
 #### Prochaine vague UI sûre — UI-001B
@@ -129,7 +129,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : rend visibles les prochains gestes sans charger ni exposer les outils lourds.
 - Risque : faible ; présentation frontend uniquement.
 - Source de vérité concernée : loadout, checkpoint, inbox, ressources validées et CDC UI actif.
-- Statut : corrigé et vérifié localement ; publication GitHub à terminer.
+- Statut : corrigé, vérifié localement et publié en branche `codex/ui-home-lightweight` via PR #153.
 - Validation requise : non pour cette tranche ; oui avant nouveau contrat backend ou génération d'assets.
 
 ### D12 R5 — Continuité runtime privée

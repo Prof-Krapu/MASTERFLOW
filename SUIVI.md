@@ -16,6 +16,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : lint frontend, build frontend et diff-check OK ; smoke navigateur desktop
 1280 px et mobile 390 px sans débordement ; navigation Home → Teaching → Home OK.
 
+Statut : branche `codex/ui-home-lightweight`, PR #153 avant merge.
+
 ## 2026-06-28 — Fondations composables clean-room
 
 - ajout d'un registre de packs runtime fondé sur les actions et permissions réelles ;

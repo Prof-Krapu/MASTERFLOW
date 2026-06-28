@@ -78,7 +78,7 @@ backend déjà opérationnels.
 
 ### Checkpoint UI-001E — Home légère
 
-Statut : vérifié localement, publication à terminer.
+Statut : vérifié localement et publié en branche via PR #153 avant merge.
 
 - Home limitée à six cartes de reprise et un chat compact ;
 - modes autorisés uniquement, issus du loadout ;
