@@ -863,6 +863,79 @@ export const MemoryCardSchema = CreateMemoryCardSchema.extend({
 });
 export type MemoryCard = z.infer<typeof MemoryCardSchema>;
 
+export const MemoryCardRelationTypeSchema = z.enum([
+  'supports',
+  'contradicts',
+  'extends',
+  'illustrates',
+  'related_to',
+  'broader',
+  'narrower',
+  'derived_from',
+  'requires_validation',
+  'triggers_action',
+  'references',
+  'used_in',
+  'blocks',
+  'unlocks',
+]);
+export type MemoryCardRelationType = z.infer<typeof MemoryCardRelationTypeSchema>;
+
+export const MemoryCardRelationFamilySchema = z.enum([
+  'semantic',
+  'provenance',
+  'operational',
+]);
+export type MemoryCardRelationFamily = z.infer<typeof MemoryCardRelationFamilySchema>;
+
+export const CreateMemoryCardLinkSchema = z.object({
+  target_card_id: z.string().min(1),
+  relation_type: MemoryCardRelationTypeSchema,
+  rationale: z.string().min(1).max(500),
+  source_ref: z.string().min(1).max(1000),
+  confidence: z.enum(['low', 'medium', 'high']).default('medium'),
+});
+export type CreateMemoryCardLink = z.infer<typeof CreateMemoryCardLinkSchema>;
+
+export const MemoryCardLinkSchema = CreateMemoryCardLinkSchema.extend({
+  link_id: z.string().min(1),
+  source_card_id: z.string().min(1),
+  relation_family: MemoryCardRelationFamilySchema,
+  directionality: z.enum(['directed', 'symmetric']),
+  confidence: z.enum(['low', 'medium', 'high', 'validated']),
+  created_by: z.string().min(1),
+  status: z.enum(['candidate', 'active', 'rejected', 'archived']),
+  validated_by: z.string().min(1).nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type MemoryCardLink = z.infer<typeof MemoryCardLinkSchema>;
+
+export const DecideMemoryCardLinkSchema = z.object({
+  decision: z.enum(['active', 'rejected', 'archived']),
+});
+export type DecideMemoryCardLink = z.infer<typeof DecideMemoryCardLinkSchema>;
+
+export const MemoryGraphHealthSchema = z.object({
+  scope: z.enum(['user', 'project']),
+  scope_id: z.string().min(1),
+  cards: z.object({
+    total: z.number().int().nonnegative(),
+    candidate: z.number().int().nonnegative(),
+    active: z.number().int().nonnegative(),
+    stale: z.number().int().nonnegative(),
+    archived: z.number().int().nonnegative(),
+    rejected: z.number().int().nonnegative(),
+  }),
+  active_links: z.number().int().nonnegative(),
+  candidate_links: z.number().int().nonnegative(),
+  orphan_active_cards: z.number().int().nonnegative(),
+  contradiction_links: z.number().int().nonnegative(),
+  duplicate_distilled_values: z.number().int().nonnegative(),
+  stale_links: z.number().int().nonnegative(),
+});
+export type MemoryGraphHealth = z.infer<typeof MemoryGraphHealthSchema>;
+
 // ───────────────────────── Personas & chimères ─────────────────────────
 
 export const PersonaStatusSchema = z.enum(['active', 'deprecated']);

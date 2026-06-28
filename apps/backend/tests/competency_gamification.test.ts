@@ -18,7 +18,7 @@ import {
   updateSkillTreeNodeStatus, getNodeDependencies, setNodeEquipped,
 } from '../src/services/skill_tree.ts';
 import {
-  createGraph, listGraphs, getGraph, getFullGraph,
+  createGraph, listGraphs, getFullGraph,
   addGraphNode, addGraphEdge, listGraphNodes, listGraphEdges,
 } from '../src/services/pedagogical_graph.ts';
 
@@ -258,10 +258,10 @@ describe('pedagogical_graph', () => {
       relation_type: 'improves',
     });
 
-    const nodes = listGraphNodes(graph.id);
+    const nodes = listGraphNodes(teacher, graph.id);
     expect(nodes).toHaveLength(3);
 
-    const edges = listGraphEdges(graph.id);
+    const edges = listGraphEdges(teacher, graph.id);
     expect(edges).toHaveLength(2);
     expect(edges[0]?.relation_type).toBe('requires');
   });
@@ -270,9 +270,20 @@ describe('pedagogical_graph', () => {
     const graph = createGraph(teacher, {label: 'Graphe Full', scope: 'personal'});
     addGraphNode(teacher, graph.id, {node_type: 'competency', label: 'Nœud unique'});
 
-    const full = getFullGraph(graph.id);
+    const full = getFullGraph(teacher, graph.id);
     expect(full.graph.id).toBe(graph.id);
     expect(full.nodes.length).toBeGreaterThanOrEqual(1);
     expect(Array.isArray(full.edges)).toBe(true);
+  });
+
+  it('ne révèle ni ne modifie le graphe privé d’un autre utilisateur', () => {
+    const graph = createGraph(teacher, {label: 'Graphe privé', scope: 'personal'});
+    expect(() => getFullGraph(student, graph.id)).toThrow('pedagogical_graph_not_found');
+    expect(() =>
+      addGraphNode(student, graph.id, {
+        node_type: 'resource',
+        label: 'Nœud intrus',
+      }),
+    ).toThrow('pedagogical_graph_not_found');
   });
 });

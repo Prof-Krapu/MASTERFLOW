@@ -184,7 +184,7 @@ describe('Pedagogical Graphs', () => {
   });
 
   it('getFullGraph returns graph with nodes and edges', () => {
-    const result = getFullGraph(graphId);
+    const result = getFullGraph(teacher, graphId);
     expect(result.graph.id).toBe(graphId);
     expect(Array.isArray(result.nodes)).toBe(true);
     expect(Array.isArray(result.edges)).toBe(true);
