@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import type {FormEvent, ReactElement} from 'react';
 
 import type {
@@ -39,22 +39,10 @@ import {
   updateRoomInstance,
   validateResource,
 } from './api.ts';
-import {ActionAudit} from './action-audit.tsx';
-import {AdminConsole} from './admin-console.tsx';
 import {MasterFlowShell, ModeRail, SituationPanel} from './app-shell.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
 import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
-import {InventoryWorkspace} from './inventory-workspace.tsx';
-import {JobObservability} from './job-observability.tsx';
-import {OwnerCockpit} from './owner-cockpit.tsx';
-import {VisualManifestPanel} from './visual-manifest-panel.tsx';
-import {StoryWorkbenchPanel} from './story-workbench-panel.tsx';
-import {PrivateQuotePanel} from './private-quote-panel.tsx';
-import {ReleaseReceiptPanel} from './release-receipt-panel.tsx';
-import {BackupReceiptPanel} from './backup-receipt-panel.tsx';
-import {IncidentRecordPanel} from './incident-record-panel.tsx';
-import {TeachingReadiness} from './teaching-readiness.tsx';
 import {
   buildModeView,
   canUseMode,
@@ -74,6 +62,7 @@ type ChatTurn = {
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
 type EntryDensity = 'low' | 'medium' | 'high';
 type PersonaPresence = 'direct' | 'guided' | 'character';
+type PrivateTool = 'd08' | 'd09' | 'd10' | null;
 type EntryProfile = {
   userId: string;
   intent: WorkModeId;
@@ -115,6 +104,55 @@ const ROLE_LABEL: Record<string, string> = {
   admin: 'admin',
   godmode: 'godmode',
 };
+
+const ActionAudit = lazy(async () => {
+  const module = await import('./action-audit.tsx');
+  return {default: module.ActionAudit};
+});
+const AdminConsole = lazy(async () => {
+  const module = await import('./admin-console.tsx');
+  return {default: module.AdminConsole};
+});
+const InventoryWorkspace = lazy(async () => {
+  const module = await import('./inventory-workspace.tsx');
+  return {default: module.InventoryWorkspace};
+});
+const JobObservability = lazy(async () => {
+  const module = await import('./job-observability.tsx');
+  return {default: module.JobObservability};
+});
+const OwnerCockpit = lazy(async () => {
+  const module = await import('./owner-cockpit.tsx');
+  return {default: module.OwnerCockpit};
+});
+const VisualManifestPanel = lazy(async () => {
+  const module = await import('./visual-manifest-panel.tsx');
+  return {default: module.VisualManifestPanel};
+});
+const StoryWorkbenchPanel = lazy(async () => {
+  const module = await import('./story-workbench-panel.tsx');
+  return {default: module.StoryWorkbenchPanel};
+});
+const PrivateQuotePanel = lazy(async () => {
+  const module = await import('./private-quote-panel.tsx');
+  return {default: module.PrivateQuotePanel};
+});
+const ReleaseReceiptPanel = lazy(async () => {
+  const module = await import('./release-receipt-panel.tsx');
+  return {default: module.ReleaseReceiptPanel};
+});
+const BackupReceiptPanel = lazy(async () => {
+  const module = await import('./backup-receipt-panel.tsx');
+  return {default: module.BackupReceiptPanel};
+});
+const IncidentRecordPanel = lazy(async () => {
+  const module = await import('./incident-record-panel.tsx');
+  return {default: module.IncidentRecordPanel};
+});
+const TeachingReadiness = lazy(async () => {
+  const module = await import('./teaching-readiness.tsx');
+  return {default: module.TeachingReadiness};
+});
 
 const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
 const PROJECT_ROLE_LABEL: Record<ProjectMemberRole, string> = {
@@ -228,6 +266,7 @@ function App(): ReactElement {
   const [error, setError] = useState<string | null>(null);
   const [selectedMode, setSelectedMode] = useState<WorkModeId>('home');
   const [pilotageOpen, setPilotageOpen] = useState(false);
+  const [privateTool, setPrivateTool] = useState<PrivateTool>(null);
   const [entryIntent, setEntryIntent] = useState<WorkModeId>('learning');
   const [entryDensity, setEntryDensity] = useState<EntryDensity>('medium');
   const [entryPresence, setEntryPresence] = useState<PersonaPresence>('guided');
@@ -416,6 +455,7 @@ function App(): ReactElement {
     setState('idle');
     setSelectedMode('home');
     setPilotageOpen(false);
+    setPrivateTool(null);
     setEntryIntent('learning');
     setEntryDensity('medium');
     setEntryPresence('guided');
@@ -506,6 +546,7 @@ function App(): ReactElement {
 
   const handleModeSelect = useCallback((mode: WorkModeId): void => {
     setPilotageOpen(false);
+    setPrivateTool(null);
     setSelectedMode(mode);
     void persistRoomInstance(mode);
   }, [persistRoomInstance]);
@@ -1258,29 +1299,31 @@ function App(): ReactElement {
           ) : null}
 
           {pilotageOpen && canAdmin && auth && context ? (
-            <ControlWorkspace
-              admin={<>
-                <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
-              </>}
-              control={<>
-                <OwnerCockpit
-                  activeMode={activeMode.id}
-                  contextTier={context.runtime_context.trace.granted_tier}
-                  roomId={context.room.id}
-                  token={auth.token}
-                />
-                {renderValidationInbox()}
-                {renderRagPanel()}
-                <JobObservability token={auth.token} />
-                {renderDebugPanel()}
-              </>}
-              onClose={() => setPilotageOpen(false)}
-              ops={<>
-                <ReleaseReceiptPanel token={auth.token} />
-                <BackupReceiptPanel token={auth.token} />
-                <IncidentRecordPanel token={auth.token} />
-              </>}
-            />
+            <Suspense fallback={<p className="panel panel--wide muted">Chargement du pilotage…</p>}>
+              <ControlWorkspace
+                admin={<>
+                  <AdminConsole token={auth.token} role={context.user.role} currentUserId={context.user.id} />
+                </>}
+                control={<>
+                  <OwnerCockpit
+                    activeMode={activeMode.id}
+                    contextTier={context.runtime_context.trace.granted_tier}
+                    roomId={context.room.id}
+                    token={auth.token}
+                  />
+                  {renderValidationInbox()}
+                  {renderRagPanel()}
+                  <JobObservability token={auth.token} />
+                  {renderDebugPanel()}
+                </>}
+                onClose={() => setPilotageOpen(false)}
+                ops={<>
+                  <ReleaseReceiptPanel token={auth.token} />
+                  <BackupReceiptPanel token={auth.token} />
+                  <IncidentRecordPanel token={auth.token} />
+                </>}
+              />
+            </Suspense>
           ) : (
           <>
           <article className="panel panel--wide main-widget">
@@ -1325,29 +1368,37 @@ function App(): ReactElement {
                 </button>
               ) : null}
             </div>
-            {actionRun.action ? <ActionAudit action={actionRun.action} token={auth.token} /> : null}
+            {actionRun.action ? (
+              <Suspense fallback={<p className="muted compact">Chargement de l’audit…</p>}>
+                <ActionAudit action={actionRun.action} token={auth.token} />
+              </Suspense>
+            ) : null}
           </article>
 
           {activeMode.id === 'inventory' && auth && context ? (
-            <InventoryWorkspace
-              onProjectChange={setSelectedProjectId}
-              projectMemberRole={currentProjectMember?.role ?? null}
-              projects={projects}
-              role={context.user.role}
-              selectedProjectId={selectedProjectId}
-              token={auth.token}
-            />
+            <Suspense fallback={<p className="panel panel--wide muted">Chargement Inventory…</p>}>
+              <InventoryWorkspace
+                onProjectChange={setSelectedProjectId}
+                projectMemberRole={currentProjectMember?.role ?? null}
+                projects={projects}
+                role={context.user.role}
+                selectedProjectId={selectedProjectId}
+                token={auth.token}
+              />
+            </Suspense>
           ) : null}
 
           {activeMode.id === 'teaching' && auth && context ? (
-            <TeachingReadiness
-              context={context}
-              project={selectedProject}
-              projectResources={projectResources}
-              resources={resources}
-              token={auth.token}
-              validationItems={pendingActions}
-            />
+            <Suspense fallback={<p className="panel panel--wide muted">Chargement Teaching…</p>}>
+              <TeachingReadiness
+                context={context}
+                project={selectedProject}
+                projectResources={projectResources}
+                resources={resources}
+                token={auth.token}
+                validationItems={pendingActions}
+              />
+            </Suspense>
           ) : null}
 
           {activeMode.id !== 'inventory' ? <article className="panel panel--wide">
@@ -1587,9 +1638,33 @@ function App(): ReactElement {
 
           <SystemMessages messages={systemMessages} />
 
-          {canAdmin && auth ? <VisualManifestPanel token={auth.token} /> : null}
-          {canAdmin && auth ? <StoryWorkbenchPanel token={auth.token} /> : null}
-          {canAdmin && auth ? <PrivateQuotePanel token={auth.token} /> : null}
+          {canAdmin && auth ? (
+            <section className="private-tools" aria-label="Outils privés">
+              <div className="panel-header">
+                <div>
+                  <h2>Outils privés</h2>
+                  <p className="muted compact">Un seul outil est chargé à la demande.</p>
+                </div>
+                {privateTool ? (
+                  <button className="secondary" onClick={() => setPrivateTool(null)} type="button">
+                    Fermer
+                  </button>
+                ) : null}
+              </div>
+              <div className="next-actions">
+                <button onClick={() => setPrivateTool('d08')} type="button">D08 · Visuel</button>
+                <button onClick={() => setPrivateTool('d09')} type="button">D09 · Story</button>
+                <button onClick={() => setPrivateTool('d10')} type="button">D10 · Devis</button>
+              </div>
+              {privateTool ? (
+                <Suspense fallback={<p className="panel panel--wide muted">Chargement de l’outil…</p>}>
+                  {privateTool === 'd08' ? <VisualManifestPanel token={auth.token} /> : null}
+                  {privateTool === 'd09' ? <StoryWorkbenchPanel token={auth.token} /> : null}
+                  {privateTool === 'd10' ? <PrivateQuotePanel token={auth.token} /> : null}
+                </Suspense>
+              ) : null}
+            </section>
+          ) : null}
           </>
           )}
         </section>
