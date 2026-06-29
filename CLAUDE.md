@@ -106,6 +106,38 @@ il reste en pause. Sa réponse `done_unverified` n'est jamais une validation. Le
 le canon, l'architecture, les permissions, les secrets, les providers, les migrations, les seeds,
 les schémas, les contrats partagés, le Git distant et le live restent pilotés par Codex et MALEX.
 
+### Reprise anti-coupure crédits
+
+Les sessions Codex peuvent s'interrompre par manque de crédits. Toute vague structurante doit donc
+laisser un point de reprise lisible dans `SUIVI.md` avant de devenir longue ou risquée.
+
+Rituel de reprise obligatoire :
+
+1. `git fetch --all --prune` ;
+2. lire `CLAUDE.md`, `SUIVI.md`, `.opencode/INBOX.md`, `INBOX_MALEX.md`, `INBOX_VINCENT.md` et
+   `SYNC_THREAD_MALEX_VINCENT.md` ;
+3. vérifier `HEAD == origin/main` ou expliciter le delta ;
+4. reprendre d'abord la vague active/inachevée indiquée dans `SUIVI.md` ;
+5. ne jamais déclarer une publication sans preuve GitHub.
+
+Format attendu en tête de `SUIVI.md` :
+
+```txt
+VAGUE ACTIVE:
+- id:
+- objectif:
+- statut:
+- dernière action terminée:
+- prochaine action:
+- fichiers/domaines concernés:
+- tests à relancer:
+- publication:
+- blocage:
+```
+
+Si aucune vague n'est active, le bloc doit le dire explicitement et pointer la prochaine vague
+recommandée.
+
 ## Stack & commandes
 
 TypeScript ESM (exécuté par **tsx**, pas de build backend). Express 4 + better-sqlite3 + `ws` + JWT (`jsonwebtoken`/`bcryptjs`) + Zod. Frontend MALEX (`apps/frontend`) : React 19 + Vite 6.
