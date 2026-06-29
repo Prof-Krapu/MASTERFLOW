@@ -31,6 +31,7 @@ frozen_by: MALEX « on reprend » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Tests auth/révocation prêts à publication.
+> 2026-06-29 codex → PR #197 mergée (`629e190`) ; GitHub `main` fait foi.
 
 ---
 
