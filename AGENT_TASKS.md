@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-339 — DA-NARRATIVE-BRIDGE-001 : ponts DA narrative
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Auditer les ponts existants entre Experience Fabric, MasterStory, D08, Theme Studio,
+  Visual Narrative Grammar, Living Companions et Safety.
+- Définir l'autorité par type de décision pour éviter les moteurs concurrents.
+- Préparer la tranche Theme Studio / Asset Packs sans provider, génération ou canonisation.
+
+### verification
+- Lecture ciblée des services runtime existants.
+- `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Carte de ponts DA narrative prête à publication.
+
+---
+
 ## TASK-338 — VOICE-PERSONA-002 : TTS durci
 target: codex
 status: done

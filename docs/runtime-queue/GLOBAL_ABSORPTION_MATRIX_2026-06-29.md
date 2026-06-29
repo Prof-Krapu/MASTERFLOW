@@ -41,8 +41,8 @@ présents dans Git pour éviter trois dérives :
 | Vision product absorption | `already_in_git_doc` partiel | progressive disclosure, preflight UI, notes/ZK comme Knowledge extension, output registry | LMS/OCR/C2PA/image sans tranche séparée | piocher par vagues courtes |
 | Factories | `external_workshop` + primitives Git | boot context, scope lock, extraction inbox, source truth strip, visual refs | audit détaillé Factory dans Git, copie de bot complet | seulement primitives nommées |
 | OpenMontage / design.md | `already_in_git_doc` et concepts clean-room | packs, étapes, promesse de sortie, cost/preflight, Theme Studio | code AGPL, provider scoring, génération automatique | continuer côté Theme/D08 si utile |
-| DA narrative / Theme Studio / D08 | `partial_runtime` | manifests, visual grammar, Theme Studio explain-only, D08 gates | provider image réel, canonisation auto, motif décoratif non justifié | après Security/Trust ou en parallèle doc |
-| MasterStory / Experience Fabric | `partial_runtime` avancé | Event Spine, Precedents, Storylets, MAPE-K, Blackboard, MasterStory UI | autonomie sans validation, multi-porte-parole public | consolider ponts après sécurité |
+| DA narrative / Theme Studio / D08 | `bridge_map_ready_local` | manifests, visual grammar, Theme Studio explain-only, D08 gates, autorités de routage | provider image réel, canonisation auto, motif décoratif non justifié | `THEME-STUDIO-ASSET-PACKS-001` |
+| MasterStory / Experience Fabric | `bridge_map_ready_local` | Event Spine, Precedents, Storylets, MAPE-K, Blackboard, MasterStory UI, routage DA narrative | autonomie sans validation, multi-porte-parole public | `THEME-STUDIO-ASSET-PACKS-001` |
 | Learning / Teaching integrity | `partial_runtime` | Teaching, ressources vidéo, timecodes/notions, validation inbox | faire le travail à la place, LMS lourd, tracking intrusif | après Safety/Trust |
 | UI progressive | `partial_runtime` | Home légère, GodMode panels, outils à la demande | dashboard permanent, chargement massif, surfaces sans endpoint réel | après contrats sécurité/trust |
 
