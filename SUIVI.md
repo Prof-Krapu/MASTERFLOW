@@ -6,17 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `SAFETY-STATE-001`
-- objectif : définir les états narratifs de sécurité et leur récupération sans humiliation,
-  sanction automatique, ban ou modification de permission.
+- id : `SAFETY-STATE-002`
+- objectif : projeter les états narratifs depuis Security, Trust et hard stop, sans persistance,
+  prompt persona, UI, asset, sanction ou permission.
 - statut : `next_not_started`
-- dernière action terminée : `TRUST-FABRIC-002` portée par la PR #179.
-- prochaine action : figer le contrat des états, transitions, réactions persona et retour normal.
-- fichiers/domaines concernés : Security Fabric, Trust Fabric, hard stop, personas et GodMode.
-- tests à relancer : lecture ciblée + `git diff --check` pour le contrat initial.
-- publication : PR #179 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : assets générés, UI rouge, auto-ban, permission, sanction, session kill et migration
-  restent interdits.
+- dernière action terminée : contrat `SAFETY-STATE-001` prêt à publication.
+- prochaine action : figer les entrées exactes de la fonction pure avant tout code runtime.
+- fichiers/domaines concernés : `docs/safety/SAFETY_STATE_MACHINE_V1_2026-06-29.md`, Security,
+  Trust, hard stop et diagnostics.
+- tests à relancer : ciblés Safety puis backend complet et lint si runtime touché.
+- publication : `SAFETY-STATE-001` local, publication GitHub en cours.
+- blocage : persistance, prompt persona, asset, UI rouge, auto-ban, permission, sanction, session
+  kill et migration restent interdits.
+
+## 2026-06-29 — SAFETY-STATE-001 : sécurité narrative non punitive
+
+- sept états : normal, vigilant, recadrage, suspicious, closed, hard stop et recovered ;
+- transitions dérivées uniquement de Security, Trust et hard stop réels ;
+- réactions persona sémantiques sans génération d'asset ;
+- règles privées, classe et intégrité académique non humiliantes ;
+- récupération et expiration obligatoires ;
+- aucune autorité métier, permission, sanction ou ban ajoutés.
+
+Livrable : `docs/safety/SAFETY_STATE_MACHINE_V1_2026-06-29.md`.
+
+Statut : local vérifié, publication GitHub en cours.
 
 ## 2026-06-29 — TRUST-FABRIC-002 : read model privé
 

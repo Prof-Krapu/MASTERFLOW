@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-335 — SAFETY-STATE-001 : sécurité narrative non punitive
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Définir états, transitions, réactions persona et récupération.
+- Garder l'état narratif subordonné à Security, Trust, permissions et hard stop.
+- Préparer classe, GodMode et assets futurs sans humiliation.
+- Ne modifier aucun runtime, prompt, asset, UI, schéma, permission ou sanction.
+
+### verification
+- Relecture Security, Trust, hard stop, réactions persona et règles non humiliantes.
+- `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Contrat Safety State V1 prêt à publication atomique.
+
+---
+
 ## TASK-334 — TRUST-FABRIC-002 : read model privé
 target: codex
 status: done
