@@ -37,6 +37,7 @@ import {
   setToken,
   syncCoordinationRag,
   updateRoomInstance,
+  validateAction,
   validateResource,
 } from './api.ts';
 import {ChatDock, HomeDashboard, MasterFlowShell, ModeRail, SituationPanel} from './app-shell.tsx';
@@ -71,7 +72,7 @@ type EntryProfile = {
   completedAt: number;
 };
 type ActionRunState = {
-  status: 'idle' | 'creating' | 'preflight' | 'waiting_validation' | 'approved' | 'executing' | 'completed' | 'failed';
+  status: 'idle' | 'creating' | 'preflight' | 'waiting_validation' | 'deciding' | 'approved' | 'executing' | 'completed' | 'failed';
   message: string;
   action?: Action;
 };
@@ -703,6 +704,35 @@ function App(): ReactElement {
       });
     }
   }, [activeMode.id, auth, canValidate, context, refreshPendingActions, runApprovedAction]);
+
+  const handleDirectActionDecision = useCallback(async (
+    action: Action,
+    decision: 'approved' | 'rejected',
+  ): Promise<void> => {
+    if (!auth) return;
+    setActionRun({
+      status: 'deciding',
+      message: decision === 'approved' ? 'Validation en cours.' : 'Rejet en cours.',
+      action,
+    });
+    try {
+      const decided = await validateAction(action.id, {decision}, auth.token);
+      setActionRun({
+        status: decided.status === 'approved' ? 'approved' : 'failed',
+        message: decided.status === 'approved'
+          ? 'Action validée. Elle reste sans effet tant que vous ne l’exécutez pas.'
+          : 'Action rejetée. Aucun effet produit.',
+        action: decided,
+      });
+      await refreshPendingActions();
+    } catch (err) {
+      setActionRun({
+        status: 'failed',
+        message: err instanceof Error ? err.message : 'Décision impossible.',
+        action,
+      });
+    }
+  }, [auth, refreshPendingActions]);
 
   const handleValidationDecision = useCallback(async (
     item: ValidationInboxItem,
@@ -1379,7 +1409,7 @@ function App(): ReactElement {
                 nextActions.map((action) => (
                   <button
                     className="action-chip"
-                    disabled={actionRun.status === 'creating' || actionRun.status === 'preflight' || actionRun.status === 'executing'}
+                    disabled={actionRun.status === 'creating' || actionRun.status === 'preflight' || actionRun.status === 'deciding' || actionRun.status === 'executing'}
                     key={action.action_id}
                     onClick={() => void handleActionClick(action)}
                     type="button"
@@ -1412,7 +1442,15 @@ function App(): ReactElement {
             </div>
             {actionRun.action ? (
               <Suspense fallback={<p className="muted compact">Chargement de l’audit…</p>}>
-                <ActionAudit action={actionRun.action} token={auth.token} />
+                <ActionAudit
+                  action={actionRun.action}
+                  canDecide={canValidate}
+                  decisionBusy={actionRun.status === 'deciding'}
+                  onDecision={(decision) => {
+                    if (actionRun.action) void handleDirectActionDecision(actionRun.action, decision);
+                  }}
+                  token={auth.token}
+                />
               </Suspense>
             ) : null}
           </article>

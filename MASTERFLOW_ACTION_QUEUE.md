@@ -39,8 +39,18 @@ Dernière mise à jour : 2026-06-29
 - Impact : l’UI peut expliquer une action avant validation sans lire les payloads techniques.
 - Risque : faible ; extension additive, aucune exécution ou permission nouvelle.
 - Source de vérité concernée : Action Engine + rapport Vision Product Absorption.
-- Statut : implémenté localement, validation en cours.
+- Statut : publié via PR #168 (`bb03628`).
 - Validation requise : non pour le contrat partagé ; oui avant automatisation ou effet live.
+
+#### VISIBLE-PREFLIGHT-002 — panneau de décision progressif
+
+- Tâche : rendre le contrat visible dans la trace d’action et brancher les décisions réellement
+  disponibles.
+- Impact : l’utilisateur comprend avant d’agir, sans passer par des détails techniques.
+- Risque : faible ; validation et exécution restent deux gestes séparés.
+- Source de vérité concernée : frontend MALEX + Action Engine existant.
+- Statut : implémenté et vérifié localement.
+- Validation requise : non pour publication ; oui avant route de modification directe.
 
 ### FACTORIES-CONFRONTATION-P1 — Hygiène Desktop + primitives seulement
 

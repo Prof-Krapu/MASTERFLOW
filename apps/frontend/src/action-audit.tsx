@@ -7,6 +7,9 @@ import {getActionContextComparison} from './api.ts';
 
 type ActionAuditProps = {
   action: Action;
+  canDecide?: boolean;
+  decisionBusy?: boolean;
+  onDecision?: (decision: 'approved' | 'rejected') => void;
   token: string;
 };
 
@@ -99,9 +102,16 @@ const NEXT_STEP_LABELS: Record<ActionContextComparison['recommended_next_step'],
   owner_review: 'Vérification owner nécessaire avant toute suite.',
 };
 
-export function ActionAudit({action, token}: ActionAuditProps): ReactElement {
+export function ActionAudit({
+  action,
+  canDecide = false,
+  decisionBusy = false,
+  onDecision,
+  token,
+}: ActionAuditProps): ReactElement {
   const risk = action.preflight?.risk_level ?? action.risk_level ?? 'non renseigne';
   const warnings = action.preflight?.warnings ?? [];
+  const explanation = action.preflight?.explanation;
   const resultAvailable = action.result && Object.keys(action.result).length > 0;
   const [contextComparison, setContextComparison] = useState<ActionContextComparison | null>(null);
 
@@ -147,6 +157,68 @@ export function ActionAudit({action, token}: ActionAuditProps): ReactElement {
           <dd>{formatTimestamp(action.updated_at)}</dd>
         </div>
       </dl>
+
+      {explanation ? (
+        <section className="preflight-panel" aria-label="Préflight lisible">
+          <header>
+            <div>
+              <small>Avant toute action</small>
+              <h3>{explanation.proposed_change}</h3>
+            </div>
+            <span className={`preflight-risk preflight-risk--${risk}`}>Risque {risk}</span>
+          </header>
+          <div className="preflight-impact">
+            <article>
+              <small>Maintenant</small>
+              <p>{explanation.effect_preview.before}</p>
+            </article>
+            <span aria-hidden="true">→</span>
+            <article>
+              <small>Après validation</small>
+              <p>{explanation.effect_preview.after}</p>
+            </article>
+          </div>
+          <div className="preflight-resources">
+            <small>Éléments concernés</small>
+            <ul>
+              {explanation.affected_resources.map((resource) => <li key={resource}>{resource}</li>)}
+            </ul>
+          </div>
+          {action.status === 'pending_validation' ? (
+            <div className="preflight-decisions">
+              {explanation.decision_options.map((option) => {
+                const available = option.availability === 'available';
+                const disabled = decisionBusy || !canDecide || !available;
+                const label = option.id === 'approve'
+                  ? 'Valider'
+                  : option.id === 'modify'
+                    ? 'Modifier'
+                    : 'Rejeter';
+                return (
+                  <button
+                    className={option.id === 'reject' ? 'secondary' : undefined}
+                    disabled={disabled}
+                    key={option.id}
+                    onClick={() => {
+                      if (option.id === 'approve') onDecision?.('approved');
+                      if (option.id === 'reject') onDecision?.('rejected');
+                    }}
+                    title={option.reason ?? (!canDecide ? 'Rôle validateur requis.' : undefined)}
+                    type="button"
+                  >
+                    {label}{!available ? ' · à venir' : ''}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+          {!canDecide && action.status === 'pending_validation' ? (
+            <small className="preflight-validator-note">
+              Décision réservée au rôle {action.preflight?.validator_role ?? 'teacher'}.
+            </small>
+          ) : null}
+        </section>
+      ) : null}
 
       {action.validation_note ? (
         <p className="audit-note">
