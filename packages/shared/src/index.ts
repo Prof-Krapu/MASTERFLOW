@@ -1090,6 +1090,13 @@ export const PersonaBlendSchema = z.object({
 });
 export type PersonaBlend = z.infer<typeof PersonaBlendSchema>;
 
+export const TtsRequestSchema = z.object({
+  text: z.string().trim().min(1).max(1200),
+  room_instance_id: z.string().min(1).max(120),
+  expected_persona_id: z.string().min(1).max(120).nullable().default(null),
+}).strict();
+export type TtsRequest = z.infer<typeof TtsRequestSchema>;
+
 // ───────────────────────── Cycle de vie des actions ─────────────────────────
 
 export const ActionStatusSchema = z.enum([

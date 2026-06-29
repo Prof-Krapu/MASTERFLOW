@@ -109,14 +109,14 @@ Un échec audio ne bloque jamais le chat.
 
 ## Première tranche runtime recommandée
 
-`VOICE-PERSONA-002` :
+Statut : implémentée par `VOICE-PERSONA-002`, publication GitHub à vérifier dans `SUIVI.md`.
 
-1. créer schéma partagé et service TTS testable ;
-2. exiger auth + Room et résoudre le speaker réel ;
-3. supprimer `requestedVoice` côté client ;
-4. ajouter whitelist, 1 200 caractères, rate limit, timeout et cleanup ;
-5. mocker le générateur dans les tests, sans appel réseau réel ;
-6. conserver le bouton frontend mais adapter son contrat.
+1. schéma partagé strict et service TTS injectable ;
+2. auth + Room + speaker réel partagé avec le chat ;
+3. suppression de la voix libre côté client ;
+4. whitelist serveur minimale, 1 200 caractères, quota, timeout, taille et cleanup ;
+5. générateur mocké dans les tests, sans appel réseau ;
+6. bouton frontend conservé avec le nouveau contrat.
 
 ## Tests d'acceptation
 

@@ -6,18 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `VOICE-PERSONA-002`
-- objectif : durcir le TTS avec auth, Room/speaker réel, whitelist, limites et tests mockés, sans
-  STT, clonage vocal, provider payant ou appel réseau de test.
+- id : `DA-NARRATIVE-BRIDGE-001`
+- objectif : consolider les ponts entre Experience Fabric, D08, Theme Studio, MasterStory,
+  compagnons et Safety sans ouvrir génération ou canonisation automatique.
 - statut : `next_not_started`
-- dernière action terminée : contrat `VOICE-PERSONA-001` porté par la PR #182.
-- prochaine action : figer la whitelist et l'injection du générateur avant tout code runtime.
-- fichiers/domaines concernés : `docs/voice/VOICE_PERSONA_TTS_V1_2026-06-29.md`, TTS, speaker,
-  runtime loadout et frontend audio.
-- tests à relancer : ciblés TTS puis backend complet, lint et build frontend si code touché.
-- publication : PR #182 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : STT/micro, clonage vocal, provider payant, cache audio, secrets et live restent
-  interdits.
+- dernière action terminée : `VOICE-PERSONA-002` vérifiée localement.
+- prochaine action : auditer les ponts déjà réels et identifier le premier gap sans recoder
+  Experience Fabric.
+- fichiers/domaines concernés : Experience Fabric, D08, Theme Studio, MasterStory, companions,
+  Safety et assets.
+- tests à relancer : lecture ciblée + `git diff --check` pour l'audit initial.
+- publication : `VOICE-PERSONA-002` prête pour une PR atomique.
+- blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
+
+## 2026-06-29 — VOICE-PERSONA-002 : TTS durci
+
+- route TTS authentifiée et body strict ;
+- porte-parole résolu depuis la Room avec le même moteur que le chat ;
+- voix provider libre supprimée du client ;
+- whitelist serveur minimale, texte 1 200 caractères, quota, timeout et taille bornée ;
+- nettoyage temporaire garanti et audit sans texte brut ;
+- frontend adapté, générateur mocké dans les tests, aucun appel Edge TTS.
+
+Vérifications : TTS + persona 9/9, backend 632/632, lint back/front, build frontend et diff-check.
+
+Statut : local vérifié, publication GitHub à lancer.
 
 ## 2026-06-29 — VOICE-PERSONA-001 : audit TTS contrôlé
 

@@ -34,7 +34,7 @@ présents dans Git pour éviter trois dérives :
 |---|---|---|---|---|
 | Reprise / pilotage | `implemented_doc` via PR #173 | rituel anti-coupure, queue globale, bloc `VAGUE ACTIVE` | nouvelles queues parallèles | continuer avec cette matrice |
 | EXPRESSIVE_CANON | `already_in_git_runtime` P1 | Style Mirror consenti, borné, injecté seulement si actif/validé | nouvelle table `behavior_profiles`, psychologie inférée, collecte auto | plus tard : P2 évaluation consentie |
-| Voix / TTS persona | `contract_ready_pr_182` + PoC | route et bouton existent ; contrat auth/Room/whitelist/limites prêt | STT, clonage, voix libre, provider payant, cache audio | `VOICE-PERSONA-002` durcissement mocké |
+| Voix / TTS persona | `runtime_hardened_ready_local` | auth, Room speaker, whitelist, limites, cleanup, frontend et tests mockés | STT, clonage, provider payant, cache audio, voix différenciées non validées | `DA-NARRATIVE-BRIDGE-001` |
 | Security Fabric | `runtime_guard_pr_177` | frontière V1, garde déterministe direct/indirect, RAG fiable, action engine, hard stop, permissions | répétition persistante, ban automatique, kill switch global, provider/live | `TRUST-FABRIC-001`, puis observabilité sécurité |
 | Trust Fabric | `runtime_read_model_pr_179` | quatre dimensions séparées, lecture privée, trust RAG, audit, coûts et santé runtime | passeport artifact, score moral, moyenne globale, surveillance opaque | `SAFETY-STATE-001`, puis passeport artifact séparé |
 | Safety narrative states | `runtime_projection_pr_181` | sept états, projection privée, récupération, hard stop et réactions sémantiques | humiliation en classe, sanction automatique, asset improvisé, UI punitive | `VOICE-PERSONA-001`, puis surface UI séparée |

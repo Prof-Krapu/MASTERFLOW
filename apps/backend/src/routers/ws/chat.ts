@@ -10,10 +10,8 @@ import type {
 import {WsClientMessageSchema} from '@masterflow/shared';
 
 import {getDb} from '../../db/schema.ts';
-import type {RoomInstanceRow, RoomRow} from '../../db/schema.ts';
 import {audit} from '../../lib/audit.ts';
 import {authenticateToken} from '../../middleware/auth.ts';
-import {getActiveBlend, getPersona, methodAttribution} from '../../engines/persona_engine.ts';
 import {getOwnedAccessibleRoomInstance} from '../../services/room_access.ts';
 import {streamChat, type ChatMessage} from '../../services/llm.ts';
 import {deriveUserRuntimeLoadout} from '../../services/runtime_loadout.ts';
@@ -21,6 +19,7 @@ import {compileRuntimeContext} from '../../services/context_compiler.ts';
 import {getRagContextPack} from '../../services/rag.ts';
 import {getStyleInstructions} from '../../services/style_mirror_engine.ts';
 import type {AuthUser} from '../../middleware/auth.ts';
+import {resolvePersonaSpeaker} from '../../services/persona_speaker.ts';
 
 /**
  * WebSocket de chat — streaming token-par-token (Phase 2).
@@ -41,9 +40,6 @@ import type {AuthUser} from '../../middleware/auth.ts';
  *   client → `{type:'chat', content}` | `{type:'ping'}`
  *   serveur → `chat_start` → n × `chat_chunk` → `chat_end` | `pong` | `error`
  */
-
-/** Persona de repli si la room_instance n'en désigne aucun et qu'aucune chimère n'est active. */
-const DEFAULT_PERSONA_ID = 'masterflow-system-001';
 
 /** Contexte résolu d'une connexion WS (utilisateur + room_instance). */
 interface WsContext {
@@ -84,43 +80,7 @@ function parseToken(url: string | undefined, headers: IncomingMessage['headers']
  * Priorité : chimère active (primaire) > persona actif de la room_instance > défaut.
  * Retourne aussi l'attribution de méthode si une chimère prête un secondaire.
  */
-export function resolveSpeaker(
-  actor: AuthUser,
-  roomInstanceId: string,
-): {speaker: Persona; methodAttr: string | null} {
-  const instance = getOwnedAccessibleRoomInstance(actor, roomInstanceId);
-  if (!instance) throw new Error('Room instance indisponible.');
-  const room = getDb().prepare('SELECT * FROM rooms WHERE id = ?').get(instance.room_id) as
-    | RoomRow
-    | undefined;
-  if (!room) throw new Error('Room indisponible.');
-  const loadout = deriveUserRuntimeLoadout(actor, room, instance);
-  const allowed = new Set(loadout.available_persona_ids);
-  const blend = getActiveBlend(roomInstanceId);
-  if (blend && allowed.has(blend.primary_persona.id)) {
-    const methodAttr =
-      blend.secondary_persona && allowed.has(blend.secondary_persona.id)
-        ? methodAttribution(blend.secondary_persona)
-        : null;
-    return {speaker: blend.primary_persona, methodAttr};
-  }
-
-  // Pas de chimère : persona actif stocké dans l'état vivant de la room_instance.
-  const row = getDb()
-    .prepare('SELECT * FROM room_instances WHERE id = ?')
-    .get(roomInstanceId) as RoomInstanceRow | undefined;
-  if (row?.widget_state_json) {
-    const state = JSON.parse(row.widget_state_json) as Record<string, unknown>;
-    const activeId = typeof state['active_persona'] === 'string' ? state['active_persona'] : null;
-    const persona = activeId ? getPersona(activeId) : null;
-    if (persona && allowed.has(persona.id)) return {speaker: persona, methodAttr: null};
-  }
-
-  const fallbackId = loadout.available_persona_ids[0] ?? DEFAULT_PERSONA_ID;
-  const fallback = getPersona(fallbackId);
-  if (!fallback) throw new Error('Aucun persona disponible pour le chat.');
-  return {speaker: fallback, methodAttr: null};
-}
+export const resolveSpeaker = resolvePersonaSpeaker;
 
 /**
  * Construit le prompt système d'un persona à partir de sa voix et de sa méthode.

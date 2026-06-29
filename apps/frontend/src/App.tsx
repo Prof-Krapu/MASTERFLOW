@@ -1333,6 +1333,7 @@ function App(): ReactElement {
                     chatInput={chatInput}
                     conversationTurns={conversationTurns}
                     activePersonaId={activePersona?.id}
+                    roomInstanceId={context?.room_instance.id ?? ''}
                     onChatInputChange={(value) => setChatInput(value)}
                     onChatSubmit={handleChatSubmit}
                     wsState={wsState}

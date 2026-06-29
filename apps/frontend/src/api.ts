@@ -925,7 +925,8 @@ export async function getTokenUsage(
 
 export async function playTts(
   text: string,
-  personaId?: string,
+  roomInstanceId: string,
+  expectedPersonaId?: string,
   token?: string | null,
 ): Promise<void> {
   const response = await fetch(`${API_BASE}/tts`, {
@@ -933,7 +934,11 @@ export async function playTts(
     headers: {
       ...headers(token),
     },
-    body: JSON.stringify({ text, personaId }),
+    body: JSON.stringify({
+      text,
+      room_instance_id: roomInstanceId,
+      expected_persona_id: expectedPersonaId ?? null,
+    }),
   });
 
   if (!response.ok) {
