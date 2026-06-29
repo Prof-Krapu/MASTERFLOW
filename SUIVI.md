@@ -6,18 +6,42 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-PROGRESSIVE-LEARNING-001`
-- objectif : donner à Learn une surface légère fondée sur le profil self-read, les sources fiables
-  et le cadre d'aide partagé.
-- statut : `local_verified_pending_publication`
-- dernière action terminée : surface Learn lazy-loadée, profil en lecture et cadre d'aide vérifiés
-  en desktop/mobile.
-- prochaine action : publier la surface, puis reprendre `OBSERVABILITY-GODMODE-001`.
-- fichiers/domaines concernés : API frontend Learning Mirror, workspace Learn, panneau
-  pédagogique partagé et responsive.
-- tests à relancer : recette complète déjà verte ; publication et preuve GitHub à produire.
-- publication : accès Learning mergé via PR #193 (`c02843a`) ; surface Learn à publier.
-- blocage : aucun éditeur étudiant, aucune application d'un profil brouillon et aucun autoplay.
+- id : `RED-TEAM-TESTS-001`
+- objectif : couvrir les risques transverses restants par tests proportionnés : prompt injection,
+  permissions, révocation/confiance, poisoning de source et états Safety/UI.
+- statut : `next_queued`
+- dernière action terminée : surface Learn publiée via PR #194 (`b29366a`) ; Observabilité/GodMode
+  réconciliée comme cockpit existant à ne pas dupliquer.
+- prochaine action : ouvrir une tranche courte de tests Red Team sans migration, provider, live ou
+  nouveau cockpit.
+- fichiers/domaines concernés : Security Guard, RAG, Trust/Safety diagnostics, OwnerCockpit,
+  ExperienceCockpit, Learning/Teaching integrity.
+- tests à relancer : ciblés Red Team à créer, puis backend complet, lint backend/frontend et build
+  frontend si surface touchée.
+- publication : GitHub `main` fait foi ; `HEAD == origin/main == b29366a` au préflight.
+- blocage : aucun ; Big Pickle en pause.
+
+## 2026-06-29 — OBSERVABILITY-GODMODE-RECONCILIATION-001 : cockpit existant confirmé
+
+- confirmation que `OwnerCockpit` et `ExperienceCockpit` existent déjà côté frontend ;
+- confirmation des endpoints privés `/diagnostics/owner-cockpit`, `/diagnostics/trust`,
+  `/diagnostics/safety-state` et `/diagnostics/token-usage` ;
+- décision de ne pas créer de dashboard parallèle ni de nouvelle queue d'alertes ;
+- Observabilité/GodMode reste un agrégateur lisible : timeline, précédents, recommandations,
+  confiance, Safety, coûts, stale actions et hard-stop ;
+- prochaine tranche utile : `RED-TEAM-TESTS-001`.
+
+Vérifications : preflight GitHub/local, lecture cockpit/inbox, recherche ciblée OwnerCockpit,
+ExperienceCockpit, diagnostics, trust, safety-state et token usage, puis tests ciblés
+OwnerCockpit/token usage 13/13.
+
+Statut : réconcilié dans le suivi ; publication documentaire atomique en cours.
+
+## 2026-06-29 — UI-PROGRESSIVE-LEARNING-001 : publication GitHub
+
+La surface Learn a été publiée via PR #194 (`b29366a`). Le statut local “à publier” est donc
+clos : GitHub `main` contient le workspace Learn lazy-loadé, le profil self-read et le cadre
+d'aide Learn.
 
 ## 2026-06-29 — UI-PROGRESSIVE-LEARNING-001 : premier workspace Learn
 
