@@ -6,18 +6,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `DA-NARRATIVE-BRIDGE-001`
-- objectif : consolider les ponts entre Experience Fabric, D08, Theme Studio, MasterStory,
-  compagnons et Safety sans ouvrir génération ou canonisation automatique.
+- id : `THEME-STUDIO-ASSET-PACKS-001`
+- objectif : transformer Theme Studio en cockpit de packs thème/typos/assets/lore sans provider,
+  génération ou application silencieuse.
 - statut : `next_not_started`
-- dernière action terminée : `VOICE-PERSONA-002` publiée en PR #183.
-- prochaine action : auditer les ponts déjà réels et identifier le premier gap sans recoder
-  Experience Fabric.
-- fichiers/domaines concernés : Experience Fabric, D08, Theme Studio, MasterStory, companions,
-  Safety et assets.
+- dernière action terminée : `DA-NARRATIVE-BRIDGE-001` publiée en PR #184.
+- prochaine action : auditer Theme Studio, ThemePack, D08 manifests et assets pour définir la
+  première tranche runtime/UI sûre.
+- fichiers/domaines concernés : Theme Studio, D08, ThemePack, Visual Narrative Grammar, assets,
+  lore, Ours d'Or et versions institutionnelles.
 - tests à relancer : lecture ciblée + `git diff --check` pour l'audit initial.
-- publication : `VOICE-PERSONA-002` en PR #183, merge à effectuer.
+- publication : `DA-NARRATIVE-BRIDGE-001` en PR #184, merge à effectuer.
 - blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
+
+## 2026-06-29 — DA-NARRATIVE-BRIDGE-001 : ponts DA narrative
+
+- cartographie des autorités entre MasterStory, Experience Fabric, D08, Visual Narrative Grammar,
+  Theme Studio, Living Companions et Safety ;
+- confirmation que plusieurs ponts existent déjà en runtime, donc pas de nouveau moteur à créer ;
+- routage des demandes DA/narratives vers la bonne brique sans provider ni canonisation ;
+- règles d'évolution des subpersonas / monstres : identité initiale validée, évolution pilotée par
+  indicateurs, manifest avant asset ;
+- prochaine tranche recommandée : `THEME-STUDIO-ASSET-PACKS-001`.
+
+Livrable : `docs/experience-fabric/DA_NARRATIVE_BRIDGE_MAP_V1.md`.
+
+Vérifications : lecture ciblée des services existants et `git diff --check`.
+
+Statut : PR #184 ouverte ; merge GitHub à effectuer.
 
 ## 2026-06-29 — VOICE-PERSONA-002 : TTS durci
 
@@ -30,7 +46,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Vérifications : TTS + persona 9/9, backend 632/632, lint back/front, build frontend et diff-check.
 
-Statut : PR #183 ouverte ; merge GitHub à effectuer.
+Statut : publié via PR #183 (`21132ae`).
 
 ## 2026-06-29 — VOICE-PERSONA-001 : audit TTS contrôlé
 
