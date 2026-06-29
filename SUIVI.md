@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPERIENCE-FABRIC-006B : MOTH Living Companion
+
+- extension additive de `LivingCompanion` aux types `cdc_robot` et `moth` ;
+- activation MOTH uniquement via `ui_manifest.companion_type = moth` sur un guide assigné ;
+- scopes d'assignation explicites : session, projet et room disponibles ;
+- rôle de garde-fou CDC, bulle contextuelle et limites distinctes du Robot CDC ;
+- présence `assigned_context_only` : MOTH ne remplace jamais le persona personnel ;
+- type inconnu refusé au lieu d'être inféré ;
+- aucune permission, autonomie, génération, évolution visuelle, publication ou export ajouté.
+
+Vérifications : 7/7 ciblés Living Companion, 4/4 Storylet Engine, backend complet 591/591,
+lint backend/frontend, build frontend et diff-check OK.
+
+Statut : vague 6.2 locale prête à publication atomique.
+
 ## 2026-06-29 — EXPERIENCE-FABRIC-006A : Living Companion / Robot CDC
 
 - projection `LivingCompanion` depuis le Guided Runtime privé existant ;
@@ -19,7 +34,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 5/5 ciblés Living Companion, 4/4 Storylet Engine, backend complet 589/589,
 lint backend/frontend, build frontend et diff-check OK.
 
-Statut : vague 6.1 locale prête à publication atomique.
+Statut : publié via PR #161 (`84291eb`).
 
 ## 2026-06-29 — EXPERIENCE-FABRIC-005 : Visual Narrative Grammar
 

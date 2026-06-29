@@ -4,13 +4,22 @@ Dernière mise à jour : 2026-06-29
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-006B — MOTH Living Companion
+
+- Tâche : activer MOTH comme compagnon contextuel assigné sur le contrat Living Companion.
+- Impact : une classe ou session CDC peut disposer d'un garde-fou incarné sans remplacer le persona personnel.
+- Risque : faible ; assignation explicite, guide privé et aucune autonomie silencieuse.
+- Source de vérité concernée : runtime Git + Guided Runtime + D04/D05.
+- Statut : local vérifié, publication atomique en cours.
+- Validation requise : non pour cette projection ; oui avant asset, évolution, provider ou dialogue autonome.
+
 ### EXPERIENCE-FABRIC-006A — Living Companion / Robot CDC
 
 - Tâche : projeter le premier compagnon vivant depuis une session Guided Runtime CDC réelle.
 - Impact : le Robot CDC peut guider, montrer la progression et signaler les contradictions sans faire le travail du groupe.
 - Risque : faible ; lecture et guidage permissionnés, aucune autonomie silencieuse.
 - Source de vérité concernée : runtime Git + Guided Runtime + Storylet Engine + D04/D05.
-- Statut : local vérifié, publication atomique en cours.
+- Statut : publié via PR #161 (`84291eb`).
 - Validation requise : non pour cette projection ; oui avant asset, évolution, provider, publication ou persona canon.
 
 ### EXPERIENCE-FABRIC-005 — Visual Narrative Grammar
