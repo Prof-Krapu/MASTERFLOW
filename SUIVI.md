@@ -10,11 +10,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : auditer et durcir le TTS existant avec voix whitelistées, limites, permissions et
   fallback, sans ouvrir STT/micro complet ni provider payant.
 - statut : `next_not_started`
-- dernière action terminée : `SAFETY-STATE-002` vérifiée localement.
+- dernière action terminée : `SAFETY-STATE-002` portée par la PR #181.
 - prochaine action : auditer le routeur TTS, les configs persona et les limites avant le contrat.
 - fichiers/domaines concernés : TTS, persona voice config, permissions, coûts et frontend audio.
 - tests à relancer : lecture ciblée + `git diff --check` pour le contrat initial.
-- publication : `SAFETY-STATE-002` prête pour une PR atomique.
+- publication : PR #181 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : STT/micro complet, voix clonée, provider payant, secrets et live restent interdits.
 
 ## 2026-06-29 — SAFETY-STATE-002 : projection runtime pure
@@ -27,7 +27,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Vérifications : Safety + route 14/14, backend 628/628, lint backend et diff-check.
 
-Statut : local vérifié, publication GitHub à lancer.
+Statut : runtime porté par la PR #181 ; son état GitHub fait foi.
 
 ## 2026-06-29 — SAFETY-STATE-001 : sécurité narrative non punitive
 
