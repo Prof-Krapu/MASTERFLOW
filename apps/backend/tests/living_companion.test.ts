@@ -63,7 +63,10 @@ afterAll(async () => {
   );
 });
 
-function createCdcSession(name: string) {
+function createCdcSession(
+  name: string,
+  companion: {type?: string; name?: string} = {},
+) {
   const guide = createGuide(teacher, {
     name,
     purpose: 'Aider un groupe à comprendre et cadrer un outil IA.',
@@ -104,7 +107,10 @@ function createCdcSession(name: string) {
     completion_rules: {complete_when_required_fields_done: true},
     functional_persona_id: 'robot-cdc-functional',
     lore_persona_id: 'robot-cdc-lore',
-    ui_manifest: {companion_name: 'K-RTON'},
+    ui_manifest: {
+      companion_name: companion.name ?? 'K-RTON',
+      ...(companion.type ? {companion_type: companion.type} : {}),
+    },
     analytics_policy: {private: true},
     consent_policy: {required: true},
   });
@@ -127,9 +133,13 @@ describe('Experience Fabric — Living Companion Robot CDC', () => {
       readiness: 'limited',
       current_prompt: 'Dans quel contexte cet outil IA sera-t-il utilisé ?',
       execution_policy: 'guide_only',
+      presence_policy: 'assigned_context_only',
       configuration_policy: 'creator_validates_initial_identity',
       evolution_policy: 'engine_managed_after_validation',
     });
+    expect(companion.assignment_scope_refs).toEqual([
+      `guided_session:${session.session_id}`,
+    ]);
     expect(companion.available_intents).toContain('answer_current_question');
     expect(companion.boundaries.join(' ')).toContain('ne rédige pas');
     expect(companion.storylets[0]?.definition.storylet_id).toBe(
@@ -199,6 +209,40 @@ describe('Experience Fabric — Living Companion Robot CDC', () => {
     const session = createCdcSession('Robot CDC privé');
     expect(() => buildGuidedLivingCompanion(outsider, session.session_id)).toThrow(
       'guided_session_not_found',
+    );
+  });
+
+  it('active MOTH seulement lorsqu’il est explicitement assigné par le guide', () => {
+    const session = createCdcSession(
+      'MOTH CDC assigné',
+      {type: 'moth', name: 'MOTH'},
+    );
+    const companion = buildGuidedLivingCompanion(teacher, session.session_id);
+
+    expect(companion).toMatchObject({
+      companion_type: 'moth',
+      display_name: 'MOTH',
+      presence_policy: 'assigned_context_only',
+      interaction_mode: 'full_page_guided',
+      execution_policy: 'guide_only',
+    });
+    expect(companion.dialogue_bubble).toContain('Je vais être pénible une seconde');
+    expect(companion.role_summary).toContain('Garde-fou contextuel');
+    expect(companion.boundaries).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('n’apparaît que dans la session'),
+        expect.stringContaining('ne remplace jamais le persona personnel'),
+      ]),
+    );
+  });
+
+  it('refuse un type de compagnon non déclaré au lieu de l’inférer', () => {
+    const session = createCdcSession(
+      'Compagnon inconnu',
+      {type: 'personnage_magique'},
+    );
+    expect(() => buildGuidedLivingCompanion(teacher, session.session_id)).toThrow(
+      'living_companion_type_invalid',
     );
   });
 

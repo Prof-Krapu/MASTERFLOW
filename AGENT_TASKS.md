@@ -14,9 +14,32 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-319 — EXPERIENCE-FABRIC-006A : Living Companion / Robot CDC
+## TASK-320 — EXPERIENCE-FABRIC-006B : MOTH Living Companion
 target: codex
 status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Étendre Living Companion à MOTH sans moteur parallèle.
+- Exiger une assignation explicite par guide/session.
+- Garder MOTH comme garde-fou CDC distinct du persona personnel.
+- Ne pas générer d'asset, faire évoluer visuellement, publier, exporter ou appeler un provider.
+
+### verification
+- tests ciblés Living Companion : 7/7.
+- tests ciblés Storylet Engine : 4/4.
+- backend complet : 591/591.
+- lint backend/frontend, build frontend et diff-check : OK.
+
+### updates
+> 2026-06-29 codex → claimed. Tranche 6.2 implémentée localement, validation complète en cours.
+> 2026-06-29 codex → done local. Tranche 6.2 prête à publication atomique.
+
+---
+
+## TASK-319 — EXPERIENCE-FABRIC-006A : Living Companion / Robot CDC
+target: codex
+status: verified
 frozen_by: MALEX « go » 2026-06-29
 
 ### scope
@@ -34,6 +57,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → claimed. Tranche 6.1 implémentée localement, validation complète en cours.
 > 2026-06-29 codex → done local. Tranche 6.1 prête à publication atomique.
+> 2026-06-29 codex → verified. PR #161 mergée sur GitHub main (`84291eb`).
 
 ---
 

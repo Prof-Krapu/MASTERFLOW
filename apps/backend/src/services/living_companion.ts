@@ -8,6 +8,8 @@ import type {AuthUser} from '../middleware/auth.ts';
 import {getGuidedSessionContext} from './guided_runtime.ts';
 import {evaluateStorylets} from './storylet_engine.ts';
 
+type CompanionType = LivingCompanion['companion_type'];
+
 function manifestString(
   manifest: Record<string, unknown> | null,
   key: string,
@@ -16,11 +18,19 @@ function manifestString(
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
+function companionType(manifest: Record<string, unknown> | null): CompanionType {
+  const value = manifestString(manifest, 'companion_type');
+  if (value === null || value === 'cdc_robot') return 'cdc_robot';
+  if (value === 'moth') return 'moth';
+  throw new Error('living_companion_type_invalid');
+}
+
 function unresolvedPersonaRefs(refs: Array<string | null>): string[] {
   return refs.filter((ref): ref is string => ref !== null && getPersona(ref) === null);
 }
 
 function dialogueBubble(
+  type: CompanionType,
   status: 'active' | 'completed' | 'expired' | 'revoked',
   currentPrompt: string | null,
   contradictionCount: number,
@@ -35,9 +45,32 @@ function dialogueBubble(
     return 'Cette session n’est plus active. Demande au facilitateur de la rouvrir ou d’en créer une nouvelle.';
   }
   if (currentPrompt) {
-    return `On avance étape par étape. ${currentPrompt}`;
+    return type === 'moth'
+      ? `Je vais être pénible une seconde : ${currentPrompt}`
+      : `On avance étape par étape. ${currentPrompt}`;
   }
   return 'Je ne trouve pas de question valide dans le guide. Je préfère m’arrêter plutôt que d’en inventer une.';
+}
+
+function companionRole(type: CompanionType): string {
+  return type === 'moth'
+    ? 'Garde-fou contextuel du CDC : questionner les raccourcis, révéler les zones floues et renvoyer les arbitrages au groupe ou au professeur.'
+    : 'Aider le groupe à comprendre, découper et vérifier son CDC IA sans produire le travail à sa place.';
+}
+
+function companionBoundaries(type: CompanionType): string[] {
+  return [
+    ...(type === 'moth'
+      ? [
+          'n’apparaît que dans la session ou le contexte auquel le créateur l’a assigné',
+          'provoque une réflexion mais ne tranche pas à la place du groupe',
+          'ne remplace jamais le persona personnel de l’utilisateur',
+        ]
+      : ['oriente mais ne rédige pas le CDC à la place du groupe']),
+    'n’invente aucune question hors du guide figé',
+    'demande une validation humaine en cas de contradiction',
+    'ne publie, n’exporte et ne génère aucun asset',
+  ];
 }
 
 export function buildGuidedLivingCompanion(
@@ -46,6 +79,7 @@ export function buildGuidedLivingCompanion(
 ): LivingCompanion {
   const {session, guide} = getGuidedSessionContext(actor, sessionId);
   if (guide.domain !== 'cdc') throw new Error('living_companion_domain_not_supported');
+  const type = companionType(guide.ui_manifest);
 
   const currentQuestion = guide.question_flow.find(
     (question) => question.question_id === session.current_question_id,
@@ -84,31 +118,33 @@ export function buildGuidedLivingCompanion(
           'review_progress',
           'request_facilitator',
         ];
+  const assignmentScopeRefs = [
+    `guided_session:${sessionId}`,
+    ...(session.project_id ? [`project:${session.project_id}`] : []),
+    ...(session.room_id ? [`room:${session.room_id}`] : []),
+  ];
 
   return LivingCompanionSchema.parse({
-    companion_id: `living_companion:cdc_robot:${sessionId}`,
-    companion_type: 'cdc_robot',
+    companion_id: `living_companion:${type}:${sessionId}`,
+    companion_type: type,
     display_name:
       manifestString(guide.ui_manifest, 'companion_name') ??
       (guide.lore_persona_id ? getPersona(guide.lore_persona_id)?.name : null) ??
-      'Robot CDC IA',
-    role_summary:
-      'Aider le groupe à comprendre, découper et vérifier son CDC IA sans produire le travail à sa place.',
-    boundaries: [
-      'oriente mais ne rédige pas le CDC à la place du groupe',
-      'n’invente aucune question hors du guide figé',
-      'demande une validation humaine en cas de contradiction',
-      'ne publie, n’exporte et ne génère aucun asset',
-    ],
+      (type === 'moth' ? 'MOTH' : 'Robot CDC IA'),
+    role_summary: companionRole(type),
+    boundaries: companionBoundaries(type),
     session_ref: `guided_session:${sessionId}`,
     guide_ref: `conversation_guide:${guide.guide_id}:v${session.guide_version}`,
     project_ref: session.project_id ? `project:${session.project_id}` : null,
+    room_ref: session.room_id ? `room:${session.room_id}` : null,
+    assignment_scope_refs: assignmentScopeRefs,
     functional_persona_ref: guide.functional_persona_id,
     lore_persona_ref: guide.lore_persona_id,
     interaction_mode: 'full_page_guided',
     readiness,
     current_prompt: currentPrompt,
     dialogue_bubble: dialogueBubble(
+      type,
       session.status,
       currentPrompt,
       contradictionRefs.length,
@@ -127,6 +163,7 @@ export function buildGuidedLivingCompanion(
       contradictions: contradictionRefs,
       configuration_warnings: configurationWarnings,
     },
+    presence_policy: 'assigned_context_only',
     configuration_policy: 'creator_validates_initial_identity',
     evolution_policy: 'engine_managed_after_validation',
     execution_policy: 'guide_only',
