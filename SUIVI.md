@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPERIENCE-UI-001 : cockpit GodMode progressif
+
+- le cockpit owner contient une entrée Experience Fabric fermée par défaut ;
+- le clic charge en parallèle la chronologie, les précédents et le cycle MAPE-K du scope actif ;
+- la surface répond simplement : ce qui s’est passé, ce qui ressemble au contexte, ce qui est
+  proposé et pourquoi ;
+- les plans restent candidats, la sélection reste humaine et l’exécution reste absente ;
+- aucun appel Experience n’est lancé au chargement normal de la Home.
+
+Vérifications : backend 605/605, lint frontend/backend, build frontend, diff-check et smoke
+navigateur à 1280/390 px. Runtime de test : 17 événements, 2 précédents et 1 proposition lus,
+zéro Action créée.
+
+Statut : local vérifié, prêt à publication atomique.
+
 ## 2026-06-29 — VISIBLE-PREFLIGHT-002 : panneau UI progressif
 
 - la trace d’action existante affiche maintenant le préflight sous forme de panneau lisible ;
@@ -16,7 +31,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : backend 605/605, lint frontend/backend, build frontend, diff-check et smoke navigateur à
 1280 px puis 390 px sans débordement.
 
-Statut : local vérifié, prêt à publication atomique.
+Statut : publié via PR #169 (`1c46fee`).
 
 ## 2026-06-29 — VISIBLE-PREFLIGHT-001 : contrat UI explicable
 

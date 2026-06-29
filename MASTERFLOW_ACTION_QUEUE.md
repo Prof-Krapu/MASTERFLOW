@@ -49,8 +49,18 @@ Dernière mise à jour : 2026-06-29
 - Impact : l’utilisateur comprend avant d’agir, sans passer par des détails techniques.
 - Risque : faible ; validation et exécution restent deux gestes séparés.
 - Source de vérité concernée : frontend MALEX + Action Engine existant.
-- Statut : implémenté et vérifié localement.
+- Statut : publié via PR #169 (`1c46fee`).
 - Validation requise : non pour publication ; oui avant route de modification directe.
+
+#### EXPERIENCE-UI-001 — cockpit GodMode progressif
+
+- Tâche : réunir chronologie, précédents et recommandations Experience Fabric dans une surface
+  chargée uniquement à la demande.
+- Impact : MALEX comprend l’état et les propositions sans parcourir les endpoints techniques.
+- Risque : faible ; read-model uniquement, aucune Action créée.
+- Source de vérité concernée : Experience Fabric publiée + owner cockpit.
+- Statut : implémenté et vérifié localement.
+- Validation requise : non pour publication ; oui avant sélection ou exécution automatique.
 
 ### FACTORIES-CONFRONTATION-P1 — Hygiène Desktop + primitives seulement
 

@@ -20,10 +20,12 @@ import {
   previewHardStopActionExpiry,
   resumeRoomHardStop,
 } from './api.ts';
+import {ExperienceCockpit} from './experience-cockpit.tsx';
 
 type OwnerCockpitProps = {
   activeMode: string;
   contextTier: ContextTier;
+  projectId?: string;
   roomId: string;
   token: string;
 };
@@ -36,7 +38,7 @@ const CAPABILITY_LABELS: Record<string, string> = {
   d08_generation: 'D08 génération',
 };
 
-export function OwnerCockpit({activeMode, contextTier, roomId, token}: OwnerCockpitProps): ReactElement {
+export function OwnerCockpit({activeMode, contextTier, projectId, roomId, token}: OwnerCockpitProps): ReactElement {
   const [snapshot, setSnapshot] = useState<OwnerCockpitStatus | null>(null);
   const [status, setStatus] = useState('Chargement du cockpit owner.');
   const [loading, setLoading] = useState(false);
@@ -255,6 +257,8 @@ export function OwnerCockpit({activeMode, contextTier, roomId, token}: OwnerCock
               ))}
             </ul>
           </div>
+
+          <ExperienceCockpit projectId={projectId} token={token} />
 
           <section className="process-control-strip">
             <div>

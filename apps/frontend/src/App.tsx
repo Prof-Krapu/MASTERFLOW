@@ -1380,6 +1380,7 @@ function App(): ReactElement {
                   <OwnerCockpit
                     activeMode={activeMode.id}
                     contextTier={context.runtime_context.trace.granted_tier}
+                    projectId={context.room.project_id ?? undefined}
                     roomId={context.room.id}
                     token={auth.token}
                   />

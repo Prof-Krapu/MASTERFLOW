@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-29
-Branche de travail : `codex/visible-preflight-ui`
-Base GitHub vérifiée : `bb03628` (`origin/main` après merge PR #168)
+Branche de travail : `codex/experience-cockpit-ui`
+Base GitHub vérifiée : `1c46fee` (`origin/main` après merge PR #169)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -21,7 +21,7 @@ récoltées après audit.
 | Experience Fabric / MOTH contextuel | implémenté | Variante Living Companion explicitement assignée au guide/session publiée via PR #162. | faible | Garder MOTH distinct du persona personnel et sans permission propre. |
 | Experience Fabric / Monstre-idée Ours d’Or | implémenté | Projection candidate V0, mutation et stabilisation publiée via PR #163 ; aucun asset généré. | faible à moyen | Génération et galerie restent derrière décision séparée. |
 | Experience Fabric / MAPE-K | implémenté | Cycle Monitor/Analyze/Plan read-only publié via PR #164 ; Execute reste `not_executed`, aucune Action créée. | faible | Utiliser comme boucle d'orchestration contrôlée. |
-| Experience Fabric / Blackboard privé | implémenté | Contributions privées monitor/storylet/précédent/garde-fou/compagnon publiées via PR #165 ; synthèse par porte-parole unique, aucune Action créée. | faible | Utiliser comme socle pour GodMode/Teaching/MasterStory, sans dialogue multi-agent automatique. |
+| Experience Fabric / Blackboard privé | implémenté | Contributions privées monitor/storylet/précédent/garde-fou/compagnon publiées via PR #165 ; cockpit GodMode progressif vérifié localement sur les read-models Experience. | faible | Publier le cockpit sans ouvrir dialogue multi-agent ou exécution automatique. |
 | EXPRESSIVE_CANON / Style Mirror | implémenté P1 | Extension de Style Mirror publiée via PR #167 : consentement sujet, validation, config expressive bornée, sélection projet réelle, prompt limité et metadata WS. | faible à moyen | Garder collecte automatique, psychologie, avatar runtime et contrôle provider en P2/P3. |
 | Vision Product Absorption | partiel | Le préflight visible dispose d’un contrat backend publié et d’un panneau UI vérifié localement ; notes/backlinks, design tokens, output registry et LMS restent séparés. | faible à moyen | Publier `VISIBLE-PREFLIGHT-002`, puis arbitrer la prochaine primitive sans ouvrir de chantier global. |
 | Factories confrontation | partiel externe | 22 factories auditées hors runtime ; corrections de packs restent dans l'atelier Desktop, Git ne reçoit que primitives/guardrails utiles. | moyen | Ne pas absorber les factories telles quelles ; préparer seulement un validateur de pack et un routeur de primitives. |

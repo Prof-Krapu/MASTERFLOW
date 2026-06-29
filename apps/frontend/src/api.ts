@@ -1,5 +1,6 @@
 import type {
   Action,
+  AutonomyCycle,
   ActionContextComparison,
   ActionRegistryEntry,
   AdminUser,
@@ -37,6 +38,7 @@ import type {
   D12IncidentRecord,
   CreateD12IncidentRecord,
   D12ReleaseReceipt,
+  DomainEventEnvelope,
   ExpireActionsResponse,
   InventoryCollection,
   InventoryItem,
@@ -57,6 +59,7 @@ import type {
   ProcessActivationRequest,
   PreviewActionsExpiryResponse,
   PreCorrectionManifest,
+  PrecedentSearchResult,
   Persona,
   Project,
   ProjectMember,
@@ -583,6 +586,30 @@ export async function validateAction(
     method: 'POST',
     body: JSON.stringify(decision),
   }, token);
+}
+
+export async function getExperienceAutonomyCycle(
+  projectId?: string,
+  token?: string | null,
+): Promise<AutonomyCycle> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}&limit=8` : '?limit=8';
+  return request<AutonomyCycle>(`/experience/autonomy/cycle${query}`, {method: 'GET'}, token);
+}
+
+export async function getExperienceEvents(
+  projectId?: string,
+  token?: string | null,
+): Promise<DomainEventEnvelope[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}&limit=8` : '?limit=8';
+  return request<DomainEventEnvelope[]>(`/experience/events${query}`, {method: 'GET'}, token);
+}
+
+export async function getExperiencePrecedents(
+  projectId?: string,
+  token?: string | null,
+): Promise<PrecedentSearchResult[]> {
+  const query = projectId ? `?project_id=${encodeURIComponent(projectId)}&limit=4` : '?limit=4';
+  return request<PrecedentSearchResult[]>(`/experience/precedents${query}`, {method: 'GET'}, token);
 }
 
 export async function getResources(token?: string | null, includeAll = false): Promise<Resource[]> {

@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-326 — EXPERIENCE-UI-001 : cockpit GodMode progressif
+target: codex
+status: done
+frozen_by: MALEX « Go » 2026-06-29
+
+### scope
+- Charger l’Experience Fabric uniquement à la demande depuis le cockpit owner.
+- Réunir événements, précédents, analyse et plans candidats.
+- Garder un affichage synthétique, explicable et responsive.
+- Ne créer aucune Action, rétention mémoire, permission ou sélection automatique.
+
+### verification
+- backend complet : 605/605.
+- lint frontend/backend, build frontend et diff-check : OK.
+- smoke navigateur : chargement volontaire, 17 événements, 2 précédents, 1 proposition ;
+  aucune Action créée ; aucun débordement à 390 px.
+
+### updates
+> 2026-06-29 codex → done local. Cockpit Experience Fabric vérifié ; publication atomique prête.
+
+---
+
 ## TASK-325 — VISIBLE-PREFLIGHT-002 : panneau UI progressif
 target: codex
 status: done
