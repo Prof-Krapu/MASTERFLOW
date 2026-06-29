@@ -6,18 +6,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `SAFETY-STATE-002`
-- objectif : projeter les états narratifs depuis Security, Trust et hard stop, sans persistance,
-  prompt persona, UI, asset, sanction ou permission.
+- id : `VOICE-PERSONA-001`
+- objectif : auditer et durcir le TTS existant avec voix whitelistées, limites, permissions et
+  fallback, sans ouvrir STT/micro complet ni provider payant.
 - statut : `next_not_started`
-- dernière action terminée : contrat `SAFETY-STATE-001` porté par la PR #180.
-- prochaine action : figer les entrées exactes de la fonction pure avant tout code runtime.
-- fichiers/domaines concernés : `docs/safety/SAFETY_STATE_MACHINE_V1_2026-06-29.md`, Security,
-  Trust, hard stop et diagnostics.
-- tests à relancer : ciblés Safety puis backend complet et lint si runtime touché.
-- publication : PR #180 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : persistance, prompt persona, asset, UI rouge, auto-ban, permission, sanction, session
-  kill et migration restent interdits.
+- dernière action terminée : `SAFETY-STATE-002` portée par la PR #181.
+- prochaine action : auditer le routeur TTS, les configs persona et les limites avant le contrat.
+- fichiers/domaines concernés : TTS, persona voice config, permissions, coûts et frontend audio.
+- tests à relancer : lecture ciblée + `git diff --check` pour le contrat initial.
+- publication : PR #181 ; son état GitHub fait foi, sans implication de déploiement live.
+- blocage : STT/micro complet, voix clonée, provider payant, secrets et live restent interdits.
+
+## 2026-06-29 — SAFETY-STATE-002 : projection runtime pure
+
+- fonction pure de projection depuis Trust, récupération et hard stop ;
+- endpoint privé `/diagnostics/safety-state` admin/godmode ;
+- réactions persona et stratégies de message sémantiques ;
+- récupération détectable sans nouvelle table ;
+- aucune persistance, permission, sanction, prompt persona, asset ou UI.
+
+Vérifications : Safety + route 14/14, backend 628/628, lint backend et diff-check.
+
+Statut : runtime porté par la PR #181 ; son état GitHub fait foi.
 
 ## 2026-06-29 — SAFETY-STATE-001 : sécurité narrative non punitive
 

@@ -3,7 +3,11 @@ import {createServer, type Server} from 'node:http';
 import express from 'express';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
-import {OwnerCockpitStatusSchema, TrustFabricSnapshotSchema} from '@masterflow/shared';
+import {
+  OwnerCockpitStatusSchema,
+  SafetyStateSnapshotSchema,
+  TrustFabricSnapshotSchema,
+} from '@masterflow/shared';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
@@ -58,6 +62,17 @@ describe('D12 Owner Cockpit read-only', () => {
     expect((await fetch(`${base}/diagnostics/owner-cockpit`, auth(teacherToken))).status).toBe(403);
     expect((await fetch(`${base}/diagnostics/trust`)).status).toBe(401);
     expect((await fetch(`${base}/diagnostics/trust`, auth(teacherToken))).status).toBe(403);
+    expect((await fetch(`${base}/diagnostics/safety-state`)).status).toBe(401);
+    expect((await fetch(`${base}/diagnostics/safety-state`, auth(teacherToken))).status).toBe(403);
+  });
+
+  it('expose un état Safety privé sans effet métier', async () => {
+    const response = await fetch(`${base}/diagnostics/safety-state`, auth(adminToken));
+    expect(response.status).toBe(200);
+    const body = SafetyStateSnapshotSchema.parse(await response.json());
+    expect(body.affects_permissions).toBe(false);
+    expect(body.automatic_sanction).toBe(false);
+    expect(body.class_projection_anonymous).toBe(true);
   });
 
   it('expose Trust Fabric en lecture seule sans score global', async () => {

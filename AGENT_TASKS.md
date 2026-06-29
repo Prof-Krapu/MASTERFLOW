@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-336 — SAFETY-STATE-002 : projection runtime pure
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Projeter les états depuis Trust, récupération et hard stop.
+- Exposer une lecture privée admin/godmode.
+- Ne rien persister et ne modifier aucun comportement métier.
+
+### verification
+- Safety + route : 14/14.
+- backend : 628/628.
+- lint backend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Projection Safety vérifiée, prête à publication.
+> 2026-06-29 codex → PR #181 créée ; l'état GitHub de la PR fait foi.
+
+---
+
 ## TASK-335 — SAFETY-STATE-001 : sécurité narrative non punitive
 target: codex
 status: done
