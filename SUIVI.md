@@ -6,16 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `VOICE-PERSONA-001`
-- objectif : auditer et durcir le TTS existant avec voix whitelistées, limites, permissions et
-  fallback, sans ouvrir STT/micro complet ni provider payant.
+- id : `VOICE-PERSONA-002`
+- objectif : durcir le TTS avec auth, Room/speaker réel, whitelist, limites et tests mockés, sans
+  STT, clonage vocal, provider payant ou appel réseau de test.
 - statut : `next_not_started`
-- dernière action terminée : `SAFETY-STATE-002` portée par la PR #181.
-- prochaine action : auditer le routeur TTS, les configs persona et les limites avant le contrat.
-- fichiers/domaines concernés : TTS, persona voice config, permissions, coûts et frontend audio.
-- tests à relancer : lecture ciblée + `git diff --check` pour le contrat initial.
-- publication : PR #181 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : STT/micro complet, voix clonée, provider payant, secrets et live restent interdits.
+- dernière action terminée : contrat `VOICE-PERSONA-001` prêt à publication.
+- prochaine action : figer la whitelist et l'injection du générateur avant tout code runtime.
+- fichiers/domaines concernés : `docs/voice/VOICE_PERSONA_TTS_V1_2026-06-29.md`, TTS, speaker,
+  runtime loadout et frontend audio.
+- tests à relancer : ciblés TTS puis backend complet, lint et build frontend si code touché.
+- publication : `VOICE-PERSONA-001` local, publication GitHub en cours.
+- blocage : STT/micro, clonage vocal, provider payant, cache audio, secrets et live restent
+  interdits.
+
+## 2026-06-29 — VOICE-PERSONA-001 : audit TTS contrôlé
+
+- PoC confirmé mais route non authentifiée et paramètres trop libres ;
+- séparation voix sémantique et configuration TTS technique ;
+- résolution obligatoire du porte-parole depuis la Room ;
+- whitelist serveur, texte borné, débit, timeout, taille et cleanup ;
+- fallback texte, audit sans contenu brut et aucun blocage du chat ;
+- STT, clonage, provider payant et lecture automatique restent fermés.
+
+Livrable : `docs/voice/VOICE_PERSONA_TTS_V1_2026-06-29.md`.
+
+Statut : local vérifié, publication GitHub en cours.
 
 ## 2026-06-29 — SAFETY-STATE-002 : projection runtime pure
 
