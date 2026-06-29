@@ -37,7 +37,7 @@ Au démarrage d'une session :
 | 8 | Learning / Teaching / Academic Integrity | Guider sans faire le travail à la place ; préparer tutos/timecodes | runtime_pr_191_merged | contrat et classifieur pur publiés |
 | 9 | UI progressive | Home légère puis surfaces Teaching, Learn, GodMode, Theme Studio, MasterStory | learn_surface_pr_194_merged | Teaching, accès Learning et premier workspace Learn publiés |
 | 10 | Observabilité / GodMode | Timeline, alertes groupées, incidents, confiance, coûts et providers | reconciled_existing_cockpit | OwnerCockpit, ExperienceCockpit et diagnostics privés existent ; ne pas créer de cockpit parallèle |
-| 11 | Red Team / Tests | Couvrir prompt injection, permissions, révocation, poisoning, UI safety states | red_team_tests_003_local | sécurité/RAG/Safety et auth/révocation publiées ; permissions router/UI safety vérifiées localement |
+| 11 | Red Team / Tests | Couvrir prompt injection, permissions, révocation, poisoning, UI safety states | red_team_tests_003_merged | sécurité/RAG/Safety, auth/révocation et permissions router/UI safety publiées |
 
 ## Big Pickle
 

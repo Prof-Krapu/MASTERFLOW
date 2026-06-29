@@ -46,7 +46,7 @@ présents dans Git pour éviter trois dérives :
 | Learning / Teaching integrity | `runtime_pr_191_merged` | Teaching, ressources vidéo, timecodes/notions, Learning Mirror, storylets, validation inbox, D05/D06 candidat, classifieur pur d'assistance | faire le travail à la place, LMS lourd, tracking intrusif, note finale automatique | consommer par surfaces progressives |
 | UI progressive | `learn_surface_pr_194_merged` | Home légère, GodMode panels, outils à la demande, cadre d'aide Teaching, Learning self-read et workspace lazy-loadé | dashboard permanent, chargement massif, surfaces sans endpoint réel, édition Learning étudiant | continuer par tests Red Team |
 | Observabilité / GodMode | `existing_cockpit_reconciled` | OwnerCockpit, ExperienceCockpit, diagnostics privés, confiance, Safety, token usage, stale actions et hard-stop | second cockpit, spam d'alertes, queue parallèle | couvrir par Red Team/tests plutôt que recoder |
-| Red Team / tests | `red_team_tests_003_local` | tests percent-encoding, scope escape, tool misuse, markup caché, RAG obfusqué, priorité hard-stop, token révoqué, rôle effectif BDD, gate order et suspicion non punitive | faux sentiment de sécurité sans smoke UI navigateur | publier, puis décider entre Red Team UI navigateur et reprise build interface |
+| Red Team / tests | `red_team_tests_003_merged` | tests percent-encoding, scope escape, tool misuse, markup caché, RAG obfusqué, priorité hard-stop, token révoqué, rôle effectif BDD, gate order et suspicion non punitive | faux sentiment de sécurité sans smoke UI navigateur | décider entre Red Team UI navigateur et reprise build interface |
 
 ## Décisions d'ordre
 

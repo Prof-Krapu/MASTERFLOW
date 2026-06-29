@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Tests permissions/UI safety prêts à publication.
+> 2026-06-29 codex → PR #199 mergée (`58992b2`) ; GitHub `main` fait foi.
 
 ---
 
