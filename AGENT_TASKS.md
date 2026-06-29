@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-350 — RED-TEAM-TESTS-003 : permissions router et UI Safety
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Couvrir le recadrage/suspicion exposé par l'API d'assistance pédagogique.
+- Prouver que les contournements répétés restent non punitifs et sans changement de permission.
+- Prouver que les gates admin/diagnostics ne bloquent pas une route utile aux étudiants.
+- Ne modifier aucun runtime, schéma, permission, provider, UI ou migration.
+
+### verification
+- Assistance pédagogique routeur + ordre des gates : 7/7.
+- Ciblés Red Team Security/RAG/assistance/gates 31/31.
+- Backend complet 665/665, lint backend/frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Tests permissions/UI safety prêts à publication.
+
+---
+
 ## TASK-349 — RED-TEAM-TESTS-002 : auth, révocation et rôle effectif
 target: codex
 status: done
