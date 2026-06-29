@@ -1833,6 +1833,13 @@ export const PedagogicalAssistanceInputSchema = z.object({
 });
 export type PedagogicalAssistanceInput = z.input<typeof PedagogicalAssistanceInputSchema>;
 
+export const PedagogicalAssistanceRequestSchema = PedagogicalAssistanceInputSchema.omit({
+  role: true,
+});
+export type PedagogicalAssistanceRequest = z.input<
+  typeof PedagogicalAssistanceRequestSchema
+>;
+
 export const PedagogicalAssistanceDecisionSchema = z.object({
   assistance_kind: z.enum([
     'guide',

@@ -6,19 +6,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `LEARNING-TEACHING-INTEGRITY-RUNTIME-001`
-- objectif : ajouter une décision pédagogique pure et commune pour classifier l'aide autorisée,
-  les sorties interdites, la validation requise et les hints Safety/Storylets.
+- id : `UI-PROGRESSIVE-SURFACES-001`
+- objectif : rendre la politique d'aide pédagogique visible dans Teaching sans charger un
+  dashboard technique ni lancer d'action.
 - statut : `local_verified_pending_publication`
-- dernière action terminée : classifieur pur et contrats partagés implémentés avec tests ciblés.
-- prochaine action : terminer la recette complète, publier la vague, puis ouvrir
-  `UI-PROGRESSIVE-SURFACES-001`.
-- fichiers/domaines concernés : Learning Mirror, Teaching, Storylets, Safety State, Trust Fabric,
-  Validation Inbox, correction D05/D06 et ressources pédagogiques.
-- tests à relancer : backend complet, lint backend/frontend, build frontend et diff-check.
-- publication : contrat mergé via PR #190 (`b358f5c`) ; runtime à publier.
-- blocage : aucun ban automatique, aucune sanction morale, aucune note finale et aucune
-  publication étudiant sans validation pédagogique.
+- dernière action terminée : endpoint authentifié + panneau Teaching réutilisable vérifiés en
+  desktop et mobile.
+- prochaine action : publier la verticale, puis auditer l'exposition Learn/Home avant toute
+  nouvelle surface.
+- fichiers/domaines concernés : contrats pédagogiques partagés, route read-only, API frontend,
+  panneau Teaching et responsive.
+- tests à relancer : recette complète déjà verte ; publication et preuve GitHub à produire.
+- publication : runtime Learning/Teaching mergé via PR #191 (`7d00d60`) ; UI à publier.
+- blocage : ne jamais exposer un rôle choisi par le client, une note finale, une publication,
+  une sanction ou une surface sans endpoint réel.
+
+## 2026-06-29 — UI-PROGRESSIVE-SURFACES-001 : cadre d'aide dans Teaching
+
+- ajout d'une route authentifiée de classification, sans écriture ni exécution ;
+- rôle dérivé du token serveur : le client ne peut pas se surclasser ;
+- panneau réutilisable « Comment MasterFlow peut m'aider ? » dans Teaching ;
+- lecture simple de l'aide autorisée, des sorties interdites et de la validation humaine ;
+- recadrage visible d'une demande de rendu final, sans humiliation ni sanction ;
+- responsive 390 px sans débordement, aucune erreur navigateur.
+
+Vérifications : 12/12 ciblés, backend 648/648, lint backend/frontend, build frontend,
+smoke navigateur desktop/mobile et `git diff --check`.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — LEARNING-TEACHING-INTEGRITY-RUNTIME-001 : décision pédagogique pure
 
@@ -29,9 +44,9 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - contournement répété limité à un hint Safety narratif, sans sanction ni changement de permission ;
 - aucune route, migration, note finale, publication, provider ou UI lourde.
 
-Vérifications ciblées : 8/8, lint backend/frontend verts.
+Vérifications ciblées : 9/9, backend 645/645, lint backend/frontend et build frontend verts.
 
-Statut : vérifié localement, publication atomique en cours.
+Statut : publié via PR #191 (`7d00d60`).
 
 ## 2026-06-29 — LEARNING-TEACHING-INTEGRITY-001 : contrat d'intégrité pédagogique
 

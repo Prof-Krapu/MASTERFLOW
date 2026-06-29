@@ -1189,6 +1189,99 @@ dd {
   color: var(--text);
 }
 
+.pedagogical-assistance {
+  background: color-mix(in srgb, var(--panel) 92%, var(--accent) 8%);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 14px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.pedagogical-assistance__heading,
+.pedagogical-assistance__controls {
+  align-items: end;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.pedagogical-assistance__heading p,
+.pedagogical-assistance__error {
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+
+.pedagogical-assistance__controls label {
+  display: grid;
+  flex: 1 1 360px;
+  gap: 5px;
+}
+
+.pedagogical-assistance__controls label span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.pedagogical-assistance__state {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.pedagogical-assistance__state--recadrage {
+  border-color: rgba(240, 195, 107, 0.65);
+  color: #f0c36b;
+}
+
+.pedagogical-assistance__state--suspicious {
+  border-color: rgba(255, 143, 143, 0.7);
+  color: #ff8f8f;
+}
+
+.pedagogical-assistance__decision {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pedagogical-assistance__decision > div {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 9px;
+  padding: 11px 12px;
+}
+
+.pedagogical-assistance__decision ul {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.82rem;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.pedagogical-assistance__validation {
+  border-left: 3px solid var(--warning, #c98000);
+  color: var(--muted);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+@media (max-width: 720px) {
+  .pedagogical-assistance__heading,
+  .pedagogical-assistance__controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pedagogical-assistance__decision {
+    grid-template-columns: 1fr;
+  }
+}
+
 .identity-review {
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
   border-radius: 18px;

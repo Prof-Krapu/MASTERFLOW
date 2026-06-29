@@ -43,8 +43,8 @@ présents dans Git pour éviter trois dérives :
 | OpenMontage / design.md | `already_in_git_doc` et concepts clean-room | packs, étapes, promesse de sortie, cost/preflight, Theme Studio | code AGPL, provider scoring, génération automatique | continuer côté Theme/D08 si utile |
 | DA narrative / Theme Studio / D08 | `activation_preflight_pr_188_merged` | manifests, visual grammar, Theme Studio explain-only, D08 gates, autorités de routage, ThemePack preview, action d'activation préflight-only | provider image réel, canonisation auto, motif décoratif non justifié, application silencieuse, rollback réel non conçu | cadrer application runtime séparée |
 | MasterStory / Experience Fabric | `bridge_map_pr_184_merged` | Event Spine, Precedents, Storylets, MAPE-K, Blackboard, MasterStory UI, routage DA narrative | autonomie sans validation, multi-porte-parole public | `THEME-STUDIO-ASSET-PACKS-001` |
-| Learning / Teaching integrity | `runtime_ready_local` | Teaching, ressources vidéo, timecodes/notions, Learning Mirror, storylets, validation inbox, D05/D06 candidat, classifieur pur d'assistance | faire le travail à la place, LMS lourd, tracking intrusif, note finale automatique | publier `LEARNING-TEACHING-INTEGRITY-RUNTIME-001`, puis surfaces UI progressives |
-| UI progressive | `partial_runtime` | Home légère, GodMode panels, outils à la demande | dashboard permanent, chargement massif, surfaces sans endpoint réel | après contrats sécurité/trust |
+| Learning / Teaching integrity | `runtime_pr_191_merged` | Teaching, ressources vidéo, timecodes/notions, Learning Mirror, storylets, validation inbox, D05/D06 candidat, classifieur pur d'assistance | faire le travail à la place, LMS lourd, tracking intrusif, note finale automatique | consommer par surfaces progressives |
+| UI progressive | `teaching_surface_ready_local` | Home légère, GodMode panels, outils à la demande, cadre d'aide Teaching adossé à un endpoint réel | dashboard permanent, chargement massif, surfaces sans endpoint réel | publier la surface Teaching, puis auditer Learn/Home |
 
 ## Décisions d'ordre
 
