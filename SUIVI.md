@@ -6,17 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `TRUST-FABRIC-001`
-- objectif : séparer clairement confiance source, fichier/lien, signal utilisateur contextuel et
-  santé système/provider, sans produire de score moral ni de décision automatique.
+- id : `TRUST-FABRIC-002`
+- objectif : projeter un read model de confiance depuis les données existantes, sans table, score
+  composite, permission ou sanction.
 - statut : `next_not_started`
-- dernière action terminée : `SECURITY-FABRIC-002` portée par la PR #177.
-- prochaine action : auditer les signaux de confiance existants et figer un contrat sans runtime.
-- fichiers/domaines concernés : RAG, ressources, audit, owner cockpit, providers et contrat Trust.
-- tests à relancer : lecture ciblée + `git diff --check` pour le premier contrat.
-- publication : PR #177 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : score moral, surveillance opaque, auto-ban, changement permission et migration restent
-  interdits.
+- dernière action terminée : contrat `TRUST-FABRIC-001` prêt à publication.
+- prochaine action : figer les entrées exactes du read model avant tout code runtime.
+- fichiers/domaines concernés : `docs/trust/TRUST_FABRIC_V1_2026-06-29.md`, RAG, workflow,
+  coût/provider, audit sécurité et owner cockpit.
+- tests à relancer : ciblés Trust puis backend complet et lint si runtime touché.
+- publication : `TRUST-FABRIC-001` local, publication GitHub en cours.
+- blocage : table, score moral, surveillance opaque, auto-ban, permission, sanction et UI rouge
+  restent interdits.
+
+## 2026-06-29 — TRUST-FABRIC-001 : confiance explicable
+
+- séparation de quatre dimensions : source, fichier/lien, signal de risque contextuel et santé
+  système/provider ;
+- refus d'un score global ou moral de l'utilisateur ;
+- signaux datés, scopés, réversibles, avec raison, preuve et expiration ;
+- règles d'échelle : agrégation, TTL, faible cardinalité et alertes groupées ;
+- première tranche runtime limitée à un read model calculé depuis l'existant.
+
+Livrable : `docs/trust/TRUST_FABRIC_V1_2026-06-29.md`.
+
+Statut : local vérifié, publication GitHub en cours.
 
 ## 2026-06-29 — SECURITY-FABRIC-002 : garde déterministe commun
 
