@@ -31,6 +31,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Contrat Security Fabric V1 prêt à publication atomique.
+> 2026-06-29 codex → PR #176 créée ; l'état GitHub de la PR fait foi.
 
 ---
 

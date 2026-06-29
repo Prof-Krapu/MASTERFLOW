@@ -10,12 +10,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : construire le premier garde déterministe commun pour entrées directes et contenus
   indirects, sans changer permissions, hard stop ou sanctions.
 - statut : `next_not_started`
-- dernière action terminée : contrat `SECURITY-FABRIC-001` prêt à publication.
+- dernière action terminée : contrat `SECURITY-FABRIC-001` porté par la PR #176.
 - prochaine action : figer la tranche additive et ses tests avant toute modification runtime.
 - fichiers/domaines concernés : `docs/security/SECURITY_FABRIC_V1_2026-06-29.md`,
   `apps/backend/src/services/rag.ts`, futur garde partagé et tests RAG/sécurité.
 - tests à relancer : ciblés RAG/sécurité puis backend complet et lint si runtime touché.
-- publication : `SECURITY-FABRIC-001` local, publication GitHub en cours.
+- publication : PR #176 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : persistance d'incidents, permission, session, ban, provider/live, migration DB et UI
   restent hors de `SECURITY-FABRIC-002`.
 
@@ -30,7 +30,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Livrable : `docs/security/SECURITY_FABRIC_V1_2026-06-29.md`.
 
-Statut : local vérifié, publication GitHub en cours.
+Statut : contrat porté par la PR #176 ; son état GitHub fait foi.
 
 ## 2026-06-29 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
 
