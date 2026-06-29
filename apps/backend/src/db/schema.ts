@@ -1999,6 +1999,18 @@ function migrate(d: Database.Database): void {
       lexical_overrides_json          TEXT NOT NULL DEFAULT '[]',
       signature_moves_override_json   TEXT NOT NULL DEFAULT '[]',
       tone_rules_json                 TEXT NOT NULL DEFAULT '[]',
+      behavior_config_json            TEXT NOT NULL DEFAULT '{}',
+      source_refs_json                TEXT NOT NULL DEFAULT '[]',
+      consent_status                  TEXT NOT NULL DEFAULT 'pending' CHECK (
+                                        consent_status IN ('pending','granted','revoked')
+                                      ),
+      consent_ref                     TEXT,
+      consent_granted_at              INTEGER,
+      consent_revoked_at              INTEGER,
+      validated_by                    TEXT REFERENCES users(id) ON DELETE SET NULL,
+      validated_at                    INTEGER,
+      validation_version              TEXT,
+      visual_canon_ref                TEXT,
       profile_status  TEXT NOT NULL DEFAULT 'draft' CHECK (profile_status IN (
                           'draft','active','archived'
                         )),
@@ -2015,6 +2027,16 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'guided_sessions', 'guide_snapshot_json', 'TEXT');
   ensureColumn(d, 'guided_sessions', 'schema_snapshot_json', 'TEXT');
   ensureColumn(d, 'guided_sessions', 'consent_policy_json', "TEXT NOT NULL DEFAULT '{}'");
+  ensureColumn(d, 'style_mirror_profiles', 'behavior_config_json', "TEXT NOT NULL DEFAULT '{}'");
+  ensureColumn(d, 'style_mirror_profiles', 'source_refs_json', "TEXT NOT NULL DEFAULT '[]'");
+  ensureColumn(d, 'style_mirror_profiles', 'consent_status', "TEXT NOT NULL DEFAULT 'pending'");
+  ensureColumn(d, 'style_mirror_profiles', 'consent_ref', 'TEXT');
+  ensureColumn(d, 'style_mirror_profiles', 'consent_granted_at', 'INTEGER');
+  ensureColumn(d, 'style_mirror_profiles', 'consent_revoked_at', 'INTEGER');
+  ensureColumn(d, 'style_mirror_profiles', 'validated_by', 'TEXT');
+  ensureColumn(d, 'style_mirror_profiles', 'validated_at', 'INTEGER');
+  ensureColumn(d, 'style_mirror_profiles', 'validation_version', 'TEXT');
+  ensureColumn(d, 'style_mirror_profiles', 'visual_canon_ref', 'TEXT');
   ensureColumn(d, 'rag_context_packs', 'purpose', "TEXT NOT NULL DEFAULT 'context_retrieval'");
   ensureColumn(d, 'rag_context_packs', 'room_instance_id', 'TEXT');
   ensureColumn(d, 'rag_context_packs', 'context_tier', "TEXT NOT NULL DEFAULT 'T2'");
@@ -3564,6 +3586,16 @@ export interface StyleMirrorProfileRow {
   lexical_overrides_json: string;
   signature_moves_override_json: string;
   tone_rules_json: string;
+  behavior_config_json: string;
+  source_refs_json: string;
+  consent_status: 'pending' | 'granted' | 'revoked';
+  consent_ref: string | null;
+  consent_granted_at: number | null;
+  consent_revoked_at: number | null;
+  validated_by: string | null;
+  validated_at: number | null;
+  validation_version: string | null;
+  visual_canon_ref: string | null;
   profile_status: 'draft' | 'active' | 'archived';
   created_at: number;
   updated_at: number;

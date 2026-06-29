@@ -9,6 +9,7 @@ import {
 
 const teacher: AuthUser = {id: 'sm-test-teacher', username: 'sm_test_teacher', role: 'teacher'};
 const student: AuthUser = {id: 'sm-test-student', username: 'sm_test_student', role: 'student'};
+const projectId = 'sm-test-project';
 
 beforeAll(async () => {
   await seedAll();
@@ -21,6 +22,12 @@ beforeAll(async () => {
   insert.run(teacher.id, teacher.username, teacher.username, teacher.role, now, now);
   insert.run(student.id, student.username, student.username, student.role, now, now);
   getDb().prepare('DELETE FROM style_mirror_profiles WHERE user_id IN (?, ?)').run(teacher.id, student.id);
+  getDb().prepare('DELETE FROM project_members WHERE project_id = ?').run(projectId);
+  getDb().prepare('DELETE FROM projects WHERE id = ?').run(projectId);
+  getDb().prepare(
+    `INSERT INTO projects (id, owner_id, name, status, visibility, created_at, updated_at)
+     VALUES (?, ?, 'Style Mirror Test', 'active', 'private', ?, ?)`,
+  ).run(projectId, teacher.id, now, now);
 });
 
 describe('style_mirror_engine', () => {
@@ -32,13 +39,24 @@ describe('style_mirror_engine', () => {
       lexical_complexity: 'simple',
       mirror_intensity: 0.7,
       tone_rules: ['Utilise des questions', 'Phrases courtes'],
+      behavior_config: {
+        rhythm: 'short',
+        warmth: 0.8,
+        frankness: 0.6,
+        playfulness: 0.4,
+        technical_density: 0.3,
+      },
+      source_refs: ['memory_card:style-sample'],
     });
     expect(profile.user_id).toBe(student.id);
     expect(profile.register_target).toBe('casual');
     expect(profile.energy_target).toBe('high');
     expect(profile.mirror_intensity).toBe(0.7);
     expect(profile.tone_rules).toContain('Utilise des questions');
+    expect(profile.behavior_config.rhythm).toBe('short');
+    expect(profile.source_refs).toContain('memory_card:style-sample');
     expect(profile.profile_status).toBe('draft');
+    expect(profile.consent_status).toBe('pending');
   });
 
   it('upsertProfile met à jour un profil existant (même user_id + persona_id)', () => {
@@ -75,13 +93,22 @@ describe('style_mirror_engine', () => {
     expect(() => getProfile(teacher, 'nonexistent', null)).toThrow('profile_not_found');
   });
 
-  it('updateProfileStatus change le statut', () => {
+  it('updateProfileStatus active seulement par consentement du sujet', () => {
     const profile = upsertProfile(teacher, {
       user_id: teacher.id,
       register_target: 'medium',
     });
     const updated = updateProfileStatus(teacher, profile.id, 'active');
     expect(updated.profile_status).toBe('active');
+    expect(updated.consent_status).toBe('granted');
+    expect(updated.validated_by).toBe(teacher.id);
+
+    const studentProfile = getProfile(teacher, student.id, null);
+    expect(() => updateProfileStatus(teacher, studentProfile.id, 'active')).toThrow('style_mirror_subject_consent_required');
+    const consented = updateProfileStatus(student, studentProfile.id, 'active');
+    expect(consented.profile_status).toBe('active');
+    expect(consented.consent_status).toBe('granted');
+    expect(consented.validated_by).toBe(student.id);
   });
 
   it('getStyleInstructions retourne null sans profil actif', () => {
@@ -92,18 +119,19 @@ describe('style_mirror_engine', () => {
   it('getStyleInstructions génère des instructions depuis un profil actif', () => {
     // Activer le profil général de l'étudiant
     const profile = getProfile(teacher, student.id, null);
-    updateProfileStatus(teacher, profile.id, 'active');
+    updateProfileStatus(student, profile.id, 'active');
 
     const instructions = getStyleInstructions(student.id, 'masterflex-001');
     expect(instructions).not.toBeNull();
-    expect(instructions).toContain('Style adapté');
+    expect(instructions).toContain('Voix stylisée consentie');
     expect(instructions).toContain('casual');
     expect(instructions).toContain('Utilise des questions');
+    expect(instructions!.length).toBeLessThanOrEqual(1200);
   });
 
   it('getStyleInstructions préfère profil persona-specific au général', () => {
     const specificProfile = getProfile(teacher, student.id, 'masterflex-001');
-    updateProfileStatus(teacher, specificProfile.id, 'active');
+    updateProfileStatus(student, specificProfile.id, 'active');
 
     const instructionsGeneric = getStyleInstructions(student.id, 'unknown-persona');
     expect(instructionsGeneric).not.toBeNull();
@@ -112,5 +140,27 @@ describe('style_mirror_engine', () => {
     const instructionsSpecific = getStyleInstructions(student.id, 'masterflex-001');
     expect(instructionsSpecific).not.toBeNull();
     expect(instructionsSpecific).toContain('playful');
+  });
+
+  it('getStyleInstructions préfère le profil projet puis coupe après révocation', () => {
+    const projectProfile = upsertProfile(teacher, {
+      user_id: student.id,
+      project_id: projectId,
+      persona_id: 'masterflex-001',
+      register_target: 'formal',
+      energy_target: 'calm',
+    });
+    updateProfileStatus(student, projectProfile.id, 'active');
+
+    const projectInstructions = getStyleInstructions(student.id, 'masterflex-001', projectId);
+    expect(projectInstructions).not.toBeNull();
+    expect(projectInstructions).toContain('formal');
+    expect(projectInstructions).toContain('calm');
+
+    updateProfileStatus(student, projectProfile.id, 'archived');
+    const fallbackInstructions = getStyleInstructions(student.id, 'masterflex-001', projectId);
+    expect(fallbackInstructions).not.toBeNull();
+    expect(fallbackInstructions).toContain('playful');
+    expect(fallbackInstructions).not.toContain('formal');
   });
 });
