@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-345 — LEARNING-MODE-ACCESS-001 : accès Learning borné
+target: codex
+status: done
+frozen_by: MALEX « on reprend » 2026-06-29
+
+### scope
+- Ajouter Learning au cycle Home de façon additive et idempotente.
+- Autoriser la lecture de son propre profil à un étudiant.
+- Garder édition, validation et contexte d'aide sous rôle teacher.
+- Ne créer aucune migration, collecte automatique ou extension de scope.
+
+### verification
+- Tests route Learning Mirror, registre d'actions, seed Home et runtime loadout.
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+- Smoke navigateur : Learning visible et ouvrable depuis la Home.
+
+### updates
+> 2026-06-29 codex → done local. Accès Learning borné prêt à publication.
+
+---
+
 ## TASK-344 — UI-PROGRESSIVE-SURFACES-001 : cadre d'aide Teaching
 target: codex
 status: done
@@ -32,6 +53,7 @@ frozen_by: MALEX « on reprend » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Route read-only et panneau Teaching prêts à publication.
+> 2026-06-29 codex → PR #192 mergée (`8f41537`) ; GitHub `main` fait foi.
 
 ---
 

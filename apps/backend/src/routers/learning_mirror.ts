@@ -15,7 +15,7 @@ const fail = (s: Response, e: unknown): void => {
 
 export function createLearningMirrorRouter(): Router {
   const r = Router();
-  r.use(requireUser, requireRole('teacher'));
+  r.use(requireUser);
 
   // Personal learning profiles
   r.get('/learning-mirror/profiles/:userId', (q, s) => {
@@ -24,19 +24,19 @@ export function createLearningMirrorRouter(): Router {
       s.json(getProfile(actor(q), q.params.userId ?? '', p));
     } catch (e) { fail(s, e); }
   });
-  r.post('/learning-mirror/profiles', (q, s) => {
+  r.post('/learning-mirror/profiles', requireRole('teacher'), (q, s) => {
     const b = UpsertProfileRequestSchema.safeParse(q.body);
     if (!b.success) return void s.status(400).json({error: 'invalid_body', detail: b.error.flatten()});
     try { s.status(201).json(upsertProfile(actor(q), b.data)); } catch (e) { fail(s, e); }
   });
-  r.post('/learning-mirror/profiles/:id/status', (q, s) => {
+  r.post('/learning-mirror/profiles/:id/status', requireRole('teacher'), (q, s) => {
     const b = z.object({status: z.enum(['draft', 'proposed', 'user_validated', 'teacher_validated', 'archived'])}).safeParse(q.body);
     if (!b.success) return void s.status(400).json({error: 'invalid_body'});
     try { s.json(updateProfileStatus(actor(q), q.params.id ?? '', b.data.status)); } catch (e) { fail(s, e); }
   });
 
   // Help context snapshots
-  r.post('/learning-mirror/help-context', (q, s) => {
+  r.post('/learning-mirror/help-context', requireRole('teacher'), (q, s) => {
     const b = RecordHelpContextRequestSchema.safeParse(q.body);
     if (!b.success) return void s.status(400).json({error: 'invalid_body', detail: b.error.flatten()});
     try { s.status(201).json(recordHelpContext(actor(q), b.data)); } catch (e) { fail(s, e); }

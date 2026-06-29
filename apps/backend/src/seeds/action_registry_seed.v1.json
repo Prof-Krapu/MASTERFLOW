@@ -312,7 +312,7 @@
       "risk_level": "low",
       "preflight_required": false,
       "validation_required": false,
-      "minimum_role": "teacher",
+      "minimum_role": "student",
       "ui_surface": "learning_profile_card",
       "status": "live"
     },
