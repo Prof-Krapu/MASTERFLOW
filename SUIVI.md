@@ -6,19 +6,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `GLOBAL-ABSORPTION-001`
-- objectif : classer les audits BP/legacy/factories/OpenMontage/design/voix/sécurité/DA narrative
-  pour choisir la prochaine vague sans dérive.
-- statut : `done_local_not_published`
-- dernière action terminée : matrice d'absorption créée dans
+- id : `SECURITY-FABRIC-001`
+- objectif : formaliser le trust boundary runtime : prompt injection, RAG poisoning, sources non
+  fiables, refus gradués, alertes godmode et tests attendus.
+- statut : `next_not_started`
+- dernière action terminée : `GLOBAL-ABSORPTION-001` publié via PR #174 (`1aa6f62`).
+- prochaine action : créer le contrat documentaire `SECURITY-FABRIC-001`, sans runtime ni
+  changement de permission.
+- fichiers/domaines concernés : à définir dans la vague ; point de départ recommandé :
+  `apps/backend/src/services/rag.ts`, `apps/backend/src/engines/action_engine.ts`,
+  `apps/backend/src/services/hard_stop.ts`, `apps/backend/src/services/owner_cockpit.ts`,
   `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
-- prochaine action : publier cette vague documentaire, puis lancer `SECURITY-FABRIC-001`.
-- fichiers/domaines concernés : `CLAUDE.md`, `SUIVI.md`, `AGENT_TASKS.md`,
-  `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md`,
-  `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
-- tests à relancer : `git diff --check` suffit pour cette vague documentaire.
-- publication : locale uniquement tant qu'aucun commit/push/PR/merge n'est fait.
-- blocage : aucun ; commit/push/PR/merge demandent validation explicite MALEX.
+- tests à relancer : lecture ciblée + `git diff --check` pour une vague documentaire ; tests
+  runtime seulement si code touché.
+- publication : aucune modification locale en cours pour `SECURITY-FABRIC-001`.
+- blocage : provider/live, ban automatique, session kill, changement permission et migration DB
+  restent hors périmètre sans validation explicite.
 
 ## 2026-06-29 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
 
@@ -31,7 +34,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Livrable : `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
 
-Statut : local documentaire, non publié.
+Statut : publié via PR #174 (`1aa6f62`).
 
 ## 2026-06-29 — GLOBAL-ABSORPTION-RESUME-000 : reprise anti-coupure crédits
 
