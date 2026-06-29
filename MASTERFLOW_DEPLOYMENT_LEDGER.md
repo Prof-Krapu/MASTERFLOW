@@ -5,6 +5,7 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-29 | THEME-STUDIO-UI-001 diagnostic DA | Expliquer une DA narrative avant tout thème actif ou asset généré. | API frontend, ThemeStudioPanel, App, styles, pilotage | local vérifié | GO MALEX | 605/605, lint frontend/backend, build et diff-check OK ; smoke vide + manifest 3 signes/2 alertes ; responsive 390 px. |
 | 2026-06-29 | MASTERSTORY-UI-001 lecture canon | Rendre un même canon lisible selon le public sans fuite de spoiler ni mutation. | API frontend, StoryWorkbench, MasterStoryCanonPanel, styles, pilotage | local vérifié | GO MALEX | 605/605, lint frontend/backend, build et diff-check OK ; Batrasia lecteur 30/8, atelier 0 masqué, responsive 390 px. |
 | 2026-06-29 | EXPERIENCE-UI-001 cockpit GodMode | Rendre l’Experience Fabric pilotable sans charger ni exécuter automatiquement ses fonctions. | API frontend, ExperienceCockpit, OwnerCockpit, styles, pilotage | local vérifié | GO MALEX | 605/605, lint frontend/backend, build et diff-check OK ; smoke 1280/390 px ; 17 événements, 2 précédents et 1 proposition lus sans Action. |
 | 2026-06-29 | VISIBLE-PREFLIGHT-002 panneau UI | Rendre les décisions de préflight compréhensibles et actionnables sans confondre validation et exécution. | ActionAudit, App, styles, pilotage | local vérifié | GO MALEX | Backend 605/605, lint frontend/backend, build et diff-check OK ; smoke desktop/mobile sans débordement ; `modify` désactivé. |

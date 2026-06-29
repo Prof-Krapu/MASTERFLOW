@@ -63,7 +63,7 @@ type ChatTurn = {
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
 type EntryDensity = 'low' | 'medium' | 'high';
 type PersonaPresence = 'direct' | 'guided' | 'character';
-type PrivateTool = 'd08' | 'd09' | 'd10' | null;
+type PrivateTool = 'd08' | 'd09' | 'd10' | 'theme' | null;
 type EntryProfile = {
   userId: string;
   intent: WorkModeId;
@@ -133,6 +133,10 @@ const VisualManifestPanel = lazy(async () => {
 const StoryWorkbenchPanel = lazy(async () => {
   const module = await import('./story-workbench-panel.tsx');
   return {default: module.StoryWorkbenchPanel};
+});
+const ThemeStudioPanel = lazy(async () => {
+  const module = await import('./theme-studio-panel.tsx');
+  return {default: module.ThemeStudioPanel};
 });
 const PrivateQuotePanel = lazy(async () => {
   const module = await import('./private-quote-panel.tsx');
@@ -1736,12 +1740,14 @@ function App(): ReactElement {
                 <button onClick={() => setPrivateTool('d08')} type="button">D08 · Visuel</button>
                 <button onClick={() => setPrivateTool('d09')} type="button">D09 · Story</button>
                 <button onClick={() => setPrivateTool('d10')} type="button">D10 · Devis</button>
+                <button onClick={() => setPrivateTool('theme')} type="button">Theme Studio</button>
               </div>
               {privateTool ? (
                 <Suspense fallback={<p className="panel panel--wide muted">Chargement de l’outil…</p>}>
                   {privateTool === 'd08' ? <VisualManifestPanel token={auth.token} /> : null}
                   {privateTool === 'd09' ? <StoryWorkbenchPanel token={auth.token} /> : null}
                   {privateTool === 'd10' ? <PrivateQuotePanel token={auth.token} /> : null}
+                  {privateTool === 'theme' ? <ThemeStudioPanel token={auth.token} /> : null}
                 </Suspense>
               ) : null}
             </section>

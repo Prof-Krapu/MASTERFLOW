@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-328 — THEME-STUDIO-UI-001 : grammaire visuelle explicable
+target: codex
+status: done
+frozen_by: MALEX « Go / continue » 2026-06-29
+
+### scope
+- Ajouter Theme Studio comme outil GodMode chargé à la demande.
+- Lire un manifest D08 via Visual Narrative Grammar.
+- Exposer signes, arc émotionnel, justification et diagnostics.
+- Ne pas appliquer de thème, générer, canoniser ou publier.
+
+### verification
+- backend complet : 605/605.
+- lint frontend/backend, build frontend et diff-check : OK.
+- smoke : état vide honnête ; manifest local = 3 signes, 0 arc, 2 alertes ;
+  aucun débordement à 390 px.
+
+### updates
+> 2026-06-29 codex → done local. Theme Studio diagnostic vérifié ; publication atomique prête.
+
+---
+
 ## TASK-327 — MASTERSTORY-UI-001 : lecture canon progressive
 target: codex
 status: done
