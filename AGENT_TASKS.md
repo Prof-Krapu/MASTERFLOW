@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-333 — TRUST-FABRIC-001 : confiance explicable
+target: codex
+status: done
+frozen_by: MALEX « on continue ? » 2026-06-29
+
+### scope
+- Auditer les signaux de confiance, intégrité, risque utilisateur et santé runtime existants.
+- Séparer les dimensions et interdire tout score global ou moral.
+- Définir reason codes, scope, expiration, réversibilité et règles d'échelle.
+- Ne modifier aucun runtime, schéma, permission, provider, sanction ou UI.
+
+### verification
+- Relecture RAG, workflow observability, cost governance, LLM routing et owner cockpit.
+- `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Contrat Trust Fabric V1 prêt à publication atomique.
+> 2026-06-29 codex → PR #178 créée ; l'état GitHub de la PR fait foi.
+
+---
+
 ## TASK-332 — SECURITY-FABRIC-002 : garde déterministe commun
 target: codex
 status: done
