@@ -38,6 +38,15 @@ describe('getRegistryEntry', () => {
   it("retourne null pour un action_id inconnu", () => {
     expect(getRegistryEntry('action_inexistante_xyz')).toBeNull();
   });
+
+  it("rend la lecture du profil Learning disponible dès le rôle student", () => {
+    expect(getRegistryEntry('view_learning_profile')).toMatchObject({
+      minimum_role: 'student',
+      risk_level: 'low',
+      validation_required: false,
+      status: 'live',
+    });
+  });
 });
 
 describe('riskLevelFor', () => {

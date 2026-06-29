@@ -6,20 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-PROGRESSIVE-SURFACES-001`
-- objectif : rendre la politique d'aide pédagogique visible dans Teaching sans charger un
-  dashboard technique ni lancer d'action.
+- id : `LEARNING-MODE-ACCESS-001`
+- objectif : rendre Learning visible dans les Home et permettre à un étudiant de lire uniquement
+  son propre profil d'apprentissage.
 - statut : `local_verified_pending_publication`
-- dernière action terminée : endpoint authentifié + panneau Teaching réutilisable vérifiés en
-  desktop et mobile.
-- prochaine action : publier la verticale, puis auditer l'exposition Learn/Home avant toute
-  nouvelle surface.
-- fichiers/domaines concernés : contrats pédagogiques partagés, route read-only, API frontend,
-  panneau Teaching et responsive.
-- tests à relancer : recette complète déjà verte ; publication et preuve GitHub à produire.
-- publication : runtime Learning/Teaching mergé via PR #191 (`7d00d60`) ; UI à publier.
-- blocage : ne jamais exposer un rôle choisi par le client, une note finale, une publication,
-  une sanction ou une surface sans endpoint réel.
+- dernière action terminée : accès self-read Learning, exposition Home additive et tests de
+  permissions ciblés.
+- prochaine action : terminer la recette complète, publier, puis construire la surface Learn
+  depuis les endpoints réels.
+- fichiers/domaines concernés : Room Home, runtime loadout, registre d'actions et Learning Mirror.
+- tests à relancer : backend complet, lint backend/frontend, build frontend et diff-check.
+- publication : surface Teaching mergée via PR #192 (`8f41537`) ; accès Learning à publier.
+- blocage : l'étudiant ne peut ni éditer, ni valider, ni lire le profil d'un autre utilisateur.
+
+## 2026-06-29 — LEARNING-MODE-ACCESS-001 : accès Learning borné
+
+- ajout additif de `learning` au cycle des Home Vincent/MALEX, sans retirer aucun mode ;
+- action de lecture du profil Learning disponible dès `student` ;
+- lecture autorisée uniquement pour son propre profil ou un scope déjà autorisé ;
+- écritures de profil, statuts et contextes d'aide toujours limitées aux professeurs ;
+- aucune nouvelle table, migration, publication, note ou collecte automatique.
+
+Vérifications : 19/19 ciblés, backend 654/654, lint backend/frontend, build frontend,
+Learning visible et ouvrable dans le navigateur local, `git diff --check`.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — UI-PROGRESSIVE-SURFACES-001 : cadre d'aide dans Teaching
 
@@ -33,7 +44,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 12/12 ciblés, backend 648/648, lint backend/frontend, build frontend,
 smoke navigateur desktop/mobile et `git diff --check`.
 
-Statut : vérifié localement, publication atomique en cours.
+Statut : publié via PR #192 (`8f41537`).
 
 ## 2026-06-29 — LEARNING-TEACHING-INTEGRITY-RUNTIME-001 : décision pédagogique pure
 
