@@ -14,9 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-317 — EXPERIENCE-FABRIC-004 : Storylet Engine
+## TASK-318 — EXPERIENCE-FABRIC-005 : Visual Narrative Grammar
 target: codex
 status: done
+frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
+
+### scope
+- Relier D08, références visuelles, canon narratif et thèmes en rapport explicable.
+- Garder la politique `explain_only`.
+- Ne pas générer, appeler un provider, appliquer un thème, exporter ou canoniser automatiquement.
+
+### verification
+- test ciblé Visual Narrative Grammar : 5/5.
+
+### updates
+> 2026-06-29 codex → done local. Vague 5 prête à publication.
+
+---
+
+## TASK-317 — EXPERIENCE-FABRIC-004 : Storylet Engine
+target: codex
+status: verified
 frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### scope
@@ -30,6 +48,7 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### updates
 > 2026-06-28 codex → done local. Vague 4 prête à publication.
+> 2026-06-29 codex → verified. PR #159 mergée sur GitHub main (`0532406`).
 
 ---
 

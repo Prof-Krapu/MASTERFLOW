@@ -4,6 +4,7 @@ import {
   ExperienceTimelineQuerySchema,
   PrecedentSearchQuerySchema,
   StoryletEvaluationQuerySchema,
+  VisualNarrativeGrammarQuerySchema,
 } from '@masterflow/shared';
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
@@ -16,6 +17,7 @@ import {
   searchPrecedentCases,
 } from '../services/precedent_engine.ts';
 import {evaluateStorylets} from '../services/storylet_engine.ts';
+import {buildVisualNarrativeGrammarReport} from '../services/visual_narrative_grammar.ts';
 
 function actor(req: Request): AuthUser {
   if (!req.user) throw new Error('unauthorized');
@@ -61,6 +63,14 @@ function storyletQuery(req: Request) {
     workbench_id: req.query.workbench_id,
     domains,
     limit: typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined,
+  });
+}
+
+function visualGrammarQuery(req: Request) {
+  return VisualNarrativeGrammarQuerySchema.safeParse({
+    workbench_id: req.query.workbench_id,
+    manifest_id: req.query.manifest_id,
+    project_id: req.query.project_id,
   });
 }
 
@@ -133,6 +143,19 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(evaluateStorylets(actor(req), parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/visual-grammar', (req, res): void => {
+    const parsed = visualGrammarQuery(req);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(buildVisualNarrativeGrammarReport(actor(req), parsed.data));
     } catch (error) {
       fail(res, error);
     }

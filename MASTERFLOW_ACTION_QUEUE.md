@@ -4,13 +4,22 @@ Dernière mise à jour : 2026-06-28
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-005 — Visual Narrative Grammar
+
+- Tâche : expliquer les visuels D08 par leur fonction narrative, leur thème, leurs sources et leur continuité.
+- Impact : MasterFlow peut préparer `pourquoi ce visuel ?`, Theme Studio, compagnons, monstres et DA robuste sans lancer de génération.
+- Risque : faible ; politique `explain_only`, aucun provider, asset, export, thème appliqué ou canonisation.
+- Source de vérité concernée : runtime Git + D08 + MasterStory + Theme Studio.
+- Statut : local vérifié, publication atomique en cours.
+- Validation requise : non pour cette tranche ; oui avant provider image, application de thème, génération ou UI prescriptive.
+
 ### EXPERIENCE-FABRIC-004 — Storylet Engine
 
 - Tâche : évaluer des storylets candidates depuis canon narratif, précédents et blockers.
 - Impact : MasterFlow peut proposer le bon événement ou pont contextuel sans agir en douce.
 - Risque : faible ; politique `suggest_only`, aucune exécution automatique.
 - Source de vérité concernée : runtime Git + Experience Fabric.
-- Statut : prêt à publication atomique.
+- Statut : publié via PR #159 (`0532406`).
 - Validation requise : non pour cette tranche ; oui avant scheduler, exécution ou UI prescriptive.
 
 ### EXPERIENCE-FABRIC-003 — Narrative Canon Graph
@@ -19,7 +28,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : MasterFlow peut produire une lecture sans spoiler et un atelier complet depuis le même canon.
 - Risque : faible ; projection read-only sans delta canon ni génération.
 - Source de vérité concernée : runtime Git + MasterStory D09.
-- Statut : prêt à publication atomique.
+- Statut : publié via PR #158 (`5f833a3`).
 - Validation requise : non pour cette tranche ; oui avant validation automatique, storylets ou export canon.
 
 ### EXPERIENCE-FABRIC-002 — Precedent Engine
@@ -28,7 +37,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : MasterFlow peut proposer des précédents sourcés au lieu de repartir de zéro.
 - Risque : faible ; lecture seule, aucune réutilisation automatique.
 - Source de vérité concernée : runtime Git.
-- Statut : prêt à publication atomique.
+- Statut : publié via PR #156 (`0a3a2ef`).
 - Validation requise : non pour cette tranche ; oui avant rétention automatique, embeddings ou UI prescriptive.
 
 ### EXPERIENCE-FABRIC-001 — Event Spine

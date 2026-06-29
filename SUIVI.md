@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPERIENCE-FABRIC-005 : Visual Narrative Grammar
+
+- contrats `VisualGrammarElement`, `EmotionalArcPoint`, `VisualNarrativeGrammar`
+  et `VisualNarrativeGrammarReport` ;
+- projection read-only depuis les manifests D08, les références visuelles, le canon narratif
+  et la racine DA/thème disponible ;
+- endpoint `GET /experience/visual-grammar` ;
+- rapport explicable : motifs, template, arc émotionnel, sources et cartes « pourquoi ce visuel ? » ;
+- diagnostics de dérive graphique, évolution injustifiée, motif décoratif sans fonction et trou de
+  continuité ;
+- politique d'exécution stricte `explain_only` : aucune génération, provider, application de thème,
+  canonisation, export ou publication.
+
+Vérifications : 5/5 ciblés Visual Narrative Grammar.
+
+Statut : vague 5 locale en cours de publication atomique.
+
 ## 2026-06-28 — EXPERIENCE-FABRIC-004 : Storylet Engine
 
 - contrats `StoryletDefinition`, `StoryletInstance` et `StoryletEvaluation` ;
@@ -16,7 +33,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 4/4 ciblés Storylet Engine, backend complet 579/579, lint backend/frontend,
 build frontend et diff-check.
 
-Statut : vague 4 prête à publication atomique.
+Statut : publié via PR #159 (`0532406`).
 
 ## 2026-06-28 — EXPERIENCE-FABRIC-003 : Narrative Canon Graph
 
@@ -33,7 +50,7 @@ Statut : vague 4 prête à publication atomique.
 Vérifications : 5/5 ciblés Narrative Canon Graph, backend complet 575/575, lint backend/frontend,
 build frontend et diff-check.
 
-Statut : vague 3 prête à publication atomique.
+Statut : publié via PR #158 (`5f833a3`).
 
 ## 2026-06-28 — EXPERIENCE-FABRIC-002 : Precedent Engine
 
@@ -48,7 +65,7 @@ Statut : vague 3 prête à publication atomique.
 Vérifications : 8/8 ciblés Experience Fabric, backend complet 570/570, lint backend/frontend,
 build frontend et diff-check.
 
-Statut : vague 2 prête à publication atomique.
+Statut : publié via PR #156 (`0a3a2ef`).
 
 ## 2026-06-28 — EXPERIENCE-FABRIC-001 : Event Spine publiée
 
