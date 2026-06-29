@@ -31,6 +31,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Contrat Voice Persona V1 prêt à publication.
+> 2026-06-29 codex → PR #182 créée ; l'état GitHub de la PR fait foi.
 
 ---
 

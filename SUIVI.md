@@ -10,12 +10,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : durcir le TTS avec auth, Room/speaker réel, whitelist, limites et tests mockés, sans
   STT, clonage vocal, provider payant ou appel réseau de test.
 - statut : `next_not_started`
-- dernière action terminée : contrat `VOICE-PERSONA-001` prêt à publication.
+- dernière action terminée : contrat `VOICE-PERSONA-001` porté par la PR #182.
 - prochaine action : figer la whitelist et l'injection du générateur avant tout code runtime.
 - fichiers/domaines concernés : `docs/voice/VOICE_PERSONA_TTS_V1_2026-06-29.md`, TTS, speaker,
   runtime loadout et frontend audio.
 - tests à relancer : ciblés TTS puis backend complet, lint et build frontend si code touché.
-- publication : `VOICE-PERSONA-001` local, publication GitHub en cours.
+- publication : PR #182 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : STT/micro, clonage vocal, provider payant, cache audio, secrets et live restent
   interdits.
 
@@ -30,7 +30,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Livrable : `docs/voice/VOICE_PERSONA_TTS_V1_2026-06-29.md`.
 
-Statut : local vérifié, publication GitHub en cours.
+Statut : contrat porté par la PR #182 ; son état GitHub fait foi.
 
 ## 2026-06-29 — SAFETY-STATE-002 : projection runtime pure
 
