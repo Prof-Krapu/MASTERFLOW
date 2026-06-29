@@ -2075,6 +2075,67 @@ export const CreateVisualManifestRequestSchema = z.object({
 });
 export type CreateVisualManifestRequest = z.infer<typeof CreateVisualManifestRequestSchema>;
 
+export const VisualGrammarElementSchema = z.object({
+  element_id: z.string().min(1),
+  element_type: z.enum(['shape', 'color', 'light', 'motion', 'composition', 'motif', 'texture', 'typography']),
+  label: z.string().min(1).max(160),
+  meaning: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1)).min(1).max(20),
+});
+export type VisualGrammarElement = z.infer<typeof VisualGrammarElementSchema>;
+
+export const EmotionalArcPointSchema = z.object({
+  point_id: z.string().min(1),
+  narrative_ref: z.string().min(1),
+  emotion: z.string().min(1).max(120),
+  intensity: z.number().min(0).max(1),
+  palette_refs: z.array(z.string().min(1)).max(12),
+  lighting_ref: z.string().min(1).nullable(),
+});
+export type EmotionalArcPoint = z.infer<typeof EmotionalArcPointSchema>;
+
+export const VisualNarrativeGrammarSchema = z.object({
+  grammar_id: z.string().min(1),
+  scope_ref: z.string().min(1),
+  theme_ref: z.string().min(1).nullable(),
+  narrative_refs: z.array(z.string().min(1)),
+  visual_elements: z.array(VisualGrammarElementSchema),
+  emotional_arc: z.array(EmotionalArcPointSchema),
+  continuity_refs: z.array(z.string().min(1)),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type VisualNarrativeGrammar = z.infer<typeof VisualNarrativeGrammarSchema>;
+
+export const VisualNarrativeGrammarQuerySchema = z.object({
+  workbench_id: z.string().min(1).optional(),
+  manifest_id: z.string().min(1).optional(),
+  project_id: z.string().min(1).optional(),
+}).refine((value) => Boolean(value.workbench_id || value.manifest_id), {
+  message: 'workbench_id_or_manifest_id_required',
+});
+export type VisualNarrativeGrammarQuery = z.input<typeof VisualNarrativeGrammarQuerySchema>;
+
+export const VisualNarrativeGrammarReportSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  grammar: VisualNarrativeGrammarSchema,
+  manifest_refs: z.array(z.string().min(1)),
+  narrative_fact_refs: z.array(z.string().min(1)),
+  explanation_cards: z.array(z.object({
+    card_id: z.string().min(1),
+    title: z.string().min(1).max(160),
+    explanation: z.string().min(1).max(1000),
+    source_refs: z.array(z.string().min(1)).min(1).max(20),
+  })),
+  diagnostics: z.object({
+    graphic_drift: z.array(z.string().min(1)),
+    unjustified_evolution: z.array(z.string().min(1)),
+    decorative_motif_without_function: z.array(z.string().min(1)),
+    missing_continuity_refs: z.array(z.string().min(1)),
+  }),
+  execution_policy: z.literal('explain_only'),
+});
+export type VisualNarrativeGrammarReport = z.infer<typeof VisualNarrativeGrammarReportSchema>;
+
 export const GeneratedAssetTypeSchema = z.enum(['image', 'visual_manifest', 'badge', 'render', 'export']);
 export type GeneratedAssetType = z.infer<typeof GeneratedAssetTypeSchema>;
 
@@ -3391,6 +3452,7 @@ export const EXPERIENCE_FABRIC_API = {
   snapshot: '/api/v1/experience/snapshot',
   precedents: '/api/v1/experience/precedents',
   storylets: '/api/v1/experience/storylets',
+  visualGrammar: '/api/v1/experience/visual-grammar',
 } as const;
 
 export const DecisionTraceOptionSchema = z.object({

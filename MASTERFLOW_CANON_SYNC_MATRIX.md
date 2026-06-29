@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
-Dernière vérification : 2026-06-28
-Branche de travail : `codex/experience-fabric-precedents`
-Base GitHub vérifiée : `63381f5` (`main == origin/main` après merge PR #155)
+Dernière vérification : 2026-06-29
+Branche de travail : `codex/experience-fabric-visual-grammar`
+Base GitHub vérifiée : `0532406` (`origin/main` après merge PR #159)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -13,9 +13,10 @@ récoltées après audit.
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
-| Experience Fabric / Precedent Engine | implémenté local | Recherche de cas depuis mémoire, checkpoints, décisions et événements ; publication GitHub à faire. | faible | Publier la vague 2 puis construire le Narrative Canon Graph. |
-| Experience Fabric / Narrative Canon Graph | implémenté local | Projection des faits, présentations, connaissances personnage et setup/payoff ; publication GitHub à faire. | faible | Publier la vague 3 puis construire les storylets sur ces faits. |
-| Experience Fabric / Storylet Engine | implémenté local | Storylets candidates `suggest_only` depuis canon narratif, précédents et blockers ; publication GitHub à faire. | faible | Publier la vague 4 puis relier Visual Narrative Grammar. |
+| Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
+| Experience Fabric / Narrative Canon Graph | implémenté | Projection des faits, présentations, connaissances personnage et setup/payoff publiée via PR #158. | faible | Utiliser comme source des storylets, compagnons et DA narrative. |
+| Experience Fabric / Storylet Engine | implémenté | Storylets candidates `suggest_only` depuis canon narratif, précédents et blockers publiées via PR #159. | faible | Garder toute exécution future derrière validation et Action Engine. |
+| Experience Fabric / Visual Narrative Grammar | implémenté local | Projection `explain_only` depuis D08, références, thème et canon narratif ; publication GitHub à faire. | faible | Publier la vague 5 puis préparer compagnons/subpersonas sans ouvrir provider image. |
 | Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
