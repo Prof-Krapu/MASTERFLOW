@@ -14,6 +14,29 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-347 — OBSERVABILITY-GODMODE-RECONCILIATION-001 : cockpit existant confirmé
+target: codex
+status: done
+frozen_by: MALEX « on reprend » 2026-06-29
+
+### scope
+- Vérifier si Observabilité/GodMode exige un nouveau build ou si le cockpit existe déjà.
+- Reclasser la vague comme réconciliation si OwnerCockpit/ExperienceCockpit/diagnostics couvrent
+  le besoin.
+- Éviter tout dashboard parallèle, toute nouvelle queue d'alertes et toute duplication GodMode.
+- Préparer la suite logique Red Team/tests.
+
+### verification
+- GitHub/local alignés.
+- Recherche ciblée OwnerCockpit, ExperienceCockpit, diagnostics, trust, safety-state, token usage.
+- Tests ciblés OwnerCockpit/token usage 13/13.
+- `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Observabilité/GodMode existe déjà partiellement ; pas de nouveau cockpit à coder.
+
+---
+
 ## TASK-346 — UI-PROGRESSIVE-LEARNING-001 : premier workspace Learn
 target: codex
 status: done
@@ -31,6 +54,7 @@ frozen_by: MALEX « on reprend » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Premier workspace Learn prêt à publication.
+> 2026-06-29 codex → PR #194 mergée (`b29366a`) ; GitHub `main` fait foi.
 
 ---
 
