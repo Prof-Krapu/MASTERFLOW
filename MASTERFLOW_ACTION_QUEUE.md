@@ -4,13 +4,22 @@ Dernière mise à jour : 2026-06-29
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-006C — Monstre-idée Ours d’Or
+
+- Tâche : projeter naissance V0 et évolution candidate d'un monstre depuis un projet guidé Ours d'Or.
+- Impact : la maturation du projet devient visible sans note, classement ni mutation automatique.
+- Risque : faible pour la projection ; élevé dès qu'un provider image ou une promotion canon est ouvert.
+- Source de vérité concernée : runtime Git + Guided Runtime + D04/D05/D08 + legacy Ours d'Or arbitré.
+- Statut : local vérifié, publication atomique en cours.
+- Validation requise : non pour le rapport candidat ; oui avant génération, galerie, export ou canonisation.
+
 ### EXPERIENCE-FABRIC-006B — MOTH Living Companion
 
 - Tâche : activer MOTH comme compagnon contextuel assigné sur le contrat Living Companion.
 - Impact : une classe ou session CDC peut disposer d'un garde-fou incarné sans remplacer le persona personnel.
 - Risque : faible ; assignation explicite, guide privé et aucune autonomie silencieuse.
 - Source de vérité concernée : runtime Git + Guided Runtime + D04/D05.
-- Statut : local vérifié, publication atomique en cours.
+- Statut : publié via PR #162 (`3afee8d`).
 - Validation requise : non pour cette projection ; oui avant asset, évolution, provider ou dialogue autonome.
 
 ### EXPERIENCE-FABRIC-006A — Living Companion / Robot CDC

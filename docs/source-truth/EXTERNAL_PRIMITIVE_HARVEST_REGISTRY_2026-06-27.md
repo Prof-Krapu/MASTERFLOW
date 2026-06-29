@@ -28,6 +28,7 @@ Autorité opérable : Git repo `/Users/malex/Documents/Playground/MASTERFLOW`
 | EXT-DRIVE-001 | Drive Domain Cards D01-D12 | Produit lent | `already_in_git_doc` partiel | Ne plus traiter comme vérité parallèle ; vérifier uniquement si une idée n'est pas encore dans Git. |
 | EXT-DESIGN-MD-001 | `design.md` — Apache-2.0 | Design tokens / lint | `already_in_git_runtime` fondation clean-room | Contrat ThemePack et lint déterministe absorbés ; stockage, application UI et export DTCG restent futurs. |
 | EXT-OPENMONTAGE-001 | OpenMontage — AGPL-3.0 | Packs, étapes, promesses de sortie | `already_in_git_runtime` concepts clean-room | Aucun code copié : packs, guidage, ponts proposés, qualité, décisions et coûts réimplémentés ; scoring provider différé. |
+| EXT-OURS-DOR-MONSTER-001 | Legacy Ours d’Or : évolution, personnalité, silhouette, lisibilité et pipeline trois étapes | Monstre-idée de projet | `already_in_git_runtime` partiel | Projection V0/mutation/stabilisation candidate ; génération, galerie et promotion canon restent bloquées. |
 
 ## Règle d'usage
 

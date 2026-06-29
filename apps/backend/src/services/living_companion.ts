@@ -22,6 +22,7 @@ function companionType(manifest: Record<string, unknown> | null): CompanionType 
   const value = manifestString(manifest, 'companion_type');
   if (value === null || value === 'cdc_robot') return 'cdc_robot';
   if (value === 'moth') return 'moth';
+  if (value === 'project_monster') return 'project_monster';
   throw new Error('living_companion_type_invalid');
 }
 
@@ -45,17 +46,23 @@ function dialogueBubble(
     return 'Cette session n’est plus active. Demande au facilitateur de la rouvrir ou d’en créer une nouvelle.';
   }
   if (currentPrompt) {
-    return type === 'moth'
-      ? `Je vais être pénible une seconde : ${currentPrompt}`
-      : `On avance étape par étape. ${currentPrompt}`;
+    if (type === 'moth') return `Je vais être pénible une seconde : ${currentPrompt}`;
+    if (type === 'project_monster') {
+      return 'Je prends forme avec ton projet. Clarifie encore son idée centrale pour que mon évolution reste lisible.';
+    }
+    return `On avance étape par étape. ${currentPrompt}`;
   }
   return 'Je ne trouve pas de question valide dans le guide. Je préfère m’arrêter plutôt que d’en inventer une.';
 }
 
 function companionRole(type: CompanionType): string {
-  return type === 'moth'
-    ? 'Garde-fou contextuel du CDC : questionner les raccourcis, révéler les zones floues et renvoyer les arbitrages au groupe ou au professeur.'
-    : 'Aider le groupe à comprendre, découper et vérifier son CDC IA sans produire le travail à sa place.';
+  if (type === 'moth') {
+    return 'Garde-fou contextuel du CDC : questionner les raccourcis, révéler les zones floues et renvoyer les arbitrages au groupe ou au professeur.';
+  }
+  if (type === 'project_monster') {
+    return 'Incarnation contextuelle de l’idée du projet : rendre son gimmick, son émotion et sa maturation visibles sans noter ni comparer les étudiants.';
+  }
+  return 'Aider le groupe à comprendre, découper et vérifier son CDC IA sans produire le travail à sa place.';
 }
 
 function companionBoundaries(type: CompanionType): string[] {
@@ -66,6 +73,12 @@ function companionBoundaries(type: CompanionType): string[] {
           'provoque une réflexion mais ne tranche pas à la place du groupe',
           'ne remplace jamais le persona personnel de l’utilisateur',
         ]
+      : type === 'project_monster'
+        ? [
+            'représente une idée de projet et jamais la valeur ou le niveau d’un étudiant',
+            'évolue par clarification du gimmick et non par power-level',
+            'son identité et chaque évolution restent candidates avant validation du créateur',
+          ]
       : ['oriente mais ne rédige pas le CDC à la place du groupe']),
     'n’invente aucune question hors du guide figé',
     'demande une validation humaine en cas de contradiction',
@@ -111,7 +124,9 @@ export function buildGuidedLivingCompanion(
           ? 'limited'
           : 'ready';
   const availableIntents: LivingCompanion['available_intents'] =
-    session.status === 'completed'
+    type === 'project_monster'
+      ? ['inspect_project_state', 'review_evolution_candidate', 'request_identity_validation']
+      : session.status === 'completed'
       ? ['review_summary', 'review_progress']
       : [
           ...(currentPrompt ? ['answer_current_question' as const] : []),
@@ -130,7 +145,7 @@ export function buildGuidedLivingCompanion(
     display_name:
       manifestString(guide.ui_manifest, 'companion_name') ??
       (guide.lore_persona_id ? getPersona(guide.lore_persona_id)?.name : null) ??
-      (type === 'moth' ? 'MOTH' : 'Robot CDC IA'),
+      (type === 'moth' ? 'MOTH' : type === 'project_monster' ? 'Monstre-idée' : 'Robot CDC IA'),
     role_summary: companionRole(type),
     boundaries: companionBoundaries(type),
     session_ref: `guided_session:${sessionId}`,
@@ -140,7 +155,7 @@ export function buildGuidedLivingCompanion(
     assignment_scope_refs: assignmentScopeRefs,
     functional_persona_ref: guide.functional_persona_id,
     lore_persona_ref: guide.lore_persona_id,
-    interaction_mode: 'full_page_guided',
+    interaction_mode: type === 'project_monster' ? 'contextual_bubble' : 'full_page_guided',
     readiness,
     current_prompt: currentPrompt,
     dialogue_bubble: dialogueBubble(

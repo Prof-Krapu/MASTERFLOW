@@ -2508,7 +2508,7 @@ export type LivingCompanionReadiness = z.infer<typeof LivingCompanionReadinessSc
 
 export const LivingCompanionSchema = z.object({
   companion_id: z.string().min(1),
-  companion_type: z.enum(['cdc_robot', 'moth']),
+  companion_type: z.enum(['cdc_robot', 'moth', 'project_monster']),
   display_name: z.string().min(1).max(160),
   role_summary: z.string().min(1).max(500),
   boundaries: z.array(z.string().min(1).max(240)).min(1).max(12),
@@ -2519,7 +2519,7 @@ export const LivingCompanionSchema = z.object({
   assignment_scope_refs: z.array(z.string().min(1)).min(1).max(6),
   functional_persona_ref: z.string().min(1).nullable(),
   lore_persona_ref: z.string().min(1).nullable(),
-  interaction_mode: z.literal('full_page_guided'),
+  interaction_mode: z.enum(['full_page_guided', 'contextual_bubble']),
   readiness: LivingCompanionReadinessSchema,
   current_prompt: z.string().min(1).max(1000).nullable(),
   dialogue_bubble: z.string().min(1).max(1200),
@@ -2528,6 +2528,9 @@ export const LivingCompanionSchema = z.object({
     'review_progress',
     'request_facilitator',
     'review_summary',
+    'inspect_project_state',
+    'review_evolution_candidate',
+    'request_identity_validation',
   ])),
   progress: GuidedProgressSchema,
   storylets: z.array(StoryletInstanceSchema),
@@ -2543,6 +2546,65 @@ export const LivingCompanionSchema = z.object({
   execution_policy: z.literal('guide_only'),
 });
 export type LivingCompanion = z.infer<typeof LivingCompanionSchema>;
+
+export const ProjectMonsterEvolutionStageSchema = z.enum([
+  'seed',
+  'mutation',
+  'stabilized',
+]);
+export type ProjectMonsterEvolutionStage = z.infer<typeof ProjectMonsterEvolutionStageSchema>;
+
+export const ProjectMonsterEvolutionReportSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  companion: LivingCompanionSchema,
+  project_ref: z.string().min(1),
+  event_context: z.literal('ours_dor'),
+  identity: z.object({
+    proposed_name: z.string().min(1).max(160).nullable(),
+    lore_summary: z.string().min(1).max(1000).nullable(),
+    status: z.enum(['needs_creator_input', 'candidate']),
+  }),
+  creative_gimmick: z.string().min(1).max(1000).nullable(),
+  dominant_emotion: z.string().min(1).max(500).nullable(),
+  proposed_stage: ProjectMonsterEvolutionStageSchema,
+  stage_reason: z.string().min(1).max(1000),
+  continuity_locks: z.array(z.enum([
+    'same_silhouette_family',
+    'same_core_gimmick',
+    'same_emotional_lineage',
+    'same_non_humiliating_tone',
+    'behavior_before_form',
+  ])).length(5),
+  visual_gates: z.object({
+    personality: z.enum(['ready', 'pending', 'blocked']),
+    silhouette: z.enum(['ready', 'pending', 'blocked']),
+    evolution: z.enum(['ready', 'pending', 'blocked']),
+    readability: z.enum(['ready', 'pending', 'blocked']),
+    non_humiliation: z.enum(['ready', 'pending', 'blocked']),
+  }),
+  missing_inputs: z.array(z.enum([
+    'creator_validated_name',
+    'creator_validated_lore',
+    'creative_gimmick',
+    'dominant_emotion',
+  ])),
+  asset_plan: z.object({
+    pipeline_profile: z.literal('OD_MONSTER_EVOLUTION_THREE_STAGE_COMFY'),
+    output_protocol: z.literal('OD_MONSTER_EVOLUTION_PACK'),
+    expected_outputs: z.array(z.enum([
+      'contact_sheet_preview',
+      'stage_1_crop_optional',
+      'stage_2_crop_optional',
+      'stage_3_crop_optional',
+    ])).length(4),
+    generation_allowed: z.literal(false),
+    canon_promotion_allowed: z.literal(false),
+  }),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+  requires_creator_validation: z.literal(true),
+  execution_policy: z.literal('candidate_only'),
+});
+export type ProjectMonsterEvolutionReport = z.infer<typeof ProjectMonsterEvolutionReportSchema>;
 
 export const NARRATIVE_RUNTIME_API = {
   nodes: {
@@ -3501,6 +3563,7 @@ export const EXPERIENCE_FABRIC_API = {
   storylets: '/api/v1/experience/storylets',
   visualGrammar: '/api/v1/experience/visual-grammar',
   guidedCompanion: '/api/v1/experience/companions/guided-sessions/:sessionId',
+  projectMonster: '/api/v1/experience/companions/project-monsters/guided-sessions/:sessionId',
 } as const;
 
 export const DecisionTraceOptionSchema = z.object({

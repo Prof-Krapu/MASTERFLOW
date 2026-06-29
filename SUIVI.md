@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPERIENCE-FABRIC-006C : Monstre-idée Ours d’Or
+
+- extension `LivingCompanion` au type `project_monster` en bulle contextuelle ;
+- rapport `ProjectMonsterEvolutionReport` lié à une session et un projet privés ;
+- nom et lore déclarés par le créateur, jamais inventés par le runtime ;
+- trois étapes candidates issues des contrats legacy : `seed`, `mutation`, `stabilized` ;
+- calcul depuis complétude, `creative_gimmick`, `dominant_emotion` et contradictions ;
+- continuité verrouillée : silhouette, gimmick, émotion, non-humiliation et comportement avant forme ;
+- plan d'asset Ours d'Or exposé mais `generation_allowed: false` et `canon_promotion_allowed: false` ;
+- endpoint `GET /experience/companions/project-monsters/guided-sessions/:sessionId`.
+
+Vérifications : 5/5 ciblés Project Monster, 7/7 Living Companion, 4/4 Storylet Engine,
+backend complet 596/596, lint backend/frontend, build frontend et diff-check OK.
+
+Statut : vague 6.3 locale prête à publication atomique.
+
 ## 2026-06-29 — EXPERIENCE-FABRIC-006B : MOTH Living Companion
 
 - extension additive de `LivingCompanion` aux types `cdc_robot` et `moth` ;
@@ -17,7 +33,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 7/7 ciblés Living Companion, 4/4 Storylet Engine, backend complet 591/591,
 lint backend/frontend, build frontend et diff-check OK.
 
-Statut : vague 6.2 locale prête à publication atomique.
+Statut : publié via PR #162 (`3afee8d`).
 
 ## 2026-06-29 — EXPERIENCE-FABRIC-006A : Living Companion / Robot CDC
 
