@@ -140,18 +140,20 @@ Les alertes doivent aider, pas noyer :
 La Trust Fabric séparera ensuite confiance source, confiance fichier/lien, signal utilisateur
 contextuel et santé provider. La Security Fabric ne fusionne pas ces valeurs.
 
-## Première tranche runtime recommandée
+## Première tranche runtime
 
-`SECURITY-FABRIC-002` doit rester additive et sans migration :
+Statut : implémentée par `SECURITY-FABRIC-002`, publication GitHub à vérifier dans `SUIVI.md`.
 
-1. créer un classifieur déterministe partagé pour entrée directe et contenu indirect ;
-2. remplacer la regex RAG isolée par ce classifieur sans diminuer les refus actuels ;
-3. produire un audit borné pour les refus et quarantaines ;
-4. tester encodage, typoglycémie simple, instruction distante, secret, scope et répétition ;
-5. ne modifier ni permission, hard stop, session, sanction, provider ou UI.
+`SECURITY-FABRIC-002` reste additive et sans migration :
 
-Le modèle de décision partagé, la persistance d'incidents, l'agrégation GodMode et les états
-narratifs seront des tranches ultérieures, après validation de leurs contrats.
+1. classifieur déterministe commun pour entrée directe et contenu indirect ;
+2. remplacement de la regex RAG isolée sans diminuer les refus existants ;
+3. refus d'ingestion et quarantaine à la lecture pour un chunk RAG hostile ;
+4. audit borné par identifiants, hash et famille de menace, sans contenu brut ;
+5. tests direct, base64, lettres espacées, typoglycémie, markup et usage pédagogique.
+
+La persistance d'incidents, l'agrégation GodMode, la répétition multi-requêtes et les états
+narratifs restent des tranches ultérieures.
 
 ## Tests d'acceptation
 

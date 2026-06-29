@@ -6,18 +6,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `SECURITY-FABRIC-002`
-- objectif : construire le premier garde déterministe commun pour entrées directes et contenus
-  indirects, sans changer permissions, hard stop ou sanctions.
+- id : `TRUST-FABRIC-001`
+- objectif : séparer clairement confiance source, fichier/lien, signal utilisateur contextuel et
+  santé système/provider, sans produire de score moral ni de décision automatique.
 - statut : `next_not_started`
-- dernière action terminée : contrat `SECURITY-FABRIC-001` porté par la PR #176.
-- prochaine action : figer la tranche additive et ses tests avant toute modification runtime.
-- fichiers/domaines concernés : `docs/security/SECURITY_FABRIC_V1_2026-06-29.md`,
-  `apps/backend/src/services/rag.ts`, futur garde partagé et tests RAG/sécurité.
-- tests à relancer : ciblés RAG/sécurité puis backend complet et lint si runtime touché.
-- publication : PR #176 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : persistance d'incidents, permission, session, ban, provider/live, migration DB et UI
-  restent hors de `SECURITY-FABRIC-002`.
+- dernière action terminée : `SECURITY-FABRIC-002` vérifiée localement.
+- prochaine action : auditer les signaux de confiance existants et figer un contrat sans runtime.
+- fichiers/domaines concernés : RAG, ressources, audit, owner cockpit, providers et contrat Trust.
+- tests à relancer : lecture ciblée + `git diff --check` pour le premier contrat.
+- publication : `SECURITY-FABRIC-002` prête pour une PR atomique.
+- blocage : score moral, surveillance opaque, auto-ban, changement permission et migration restent
+  interdits.
+
+## 2026-06-29 — SECURITY-FABRIC-002 : garde déterministe commun
+
+- remplacement de la regex RAG isolée par un garde réutilisable ;
+- détection directe, base64, lettres espacées, typoglycémie simple, secret et markup actif ;
+- usage pédagogique reconnu en avertissement sans ouvrir de capacité sensible ;
+- ingestion RAG hostile refusée et chunk hostile exclu au dernier moment ;
+- audit limité à identifiants, hash et famille de menace, sans contenu brut ;
+- aucune permission, session, sanction, hard stop, DB, provider ou UI modifiée.
+
+Vérifications : garde + RAG 19/19, backend 615/615, lint backend et diff-check.
+
+Statut : local vérifié, publication GitHub à lancer.
 
 ## 2026-06-29 — SECURITY-FABRIC-001 : frontière de confiance runtime
 
