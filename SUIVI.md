@@ -10,13 +10,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : préparer une future action sensible d'activation de thème avec préflight visible,
   validation humaine et rollback, sans l'exécuter.
 - statut : `next_not_started`
-- dernière action terminée : `THEME-STUDIO-ASSET-PACKS-001` publiée en PR #186.
+- dernière action terminée : `THEME-STUDIO-ASSET-PACKS-001` publiée via PR #186.
 - prochaine action : auditer l'Action Engine, ThemePack preview et UI préflight avant toute
   activation réelle.
 - fichiers/domaines concernés : Theme Studio, Action Engine, Validation Inbox, D08, ThemePack,
   rollback UI et permissions.
 - tests à relancer : lecture ciblée + tests Theme Studio + lint back/front + build frontend.
-- publication : `THEME-STUDIO-ASSET-PACKS-001` en PR #186, merge à effectuer.
+- publication : `THEME-STUDIO-ASSET-PACKS-001` publiée via PR #186 (`d0a58ae`).
 - blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
 
 ## 2026-06-29 — THEME-STUDIO-ASSET-PACKS-001 : preview de packs thème/assets
@@ -31,7 +31,7 @@ Livrable : `docs/theme-studio/THEME_STUDIO_ASSET_PACKS_V1.md`.
 
 Vérifications : Theme Studio asset pack ciblé, lint backend/frontend, build frontend et diff-check.
 
-Statut : PR #186 ouverte ; merge GitHub à effectuer.
+Statut : publié via PR #186 (`d0a58ae`).
 
 ## 2026-06-29 — DA-NARRATIVE-BRIDGE-001 : ponts DA narrative
 
