@@ -16,7 +16,7 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ## TASK-330 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
 target: codex
-status: done
+status: verified
 frozen_by: MALEX « go » 2026-06-29
 
 ### scope
@@ -30,6 +30,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Matrice globale créée ; prochaine vague recommandée : `SECURITY-FABRIC-001`.
+> 2026-06-29 codex → verified. PR #174 mergée sur `main` (`1aa6f62`).
 
 ---
 
