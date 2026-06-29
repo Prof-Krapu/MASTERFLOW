@@ -1,6 +1,6 @@
 # Experience Fabric — Cycle MAPE-K contrôlé V1
 
-Statut : V1 locale, planification sans exécution.
+Statut : publié via PR #164, planification sans exécution.
 
 ## Intention
 

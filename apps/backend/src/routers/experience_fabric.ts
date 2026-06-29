@@ -10,6 +10,7 @@ import {
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {buildAutonomyCycle} from '../services/autonomy_cycle.ts';
+import {buildBlackboardReport} from '../services/blackboard.ts';
 import {
   buildExperienceSnapshot,
   listExperienceEvents,
@@ -207,6 +208,19 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildAutonomyCycle(actor(req), parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/autonomy/blackboard', (req, res): void => {
+    const parsed = autonomyCycleQuery(req);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(buildBlackboardReport(actor(req), parsed.data));
     } catch (error) {
       fail(res, error);
     }

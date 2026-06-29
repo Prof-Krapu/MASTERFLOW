@@ -14,9 +14,31 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-322 — EXPERIENCE-FABRIC-007A : Cycle MAPE-K contrôlé
+## TASK-323 — EXPERIENCE-FABRIC-007B : Blackboard privé contrôlé
 target: codex
 status: done
+frozen_by: MALEX « finir les vagues précédentes avant EXPRESSIVE_CANON » 2026-06-29
+
+### scope
+- Consolider les contributions privées du cycle MAPE-K.
+- Garder un seul porte-parole sémantique.
+- Ne créer aucune Action, aucune rétention mémoire et aucune permission nouvelle.
+- Préparer GodMode/Teaching/MasterStory sans construire l'UI dans cette tranche.
+
+### verification
+- tests ciblés MAPE-K + Blackboard : 8/8.
+- backend complet : 604/604.
+- lint backend/frontend, build frontend et diff-check : OK.
+
+### updates
+> 2026-06-29 codex → claimed. Tranche 7.2 implémentée localement dans le worktree Experience.
+> 2026-06-29 codex → done local. Tranche 7.2 prête à publication atomique.
+
+---
+
+## TASK-322 — EXPERIENCE-FABRIC-007A : Cycle MAPE-K contrôlé
+target: codex
+status: verified
 frozen_by: MALEX « go » 2026-06-29
 
 ### scope
@@ -35,6 +57,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → claimed. Tranche 7.1 implémentée localement, validation complète en cours.
 > 2026-06-29 codex → done local. Tranche 7.1 prête à publication atomique.
+> 2026-06-29 codex → verified. PR #164 mergée sur GitHub main (`da07f38`).
 
 ---
 

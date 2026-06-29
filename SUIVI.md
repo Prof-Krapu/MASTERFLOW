@@ -18,7 +18,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 5/5 ciblés MAPE-K, 4/4 Storylet Engine, 8/8 Event Spine,
 backend complet 601/601, lint backend/frontend, build frontend et diff-check OK.
 
-Statut : vague 7.1 locale prête à publication atomique.
+Statut : publié via PR #164 (`da07f38`).
+
+## 2026-06-29 — EXPERIENCE-FABRIC-007B : Blackboard privé contrôlé
+
+- contrat `BlackboardContribution`, `BlackboardSynthesis` et `BlackboardReport` ;
+- consolidation privée du cycle MAPE-K : monitor, storylets, précédents, garde-fous et compagnon
+  assigné lorsqu'une session guidée est fournie ;
+- endpoint `GET /experience/autonomy/blackboard` ;
+- contributions `cycle_private`, jamais exposées comme dialogue multi-personas ;
+- synthèse par porte-parole sémantique unique ;
+- garde-fous explicites : aucune Action créée, aucune permission modifiée, aucune rétention mémoire
+  automatique, aucun multi-porte-parole.
+
+Vérifications : 8/8 ciblés MAPE-K + Blackboard, backend complet 604/604, lint backend/frontend,
+build frontend et diff-check OK.
+
+Statut : vague 7.2 locale prête à publication atomique.
 
 ## 2026-06-29 — EXPERIENCE-FABRIC-006C : Monstre-idée Ours d’Or
 

@@ -4,13 +4,22 @@ Dernière mise à jour : 2026-06-29
 
 ## 1. À faire maintenant
 
+### EXPERIENCE-FABRIC-007B — Blackboard privé contrôlé
+
+- Tâche : consolider les contributions privées autour du cycle MAPE-K sans dialogue multi-personas public.
+- Impact : MasterFlow peut expliquer “qui apporte quoi” avant une décision, tout en gardant un porte-parole unique.
+- Risque : faible ; read-model pur, aucune Action créée, aucune mémoire retenue automatiquement.
+- Source de vérité concernée : runtime Git + Experience Fabric + Personas comme contributeurs privés futurs.
+- Statut : local vérifié, publication atomique à faire.
+- Validation requise : non pour synthèse read-only ; oui avant dialogue multi-agent, création d'Action ou rétention mémoire.
+
 ### EXPERIENCE-FABRIC-007A — Cycle MAPE-K contrôlé
 
 - Tâche : assembler événements, précédents et storylets en plan candidat explicable.
 - Impact : MasterFlow peut recommander la prochaine action sans autonomie cachée.
 - Risque : faible ; read-model pur, aucune Action créée ni exécutée.
 - Source de vérité concernée : runtime Git + Experience Fabric + Action Engine comme futur exécuteur exclusif.
-- Statut : local vérifié, publication atomique en cours.
+- Statut : publié via PR #164 (`da07f38`).
 - Validation requise : non pour le cycle read-only ; oui avant sélection automatique, création d'Action ou exécution.
 
 ### EXPERIENCE-FABRIC-006C — Monstre-idée Ours d’Or
