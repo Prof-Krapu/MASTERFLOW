@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Read model Trust vérifié, prêt à publication atomique.
+> 2026-06-29 codex → PR #179 créée ; l'état GitHub de la PR fait foi.
 
 ---
 

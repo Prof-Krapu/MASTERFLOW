@@ -10,11 +10,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : définir les états narratifs de sécurité et leur récupération sans humiliation,
   sanction automatique, ban ou modification de permission.
 - statut : `next_not_started`
-- dernière action terminée : `TRUST-FABRIC-002` vérifiée localement.
+- dernière action terminée : `TRUST-FABRIC-002` portée par la PR #179.
 - prochaine action : figer le contrat des états, transitions, réactions persona et retour normal.
 - fichiers/domaines concernés : Security Fabric, Trust Fabric, hard stop, personas et GodMode.
 - tests à relancer : lecture ciblée + `git diff --check` pour le contrat initial.
-- publication : `TRUST-FABRIC-002` prête pour une PR atomique.
+- publication : PR #179 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : assets générés, UI rouge, auto-ban, permission, sanction, session kill et migration
   restent interdits.
 
@@ -29,7 +29,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Vérifications : Trust + route 8/8, backend 619/619, lint backend et diff-check.
 
-Statut : local vérifié, publication GitHub à lancer.
+Statut : runtime porté par la PR #179 ; son état GitHub fait foi.
 
 ## 2026-06-29 — TRUST-FABRIC-001 : confiance explicable
 
