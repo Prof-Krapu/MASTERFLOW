@@ -10,14 +10,14 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : cadrer la prochaine vague Learning / Teaching / Academic Integrity : aider, guider,
   afficher les alertes utiles et éviter que MasterFlow fasse le travail à la place des utilisateurs.
 - statut : `next_after_theme_activation_preflight_publication`
-- dernière action terminée : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` prête localement.
+- dernière action terminée : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` portée par la PR #188.
 - prochaine action : publier la vague Theme Studio, puis auditer les règles pédagogiques existantes
   avant toute modification runtime.
 - fichiers/domaines concernés : Teaching, Learn, Academic Integrity, Safety State, Trust Fabric,
   Storylets, UI progressive et permissions.
 - tests à relancer : après publication Theme Studio, lecture ciblée + tests concernés par la
   prochaine tranche.
-- publication : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` en attente de PR/merge.
+- publication : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` en attente de merge via PR #188.
 - blocage : aucun ban automatique, aucune sanction morale et aucune correction automatique sans
   validation pédagogique.
 
@@ -36,7 +36,7 @@ Livrable : `docs/theme-studio/THEME_STUDIO_ACTIVATION_PREFLIGHT_V1.md`.
 Vérifications locales à publier : action lifecycle ciblé, Theme Studio asset pack, backend complet,
 lint backend/frontend, build frontend et diff-check.
 
-Statut : prêt localement, publication GitHub à faire.
+Statut : publication en cours via PR #188 (`260a7aa`).
 
 ## 2026-06-29 — THEME-STUDIO-ASSET-PACKS-001 : preview de packs thème/assets
 
