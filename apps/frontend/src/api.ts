@@ -63,6 +63,7 @@ import type {
   PreCorrectionManifest,
   PedagogicalAssistanceDecision,
   PedagogicalAssistanceRequest,
+  PersonalLearningProfile,
   PrecedentSearchResult,
   Persona,
   Project,
@@ -183,6 +184,17 @@ export async function classifyPedagogicalAssistance(
     method: 'POST',
     body: JSON.stringify(body),
   }, token);
+}
+
+export async function getLearningProfile(
+  userId: string,
+  token?: string | null,
+): Promise<PersonalLearningProfile> {
+  return request<PersonalLearningProfile>(
+    `/learning-mirror/profiles/${encodeURIComponent(userId)}`,
+    {method: 'GET'},
+    token,
+  );
 }
 
 export async function getPersonas(token?: string | null): Promise<Persona[]> {

@@ -6,18 +6,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `LEARNING-MODE-ACCESS-001`
-- objectif : rendre Learning visible dans les Home et permettre à un étudiant de lire uniquement
-  son propre profil d'apprentissage.
+- id : `UI-PROGRESSIVE-LEARNING-001`
+- objectif : donner à Learn une surface légère fondée sur le profil self-read, les sources fiables
+  et le cadre d'aide partagé.
 - statut : `local_verified_pending_publication`
-- dernière action terminée : accès self-read Learning, exposition Home additive et tests de
-  permissions ciblés.
-- prochaine action : terminer la recette complète, publier, puis construire la surface Learn
-  depuis les endpoints réels.
-- fichiers/domaines concernés : Room Home, runtime loadout, registre d'actions et Learning Mirror.
-- tests à relancer : backend complet, lint backend/frontend, build frontend et diff-check.
-- publication : surface Teaching mergée via PR #192 (`8f41537`) ; accès Learning à publier.
-- blocage : l'étudiant ne peut ni éditer, ni valider, ni lire le profil d'un autre utilisateur.
+- dernière action terminée : surface Learn lazy-loadée, profil en lecture et cadre d'aide vérifiés
+  en desktop/mobile.
+- prochaine action : publier la surface, puis reprendre `OBSERVABILITY-GODMODE-001`.
+- fichiers/domaines concernés : API frontend Learning Mirror, workspace Learn, panneau
+  pédagogique partagé et responsive.
+- tests à relancer : recette complète déjà verte ; publication et preuve GitHub à produire.
+- publication : accès Learning mergé via PR #193 (`c02843a`) ; surface Learn à publier.
+- blocage : aucun éditeur étudiant, aucune application d'un profil brouillon et aucun autoplay.
+
+## 2026-06-29 — UI-PROGRESSIVE-LEARNING-001 : premier workspace Learn
+
+- ajout d'un workspace Learn chargé uniquement à l'ouverture du mode ;
+- lecture du profil d'aide courant, sans édition ;
+- profil brouillon clairement marqué comme non appliqué comme vérité ;
+- réutilisation du cadre d'aide avec intentions adaptées à Learn ;
+- sources fiables comptées, ressources candidates maintenues hors vérité ;
+- aucun autoplay, rendu final, note, publication ou action automatique.
+
+Vérifications : backend 654/654, lint backend/frontend, build frontend, chunks Learn séparés,
+smoke navigateur desktop/mobile 390 px et `git diff --check`.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — LEARNING-MODE-ACCESS-001 : accès Learning borné
 
@@ -30,7 +44,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 19/19 ciblés, backend 654/654, lint backend/frontend, build frontend,
 Learning visible et ouvrable dans le navigateur local, `git diff --check`.
 
-Statut : vérifié localement, publication atomique en cours.
+Statut : publié via PR #193 (`c02843a`).
 
 ## 2026-06-29 — UI-PROGRESSIVE-SURFACES-001 : cadre d'aide dans Teaching
 

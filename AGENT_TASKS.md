@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-346 — UI-PROGRESSIVE-LEARNING-001 : premier workspace Learn
+target: codex
+status: done
+frozen_by: MALEX « on reprend » 2026-06-29
+
+### scope
+- Afficher le profil Learning courant en lecture seule.
+- Réutiliser le cadre d'aide avec des intentions adaptées à Learn.
+- Charger le workspace uniquement à l'ouverture du mode.
+- Ne créer aucun éditeur étudiant, autoplay, note ou publication.
+
+### verification
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+- Smoke desktop/mobile 390 px et vérification du chunk Learn séparé.
+
+### updates
+> 2026-06-29 codex → done local. Premier workspace Learn prêt à publication.
+
+---
+
 ## TASK-345 — LEARNING-MODE-ACCESS-001 : accès Learning borné
 target: codex
 status: done
@@ -32,6 +52,7 @@ frozen_by: MALEX « on reprend » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Accès Learning borné prêt à publication.
+> 2026-06-29 codex → PR #193 mergée (`c02843a`) ; GitHub `main` fait foi.
 
 ---
 

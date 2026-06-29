@@ -44,7 +44,7 @@ présents dans Git pour éviter trois dérives :
 | DA narrative / Theme Studio / D08 | `activation_preflight_pr_188_merged` | manifests, visual grammar, Theme Studio explain-only, D08 gates, autorités de routage, ThemePack preview, action d'activation préflight-only | provider image réel, canonisation auto, motif décoratif non justifié, application silencieuse, rollback réel non conçu | cadrer application runtime séparée |
 | MasterStory / Experience Fabric | `bridge_map_pr_184_merged` | Event Spine, Precedents, Storylets, MAPE-K, Blackboard, MasterStory UI, routage DA narrative | autonomie sans validation, multi-porte-parole public | `THEME-STUDIO-ASSET-PACKS-001` |
 | Learning / Teaching integrity | `runtime_pr_191_merged` | Teaching, ressources vidéo, timecodes/notions, Learning Mirror, storylets, validation inbox, D05/D06 candidat, classifieur pur d'assistance | faire le travail à la place, LMS lourd, tracking intrusif, note finale automatique | consommer par surfaces progressives |
-| UI progressive | `teaching_pr_192_merged_learning_access_ready_local` | Home légère, GodMode panels, outils à la demande, cadre d'aide Teaching adossé à un endpoint réel, Learning visible et self-read | dashboard permanent, chargement massif, surfaces sans endpoint réel, édition Learning étudiant | publier l'accès Learning, puis construire la surface Learn |
+| UI progressive | `teaching_pr_192_learning_access_pr_193_learn_ui_ready_local` | Home légère, GodMode panels, outils à la demande, cadre d'aide Teaching, Learning self-read et workspace lazy-loadé | dashboard permanent, chargement massif, surfaces sans endpoint réel, édition Learning étudiant | publier la surface Learn, puis reprendre Observabilité/GodMode |
 
 ## Décisions d'ordre
 

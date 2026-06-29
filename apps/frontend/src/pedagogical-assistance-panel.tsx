@@ -55,14 +55,21 @@ const KIND_LABELS: Record<PedagogicalAssistanceDecision['assistance_kind'], stri
 
 type Props = {
   hasValidatedResources: boolean;
+  mode: 'learn' | 'teaching';
   token: string;
 };
 
 export function PedagogicalAssistancePanel({
   hasValidatedResources,
+  mode,
   token,
 }: Props): ReactElement {
-  const [intent, setIntent] = useState<PedagogicalAssistanceRequestType>('advance_project');
+  const availableIntents = mode === 'learn'
+    ? INTENTS.filter((item) => !['frame_subject', 'correct_or_evaluate'].includes(item.value))
+    : INTENTS;
+  const [intent, setIntent] = useState<PedagogicalAssistanceRequestType>(
+    mode === 'learn' ? 'understand_concept' : 'advance_project',
+  );
   const [decision, setDecision] = useState<PedagogicalAssistanceDecision | null>(null);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
@@ -72,7 +79,7 @@ export function PedagogicalAssistancePanel({
     setStatus('');
     try {
       const next = await classifyPedagogicalAssistance({
-        active_mode: 'teaching',
+        active_mode: mode,
         request_type: intent,
         source_state: intent === 'request_learning_resource'
           ? hasValidatedResources ? 'validated' : 'missing'
@@ -111,7 +118,7 @@ export function PedagogicalAssistancePanel({
             }}
             value={intent}
           >
-            {INTENTS.map((item) => (
+            {availableIntents.map((item) => (
               <option key={item.value} value={item.value}>{item.label}</option>
             ))}
           </select>
