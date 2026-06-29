@@ -33,7 +33,7 @@ Au démarrage d'une session :
 | 4 | Safety State Machine narrative | Créer états de recadrage, suspicion, fermeture, hard stop et rétablissement | runtime_projection_pr_181 | projection pure et privée, sans ban automatique |
 | 5 | Voice / Persona Voice | Auditer TTS existant et raccorder aux personas sans moteur concurrent | runtime_hardened_pr_183 | P1 TTS contrôlé ; STT reste futur |
 | 6 | Experience Fabric consolidation | Relier Event Spine, précédents, canon narratif, storylets et grammaire visuelle | bridge_map_pr_184_merged | ponts documentés entre DA, Theme Studio, D08, MasterStory et compagnons |
-| 7 | Theme Studio / DA / Assets | Piloter thèmes, typos, palettes, assets, lore et versions événementielles | asset_pack_preview_pr_186 | continuité visuelle, justification et provenance définies |
+| 7 | Theme Studio / DA / Assets | Piloter thèmes, typos, palettes, assets, lore et versions événementielles | asset_pack_preview_pr_186_merged | continuité visuelle, justification et provenance définies |
 | 8 | Learning / Teaching / Academic Integrity | Guider sans faire le travail à la place ; préparer tutos/timecodes | queued | règles pédagogiques et alertes exploitables |
 | 9 | UI progressive | Home légère puis surfaces Teaching, Learn, GodMode, Theme Studio, MasterStory | queued | chaque surface consomme seulement des endpoints réels |
 | 10 | Observabilité / GodMode | Timeline, alertes groupées, incidents, confiance, coûts et providers | queued | cockpit lisible, pas de spam |
