@@ -127,6 +127,14 @@ La première surface `UI-PROGRESSIVE-SURFACES-001` ajoute ensuite :
 - un recadrage visible des demandes de livrable final ;
 - aucune écriture, exécution, note, sanction ou publication.
 
+La surface `UI-PROGRESSIVE-LEARNING-001` réutilise ce contrat :
+
+- profil d'aide personnel en lecture seule ;
+- profil brouillon visible mais jamais appliqué comme vérité ;
+- intentions Learn bornées à comprendre, avancer, relire et trouver une ressource ;
+- chargement du workspace uniquement à l'ouverture du mode ;
+- aucun éditeur étudiant, autoplay ou livrable final automatique.
+
 ## Hors périmètre
 
 - LMS lourd, LTI, SCORM, xAPI ;

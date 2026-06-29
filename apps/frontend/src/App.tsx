@@ -158,6 +158,10 @@ const TeachingReadiness = lazy(async () => {
   const module = await import('./teaching-readiness.tsx');
   return {default: module.TeachingReadiness};
 });
+const LearningWorkspace = lazy(async () => {
+  const module = await import('./learning-workspace.tsx');
+  return {default: module.LearningWorkspace};
+});
 
 const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
 const PROJECT_ROLE_LABEL: Record<ProjectMemberRole, string> = {
@@ -1483,6 +1487,16 @@ function App(): ReactElement {
                 resources={resources}
                 token={auth.token}
                 validationItems={pendingActions}
+              />
+            </Suspense>
+          ) : null}
+
+          {activeMode.id === 'learning' && auth && context ? (
+            <Suspense fallback={<p className="panel panel--wide muted">Chargement Learning…</p>}>
+              <LearningWorkspace
+                resources={resources}
+                token={auth.token}
+                userId={context.user.id}
               />
             </Suspense>
           ) : null}

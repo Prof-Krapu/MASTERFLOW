@@ -788,6 +788,7 @@ export function TeachingReadiness({
 
       <PedagogicalAssistancePanel
         hasValidatedResources={effectiveResources.length > 0}
+        mode="teaching"
         token={token}
       />
 

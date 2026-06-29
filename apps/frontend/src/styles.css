@@ -1282,6 +1282,68 @@ dd {
   }
 }
 
+.learning-workspace {
+  gap: 14px;
+}
+
+.learning-workspace__status,
+.learning-workspace__guardrail {
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+  margin: 0;
+  padding: 8px 11px;
+}
+
+.learning-profile-card {
+  background: color-mix(in srgb, var(--panel) 94%, var(--accent) 6%);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+  border-radius: 12px;
+  display: grid;
+  gap: 12px;
+  padding: 13px;
+}
+
+.learning-profile-card > div {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.learning-profile-card > div span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.learning-profile-card dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.learning-profile-card dl > div {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+
+.learning-profile-card dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-bottom: 4px;
+}
+
+.learning-profile-card dd {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .learning-profile-card dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .identity-review {
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
   border-radius: 18px;
