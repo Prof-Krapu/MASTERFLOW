@@ -1,8 +1,17 @@
 # MasterFlow — Action Queue
 
-Dernière mise à jour : 2026-06-28
+Dernière mise à jour : 2026-06-29
 
 ## 1. À faire maintenant
+
+### EXPERIENCE-FABRIC-006A — Living Companion / Robot CDC
+
+- Tâche : projeter le premier compagnon vivant depuis une session Guided Runtime CDC réelle.
+- Impact : le Robot CDC peut guider, montrer la progression et signaler les contradictions sans faire le travail du groupe.
+- Risque : faible ; lecture et guidage permissionnés, aucune autonomie silencieuse.
+- Source de vérité concernée : runtime Git + Guided Runtime + Storylet Engine + D04/D05.
+- Statut : local vérifié, publication atomique en cours.
+- Validation requise : non pour cette projection ; oui avant asset, évolution, provider, publication ou persona canon.
 
 ### EXPERIENCE-FABRIC-005 — Visual Narrative Grammar
 
@@ -10,7 +19,7 @@ Dernière mise à jour : 2026-06-28
 - Impact : MasterFlow peut préparer `pourquoi ce visuel ?`, Theme Studio, compagnons, monstres et DA robuste sans lancer de génération.
 - Risque : faible ; politique `explain_only`, aucun provider, asset, export, thème appliqué ou canonisation.
 - Source de vérité concernée : runtime Git + D08 + MasterStory + Theme Studio.
-- Statut : local vérifié, publication atomique en cours.
+- Statut : publié via PR #160 (`dd76353`).
 - Validation requise : non pour cette tranche ; oui avant provider image, application de thème, génération ou UI prescriptive.
 
 ### EXPERIENCE-FABRIC-004 — Storylet Engine

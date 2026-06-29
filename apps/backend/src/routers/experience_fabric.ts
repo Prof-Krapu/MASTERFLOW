@@ -17,6 +17,7 @@ import {
   searchPrecedentCases,
 } from '../services/precedent_engine.ts';
 import {evaluateStorylets} from '../services/storylet_engine.ts';
+import {buildGuidedLivingCompanion} from '../services/living_companion.ts';
 import {buildVisualNarrativeGrammarReport} from '../services/visual_narrative_grammar.ts';
 
 function actor(req: Request): AuthUser {
@@ -61,6 +62,7 @@ function storyletQuery(req: Request) {
   return StoryletEvaluationQuerySchema.safeParse({
     project_id: req.query.project_id,
     workbench_id: req.query.workbench_id,
+    guided_session_id: req.query.guided_session_id,
     domains,
     limit: typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined,
   });
@@ -156,6 +158,18 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildVisualNarrativeGrammarReport(actor(req), parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/companions/guided-sessions/:sessionId', (req, res): void => {
+    if (!req.params.sessionId) {
+      res.status(400).json({error: 'missing_session_id'});
+      return;
+    }
+    try {
+      res.json(buildGuidedLivingCompanion(actor(req), req.params.sessionId));
     } catch (error) {
       fail(res, error);
     }

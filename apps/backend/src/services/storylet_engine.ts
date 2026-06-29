@@ -9,6 +9,7 @@ import {
 
 import type {AuthUser} from '../middleware/auth.ts';
 import {listExperienceEvents} from './experience_fabric.ts';
+import {getGuidedSessionContext} from './guided_runtime.ts';
 import {buildNarrativeCanonGraph} from './narrative_canon_graph.ts';
 import {searchPrecedentCases} from './precedent_engine.ts';
 
@@ -134,15 +135,118 @@ function blockerStorylets(actor: AuthUser, projectId?: string): StoryletInstance
   })];
 }
 
+function companionStorylets(actor: AuthUser, sessionId: string): StoryletInstance[] {
+  const {session, guide} = getGuidedSessionContext(actor, sessionId);
+  const scopeRef = `guided_session:${sessionId}`;
+  const sourceRefs = [
+    scopeRef,
+    `conversation_guide:${guide.guide_id}:v${session.guide_version}`,
+    `schema_template:${session.target_schema_id}:v${session.target_schema_version}`,
+  ];
+  if (session.progress.contradictions.length > 0) {
+    return [instance({
+      id: `companion_contradictions:${sessionId}`,
+      definition: {
+        storylet_id: 'storylet:companion:resolve_guided_contradictions',
+        domain: 'companion',
+        title: 'Valider les réponses contradictoires',
+        description: 'Le compagnon a repéré plusieurs réponses incompatibles dans le cadrage.',
+        appearance_conditions: ['session guidée accessible', 'contradiction non résolue'],
+        proposed_action: 'Préparer une synthèse courte et demander au facilitateur de trancher.',
+        expected_effects: ['préserver les réponses concurrentes', 'éviter un CDC incohérent'],
+        priority: 0.96,
+        validation_required: true,
+        scope_ref: scopeRef,
+        permission_ref: 'guided_session.facilitate',
+        source_refs: sourceRefs,
+      },
+      readiness: 'blocked',
+      reason: 'Le compagnon oriente vers une validation humaine et ne tranche pas à la place du groupe.',
+      context_refs: session.progress.contradictions.map((item) => `field:${item.target_field}`),
+      expires_at: session.expires_at,
+    })];
+  }
+  if (session.status === 'completed') {
+    return [instance({
+      id: `companion_summary:${sessionId}`,
+      definition: {
+        storylet_id: 'storylet:companion:review_guided_summary',
+        domain: 'companion',
+        title: 'Relire la synthèse du cadrage',
+        description: 'Le parcours est complet et peut être relu avant toute utilisation suivante.',
+        appearance_conditions: ['session guidée terminée', 'record structuré disponible'],
+        proposed_action: 'Relire la synthèse et choisir explicitement la prochaine utilisation.',
+        expected_effects: ['confirmer le cadrage', 'éviter une publication implicite'],
+        priority: 0.7,
+        validation_required: false,
+        scope_ref: scopeRef,
+        permission_ref: 'guided_session.read',
+        source_refs: sourceRefs,
+      },
+      readiness: 'available',
+      reason: 'La session est complète, mais aucun export ou effet externe n’est déclenché.',
+      context_refs: Object.keys(session.structured_record).map((field) => `field:${field}`).slice(0, 20),
+      expires_at: session.expires_at,
+    })];
+  }
+  const question = guide.question_flow.find((item) => item.question_id === session.current_question_id);
+  if (!question) {
+    return [instance({
+      id: `companion_missing_question:${sessionId}`,
+      definition: {
+        storylet_id: 'storylet:companion:repair_guided_question',
+        domain: 'companion',
+        title: 'Réparer le parcours guidé',
+        description: 'La session active ne pointe vers aucune question déclarée dans le guide figé.',
+        appearance_conditions: ['session active', 'question courante absente'],
+        proposed_action: 'Demander au créateur du guide de corriger la configuration.',
+        expected_effects: ['éviter une question inventée', 'restaurer un parcours déterministe'],
+        priority: 1,
+        validation_required: true,
+        scope_ref: scopeRef,
+        permission_ref: 'guided_session.facilitate',
+        source_refs: sourceRefs,
+      },
+      readiness: 'blocked',
+      reason: 'Le compagnon ne doit jamais inventer une question hors du guide.',
+      context_refs: [],
+      expires_at: session.expires_at,
+    })];
+  }
+  return [instance({
+    id: `companion_question:${sessionId}:${question.question_id}`,
+    definition: {
+      storylet_id: 'storylet:companion:continue_guided_cdc',
+      domain: 'companion',
+      title: 'Continuer le cadrage CDC',
+      description: question.prompt,
+      appearance_conditions: ['session active', 'question déclarée manquante', 'participant autorisé'],
+      proposed_action: 'Répondre à la question avec le groupe, puis vérifier la progression.',
+      expected_effects: [`renseigner ${question.target_field}`, 'faire progresser le CDC sans le rédiger à la place du groupe'],
+      priority: 0.82,
+      validation_required: false,
+      scope_ref: scopeRef,
+      permission_ref: 'guided_session.answer',
+      source_refs: sourceRefs,
+    },
+    readiness: 'available',
+    reason: 'La question vient du guide figé et reste sous contrôle de l’utilisateur.',
+    context_refs: [`question:${question.question_id}`, `field:${question.target_field}`],
+    expires_at: session.expires_at,
+  })];
+}
+
 export function evaluateStorylets(actor: AuthUser, input: StoryletEvaluationQuery = {}): StoryletEvaluation {
   const query = StoryletEvaluationQuerySchema.parse(input);
   const allowedDomains = new Set<StoryletDomain>(query.domains ?? []);
   const scopeRefs = [
     query.project_id ? `project:${query.project_id}` : `user:${actor.id}`,
     ...(query.workbench_id ? [`story_workbench:${query.workbench_id}`] : []),
+    ...(query.guided_session_id ? [`guided_session:${query.guided_session_id}`] : []),
   ];
   const instances = [
     ...(query.workbench_id ? narrativeStorylets(actor, query.workbench_id) : []),
+    ...(query.guided_session_id ? companionStorylets(actor, query.guided_session_id) : []),
     ...precedentStorylets(actor, query.project_id),
     ...blockerStorylets(actor, query.project_id),
   ]

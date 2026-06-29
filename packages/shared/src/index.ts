@@ -2482,6 +2482,7 @@ export type StoryletInstance = z.infer<typeof StoryletInstanceSchema>;
 export const StoryletEvaluationQuerySchema = z.object({
   project_id: z.string().min(1).optional(),
   workbench_id: z.string().min(1).optional(),
+  guided_session_id: z.string().min(1).optional(),
   domains: z.array(StoryletDomainSchema).min(1).optional(),
   limit: z.number().int().min(1).max(50).default(20),
 });
@@ -2496,6 +2497,49 @@ export const StoryletEvaluationSchema = z.object({
   execution_policy: z.literal('suggest_only'),
 });
 export type StoryletEvaluation = z.infer<typeof StoryletEvaluationSchema>;
+
+export const LivingCompanionReadinessSchema = z.enum([
+  'ready',
+  'limited',
+  'blocked',
+  'completed',
+]);
+export type LivingCompanionReadiness = z.infer<typeof LivingCompanionReadinessSchema>;
+
+export const LivingCompanionSchema = z.object({
+  companion_id: z.string().min(1),
+  companion_type: z.literal('cdc_robot'),
+  display_name: z.string().min(1).max(160),
+  role_summary: z.string().min(1).max(500),
+  boundaries: z.array(z.string().min(1).max(240)).min(1).max(12),
+  session_ref: z.string().min(1),
+  guide_ref: z.string().min(1),
+  project_ref: z.string().min(1).nullable(),
+  functional_persona_ref: z.string().min(1).nullable(),
+  lore_persona_ref: z.string().min(1).nullable(),
+  interaction_mode: z.literal('full_page_guided'),
+  readiness: LivingCompanionReadinessSchema,
+  current_prompt: z.string().min(1).max(1000).nullable(),
+  dialogue_bubble: z.string().min(1).max(1200),
+  available_intents: z.array(z.enum([
+    'answer_current_question',
+    'review_progress',
+    'request_facilitator',
+    'review_summary',
+  ])),
+  progress: GuidedProgressSchema,
+  storylets: z.array(StoryletInstanceSchema),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+  diagnostics: z.object({
+    unresolved_persona_refs: z.array(z.string().min(1)),
+    contradictions: z.array(z.string().min(1)),
+    configuration_warnings: z.array(z.string().min(1).max(500)),
+  }),
+  configuration_policy: z.literal('creator_validates_initial_identity'),
+  evolution_policy: z.literal('engine_managed_after_validation'),
+  execution_policy: z.literal('guide_only'),
+});
+export type LivingCompanion = z.infer<typeof LivingCompanionSchema>;
 
 export const NARRATIVE_RUNTIME_API = {
   nodes: {
@@ -3453,6 +3497,7 @@ export const EXPERIENCE_FABRIC_API = {
   precedents: '/api/v1/experience/precedents',
   storylets: '/api/v1/experience/storylets',
   visualGrammar: '/api/v1/experience/visual-grammar',
+  guidedCompanion: '/api/v1/experience/companions/guided-sessions/:sessionId',
 } as const;
 
 export const DecisionTraceOptionSchema = z.object({
