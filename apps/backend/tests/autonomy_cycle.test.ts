@@ -3,7 +3,7 @@ import {createServer, type Server} from 'node:http';
 import express from 'express';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
-import {AutonomyCycleSchema} from '@masterflow/shared';
+import {AutonomyCycleSchema, BlackboardReportSchema} from '@masterflow/shared';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
@@ -11,6 +11,7 @@ import {audit} from '../src/lib/audit.ts';
 import {signToken, type AuthUser} from '../src/middleware/auth.ts';
 import {createExperienceFabricRouter} from '../src/routers/experience_fabric.ts';
 import {buildAutonomyCycle} from '../src/services/autonomy_cycle.ts';
+import {buildBlackboardReport} from '../src/services/blackboard.ts';
 import {createProject} from '../src/services/projects.ts';
 
 const owner: AuthUser = {
@@ -132,5 +133,61 @@ describe('Experience Fabric — cycle MAPE-K contrôlé', () => {
       {headers},
     );
     expect(response.status).toBe(400);
+  });
+});
+
+describe('Experience Fabric — blackboard privé', () => {
+  it('consolide des contributions privées sans créer d’action', () => {
+    const before = (
+      getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}
+    ).count;
+    const report = buildBlackboardReport(owner, {project_id: projectId});
+    const after = (
+      getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}
+    ).count;
+
+    expect(report.execution_policy).toBe('synthesize_only');
+    expect(report.guardrails).toEqual({
+      private_contributions: true,
+      permissions_unchanged: true,
+      no_action_created: true,
+      no_multi_spokesperson: true,
+      no_automatic_memory_retention: true,
+    });
+    expect(report.synthesis.speaker_policy).toBe('single_semantic_spokesperson');
+    expect(report.contributions.map((item) => item.contributor_type)).toEqual(
+      expect.arrayContaining(['monitor', 'storylet', 'guardrail']),
+    );
+    expect(report.contributions.every((item) => item.visibility === 'cycle_private')).toBe(true);
+    expect(after).toBe(before);
+    expect(BlackboardReportSchema.parse(report)).toEqual(report);
+  });
+
+  it('protège le blackboard d’un projet privé', () => {
+    expect(() =>
+      buildBlackboardReport(outsider, {project_id: projectId}),
+    ).toThrow('project_not_found');
+  });
+
+  it('expose le blackboard via HTTP sans action ni multi-porte-parole', async () => {
+    const before = (
+      getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}
+    ).count;
+    const headers = {Authorization: `Bearer ${signToken(owner)}`};
+    const response = await fetch(
+      `${base}/experience/autonomy/blackboard?project_id=${projectId}`,
+      {headers},
+    );
+    const after = (
+      getDb().prepare('SELECT COUNT(*) AS count FROM actions').get() as {count: number}
+    ).count;
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      execution_policy: 'synthesize_only',
+      synthesis: {speaker_policy: 'single_semantic_spokesperson'},
+      guardrails: {no_action_created: true, no_multi_spokesperson: true},
+    });
+    expect(after).toBe(before);
   });
 });

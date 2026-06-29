@@ -2664,6 +2664,49 @@ export const AutonomyCycleSchema = z.object({
 });
 export type AutonomyCycle = z.infer<typeof AutonomyCycleSchema>;
 
+export const BlackboardContributionSchema = z.object({
+  contribution_id: z.string().min(1),
+  cycle_ref: z.string().min(1),
+  contributor_ref: z.string().min(1),
+  contributor_type: z.enum(['monitor', 'storylet', 'precedent', 'companion', 'guardrail']),
+  visibility: z.literal('cycle_private'),
+  facts: z.array(z.string().min(1).max(300)).min(1).max(8),
+  proposal: z.string().min(1).max(700),
+  confidence: z.number().min(0).max(1),
+  risk_notes: z.array(z.string().min(1).max(300)).max(8),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+  status: z.literal('candidate'),
+});
+export type BlackboardContribution = z.infer<typeof BlackboardContributionSchema>;
+
+export const BlackboardSynthesisSchema = z.object({
+  speaker_policy: z.literal('single_semantic_spokesperson'),
+  spokesperson_ref: z.string().min(1),
+  summary: z.string().min(1).max(1000),
+  recommended_candidate_refs: z.array(z.string().min(1)).max(10),
+  human_validation_required: z.boolean(),
+  execution_policy: z.literal('synthesize_only'),
+});
+export type BlackboardSynthesis = z.infer<typeof BlackboardSynthesisSchema>;
+
+export const BlackboardReportSchema = z.object({
+  blackboard_id: z.string().min(1),
+  generated_at: z.number().int().nonnegative(),
+  cycle_ref: z.string().min(1),
+  scope_refs: z.array(z.string().min(1)).min(1),
+  contributions: z.array(BlackboardContributionSchema).min(1).max(40),
+  synthesis: BlackboardSynthesisSchema,
+  guardrails: z.object({
+    private_contributions: z.literal(true),
+    permissions_unchanged: z.literal(true),
+    no_action_created: z.literal(true),
+    no_multi_spokesperson: z.literal(true),
+    no_automatic_memory_retention: z.literal(true),
+  }),
+  execution_policy: z.literal('synthesize_only'),
+});
+export type BlackboardReport = z.infer<typeof BlackboardReportSchema>;
+
 export const NARRATIVE_RUNTIME_API = {
   nodes: {
     list: '/api/v1/narrative/nodes',

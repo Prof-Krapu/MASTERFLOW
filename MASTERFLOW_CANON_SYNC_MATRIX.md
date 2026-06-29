@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-29
-Branche de travail : `codex/experience-fabric-mapek`
-Base GitHub vérifiée : `8d7fdd4` (`origin/main` après merge PR #163)
+Branche de travail : `codex/experience-fabric-blackboard`
+Base GitHub vérifiée : `da07f38` (`origin/main` après merge PR #164)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -20,7 +20,8 @@ récoltées après audit.
 | Experience Fabric / Living Companion Robot CDC | implémenté | Projection guidée depuis session CDC, progression et storylets publiée via PR #161. | faible | Réutiliser le contrat sans ouvrir autonomie, provider ou asset. |
 | Experience Fabric / MOTH contextuel | implémenté | Variante Living Companion explicitement assignée au guide/session publiée via PR #162. | faible | Garder MOTH distinct du persona personnel et sans permission propre. |
 | Experience Fabric / Monstre-idée Ours d’Or | implémenté | Projection candidate V0, mutation et stabilisation publiée via PR #163 ; aucun asset généré. | faible à moyen | Génération et galerie restent derrière décision séparée. |
-| Experience Fabric / MAPE-K | implémenté local | Cycle Monitor/Analyze/Plan read-only ; Execute reste `not_executed`, aucune Action créée. | faible | Valider et publier la tranche 7.1, puis ajouter le Blackboard privé. |
+| Experience Fabric / MAPE-K | implémenté | Cycle Monitor/Analyze/Plan read-only publié via PR #164 ; Execute reste `not_executed`, aucune Action créée. | faible | Utiliser comme boucle d'orchestration contrôlée. |
+| Experience Fabric / Blackboard privé | implémenté local | Contributions privées monitor/storylet/précédent/garde-fou/compagnon ; synthèse par porte-parole unique, aucune Action créée. | faible | Valider et publier la tranche 7.2, puis passer à EXPRESSIVE_CANON. |
 | Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
