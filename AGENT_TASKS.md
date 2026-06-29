@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-325 — VISIBLE-PREFLIGHT-002 : panneau UI progressif
+target: codex
+status: done
+frozen_by: MALEX « Next » 2026-06-29
+
+### scope
+- Étendre la trace d’action existante avec le contrat de préflight lisible.
+- Permettre validation/rejet uniquement via la route backend existante.
+- Afficher `modify` comme future et désactivée.
+- Conserver l’exécution comme geste séparé après validation.
+
+### verification
+- backend complet : 605/605.
+- lint frontend/backend, build frontend et diff-check : OK.
+- smoke navigateur desktop 1280 px et mobile 390 px : panneau visible, aucun débordement.
+
+### updates
+> 2026-06-29 codex → done local. Surface UI vérifiée ; publication atomique prête.
+
+---
+
 ## TASK-324 — VISIBLE-PREFLIGHT-001 : contrat UI explicable
 target: codex
 status: done

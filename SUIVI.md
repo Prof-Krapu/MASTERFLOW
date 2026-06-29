@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — VISIBLE-PREFLIGHT-002 : panneau UI progressif
+
+- la trace d’action existante affiche maintenant le préflight sous forme de panneau lisible ;
+- proposition, risque, état avant/après et ressources concernées restent visibles sans payload ;
+- un validateur autorisé peut approuver ou rejeter via la route backend réelle ;
+- la validation ne lance rien : l’exécution reste un geste séparé ;
+- `Modifier` est visible mais désactivé et marqué « à venir » ;
+- le panneau se replie verticalement sur mobile.
+
+Vérifications : backend 605/605, lint frontend/backend, build frontend, diff-check et smoke navigateur à
+1280 px puis 390 px sans débordement.
+
+Statut : local vérifié, prêt à publication atomique.
+
 ## 2026-06-29 — VISIBLE-PREFLIGHT-001 : contrat UI explicable
 
 - le préflight Action Engine expose désormais une explication déterministe et bornée ;
@@ -17,7 +31,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : Action Lifecycle 15/15, backend complet 605/605, lint backend, build frontend et
 diff-check OK.
 
-Statut : local vérifié, prêt à publication atomique.
+Statut : publié via PR #168 (`bb03628`).
 
 ## 2026-06-29 — EXPRESSIVE-CANON-P1 : Style Mirror consenti
 
