@@ -40,6 +40,48 @@ describe('JWT — signToken / verifyToken', () => {
 });
 
 describe('JWT — identité effective et révocable', () => {
+  it('refuse un jeton explicitement révoqué', () => {
+    const db = getDb();
+    const row = db
+      .prepare("SELECT id, username, role, auth_version FROM users WHERE username = 'vincent'")
+      .get() as AuthUser & {auth_version: number};
+    const token = signToken(row);
+    const payload = verifyToken(token);
+    expect(payload).not.toBeNull();
+
+    const now = Date.now();
+    db.prepare(
+      `INSERT INTO revoked_tokens (jti, user_id, revoked_at, expires_at)
+       VALUES (?, ?, ?, ?)`,
+    ).run(payload?.jti, row.id, now, now + 60_000);
+
+    expect(authenticateToken(token)).toEqual({ok: false, error: 'token_revoked'});
+  });
+
+  it('ignore un rôle surclassé dans le JWT et relit le rôle effectif en BDD', () => {
+    const db = getDb();
+    const now = Date.now();
+    db.prepare(
+      `INSERT OR IGNORE INTO users
+         (id, username, display_name, password_hash, role, active, auth_version, created_at, updated_at)
+       VALUES ('auth-redteam-student', 'auth_redteam_student', 'Auth Redteam Student',
+               'x', 'student', 1, 1, ?, ?)`,
+    ).run(now, now);
+
+    const forged = signToken({
+      id: 'auth-redteam-student',
+      username: 'auth_redteam_student',
+      role: 'godmode',
+      auth_version: 1,
+    });
+
+    expect(authenticateToken(forged)).toEqual({
+      ok: true,
+      payload: expect.objectContaining({role: 'godmode'}),
+      user: {id: 'auth-redteam-student', username: 'auth_redteam_student', role: 'student'},
+    });
+  });
+
   it('relit le rôle courant en BDD et invalide les sessions après changement de version', () => {
     const db = getDb();
     const row = db

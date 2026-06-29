@@ -6,20 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `RED-TEAM-TESTS-001`
+- id : `RED-TEAM-TESTS-002`
 - objectif : couvrir les risques transverses restants par tests proportionnés : prompt injection,
   permissions, révocation/confiance, poisoning de source et états Safety/UI.
 - statut : `local_verified_pending_publication`
-- dernière action terminée : tests Red Team ciblés ajoutés sur garde sécurité, RAG et Safety ;
-  51/51 ciblés verts.
+- dernière action terminée : tests auth/révocation ajoutés ; token révoqué et rôle JWT surclassé
+  couverts ; 9/9 ciblés verts.
 - prochaine action : publier cette tranche, puis poursuivre seulement sur les trous restants
-  permissions/révocation/UI safety.
-- fichiers/domaines concernés : Security Guard, RAG, Trust/Safety diagnostics, OwnerCockpit,
-  ExperienceCockpit, Learning/Teaching integrity.
+  permissions router/UI safety.
+- fichiers/domaines concernés : Auth middleware, révocation de token, rôle effectif BDD,
+  permissions router, UI safety.
 - tests à relancer : backend complet, lint backend/frontend ; build frontend inutile si aucun fichier
   frontend n'est touché.
-- publication : PR à créer depuis `codex/red-team-tests-001`.
+- publication : PR à créer depuis `codex/red-team-auth-tests-002`.
 - blocage : aucun ; Big Pickle en pause.
+
+## 2026-06-29 — RED-TEAM-TESTS-002 : auth, révocation et rôle effectif
+
+- ajout d'un test prouvant qu'un token explicitement révoqué est refusé immédiatement ;
+- ajout d'un test prouvant qu'un JWT avec rôle surclassé ne traverse pas l'autorité BDD ;
+- aucune modification du middleware, des permissions, des sessions, du schéma ou des routes.
+
+Vérifications : auth ciblé 9/9 ; backend complet 663/663 ; lint backend/frontend ;
+`git diff --check`.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — RED-TEAM-TESTS-001 : injection, RAG poisoning et Safety
 
@@ -32,7 +43,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : ciblés Security Guard, RAG service/router, Trust Fabric, Safety State et
 intégrité pédagogique 51/51 ; backend complet 661/661 ; lint backend/frontend ; `git diff --check`.
 
-Statut : vérifié localement, publication atomique en cours.
+Statut : publié via PR #196 (`d63efc9`).
 
 ## 2026-06-29 — OBSERVABILITY-GODMODE-RECONCILIATION-001 : cockpit existant confirmé
 
@@ -68,7 +79,7 @@ d'aide Learn.
 Vérifications : backend 654/654, lint backend/frontend, build frontend, chunks Learn séparés,
 smoke navigateur desktop/mobile 390 px et `git diff --check`.
 
-Statut : vérifié localement, publication atomique en cours.
+Statut : publié via PR #194 (`b29366a`).
 
 ## 2026-06-29 — LEARNING-MODE-ACCESS-001 : accès Learning borné
 

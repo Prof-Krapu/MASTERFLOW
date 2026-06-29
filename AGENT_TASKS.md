@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-349 — RED-TEAM-TESTS-002 : auth, révocation et rôle effectif
+target: codex
+status: done
+frozen_by: MALEX « on reprend » 2026-06-29
+
+### scope
+- Couvrir la révocation immédiate d'un JWT.
+- Couvrir le cas d'un JWT dont le rôle signé est surclassé par rapport au rôle BDD.
+- Prouver que l'autorité effective reste la base, pas le payload client.
+- Ne modifier aucun middleware, schéma, permission, route ou session.
+
+### verification
+- Auth ciblé 9/9.
+- Backend complet 663/663, lint backend/frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Tests auth/révocation prêts à publication.
+
+---
+
 ## TASK-348 — RED-TEAM-TESTS-001 : injection, RAG poisoning et Safety
 target: codex
 status: done
@@ -32,6 +52,7 @@ frozen_by: MALEX « on reprend » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Tests Red Team ciblés prêts à publication.
+> 2026-06-29 codex → PR #196 mergée (`d63efc9`) ; GitHub `main` fait foi.
 
 ---
 
