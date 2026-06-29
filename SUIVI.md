@@ -10,12 +10,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : projeter les états narratifs depuis Security, Trust et hard stop, sans persistance,
   prompt persona, UI, asset, sanction ou permission.
 - statut : `next_not_started`
-- dernière action terminée : contrat `SAFETY-STATE-001` prêt à publication.
+- dernière action terminée : contrat `SAFETY-STATE-001` porté par la PR #180.
 - prochaine action : figer les entrées exactes de la fonction pure avant tout code runtime.
 - fichiers/domaines concernés : `docs/safety/SAFETY_STATE_MACHINE_V1_2026-06-29.md`, Security,
   Trust, hard stop et diagnostics.
 - tests à relancer : ciblés Safety puis backend complet et lint si runtime touché.
-- publication : `SAFETY-STATE-001` local, publication GitHub en cours.
+- publication : PR #180 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : persistance, prompt persona, asset, UI rouge, auto-ban, permission, sanction, session
   kill et migration restent interdits.
 
@@ -30,7 +30,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Livrable : `docs/safety/SAFETY_STATE_MACHINE_V1_2026-06-29.md`.
 
-Statut : local vérifié, publication GitHub en cours.
+Statut : contrat porté par la PR #180 ; son état GitHub fait foi.
 
 ## 2026-06-29 — TRUST-FABRIC-002 : read model privé
 

@@ -31,6 +31,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Contrat Safety State V1 prêt à publication atomique.
+> 2026-06-29 codex → PR #180 créée ; l'état GitHub de la PR fait foi.
 
 ---
 
