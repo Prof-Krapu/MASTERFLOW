@@ -3,7 +3,7 @@ import {createServer, type Server} from 'node:http';
 import express from 'express';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
-import {OwnerCockpitStatusSchema} from '@masterflow/shared';
+import {OwnerCockpitStatusSchema, TrustFabricSnapshotSchema} from '@masterflow/shared';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
@@ -56,6 +56,17 @@ describe('D12 Owner Cockpit read-only', () => {
   it('reste privé admin/godmode', async () => {
     expect((await fetch(`${base}/diagnostics/owner-cockpit`)).status).toBe(401);
     expect((await fetch(`${base}/diagnostics/owner-cockpit`, auth(teacherToken))).status).toBe(403);
+    expect((await fetch(`${base}/diagnostics/trust`)).status).toBe(401);
+    expect((await fetch(`${base}/diagnostics/trust`, auth(teacherToken))).status).toBe(403);
+  });
+
+  it('expose Trust Fabric en lecture seule sans score global', async () => {
+    const response = await fetch(`${base}/diagnostics/trust`, auth(adminToken));
+    expect(response.status).toBe(200);
+    const body = TrustFabricSnapshotSchema.parse(await response.json());
+    expect(body.invariants.composite_score).toBe(false);
+    expect(body.invariants.affects_permissions).toBe(false);
+    expect(body.artifact_integrity.state).toBe('unknown');
   });
 
   it('retourne des décisions agrégées sans prétendre vérifier GitHub ou le Drive', async () => {

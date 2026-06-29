@@ -464,6 +464,70 @@ export const OwnerCockpitStatusSchema = z.object({
 });
 export type OwnerCockpitStatus = z.infer<typeof OwnerCockpitStatusSchema>;
 
+// ───────────────────────── Trust Fabric read model ─────────────────────────
+
+export const TrustSignalStateSchema = z.enum([
+  'unknown',
+  'verified',
+  'attention',
+  'clear',
+  'observe',
+  'step_up',
+  'human_review',
+  'healthy',
+  'degraded',
+  'unavailable',
+]);
+
+const TrustSignalBaseSchema = z.object({
+  state: TrustSignalStateSchema,
+  reason_codes: z.array(z.string().min(1).max(120)).max(20),
+  evidence_refs: z.array(z.string().min(1).max(240)).max(20),
+  observed_at: z.number().int().nonnegative(),
+  expires_at: z.number().int().nonnegative().nullable(),
+  reversible: z.literal(true),
+});
+
+export const TrustFabricSnapshotSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  window: z.object({
+    from: z.number().int().nonnegative(),
+    to: z.number().int().nonnegative(),
+  }),
+  source_trust: TrustSignalBaseSchema.extend({
+    counts: z.object({
+      total: z.number().int().nonnegative(),
+      unverified: z.number().int().nonnegative(),
+      source_verified: z.number().int().nonnegative(),
+      canonical: z.number().int().nonnegative(),
+      private_reference: z.number().int().nonnegative(),
+      revoked: z.number().int().nonnegative(),
+    }),
+  }),
+  artifact_integrity: TrustSignalBaseSchema.extend({
+    checked_artifacts: z.number().int().nonnegative(),
+  }),
+  user_risk_signal: TrustSignalBaseSchema.extend({
+    event_count: z.number().int().nonnegative(),
+    scope_ref: z.string().min(1).max(240),
+  }),
+  runtime_health: TrustSignalBaseSchema.extend({
+    workflow_events: z.number().int().nonnegative(),
+    failed_or_blocked: z.number().int().nonnegative(),
+    token_events: z.number().int().nonnegative(),
+    cost_eur: z.number().nonnegative(),
+    provider: z.string().min(1).max(120),
+    release_verification: z.enum(['reported', 'unverified']),
+  }),
+  invariants: z.object({
+    composite_score: z.literal(false),
+    affects_permissions: z.literal(false),
+    automatic_sanction: z.literal(false),
+    raw_payload_exposed: z.literal(false),
+  }),
+});
+export type TrustFabricSnapshot = z.infer<typeof TrustFabricSnapshotSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);
