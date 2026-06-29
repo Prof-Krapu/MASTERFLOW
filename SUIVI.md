@@ -6,19 +6,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `LEARNING-TEACHING-INTEGRITY-001`
-- objectif : cadrer la prochaine vague Learning / Teaching / Academic Integrity : aider, guider,
-  afficher les alertes utiles et éviter que MasterFlow fasse le travail à la place des utilisateurs.
-- statut : `next_not_started`
-- dernière action terminée : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` publiée via PR #188.
-- prochaine action : auditer les règles pédagogiques existantes avant toute modification runtime.
-- fichiers/domaines concernés : Teaching, Learn, Academic Integrity, Safety State, Trust Fabric,
-  Storylets, UI progressive et permissions.
-- tests à relancer : après publication Theme Studio, lecture ciblée + tests concernés par la
-  prochaine tranche.
-- publication : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` publiée via PR #188 (`2a95fee`).
-- blocage : aucun ban automatique, aucune sanction morale et aucune correction automatique sans
-  validation pédagogique.
+- id : `LEARNING-TEACHING-INTEGRITY-RUNTIME-001`
+- objectif : ajouter une décision pédagogique pure et commune pour classifier l'aide autorisée,
+  les sorties interdites, la validation requise et les hints Safety/Storylets.
+- statut : `next_after_learning_teaching_integrity_contract_publication`
+- dernière action terminée : `LEARNING-TEACHING-INTEGRITY-001` prête localement.
+- prochaine action : publier le contrat, puis coder une fonction pure sans migration ni UI lourde.
+- fichiers/domaines concernés : Learning Mirror, Teaching, Storylets, Safety State, Trust Fabric,
+  Validation Inbox, correction D05/D06 et ressources pédagogiques.
+- tests à relancer : diff-check pour le contrat ; prochaine vague runtime avec tests ciblés
+  Learning/Teaching/Integrity.
+- publication : `LEARNING-TEACHING-INTEGRITY-001` en attente de PR/merge.
+- blocage : aucun ban automatique, aucune sanction morale, aucune note finale et aucune
+  publication étudiant sans validation pédagogique.
+
+## 2026-06-29 — LEARNING-TEACHING-INTEGRITY-001 : contrat d'intégrité pédagogique
+
+- consolidation des verrous dispersés : `guide_only`, validation professeur, correction candidate,
+  export privé, Safety non punitive et ressources timecodées ;
+- matrice Canon → GitHub pour Learning, Teaching, correction, storylets, Safety et Trust ;
+- politique de réponse pédagogique : expliquer, guider, coacher, relire, proposer candidat ou
+  bloquer une demande de rendu complet ;
+- décision de ne pas créer de moteur Learning parallèle ;
+- prochaine tranche recommandée : fonction pure `classifyPedagogicalAssistance`, sans migration.
+
+Livrable : `docs/d05-d06/LEARNING_TEACHING_INTEGRITY_CONTRACT_V1_2026-06-29.md`.
+
+Vérifications locales à publier : lecture ciblée + `git diff --check`.
+
+Statut : prêt localement, publication GitHub à faire.
 
 ## 2026-06-29 — THEME-STUDIO-ACTIVATION-PREFLIGHT-001 : préflight activation thème
 

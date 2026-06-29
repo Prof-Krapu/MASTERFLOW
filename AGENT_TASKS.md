@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-342 — LEARNING-TEACHING-INTEGRITY-001 : contrat d'intégrité pédagogique
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Consolider les règles Learning / Teaching / Academic Integrity déjà présentes dans Git.
+- Distinguer aide, guidage, coaching, revue, candidat et blocage d'intégrité.
+- Préparer une prochaine fonction pure commune sans migration ni UI lourde.
+- Ne créer aucune sanction, note finale, publication étudiant, provider ou moteur Learning parallèle.
+
+### verification
+- Lecture ciblée Learning Mirror, Teaching, D05/D06, Storylets, Safety, Trust et ressources vidéo.
+- `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Contrat Learning/Teaching/Integrity prêt à publication.
+
+---
+
 ## TASK-341 — THEME-STUDIO-ACTIVATION-PREFLIGHT-001 : préflight activation thème
 target: codex
 status: done
