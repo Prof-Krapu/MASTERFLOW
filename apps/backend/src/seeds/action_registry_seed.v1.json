@@ -106,6 +106,18 @@
       "status": "future"
     },
     {
+      "action_id": "activate_theme_pack_candidate",
+      "label": "Préparer l'activation d'un thème",
+      "endpoint": "POST /actions/{action_id}/execute",
+      "risk_level": "medium_high",
+      "preflight_required": true,
+      "validation_required": true,
+      "validator_role": "godmode",
+      "minimum_role": "teacher",
+      "ui_surface": "theme_studio_activation_preflight",
+      "status": "live"
+    },
+    {
       "action_id": "scan_inventory_photo",
       "label": "Scanner une collection",
       "endpoint": "POST /inventory/photo-scan",

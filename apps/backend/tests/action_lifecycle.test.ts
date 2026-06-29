@@ -166,6 +166,46 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     expect(() => validateAction(student, id, {decision: 'approved'})).toThrow();
   });
 
+  it('prépare une activation Theme Studio avec validation godmode sans appliquer de thème', () => {
+    const created = createAction(god, {
+      registry_id: 'activate_theme_pack_candidate',
+      intent: 'préparer activation thème Ours d’Or',
+      object_type: 'theme_pack',
+      room_id: 'context-snapshot-room',
+      payload: {
+        theme_pack_id: 'theme-pack:ours-dor:v1',
+        rollback_ref: 'theme-pack:previous-active',
+        source_manifest_id: 'manifest:theme-studio-test',
+      },
+    });
+    expect(created.status).toBe('draft');
+
+    const flighted = preflightAction(god, created.id);
+    expect(flighted.status).toBe('pending_validation');
+    expect(flighted.risk_level).toBe('medium_high');
+    expect(flighted.preflight).toMatchObject({
+      permission_check: 'passed',
+      requires_validation: true,
+      validator_role: 'godmode',
+      risk_level: 'medium_high',
+    });
+    expect(flighted.preflight?.explanation).toMatchObject({
+      affected_resources: ['object:theme_pack', 'room:context-snapshot-room'],
+      payload_disclosed: false,
+    });
+    expect(flighted.preflight?.explanation?.proposed_change).toContain(
+      'Préparer l\'activation d\'un thème',
+    );
+    expect(flighted.preflight?.explanation?.effect_preview.after).toContain('validation humaine');
+
+    expect(() => validateAction(student, created.id, {decision: 'approved'})).toThrow();
+    expect(validateAction(god, created.id, {decision: 'approved'}).status).toBe('approved');
+
+    const executed = executeAction(god, created.id);
+    expect(executed.status).toBe('failed');
+    expect(executed.error).toBe('not_implemented');
+  });
+
   it('rend stale une action sensible pending_validation après hard stop sans suppression', () => {
     const created = createAction(god, {
       registry_id: 'approve_validation_item',
