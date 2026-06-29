@@ -33,6 +33,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → done local. Préflight activation Theme Studio prêt à publication.
 > 2026-06-29 codex → PR #188 créée ; l'état GitHub de la PR fait foi.
+> 2026-06-29 codex → PR #188 mergée (`2a95fee`) ; GitHub `main` fait foi.
 
 ---
 
