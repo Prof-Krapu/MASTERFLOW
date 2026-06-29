@@ -14,9 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-328 — THEME-STUDIO-UI-001 : grammaire visuelle explicable
+## TASK-329 — GLOBAL-ABSORPTION-RESUME-000 : reprise anti-coupure crédits
 target: codex
 status: done
+frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-29
+
+### scope
+- Inscrire le rituel de reprise anti-coupure dans le poste de contrôle.
+- Ajouter une queue globale unique des vagues restantes.
+- Ajouter un bloc `VAGUE ACTIVE` en tête de `SUIVI.md`.
+- Ne modifier aucun runtime, provider, permission, seed, migration, endpoint ou UI.
+
+### verification
+- `git diff --check` requis avant publication.
+
+### updates
+> 2026-06-29 codex → done local. Reprise anti-coupure documentée ; publication non lancée.
+
+---
+
+## TASK-328 — THEME-STUDIO-UI-001 : grammaire visuelle explicable
+target: codex
+status: verified
 frozen_by: MALEX « Go / continue » 2026-06-29
 
 ### scope
@@ -33,6 +52,7 @@ frozen_by: MALEX « Go / continue » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Theme Studio diagnostic vérifié ; publication atomique prête.
+> 2026-06-29 codex → verified. PR #172 mergée sur `main` (`2e958e7`).
 
 ---
 

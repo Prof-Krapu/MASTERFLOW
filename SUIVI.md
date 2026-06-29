@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## VAGUE ACTIVE — reprise anti-coupure crédits
+
+- id : `GLOBAL-ABSORPTION-RESUME-000`
+- objectif : stabiliser le poste de reprise avant les vagues d'absorption/security/trust/voice/UI.
+- statut : `done_local_not_published`
+- dernière action terminée : plan global de reprise créé dans
+  `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md`.
+- prochaine action : publier cette vague documentaire, puis lancer `GLOBAL-ABSORPTION-001`
+  depuis le même clone actif.
+- fichiers/domaines concernés : `CLAUDE.md`, `SUIVI.md`, `AGENT_TASKS.md`,
+  `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md`.
+- tests à relancer : `git diff --check` suffit pour cette vague documentaire.
+- publication : locale uniquement tant qu'aucun commit/push/PR/merge n'est fait.
+- blocage : aucun ; commit/push/PR/merge demandent validation explicite MALEX.
+
+## 2026-06-29 — GLOBAL-ABSORPTION-RESUME-000 : reprise anti-coupure crédits
+
+- ajout du rituel de reprise obligatoire dans `CLAUDE.md` ;
+- ajout d'une queue globale des vagues dans `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md` ;
+- ajout du bloc `VAGUE ACTIVE` en tête de `SUIVI.md` pour éviter les reprises à l'aveugle ;
+- Big Pickle reste piloté uniquement par `.opencode/INBOX.md` et ne reçoit aucune tâche prête ;
+- aucune modification runtime, permission, provider, DB, seed, endpoint ou UI.
+
+Statut : local documentaire, non publié.
+
 ## 2026-06-29 — THEME-STUDIO-UI-001 : grammaire visuelle explicable
 
 - Theme Studio devient un outil GodMode distinct et chargé uniquement à la demande ;
@@ -16,7 +41,7 @@ Vérifications : backend 605/605, lint frontend/backend, build frontend et diff-
 manifest local de recette = 3 signes visuels, 0 étape émotionnelle et 2 alertes de continuité ;
 aucun débordement à 390 px.
 
-Statut : local vérifié, prêt à publication atomique.
+Statut : publié via PR #172 (`2e958e7`).
 
 ## 2026-06-29 — MASTERSTORY-UI-001 : lecture canon progressive
 
