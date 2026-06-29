@@ -43,7 +43,7 @@ présents dans Git pour éviter trois dérives :
 | OpenMontage / design.md | `already_in_git_doc` et concepts clean-room | packs, étapes, promesse de sortie, cost/preflight, Theme Studio | code AGPL, provider scoring, génération automatique | continuer côté Theme/D08 si utile |
 | DA narrative / Theme Studio / D08 | `activation_preflight_pr_188_merged` | manifests, visual grammar, Theme Studio explain-only, D08 gates, autorités de routage, ThemePack preview, action d'activation préflight-only | provider image réel, canonisation auto, motif décoratif non justifié, application silencieuse, rollback réel non conçu | cadrer application runtime séparée |
 | MasterStory / Experience Fabric | `bridge_map_pr_184_merged` | Event Spine, Precedents, Storylets, MAPE-K, Blackboard, MasterStory UI, routage DA narrative | autonomie sans validation, multi-porte-parole public | `THEME-STUDIO-ASSET-PACKS-001` |
-| Learning / Teaching integrity | `partial_runtime` | Teaching, ressources vidéo, timecodes/notions, validation inbox | faire le travail à la place, LMS lourd, tracking intrusif | après Safety/Trust |
+| Learning / Teaching integrity | `contract_ready_local` | Teaching, ressources vidéo, timecodes/notions, Learning Mirror, storylets, validation inbox, D05/D06 candidat | faire le travail à la place, LMS lourd, tracking intrusif, note finale automatique | publier `LEARNING-TEACHING-INTEGRITY-001`, puis fonction pure d'assistance pédagogique |
 | UI progressive | `partial_runtime` | Home légère, GodMode panels, outils à la demande | dashboard permanent, chargement massif, surfaces sans endpoint réel | après contrats sécurité/trust |
 
 ## Décisions d'ordre
@@ -58,7 +58,7 @@ présents dans Git pour éviter trois dérives :
 
 - `VOICE-PERSONA-001` : durcir le TTS existant avec whitelist, limites, permissions et fallback.
 - `DA-NARRATIVE-BRIDGE-001` : relier D08, Theme Studio, MasterStory et assets explicables.
-- `ACADEMIC-INTEGRITY-001` : empêcher l'IA de faire le travail à la place tout en gardant le guidage.
+- `LEARNING-TEACHING-INTEGRITY-RUNTIME-001` : classifier l'aide autorisée sans faire le travail à la place.
 - `UI-PROGRESSIVE-SURFACES-001` : surfaces visibles après contrats backend.
 
 ### À garder futur ou bloqué
