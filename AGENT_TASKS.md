@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-334 — TRUST-FABRIC-002 : read model privé
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Calculer quatre dimensions depuis les données runtime existantes.
+- Exposer une lecture admin/godmode sans écriture.
+- Garder le signal utilisateur owner-scoped, expirable et réversible.
+- Ne créer ni table, score composite, permission, sanction, provider ou UI.
+
+### verification
+- Trust + route : 8/8.
+- backend : 619/619.
+- lint backend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Read model Trust vérifié, prêt à publication atomique.
+
+---
+
 ## TASK-333 — TRUST-FABRIC-001 : confiance explicable
 target: codex
 status: done

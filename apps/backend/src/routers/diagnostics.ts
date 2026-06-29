@@ -8,6 +8,7 @@ import {
 } from '../services/workflow_observability.ts';
 import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
 import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
+import {getTrustFabricSnapshot} from '../services/trust_fabric.ts';
 import {diagnoseProcessActivation} from '../services/process_activation.ts';
 import {
   CreateD12MissedTriggerFindingSchema,
@@ -177,6 +178,16 @@ export function createDiagnosticsRouter(): Router {
       return;
     }
     res.json(getOwnerCockpitStatus(user));
+  });
+
+  // GET /diagnostics/trust — quatre dimensions séparées, lecture seule admin/godmode.
+  router.get('/diagnostics/trust', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    res.json(getTrustFabricSnapshot(user));
   });
 
   router.post('/diagnostics/process-activation', (req: Request, res: Response): void => {

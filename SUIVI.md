@@ -6,18 +6,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `TRUST-FABRIC-002`
-- objectif : projeter un read model de confiance depuis les données existantes, sans table, score
-  composite, permission ou sanction.
+- id : `SAFETY-STATE-001`
+- objectif : définir les états narratifs de sécurité et leur récupération sans humiliation,
+  sanction automatique, ban ou modification de permission.
 - statut : `next_not_started`
-- dernière action terminée : contrat `TRUST-FABRIC-001` porté par la PR #178.
-- prochaine action : figer les entrées exactes du read model avant tout code runtime.
-- fichiers/domaines concernés : `docs/trust/TRUST_FABRIC_V1_2026-06-29.md`, RAG, workflow,
-  coût/provider, audit sécurité et owner cockpit.
-- tests à relancer : ciblés Trust puis backend complet et lint si runtime touché.
-- publication : PR #178 ; son état GitHub fait foi, sans implication de déploiement live.
-- blocage : table, score moral, surveillance opaque, auto-ban, permission, sanction et UI rouge
+- dernière action terminée : `TRUST-FABRIC-002` vérifiée localement.
+- prochaine action : figer le contrat des états, transitions, réactions persona et retour normal.
+- fichiers/domaines concernés : Security Fabric, Trust Fabric, hard stop, personas et GodMode.
+- tests à relancer : lecture ciblée + `git diff --check` pour le contrat initial.
+- publication : `TRUST-FABRIC-002` prête pour une PR atomique.
+- blocage : assets générés, UI rouge, auto-ban, permission, sanction, session kill et migration
   restent interdits.
+
+## 2026-06-29 — TRUST-FABRIC-002 : read model privé
+
+- nouvelle lecture `/diagnostics/trust`, réservée admin/godmode ;
+- quatre dimensions séparées : source, intégrité artifact, risque contextuel et santé runtime ;
+- calcul depuis les tables existantes, sans migration ni rétention supplémentaire ;
+- signal utilisateur owner-scoped, borné à quinze minutes, explicable et réversible ;
+- intégrité fichier/lien laissée à `unknown` tant que les preuves communes n'existent pas ;
+- aucune moyenne globale, permission, sanction, provider ou UI modifiée.
+
+Vérifications : Trust + route 8/8, backend 619/619, lint backend et diff-check.
+
+Statut : local vérifié, publication GitHub à lancer.
 
 ## 2026-06-29 — TRUST-FABRIC-001 : confiance explicable
 

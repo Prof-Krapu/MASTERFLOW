@@ -152,13 +152,13 @@ réinterpréter leur sens ni créer une sanction.
 
 ## Première tranche runtime recommandée
 
-`TRUST-FABRIC-002` :
+Statut : implémentée par `TRUST-FABRIC-002`, publication GitHub à vérifier dans `SUIVI.md`.
 
-1. créer un read model pur à partir des données existantes, sans table ;
-2. exposer séparément `source_trust` et `runtime_health` ;
-3. garder `artifact_integrity` à `unknown` lorsque les preuves manquent ;
-4. exposer `user_risk_signal` uniquement depuis les événements Security Fabric du scope courant ;
-5. ne créer ni score composite, permission, sanction, rétention nouvelle ou UI rouge.
+1. read model pur calculé depuis RAG, audit sécurité, workflows et tokens ;
+2. quatre dimensions exposées séparément sous `/diagnostics/trust` ;
+3. `artifact_integrity` reste honnêtement `unknown` faute de passeport commun ;
+4. `user_risk_signal` est owner-scoped, borné à quinze minutes et réversible ;
+5. accès privé admin/godmode, sans score composite, permission, sanction ou table.
 
 ## Tests d'acceptation
 

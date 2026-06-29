@@ -29,8 +29,8 @@ Au démarrage d'une session :
 | 0 | État zéro / réalignement suivi | Corriger les statuts ambigus et rendre la reprise lisible | done_published_pr_173 | `SUIVI.md` contient un checkpoint clair et les PRs déjà mergées sont reflétées |
 | 1 | Plan d'absorption canonique | Classer audits BP, legacy, factories, OpenMontage/design, voix, sécurité et DA narrative | done_published_pr_174 | matrice déjà représenté / candidat / à intégrer / futur / rejeté / bloqué |
 | 2 | Security Fabric | Formaliser injection, RAG poisoning, permissions, sources non fiables et actions sensibles | runtime_guard_pr_177 | contrat V1 + garde déterministe, sans provider/live |
-| 3 | Trust Fabric | Séparer confiance utilisateur, source, lien/fichier et charge système/provider | contract_ready_pr_178 | dimensions séparées puis read model calculé depuis l'existant |
-| 4 | Safety State Machine narrative | Créer états de recadrage, suspicion, fermeture, hard stop et rétablissement | queued | états reliés à alertes godmode et réactions persona sans ban automatique |
+| 3 | Trust Fabric | Séparer confiance utilisateur, source, lien/fichier et charge système/provider | runtime_read_model_ready_local | dimensions séparées et read model calculé depuis l'existant |
+| 4 | Safety State Machine narrative | Créer états de recadrage, suspicion, fermeture, hard stop et rétablissement | next_not_started | états reliés à alertes godmode et réactions persona sans ban automatique |
 | 5 | Voice / Persona Voice | Auditer TTS existant et raccorder aux personas sans moteur concurrent | queued | P1 TTS contrôlé, whitelist, limites et permissions ; STT reste futur |
 | 6 | Experience Fabric consolidation | Relier Event Spine, précédents, canon narratif, storylets et grammaire visuelle | queued | ponts documentés entre DA, Theme Studio, D08, MasterStory et compagnons |
 | 7 | Theme Studio / DA / Assets | Piloter thèmes, typos, palettes, assets, lore et versions événementielles | queued | continuité visuelle, justification et provenance définies |
