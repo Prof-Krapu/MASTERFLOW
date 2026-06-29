@@ -31,6 +31,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Contrat Learning/Teaching/Integrity prêt à publication.
+> 2026-06-29 codex → PR #190 créée ; l'état GitHub de la PR fait foi.
 
 ---
 

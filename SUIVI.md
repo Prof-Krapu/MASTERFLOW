@@ -10,13 +10,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : ajouter une décision pédagogique pure et commune pour classifier l'aide autorisée,
   les sorties interdites, la validation requise et les hints Safety/Storylets.
 - statut : `next_after_learning_teaching_integrity_contract_publication`
-- dernière action terminée : `LEARNING-TEACHING-INTEGRITY-001` prête localement.
+- dernière action terminée : `LEARNING-TEACHING-INTEGRITY-001` portée par la PR #190.
 - prochaine action : publier le contrat, puis coder une fonction pure sans migration ni UI lourde.
 - fichiers/domaines concernés : Learning Mirror, Teaching, Storylets, Safety State, Trust Fabric,
   Validation Inbox, correction D05/D06 et ressources pédagogiques.
 - tests à relancer : diff-check pour le contrat ; prochaine vague runtime avec tests ciblés
   Learning/Teaching/Integrity.
-- publication : `LEARNING-TEACHING-INTEGRITY-001` en attente de PR/merge.
+- publication : `LEARNING-TEACHING-INTEGRITY-001` en attente de merge via PR #190.
 - blocage : aucun ban automatique, aucune sanction morale, aucune note finale et aucune
   publication étudiant sans validation pédagogique.
 
@@ -34,7 +34,7 @@ Livrable : `docs/d05-d06/LEARNING_TEACHING_INTEGRITY_CONTRACT_V1_2026-06-29.md`.
 
 Vérifications locales à publier : lecture ciblée + `git diff --check`.
 
-Statut : prêt localement, publication GitHub à faire.
+Statut : publication en cours via PR #190 (`0ef3427`).
 
 ## 2026-06-29 — THEME-STUDIO-ACTIVATION-PREFLIGHT-001 : préflight activation thème
 
