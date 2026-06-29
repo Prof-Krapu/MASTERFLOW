@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPERIENCE-FABRIC-007A : Cycle MAPE-K contrôlé
+
+- contrat `AutonomyCycle` et `AutonomyPlanCandidate` ;
+- Monitor depuis Event Spine et snapshot permissionnés ;
+- Analyze depuis blockers, validations, précédents et storylets ;
+- Plan candidat classé, sourcé et sans sélection automatique ;
+- Execute figé à `not_executed` avec zéro `Action` créée ;
+- Knowledge sans rétention automatique ;
+- endpoint `GET /experience/autonomy/cycle` ;
+- scopes projet, workbench et session guidée conservés.
+
+Vérifications : 5/5 ciblés MAPE-K, 4/4 Storylet Engine, 8/8 Event Spine,
+backend complet 601/601, lint backend/frontend, build frontend et diff-check OK.
+
+Statut : vague 7.1 locale prête à publication atomique.
+
 ## 2026-06-29 — EXPERIENCE-FABRIC-006C : Monstre-idée Ours d’Or
 
 - extension `LivingCompanion` au type `project_monster` en bulle contextuelle ;
@@ -18,7 +34,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : 5/5 ciblés Project Monster, 7/7 Living Companion, 4/4 Storylet Engine,
 backend complet 596/596, lint backend/frontend, build frontend et diff-check OK.
 
-Statut : vague 6.3 locale prête à publication atomique.
+Statut : publié via PR #163 (`8d7fdd4`).
 
 ## 2026-06-29 — EXPERIENCE-FABRIC-006B : MOTH Living Companion
 

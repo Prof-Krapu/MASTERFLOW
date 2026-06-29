@@ -5,6 +5,8 @@ ni déployée.
 
 | Date | Action | Intention produit | Fichiers touchés | Statut | Validation | Résultat |
 |---|---|---|---|---|---|---|
+| 2026-06-29 | Experience Fabric MAPE-K contrôlé | Produire un plan candidat depuis événements, précédents et storylets sans créer d'Action. | shared, autonomy cycle, router, tests, contrat, pilotage | local vérifié | GO MALEX | 601/601, lint backend/frontend, build frontend et diff-check ; publication atomique à faire. |
+| 2026-06-29 | Merge PR #163 — Monstre-idée Ours d’Or | Publier l'évolution candidate V0→mutation→stabilisation sans génération. | shared, living companion, project monster, router, tests, contrat, registre externe, pilotage | déployé sur `main` GitHub | GO MALEX | GitHub `main` = `8d7fdd4`; 596/596, génération et canonisation fermées. |
 | 2026-06-29 | Experience Fabric Monstre-idée Ours d’Or | Proposer une évolution V0→mutation→stabilisation sans génération ni power-level. | shared, living companion, project monster, router, tests, contrat, registre externe, pilotage | local vérifié | GO MALEX | 596/596, lint backend/frontend, build frontend et diff-check ; publication atomique à faire. |
 | 2026-06-29 | Merge PR #162 — MOTH Living Companion | Publier MOTH comme garde-fou uniquement dans son contexte assigné. | shared, living companion, tests, contrat, pilotage | déployé sur `main` GitHub | GO MALEX | GitHub `main` = `3afee8d`; 591/591, aucune permission/autonomie/évolution visuelle. |
 | 2026-06-29 | Experience Fabric MOTH Living Companion | Activer MOTH comme garde-fou CDC uniquement dans un contexte assigné. | shared, living companion, tests, contrat, pilotage | local vérifié | GO MALEX | 591/591, lint backend/frontend, build frontend et diff-check ; publication atomique à faire. |

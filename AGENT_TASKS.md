@@ -14,9 +14,33 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-321 — EXPERIENCE-FABRIC-006C : Monstre-idée Ours d’Or
+## TASK-322 — EXPERIENCE-FABRIC-007A : Cycle MAPE-K contrôlé
 target: codex
 status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Assembler Event Spine, précédents et storylets dans un cycle Monitor/Analyze/Plan.
+- Garder Execute à `not_executed`.
+- Ne créer aucune Action et ne retenir aucun résultat automatiquement.
+- Préparer le Blackboard sans construire de dialogue multi-personas dans cette tranche.
+
+### verification
+- tests ciblés MAPE-K : 5/5.
+- tests ciblés Storylet Engine : 4/4.
+- tests ciblés Event Spine : 8/8.
+- backend complet : 601/601.
+- lint backend/frontend, build frontend et diff-check : OK.
+
+### updates
+> 2026-06-29 codex → claimed. Tranche 7.1 implémentée localement, validation complète en cours.
+> 2026-06-29 codex → done local. Tranche 7.1 prête à publication atomique.
+
+---
+
+## TASK-321 — EXPERIENCE-FABRIC-006C : Monstre-idée Ours d’Or
+target: codex
+status: verified
 frozen_by: MALEX « go » 2026-06-29
 
 ### scope
@@ -35,6 +59,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → claimed. Tranche 6.3 implémentée localement, validation complète en cours.
 > 2026-06-29 codex → done local. Tranche 6.3 prête à publication atomique.
+> 2026-06-29 codex → verified. PR #163 mergée sur GitHub main (`8d7fdd4`).
 
 ---
 

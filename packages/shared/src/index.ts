@@ -2606,6 +2606,64 @@ export const ProjectMonsterEvolutionReportSchema = z.object({
 });
 export type ProjectMonsterEvolutionReport = z.infer<typeof ProjectMonsterEvolutionReportSchema>;
 
+export const AutonomyCycleQuerySchema = z.object({
+  project_id: z.string().min(1).optional(),
+  workbench_id: z.string().min(1).optional(),
+  guided_session_id: z.string().min(1).optional(),
+  limit: z.number().int().min(1).max(20).default(10),
+});
+export type AutonomyCycleQuery = z.input<typeof AutonomyCycleQuerySchema>;
+
+export const AutonomyPlanCandidateSchema = z.object({
+  candidate_id: z.string().min(1),
+  title: z.string().min(1).max(240),
+  proposed_action: z.string().min(1).max(500),
+  priority: z.number().min(0).max(1),
+  readiness: z.enum(['available', 'pending_validation', 'blocked', 'expired']),
+  validation_required: z.boolean(),
+  source_storylet_ref: z.string().min(1),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+  action_registry_ref: z.string().min(1).nullable(),
+  status: z.literal('proposed'),
+});
+export type AutonomyPlanCandidate = z.infer<typeof AutonomyPlanCandidateSchema>;
+
+export const AutonomyCycleSchema = z.object({
+  cycle_id: z.string().min(1),
+  generated_at: z.number().int().nonnegative(),
+  scope_refs: z.array(z.string().min(1)).min(1),
+  monitor: z.object({
+    snapshot: z.lazy(() => ExperienceStateSnapshotSchema),
+    event_refs: z.array(z.string().min(1)).max(50),
+    source_refs: z.array(z.string().min(1)).min(1).max(50),
+  }),
+  analyze: z.object({
+    blocker_count: z.number().int().nonnegative(),
+    validation_required_count: z.number().int().nonnegative(),
+    precedent_count: z.number().int().nonnegative(),
+    storylet_count: z.number().int().nonnegative(),
+    findings: z.array(z.string().min(1).max(500)).max(20),
+  }),
+  plan: z.object({
+    candidates: z.array(AutonomyPlanCandidateSchema),
+    selected_candidate_id: z.null(),
+    selection_policy: z.literal('human_selects'),
+  }),
+  execute: z.object({
+    status: z.literal('not_executed'),
+    action_ids: z.array(z.never()).length(0),
+    reason: z.string().min(1).max(500),
+  }),
+  knowledge: z.object({
+    precedent_refs: z.array(z.string().min(1)).max(20),
+    retention_policy: z.literal('no_automatic_retention'),
+    result_refs: z.array(z.never()).length(0),
+  }),
+  human_validation_required: z.boolean(),
+  execution_policy: z.literal('plan_only'),
+});
+export type AutonomyCycle = z.infer<typeof AutonomyCycleSchema>;
+
 export const NARRATIVE_RUNTIME_API = {
   nodes: {
     list: '/api/v1/narrative/nodes',
@@ -3564,6 +3622,7 @@ export const EXPERIENCE_FABRIC_API = {
   visualGrammar: '/api/v1/experience/visual-grammar',
   guidedCompanion: '/api/v1/experience/companions/guided-sessions/:sessionId',
   projectMonster: '/api/v1/experience/companions/project-monsters/guided-sessions/:sessionId',
+  autonomyCycle: '/api/v1/experience/autonomy/cycle',
 } as const;
 
 export const DecisionTraceOptionSchema = z.object({
