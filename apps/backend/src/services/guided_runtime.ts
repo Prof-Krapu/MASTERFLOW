@@ -595,6 +595,24 @@ export function getGuidedSession(actor: AuthUser, sessionId: string): GuidedSess
   return toSession(getSessionRow(sessionId) ?? row);
 }
 
+export function getGuidedSessionContext(
+  actor: AuthUser,
+  sessionId: string,
+): {
+  session: GuidedSession;
+  guide: ConversationGuide;
+  contributions: GuidedContribution[];
+} {
+  const session = getGuidedSession(actor, sessionId);
+  const row = getSessionRow(sessionId);
+  if (!row || !canReadSession(actor, row)) throw new Error('guided_session_not_found');
+  return {
+    session,
+    guide: guideFromSession(row),
+    contributions: getContributions(sessionId),
+  };
+}
+
 export function submitGuidedAnswer(
   actor: AuthUser,
   sessionId: string,

@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPERIENCE-FABRIC-006A : Living Companion / Robot CDC
+
+- projection `LivingCompanion` depuis le Guided Runtime privé existant ;
+- premier pilote `cdc_robot` : rôle, limites, question courante, progression, bulle contextuelle
+  et intentions disponibles ;
+- storylets `companion` pour continuer le cadrage, résoudre une contradiction, réparer une
+  configuration ou relire une synthèse ;
+- endpoint `GET /experience/companions/guided-sessions/:sessionId` ;
+- scope de session conservé et références persona diagnostiquées sans donner de permission ;
+- politique stricte `guide_only` : aucune rédaction autonome, génération d'asset, évolution,
+  publication, export, provider ou écriture canon.
+
+Vérifications : 5/5 ciblés Living Companion, 4/4 Storylet Engine, backend complet 589/589,
+lint backend/frontend, build frontend et diff-check OK.
+
+Statut : vague 6.1 locale prête à publication atomique.
+
 ## 2026-06-29 — EXPERIENCE-FABRIC-005 : Visual Narrative Grammar
 
 - contrats `VisualGrammarElement`, `EmotionalArcPoint`, `VisualNarrativeGrammar`
@@ -19,7 +36,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Vérifications : 5/5 ciblés Visual Narrative Grammar.
 
-Statut : vague 5 locale en cours de publication atomique.
+Statut : publié via PR #160 (`dd76353`).
 
 ## 2026-06-28 — EXPERIENCE-FABRIC-004 : Storylet Engine
 

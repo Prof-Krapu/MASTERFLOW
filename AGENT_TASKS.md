@@ -14,9 +14,32 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-318 — EXPERIENCE-FABRIC-005 : Visual Narrative Grammar
+## TASK-319 — EXPERIENCE-FABRIC-006A : Living Companion / Robot CDC
 target: codex
 status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Projeter un compagnon CDC depuis Guided Runtime, progression et storylets.
+- Orienter sans produire le travail à la place du groupe.
+- Conserver scope privé, guide figé, persona sans permission et validation humaine sur contradiction.
+- Ne pas générer d'asset, faire évoluer le compagnon, publier, exporter ou appeler un provider.
+
+### verification
+- tests ciblés Living Companion : 5/5.
+- tests ciblés Storylet Engine : 4/4.
+- backend complet : 589/589.
+- lint backend/frontend, build frontend et diff-check : OK.
+
+### updates
+> 2026-06-29 codex → claimed. Tranche 6.1 implémentée localement, validation complète en cours.
+> 2026-06-29 codex → done local. Tranche 6.1 prête à publication atomique.
+
+---
+
+## TASK-318 — EXPERIENCE-FABRIC-005 : Visual Narrative Grammar
+target: codex
+status: verified
 frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### scope
@@ -29,6 +52,7 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### updates
 > 2026-06-29 codex → done local. Vague 5 prête à publication.
+> 2026-06-29 codex → verified. PR #160 mergée sur GitHub main (`dd76353`).
 
 ---
 
@@ -54,7 +78,7 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ## TASK-316 — EXPERIENCE-FABRIC-003 : Narrative Canon Graph
 target: codex
-status: done
+status: verified
 frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### scope
@@ -68,12 +92,13 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### updates
 > 2026-06-28 codex → done local. Vague 3 prête à publication.
+> 2026-06-29 codex → verified. PR #158 mergée sur GitHub main (`5f833a3`).
 
 ---
 
 ## TASK-315 — EXPERIENCE-FABRIC-002 : Precedent Engine
 target: codex
-status: done
+status: verified
 frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### scope
@@ -87,6 +112,7 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-28
 
 ### updates
 > 2026-06-28 codex → done local. Vague 2 prête à publication.
+> 2026-06-29 codex → verified. PR #156 mergée sur GitHub main (`0a3a2ef`).
 
 ---
 
