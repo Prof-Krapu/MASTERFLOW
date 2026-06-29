@@ -220,6 +220,7 @@ type ChatDockProps = {
   chatInput: string;
   onChatInputChange: (value: string) => void;
   onChatSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  roomInstanceId: string;
   activePersonaId?: string | null;
 };
 
@@ -325,13 +326,13 @@ export function HomeDashboard(props: HomeDashboardProps): ReactElement {
 }
 
 export function ChatDock(props: ChatDockProps): ReactElement {
-  const {wsState, conversationTurns, chatInput, onChatInputChange, onChatSubmit, activePersonaId} = props;
+  const {wsState, conversationTurns, chatInput, onChatInputChange, onChatSubmit, roomInstanceId, activePersonaId} = props;
   const [playingId, setPlayingId] = useState<string | null>(null);
 
   const handlePlayTts = async (turnId: string, text: string) => {
     try {
       setPlayingId(turnId);
-      await playTts(text, activePersonaId ?? undefined);
+      await playTts(text, roomInstanceId, activePersonaId ?? undefined);
     } catch (e) {
       console.error('[tts] playTts failed:', e);
     } finally {

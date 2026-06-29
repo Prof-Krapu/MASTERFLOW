@@ -1,105 +1,60 @@
 import {Router} from 'express';
 import {EdgeTTS} from 'node-edge-tts';
-import {join} from 'node:path';
-import {tmpdir} from 'node:os';
-import {createReadStream, unlink, stat} from 'node:fs';
-import {randomUUID} from 'node:crypto';
-import {getDb} from '../db/schema.ts';
+import {TtsRequestSchema} from '@masterflow/shared';
 
-/**
- * Routeur TTS (Text-to-Speech) utilisant node-edge-tts.
- * Génération à la volée avec nettoyage immédiat du fichier temporaire.
- */
-export function createTtsRouter(): Router {
+import {requireUser} from '../middleware/auth.ts';
+import {
+  consumeTtsQuota,
+  synthesizePersonaSpeech,
+  type TtsGenerator,
+} from '../services/tts.ts';
+
+const edgeGenerator: TtsGenerator = async (input) => {
+  const tts = new EdgeTTS({
+    voice: input.voice,
+    lang: input.lang,
+    outputFormat: 'audio-24khz-48kbitrate-mono-mp3',
+    pitch: input.pitch,
+    rate: input.rate,
+    volume: input.volume,
+  });
+  await tts.ttsPromise(input.text, input.outputPath);
+};
+
+export function createTtsRouter(generate: TtsGenerator = edgeGenerator): Router {
   const router = Router();
-
-  router.post('/', async (req, res) => {
+  router.use(requireUser);
+  router.post('/', async (req, res): Promise<void> => {
+    const parsed = TtsRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_tts_request'});
+      return;
+    }
+    const actor = req.user;
+    if (!actor) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    if (!consumeTtsQuota(actor.id)) {
+      res.status(429).json({error: 'tts_rate_limited'});
+      return;
+    }
     try {
-      const {text, personaId, voice: requestedVoice} = req.body;
-
-      if (!text || typeof text !== 'string') {
-        return res.status(400).json({error: 'Le champ "text" est requis.'});
-      }
-
-      let voice = requestedVoice || 'fr-FR-HenriNeural'; // Voix par défaut
-      let pitch: string | undefined;
-      let rate: string | undefined;
-      let volume: string | undefined;
-
-      // Si un personaId est fourni, on tente de récupérer sa voix en BDD
-      if (personaId) {
-        const db = getDb();
-        const personaRow = db.prepare('SELECT voice_config_json FROM personas WHERE id = ?').get(personaId) as {
-          voice_config_json: string | null;
-        } | undefined;
-
-        if (personaRow && personaRow.voice_config_json) {
-          try {
-            const voiceConfig = JSON.parse(personaRow.voice_config_json);
-            if (voiceConfig) {
-              if (voiceConfig.voice) voice = voiceConfig.voice;
-              if (voiceConfig.pitch) pitch = voiceConfig.pitch;
-              if (voiceConfig.rate) rate = voiceConfig.rate;
-              if (voiceConfig.volume) volume = voiceConfig.volume;
-            }
-          } catch (e) {
-            console.error('[tts] Erreur parsing voice_config_json:', e);
-          }
-        }
-      }
-
-      // Chemin temporaire
-      const tempId = randomUUID();
-      const audioPath = join(tmpdir(), `masterflow_tts_${tempId}.mp3`);
-
-      // Instanciation TTS
-      const tts = new EdgeTTS({
-        voice,
-        lang: voice.split('-').slice(0, 2).join('-'), // ex: fr-FR
-        outputFormat: 'audio-24khz-48kbitrate-mono-mp3',
-        ...(pitch && { pitch }),
-        ...(rate && { rate }),
-        ...(volume && { volume })
-      });
-
-      // Génération du fichier audio
-      await tts.ttsPromise(text, audioPath);
-
-      // Stream du fichier vers la réponse
-      stat(audioPath, (err, stats) => {
-        if (err) {
-          console.error('[tts] Erreur stat fichier temporaire:', err);
-          return res.status(500).json({error: 'Erreur lors de la génération audio.'});
-        }
-
-        res.writeHead(200, {
+      const result = await synthesizePersonaSpeech(actor, parsed.data, generate);
+      res
+        .status(200)
+        .set({
           'Content-Type': 'audio/mpeg',
-          'Content-Length': stats.size,
-          'Content-Disposition': 'inline; filename="tts.mp3"'
-        });
-
-        const readStream = createReadStream(audioPath);
-        
-        readStream.pipe(res);
-
-        // Nettoyage après envoi
-        readStream.on('end', () => {
-          unlink(audioPath, (unlinkErr) => {
-            if (unlinkErr) console.error('[tts] Erreur suppression fichier temporaire:', unlinkErr);
-          });
-        });
-        
-        readStream.on('error', (streamErr) => {
-          console.error('[tts] Erreur stream read:', streamErr);
-          if (!res.headersSent) res.status(500).end();
-        });
-      });
-
+          'Content-Length': String(result.audio.length),
+          'X-MasterFlow-Persona': result.personaId,
+          'Cache-Control': 'no-store',
+        })
+        .send(result.audio);
     } catch (error) {
-      console.error('[tts] Exception interne:', error);
-      res.status(500).json({error: 'Erreur interne du serveur TTS.'});
+      const code = error instanceof Error ? error.message : 'tts_failed';
+      const status = code === 'tts_persona_mismatch' || code.includes('unavailable') ? 403 : 503;
+      res.status(status).json({error: code});
     }
   });
-
   return router;
 }

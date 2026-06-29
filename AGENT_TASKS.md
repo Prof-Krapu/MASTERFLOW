@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-338 — VOICE-PERSONA-002 : TTS durci
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Authentifier TTS et résoudre le speaker réel depuis la Room.
+- Retirer la voix libre côté client.
+- Borner texte, quota, timeout, taille, cleanup et audit.
+- Tester avec générateur mocké, sans provider réel.
+
+### verification
+- TTS + persona : 9/9.
+- backend : 632/632.
+- lint back/front, build frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. TTS durci et vérifié, prêt à publication.
+> 2026-06-29 codex → PR #183 créée ; l'état GitHub de la PR fait foi.
+
+---
+
 ## TASK-337 — VOICE-PERSONA-001 : audit TTS contrôlé
 target: codex
 status: done
