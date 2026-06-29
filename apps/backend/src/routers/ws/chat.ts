@@ -132,13 +132,18 @@ export function buildSystemPrompt(
   runtime: RuntimeContextEnvelope,
   citations: RagCitation[],
   userId?: string,
+  styleInstructionsOverride?: string | null,
 ): string {
   const voice = speaker.voice_config ?? {};
   const method = speaker.method_config ?? {};
   const lex = Array.isArray(voice['lexical_field']) ? (voice['lexical_field'] as string[]).join(', ') : '';
   const moves = Array.isArray(voice['signature_moves']) ? (voice['signature_moves'] as string[]).join(', ') : '';
   const cadrage = typeof method['cadrage'] === 'string' ? method['cadrage'] : '';
-  const styleInstructions = userId ? getStyleInstructions(userId, speaker.id) : null;
+  const styleInstructions = styleInstructionsOverride !== undefined
+    ? styleInstructionsOverride
+    : userId
+      ? getStyleInstructions(userId, speaker.id, runtime.scope.project_id)
+      : null;
 
   const lines = [
     `Tu es ${speaker.name}, un persona pédagogique (domaine : ${speaker.domain}).`,
@@ -178,8 +183,6 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
     return;
   }
 
-  send(ws, {type: 'chat_start', persona_id: speaker.id, speaker: speaker.name});
-
   const runtime = compileRuntimeContext(ctx.actor, {
     purpose: 'ws_chat',
     requested_tier: 'T2',
@@ -189,8 +192,15 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
   const citations = runtime.rag_context_pack_ref
     ? getRagContextPack(ctx.actor, runtime.rag_context_pack_ref.ref_id).citations
     : [];
+  const styleInstructions = getStyleInstructions(ctx.actor.id, speaker.id, runtime.scope.project_id);
+  send(ws, {
+    type: 'chat_start',
+    persona_id: speaker.id,
+    speaker: speaker.name,
+    ...(styleInstructions ? {expressive_voice: {profile_used: true, label: 'Voix stylisée' as const}} : {}),
+  });
   const messages: ChatMessage[] = [
-    {role: 'system', content: buildSystemPrompt(speaker, methodAttr, runtime, citations, ctx.actor.id)},
+    {role: 'system', content: buildSystemPrompt(speaker, methodAttr, runtime, citations, ctx.actor.id, styleInstructions)},
     {role: 'user', content},
   ];
 

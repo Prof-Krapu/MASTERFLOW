@@ -4572,7 +4572,15 @@ export type WsClientMessage = z.infer<typeof WsClientMessageSchema>;
 
 /** Serveur → client. */
 export const WsServerMessageSchema = z.discriminatedUnion('type', [
-  z.object({type: z.literal('chat_start'), persona_id: z.string(), speaker: z.string()}),
+  z.object({
+    type: z.literal('chat_start'),
+    persona_id: z.string(),
+    speaker: z.string(),
+    expressive_voice: z.object({
+      profile_used: z.boolean(),
+      label: z.literal('Voix stylisée'),
+    }).optional(),
+  }),
   z.object({type: z.literal('chat_chunk'), content: z.string()}),
   z.object({
     type: z.literal('chat_end'),
@@ -5035,6 +5043,33 @@ export type LexicalComplexity = z.infer<typeof LexicalComplexitySchema>;
 export const StyleMirrorProfileStatusSchema = z.enum(['draft', 'active', 'archived']);
 export type StyleMirrorProfileStatus = z.infer<typeof StyleMirrorProfileStatusSchema>;
 
+export const StyleMirrorConsentStatusSchema = z.enum(['pending', 'granted', 'revoked']);
+export type StyleMirrorConsentStatus = z.infer<typeof StyleMirrorConsentStatusSchema>;
+
+const ExpressiveBehaviorConfigShape = {
+  rhythm: z.enum(['auto', 'short', 'balanced', 'expansive']).default('auto'),
+  humor: z.number().min(0).max(1).default(0.3),
+  warmth: z.number().min(0).max(1).default(0.5),
+  frankness: z.number().min(0).max(1).default(0.5),
+  playfulness: z.number().min(0).max(1).default(0.3),
+  technical_density: z.number().min(0).max(1).default(0.4),
+  recurring_expressions: z.array(z.string().min(1).max(80)).max(5).default([]),
+  signature_moves: z.array(z.string().min(1).max(120)).max(5).default([]),
+  tone_rules: z.array(z.string().min(1).max(240)).max(10).default([]),
+  forbidden_tones: z.array(z.string().min(1).max(160)).max(10).default([]),
+  observable_patterns: z.object({
+    request: z.string().max(240).optional(),
+    correction: z.string().max(240).optional(),
+    validation: z.string().max(240).optional(),
+    humor: z.string().max(240).optional(),
+  }).default({}),
+};
+
+export const ExpressiveBehaviorConfigSchema = z.object(ExpressiveBehaviorConfigShape).default({});
+export type ExpressiveBehaviorConfig = z.infer<typeof ExpressiveBehaviorConfigSchema>;
+
+export const ExpressiveBehaviorConfigInputSchema = z.object(ExpressiveBehaviorConfigShape).partial();
+
 export const StyleMirrorProfileSchema = z.object({
   id: z.string(),
   user_id: z.string(),
@@ -5048,6 +5083,16 @@ export const StyleMirrorProfileSchema = z.object({
   lexical_overrides: z.array(z.string()).default([]),
   signature_moves_override: z.array(z.string()).default([]),
   tone_rules: z.array(z.string()).default([]),
+  behavior_config: ExpressiveBehaviorConfigSchema,
+  source_refs: z.array(z.string().min(1).max(240)).default([]),
+  consent_status: StyleMirrorConsentStatusSchema,
+  consent_ref: z.string().min(1).nullable(),
+  consent_granted_at: z.number().nullable(),
+  consent_revoked_at: z.number().nullable(),
+  validated_by: z.string().min(1).nullable(),
+  validated_at: z.number().nullable(),
+  validation_version: z.string().min(1).nullable(),
+  visual_canon_ref: z.string().min(1).nullable(),
   profile_status: StyleMirrorProfileStatusSchema,
   created_at: z.number(),
   updated_at: z.number(),
@@ -5065,6 +5110,9 @@ export const UpsertStyleMirrorRequestSchema = z.object({
   lexical_overrides: z.array(z.string()).optional(),
   signature_moves_override: z.array(z.string()).optional(),
   tone_rules: z.array(z.string()).optional(),
+  behavior_config: ExpressiveBehaviorConfigInputSchema.optional(),
+  source_refs: z.array(z.string().min(1).max(240)).max(30).optional(),
+  visual_canon_ref: z.string().min(1).nullable().optional(),
 });
 export type UpsertStyleMirrorRequest = z.infer<typeof UpsertStyleMirrorRequestSchema>;
 

@@ -19,8 +19,8 @@ Dernière mise à jour : 2026-06-29
 - Impact : voix stylisée robuste et consentie sans usurpation ni dérive de permissions.
 - Risque : moyen ; touche identité, style et chat runtime.
 - Source de vérité concernée : D04 Personas + Style Mirror existant + chat WS.
-- Statut : planifié, non lancé.
-- Validation requise : oui avant migration/schema/API ; Big Pickle reste en pause tant qu'aucune tranche mécanique bornée n'est définie.
+- Statut : implémenté localement, tests verts, publication à faire.
+- Validation requise : non pour publier cette tranche testée ; oui avant collecte automatique, avatar runtime, psychologie inférée ou provider.
 
 ### VISION-ABSORPTION-P1 — Roadmap de primitives, pas exécution globale
 

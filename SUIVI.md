@@ -4,6 +4,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — EXPRESSIVE-CANON-P1 : Style Mirror consenti
+
+- `EXPRESSIVE_CANON` est implémenté comme durcissement de `StyleMirrorProfile`, sans table
+  `behavior_profiles` concurrente ;
+- ajout d'un contrat `ExpressiveBehaviorConfig` borné : rythme, chaleur, franchise, ludisme,
+  densité technique, expressions, mouvements de signature et tons interdits ;
+- ajout de consentement sujet `pending/granted/revoked`, validation, version, source refs sans
+  texte brut et référence visuelle canon nullable ;
+- un profil n'est injecté dans le chat que s'il est `active`, consenti, validé et non révoqué ;
+- un professeur peut proposer un profil, mais seul le sujet peut l'activer ;
+- le chat passe désormais le `project_id` réel à Style Mirror et sélectionne dans l'ordre :
+  projet/persona, projet/générique, global/persona, global/générique ;
+- le bloc expressif est borné à 1 200 caractères, rappelle que le style ne modifie jamais
+  permissions, faits, sources ou méthode métier, et limite les signatures ;
+- le protocole WebSocket `chat_start` peut exposer un metadata `Voix stylisée` sans répéter ce
+  label dans chaque réponse.
+
+Vérifications : Style Mirror ciblé 10/10, backend complet 605/605, lint backend, build frontend et
+diff-check OK.
+
+Statut : vague locale prête à publication atomique. Aucun provider, collecte automatique,
+psychologie inférée, avatar runtime, permission bypass ou migration destructive.
+
 ## 2026-06-29 — AUDIT-BP-PLAN-001 : rapports Big Pickle relus et arbitrés
 
 Rapports lus :

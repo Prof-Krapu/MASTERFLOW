@@ -1,7 +1,7 @@
 import {Router, type Request, type Response} from 'express';
 import {UpsertStyleMirrorRequestSchema} from '@masterflow/shared';
 import {z} from 'zod';
-import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
+import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
   getProfile, upsertProfile, updateProfileStatus,
 } from '../services/style_mirror_engine.ts';
@@ -14,7 +14,7 @@ const fail = (s: Response, e: unknown): void => {
 
 export function createStyleMirrorRouter(): Router {
   const r = Router();
-  r.use(requireUser, requireRole('teacher'));
+  r.use(requireUser);
 
   r.get('/style-mirror/profiles/:userId', (q, s) => {
     try {
