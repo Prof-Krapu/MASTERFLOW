@@ -18,6 +18,7 @@ import {
 } from '../services/precedent_engine.ts';
 import {evaluateStorylets} from '../services/storylet_engine.ts';
 import {buildGuidedLivingCompanion} from '../services/living_companion.ts';
+import {buildProjectMonsterEvolutionReport} from '../services/project_monster.ts';
 import {buildVisualNarrativeGrammarReport} from '../services/visual_narrative_grammar.ts';
 
 function actor(req: Request): AuthUser {
@@ -170,6 +171,18 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildGuidedLivingCompanion(actor(req), req.params.sessionId));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/companions/project-monsters/guided-sessions/:sessionId', (req, res): void => {
+    if (!req.params.sessionId) {
+      res.status(400).json({error: 'missing_session_id'});
+      return;
+    }
+    try {
+      res.json(buildProjectMonsterEvolutionReport(actor(req), req.params.sessionId));
     } catch (error) {
       fail(res, error);
     }

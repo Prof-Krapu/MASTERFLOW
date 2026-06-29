@@ -14,9 +14,33 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-320 — EXPERIENCE-FABRIC-006B : MOTH Living Companion
+## TASK-321 — EXPERIENCE-FABRIC-006C : Monstre-idée Ours d’Or
 target: codex
 status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Projeter naissance V0, mutation et stabilisation candidates depuis un projet/session Ours d'Or.
+- Reprendre les verrous legacy de gimmick, empathie, silhouette et non-humiliation.
+- Garder nom/lore sous contrôle du créateur.
+- Ne pas générer d'image, promouvoir un canon, publier, exporter ou créer une galerie.
+
+### verification
+- tests ciblés Project Monster : 5/5.
+- tests ciblés Living Companion : 7/7.
+- tests ciblés Storylet Engine : 4/4.
+- backend complet : 596/596.
+- lint backend/frontend, build frontend et diff-check : OK.
+
+### updates
+> 2026-06-29 codex → claimed. Tranche 6.3 implémentée localement, validation complète en cours.
+> 2026-06-29 codex → done local. Tranche 6.3 prête à publication atomique.
+
+---
+
+## TASK-320 — EXPERIENCE-FABRIC-006B : MOTH Living Companion
+target: codex
+status: verified
 frozen_by: MALEX « go » 2026-06-29
 
 ### scope
@@ -34,6 +58,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → claimed. Tranche 6.2 implémentée localement, validation complète en cours.
 > 2026-06-29 codex → done local. Tranche 6.2 prête à publication atomique.
+> 2026-06-29 codex → verified. PR #162 mergée sur GitHub main (`3afee8d`).
 
 ---
 

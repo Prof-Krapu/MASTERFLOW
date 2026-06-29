@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-29
-Branche de travail : `codex/experience-fabric-visual-grammar`
-Base GitHub vérifiée : `0532406` (`origin/main` après merge PR #159)
+Branche de travail : `codex/experience-fabric-project-monster`
+Base GitHub vérifiée : `3afee8d` (`origin/main` après merge PR #162)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -18,7 +18,8 @@ récoltées après audit.
 | Experience Fabric / Storylet Engine | implémenté | Storylets candidates `suggest_only` depuis canon narratif, précédents et blockers publiées via PR #159. | faible | Garder toute exécution future derrière validation et Action Engine. |
 | Experience Fabric / Visual Narrative Grammar | implémenté | Projection `explain_only` depuis D08, références, thème et canon narratif publiée via PR #160. | faible | Réutiliser pour les futurs assets de compagnons sans ouvrir provider image. |
 | Experience Fabric / Living Companion Robot CDC | implémenté | Projection guidée depuis session CDC, progression et storylets publiée via PR #161. | faible | Réutiliser le contrat sans ouvrir autonomie, provider ou asset. |
-| Experience Fabric / MOTH contextuel | implémenté local | Variante Living Companion explicitement assignée au guide/session, distincte du persona personnel. | faible | Valider et publier la tranche 6.2 avant d'aborder l'évolution des subpersonas. |
+| Experience Fabric / MOTH contextuel | implémenté | Variante Living Companion explicitement assignée au guide/session publiée via PR #162. | faible | Garder MOTH distinct du persona personnel et sans permission propre. |
+| Experience Fabric / Monstre-idée Ours d’Or | implémenté local | Projection candidate V0, mutation et stabilisation depuis un projet guidé ; aucun asset généré. | faible à moyen | Valider et publier la tranche 6.3 ; génération et galerie restent derrière décision séparée. |
 | Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
