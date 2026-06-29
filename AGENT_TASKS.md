@@ -31,6 +31,7 @@ frozen_by: MALEX « on continue ? » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Contrat Trust Fabric V1 prêt à publication atomique.
+> 2026-06-29 codex → PR #178 créée ; l'état GitHub de la PR fait foi.
 
 ---
 

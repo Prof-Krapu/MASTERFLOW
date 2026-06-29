@@ -10,12 +10,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : projeter un read model de confiance depuis les données existantes, sans table, score
   composite, permission ou sanction.
 - statut : `next_not_started`
-- dernière action terminée : contrat `TRUST-FABRIC-001` prêt à publication.
+- dernière action terminée : contrat `TRUST-FABRIC-001` porté par la PR #178.
 - prochaine action : figer les entrées exactes du read model avant tout code runtime.
 - fichiers/domaines concernés : `docs/trust/TRUST_FABRIC_V1_2026-06-29.md`, RAG, workflow,
   coût/provider, audit sécurité et owner cockpit.
 - tests à relancer : ciblés Trust puis backend complet et lint si runtime touché.
-- publication : `TRUST-FABRIC-001` local, publication GitHub en cours.
+- publication : PR #178 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : table, score moral, surveillance opaque, auto-ban, permission, sanction et UI rouge
   restent interdits.
 
@@ -30,7 +30,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Livrable : `docs/trust/TRUST_FABRIC_V1_2026-06-29.md`.
 
-Statut : local vérifié, publication GitHub en cours.
+Statut : contrat porté par la PR #178 ; son état GitHub fait foi.
 
 ## 2026-06-29 — SECURITY-FABRIC-002 : garde déterministe commun
 
