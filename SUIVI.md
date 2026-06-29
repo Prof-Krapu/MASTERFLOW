@@ -10,13 +10,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : transformer Theme Studio en cockpit de packs thème/typos/assets/lore sans provider,
   génération ou application silencieuse.
 - statut : `next_not_started`
-- dernière action terminée : `DA-NARRATIVE-BRIDGE-001` publiée en PR #184.
+- dernière action terminée : `DA-NARRATIVE-BRIDGE-001` publiée via PR #184.
 - prochaine action : auditer Theme Studio, ThemePack, D08 manifests et assets pour définir la
   première tranche runtime/UI sûre.
 - fichiers/domaines concernés : Theme Studio, D08, ThemePack, Visual Narrative Grammar, assets,
   lore, Ours d'Or et versions institutionnelles.
 - tests à relancer : lecture ciblée + `git diff --check` pour l'audit initial.
-- publication : `DA-NARRATIVE-BRIDGE-001` en PR #184, merge à effectuer.
+- publication : `DA-NARRATIVE-BRIDGE-001` publiée via PR #184 (`a52eb64`).
 - blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
 
 ## 2026-06-29 — DA-NARRATIVE-BRIDGE-001 : ponts DA narrative
@@ -33,7 +33,7 @@ Livrable : `docs/experience-fabric/DA_NARRATIVE_BRIDGE_MAP_V1.md`.
 
 Vérifications : lecture ciblée des services existants et `git diff --check`.
 
-Statut : PR #184 ouverte ; merge GitHub à effectuer.
+Statut : publié via PR #184 (`a52eb64`).
 
 ## 2026-06-29 — VOICE-PERSONA-002 : TTS durci
 

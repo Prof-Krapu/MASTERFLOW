@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → done local. Carte de ponts DA narrative prête à publication.
 > 2026-06-29 codex → PR #184 créée ; l'état GitHub de la PR fait foi.
+> 2026-06-29 codex → PR #184 mergée (`a52eb64`) ; GitHub `main` fait foi.
 
 ---
 
