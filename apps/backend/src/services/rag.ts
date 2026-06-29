@@ -36,12 +36,11 @@ import type {AuthUser} from '../middleware/auth.ts';
 import {createRagReindexJob} from './jobs.ts';
 import {decideScopedPermission} from './projects.ts';
 import {getOwnedAccessibleRoomInstance} from './room_access.ts';
+import {classifySecurityInput} from './security_guard.ts';
 import type {RoomRow} from '../db/schema.ts';
 
 const SECRET_PATTERN =
   /(\.env|api[_-]?key|access[_-]?token|refresh[_-]?token|password|passwd|private[_-]?key|credential|authorization|begin [a-z ]*private key)/i;
-const PROMPT_INJECTION_PATTERN =
-  /(ignore (all )?(previous|prior)|system prompt|developer message|jailbreak|bypass|reveal (the )?prompt|affiche (le )?prompt|oublie (les )?instructions)/i;
 const PACK_TTL_MS = 15 * 60 * 1000;
 const COORDINATION_DOCS = [
   {id: 'coordination-suivi', path: 'SUIVI.md', title: 'SUIVI MasterFlow'},
@@ -141,6 +140,10 @@ function assertCanManageResource(actor: AuthUser, row: RagResourceRow): void {
 
 function assertNoSecret(input: RegisterRagResourceRequest): void {
   if (SECRET_PATTERN.test(JSON.stringify(input))) throw new Error('rag_secret_detected');
+}
+
+function isSecurityBlocked(disposition: ReturnType<typeof classifySecurityInput>['disposition']): boolean {
+  return !['allow', 'allow_with_warning'].includes(disposition);
 }
 
 function statusFromTruth(status: ResourceRow['status']): RagResourceRow['status'] {
@@ -520,6 +523,33 @@ export function registerRagResource(
   assertTeacher(actor);
   const request = RegisterRagResourceRequestSchema.parse(input);
   assertNoSecret(request);
+  const unsafeChunk = request.chunks
+    .map((content, index) => ({
+      index,
+      content,
+      decision: classifySecurityInput({
+        content,
+        input_zone: 'untrusted_external',
+        affected_capability: 'rag',
+      }),
+    }))
+    .find(({decision}) => isSecurityBlocked(decision.disposition));
+  if (unsafeChunk) {
+    audit({
+      event_type: 'security.rag_ingestion_refused',
+      user_id: actor.id,
+      scope: request.project_id ?? actor.id,
+      detail: {
+        resource_id: request.resource_id,
+        chunk_index: unsafeChunk.index,
+        content_hash: hash(unsafeChunk.content),
+        threat_family: unsafeChunk.decision.threat_family,
+        confidence: unsafeChunk.decision.confidence,
+        audit_code: unsafeChunk.decision.audit_code,
+      },
+    });
+    throw new Error('rag_unsafe_content_detected');
+  }
   if (request.project_id) {
     const allowed = decideScopedPermission({
       actor,
@@ -743,7 +773,40 @@ export function queryRag(
   const scopeType = effectiveProjectId ? 'project' : 'owner';
   const scopeId = effectiveProjectId ?? actor.id;
 
-  if (PROMPT_INJECTION_PATTERN.test(request.query)) {
+  const securityDecision = classifySecurityInput({
+    content: request.query,
+    input_zone: 'user_input',
+    affected_capability: 'rag',
+  });
+  if (securityDecision.disposition === 'allow_with_warning') {
+    audit({
+      event_type: 'security.input_observed',
+      user_id: actor.id,
+      scope: scopeId,
+      detail: {
+        query_hash: queryHash,
+        threat_family: securityDecision.threat_family,
+        confidence: securityDecision.confidence,
+        input_zone: securityDecision.input_zone,
+        affected_capability: securityDecision.affected_capability,
+        audit_code: securityDecision.audit_code,
+      },
+    });
+  }
+  if (!['allow', 'allow_with_warning'].includes(securityDecision.disposition)) {
+    audit({
+      event_type: 'security.input_refused',
+      user_id: actor.id,
+      scope: scopeId,
+      detail: {
+        query_hash: queryHash,
+        threat_family: securityDecision.threat_family,
+        confidence: securityDecision.confidence,
+        input_zone: securityDecision.input_zone,
+        affected_capability: securityDecision.affected_capability,
+        audit_code: securityDecision.audit_code,
+      },
+    });
     const contextPack = createPack({
       actor,
       queryHash,
@@ -826,7 +889,29 @@ export function queryRag(
       >)
     : [];
   const terms = queryTerms(request.query);
-  const scoredCitations = rows
+  const safeRows = rows.filter((row) => {
+    const decision = classifySecurityInput({
+      content: row.content_excerpt,
+      input_zone: 'untrusted_external',
+      affected_capability: 'rag',
+    });
+    if (!isSecurityBlocked(decision.disposition)) return true;
+    audit({
+      event_type: 'security.rag_chunk_quarantined',
+      user_id: actor.id,
+      scope: scopeId,
+      detail: {
+        resource_id: row.resource_id,
+        chunk_id: row.id,
+        content_hash: hash(row.content_excerpt),
+        threat_family: decision.threat_family,
+        confidence: decision.confidence,
+        audit_code: decision.audit_code,
+      },
+    });
+    return false;
+  });
+  const scoredCitations = safeRows
     .map((row) => ({row, score: scoreExcerpt(terms, row.content_excerpt)}))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score)

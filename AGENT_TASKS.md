@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-332 — SECURITY-FABRIC-002 : garde déterministe commun
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Remplacer la regex RAG isolée par un garde réutilisable.
+- Couvrir entrée directe, obfuscation simple et contenu RAG indirect.
+- Auditer refus et quarantaines sans contenu brut.
+- Ne modifier ni DB, permission, hard stop, session, sanction, provider ou UI.
+
+### verification
+- garde + RAG : 19/19.
+- backend : 615/615.
+- lint backend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Tranche runtime vérifiée, prête à publication atomique.
+> 2026-06-29 codex → PR #177 créée ; l'état GitHub de la PR fait foi.
+
+---
+
 ## TASK-331 — SECURITY-FABRIC-001 : frontière de confiance runtime
 target: codex
 status: done
