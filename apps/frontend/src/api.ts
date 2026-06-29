@@ -61,6 +61,8 @@ import type {
   ProcessActivationRequest,
   PreviewActionsExpiryResponse,
   PreCorrectionManifest,
+  PedagogicalAssistanceDecision,
+  PedagogicalAssistanceRequest,
   PrecedentSearchResult,
   Persona,
   Project,
@@ -171,6 +173,16 @@ export async function login(username: string, password: string): Promise<AuthRes
 
 export async function getCurrentContext(token?: string | null): Promise<CurrentContext> {
   return request<CurrentContext>('/context/current', {method: 'GET'}, token);
+}
+
+export async function classifyPedagogicalAssistance(
+  body: PedagogicalAssistanceRequest,
+  token?: string | null,
+): Promise<PedagogicalAssistanceDecision> {
+  return request<PedagogicalAssistanceDecision>('/pedagogical-assistance/classify', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
 }
 
 export async function getPersonas(token?: string | null): Promise<Persona[]> {

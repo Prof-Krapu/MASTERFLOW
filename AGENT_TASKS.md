@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-344 — UI-PROGRESSIVE-SURFACES-001 : cadre d'aide Teaching
+target: codex
+status: done
+frozen_by: MALEX « on reprend » 2026-06-29
+
+### scope
+- Exposer le classifieur pédagogique par une route authentifiée et sans effet métier.
+- Dériver le rôle depuis le token, jamais depuis le body.
+- Ajouter une surface Teaching légère, explicable et réutilisable.
+- Ne lancer aucune action, note, publication, sanction ou chargement massif.
+
+### verification
+- Tests ciblés service + route.
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+- Smoke navigateur desktop et 390 px.
+
+### updates
+> 2026-06-29 codex → done local. Route read-only et panneau Teaching prêts à publication.
+
+---
+
 ## TASK-343 — LEARNING-TEACHING-INTEGRITY-RUNTIME-001 : décision pédagogique pure
 target: codex
 status: done
@@ -31,6 +52,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Classifieur pur et contrats partagés prêts à publication.
+> 2026-06-29 codex → PR #191 mergée (`7d00d60`) ; GitHub `main` fait foi.
 
 ---
 

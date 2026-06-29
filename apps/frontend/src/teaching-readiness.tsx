@@ -68,6 +68,7 @@ import {
   updateCorrectionSheet,
   validateCorrectionSheet,
 } from './api.ts';
+import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
 
 type TeachingReadinessProps = {
   context: CurrentContext;
@@ -784,6 +785,11 @@ export function TeachingReadiness({
           </section>
         ))}
       </div>
+
+      <PedagogicalAssistancePanel
+        hasValidatedResources={effectiveResources.length > 0}
+        token={token}
+      />
 
       <section className="identity-review" aria-label="Identités étudiantes à confirmer">
         <div className="identity-review__heading">

@@ -120,6 +120,13 @@ La tranche `LEARNING-TEACHING-INTEGRITY-RUNTIME-001` ajoute :
   le hint Safety et la storylet recommandée ;
 - aucune route, migration, publication, note finale, sanction ou modification de permission.
 
+La première surface `UI-PROGRESSIVE-SURFACES-001` ajoute ensuite :
+
+- une route read-only authentifiée dont le rôle est dérivé du token serveur ;
+- un panneau Teaching réutilisable qui explique l'aide autorisée avant toute action ;
+- un recadrage visible des demandes de livrable final ;
+- aucune écriture, exécution, note, sanction ou publication.
+
 ## Hors périmètre
 
 - LMS lourd, LTI, SCORM, xAPI ;
