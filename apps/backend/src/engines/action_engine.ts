@@ -151,6 +151,48 @@ function effectiveRisk(action: Action): RiskLevel {
   return action.risk_level ?? 'low';
 }
 
+/** Construit une explication UI sans sérialiser le payload potentiellement privé. */
+function buildPreflightExplanation(
+  action: Action,
+  label: string | null,
+  requiresValidation: boolean,
+  allowed: boolean,
+): NonNullable<PreflightResult['explanation']> {
+  const affectedResources = [
+    `object:${action.object_type}`,
+    ...(action.project_id ? [`project:${action.project_id}`] : []),
+    ...(action.room_id ? [`room:${action.room_id}`] : []),
+  ];
+  const after = !allowed
+    ? 'Aucun changement : le préflight refuse cette action.'
+    : requiresValidation
+      ? 'Aucun changement avant validation humaine explicite.'
+      : 'Action autorisée à poursuivre ; aucun effet n’est encore exécuté par le préflight.';
+
+  return {
+    proposed_change: label
+      ? `${label} — intention : ${action.intent}.`
+      : `Intention proposée : ${action.intent}.`,
+    affected_resources: affectedResources,
+    effect_preview: {
+      before: `État actuel conservé pour ${action.object_type}.`,
+      after,
+    },
+    decision_options: requiresValidation
+      ? [
+          {id: 'approve', availability: 'available', reason: null},
+          {
+            id: 'modify',
+            availability: 'future',
+            reason: 'La modification directe d’une Action n’est pas encore implémentée.',
+          },
+          {id: 'reject', availability: 'available', reason: null},
+        ]
+      : [{id: 'reject', availability: 'available', reason: null}],
+    payload_disclosed: false,
+  };
+}
+
 // ───────────────────────── Étape 1 — Création (draft) ─────────────────────────
 
 /**
@@ -241,6 +283,12 @@ export function preflightAction(user: AuthUser, actionId: string): Action {
     validator_role: validatorRole,
     risk_level: risk,
     estimated_duration_ms: 500,
+    explanation: buildPreflightExplanation(
+      action,
+      entry?.label ?? null,
+      requiresValidation,
+      perm.allowed && !blockedByHardStop,
+    ),
   };
 
   // Détermination du status cible.

@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — VISIBLE-PREFLIGHT-001 : contrat UI explicable
+
+- le préflight Action Engine expose désormais une explication déterministe et bornée ;
+- l’interface peut afficher la proposition, les ressources concernées, un aperçu avant/après et
+  les choix `approve/modify/reject` lorsque la validation humaine est requise ;
+- `modify` est explicitement marqué `future`, car aucune route de modification directe n’existe
+  encore ; l’interface ne doit donc pas le présenter comme fonctionnel ;
+- le payload métier n’est jamais recopié dans cette explication (`payload_disclosed: false`) ;
+- le préflight ne produit toujours aucun effet et n’ajoute aucune permission.
+
+Vérifications : Action Lifecycle 15/15, backend complet 605/605, lint backend, build frontend et
+diff-check OK.
+
+Statut : local vérifié, prêt à publication atomique.
+
 ## 2026-06-29 — EXPRESSIVE-CANON-P1 : Style Mirror consenti
 
 - `EXPRESSIVE_CANON` est implémenté comme durcissement de `StyleMirrorProfile`, sans table
@@ -24,8 +39,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : Style Mirror ciblé 10/10, backend complet 605/605, lint backend, build frontend et
 diff-check OK.
 
-Statut : vague locale prête à publication atomique. Aucun provider, collecte automatique,
-psychologie inférée, avatar runtime, permission bypass ou migration destructive.
+Statut : publié via PR #167 (`eb1fd61`). Aucun provider, collecte automatique, psychologie
+inférée, avatar runtime, permission bypass ou migration destructive.
 
 ## 2026-06-29 — AUDIT-BP-PLAN-001 : rapports Big Pickle relus et arbitrés
 

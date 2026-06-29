@@ -28,8 +28,19 @@ Dernière mise à jour : 2026-06-29
 - Impact : garde les pépites sans ouvrir trop de chantiers à la fois.
 - Risque : moyen si les primitives sont codées hors ordre ou sans permission.
 - Source de vérité concernée : rapports d'audit + Experience/Knowledge Fabric + UI roadmap.
-- Statut : à arbitrer tranche par tranche.
+- Statut : première tranche `VISIBLE-PREFLIGHT-001` en cours ; les autres primitives restent à
+  arbitrer séparément.
 - Validation requise : oui avant Note Engine, package design tokens, OCR/provider, LMS, C2PA ou outputs fichiers.
+
+#### VISIBLE-PREFLIGHT-001 — contrat lisible pour l’interface
+
+- Tâche : enrichir le préflight Action Engine avec proposition, ressources impactées, aperçu
+  avant/après et choix humains bornés.
+- Impact : l’UI peut expliquer une action avant validation sans lire les payloads techniques.
+- Risque : faible ; extension additive, aucune exécution ou permission nouvelle.
+- Source de vérité concernée : Action Engine + rapport Vision Product Absorption.
+- Statut : implémenté localement, validation en cours.
+- Validation requise : non pour le contrat partagé ; oui avant automatisation ou effet live.
 
 ### FACTORIES-CONFRONTATION-P1 — Hygiène Desktop + primitives seulement
 

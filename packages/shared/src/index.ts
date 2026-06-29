@@ -1025,6 +1025,21 @@ export const PreflightResultSchema = z.object({
   validator_role: RoleSchema.nullable(),
   risk_level: RiskLevelSchema,
   estimated_duration_ms: z.number().optional(),
+  /** Projection déterministe et bornée pour une surface de validation lisible. */
+  explanation: z.object({
+    proposed_change: z.string().min(1).max(500),
+    affected_resources: z.array(z.string().min(1).max(200)).max(10),
+    effect_preview: z.object({
+      before: z.string().min(1).max(300),
+      after: z.string().min(1).max(300),
+    }),
+    decision_options: z.array(z.object({
+      id: z.enum(['approve', 'modify', 'reject']),
+      availability: z.enum(['available', 'future']),
+      reason: z.string().min(1).max(300).nullable(),
+    })).min(1).max(3),
+    payload_disclosed: z.literal(false),
+  }).optional(),
 });
 export type PreflightResult = z.infer<typeof PreflightResultSchema>;
 
