@@ -55,6 +55,8 @@ import type {
   Job,
   MatchInventoryProjectNeedRequest,
   OwnerCockpitStatus,
+  NarrativeCanonGraph,
+  NarrativePresentationMode,
   ProcessActivationReadModel,
   ProcessActivationRequest,
   PreviewActionsExpiryResponse,
@@ -94,6 +96,7 @@ import type {
   CreateVisualReferenceRequest,
   UpdateVisualReferenceRequest,
   StoryWorkbench,
+  StoryletEvaluation,
   StoryPatchCandidate,
   StoryReaderState,
   CreateStoryWorkbenchRequest,
@@ -399,6 +402,27 @@ export async function updateVisualReference(id: string, body: UpdateVisualRefere
   return request<VisualReference>(`/visual-references/${encodeURIComponent(id)}`, {method: 'PATCH', body: JSON.stringify(body)}, token);
 }
 export async function getStoryWorkbenches(token?:string|null):Promise<StoryWorkbench[]>{return request<StoryWorkbench[]>('/story-workbenches',{method:'GET'},token);}
+export async function getNarrativeCanonGraph(
+  id: string,
+  mode: NarrativePresentationMode,
+  token?: string | null,
+): Promise<NarrativeCanonGraph> {
+  return request<NarrativeCanonGraph>(
+    `/narrative/workbench/${encodeURIComponent(id)}/canon-graph?presentation_mode=${encodeURIComponent(mode)}`,
+    {method: 'GET'},
+    token,
+  );
+}
+export async function getNarrativeStorylets(
+  id: string,
+  token?: string | null,
+): Promise<StoryletEvaluation> {
+  return request<StoryletEvaluation>(
+    `/experience/storylets?workbench_id=${encodeURIComponent(id)}&domains=narrative,bridge&limit=8`,
+    {method: 'GET'},
+    token,
+  );
+}
 export async function createStoryWorkbench(body:CreateStoryWorkbenchRequest,token?:string|null):Promise<StoryWorkbench>{return request<StoryWorkbench>('/story-workbenches',{method:'POST',body:JSON.stringify(body)},token);}
 export async function getStoryPatches(id:string,token?:string|null):Promise<StoryPatchCandidate[]>{return request<StoryPatchCandidate[]>(`/story-workbenches/${encodeURIComponent(id)}/patches`,{method:'GET'},token);}
 export async function createStoryPatch(id:string,body:CreateStoryPatchCandidateRequest,token?:string|null):Promise<StoryPatchCandidate>{return request<StoryPatchCandidate>(`/story-workbenches/${encodeURIComponent(id)}/patches`,{method:'POST',body:JSON.stringify(body)},token);}

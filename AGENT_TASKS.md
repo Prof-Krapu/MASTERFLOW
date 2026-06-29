@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-327 — MASTERSTORY-UI-001 : lecture canon progressive
+target: codex
+status: done
+frozen_by: MALEX « Go » 2026-06-29
+
+### scope
+- Construire une lecture canon par public depuis le workbench sélectionné.
+- Masquer réellement les spoilers en mode lecteur.
+- Exposer setup/payoff, cohérence et storylets candidates.
+- Ne modifier ni source, canon, export ou publication.
+
+### verification
+- backend complet : 605/605.
+- lint frontend/backend, build frontend et diff-check : OK.
+- smoke Batrasia : lecteur 30 faits visibles / 8 spoilers masqués ; atelier 0 spoiler masqué ;
+  storylet pending validation ; aucun débordement à 390 px.
+
+### updates
+> 2026-06-29 codex → done local. Lecture MasterStory vérifiée ; publication atomique prête.
+
+---
+
 ## TASK-326 — EXPERIENCE-UI-001 : cockpit GodMode progressif
 target: codex
 status: done
