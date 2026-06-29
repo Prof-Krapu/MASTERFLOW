@@ -14,9 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
-## TASK-329 — GLOBAL-ABSORPTION-RESUME-000 : reprise anti-coupure crédits
+## TASK-330 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
 target: codex
 status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Lire les audits BP récents et les registres source-truth/primitives.
+- Classer legacy, factories, OpenMontage/design, voix, sécurité, DA narrative, UI et learning.
+- Choisir la prochaine vague sans coder de runtime.
+- Corriger le statut de la vague anti-coupure publiée via PR #173.
+
+### verification
+- `git diff --check` requis avant publication.
+
+### updates
+> 2026-06-29 codex → done local. Matrice globale créée ; prochaine vague recommandée : `SECURITY-FABRIC-001`.
+
+---
+
+## TASK-329 — GLOBAL-ABSORPTION-RESUME-000 : reprise anti-coupure crédits
+target: codex
+status: verified
 frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-29
 
 ### scope
@@ -30,6 +49,7 @@ frozen_by: MALEX « PLEASE IMPLEMENT THIS PLAN » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Reprise anti-coupure documentée ; publication non lancée.
+> 2026-06-29 codex → verified. PR #173 mergée sur `main` (`4ca2702`).
 
 ---
 

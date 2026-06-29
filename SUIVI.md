@@ -6,18 +6,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `GLOBAL-ABSORPTION-RESUME-000`
-- objectif : stabiliser le poste de reprise avant les vagues d'absorption/security/trust/voice/UI.
+- id : `GLOBAL-ABSORPTION-001`
+- objectif : classer les audits BP/legacy/factories/OpenMontage/design/voix/sécurité/DA narrative
+  pour choisir la prochaine vague sans dérive.
 - statut : `done_local_not_published`
-- dernière action terminée : plan global de reprise créé dans
-  `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md`.
-- prochaine action : publier cette vague documentaire, puis lancer `GLOBAL-ABSORPTION-001`
-  depuis le même clone actif.
+- dernière action terminée : matrice d'absorption créée dans
+  `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
+- prochaine action : publier cette vague documentaire, puis lancer `SECURITY-FABRIC-001`.
 - fichiers/domaines concernés : `CLAUDE.md`, `SUIVI.md`, `AGENT_TASKS.md`,
-  `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md`.
+  `docs/runtime-queue/MASTERFLOW_GLOBAL_ABSORPTION_RESUME_PLAN_2026-06-29.md`,
+  `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
 - tests à relancer : `git diff --check` suffit pour cette vague documentaire.
 - publication : locale uniquement tant qu'aucun commit/push/PR/merge n'est fait.
 - blocage : aucun ; commit/push/PR/merge demandent validation explicite MALEX.
+
+## 2026-06-29 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
+
+- lecture et consolidation des audits BP récents, de la doctrine source-truth, du registre de
+  primitives externes, des traces Factories/OpenMontage/design et de l'inbox voix/TUI ;
+- création d'une matrice unique : déjà implémenté, documenté, gap runtime, futur ou bloqué ;
+- décision d'ordre : Security Fabric doit passer avant Trust, Safety narrative, Voice et UI ;
+- rappel : Factories restent atelier externe ; Git absorbe seulement les primitives utiles ;
+- aucun runtime, provider, permission, DB, seed, endpoint, UI ou dossier externe modifié.
+
+Livrable : `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
+
+Statut : local documentaire, non publié.
 
 ## 2026-06-29 — GLOBAL-ABSORPTION-RESUME-000 : reprise anti-coupure crédits
 
@@ -27,7 +41,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - Big Pickle reste piloté uniquement par `.opencode/INBOX.md` et ne reçoit aucune tâche prête ;
 - aucune modification runtime, permission, provider, DB, seed, endpoint ou UI.
 
-Statut : local documentaire, non publié.
+Statut : publié via PR #173 (`4ca2702`).
 
 ## 2026-06-29 — THEME-STUDIO-UI-001 : grammaire visuelle explicable
 
