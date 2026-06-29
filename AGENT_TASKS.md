@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. TTS durci et vérifié, prêt à publication.
+> 2026-06-29 codex → PR #183 créée ; l'état GitHub de la PR fait foi.
 
 ---
 

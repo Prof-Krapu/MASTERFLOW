@@ -10,13 +10,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : consolider les ponts entre Experience Fabric, D08, Theme Studio, MasterStory,
   compagnons et Safety sans ouvrir génération ou canonisation automatique.
 - statut : `next_not_started`
-- dernière action terminée : `VOICE-PERSONA-002` vérifiée localement.
+- dernière action terminée : `VOICE-PERSONA-002` publiée en PR #183.
 - prochaine action : auditer les ponts déjà réels et identifier le premier gap sans recoder
   Experience Fabric.
 - fichiers/domaines concernés : Experience Fabric, D08, Theme Studio, MasterStory, companions,
   Safety et assets.
 - tests à relancer : lecture ciblée + `git diff --check` pour l'audit initial.
-- publication : `VOICE-PERSONA-002` prête pour une PR atomique.
+- publication : `VOICE-PERSONA-002` en PR #183, merge à effectuer.
 - blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
 
 ## 2026-06-29 — VOICE-PERSONA-002 : TTS durci
@@ -30,7 +30,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Vérifications : TTS + persona 9/9, backend 632/632, lint back/front, build frontend et diff-check.
 
-Statut : local vérifié, publication GitHub à lancer.
+Statut : PR #183 ouverte ; merge GitHub à effectuer.
 
 ## 2026-06-29 — VOICE-PERSONA-001 : audit TTS contrôlé
 

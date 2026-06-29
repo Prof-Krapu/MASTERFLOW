@@ -31,7 +31,7 @@ Au démarrage d'une session :
 | 2 | Security Fabric | Formaliser injection, RAG poisoning, permissions, sources non fiables et actions sensibles | runtime_guard_pr_177 | contrat V1 + garde déterministe, sans provider/live |
 | 3 | Trust Fabric | Séparer confiance utilisateur, source, lien/fichier et charge système/provider | runtime_read_model_pr_179 | dimensions séparées et read model calculé depuis l'existant |
 | 4 | Safety State Machine narrative | Créer états de recadrage, suspicion, fermeture, hard stop et rétablissement | runtime_projection_pr_181 | projection pure et privée, sans ban automatique |
-| 5 | Voice / Persona Voice | Auditer TTS existant et raccorder aux personas sans moteur concurrent | runtime_hardened_ready_local | P1 TTS contrôlé ; STT reste futur |
+| 5 | Voice / Persona Voice | Auditer TTS existant et raccorder aux personas sans moteur concurrent | runtime_hardened_pr_183 | P1 TTS contrôlé ; STT reste futur |
 | 6 | Experience Fabric consolidation | Relier Event Spine, précédents, canon narratif, storylets et grammaire visuelle | next_not_started | ponts documentés entre DA, Theme Studio, D08, MasterStory et compagnons |
 | 7 | Theme Studio / DA / Assets | Piloter thèmes, typos, palettes, assets, lore et versions événementielles | queued | continuité visuelle, justification et provenance définies |
 | 8 | Learning / Teaching / Academic Integrity | Guider sans faire le travail à la place ; préparer tutos/timecodes | queued | règles pédagogiques et alertes exploitables |
