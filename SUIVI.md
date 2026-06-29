@@ -9,16 +9,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - id : `LEARNING-TEACHING-INTEGRITY-RUNTIME-001`
 - objectif : ajouter une décision pédagogique pure et commune pour classifier l'aide autorisée,
   les sorties interdites, la validation requise et les hints Safety/Storylets.
-- statut : `next_after_learning_teaching_integrity_contract_publication`
-- dernière action terminée : `LEARNING-TEACHING-INTEGRITY-001` portée par la PR #190.
-- prochaine action : publier le contrat, puis coder une fonction pure sans migration ni UI lourde.
+- statut : `local_verified_pending_publication`
+- dernière action terminée : classifieur pur et contrats partagés implémentés avec tests ciblés.
+- prochaine action : terminer la recette complète, publier la vague, puis ouvrir
+  `UI-PROGRESSIVE-SURFACES-001`.
 - fichiers/domaines concernés : Learning Mirror, Teaching, Storylets, Safety State, Trust Fabric,
   Validation Inbox, correction D05/D06 et ressources pédagogiques.
-- tests à relancer : diff-check pour le contrat ; prochaine vague runtime avec tests ciblés
-  Learning/Teaching/Integrity.
-- publication : `LEARNING-TEACHING-INTEGRITY-001` en attente de merge via PR #190.
+- tests à relancer : backend complet, lint backend/frontend, build frontend et diff-check.
+- publication : contrat mergé via PR #190 (`b358f5c`) ; runtime à publier.
 - blocage : aucun ban automatique, aucune sanction morale, aucune note finale et aucune
   publication étudiant sans validation pédagogique.
+
+## 2026-06-29 — LEARNING-TEACHING-INTEGRITY-RUNTIME-001 : décision pédagogique pure
+
+- ajout du contrat partagé d'entrée/sortie pour Learn, Teaching, Project et Story ;
+- classification `guide`, `explain`, `coach`, `candidate_output` ou `blocked_integrity` ;
+- correction et cadrage sensibles maintenus comme candidats à validation humaine ;
+- ressources limitées aux sources validées ou explicitement candidates ;
+- contournement répété limité à un hint Safety narratif, sans sanction ni changement de permission ;
+- aucune route, migration, note finale, publication, provider ou UI lourde.
+
+Vérifications ciblées : 8/8, lint backend/frontend verts.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — LEARNING-TEACHING-INTEGRITY-001 : contrat d'intégrité pédagogique
 
@@ -34,7 +47,7 @@ Livrable : `docs/d05-d06/LEARNING_TEACHING_INTEGRITY_CONTRACT_V1_2026-06-29.md`.
 
 Vérifications locales à publier : lecture ciblée + `git diff --check`.
 
-Statut : publication en cours via PR #190 (`0ef3427`).
+Statut : publié via PR #190 (`b358f5c`).
 
 ## 2026-06-29 — THEME-STUDIO-ACTIVATION-PREFLIGHT-001 : préflight activation thème
 

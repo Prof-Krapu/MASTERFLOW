@@ -1766,6 +1766,98 @@ export const PedagogicalSignalSchema = z.object({
 });
 export type PedagogicalSignal = z.infer<typeof PedagogicalSignalSchema>;
 
+export const PedagogicalAssistanceModeSchema = z.enum([
+  'learn',
+  'teaching',
+  'project',
+  'story',
+]);
+export type PedagogicalAssistanceMode = z.infer<typeof PedagogicalAssistanceModeSchema>;
+
+export const PedagogicalAssistanceRequestTypeSchema = z.enum([
+  'understand_concept',
+  'advance_project',
+  'frame_subject',
+  'review_user_work',
+  'correct_or_evaluate',
+  'request_learning_resource',
+  'request_final_deliverable',
+  'attempt_circumvention',
+]);
+export type PedagogicalAssistanceRequestType = z.infer<
+  typeof PedagogicalAssistanceRequestTypeSchema
+>;
+
+export const PedagogicalSourceStateSchema = z.enum([
+  'validated',
+  'candidate',
+  'missing',
+  'not_applicable',
+]);
+export type PedagogicalSourceState = z.infer<typeof PedagogicalSourceStateSchema>;
+
+export const PedagogicalAllowedHelpSchema = z.enum([
+  'explain_concept',
+  'provide_example',
+  'explain_method',
+  'ask_guiding_questions',
+  'provide_checklist',
+  'propose_next_step',
+  'review_user_work',
+  'propose_candidate_feedback',
+  'recommend_validated_resource',
+  'propose_resource_candidate',
+  'include_video_timecode',
+]);
+export type PedagogicalAllowedHelp = z.infer<typeof PedagogicalAllowedHelpSchema>;
+
+export const PedagogicalForbiddenOutputSchema = z.enum([
+  'ready_to_submit_deliverable',
+  'final_grade',
+  'direct_publication',
+  'invented_source',
+  'automatic_sanction',
+  'permission_bypass',
+  'forced_autoplay',
+]);
+export type PedagogicalForbiddenOutput = z.infer<typeof PedagogicalForbiddenOutputSchema>;
+
+export const PedagogicalAssistanceInputSchema = z.object({
+  role: RoleSchema,
+  active_mode: PedagogicalAssistanceModeSchema,
+  request_type: PedagogicalAssistanceRequestTypeSchema,
+  final_deliverable_requested: z.boolean().default(false),
+  source_state: PedagogicalSourceStateSchema.default('not_applicable'),
+  resource_timecode_requested: z.boolean().default(false),
+  circumvention_count: z.number().int().min(0).max(100).default(0),
+});
+export type PedagogicalAssistanceInput = z.input<typeof PedagogicalAssistanceInputSchema>;
+
+export const PedagogicalAssistanceDecisionSchema = z.object({
+  assistance_kind: z.enum([
+    'guide',
+    'explain',
+    'coach',
+    'review',
+    'candidate_output',
+    'blocked_integrity',
+  ]),
+  allowed_help: z.array(PedagogicalAllowedHelpSchema).min(1),
+  forbidden_outputs: z.array(PedagogicalForbiddenOutputSchema).min(1),
+  validation_required: z.boolean(),
+  validation_reason: z.string().min(1).max(500).nullable(),
+  safety_state_hint: z.enum(['normal', 'recadrage', 'suspicious']),
+  recommended_storylet: z.string().min(1).max(160).nullable(),
+  reason_codes: z.array(z.string().min(1).max(120)).min(1).max(10),
+  source_policy: z.enum(['validated_only', 'candidate_needs_validation', 'not_applicable']),
+  permissions_unchanged: z.literal(true),
+  automatic_sanction: z.literal(false),
+  final_publication_allowed: z.literal(false),
+});
+export type PedagogicalAssistanceDecision = z.infer<
+  typeof PedagogicalAssistanceDecisionSchema
+>;
+
 export const TeacherDecisionDeltaSchema = z
   .object({
     delta_id: z.string().min(1),
