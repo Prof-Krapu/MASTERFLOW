@@ -4595,6 +4595,35 @@ export const ThemeLintReportSchema = z.object({
 });
 export type ThemeLintReport = z.infer<typeof ThemeLintReportSchema>;
 
+export const ThemeStudioAssetPackQuerySchema = z.object({
+  workbench_id: z.string().min(1).optional(),
+  manifest_id: z.string().min(1).optional(),
+  project_id: z.string().min(1).optional(),
+}).refine((value) => Boolean(value.workbench_id || value.manifest_id), {
+  message: 'workbench_id_or_manifest_id_required',
+});
+export type ThemeStudioAssetPackQuery = z.input<typeof ThemeStudioAssetPackQuerySchema>;
+
+export const ThemeStudioAssetPackPreviewSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  theme_pack: ThemePackSchema,
+  lint_report: ThemeLintReportSchema,
+  visual_grammar_ref: z.string().min(1),
+  manifest_refs: z.array(z.string().min(1)),
+  asset_groups: z.array(z.object({
+    group_id: z.string().min(1),
+    label: z.string().min(1).max(160),
+    role: z.enum(['identity', 'interface', 'event', 'lore', 'proof']),
+    refs: z.array(z.string().min(1)),
+    readiness: z.enum(['ready', 'limited', 'blocked']),
+  })),
+  missing_decisions: z.array(z.string().min(1)),
+  locked_actions: z.array(z.string().min(1)),
+  recommended_next_action: z.string().min(1).max(500),
+  application_policy: z.literal('preview_only'),
+});
+export type ThemeStudioAssetPackPreview = z.infer<typeof ThemeStudioAssetPackPreviewSchema>;
+
 export const UserRuntimeLoadoutSchema = z.object({
   user_id: z.string().min(1),
   room_id: z.string().min(1),

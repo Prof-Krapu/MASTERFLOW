@@ -6,18 +6,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `THEME-STUDIO-ASSET-PACKS-001`
-- objectif : transformer Theme Studio en cockpit de packs thème/typos/assets/lore sans provider,
-  génération ou application silencieuse.
+- id : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001`
+- objectif : préparer une future action sensible d'activation de thème avec préflight visible,
+  validation humaine et rollback, sans l'exécuter.
 - statut : `next_not_started`
-- dernière action terminée : `DA-NARRATIVE-BRIDGE-001` publiée via PR #184.
-- prochaine action : auditer Theme Studio, ThemePack, D08 manifests et assets pour définir la
-  première tranche runtime/UI sûre.
-- fichiers/domaines concernés : Theme Studio, D08, ThemePack, Visual Narrative Grammar, assets,
-  lore, Ours d'Or et versions institutionnelles.
-- tests à relancer : lecture ciblée + `git diff --check` pour l'audit initial.
+- dernière action terminée : `THEME-STUDIO-ASSET-PACKS-001` vérifiée localement.
+- prochaine action : auditer l'Action Engine, ThemePack preview et UI préflight avant toute
+  activation réelle.
+- fichiers/domaines concernés : Theme Studio, Action Engine, Validation Inbox, D08, ThemePack,
+  rollback UI et permissions.
+- tests à relancer : lecture ciblée + tests Theme Studio + lint back/front + build frontend.
 - publication : `DA-NARRATIVE-BRIDGE-001` publiée via PR #184 (`a52eb64`).
 - blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
+
+## 2026-06-29 — THEME-STUDIO-ASSET-PACKS-001 : preview de packs thème/assets
+
+- ajout d'un preview `ThemeStudioAssetPackPreview` en lecture seule ;
+- route `/experience/theme-studio/asset-pack` derrière authentification ;
+- pack candidat avec palette, typos Google Fonts sourcées, refs D08, groupes d'assets et lint ;
+- affichage dans le panneau Theme Studio existant ;
+- aucun thème actif, aucun téléchargement de fonte, aucune génération, aucune canonisation.
+
+Livrable : `docs/theme-studio/THEME_STUDIO_ASSET_PACKS_V1.md`.
+
+Vérifications : Theme Studio asset pack ciblé, lint backend/frontend, build frontend et diff-check.
+
+Statut : local vérifié, publication GitHub à lancer.
 
 ## 2026-06-29 — DA-NARRATIVE-BRIDGE-001 : ponts DA narrative
 

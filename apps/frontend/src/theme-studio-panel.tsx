@@ -1,9 +1,10 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {ReactElement} from 'react';
 
-import type {VisualManifest, VisualNarrativeGrammarReport} from '@masterflow/shared';
+import type {ThemeStudioAssetPackPreview, VisualManifest, VisualNarrativeGrammarReport} from '@masterflow/shared';
 
 import {
+  getThemeStudioAssetPack,
   getVisualManifests,
   getVisualNarrativeGrammar,
 } from './api.ts';
@@ -12,6 +13,7 @@ export function ThemeStudioPanel({token}: {token: string}): ReactElement {
   const [manifests, setManifests] = useState<VisualManifest[]>([]);
   const [selected, setSelected] = useState('');
   const [report, setReport] = useState<VisualNarrativeGrammarReport | null>(null);
+  const [assetPack, setAssetPack] = useState<ThemeStudioAssetPackPreview | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('Choisis un manifest pour lire sa grammaire.');
 
@@ -38,12 +40,18 @@ export function ThemeStudioPanel({token}: {token: string}): ReactElement {
   const analyze = useCallback(async (): Promise<void> => {
     if (!selected) return;
     setLoading(true);
-    setStatus('Construction de la grammaire visuelle…');
+      setStatus('Construction de la grammaire visuelle…');
     try {
-      setReport(await getVisualNarrativeGrammar(selected, token));
-      setStatus('Grammaire construite en lecture seule.');
+      const [nextReport, nextAssetPack] = await Promise.all([
+        getVisualNarrativeGrammar(selected, token),
+        getThemeStudioAssetPack(selected, token),
+      ]);
+      setReport(nextReport);
+      setAssetPack(nextAssetPack);
+      setStatus('Grammaire et pack candidat construits en lecture seule.');
     } catch (error) {
       setReport(null);
+      setAssetPack(null);
       setStatus(error instanceof Error ? error.message : 'Analyse visuelle impossible.');
     } finally {
       setLoading(false);
@@ -77,6 +85,7 @@ export function ThemeStudioPanel({token}: {token: string}): ReactElement {
             onChange={(event) => {
               setSelected(event.target.value);
               setReport(null);
+              setAssetPack(null);
               setStatus('Manifest sélectionné. Lancer l’analyse.');
             }}
           >
@@ -140,6 +149,38 @@ export function ThemeStudioPanel({token}: {token: string}): ReactElement {
               </article>
             ))}
           </section>
+
+          {assetPack ? (
+            <section className="theme-studio__explanations">
+              <div><strong>Pack thème / assets candidat</strong><span>{assetPack.application_policy}</span></div>
+              <article>
+                <strong>{assetPack.theme_pack.label}</strong>
+                <p>
+                  Scope {assetPack.theme_pack.scope} · statut {assetPack.theme_pack.status} · lint {assetPack.lint_report.valid ? 'valide' : 'à corriger'}.
+                </p>
+                <p>
+                  Palette : {assetPack.theme_pack.palette.primary} / {assetPack.theme_pack.palette.surface} / {assetPack.theme_pack.palette.accent}
+                </p>
+                <p>
+                  Typos : {assetPack.theme_pack.fonts.body.family}, {assetPack.theme_pack.fonts.heading.family}
+                  {assetPack.theme_pack.fonts.display ? `, ${assetPack.theme_pack.fonts.display.family}` : ''}
+                </p>
+              </article>
+              {assetPack.asset_groups.map((group) => (
+                <article key={group.group_id}>
+                  <strong>{group.label}</strong>
+                  <p>{group.role} · {group.readiness} · {group.refs.length} ref(s)</p>
+                </article>
+              ))}
+              <article>
+                <strong>Décisions avant activation</strong>
+                <ul>
+                  {assetPack.missing_decisions.map((decision) => <li key={decision}>{decision}</li>)}
+                </ul>
+                <small>Verrous : {assetPack.locked_actions.join(' · ')}</small>
+              </article>
+            </section>
+          ) : null}
 
           <section className={`theme-studio__diagnostics ${diagnosticCount > 0 ? 'theme-studio__diagnostics--warning' : ''}`}>
             <strong>Contrôle de continuité</strong>

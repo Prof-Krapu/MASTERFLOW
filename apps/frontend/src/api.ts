@@ -92,6 +92,7 @@ import type {
   ValidationDecision,
   VisualManifest,
   VisualNarrativeGrammarReport,
+  ThemeStudioAssetPackPreview,
   VisualReference,
   CreateVisualManifestRequest,
   CreateVisualReferenceRequest,
@@ -447,6 +448,16 @@ export async function getVisualNarrativeGrammar(
 ): Promise<VisualNarrativeGrammarReport> {
   return request<VisualNarrativeGrammarReport>(
     `/experience/visual-grammar?manifest_id=${encodeURIComponent(manifestId)}`,
+    {method: 'GET'},
+    token,
+  );
+}
+export async function getThemeStudioAssetPack(
+  manifestId: string,
+  token?: string | null,
+): Promise<ThemeStudioAssetPackPreview> {
+  return request<ThemeStudioAssetPackPreview>(
+    `/experience/theme-studio/asset-pack?manifest_id=${encodeURIComponent(manifestId)}`,
     {method: 'GET'},
     token,
   );

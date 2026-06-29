@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-340 — THEME-STUDIO-ASSET-PACKS-001 : preview de packs thème/assets
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Produire un pack thème/assets candidat depuis D08 / Visual Narrative Grammar.
+- Linter palettes, typos et sources sans appliquer le thème.
+- Exposer le preview dans Theme Studio.
+- Bloquer explicitement application, génération, canonisation et téléchargement de fontes.
+
+### verification
+- Tests Theme Studio asset pack.
+- lint backend/frontend, build frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Preview Theme Studio Asset Packs prêt à publication.
+
+---
+
 ## TASK-339 — DA-NARRATIVE-BRIDGE-001 : ponts DA narrative
 target: codex
 status: done
