@@ -14,6 +14,26 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-343 — LEARNING-TEACHING-INTEGRITY-RUNTIME-001 : décision pédagogique pure
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Ajouter un classifieur pur commun à Learn, Teaching, Project, Story et compagnons.
+- Exposer aide autorisée, sorties interdites, validation et hints Safety/Storylets.
+- Garder permissions, publication, note finale et sanctions hors de cette fonction.
+- Ne créer aucune migration, route, UI lourde ou moteur Learning parallèle.
+
+### verification
+- Tests ciblés Learning/Teaching/Integrity.
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Classifieur pur et contrats partagés prêts à publication.
+
+---
+
 ## TASK-342 — LEARNING-TEACHING-INTEGRITY-001 : contrat d'intégrité pédagogique
 target: codex
 status: done
@@ -32,6 +52,7 @@ frozen_by: MALEX « go » 2026-06-29
 ### updates
 > 2026-06-29 codex → done local. Contrat Learning/Teaching/Integrity prêt à publication.
 > 2026-06-29 codex → PR #190 créée ; l'état GitHub de la PR fait foi.
+> 2026-06-29 codex → PR #190 mergée (`b358f5c`) ; GitHub `main` fait foi.
 
 ---
 

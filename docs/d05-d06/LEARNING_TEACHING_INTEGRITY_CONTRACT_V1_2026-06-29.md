@@ -2,7 +2,7 @@
 
 Date : 2026-06-29  
 Vague : `LEARNING-TEACHING-INTEGRITY-001`  
-Statut : `contract_ready`
+Statut : `contract_published_pr_190`
 
 ## Décision simple
 
@@ -109,6 +109,16 @@ sans dupliquer les règles.
 - une ressource vidéo peut être proposée avec timestamp sans autoplay imposé ;
 - une tentative répétée peut suggérer Safety State, sans ban automatique ;
 - le même moteur fonctionne en Learn et Teaching sans changer les permissions.
+
+## Mise en œuvre runtime
+
+La tranche `LEARNING-TEACHING-INTEGRITY-RUNTIME-001` ajoute :
+
+- les schémas partagés `PedagogicalAssistanceInput` et `PedagogicalAssistanceDecision` ;
+- la fonction pure `classifyPedagogicalAssistance` ;
+- des sorties explicables pour l'aide autorisée, les résultats interdits, la validation humaine,
+  le hint Safety et la storylet recommandée ;
+- aucune route, migration, publication, note finale, sanction ou modification de permission.
 
 ## Hors périmètre
 
