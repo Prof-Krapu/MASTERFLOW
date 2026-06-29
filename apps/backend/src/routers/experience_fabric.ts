@@ -1,6 +1,7 @@
 import {Router, type Request, type Response} from 'express';
 
 import {
+  AutonomyCycleQuerySchema,
   ExperienceTimelineQuerySchema,
   PrecedentSearchQuerySchema,
   StoryletEvaluationQuerySchema,
@@ -8,6 +9,7 @@ import {
 } from '@masterflow/shared';
 
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
+import {buildAutonomyCycle} from '../services/autonomy_cycle.ts';
 import {
   buildExperienceSnapshot,
   listExperienceEvents,
@@ -74,6 +76,15 @@ function visualGrammarQuery(req: Request) {
     workbench_id: req.query.workbench_id,
     manifest_id: req.query.manifest_id,
     project_id: req.query.project_id,
+  });
+}
+
+function autonomyCycleQuery(req: Request) {
+  return AutonomyCycleQuerySchema.safeParse({
+    project_id: req.query.project_id,
+    workbench_id: req.query.workbench_id,
+    guided_session_id: req.query.guided_session_id,
+    limit: typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined,
   });
 }
 
@@ -183,6 +194,19 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildProjectMonsterEvolutionReport(actor(req), req.params.sessionId));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/autonomy/cycle', (req, res): void => {
+    const parsed = autonomyCycleQuery(req);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(buildAutonomyCycle(actor(req), parsed.data));
     } catch (error) {
       fail(res, error);
     }
