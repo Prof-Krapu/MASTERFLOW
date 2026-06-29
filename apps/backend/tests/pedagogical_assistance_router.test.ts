@@ -117,4 +117,30 @@ describe('API assistance pédagogique', () => {
       automatic_sanction: false,
     });
   });
+
+  it('surface une tentative répétée comme état suspicious sans sanction ni permission', async () => {
+    const response = await fetch(base, {
+      method: 'POST',
+      headers: headers(studentToken),
+      body: JSON.stringify({
+        active_mode: 'learn',
+        request_type: 'attempt_circumvention',
+        circumvention_count: 3,
+      }),
+    });
+    expect(response.status).toBe(200);
+    const decision = PedagogicalAssistanceDecisionSchema.parse(await response.json());
+    expect(decision).toMatchObject({
+      assistance_kind: 'blocked_integrity',
+      safety_state_hint: 'suspicious',
+      permissions_unchanged: true,
+      automatic_sanction: false,
+      final_publication_allowed: false,
+    });
+    expect(decision.allowed_help).toEqual(expect.arrayContaining([
+      'explain_method',
+      'ask_guiding_questions',
+    ]));
+    expect(decision.forbidden_outputs).toContain('ready_to_submit_deliverable');
+  });
 });

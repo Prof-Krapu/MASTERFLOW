@@ -9,13 +9,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - id : `RED-TEAM-TESTS-003`
 - objectif : couvrir les risques transverses restants par tests proportionnés : prompt injection,
   permissions, révocation/confiance, poisoning de source et états Safety/UI.
-- statut : `next_queued`
-- dernière action terminée : tests auth/révocation publiés via PR #197 (`629e190`).
-- prochaine action : poursuivre seulement sur les trous restants permissions router/UI safety.
+- statut : `local_verified_pending_publication`
+- dernière action terminée : tests permissions router/UI safety ajoutés ; 7/7 ciblés verts.
+- prochaine action : publier cette tranche, puis décider si l'on poursuit Red Team UI navigateur ou
+  si on revient au build interface.
 - fichiers/domaines concernés : permissions router, UI safety, surfaces Safety/OwnerCockpit.
-- tests à relancer : ciblés à définir, puis backend complet et lint selon fichiers touchés.
-- publication : GitHub `main` fait foi ; `HEAD == origin/main == 629e190` au préflight.
+- tests à relancer : backend complet, lint backend/frontend ; build frontend inutile si aucun
+  fichier frontend n'est touché.
+- publication : PR à créer depuis `codex/red-team-permissions-ui-safety-003`.
 - blocage : aucun ; Big Pickle en pause.
+
+## 2026-06-29 — RED-TEAM-TESTS-003 : permissions router et UI Safety
+
+- ajout d'un test routeur prouvant qu'une tentative répétée remonte `suspicious` sans sanction,
+  sans publication finale et sans modification de permission ;
+- ajout d'un test d'intégration prouvant que les gates admin/diagnostics ne bloquent pas
+  `/pedagogical-assistance/classify` pour un étudiant authentifié ;
+- aucun runtime, schéma, permission, provider, UI ou migration modifié.
+
+Vérifications : assistance pédagogique routeur + ordre des gates 7/7 ; ciblés Red Team
+Security/RAG/assistance/gates 31/31 ; backend complet 665/665 ; lint backend/frontend ;
+`git diff --check`.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — RED-TEAM-TESTS-002 : auth, révocation et rôle effectif
 

@@ -8,6 +8,7 @@ import {seedAll} from '../src/db/seed.ts';
 import {signToken} from '../src/middleware/auth.ts';
 import {createDiagnosticsRouter} from '../src/routers/diagnostics.ts';
 import {createAdminRouter} from '../src/routers/admin.ts';
+import {createPedagogicalAssistanceRouter} from '../src/routers/pedagogical_assistance.ts';
 import {createProjectsRouter} from '../src/routers/projects.ts';
 
 /**
@@ -18,8 +19,9 @@ import {createProjectsRouter} from '../src/routers/projects.ts';
  * (dont `POST /projects` par un teacher) → 403. Les gates doivent être scopés à `/diagnostics`
  * et `/admin` pour laisser le reste tomber dans les routeurs suivants.
  *
- * Ce test monte les trois routeurs DANS L'ORDRE de `index.ts` (ce que les tests unitaires
- * isolés ne faisaient pas) et prouve qu'un teacher atteint bien `projects`.
+ * Ce test monte les routeurs DANS L'ORDRE de `index.ts` (ce que les tests unitaires
+ * isolés ne faisaient pas) et prouve qu'un teacher atteint bien `projects` et
+ * qu'un student atteint les surfaces read-only pédagogiques.
  */
 
 let server: Server;
@@ -48,6 +50,7 @@ beforeAll(async () => {
   // Même ordre que index.ts : diagnostics + admin (gated admin) AVANT projects.
   app.use('/api/v1', createDiagnosticsRouter());
   app.use('/api/v1', createAdminRouter());
+  app.use('/api/v1', createPedagogicalAssistanceRouter());
   app.use('/api/v1', createProjectsRouter());
 
   server = createServer(app);
@@ -76,5 +79,21 @@ describe('ordre de montage : les gates admin ne bloquent pas projects', () => {
   it('les gates restent actifs : student → 403 sur /diagnostics/token-usage et /admin/users', async () => {
     expect((await fetch(`${base}/diagnostics/token-usage`, auth(studentToken))).status).toBe(403);
     expect((await fetch(`${base}/admin/users`, auth(studentToken))).status).toBe(403);
+  });
+
+  it('un student peut POST /pedagogical-assistance/classify malgré les gates admin précédents', async () => {
+    const res = await fetch(`${base}/pedagogical-assistance/classify`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', ...auth(studentToken).headers},
+      body: JSON.stringify({
+        active_mode: 'learn',
+        request_type: 'understand_concept',
+      }),
+    });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      assistance_kind: 'explain',
+      permissions_unchanged: true,
+    });
   });
 });
