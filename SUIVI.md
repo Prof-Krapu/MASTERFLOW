@@ -4,6 +4,56 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — AUDIT-BP-PLAN-001 : rapports Big Pickle relus et arbitrés
+
+Rapports lus :
+
+- `EXPRESSIVE_CANON_BEHAVIOR_GRAPH_AUDIT_2026-06-29.md`
+- `VISION_PRODUCT_ABSORPTION_AUDIT_2026-06-29.md`
+- `FACTORIES_VS_MASTERFLOW_CONFRONTATION_AUDIT_2026-06-29.md`
+- `MASTER_AUDIT_SYNTHESIS_2026-06-27.md`
+- `D08_COHERENCE_AUDIT_2026-06-27.md`
+- `OCR_COHERENCE_AUDIT_2026-06-27.md`
+- `BOOT_CONTEXT_AUDIT_2026-06-27.md`
+- `FACTORIES_BACKFLOW_AUDIT_2026-06-27.md`
+
+Arbitrage Codex :
+
+- les rapports du 27/06 sont majoritairement des reçus historiques : les points critiques D08
+  `approved/rejected`, `generate-visual` et stockage fichier sont déjà corrigés/neutralisés sur
+  le `main` actuel ;
+- `EXPRESSIVE_CANON` est valide comme direction, mais doit évoluer `StyleMirrorProfile` existant :
+  pas de nouvelle table concurrente `behavior_profiles` en P1 ;
+- `VISION_PRODUCT_ABSORPTION` devient une roadmap de primitives, pas une autorisation à créer
+  Note Engine, LMS, OCR/provider, C2PA ou Design Tokens sans tranche dédiée ;
+- `FACTORIES_CONFRONTATION` reste atelier Desktop : Git absorbe seulement primitives, verrous et
+  validateurs utiles, jamais les factories complètes.
+
+P1 recommandé avant code EXPRESSIVE :
+
+1. fixer le contrat `EXPRESSIVE_CANON` comme extension Style Mirror ;
+2. garder Big Pickle en pause : aucune tâche n'est prête tant que Codex n'a pas figé une tranche
+   mécanique bornée ;
+3. garder SELF_DEBUG, kill switch, audit cryptographique, decoding-time control, avatar swap,
+   OCR/provider et LMS en chantiers séparés P2/P3.
+
+Livrable : `docs/audits/CODEX_BP_AUDIT_ABSORPTION_VERDICT_2026-06-29.md`.
+
+Statut : arbitrage prêt à publication. Aucune migration, permission, provider, tâche Big Pickle ou
+implémentation Expressive lancée.
+
+## 2026-06-29 — EXPERIENCE-FABRIC-007B : Blackboard privé publié
+
+PR #165 mergée sur GitHub `main` (`8566d5b`) :
+
+- contrat `BlackboardContribution`, `BlackboardSynthesis` et `BlackboardReport` ;
+- endpoint `GET /experience/autonomy/blackboard` ;
+- synthèse privée du cycle MAPE-K sans Action, permission, mémoire automatique ni
+  multi-porte-parole.
+
+Vérifications pré-publication : 8/8 ciblés MAPE-K + Blackboard, backend complet 604/604,
+lint backend/frontend, build frontend et diff-check OK.
+
 ## 2026-06-29 — EXPERIENCE-FABRIC-007A : Cycle MAPE-K contrôlé
 
 - contrat `AutonomyCycle` et `AutonomyPlanCandidate` ;
