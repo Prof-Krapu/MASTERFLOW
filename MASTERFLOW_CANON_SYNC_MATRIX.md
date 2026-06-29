@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-29
-Branche de travail : `codex/experience-cockpit-ui`
-Base GitHub vérifiée : `1c46fee` (`origin/main` après merge PR #169)
+Branche de travail : `codex/masterstory-canon-ui`
+Base GitHub vérifiée : `c6323be` (`origin/main` après merge PR #170)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -14,7 +14,7 @@ récoltées après audit.
 |---|---|---|---|---|
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
-| Experience Fabric / Narrative Canon Graph | implémenté | Projection des faits, présentations, connaissances personnage et setup/payoff publiée via PR #158. | faible | Utiliser comme source des storylets, compagnons et DA narrative. |
+| Experience Fabric / Narrative Canon Graph | implémenté | Projection publiée via PR #158 ; surface MasterStory lecteur/atelier/spoilers vérifiée localement avec setup/payoff, diagnostics et storylets. | faible | Publier la surface sans ouvrir delta canon, export ou publication. |
 | Experience Fabric / Storylet Engine | implémenté | Storylets candidates `suggest_only` depuis canon narratif, précédents et blockers publiées via PR #159. | faible | Garder toute exécution future derrière validation et Action Engine. |
 | Experience Fabric / Visual Narrative Grammar | implémenté | Projection `explain_only` depuis D08, références, thème et canon narratif publiée via PR #160. | faible | Réutiliser pour les futurs assets de compagnons sans ouvrir provider image. |
 | Experience Fabric / Living Companion Robot CDC | implémenté | Projection guidée depuis session CDC, progression et storylets publiée via PR #161. | faible | Réutiliser le contrat sans ouvrir autonomie, provider ou asset. |

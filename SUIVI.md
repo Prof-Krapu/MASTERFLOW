@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — MASTERSTORY-UI-001 : lecture canon progressive
+
+- le workbench D09 peut construire une lecture `reader`, `workshop` ou `full_spoilers` à la demande ;
+- seuls les faits autorisés par la présentation sont affichés ;
+- setup/payoff, connaissances personnages, diagnostics et storylets narratives sont synthétisés ;
+- changer de niveau de révélation exige de reconstruire explicitement la lecture ;
+- aucune source, vérité canon, storylet, export ou publication n’est modifiée.
+
+Vérifications : backend 605/605, lint frontend/backend, build frontend et diff-check. Smoke Batrasia :
+30 faits visibles et 8 spoilers masqués en lecteur ; 0 spoiler masqué en atelier ; storylet
+`pending_validation` ; aucun débordement à 390 px.
+
+Statut : local vérifié, prêt à publication atomique.
+
 ## 2026-06-29 — EXPERIENCE-UI-001 : cockpit GodMode progressif
 
 - le cockpit owner contient une entrée Experience Fabric fermée par défaut ;
@@ -17,7 +31,7 @@ Vérifications : backend 605/605, lint frontend/backend, build frontend, diff-ch
 navigateur à 1280/390 px. Runtime de test : 17 événements, 2 précédents et 1 proposition lus,
 zéro Action créée.
 
-Statut : local vérifié, prêt à publication atomique.
+Statut : publié via PR #170 (`c6323be`).
 
 ## 2026-06-29 — VISIBLE-PREFLIGHT-002 : panneau UI progressif
 

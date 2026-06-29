@@ -59,8 +59,17 @@ Dernière mise à jour : 2026-06-29
 - Impact : MALEX comprend l’état et les propositions sans parcourir les endpoints techniques.
 - Risque : faible ; read-model uniquement, aucune Action créée.
 - Source de vérité concernée : Experience Fabric publiée + owner cockpit.
-- Statut : implémenté et vérifié localement.
+- Statut : publié via PR #170 (`c6323be`).
 - Validation requise : non pour publication ; oui avant sélection ou exécution automatique.
+
+#### MASTERSTORY-UI-001 — lecture canon progressive
+
+- Tâche : afficher une lecture lecteur/atelier/spoilers depuis le même canon narratif.
+- Impact : évite les fuites de spoilers et rend setup/payoff et contradictions visibles.
+- Risque : faible ; projection read-only, aucune mutation narrative.
+- Source de vérité concernée : Narrative Canon Graph + Storylet Engine + workbench D09.
+- Statut : implémenté et vérifié localement.
+- Validation requise : non pour publication ; oui avant delta canon, export ou publication.
 
 ### FACTORIES-CONFRONTATION-P1 — Hygiène Desktop + primitives seulement
 
