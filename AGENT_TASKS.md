@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-331 — SECURITY-FABRIC-001 : frontière de confiance runtime
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Relier les gardes sécurité existants sans créer de moteur concurrent.
+- Définir zones de confiance, réponses graduées, poisoning RAG et alertes GodMode.
+- Préparer une première tranche runtime additive et testable.
+- Ne modifier aucun runtime, schéma, permission, hard stop, provider, session ou sanction.
+
+### verification
+- `git diff --check`.
+- Relecture ciblée RAG, Action Engine, hard stop et owner cockpit.
+
+### updates
+> 2026-06-29 codex → done local. Contrat Security Fabric V1 prêt à publication atomique.
+> 2026-06-29 codex → PR #176 créée ; l'état GitHub de la PR fait foi.
+
+---
+
 ## TASK-330 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
 target: codex
 status: verified
