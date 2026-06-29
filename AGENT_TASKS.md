@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-337 — VOICE-PERSONA-001 : audit TTS contrôlé
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Auditer route TTS, persona, frontend, permissions, limites et privacy.
+- Séparer voix sémantique et configuration audio technique.
+- Préparer auth, speaker Room, whitelist, timeout, rate limit et cleanup.
+- Ne lancer aucun provider ni modifier le runtime.
+
+### verification
+- Relecture route TTS, WS speaker, seeds persona et frontend audio.
+- `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Contrat Voice Persona V1 prêt à publication.
+> 2026-06-29 codex → PR #182 créée ; l'état GitHub de la PR fait foi.
+
+---
+
 ## TASK-336 — SAFETY-STATE-002 : projection runtime pure
 target: codex
 status: done
