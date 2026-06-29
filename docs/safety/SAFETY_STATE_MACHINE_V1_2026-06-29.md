@@ -132,14 +132,13 @@ permanente sur le persona utilisateur.
 
 ## Première tranche runtime recommandée
 
-`SAFETY-STATE-002` :
+Statut : implémentée par `SAFETY-STATE-002`, publication GitHub à vérifier dans `SUIVI.md`.
 
-1. créer une fonction pure de projection depuis `SecurityGuardDecision`,
-   `user_risk_signal` et hard stop ;
-2. ne rien persister ;
-3. exposer un read model privé admin/godmode ;
-4. couvrir toutes les transitions et la récupération ;
-5. ne toucher ni chat, persona prompt, permissions, assets, UI ou sanctions.
+1. fonction pure depuis `user_risk_signal`, récupération et hard stop ;
+2. aucune persistance ;
+3. read model privé `/diagnostics/safety-state` admin/godmode ;
+4. transitions et récupération couvertes par tests ;
+5. aucun chat, persona prompt, permission, asset, UI ou sanction modifié.
 
 ## Tests d'acceptation
 

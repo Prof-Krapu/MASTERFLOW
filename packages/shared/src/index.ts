@@ -528,6 +528,47 @@ export const TrustFabricSnapshotSchema = z.object({
 });
 export type TrustFabricSnapshot = z.infer<typeof TrustFabricSnapshotSchema>;
 
+export const SafetyNarrativeStateSchema = z.enum([
+  'normal',
+  'vigilant',
+  'recadrage',
+  'suspicious',
+  'closed',
+  'hard_stop',
+  'recovered',
+]);
+export const SafetyStateSnapshotSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  state: SafetyNarrativeStateSchema,
+  scope_ref: z.string().min(1).max(240),
+  reason_codes: z.array(z.string().min(1).max(120)).max(20),
+  source_refs: z.array(z.string().min(1).max(240)).max(20),
+  persona_reaction_key: z.enum([
+    'neutral',
+    'attentive',
+    'amused_firm',
+    'suspicious',
+    'disappointed',
+    'outraged_closed',
+    'sealed',
+    'relieved',
+  ]),
+  message_strategy: z.enum([
+    'normal',
+    'clarify',
+    'reframe',
+    'refuse_briefly',
+    'explain_restriction',
+    'recovery',
+  ]),
+  godmode_alert: z.enum(['none', 'grouped', 'immediate']),
+  expires_at: z.number().int().nonnegative().nullable(),
+  class_projection_anonymous: z.literal(true),
+  affects_permissions: z.literal(false),
+  automatic_sanction: z.literal(false),
+});
+export type SafetyStateSnapshot = z.infer<typeof SafetyStateSnapshotSchema>;
+
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
 export const SchemaTemplateStatusSchema = z.enum(['candidate', 'validated', 'deprecated', 'archived']);

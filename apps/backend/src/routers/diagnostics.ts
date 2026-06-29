@@ -9,6 +9,7 @@ import {
 import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
 import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
 import {getTrustFabricSnapshot} from '../services/trust_fabric.ts';
+import {getSafetyStateSnapshot} from '../services/safety_state.ts';
 import {diagnoseProcessActivation} from '../services/process_activation.ts';
 import {
   CreateD12MissedTriggerFindingSchema,
@@ -188,6 +189,15 @@ export function createDiagnosticsRouter(): Router {
       return;
     }
     res.json(getTrustFabricSnapshot(user));
+  });
+
+  router.get('/diagnostics/safety-state', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) return void res.status(401).json({error: 'unauthorized'});
+    const roomId = typeof req.query.room_id === 'string' && req.query.room_id.length <= 120
+      ? req.query.room_id
+      : undefined;
+    res.json(getSafetyStateSnapshot(user, roomId));
   });
 
   router.post('/diagnostics/process-activation', (req: Request, res: Response): void => {
