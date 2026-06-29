@@ -68,8 +68,17 @@ Dernière mise à jour : 2026-06-29
 - Impact : évite les fuites de spoilers et rend setup/payoff et contradictions visibles.
 - Risque : faible ; projection read-only, aucune mutation narrative.
 - Source de vérité concernée : Narrative Canon Graph + Storylet Engine + workbench D09.
-- Statut : implémenté et vérifié localement.
+- Statut : publié via PR #171 (`9a336a7`).
 - Validation requise : non pour publication ; oui avant delta canon, export ou publication.
+
+#### THEME-STUDIO-UI-001 — grammaire visuelle explicable
+
+- Tâche : ouvrir un outil GodMode séparé qui explique la DA d’un manifest D08.
+- Impact : motifs, arc émotionnel, continuité et dérives deviennent lisibles avant génération.
+- Risque : faible ; diagnostic `explain_only`.
+- Source de vérité concernée : Visual Narrative Grammar + D08 + fondation ThemePack.
+- Statut : implémenté et vérifié localement.
+- Validation requise : non pour publication ; oui avant édition/application d’un ThemePack ou provider.
 
 ### FACTORIES-CONFRONTATION-P1 — Hygiène Desktop + primitives seulement
 

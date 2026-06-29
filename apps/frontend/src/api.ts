@@ -91,6 +91,7 @@ import type {
   ValidationInboxItem,
   ValidationDecision,
   VisualManifest,
+  VisualNarrativeGrammarReport,
   VisualReference,
   CreateVisualManifestRequest,
   CreateVisualReferenceRequest,
@@ -439,6 +440,16 @@ export async function getD12IncidentRecords(token?:string|null):Promise<D12Incid
 export async function createD12IncidentRecord(body:CreateD12IncidentRecord,token?:string|null):Promise<D12IncidentRecord>{return request<D12IncidentRecord>('/diagnostics/d12/incidents',{method:'POST',body:JSON.stringify(body)},token);}
 export async function getVisualManifests(token?: string | null): Promise<VisualManifest[]> {
   return request<VisualManifest[]>('/visual-manifests', {method: 'GET'}, token);
+}
+export async function getVisualNarrativeGrammar(
+  manifestId: string,
+  token?: string | null,
+): Promise<VisualNarrativeGrammarReport> {
+  return request<VisualNarrativeGrammarReport>(
+    `/experience/visual-grammar?manifest_id=${encodeURIComponent(manifestId)}`,
+    {method: 'GET'},
+    token,
+  );
 }
 export async function createVisualManifest(body: CreateVisualManifestRequest, token?: string | null): Promise<VisualManifest> {
   return request<VisualManifest>('/visual-manifests', {method: 'POST', body: JSON.stringify(body)}, token);

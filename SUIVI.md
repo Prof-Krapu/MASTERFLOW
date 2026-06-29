@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-06-29 — THEME-STUDIO-UI-001 : grammaire visuelle explicable
+
+- Theme Studio devient un outil GodMode distinct et chargé uniquement à la demande ;
+- il sélectionne un manifest D08 et projette vocabulaire visuel, color script, continuité,
+  justification et diagnostics ;
+- l’état vide renvoie honnêtement vers le cadrage D08 au lieu d’inventer une DA ;
+- le moteur reste `explain_only` : aucun ThemePack appliqué, provider, génération ou canonisation.
+
+Vérifications : backend 605/605, lint frontend/backend, build frontend et diff-check. Smoke :
+manifest local de recette = 3 signes visuels, 0 étape émotionnelle et 2 alertes de continuité ;
+aucun débordement à 390 px.
+
+Statut : local vérifié, prêt à publication atomique.
+
 ## 2026-06-29 — MASTERSTORY-UI-001 : lecture canon progressive
 
 - le workbench D09 peut construire une lecture `reader`, `workshop` ou `full_spoilers` à la demande ;
@@ -16,7 +30,7 @@ Vérifications : backend 605/605, lint frontend/backend, build frontend et diff-
 30 faits visibles et 8 spoilers masqués en lecteur ; 0 spoiler masqué en atelier ; storylet
 `pending_validation` ; aucun débordement à 390 px.
 
-Statut : local vérifié, prêt à publication atomique.
+Statut : publié via PR #171 (`9a336a7`).
 
 ## 2026-06-29 — EXPERIENCE-UI-001 : cockpit GodMode progressif
 

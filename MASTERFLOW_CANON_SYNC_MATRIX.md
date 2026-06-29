@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-06-29
-Branche de travail : `codex/masterstory-canon-ui`
-Base GitHub vérifiée : `c6323be` (`origin/main` après merge PR #170)
+Branche de travail : `codex/theme-studio-grammar-ui`
+Base GitHub vérifiée : `9a336a7` (`origin/main` après merge PR #171)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -16,7 +16,7 @@ récoltées après audit.
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
 | Experience Fabric / Narrative Canon Graph | implémenté | Projection publiée via PR #158 ; surface MasterStory lecteur/atelier/spoilers vérifiée localement avec setup/payoff, diagnostics et storylets. | faible | Publier la surface sans ouvrir delta canon, export ou publication. |
 | Experience Fabric / Storylet Engine | implémenté | Storylets candidates `suggest_only` depuis canon narratif, précédents et blockers publiées via PR #159. | faible | Garder toute exécution future derrière validation et Action Engine. |
-| Experience Fabric / Visual Narrative Grammar | implémenté | Projection `explain_only` depuis D08, références, thème et canon narratif publiée via PR #160. | faible | Réutiliser pour les futurs assets de compagnons sans ouvrir provider image. |
+| Experience Fabric / Visual Narrative Grammar | implémenté | Projection `explain_only` publiée via PR #160 ; outil GodMode Theme Studio vérifié localement sur les manifests D08. | faible | Publier la surface ; garder édition/application ThemePack et provider fermés. |
 | Experience Fabric / Living Companion Robot CDC | implémenté | Projection guidée depuis session CDC, progression et storylets publiée via PR #161. | faible | Réutiliser le contrat sans ouvrir autonomie, provider ou asset. |
 | Experience Fabric / MOTH contextuel | implémenté | Variante Living Companion explicitement assignée au guide/session publiée via PR #162. | faible | Garder MOTH distinct du persona personnel et sans permission propre. |
 | Experience Fabric / Monstre-idée Ours d’Or | implémenté | Projection candidate V0, mutation et stabilisation publiée via PR #163 ; aucun asset généré. | faible à moyen | Génération et galerie restent derrière décision séparée. |
