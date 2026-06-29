@@ -23,6 +23,7 @@ describe('Safety State — projection pure', () => {
     ['clear', [], false, false, 'normal'],
     ['observe', ['security_prompt_override'], false, false, 'recadrage'],
     ['observe', ['security_secret_extraction'], false, false, 'suspicious'],
+    ['observe', ['security_tool_misuse'], false, false, 'suspicious'],
     ['step_up', ['security_prompt_override'], false, false, 'suspicious'],
     ['human_review', [], false, false, 'closed'],
     ['clear', [], true, false, 'recovered'],
@@ -53,6 +54,25 @@ describe('Safety State — projection pure', () => {
       state: 'normal',
       persona_reaction_key: 'neutral',
       godmode_alert: 'none',
+    });
+  });
+
+  it('donne toujours priorité au hard-stop réel sur les autres signaux', () => {
+    const result = projectSafetyState({
+      now: 1_500,
+      scope_ref: 'room:critical',
+      trust: trust('human_review', ['security_scope_escape']),
+      recovery_candidate: true,
+      hard_stop_active: true,
+    });
+
+    expect(result).toMatchObject({
+      state: 'hard_stop',
+      reason_codes: ['hard_stop_active'],
+      persona_reaction_key: 'sealed',
+      godmode_alert: 'immediate',
+      affects_permissions: false,
+      automatic_sanction: false,
     });
   });
 });

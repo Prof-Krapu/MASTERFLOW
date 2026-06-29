@@ -9,17 +9,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - id : `RED-TEAM-TESTS-001`
 - objectif : couvrir les risques transverses restants par tests proportionnés : prompt injection,
   permissions, révocation/confiance, poisoning de source et états Safety/UI.
-- statut : `next_queued`
-- dernière action terminée : surface Learn publiée via PR #194 (`b29366a`) ; Observabilité/GodMode
-  réconciliée comme cockpit existant à ne pas dupliquer.
-- prochaine action : ouvrir une tranche courte de tests Red Team sans migration, provider, live ou
-  nouveau cockpit.
+- statut : `local_verified_pending_publication`
+- dernière action terminée : tests Red Team ciblés ajoutés sur garde sécurité, RAG et Safety ;
+  51/51 ciblés verts.
+- prochaine action : publier cette tranche, puis poursuivre seulement sur les trous restants
+  permissions/révocation/UI safety.
 - fichiers/domaines concernés : Security Guard, RAG, Trust/Safety diagnostics, OwnerCockpit,
   ExperienceCockpit, Learning/Teaching integrity.
-- tests à relancer : ciblés Red Team à créer, puis backend complet, lint backend/frontend et build
-  frontend si surface touchée.
-- publication : GitHub `main` fait foi ; `HEAD == origin/main == b29366a` au préflight.
+- tests à relancer : backend complet, lint backend/frontend ; build frontend inutile si aucun fichier
+  frontend n'est touché.
+- publication : PR à créer depuis `codex/red-team-tests-001`.
 - blocage : aucun ; Big Pickle en pause.
+
+## 2026-06-29 — RED-TEAM-TESTS-001 : injection, RAG poisoning et Safety
+
+- ajout de tests Security Guard pour percent-encoding, sortie de scope, outil sans validation et
+  markup caché ;
+- ajout d'un test RAG end-to-end : une requête obfusquée ne produit aucune citation fiable ;
+- ajout de tests Safety : `tool_misuse` devient suspicieux et le hard-stop réel prime sur tout ;
+- aucun runtime, schéma, permission, provider, UI ou migration modifié.
+
+Vérifications : ciblés Security Guard, RAG service/router, Trust Fabric, Safety State et
+intégrité pédagogique 51/51 ; backend complet 661/661 ; lint backend/frontend ; `git diff --check`.
+
+Statut : vérifié localement, publication atomique en cours.
 
 ## 2026-06-29 — OBSERVABILITY-GODMODE-RECONCILIATION-001 : cockpit existant confirmé
 
@@ -35,7 +48,7 @@ Vérifications : preflight GitHub/local, lecture cockpit/inbox, recherche ciblé
 ExperienceCockpit, diagnostics, trust, safety-state et token usage, puis tests ciblés
 OwnerCockpit/token usage 13/13.
 
-Statut : réconcilié dans le suivi ; publication documentaire atomique en cours.
+Statut : publié via PR #195 (`46c1646`).
 
 ## 2026-06-29 — UI-PROGRESSIVE-LEARNING-001 : publication GitHub
 
