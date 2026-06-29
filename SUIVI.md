@@ -6,19 +6,15 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `RED-TEAM-TESTS-002`
+- id : `RED-TEAM-TESTS-003`
 - objectif : couvrir les risques transverses restants par tests proportionnés : prompt injection,
   permissions, révocation/confiance, poisoning de source et états Safety/UI.
-- statut : `local_verified_pending_publication`
-- dernière action terminée : tests auth/révocation ajoutés ; token révoqué et rôle JWT surclassé
-  couverts ; 9/9 ciblés verts.
-- prochaine action : publier cette tranche, puis poursuivre seulement sur les trous restants
-  permissions router/UI safety.
-- fichiers/domaines concernés : Auth middleware, révocation de token, rôle effectif BDD,
-  permissions router, UI safety.
-- tests à relancer : backend complet, lint backend/frontend ; build frontend inutile si aucun fichier
-  frontend n'est touché.
-- publication : PR à créer depuis `codex/red-team-auth-tests-002`.
+- statut : `next_queued`
+- dernière action terminée : tests auth/révocation publiés via PR #197 (`629e190`).
+- prochaine action : poursuivre seulement sur les trous restants permissions router/UI safety.
+- fichiers/domaines concernés : permissions router, UI safety, surfaces Safety/OwnerCockpit.
+- tests à relancer : ciblés à définir, puis backend complet et lint selon fichiers touchés.
+- publication : GitHub `main` fait foi ; `HEAD == origin/main == 629e190` au préflight.
 - blocage : aucun ; Big Pickle en pause.
 
 ## 2026-06-29 — RED-TEAM-TESTS-002 : auth, révocation et rôle effectif
@@ -30,7 +26,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 Vérifications : auth ciblé 9/9 ; backend complet 663/663 ; lint backend/frontend ;
 `git diff --check`.
 
-Statut : vérifié localement, publication atomique en cours.
+Statut : publié via PR #197 (`629e190`).
 
 ## 2026-06-29 — RED-TEAM-TESTS-001 : injection, RAG poisoning et Safety
 
