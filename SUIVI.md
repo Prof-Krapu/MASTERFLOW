@@ -6,22 +6,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `SECURITY-FABRIC-001`
-- objectif : formaliser le trust boundary runtime : prompt injection, RAG poisoning, sources non
-  fiables, refus gradués, alertes godmode et tests attendus.
+- id : `SECURITY-FABRIC-002`
+- objectif : construire le premier garde déterministe commun pour entrées directes et contenus
+  indirects, sans changer permissions, hard stop ou sanctions.
 - statut : `next_not_started`
-- dernière action terminée : `GLOBAL-ABSORPTION-001` publié via PR #174 (`1aa6f62`).
-- prochaine action : créer le contrat documentaire `SECURITY-FABRIC-001`, sans runtime ni
-  changement de permission.
-- fichiers/domaines concernés : à définir dans la vague ; point de départ recommandé :
-  `apps/backend/src/services/rag.ts`, `apps/backend/src/engines/action_engine.ts`,
-  `apps/backend/src/services/hard_stop.ts`, `apps/backend/src/services/owner_cockpit.ts`,
-  `docs/runtime-queue/GLOBAL_ABSORPTION_MATRIX_2026-06-29.md`.
-- tests à relancer : lecture ciblée + `git diff --check` pour une vague documentaire ; tests
-  runtime seulement si code touché.
-- publication : aucune modification locale en cours pour `SECURITY-FABRIC-001`.
-- blocage : provider/live, ban automatique, session kill, changement permission et migration DB
-  restent hors périmètre sans validation explicite.
+- dernière action terminée : contrat `SECURITY-FABRIC-001` prêt à publication.
+- prochaine action : figer la tranche additive et ses tests avant toute modification runtime.
+- fichiers/domaines concernés : `docs/security/SECURITY_FABRIC_V1_2026-06-29.md`,
+  `apps/backend/src/services/rag.ts`, futur garde partagé et tests RAG/sécurité.
+- tests à relancer : ciblés RAG/sécurité puis backend complet et lint si runtime touché.
+- publication : `SECURITY-FABRIC-001` local, publication GitHub en cours.
+- blocage : persistance d'incidents, permission, session, ban, provider/live, migration DB et UI
+  restent hors de `SECURITY-FABRIC-002`.
+
+## 2026-06-29 — SECURITY-FABRIC-001 : frontière de confiance runtime
+
+- cartographie des protections déjà réelles : RAG fiable/scopé, permissions, Action Engine,
+  hard stop, audit et cockpit ;
+- séparation explicite instructions/données sur chat, documents, outils, OCR, mémoire et sorties ;
+- réponses graduées `allow`, avertissement, refus, quarantaine et recommandation de hard stop ;
+- contrat d'alerte GodMode borné, dédupliqué et sans contenu brut ;
+- première tranche runtime limitée à un garde déterministe partagé, sans sanction automatique.
+
+Livrable : `docs/security/SECURITY_FABRIC_V1_2026-06-29.md`.
+
+Statut : local vérifié, publication GitHub en cours.
 
 ## 2026-06-29 — GLOBAL-ABSORPTION-001 : matrice d'absorption globale
 
