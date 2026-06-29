@@ -6,18 +6,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001`
-- objectif : préparer une future action sensible d'activation de thème avec préflight visible,
-  validation humaine et rollback, sans l'exécuter.
-- statut : `next_not_started`
-- dernière action terminée : `THEME-STUDIO-ASSET-PACKS-001` publiée via PR #186.
-- prochaine action : auditer l'Action Engine, ThemePack preview et UI préflight avant toute
-  activation réelle.
-- fichiers/domaines concernés : Theme Studio, Action Engine, Validation Inbox, D08, ThemePack,
-  rollback UI et permissions.
-- tests à relancer : lecture ciblée + tests Theme Studio + lint back/front + build frontend.
-- publication : `THEME-STUDIO-ASSET-PACKS-001` publiée via PR #186 (`d0a58ae`).
-- blocage : génération image, canonisation, provider, asset automatique et live restent interdits.
+- id : `LEARNING-TEACHING-INTEGRITY-001`
+- objectif : cadrer la prochaine vague Learning / Teaching / Academic Integrity : aider, guider,
+  afficher les alertes utiles et éviter que MasterFlow fasse le travail à la place des utilisateurs.
+- statut : `next_after_theme_activation_preflight_publication`
+- dernière action terminée : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` prête localement.
+- prochaine action : publier la vague Theme Studio, puis auditer les règles pédagogiques existantes
+  avant toute modification runtime.
+- fichiers/domaines concernés : Teaching, Learn, Academic Integrity, Safety State, Trust Fabric,
+  Storylets, UI progressive et permissions.
+- tests à relancer : après publication Theme Studio, lecture ciblée + tests concernés par la
+  prochaine tranche.
+- publication : `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` en attente de PR/merge.
+- blocage : aucun ban automatique, aucune sanction morale et aucune correction automatique sans
+  validation pédagogique.
+
+## 2026-06-29 — THEME-STUDIO-ACTIVATION-PREFLIGHT-001 : préflight activation thème
+
+- ajout de l'action `activate_theme_pack_candidate` dans le registre d'actions ;
+- préflight visible via l'Action Engine existant ;
+- validation obligatoire `godmode` ;
+- payload métier non divulgué dans l'explication UI ;
+- exécution volontairement bloquée en `not_implemented` tant que stockage, application UI et
+  rollback réel ne sont pas conçus ;
+- aucun ThemePack actif, CSS, font, asset, génération, canonisation, provider ou migration.
+
+Livrable : `docs/theme-studio/THEME_STUDIO_ACTIVATION_PREFLIGHT_V1.md`.
+
+Vérifications locales à publier : action lifecycle ciblé, Theme Studio asset pack, backend complet,
+lint backend/frontend, build frontend et diff-check.
+
+Statut : prêt localement, publication GitHub à faire.
 
 ## 2026-06-29 — THEME-STUDIO-ASSET-PACKS-001 : preview de packs thème/assets
 

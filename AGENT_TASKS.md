@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-341 — THEME-STUDIO-ACTIVATION-PREFLIGHT-001 : préflight activation thème
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-29
+
+### scope
+- Ajouter une action sensible pour préparer l'activation d'un thème candidat.
+- Exiger validation `godmode` avant toute tentative d'exécution.
+- Garder l'exécution bloquée tant que l'application réelle et le rollback ne sont pas conçus.
+- Ne modifier aucun thème actif, CSS, font, asset, provider, canon ou migration.
+
+### verification
+- Action Lifecycle ciblé.
+- Tests Theme Studio asset pack.
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Préflight activation Theme Studio prêt à publication.
+
+---
+
 ## TASK-340 — THEME-STUDIO-ASSET-PACKS-001 : preview de packs thème/assets
 target: codex
 status: done

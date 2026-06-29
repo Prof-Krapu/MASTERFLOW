@@ -47,4 +47,5 @@ Actions explicitement fermées dans le preview :
 ## Prochaine tranche possible
 
 `THEME-STUDIO-ACTIVATION-PREFLIGHT-001` : créer une action sensible d'activation candidate, avec
-préflight visible, validation humaine et rollback. À ne pas lancer avant décision produit.
+préflight visible et validation humaine. L'application réelle du thème et le rollback restent une
+vague séparée.
