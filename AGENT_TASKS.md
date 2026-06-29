@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-348 — RED-TEAM-TESTS-001 : injection, RAG poisoning et Safety
+target: codex
+status: done
+frozen_by: MALEX « on reprend » 2026-06-29
+
+### scope
+- Ajouter des tests Red Team courts sur les verrous déjà implantés.
+- Couvrir percent-encoding, sortie de scope, outil sans validation et markup caché.
+- Vérifier que le RAG refuse une requête obfusquée sans citation.
+- Vérifier que Safety reste narratif, non punitif, et que le hard-stop réel prime.
+- Ne modifier aucun runtime, schéma, permission, provider, UI ou migration.
+
+### verification
+- Security Guard, RAG service/router, Trust Fabric, Safety State et intégrité pédagogique : 51/51.
+- Backend complet 661/661, lint backend/frontend et `git diff --check`.
+
+### updates
+> 2026-06-29 codex → done local. Tests Red Team ciblés prêts à publication.
+
+---
+
 ## TASK-347 — OBSERVABILITY-GODMODE-RECONCILIATION-001 : cockpit existant confirmé
 target: codex
 status: done
@@ -34,6 +55,7 @@ frozen_by: MALEX « on reprend » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Observabilité/GodMode existe déjà partiellement ; pas de nouveau cockpit à coder.
+> 2026-06-29 codex → PR #195 mergée (`46c1646`) ; GitHub `main` fait foi.
 
 ---
 
