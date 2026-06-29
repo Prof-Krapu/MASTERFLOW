@@ -10,11 +10,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - objectif : séparer clairement confiance source, fichier/lien, signal utilisateur contextuel et
   santé système/provider, sans produire de score moral ni de décision automatique.
 - statut : `next_not_started`
-- dernière action terminée : `SECURITY-FABRIC-002` vérifiée localement.
+- dernière action terminée : `SECURITY-FABRIC-002` portée par la PR #177.
 - prochaine action : auditer les signaux de confiance existants et figer un contrat sans runtime.
 - fichiers/domaines concernés : RAG, ressources, audit, owner cockpit, providers et contrat Trust.
 - tests à relancer : lecture ciblée + `git diff --check` pour le premier contrat.
-- publication : `SECURITY-FABRIC-002` prête pour une PR atomique.
+- publication : PR #177 ; son état GitHub fait foi, sans implication de déploiement live.
 - blocage : score moral, surveillance opaque, auto-ban, changement permission et migration restent
   interdits.
 
@@ -29,7 +29,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 Vérifications : garde + RAG 19/19, backend 615/615, lint backend et diff-check.
 
-Statut : local vérifié, publication GitHub à lancer.
+Statut : runtime porté par la PR #177 ; son état GitHub fait foi.
 
 ## 2026-06-29 — SECURITY-FABRIC-001 : frontière de confiance runtime
 

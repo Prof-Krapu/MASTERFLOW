@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-29
 
 ### updates
 > 2026-06-29 codex → done local. Tranche runtime vérifiée, prête à publication atomique.
+> 2026-06-29 codex → PR #177 créée ; l'état GitHub de la PR fait foi.
 
 ---
 
