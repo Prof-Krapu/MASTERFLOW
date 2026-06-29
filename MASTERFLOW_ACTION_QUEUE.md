@@ -4,13 +4,49 @@ Dernière mise à jour : 2026-06-29
 
 ## 1. À faire maintenant
 
+### AUDIT-BP-PLAN-001 — Valider l'arbitrage des 8 rapports Big Pickle
+
+- Tâche : décider la suite après lecture des 8 audits BP, sans lancer EXPRESSIVE_CANON en code.
+- Impact : évite de repartir sur une table/moteur parallèle et sépare roadmap, runtime et atelier Factories.
+- Risque : faible ; planification et file d'attente uniquement.
+- Source de vérité concernée : Git opérable + rapports `docs/audits/`.
+- Statut : arbitrage Codex prêt à publication.
+- Validation requise : oui avant toute migration, changement de permission, provider, avatar swap, OCR/LMS ou implémentation Expressive.
+
+### EXPRESSIVE-CANON-P1 — Style Mirror hardening, pas nouveau moteur
+
+- Tâche : faire évoluer `style_mirror_profiles` avec consentement, validation sujet, configuration expressive bornée et prompt steering limité.
+- Impact : voix stylisée robuste et consentie sans usurpation ni dérive de permissions.
+- Risque : moyen ; touche identité, style et chat runtime.
+- Source de vérité concernée : D04 Personas + Style Mirror existant + chat WS.
+- Statut : planifié, non lancé.
+- Validation requise : oui avant migration/schema/API ; Big Pickle reste en pause tant qu'aucune tranche mécanique bornée n'est définie.
+
+### VISION-ABSORPTION-P1 — Roadmap de primitives, pas exécution globale
+
+- Tâche : transformer le rapport vision produit en files distinctes : UX progressive, preflight UI, notes/backlinks, design tokens, output registry, LMS, provenance.
+- Impact : garde les pépites sans ouvrir trop de chantiers à la fois.
+- Risque : moyen si les primitives sont codées hors ordre ou sans permission.
+- Source de vérité concernée : rapports d'audit + Experience/Knowledge Fabric + UI roadmap.
+- Statut : à arbitrer tranche par tranche.
+- Validation requise : oui avant Note Engine, package design tokens, OCR/provider, LMS, C2PA ou outputs fichiers.
+
+### FACTORIES-CONFRONTATION-P1 — Hygiène Desktop + primitives seulement
+
+- Tâche : ne pas importer les factories dans Git ; extraire seulement les primitives utiles et préparer un futur validateur de pack.
+- Impact : garde les factories autonomes propres tout en remontant les idées utiles à MasterFlow.
+- Risque : faible côté Git ; moyen côté Desktop si anonymisation/pack active remplace des fichiers sans archive.
+- Source de vérité concernée : `/Users/malex/Desktop/FACTORIES/` + pont Factory → MasterFlow.
+- Statut : planifié ; corrections détaillées restent hors Git.
+- Validation requise : oui avant modification des factories actives ou import runtime.
+
 ### EXPERIENCE-FABRIC-007B — Blackboard privé contrôlé
 
-- Tâche : consolider les contributions privées autour du cycle MAPE-K sans dialogue multi-personas public.
+- Tâche : publier la synthèse privée des contributions MAPE-K sans dialogue multi-personas public.
 - Impact : MasterFlow peut expliquer “qui apporte quoi” avant une décision, tout en gardant un porte-parole unique.
 - Risque : faible ; read-model pur, aucune Action créée, aucune mémoire retenue automatiquement.
-- Source de vérité concernée : runtime Git + Experience Fabric + Personas comme contributeurs privés futurs.
-- Statut : local vérifié, publication atomique à faire.
+- Source de vérité concernée : runtime Git + Experience Fabric.
+- Statut : publié via PR #165 (`8566d5b`).
 - Validation requise : non pour synthèse read-only ; oui avant dialogue multi-agent, création d'Action ou rétention mémoire.
 
 ### EXPERIENCE-FABRIC-007A — Cycle MAPE-K contrôlé
