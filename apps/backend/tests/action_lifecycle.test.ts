@@ -102,6 +102,20 @@ describe('action lifecycle — action sensible (approve_validation_item)', () =>
     const flighted = preflightAction(god, id);
     expect(flighted.status).toBe('pending_validation');
     expect(flighted.preflight?.requires_validation).toBe(true);
+    expect(flighted.preflight?.explanation).toMatchObject({
+      affected_resources: ['object:validation_item'],
+      payload_disclosed: false,
+    });
+    expect(flighted.preflight?.explanation?.decision_options).toEqual([
+      {id: 'approve', availability: 'available', reason: null},
+      {
+        id: 'modify',
+        availability: 'future',
+        reason: 'La modification directe d’une Action n’est pas encore implémentée.',
+      },
+      {id: 'reject', availability: 'available', reason: null},
+    ]);
+    expect(flighted.preflight?.explanation?.effect_preview.after).toContain('validation humaine');
 
     // ── INVARIANT FORT : exécuter AVANT validation doit lever.
     expect(() => executeAction(god, id)).toThrow();

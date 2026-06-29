@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-324 — VISIBLE-PREFLIGHT-001 : contrat UI explicable
+target: codex
+status: done
+frozen_by: MALEX « Go » 2026-06-29
+
+### scope
+- Enrichir le préflight existant sans créer de moteur parallèle.
+- Exposer proposition, ressources concernées, aperçu avant/après et choix bornés.
+- Ne jamais recopier le payload métier dans l’explication.
+- Ne créer aucune exécution, permission ou automatisation.
+
+### verification
+- test ciblé Action Lifecycle : 15/15.
+- backend complet : 605/605.
+- lint backend, build frontend et diff-check : OK.
+
+### updates
+> 2026-06-29 codex → done local. Contrat partagé et moteur vérifiés ; publication atomique prête.
+
+---
+
 ## TASK-323 — EXPERIENCE-FABRIC-007B : Blackboard privé contrôlé
 target: codex
 status: done
