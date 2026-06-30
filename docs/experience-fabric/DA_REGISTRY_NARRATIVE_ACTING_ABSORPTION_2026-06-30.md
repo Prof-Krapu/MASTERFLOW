@@ -1,7 +1,7 @@
 # DA Registry + Narrative Acting — absorption ciblée legacy → Git
 
 Date : 2026-06-30  
-Statut : implémentation locale en preview, sans génération image, sans canonisation automatique.
+Statut : publié sur GitHub `main` en preview, sans génération image, sans canonisation automatique.
 
 ## Décision produit
 
@@ -69,9 +69,10 @@ Les factories actives Ours d’Or, Ours d’Or Badge et ProfKrapu contenaient de
 
 ## Prochaine tranche recommandée
 
-`DA-REGISTRY-ACTING-002` :
+`DA-REGISTRY-ACTING-003` :
 
-- exposer le preview dans GodMode / Theme Studio ;
-- ajouter l’aperçu “pourquoi ce visuel ?” côté D08 ;
-- enrichir les profils Ours d’Or monstres et ProfKrapu seulement après validation produit ;
-- préparer l’import contrôlé des planches de références réelles.
+- tester les cas pilotes sans provider image : MasterFlex UI states, ProfKrapu badge/avatar,
+  Ours d’Or monstre/subpersona et rôles Ours d’Or ;
+- vérifier que le resolver explique stack, acting, références, gates, manques et interdits ;
+- enrichir uniquement les profils manquants repérés par ces cas pilotes ;
+- préparer l'import contrôlé des planches de références réelles après validation produit.
