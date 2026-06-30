@@ -6,15 +6,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `DA-REGISTRY-ACTING-002`
-- objectif : rendre le resolver DA visible dans Theme Studio et D08 pour expliquer “pourquoi ce visuel ?”.
-- statut : `local_verified_pending_publication`
-- dernière action terminée : API frontend, panneau preview DA, intégration Theme Studio/D08, build/lint/tests.
-- prochaine action : publication PR dédiée après validation explicite.
-- fichiers/domaines concernés : frontend API, Theme Studio, D08, styles, SUIVI.
-- tests à relancer : aucun contrôle local restant avant publication.
-- publication : non publiée ; GitHub main UI prototype déjà publié via PR #210 (`1b6c132`).
-- blocage : aucun blocage produit ; tranche frontend lecture seule, aucun provider image.
+- id : `DA-REGISTRY-ACTING-003`
+- objectif : vérifier les cas pilotes du resolver DA sans générer d'image ni canoniser d'asset.
+- statut : `ready`
+- dernière action terminée : `DA-REGISTRY-ACTING-002` publiée via PR #211, merge `c99cd0d`.
+- prochaine action : écrire des tests/fixtures de cas pilotes MasterFlex, ProfKrapu, Ours d'Or monstre et rôles Ours d'Or.
+- fichiers/domaines concernés : DA Registry, seeds déclaratifs, tests backend, documentation d'absorption.
+- tests à relancer : targeted DA Registry puis backend complet si code touché.
+- publication : aucune nouvelle publication en cours ; GitHub `main` aligné sur `c99cd0d`.
+- blocage : aucun ; provider image, canonisation et assets réels restent fermés.
+
+## 2026-06-30 — SUIVI-CLEANUP-001 : DA-002 publiée et reprise DA-003
+
+- correction du checkpoint anti-coupure : DA-002 n'est plus en attente locale ;
+- publication confirmée : PR #211, merge `c99cd0d` ;
+- prochaine vague explicitée : `DA-REGISTRY-ACTING-003`, cas pilotes resolver DA ;
+- aucune modification runtime, aucun provider, aucune génération image, aucune canonisation.
+
+Statut : local, prêt pour publication documentaire si souhaité.
 
 ## 2026-06-30 — DA-REGISTRY-ACTING-002 : surface “pourquoi ce visuel ?”
 
@@ -42,7 +51,7 @@ Vérifications :
 - `git diff --check` — OK ;
 - `npm test` — backend complet 121 fichiers, 673/673.
 
-Statut : local vérifié, non publié.
+Statut : publié via PR #211 (`c99cd0d`).
 
 ## 2026-06-30 — UI-PROTOTYPE-NAVIGATION-001 : protocole de visionnage Vincent
 
