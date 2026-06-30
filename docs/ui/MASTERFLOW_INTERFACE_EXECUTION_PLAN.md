@@ -121,7 +121,7 @@ Statut : publié sur GitHub `main` via PR #205 (`fb348b6`).
 
 ### Checkpoint UI-005 — Projection classe + Living Companion
 
-Statut : vérifié localement, prêt à publier.
+Statut : publié sur GitHub `main` via PR #207 (`931c796`).
 
 - compagnon chargé depuis l'endpoint Living Companion d'une session CDC assignée ;
 - projection plein écran avec rôle, bulle, question, progression, contexte et limites ;

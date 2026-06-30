@@ -8,12 +8,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 - id : `UI-005-CLASS-PROJECTION`
 - objectif : projeter en classe un Living Companion réellement assigné à une session guidée.
-- statut : `local_verified`
-- dernière action terminée : lecture companion et projection plein écran câblées dans Teaching.
-- prochaine action : commit, push, PR, merge et preuve GitHub.
+- statut : `published`
+- dernière action terminée : PR #207 mergée sur GitHub (`931c796`).
+- prochaine action : construire `UI-006`, cockpit projet étudiant.
 - fichiers/domaines concernés : API frontend, Teaching, projection classe, styles et suivi UI.
-- tests à relancer : aucun avant publication ; backend 665/665, lint back/front et build verts.
-- publication : branche locale `codex/ui-class-projection-005`, non publiée à ce checkpoint.
+- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
+- publication : GitHub `main == origin/main == 931c796` après merge de la PR #207.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
 
@@ -36,6 +36,8 @@ Implémentation vérifiée :
 
 Vérifications : backend complet 665/665 ; lint backend/frontend ; build frontend ;
 `git diff --check`.
+
+Statut : publié via PR #207 (`931c796`).
 
 ## 2026-06-30 — UI-004-TEACHING-COCKPIT : contrat de tranche
 
