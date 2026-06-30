@@ -49,6 +49,7 @@ import {
   SituationPanel,
 } from './app-shell.tsx';
 import type {PersonaVisualState} from './app-shell.tsx';
+import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
 import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
@@ -1638,107 +1639,137 @@ function App(): ReactElement {
           </article> : null}
 
           {activeMode.id === 'project' ? (
-            <article className="panel panel--wide project-panel">
-              <div className="panel-header">
-                <h2>Projet</h2>
-                <span className="counter">{projects.length}</span>
-              </div>
-              <div className={`project-state project-state--${projectSync.status}`} aria-live="polite">
-                <strong>{projectSync.status}</strong>
-                <span>{projectSync.message}</span>
-              </div>
-
-              {projects.length > 0 ? (
+            <AdaptiveWorkspacePage
+              alert={projects.length === 0
+                ? <p>Aucun projet n’est encore assigné à ce compte.</p>
+                : undefined}
+              context={selectedProject ? (
                 <>
-                  <label className="project-selector">
-                    Projet actif
-                    <select
-                      onChange={(event) => setSelectedProjectId(event.target.value)}
-                      value={selectedProjectId}
-                    >
-                      {projects.map((project) => (
-                        <option key={project.project_id} value={project.project_id}>
-                          {project.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <div className="project-grid">
-                    <section className="project-section">
-                      <div className="panel-header">
-                        <h3>Ressources partagees</h3>
-                        <span className="counter">{projectResources.length}</span>
-                      </div>
-                      {projectResources.length > 0 ? (
-                        <div className="resource-list">
-                          {projectResources.slice(0, 6).map((resource) => (
-                            <a className="resource-item" href={resource.url ?? '#'} key={resource.id}>
-                              <strong>{resource.title}</strong>
-                              <span>{resource.source}</span>
-                            </a>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="muted compact">Aucune ressource partagee dans ce projet.</p>
-                      )}
-                    </section>
-
-                    <section className="project-section">
-                      <div className="panel-header">
-                        <h3>Membres</h3>
-                        <span className="counter">{projectMembers.length}</span>
-                      </div>
-                      <div className="member-list">
-                        {projectMembers.slice(0, 8).map((member) => (
+                  <section className="adaptive-context-block">
+                    <div className="panel-header">
+                      <h3>Personnes liées</h3>
+                      <span className="counter">{projectMembers.length}</span>
+                    </div>
+                    <div className="member-list">
+                      {projectMembers.length > 0 ? (
+                        projectMembers.slice(0, 8).map((member) => (
                           <article className="member-item" key={`${member.project_id}-${member.user_id}`}>
                             <strong>{member.user_id === context?.user.id ? 'Vous' : member.user_id}</strong>
                             <span>{PROJECT_ROLE_LABEL[member.role]}</span>
                           </article>
-                        ))}
-                      </div>
-                    </section>
-                  </div>
-
-                  <div className="project-attach">
-                    <div>
-                      <strong>{selectedProject?.name ?? 'Projet'}</strong>
-                      <span>
-                        {canAttachCurrentProjectResource
-                          ? 'Rattachement autorise par le backend pour ce role.'
-                          : 'Lecture projet active ; rattachement reserve owner/admin.'}
-                      </span>
+                        ))
+                      ) : (
+                        <p className="muted compact">Aucun membre projet visible.</p>
+                      )}
                     </div>
-                    <select
-                      aria-label="Ressource a partager"
-                      disabled={!canAttachCurrentProjectResource || attachableResources.length === 0}
-                      onChange={(event) => setProjectResourceId(event.target.value)}
-                      value={projectResourceId}
-                    >
-                      <option value="">Choisir une source validee</option>
-                      {attachableResources.map((resource) => (
-                        <option key={resource.id} value={resource.id}>
-                          {resource.title}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      disabled={
-                        !canAttachCurrentProjectResource ||
-                        projectSync.status === 'attaching' ||
-                        projectResourceId.length === 0
-                      }
-                      onClick={() => void handleAttachProjectResource()}
-                      type="button"
-                    >
-                      Partager
-                    </button>
-                  </div>
+                  </section>
+                  <dl className="adaptive-context-facts">
+                    <div>
+                      <dt>Rôle projet</dt>
+                      <dd>{currentProjectMember ? PROJECT_ROLE_LABEL[currentProjectMember.role] : 'non déclaré'}</dd>
+                    </div>
+                    <div>
+                      <dt>Sources partagées</dt>
+                      <dd>{projectResources.length}</dd>
+                    </div>
+                    <div>
+                      <dt>Visibilité</dt>
+                      <dd>{selectedProject.visibility}</dd>
+                    </div>
+                  </dl>
                 </>
               ) : (
-                <p className="muted compact">Aucun projet accessible. Le backend Project/Scope est pret, mais aucun espace n est encore assigne a ce compte.</p>
+                <p className="muted compact">Aucun contexte projet chargé.</p>
               )}
-            </article>
+              eyebrow="Project / espace de travail"
+              nextAction={projects.length > 0 ? (
+                <div className="project-attach">
+                  <div>
+                    <strong>Partager une ressource fiable</strong>
+                    <span>
+                      {canAttachCurrentProjectResource
+                        ? 'Choisissez une source déjà validée pour ce projet.'
+                        : 'Lecture active ; le partage reste réservé au propriétaire ou à l’admin projet.'}
+                    </span>
+                  </div>
+                  <select
+                    aria-label="Ressource à partager"
+                    disabled={!canAttachCurrentProjectResource || attachableResources.length === 0}
+                    onChange={(event) => setProjectResourceId(event.target.value)}
+                    value={projectResourceId}
+                  >
+                    <option value="">Choisir une source validée</option>
+                    {attachableResources.map((resource) => (
+                      <option key={resource.id} value={resource.id}>
+                        {resource.title}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    disabled={
+                      !canAttachCurrentProjectResource ||
+                      projectSync.status === 'attaching' ||
+                      projectResourceId.length === 0
+                    }
+                    onClick={() => void handleAttachProjectResource()}
+                    type="button"
+                  >
+                    Partager
+                  </button>
+                </div>
+              ) : (
+                <p className="muted compact">Attendre l’assignation d’un projet ou ouvrir un autre mode.</p>
+              )}
+              statusDetail={projectSync.message}
+              statusLabel={projectSync.status}
+              statusTone={
+                projectSync.status === 'error'
+                  ? 'blocked'
+                  : projectSync.status === 'loading' || projectSync.status === 'attaching'
+                    ? 'attention'
+                    : projectSync.status === 'ready' || projectSync.status === 'synced'
+                      ? 'ready'
+                      : 'neutral'
+              }
+              summary={selectedProject
+                ? 'Retrouvez ici les ressources, les personnes et la prochaine action utile du projet.'
+                : 'Sélectionnez un projet pour charger son espace de travail.'}
+              title={selectedProject?.name ?? 'Projets'}
+              toolbar={projects.length > 0 ? (
+                <label className="project-selector">
+                  Projet actif
+                  <select
+                    onChange={(event) => setSelectedProjectId(event.target.value)}
+                    value={selectedProjectId}
+                  >
+                    {projects.map((project) => (
+                      <option key={project.project_id} value={project.project_id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : undefined}
+            >
+              <section className="project-section">
+                <div className="panel-header">
+                  <h3>Ressources partagées</h3>
+                  <span className="counter">{projectResources.length}</span>
+                </div>
+                {projectResources.length > 0 ? (
+                  <div className="resource-list">
+                    {projectResources.slice(0, 6).map((resource) => (
+                      <a className="resource-item" href={resource.url ?? '#'} key={resource.id}>
+                        <strong>{resource.title}</strong>
+                        <span>{resource.source}</span>
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="muted compact">Aucune ressource partagée dans ce projet.</p>
+                )}
+              </section>
+            </AdaptiveWorkspacePage>
           ) : null}
 
           {activeMode.id === 'teaching' && !canAdmin ? renderValidationInbox() : null}

@@ -98,6 +98,16 @@ Statut : publié sur GitHub `main` via PR #201 (`8d41ea9`).
 - aucun backend, schéma, permission, provider, génération ou canonisation ajouté ;
 - smoke navigateur localhost non contourné car refusé par la politique du navigateur intégré.
 
+### Checkpoint UI-003 — Page complète adaptative / Project
+
+Statut : vérifié localement, prêt à publier.
+
+- cadre commun avec contexte, résumé, statut, prochaine action, métier et colonne contextuelle ;
+- première consommation limitée au mode Project ;
+- sélection du projet, ressources, membres et rattachement existants préservés ;
+- colonne contexte masquable sans inventer de préférence persistante ;
+- aucun backend, endpoint, permission, schéma, provider ou migration.
+
 ### Checkpoint UI-001B — 2026-06-28
 
 Statut : publié sur GitHub `main` via PR #150.
