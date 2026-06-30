@@ -6,16 +6,65 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `DA-REGISTRY-ACTING-001`
-- objectif : transformer les sources legacy DA/narratives en registre Git composable, pilote MasterFlex.
-- statut : `local_verified_targeted`
-- dernière action terminée : contrats partagés, seed déclaratif enrichi factories, resolver preview, endpoint et tests ciblés.
-- prochaine action : lint/build puis publication après validation explicite, sans mélanger les changements UI sales.
-- fichiers/domaines concernés : `packages/shared`, `apps/backend/src/services`, `experience_fabric`, seed DA,
-  tests, documentation Experience Fabric.
-- tests à relancer : aucun contrôle local restant avant publication, hors smoke navigateur si demandé.
-- publication : non publiée ; GitHub `origin/main` observé à `a6f978e`, branche locale `3e44424` + changements locaux.
-- blocage : aucun blocage produit ; commit/push/PR/merge demandent validation explicite.
+- id : `UI-PROTOTYPE-NAVIGATION-001`
+- objectif : publier une simulation navigable de la Home MasterFlow avec dock rétractable, cockpit,
+  personas visuels et chat contextuel.
+- statut : `local_verified_pending_publication`
+- dernière action terminée : prototype UI isolé depuis le travail local, sans mélanger la vague DA.
+- prochaine action : validation build puis PR dédiée pour retour Vincent.
+- fichiers/domaines concernés : frontend demo, assets persona, SUIVI.
+- tests à relancer : build frontend + lint backend + diff check avant publication.
+- publication : en cours via branche dédiée ; GitHub main DA déjà publié via PR #209 (`760e70f`).
+- blocage : aucun blocage produit ; prototype non connecté au runtime backend.
+
+## 2026-06-30 — UI-PROTOTYPE-NAVIGATION-001 : protocole de visionnage Vincent
+
+Objectif : permettre à Vincent de voir rapidement le prototype d’interface sans confondre avec le runtime final.
+
+Périmètre :
+
+- prototype navigable local, frontend uniquement ;
+- Home / dock de navigation / actions rapides / panneaux contextuels / persona rail / chat mocké ;
+- assets locaux `masterflex-ui-v2.png` et `profkrapu-ui-v2.png` ;
+- aucun backend nouveau, aucune permission, aucune donnée réelle, aucune génération image.
+
+Pour tester depuis le repo :
+
+```bash
+git pull
+npm install
+npm run dev:frontend
+```
+
+Puis ouvrir :
+
+```txt
+http://localhost:5174/current-ui
+```
+
+À regarder en priorité :
+
+- barre latérale gauche : icônes seules au repos, dépliage au survol ;
+- Home : cockpit léger, état actif et actions principales ;
+- personas : MasterFlex à gauche, ProfKrapu comme interlocuteur consulté ;
+- chat : bulles différenciées, contexte visible, logique de simulation ;
+- cohérence DA : sobre, RPG assumé mais pas criard.
+
+Points à ne pas juger comme runtime final :
+
+- les messages sont mockés ;
+- les états persona ne sont pas encore reliés au resolver DA ;
+- les assets sont des placeholders de prototype, pas des assets canon définitifs ;
+- aucune sauvegarde utilisateur ni appel backend n’est ajouté par cette tranche.
+
+Retour demandé à Vincent :
+
+- la navigation est-elle claire ?
+- le dock rétractable est-il confortable ?
+- la lecture Home / chat / personas tient-elle en usage quotidien ?
+- qu’est-ce qui doit rester prototype et qu’est-ce qui peut devenir composant runtime ?
+
+Statut : prêt pour PR dédiée.
 
 ## 2026-06-30 — DA-REGISTRY-ACTING-001 : contrat de tranche
 
@@ -48,7 +97,7 @@ Vérifications :
 - `npm test` — backend complet 121 fichiers, 673/673 ;
 - `npm run build:frontend` — OK.
 
-Statut : local vérifié ciblé, non publié.
+Statut : publié via PR #209 (`760e70f`).
 
 ## 2026-06-30 — UI-005-CLASS-PROJECTION : contrat de tranche
 
