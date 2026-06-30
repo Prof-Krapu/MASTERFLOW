@@ -5,6 +5,7 @@ import {
   CollectionMatchSchema,
   CreateInventoryProjectNeedRequestSchema,
   IngestInventoryOcrCandidatesRequestSchema,
+  InventoryCapabilityMapSchema,
   InventoryCollectionSchema,
   InventoryItemSchema,
   InventoryNeedMatchResultSchema,
@@ -23,6 +24,7 @@ import {
   type CollectionMatch,
   type CreateInventoryProjectNeedRequest,
   type InventoryCollection,
+  type InventoryCapabilityMap,
   type InventoryItem,
   type InventoryNeedMatchResult,
   type InventoryProjectNeed,
@@ -830,4 +832,79 @@ export function scanInventoryPhoto(
     detail: {item_id: item.item_id, project_id: projectId, bytes: buf.length, notes: request.notes ?? null},
   });
   return [item];
+}
+
+/** Carte lisible des primitives Inventory réellement disponibles pour l’acteur. */
+export function buildInventoryCapabilityMap(
+  actor: AuthUser,
+  projectId: string | null = null,
+): InventoryCapabilityMap {
+  const items = listInventoryItems(actor, {project_id: projectId, include_candidates: true});
+  const collections = listInventoryCollections(actor, {project_id: projectId, include_candidates: true});
+  return InventoryCapabilityMapSchema.parse({
+    generated_at: Date.now(),
+    project_id: projectId,
+    counts: {
+      readable_items: items.length,
+      candidate_items: items.filter((item) => item.validation_status === 'candidate').length,
+      validated_items: items.filter((item) => item.validation_status === 'validated').length,
+      readable_collections: collections.length,
+    },
+    primitives: [
+      {
+        primitive_id: 'inventory_items',
+        label: 'Objets inventaire',
+        status: 'implemented',
+        endpoint_refs: ['/api/v1/inventory/items', '/api/v1/inventory/search'],
+        gate: 'lecture scope + validation owner/admin pour canoniser',
+        gap: null,
+      },
+      {
+        primitive_id: 'inventory_collections',
+        label: 'Collections inventaire',
+        status: 'implemented',
+        endpoint_refs: ['/api/v1/inventory/collections'],
+        gate: 'scope projet ou privé ; validation explicite',
+        gap: null,
+      },
+      {
+        primitive_id: 'inventory_project_needs',
+        label: 'Besoins projet',
+        status: 'partial',
+        endpoint_refs: ['/api/v1/inventory/project-needs'],
+        gate: 'matching consultatif ; disponibilité jamais garantie',
+        gap: 'Il manque une vue registry complète besoin → preuve → décision → output.',
+      },
+      {
+        primitive_id: 'inventory_ocr_candidates',
+        label: 'Candidats OCR / photo',
+        status: 'partial',
+        endpoint_refs: ['/api/v1/inventory/ocr-candidates', '/api/v1/inventory/photo-scan'],
+        gate: 'candidate_only jusqu’à revue humaine',
+        gap: 'OCR/vision réel et scoring de confiance restent hors de cette carte.',
+      },
+      {
+        primitive_id: 'inventory_output_recipes',
+        label: 'Outputs Inventory',
+        status: 'future',
+        endpoint_refs: [],
+        gate: 'aucun export final sans recette et validation',
+        gap: 'Les outputs doivent rejoindre l’Output Registry transversal.',
+      },
+    ],
+    source_truth_policy: {
+      candidate_is_not_validated: true,
+      availability_guaranteed: false,
+      project_need_match_is_advisory: true,
+      ocr_candidate_requires_review: true,
+    },
+    forbidden_shortcuts: [
+      'candidate_as_canon',
+      'availability_guaranteed',
+      'ocr_auto_validate',
+      'rag_index_without_validated_item',
+      'project_need_as_purchase_order',
+    ],
+    execution_policy: 'diagnostic_only',
+  });
 }

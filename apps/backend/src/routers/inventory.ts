@@ -16,6 +16,7 @@ import {
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
   archiveInventoryItem,
+  buildInventoryCapabilityMap,
   createCollectionMatch,
   createInventoryCollection,
   createInventoryItem,
@@ -94,6 +95,17 @@ export function createInventoryRouter(): Router {
             req.query.include_candidates === '1' || req.query.include_candidates === 'true',
         }),
       });
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.get('/inventory/capability-map', (req: Request, res: Response): void => {
+    try {
+      res.json(buildInventoryCapabilityMap(
+        actor(req),
+        typeof req.query.project_id === 'string' ? req.query.project_id : null,
+      ));
     } catch (error) {
       routeError(res, error);
     }

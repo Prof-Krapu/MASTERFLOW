@@ -10,6 +10,7 @@ import {seedAll} from '../src/db/seed.ts';
 import {signToken, type AuthUser} from '../src/middleware/auth.ts';
 import {createFactoryBackflowRouter} from '../src/routers/factory_backflow.ts';
 import {
+  buildFactoryBackflowCapabilityMap,
   createFactoryBackflowIntake,
   getFactoryBackflowIntake,
   listFactoryBackflowCandidateUpdates,
@@ -100,6 +101,45 @@ afterAll(async () => {
 });
 
 describe('D11 — Factory Backflow Intake V6C', () => {
+  it('expose une carte native de backflow sans autoriser l’import de factories complètes', async () => {
+    const map = buildFactoryBackflowCapabilityMap();
+
+    expect(map.execution_policy).toBe('diagnostic_only');
+    expect(map.native_runtime_policy).toMatchObject({
+      full_factory_import_allowed: false,
+      zip_import_allowed: false,
+      external_fetch_allowed: false,
+      auto_canon_allowed: false,
+      runtime_activation_allowed: false,
+    });
+    expect(map.primitive_routes).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        classification: 'DA',
+        decision: 'MASTERFLOW_PRIMITIVE_CANDIDATE',
+        recommended_domains: ['D08_DA_VISUAL_ASSETS'],
+      }),
+      expect.objectContaining({
+        classification: 'PRIVATE',
+        decision: 'BLOCKED',
+        recommended_domains: [],
+      }),
+    ]));
+    expect(map.forbidden_imports).toEqual(expect.arrayContaining(['full_factory_pack', 'zip_direct_import']));
+
+    const response = await fetch(`${base}/backflow/capability-map`, {
+      headers: {Authorization: `Bearer ${adminToken}`},
+    });
+    expect(response.status).toBe(200);
+    expect((await response.json()) as {execution_policy: string}).toMatchObject({
+      execution_policy: 'diagnostic_only',
+    });
+
+    const teacherResponse = await fetch(`${base}/backflow/capability-map`, {
+      headers: {Authorization: `Bearer ${teacherToken}`},
+    });
+    expect(teacherResponse.status).toBe(403);
+  });
+
   it('reçoit un manifeste complet comme candidat Inbox admin-only, sans activer le runtime', () => {
     const intake = createFactoryBackflowIntake(admin, completeBackflow('complete'));
     expect(intake).toMatchObject({

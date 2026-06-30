@@ -392,6 +392,34 @@ export const InventoryDiagnosticsSchema = z.object({
 });
 export type InventoryDiagnostics = z.infer<typeof InventoryDiagnosticsSchema>;
 
+export const InventoryCapabilityMapSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  project_id: z.string().min(1).nullable(),
+  counts: z.object({
+    readable_items: z.number().int().nonnegative(),
+    candidate_items: z.number().int().nonnegative(),
+    validated_items: z.number().int().nonnegative(),
+    readable_collections: z.number().int().nonnegative(),
+  }),
+  primitives: z.array(z.object({
+    primitive_id: z.string().min(1),
+    label: z.string().min(1).max(160),
+    status: z.enum(['implemented', 'partial', 'blocked', 'future']),
+    endpoint_refs: z.array(z.string().min(1)).max(20),
+    gate: z.string().min(1).max(300),
+    gap: z.string().min(1).max(700).nullable(),
+  })).min(1),
+  source_truth_policy: z.object({
+    candidate_is_not_validated: z.literal(true),
+    availability_guaranteed: z.literal(false),
+    project_need_match_is_advisory: z.literal(true),
+    ocr_candidate_requires_review: z.literal(true),
+  }),
+  forbidden_shortcuts: z.array(z.string().min(1)).min(1),
+  execution_policy: z.literal('diagnostic_only'),
+});
+export type InventoryCapabilityMap = z.infer<typeof InventoryCapabilityMapSchema>;
+
 // ───────────────────────── D12 Owner Cockpit read model ─────────────────────────
 
 export const OwnerCockpitCapabilityStatusSchema = z.enum([
@@ -568,6 +596,31 @@ export const SafetyStateSnapshotSchema = z.object({
   automatic_sanction: z.literal(false),
 });
 export type SafetyStateSnapshot = z.infer<typeof SafetyStateSnapshotSchema>;
+
+export const SecurityTrustCapabilityMapSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  actor_scope_ref: z.string().min(1).max(240),
+  trust_snapshot: TrustFabricSnapshotSchema,
+  safety_state: SafetyStateSnapshotSchema,
+  primitives: z.array(z.object({
+    primitive_id: z.string().min(1),
+    label: z.string().min(1).max(160),
+    status: z.enum(['implemented', 'partial', 'blocked', 'future']),
+    protects: z.array(z.string().min(1)).min(1).max(20),
+    endpoint_refs: z.array(z.string().min(1)).max(20),
+    gap: z.string().min(1).max(700).nullable(),
+  })).min(1),
+  response_policy: z.object({
+    curiosity_allowed: z.literal(true),
+    educational_explanation_allowed: z.literal(true),
+    suspicious_inputs_warn_or_refuse: z.literal(true),
+    hard_stop_requires_existing_gate: z.literal(true),
+    ban_is_manual_godmode_only: z.literal(true),
+  }),
+  narrative_states: z.array(SafetyNarrativeStateSchema).min(1),
+  execution_policy: z.literal('diagnostic_only'),
+});
+export type SecurityTrustCapabilityMap = z.infer<typeof SecurityTrustCapabilityMapSchema>;
 
 // ───────────────────────── Template / Schema Registry ─────────────────────────
 
@@ -1582,6 +1635,53 @@ export const RouteFactoryBackflowCandidateUpdateRequestSchema = z.object({
 });
 export type RouteFactoryBackflowCandidateUpdateRequest = z.infer<typeof RouteFactoryBackflowCandidateUpdateRequestSchema>;
 
+export const FactoryBackflowRoutingDecisionSchema = z.enum([
+  'GIT_KEEP',
+  'GIT_REMOVE_TO_FACTORY_ROUTER',
+  'FACTORY_WORKSHOP',
+  'FACTORY_PATCH',
+  'NEW_FACTORY_SPEC',
+  'DUAL_TRACK',
+  'MASTERFLOW_PRIMITIVE_CANDIDATE',
+  'MASTERFLOW_RUNTIME_GAP',
+  'MASTERFLOW_DOC_ONLY',
+  'BLOCKED',
+  'REJECTED',
+  'ARCHIVE_ONLY',
+]);
+export type FactoryBackflowRoutingDecision = z.infer<typeof FactoryBackflowRoutingDecisionSchema>;
+
+export const FactoryBackflowPrimitiveRouteSchema = z.object({
+  classification: FactoryBackflowClassificationSchema,
+  decision: FactoryBackflowRoutingDecisionSchema,
+  recommended_domains: z.array(z.string().min(1).max(120)),
+  owner_validation_required: z.literal(true),
+  reason: z.string().min(1).max(700),
+});
+export type FactoryBackflowPrimitiveRoute = z.infer<typeof FactoryBackflowPrimitiveRouteSchema>;
+
+export const FactoryBackflowCapabilityMapSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+  counts: z.object({
+    pending_intakes: z.number().int().nonnegative(),
+    quarantined_intakes: z.number().int().nonnegative(),
+    approved_candidate_updates: z.number().int().nonnegative(),
+    routed_candidate_updates: z.number().int().nonnegative(),
+  }),
+  primitive_routes: z.array(FactoryBackflowPrimitiveRouteSchema).min(1),
+  forbidden_imports: z.array(z.string().min(1)).min(1),
+  native_runtime_policy: z.object({
+    full_factory_import_allowed: z.literal(false),
+    zip_import_allowed: z.literal(false),
+    external_fetch_allowed: z.literal(false),
+    auto_canon_allowed: z.literal(false),
+    runtime_activation_allowed: z.literal(false),
+  }),
+  execution_policy: z.literal('diagnostic_only'),
+});
+export type FactoryBackflowCapabilityMap = z.infer<typeof FactoryBackflowCapabilityMapSchema>;
+
 // ───────────────────────── Registre des adapters ─────────────────────────
 
 export const AdapterKindSchema = z.enum([
@@ -2428,6 +2528,53 @@ export const DA_RUNTIME_API = {
     byManifest: '/api/v1/da/assets/by-manifest/:manifestId',
   },
 } as const;
+
+export const ResourceOutputCapabilityMapSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  actor_scope_ref: z.string().min(1).max(240),
+  resources: z.object({
+    total: z.number().int().nonnegative(),
+    candidate: z.number().int().nonnegative(),
+    validated: z.number().int().nonnegative(),
+    deprecated: z.number().int().nonnegative(),
+    endpoint_refs: z.array(z.string().min(1)).min(1),
+  }),
+  outputs: z.object({
+    visual_manifests: z.object({
+      total: z.number().int().nonnegative(),
+      approved: z.number().int().nonnegative(),
+      blocked_or_pending: z.number().int().nonnegative(),
+      rejected: z.number().int().nonnegative(),
+    }),
+    generated_assets: z.object({
+      total: z.number().int().nonnegative(),
+      candidate: z.number().int().nonnegative(),
+      approved: z.number().int().nonnegative(),
+      rejected: z.number().int().nonnegative(),
+      archived: z.number().int().nonnegative(),
+    }),
+    endpoint_refs: z.array(z.string().min(1)).min(1),
+  }),
+  primitives: z.array(z.object({
+    primitive_id: z.string().min(1),
+    label: z.string().min(1).max(180),
+    status: z.enum(['implemented', 'partial', 'blocked', 'future']),
+    area: z.enum(['resource_truth', 'rag_projection', 'visual_manifest', 'generated_asset', 'output_registry']),
+    endpoint_refs: z.array(z.string().min(1)).max(20),
+    gate: z.string().min(1).max(360),
+    gap: z.string().min(1).max(800).nullable(),
+  })).min(1),
+  source_truth_policy: z.object({
+    default_resources_are_validated_only: z.literal(true),
+    candidate_resource_not_served_by_default: z.literal(true),
+    output_manifest_not_provider_generation: z.literal(true),
+    generated_asset_candidate_requires_review: z.literal(true),
+    export_or_live_publication_requires_human_gate: z.literal(true),
+  }),
+  forbidden_shortcuts: z.array(z.string().min(1)).min(1),
+  execution_policy: z.literal('diagnostic_only'),
+});
+export type ResourceOutputCapabilityMap = z.infer<typeof ResourceOutputCapabilityMapSchema>;
 
 export const StoryWorkbenchSchema = z.object({workbench_id:z.string().min(1),owner_id:z.string().min(1),project_id:z.string().min(1).nullable(),project_scope:z.string().min(1),title:z.string().min(1),source_ref:z.string().min(1),intake_mode:z.enum(['audit_only','index_only','draft_workbench']),source_truth_state:z.enum(['SOURCE_VERIFIED','SOURCE_CURRENT','SOURCE_LEGACY','USER_PROVIDED']),status:z.enum(['draft','reader_ready','workshop_ready','parked']),canon_locked:z.number().int().min(0).max(1).default(0),created_by:z.string().min(1),created_at:z.number(),updated_at:z.number()});
 export type StoryWorkbench=z.infer<typeof StoryWorkbenchSchema>;
@@ -4962,6 +5109,603 @@ export const VISUAL_DA_REGISTRY_API = {
   preview: '/api/v1/experience/da-registry/preview',
 } as const;
 
+// ───────────────────── Visual Knowledge Fabric / DA Studio ─────────────────────
+
+export const VisualRegistryLifecycleSchema = z.enum([
+  'draft',
+  'candidate',
+  'validated_version',
+  'canon_locked',
+  'superseded',
+  'deprecated',
+  'revoked',
+]);
+export type VisualRegistryLifecycle = z.infer<typeof VisualRegistryLifecycleSchema>;
+
+export const VisualRegistryEntityKindSchema = z.enum([
+  'persona',
+  'character',
+  'subpersona',
+  'companion',
+  'monster',
+  'moth',
+  'role',
+  'decor',
+  'place',
+  'environment',
+  'world',
+  'object',
+  'prop',
+  'logo',
+  'symbol',
+  'motif',
+  'ambience',
+  'theme',
+  'story_layer',
+  'event_layer',
+  'project_layer',
+  'render_layer',
+]);
+export type VisualRegistryEntityKind = z.infer<typeof VisualRegistryEntityKindSchema>;
+
+export const VisualRegistryScopeSchema = z.enum([
+  'system',
+  'institution',
+  'user',
+  'project',
+  'story',
+  'room',
+  'event',
+  'factory_projection',
+]);
+export type VisualRegistryScope = z.infer<typeof VisualRegistryScopeSchema>;
+
+export const VisualTraitValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.array(z.string()),
+]);
+export type VisualTraitValue = z.infer<typeof VisualTraitValueSchema>;
+
+export const VisualTraitDefinitionSchema = z.object({
+  trait_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  category: z.enum([
+    'identity',
+    'morphology',
+    'silhouette',
+    'style',
+    'composition',
+    'tone',
+    'acting',
+    'color',
+    'complexity',
+    'narrative',
+    'output',
+    'render',
+    'safety',
+  ]),
+  value_type: z.enum(['string', 'number', 'boolean', 'string_list']),
+  unit: z.string().min(1).max(80).nullable(),
+  description: z.string().min(1).max(600),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualTraitDefinition = z.infer<typeof VisualTraitDefinitionSchema>;
+
+export const VisualTraitAssignmentSchema = z.object({
+  trait_id: z.string().min(1),
+  value: VisualTraitValueSchema,
+  authority: VisualDaAuthoritySchema,
+  locked: z.boolean(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualTraitAssignment = z.infer<typeof VisualTraitAssignmentSchema>;
+
+export const DaGaugeFamilySchema = z.enum([
+  'structure',
+  'style',
+  'composition',
+  'tone',
+  'acting',
+  'color',
+  'complexity',
+  'narrative',
+  'output',
+  'render',
+]);
+export type DaGaugeFamily = z.infer<typeof DaGaugeFamilySchema>;
+
+export const DaGaugeDefinitionSchema = z.object({
+  gauge_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  family: DaGaugeFamilySchema,
+  min: z.number(),
+  max: z.number(),
+  default_value: z.number(),
+  safe_min: z.number(),
+  safe_max: z.number(),
+  unit: z.string().min(1).max(80),
+  user_adjustable: z.boolean(),
+  effect_trait_refs: z.array(z.string().min(1)).max(20),
+  incompatible_gauge_refs: z.array(z.string().min(1)).max(20),
+  retake_lever: z.string().min(1).max(500).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+}).superRefine((gauge, ctx) => {
+  if (!(gauge.min <= gauge.safe_min && gauge.safe_min <= gauge.default_value &&
+    gauge.default_value <= gauge.safe_max && gauge.safe_max <= gauge.max)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'La plage sûre et la valeur par défaut doivent rester dans les limites de la jauge.',
+    });
+  }
+});
+export type DaGaugeDefinition = z.infer<typeof DaGaugeDefinitionSchema>;
+
+export const DaGaugeOverrideSchema = z.object({
+  gauge_id: z.string().min(1),
+  value: z.number(),
+  lock: z.boolean().default(false),
+  reason: z.string().min(1).max(500),
+});
+export type DaGaugeOverride = z.infer<typeof DaGaugeOverrideSchema>;
+
+export const DaLayerDefinitionSchema = z.object({
+  layer_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  layer_kind: z.enum([
+    'safety',
+    'canon',
+    'root',
+    'entity',
+    'story',
+    'project',
+    'event',
+    'role',
+    'output',
+    'acting',
+    'render',
+    'theme',
+    'preference',
+  ]),
+  scope: VisualRegistryScopeSchema,
+  scope_ref: z.string().min(1).nullable(),
+  status: VisualRegistryLifecycleSchema,
+  version: z.string().min(1),
+  priority: z.number().int(),
+  parent_layer_refs: z.array(z.string().min(1)).max(12),
+  incompatible_layer_refs: z.array(z.string().min(1)).max(20),
+  immutable_trait_refs: z.array(z.string().min(1)).max(30),
+  trait_assignments: z.array(VisualTraitAssignmentSchema).max(80),
+  gauge_overrides: z.array(DaGaugeOverrideSchema).max(50),
+  positive_constraints: z.array(z.string().min(1)).max(60),
+  negative_locks: z.array(z.string().min(1)).max(60),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type DaLayerDefinition = z.infer<typeof DaLayerDefinitionSchema>;
+
+export const VisualRegistryEntitySchema = z.object({
+  entity_ref: z.string().min(1),
+  label: z.string().min(1).max(160),
+  entity_kind: VisualRegistryEntityKindSchema,
+  status: VisualRegistryLifecycleSchema,
+  version: z.string().min(1),
+  scope: VisualRegistryScopeSchema,
+  scope_ref: z.string().min(1).nullable(),
+  trait_assignments: z.array(VisualTraitAssignmentSchema).max(100),
+  layer_refs: z.array(z.string().min(1)).max(30),
+  reference_annotation_refs: z.array(z.string().min(1)).max(50),
+  acting_profile_ref: z.string().min(1).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualRegistryEntity = z.infer<typeof VisualRegistryEntitySchema>;
+
+export const VisualReferenceRoleV2Schema = z.enum([
+  'canon_strict',
+  'identity_anchor',
+  'expression_only',
+  'outfit_only',
+  'pose_reference',
+  'world_style',
+  'graphic_language',
+  'color_palette',
+  'layout_reference',
+  'poster_energy',
+  'filter_reference',
+  'output_template',
+  'inspiration',
+  'candidate',
+  'anti_pattern',
+  'contaminated',
+  'rejected',
+]);
+export type VisualReferenceRoleV2 = z.infer<typeof VisualReferenceRoleV2Schema>;
+
+export const VisualReferenceAnnotationSchema = z.object({
+  annotation_id: z.string().min(1),
+  reference_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  role: VisualReferenceRoleV2Schema,
+  selector: z.object({
+    type: z.enum(['whole_asset', 'xywh_pixel', 'xywh_percent']),
+    x: z.number().nonnegative().nullable(),
+    y: z.number().nonnegative().nullable(),
+    width: z.number().positive().nullable(),
+    height: z.number().positive().nullable(),
+  }),
+  allowed_uses: z.array(z.string().min(1)).max(20),
+  forbidden_uses: z.array(z.string().min(1)).max(20),
+  provenance_state: z.enum(['declared', 'validated', 'weak']),
+  rights_status: z.enum(['known', 'unknown', 'restricted']),
+  consent_ref: z.string().min(1).nullable(),
+  source_ref: z.string().min(1),
+}).superRefine((annotation, ctx) => {
+  const coordinates = [
+    annotation.selector.x,
+    annotation.selector.y,
+    annotation.selector.width,
+    annotation.selector.height,
+  ];
+  if (annotation.selector.type === 'whole_asset' && coordinates.some((value) => value !== null)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Une annotation whole_asset ne porte pas de coordonnées.',
+    });
+  }
+  if (annotation.selector.type !== 'whole_asset' && coordinates.some((value) => value === null)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Une annotation régionale exige x, y, width et height.',
+    });
+  }
+  if (annotation.selector.type === 'xywh_percent' &&
+    coordinates.some((value) => value !== null && value > 100)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Les coordonnées en pourcentage doivent rester entre 0 et 100.',
+    });
+  }
+});
+export type VisualReferenceAnnotation = z.infer<typeof VisualReferenceAnnotationSchema>;
+
+export const VisualOutputFamilyV2Schema = z.enum([
+  'avatar',
+  'profile_picture',
+  'ui_state_pack',
+  'badge',
+  'sticker',
+  'thumbnail',
+  'poster',
+  'scene',
+  'storyboard',
+  'comic_strip',
+  'social',
+  'print',
+  'motion',
+  'diagnostic',
+  'manifest',
+  'asset_pack',
+]);
+export type VisualOutputFamilyV2 = z.infer<typeof VisualOutputFamilyV2Schema>;
+
+export const VisualOutputRecipeSchema = z.object({
+  recipe_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  family: VisualOutputFamilyV2Schema,
+  status: VisualRegistryLifecycleSchema,
+  version: z.string().min(1),
+  required_trait_refs: z.array(z.string().min(1)).max(30),
+  required_reference_roles: z.array(VisualReferenceRoleV2Schema).max(20),
+  default_gauge_values: z.record(z.number()),
+  technical_constraints: z.record(z.union([z.string(), z.number(), z.boolean()])),
+  provider_requirements: z.array(z.string().min(1)).max(30),
+  positive_constraints: z.array(z.string().min(1)).max(30),
+  negative_locks: z.array(z.string().min(1)).max(30),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualOutputRecipe = z.infer<typeof VisualOutputRecipeSchema>;
+
+export const VisualRuleDefinitionSchema = z.object({
+  rule_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  phase: z.enum(['preflight', 'compile', 'post_generation', 'canon_review']),
+  severity: z.enum(['info', 'warning', 'block']),
+  activation: z.string().min(1).max(500),
+  requires: z.array(z.string().min(1)).max(30),
+  blocks_if: z.array(z.string().min(1)).max(30),
+  retake_lever: z.string().min(1).max(500).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualRuleDefinition = z.infer<typeof VisualRuleDefinitionSchema>;
+
+export const VisualAssetVersionSchema = z.object({
+  asset_version_id: z.string().min(1),
+  asset_ref: z.string().min(1),
+  version: z.string().min(1),
+  status: VisualRegistryLifecycleSchema,
+  parent_version_ref: z.string().min(1).nullable(),
+  storage_ref: z.string().min(1).nullable(),
+  generated_asset_ref: z.string().min(1).nullable(),
+  visual_manifest_ref: z.string().min(1).nullable(),
+  output_recipe_ref: z.string().min(1),
+  entity_refs: z.array(z.string().min(1)).max(20),
+  transformation_refs: z.array(z.string().min(1)).max(30),
+  rights_status: z.enum(['known', 'unknown', 'restricted']),
+  provenance_refs: z.array(z.string().min(1)).min(1).max(40),
+  created_at: z.number().int().nonnegative(),
+});
+export type VisualAssetVersion = z.infer<typeof VisualAssetVersionSchema>;
+
+export const VisualKnowledgeRegistrySchema = z.object({
+  registry_id: z.string().min(1),
+  version: z.string().min(1),
+  status: z.enum(['empty_ready', 'compatibility_projection', 'active']),
+  entities: z.array(VisualRegistryEntitySchema),
+  trait_definitions: z.array(VisualTraitDefinitionSchema),
+  layers: z.array(DaLayerDefinitionSchema),
+  gauges: z.array(DaGaugeDefinitionSchema),
+  reference_annotations: z.array(VisualReferenceAnnotationSchema),
+  output_recipes: z.array(VisualOutputRecipeSchema),
+  rules: z.array(VisualRuleDefinitionSchema),
+  asset_versions: z.array(VisualAssetVersionSchema),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type VisualKnowledgeRegistry = z.infer<typeof VisualKnowledgeRegistrySchema>;
+
+export const VisualRegistryDiagnosticSchema = z.object({
+  severity: z.enum(['info', 'warning', 'block']),
+  code: z.string().min(1),
+  target_ref: z.string().min(1),
+  message: z.string().min(1).max(1000),
+  source_refs: z.array(z.string().min(1)).max(20),
+});
+export type VisualRegistryDiagnostic = z.infer<typeof VisualRegistryDiagnosticSchema>;
+
+export const VisualRegistryLintReportSchema = z.object({
+  registry_id: z.string().min(1),
+  registry_version: z.string().min(1),
+  valid: z.boolean(),
+  generated_at: z.number().int().nonnegative(),
+  counts: z.object({
+    info: z.number().int().nonnegative(),
+    warning: z.number().int().nonnegative(),
+    block: z.number().int().nonnegative(),
+  }),
+  diagnostics: z.array(VisualRegistryDiagnosticSchema),
+  execution_policy: z.literal('diagnostic_only'),
+});
+export type VisualRegistryLintReport = z.infer<typeof VisualRegistryLintReportSchema>;
+
+export const CompileVisualPlanRequestSchema = z.object({
+  registry_source: z.enum(['empty_core', 'legacy_adapter']).default('empty_core'),
+  intent: z.string().min(1).max(2000),
+  context: z.string().min(1).max(500),
+  entity_refs: z.array(z.string().min(1)).max(20),
+  active_mode: z.string().min(1).max(160),
+  output_recipe_ref: z.string().min(1).max(160),
+  requested_layer_refs: z.array(z.string().min(1)).max(30).default([]),
+  acting_state_ref: z.string().min(1).max(160).nullable().optional(),
+  preference_gauge_values: z.record(z.number()).default({}),
+});
+export type CompileVisualPlanRequest = z.input<typeof CompileVisualPlanRequestSchema>;
+
+export const CompiledGaugeValueSchema = z.object({
+  gauge_id: z.string().min(1),
+  value: z.number(),
+  min: z.number(),
+  max: z.number(),
+  safe_min: z.number(),
+  safe_max: z.number(),
+  locked: z.boolean(),
+  source_ref: z.string().min(1),
+});
+export type CompiledGaugeValue = z.infer<typeof CompiledGaugeValueSchema>;
+
+export const CompiledVisualPlanSchema = z.object({
+  compiled_at: z.number().int().nonnegative(),
+  deterministic_hash: z.string().regex(/^[a-f0-9]{64}$/),
+  registry_id: z.string().min(1),
+  registry_version: z.string().min(1),
+  status: z.enum(['ready_for_manifest', 'limited', 'blocked']),
+  intent: z.string().min(1),
+  context: z.string().min(1),
+  active_mode: z.string().min(1),
+  resolved_entity_refs: z.array(z.string().min(1)),
+  layer_stack: z.array(z.object({
+    layer_ref: z.string().min(1),
+    layer_kind: DaLayerDefinitionSchema.shape.layer_kind,
+    priority: z.number().int(),
+    source_refs: z.array(z.string().min(1)).min(1),
+  })),
+  gauges: z.array(CompiledGaugeValueSchema),
+  active_traits: z.array(VisualTraitAssignmentSchema),
+  reference_annotations: z.array(VisualReferenceAnnotationSchema),
+  output_recipe: VisualOutputRecipeSchema.nullable(),
+  positive_constraints: z.array(z.string().min(1)),
+  negative_locks: z.array(z.string().min(1)),
+  conflicts: z.array(z.string().min(1)),
+  missing_items: z.array(z.string().min(1)),
+  provenance_refs: z.array(z.string().min(1)).min(1),
+  explanation_cards: z.array(z.object({
+    title: z.string().min(1),
+    explanation: z.string().min(1),
+    source_refs: z.array(z.string().min(1)).min(1),
+  })).min(1),
+  provider_requirements: z.array(z.string().min(1)),
+  execution_policy: z.literal('compile_only'),
+  generation_allowed: z.literal(false),
+  canon_promotion_allowed: z.literal(false),
+});
+export type CompiledVisualPlan = z.infer<typeof CompiledVisualPlanSchema>;
+
+export const D08VisualManifestCandidateSchema = z.object({
+  plan_hash: z.string().regex(/^[a-f0-9]{64}$/),
+  readiness: z.enum(['ready_for_d08_review', 'blocked']),
+  request_preview: z.object({
+    request_title: z.string().min(1).max(160),
+    intent: z.string().min(1).max(4000),
+    canon_entity_refs: z.array(z.string().min(1)).max(50),
+    da_root_ref: z.string().min(1).nullable(),
+    active_layers: z.array(z.string().min(1)).max(30),
+    filters: z.array(z.string().min(1)).max(30),
+    output_family: z.literal('visual_manifest_candidate'),
+    output_template: z.string().min(1).max(500),
+    source_truth_summary: z.string().min(1).max(2000),
+    reference_annotation_refs: z.array(z.string().min(1)).max(100),
+  }),
+  blockers: z.array(z.string().min(1)),
+  warnings: z.array(z.string().min(1)),
+  provenance_refs: z.array(z.string().min(1)).min(1),
+  persistence_allowed: z.literal(false),
+  generation_allowed: z.literal(false),
+  canon_promotion_allowed: z.literal(false),
+  required_next_action: z.literal('owner_reviews_then_materializes_visual_references'),
+});
+export type D08VisualManifestCandidate = z.infer<typeof D08VisualManifestCandidateSchema>;
+
+export const VISUAL_KNOWLEDGE_FABRIC_API = {
+  registry: '/api/v1/experience/visual-fabric/registry',
+  lint: '/api/v1/experience/visual-fabric/lint',
+  compile: '/api/v1/experience/visual-fabric/compile',
+  d08Candidate: '/api/v1/experience/visual-fabric/d08-candidate',
+} as const;
+
+// ───────────────────── Living Entity Kernel : generic, candidate-only ─────────────────────
+
+export const LivingEntityKindSchema = z.enum([
+  'persona',
+  'subpersona',
+  'companion',
+  'monster',
+  'moth',
+  'incubator_creature',
+]);
+export type LivingEntityKind = z.infer<typeof LivingEntityKindSchema>;
+
+export const LivingEntityInteractionModeSchema = z.enum([
+  'passive_indicator',
+  'contextual_bubble',
+  'full_page_guided',
+  'dialogue_participant',
+]);
+export type LivingEntityInteractionMode = z.infer<typeof LivingEntityInteractionModeSchema>;
+
+export const LivingEntityEvolutionStageDefinitionSchema = z.object({
+  stage_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  order: z.number().int().nonnegative(),
+  completion_min: z.number().min(0).max(1),
+  indicator_minimums: z.record(z.number()),
+  required_signal_refs: z.array(z.string().min(1)).max(30),
+  visual_layer_refs: z.array(z.string().min(1)).max(20),
+  dialogue_intent: z.string().min(1).max(500),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type LivingEntityEvolutionStageDefinition = z.infer<typeof LivingEntityEvolutionStageDefinitionSchema>;
+
+export const LivingEntityEvolutionPolicySchema = z.object({
+  policy_id: z.string().min(1),
+  version: z.string().min(1),
+  stages: z.array(LivingEntityEvolutionStageDefinitionSchema).min(1).max(20),
+  immutable_trait_refs: z.array(z.string().min(1)).max(40),
+  allow_regression: z.boolean(),
+  creator_validation_required: z.literal(true),
+  automatic_generation_allowed: z.literal(false),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+}).superRefine((policy, ctx) => {
+  const orders = policy.stages.map((stage) => stage.order);
+  if (new Set(orders).size !== orders.length) {
+    ctx.addIssue({code: z.ZodIssueCode.custom, message: 'Les paliers doivent avoir un ordre unique.'});
+  }
+});
+export type LivingEntityEvolutionPolicy = z.infer<typeof LivingEntityEvolutionPolicySchema>;
+
+export const LivingEntityDefinitionSchema = z.object({
+  definition_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  kind: LivingEntityKindSchema,
+  status: VisualRegistryLifecycleSchema,
+  version: z.string().min(1),
+  role_summary: z.string().min(1).max(800),
+  lore_summary: z.string().min(1).max(2000).nullable(),
+  interaction_mode: LivingEntityInteractionModeSchema,
+  allowed_intents: z.array(z.string().min(1)).max(30),
+  assignment_scopes: z.array(VisualRegistryScopeSchema).min(1).max(8),
+  visual_entity_ref: z.string().min(1).nullable(),
+  functional_persona_ref: z.string().min(1).nullable(),
+  lore_persona_ref: z.string().min(1).nullable(),
+  evolution_policy_ref: z.string().min(1).nullable(),
+  boundaries: z.array(z.string().min(1).max(500)).min(1).max(30),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type LivingEntityDefinition = z.infer<typeof LivingEntityDefinitionSchema>;
+
+export const LivingEntityStageHistoryEntrySchema = z.object({
+  stage_id: z.string().min(1),
+  entered_at: z.number().int().nonnegative(),
+  reason: z.string().min(1).max(1000),
+  evidence_refs: z.array(z.string().min(1)).min(1).max(40),
+  validated_by: z.string().min(1).nullable(),
+});
+export type LivingEntityStageHistoryEntry = z.infer<typeof LivingEntityStageHistoryEntrySchema>;
+
+export const LivingEntityInstanceSchema = z.object({
+  instance_id: z.string().min(1),
+  definition_ref: z.string().min(1),
+  display_name: z.string().min(1).max(160),
+  status: z.enum(['candidate', 'active', 'paused', 'archived']),
+  assignment_scope_refs: z.array(z.string().min(1)).min(1).max(20),
+  current_stage_id: z.string().min(1),
+  stage_history: z.array(LivingEntityStageHistoryEntrySchema).max(100),
+  visual_asset_refs: z.array(z.string().min(1)).max(100),
+  created_by: z.string().min(1),
+  validated_by: z.string().min(1).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type LivingEntityInstance = z.infer<typeof LivingEntityInstanceSchema>;
+
+export const LivingEntityEvolutionSignalSchema = z.object({
+  signal_ref: z.string().min(1),
+  metric_ref: z.string().min(1),
+  value: z.number(),
+  observed_at: z.number().int().nonnegative(),
+  source_ref: z.string().min(1),
+});
+export type LivingEntityEvolutionSignal = z.infer<typeof LivingEntityEvolutionSignalSchema>;
+
+export const LivingEntityEvolutionCandidateSchema = z.object({
+  evaluated_at: z.number().int().nonnegative(),
+  instance_ref: z.string().min(1),
+  current_stage_id: z.string().min(1),
+  proposed_stage_id: z.string().min(1),
+  readiness: z.enum(['unchanged', 'candidate', 'blocked']),
+  reason: z.string().min(1).max(1200),
+  evidence_refs: z.array(z.string().min(1)).max(40),
+  missing_requirements: z.array(z.string().min(1)).max(40),
+  continuity_locks: z.array(z.string().min(1)).max(40),
+  visual_layer_refs: z.array(z.string().min(1)).max(20),
+  dialogue_bubble: z.string().min(1).max(1000),
+  creator_validation_required: z.literal(true),
+  generation_allowed: z.literal(false),
+  canon_promotion_allowed: z.literal(false),
+});
+export type LivingEntityEvolutionCandidate = z.infer<typeof LivingEntityEvolutionCandidateSchema>;
+
+export const LivingEntityCodexEntrySchema = z.object({
+  instance_ref: z.string().min(1),
+  definition_ref: z.string().min(1),
+  display_name: z.string().min(1).max(160),
+  kind: LivingEntityKindSchema,
+  current_stage_id: z.string().min(1),
+  assignment_scope_refs: z.array(z.string().min(1)).min(1),
+  lore_summary: z.string().min(1).max(2000).nullable(),
+  stage_history: z.array(LivingEntityStageHistoryEntrySchema),
+  visual_asset_refs: z.array(z.string().min(1)),
+  visibility: z.enum(['creator_only', 'assigned_scope', 'public']),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type LivingEntityCodexEntry = z.infer<typeof LivingEntityCodexEntrySchema>;
+
 export const UserRuntimeLoadoutSchema = z.object({
   user_id: z.string().min(1),
   room_id: z.string().min(1),
@@ -4984,6 +5728,96 @@ export const UserRuntimeLoadoutSchema = z.object({
   guidance_candidates: z.array(GuidanceCandidateSchema).max(3).default([]),
 });
 export type UserRuntimeLoadout = z.infer<typeof UserRuntimeLoadoutSchema>;
+
+// ───────────────────── MasterFlow Orientation Fabric : diagnostic-only ─────────────────────
+
+export const OrientationImplementationStatusSchema = z.enum([
+  'absent',
+  'partial',
+  'implemented',
+  'future',
+  'blocked',
+  'unknown',
+]);
+export type OrientationImplementationStatus = z.infer<typeof OrientationImplementationStatusSchema>;
+
+export const OrientationCapabilityVisibilitySchema = z.enum([
+  'available',
+  'locked',
+  'future',
+  'out_of_scope',
+]);
+export type OrientationCapabilityVisibility = z.infer<typeof OrientationCapabilityVisibilitySchema>;
+
+export const MasterFlowOrientationQuerySchema = z.object({
+  project_id: z.string().min(1).optional(),
+  active_mode: z.string().min(1).max(160).optional(),
+  domain_id: z.string().min(1).max(160).optional(),
+  include_future: z.boolean().default(true),
+});
+export type MasterFlowOrientationQuery = z.input<typeof MasterFlowOrientationQuerySchema>;
+
+export const OrientationDomainSnapshotSchema = z.object({
+  domain_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  registry: OrientationImplementationStatusSchema,
+  resolver: OrientationImplementationStatusSchema,
+  compiler: OrientationImplementationStatusSchema,
+  lint: OrientationImplementationStatusSchema,
+  explanation: OrientationImplementationStatusSchema,
+  gate: OrientationImplementationStatusSchema,
+  gap_summary: z.string().min(1).max(1000),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type OrientationDomainSnapshot = z.infer<typeof OrientationDomainSnapshotSchema>;
+
+export const OrientationCapabilitySnapshotSchema = z.object({
+  capability_id: z.string().min(1),
+  label: z.string().min(1).max(200),
+  domain_id: z.string().min(1),
+  source_type: z.enum(['action_registry', 'runtime_pack', 'visual_fabric', 'factory_router', 'system_contract']),
+  implementation_status: OrientationImplementationStatusSchema,
+  visibility: OrientationCapabilityVisibilitySchema,
+  risk_level: RiskLevelSchema.nullable(),
+  validation_required: z.union([z.boolean(), z.literal('depends_on_preflight')]).nullable(),
+  endpoint: z.string().min(1).nullable(),
+  blocked_reason: z.string().min(1).max(500).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type OrientationCapabilitySnapshot = z.infer<typeof OrientationCapabilitySnapshotSchema>;
+
+export const NextActionCandidateSchema = z.object({
+  action_id: z.string().min(1),
+  label: z.string().min(1).max(200),
+  domain_id: z.string().min(1),
+  reason: z.string().min(1).max(800),
+  risk_level: RiskLevelSchema,
+  validation_required: z.union([z.boolean(), z.literal('depends_on_preflight')]),
+  confidence: z.number().min(0).max(1),
+});
+export type NextActionCandidate = z.infer<typeof NextActionCandidateSchema>;
+
+export const MasterFlowOrientationSnapshotSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  actor_role: RoleSchema,
+  project_id: z.string().min(1).nullable(),
+  active_mode: z.string().min(1).nullable(),
+  domains: z.array(OrientationDomainSnapshotSchema).min(1),
+  capabilities: z.array(OrientationCapabilitySnapshotSchema),
+  next_action_candidates: z.array(NextActionCandidateSchema).max(5),
+  blocked_capabilities: z.array(z.object({
+    capability_id: z.string().min(1),
+    reason: z.string().min(1).max(500),
+  })),
+  orientation_invariants: z.array(z.string().min(1)).min(1),
+  execution_policy: z.literal('diagnostic_only'),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type MasterFlowOrientationSnapshot = z.infer<typeof MasterFlowOrientationSnapshotSchema>;
+
+export const MASTERFLOW_ORIENTATION_API = {
+  snapshot: '/api/v1/experience/orientation',
+} as const;
 
 // ───────────────────────── Cohortes et rosters versionnés ─────────────────────────
 
@@ -5617,6 +6451,56 @@ export const STYLE_MIRROR_API = {
     updateStatus: '/api/v1/style-mirror/profiles/:id/status',
   },
 } as const;
+
+export const ExpressiveCanonCapabilityMapSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  actor_scope_ref: z.string().min(1).max(240),
+  style_mirror: z.object({
+    table: z.literal('style_mirror_profiles'),
+    total_profiles: z.number().int().nonnegative(),
+    active_profiles: z.number().int().nonnegative(),
+    injectable_profiles: z.number().int().nonnegative(),
+    pending_consent_profiles: z.number().int().nonnegative(),
+    revoked_profiles: z.number().int().nonnegative(),
+    instruction_limit_chars: z.number().int().positive(),
+    endpoint_refs: z.array(z.string().min(1)).min(1),
+  }),
+  primitives: z.array(z.object({
+    primitive_id: z.string().min(1),
+    label: z.string().min(1).max(180),
+    status: z.enum(['implemented', 'partial', 'blocked', 'future']),
+    area: z.enum(['style_mirror', 'prompt_steering', 'voice_tts', 'consent', 'provider', 'ui_metadata']),
+    endpoint_refs: z.array(z.string().min(1)).max(20),
+    gate: z.string().min(1).max(320),
+    gap: z.string().min(1).max(800).nullable(),
+  })).min(1),
+  consent_policy: z.object({
+    profile_owner_is_stylized_subject: z.literal(true),
+    teacher_can_only_propose_student_profile: z.literal(true),
+    subject_activation_required: z.literal(true),
+    revocation_cuts_next_injection: z.literal(true),
+    admin_cannot_bypass_consent: z.literal(true),
+  }),
+  prompt_policy: z.object({
+    provider_agnostic_prompt_only: z.literal(true),
+    no_logits_or_sampling_control: z.literal(true),
+    no_raw_private_sample_text: z.literal(true),
+    style_never_changes_permissions_facts_sources_or_method: z.literal(true),
+    single_signature_move_maximum: z.literal(true),
+    persona_canon_remains_primary_voice: z.literal(true),
+  }),
+  tts_policy: z.object({
+    provider_call_allowed_by_this_map: z.literal(false),
+    default_voice_whitelisted: z.string().min(1),
+    max_audio_bytes: z.number().int().positive(),
+    timeout_ms: z.number().int().positive(),
+    rate_limit_per_minute: z.number().int().positive(),
+    text_length_bound_by_request_schema: z.literal(true),
+  }),
+  forbidden_shortcuts: z.array(z.string().min(1)).min(1),
+  execution_policy: z.literal('diagnostic_only'),
+});
+export type ExpressiveCanonCapabilityMap = z.infer<typeof ExpressiveCanonCapabilityMapSchema>;
 
 // ───────────────────────── Weather / Pedagogical Climate (D05) ─────────────────────────
 

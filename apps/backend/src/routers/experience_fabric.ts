@@ -2,7 +2,9 @@ import {Router, type Request, type Response} from 'express';
 
 import {
   AutonomyCycleQuerySchema,
+  CompileVisualPlanRequestSchema,
   ExperienceTimelineQuerySchema,
+  MasterFlowOrientationQuerySchema,
   PrecedentSearchQuerySchema,
   StoryletEvaluationQuerySchema,
   ThemeStudioAssetPackQuerySchema,
@@ -23,9 +25,16 @@ import {
 } from '../services/precedent_engine.ts';
 import {evaluateStorylets} from '../services/storylet_engine.ts';
 import {buildGuidedLivingCompanion} from '../services/living_companion.ts';
+import {buildMasterFlowOrientationSnapshot} from '../services/orientation_fabric.ts';
 import {buildProjectMonsterEvolutionReport} from '../services/project_monster.ts';
 import {buildThemeStudioAssetPackPreview} from '../services/theme_studio.ts';
 import {buildVisualDaResolverPreview} from '../services/visual_da_registry.ts';
+import {
+  buildD08VisualManifestCandidate,
+  compileVisualPlan,
+  lintVisualKnowledgeRegistry,
+  listVisualKnowledgeRegistry,
+} from '../services/visual_knowledge_fabric.ts';
 import {buildVisualNarrativeGrammarReport} from '../services/visual_narrative_grammar.ts';
 
 function actor(req: Request): AuthUser {
@@ -112,6 +121,15 @@ function autonomyCycleQuery(req: Request) {
   });
 }
 
+function orientationQuery(req: Request) {
+  return MasterFlowOrientationQuerySchema.safeParse({
+    project_id: req.query.project_id,
+    active_mode: req.query.active_mode,
+    domain_id: req.query.domain_id,
+    include_future: req.query.include_future === 'false' ? false : undefined,
+  });
+}
+
 function fail(res: Response, error: unknown): void {
   const message = error instanceof Error ? error.message : 'experience_fabric_error';
   res.status(message === 'project_not_found' || message === 'precedent_not_found' ? 404 : 400).json({error: message});
@@ -142,6 +160,19 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildExperienceSnapshot(actor(req), parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/orientation', (req, res): void => {
+    const parsed = orientationQuery(req);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(buildMasterFlowOrientationSnapshot(actor(req), parsed.data));
     } catch (error) {
       fail(res, error);
     }
@@ -220,6 +251,50 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildVisualDaResolverPreview(actor(req), parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/visual-fabric/registry', (req, res): void => {
+    const source = req.query.source === 'legacy_adapter' ? 'legacy_adapter' : 'empty_core';
+    try {
+      res.json(listVisualKnowledgeRegistry(source));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/visual-fabric/lint', (req, res): void => {
+    const source = req.query.source === 'legacy_adapter' ? 'legacy_adapter' : 'empty_core';
+    try {
+      res.json(lintVisualKnowledgeRegistry(listVisualKnowledgeRegistry(source)));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.post('/experience/visual-fabric/compile', (req, res): void => {
+    const parsed = CompileVisualPlanRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(compileVisualPlan(parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.post('/experience/visual-fabric/d08-candidate', (req, res): void => {
+    const parsed = CompileVisualPlanRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(buildD08VisualManifestCandidate(compileVisualPlan(parsed.data)));
     } catch (error) {
       fail(res, error);
     }

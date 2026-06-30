@@ -6,15 +6,245 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `DA-REGISTRY-ACTING-003`
-- objectif : vérifier les cas pilotes du resolver DA sans générer d'image ni canoniser d'asset.
-- statut : `ready`
-- dernière action terminée : `DA-REGISTRY-ACTING-002` publiée via PR #211, merge `c99cd0d`.
-- prochaine action : écrire des tests/fixtures de cas pilotes MasterFlex, ProfKrapu, Ours d'Or monstre et rôles Ours d'Or.
-- fichiers/domaines concernés : DA Registry, seeds déclaratifs, tests backend, documentation d'absorption.
-- tests à relancer : targeted DA Registry puis backend complet si code touché.
-- publication : aucune nouvelle publication en cours ; GitHub `main` aligné sur `c99cd0d`.
-- blocage : aucun ; provider image, canonisation et assets réels restent fermés.
+- id : `PUBLICATION-GROUPED-REVIEW-001`
+- objectif : décider si la pile locale du rush système sans UI doit être publiée en PR groupée ou découpée.
+- statut : `awaiting_malex_validation`
+- dernière action terminée : cohérence globale verte après Expressive Canon et Resources/Outputs.
+- prochaine action : si MALEX valide, préparer le contrat de publication puis commit/push/PR ; sinon continuer audit ou découper.
+- fichiers/domaines concernés : Orientation Fabric, Inventory, Resources, DA assets, Expressive Canon, Security/Trust, Factory Backflow.
+- tests à relancer : aucun avant décision ; relancer backend complet, lint, build frontend et `git diff --check` juste avant publication.
+- publication : aucune ; branche locale `codex/visual-knowledge-fabric`, base GitHub `730e912`.
+- blocage : aucun ; UI, génération, canonisation, import massif DA, migration de données, provider voix/image et runner live restent fermés.
+
+## 2026-06-30 — GLOBAL-COHERENCE-TESTS-001 : rush système sans UI vérifié
+
+- backend complet : 127 fichiers, 699/699 tests ;
+- lint backend : OK ;
+- build frontend de sécurité : OK ;
+- `git diff --check` : OK ;
+- aucune UI étendue dans cette tranche ;
+- aucun provider, génération, canonisation, migration, import massif, déploiement ou publication.
+
+Statut : pile locale prête pour décision MALEX : publication groupée, découpage, ou poursuite audit.
+
+## 2026-06-30 — INVENTORY-RESOURCES-OUTPUTS-001 : carte Resources / Outputs
+
+- ajout du contrat `ResourceOutputCapabilityMap` ;
+- ajout du service `buildResourceOutputCapabilityMap` ;
+- ajout de l’endpoint admin `GET /api/v1/diagnostics/resource-output/capability-map` ;
+- la carte distingue Resource Truth, RAG projection, Visual Manifests, Generated Assets et Output Registry futur ;
+- invariants explicites : ressource candidate non servie par défaut, manifest ≠ génération, asset candidat à revoir, export/live sous gate humain ;
+- raccord Orientation Fabric via `resource_output_capability_map`.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/resource_output_capability_map.test.ts apps/backend/tests/orientation_fabric.test.ts` — 6/6 ;
+- `npm run lint` — OK.
+
+Statut : local, non publié.
+
+## 2026-06-30 — EXPRESSIVE-CANON-VOICE-001 : carte Style Mirror / Voice
+
+- ajout du contrat `ExpressiveCanonCapabilityMap` ;
+- ajout du service `buildExpressiveCanonCapabilityMap` ;
+- ajout de l’endpoint admin `GET /api/v1/diagnostics/expressive-canon/capability-map` ;
+- Style Mirror reste la base : aucune table `behavior_profiles` concurrente ;
+- la carte compte profils actifs, injectables, pending consent et revoked ;
+- policy explicite : consentement sujet, révocation effective, pas de texte source privé, pas d’effet sur permissions/faits/sources/méthode ;
+- TTS reste partiel et verrouillé : cette carte ne déclenche aucun provider voix ;
+- raccord Orientation Fabric via `style_mirror_expressive_canon`.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/expressive_canon_capability_map.test.ts apps/backend/tests/orientation_fabric.test.ts` — 6/6 ;
+- `npm run lint` — OK.
+
+Statut : local, non publié.
+
+## 2026-06-30 — ORIENTATION-FABRIC-001 : rush système sans UI
+
+- UI/prototype retiré du rush système ; l’autre conversation peut le traiter séparément ;
+- audit transversal ajouté : `docs/experience-fabric/SYSTEM_ORIENTATION_FABRIC_AUDIT_2026-06-30.md` ;
+- ajout d’un contrat partagé `MasterFlowOrientationSnapshot` ;
+- ajout d’une couche backend `orientation_fabric` diagnostic-only ;
+- endpoint `GET /api/v1/experience/orientation` ;
+- la boussole lit actions, runtime packs, Visual Knowledge Fabric et routeur factories externe ;
+- le kernel visuel reste sans entités/outputs propriétaires mais reçoit des jauges système génériques
+  pour morphologie, style, texture, détail, couleur, acting, continuité et lisibilité output ;
+- les gaps Story, Inventory, Security, Voice et Teaching sont maintenant visibles comme cartes système,
+  sans être présentés comme actions exécutables si leur contrat est incomplet ;
+- les factories restent candidates externes : aucun pack n’est importé ;
+- les prochaines actions candidates sont proposées depuis les capacités disponibles, sans exécution ;
+- invariants exposés : pas d’exécution, pas de permission nouvelle, pas d’import Factory complet, UI hors rush.
+
+Statut : local, non publié.
+
+Vérifications locales :
+
+- `npx vitest apps/backend/tests/orientation_fabric.test.ts apps/backend/tests/visual_knowledge_fabric.test.ts` — 16/16 ;
+- `npm run lint` — OK ;
+- `npm test` — backend complet 124 fichiers, 694/694 ;
+- `npm run build:frontend` — OK ;
+- `git diff --check` — OK.
+
+## 2026-06-30 — ORIENTATION-FABRIC-002 : cartes système renforcées
+
+- Story : `narrative_canon_graph` et `storylet_engine` explicités ;
+- Inventory : gap verrouillé `inventory_registry_gap`, pour éviter de prétendre que le registry explicable est fini ;
+- Security : `security_guard_and_safety_state` + `trust_fabric` visibles ;
+- Personas/Voice : `style_mirror_expressive_canon` et `voice_persona_tts` verrouillés par consentement/provider/coût ;
+- Teaching : `teaching_learning_integrity` visible comme fondation partielle ;
+- aucune UI, aucun provider, aucune permission, aucune importation Factory.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/orientation_fabric.test.ts` — 5/5 ;
+- `npm run lint` — OK ;
+- `git diff --check` — OK.
+
+Statut : local, non publié.
+
+## 2026-06-30 — FACTORY-BACKFLOW-NATIVE-001 : carte de routing native
+
+- ajout du contrat `FactoryBackflowCapabilityMap` ;
+- ajout du service `buildFactoryBackflowCapabilityMap` ;
+- ajout de l’endpoint admin `GET /api/v1/backflow/capability-map` ;
+- la carte expose les décisions possibles : primitive MasterFlow, dual track, workshop, blocked ;
+- les interdits restent explicites : import complet, ZIP direct, fetch externe, auto-canon, activation runtime ;
+- raccord dans Orientation Fabric via `factory_backflow_capability_map` ;
+- aucune Factory Desktop importée, aucun fichier externe dereferencé, aucune canonisation.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/factory_backflow_intake.test.ts` — 6/6 ;
+- `npm run lint` — OK ;
+- `git diff --check` — OK.
+
+Statut : local, non publié.
+
+## 2026-06-30 — INVENTORY-CAPABILITY-MAP-001 : carte Inventory scoped
+
+- ajout du contrat `InventoryCapabilityMap` ;
+- ajout de `buildInventoryCapabilityMap(actor, projectId)` ;
+- ajout de l’endpoint `GET /api/v1/inventory/capability-map` ;
+- compte uniquement les items/collections lisibles par l’acteur ;
+- expose les primitives : items, collections, besoins projet, OCR/photo candidates, outputs futurs ;
+- verrouille les invariants : candidate ≠ canon, disponibilité jamais garantie, matching consultatif, OCR à relire ;
+- raccord dans Orientation Fabric via `inventory_registry_gap` maintenant disponible comme capability map.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/inventory_core.test.ts apps/backend/tests/orientation_fabric.test.ts` — 14/14 ;
+- `npm run lint` — OK ;
+- `git diff --check` — OK.
+
+Statut : local, non publié.
+
+## 2026-06-30 — SECURITY-TRUST-FABRIC-001 : carte Security/Trust
+
+- ajout du contrat `SecurityTrustCapabilityMap` ;
+- ajout du service `buildSecurityTrustCapabilityMap` ;
+- ajout de l’endpoint admin `GET /api/v1/diagnostics/security-trust/capability-map` ;
+- la carte relie Security Guard, Trust Fabric et Safety State ;
+- policy explicite : curiosité autorisée, explication pédagogique autorisée, inputs suspects warn/refuse ;
+- aucun ban automatique : sanction/rétablissement restent godmode manuels ;
+- raccord Orientation Fabric via `security_guard_and_safety_state`.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/security_trust_capability_map.test.ts apps/backend/tests/orientation_fabric.test.ts` — 6/6 ;
+- `npm run lint` — OK ;
+- `git diff --check` — OK.
+
+Statut : local, non publié.
+
+## 2026-06-30 — VISUAL-KNOWLEDGE-FABRIC-001 : contrat
+
+- construire l'encyclopédie graphique exécutable avant d'y absorber les bibles DA ;
+- conserver un kernel vide capable de refuser proprement les entités, layers ou outputs inconnus ;
+- adapter le registre DA historique en lecture seule au lieu de créer un quatrième cerveau ;
+- rendre layers, jauges, références, outputs et règles réellement composables ;
+- produire un `CompiledVisualPlan` déterministe et explicable, jamais un prompt provider ;
+- conserver Theme Studio comme fondation du futur DA Studio ;
+- ne générer, canoniser, publier ou importer aucun asset réel.
+
+Implémentation locale :
+
+- kernel vide versionné, sans contenu DA propriétaire ;
+- projection explicite de l'ancien registre, jamais assimilée au nouveau canon ;
+- composition déterministe des layers, héritages, incompatibilités, jauges, outputs et annotations ;
+- refus des traits obligatoires absents et des overrides sur traits verrouillés ;
+- `CompiledVisualPlan` explicable, sans prompt provider ni génération ;
+- DA Studio : lecture du kernel, projection historique, comptages et compilation d'un plan témoin ;
+- Living Entity Kernel : définitions, assignations, paliers, signaux, propositions d'évolution et Codex ;
+- aucune évolution, génération ou canonisation automatique.
+
+Vérifications finales locales :
+
+- 12/12 tests ciblés ;
+- backend complet : 123 fichiers, 685/685 tests ;
+- `npm run lint` — OK ;
+- `npm run build:frontend` — OK ;
+- `git diff --check` — OK.
+- smoke navigateur : kernel vide, projection historique, lint et plan témoin — OK ;
+- responsive 390 px : aucun débordement horizontal.
+
+Statut : implémentation locale vérifiée, non commitée et non publiée.
+
+## 2026-06-30 — VISUAL-KNOWLEDGE-FABRIC-009A : workbench DA Studio
+
+- Explorer : choix de l'entité et lecture de sa famille ;
+- Output Lab : sélection d'une recette et lecture de ses contraintes ;
+- Layer Composer : layers hérités visibles et activation non destructive de layers optionnels ;
+- Gauge Console : réglages bornés par les plages sûres du registre ;
+- Reference Board : rôle, région, droits et provenance des références assignées ;
+- compilation : stack, jauges finales, conflits, manques et hash déterministe ;
+- Theme Studio reste un module du DA Studio ;
+- aucune persistance, génération, canonisation ou import massif.
+
+Vérifications :
+
+- build frontend — OK ;
+- lint — OK ;
+- 12/12 tests ciblés — OK ;
+- smoke réel : sélection de la couche Ours d'Or et recompilation du plan — OK ;
+- responsive 390 px : aucun débordement horizontal.
+
+Statut : local uniquement, publication groupée différée à la demande de MALEX.
+
+## 2026-06-30 — VISUAL-KNOWLEDGE-FABRIC-010A : pont D08 candidat
+
+- projette un `CompiledVisualPlan` en demande D08 lisible ;
+- conserve entités, racine, layers, filtres, output, provenance et annotations ;
+- sépare les annotations du registre des vrais `visual_reference_ids` persistés ;
+- impose une revue owner avant matérialisation des références ;
+- bloque si le plan contient un conflit canon ou une donnée obligatoire absente ;
+- `persistence_allowed=false`, `generation_allowed=false`, `canon_promotion_allowed=false`.
+
+Vérifications :
+
+- 13/13 tests ciblés — OK ;
+- lint — OK ;
+- build frontend — OK.
+
+Statut : local uniquement, aucun manifest D08 écrit.
+
+## 2026-06-30 — VISUAL-KNOWLEDGE-FABRIC-011 : pilotes minimaux
+
+- personnage humain fictif → avatar ;
+- décor neutre fictif → scène ;
+- objet symbolique fictif → scène avec render layer ;
+- MasterFlex → projection historique explicite ;
+- monstre projet et MOTH → même Living Entity Kernel ;
+- outputs et candidats D08 restent sans génération ni canonisation.
+
+Vérifications :
+
+- 16/16 tests ciblés — OK ;
+- lint — OK ;
+- `git diff --check` — OK.
+
+Statut : capacités génériques prouvées ; aucun contenu pilote promu dans le registre actif.
 
 ## 2026-06-30 — SUIVI-CLEANUP-001 : DA-002 publiée et reprise DA-003
 

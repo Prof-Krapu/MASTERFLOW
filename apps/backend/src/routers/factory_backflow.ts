@@ -4,6 +4,7 @@ import {CreateFactoryBackflowIntakeRequestSchema, RouteFactoryBackflowCandidateU
 
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
+  buildFactoryBackflowCapabilityMap,
   createFactoryBackflowIntake,
   listFactoryBackflowCandidateUpdates,
   routeFactoryBackflowCandidateUpdate,
@@ -34,6 +35,11 @@ export function createFactoryBackflowRouter(): Router {
   router.get('/backflow/candidate-updates', requireUser, requireRole('admin'), (_req: Request, res: Response): void => {
     res.json(listFactoryBackflowCandidateUpdates());
   });
+
+  router.get('/backflow/capability-map', requireUser, requireRole('admin'), (_req: Request, res: Response): void => {
+    res.json(buildFactoryBackflowCapabilityMap());
+  });
+
   router.post('/backflow/candidate-updates/:id/route', requireUser, requireRole('admin'), (req: Request, res: Response): void => {
     const parsed = RouteFactoryBackflowCandidateUpdateRequestSchema.safeParse(req.body);
     if (!parsed.success || !req.params.id) return void res.status(400).json({error: 'invalid_factory_backflow_route'});
