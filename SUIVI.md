@@ -9,12 +9,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - id : `UI-002-PERSONA-RAIL-CHAT`
 - objectif : rendre le persona actif visible sur la Home et transformer le chat compact en surface
   extensible, sans modifier le backend ni les permissions.
-- statut : `local_verified`
-- dernière action terminée : persona rail, chat extensible et test RAG stabilisé ; validations vertes.
-- prochaine action : commit, push, PR, merge et preuve GitHub.
+- statut : `published`
+- dernière action terminée : PR #201 mergée sur GitHub (`8d41ea9`).
+- prochaine action : cadrer puis construire `UI-003`, page complète adaptative réutilisable.
 - fichiers/domaines concernés : `app-shell.tsx`, `App.tsx`, `styles.css`, suivi UI.
-- tests à relancer : aucun avant publication ; backend 665/665, lint backend/frontend et build verts.
-- publication : branche locale `codex/ui-persona-rail-chat-002`, non publiée à ce checkpoint.
+- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
+- publication : GitHub `main == origin/main == 8d41ea9` après merge de la PR #201.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
 
@@ -38,6 +38,8 @@ Implémentation vérifiée :
 
 Vérifications : RAG ciblé 12/12 ; backend complet 665/665 ; lint backend/frontend ; build
 frontend ; `git diff --check`.
+
+Statut : publié via PR #201 (`8d41ea9`).
 
 ## 2026-06-29 — RED-TEAM-TESTS-003 : permissions router et UI Safety
 
