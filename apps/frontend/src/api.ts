@@ -50,6 +50,7 @@ import type {
   IdentityMatchReviewItem,
   Invitation,
   GuidedSession,
+  LivingCompanion,
   HardStopControlState,
   GuidedContribution,
   Job,
@@ -576,6 +577,17 @@ export async function getGuides(token?: string | null): Promise<ConversationGuid
 export async function getGuidedSessions(token?: string | null): Promise<GuidedSession[]> {
   const response = await request<{results: GuidedSession[]}>('/guided-sessions', {method: 'GET'}, token);
   return response.results;
+}
+
+export async function getGuidedLivingCompanion(
+  sessionId: string,
+  token?: string | null,
+): Promise<LivingCompanion> {
+  return request<LivingCompanion>(
+    `/experience/companions/guided-sessions/${encodeURIComponent(sessionId)}`,
+    {method: 'GET'},
+    token,
+  );
 }
 
 export async function createGuidedSession(

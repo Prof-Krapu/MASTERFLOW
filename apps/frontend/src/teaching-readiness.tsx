@@ -12,6 +12,7 @@ import type {
   IdentityMatchReviewItem,
   InstitutionalGradingProfile,
   Job,
+  LivingCompanion,
   Project,
   PreCorrectionManifest,
   Resource,
@@ -41,6 +42,7 @@ import {
   createSubjectVersion,
   createGuidedSession,
   getGuides,
+  getGuidedLivingCompanion,
   getCohorts,
   getCorrectionBatches,
   getGuidedSessions,
@@ -69,6 +71,7 @@ import {
   validateCorrectionSheet,
 } from './api.ts';
 import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
+import {ClassProjection} from './class-projection.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
 
 type TeachingReadinessProps = {
@@ -222,6 +225,9 @@ export function TeachingReadiness({
   const [answerChoice, setAnswerChoice] = useState('');
   const [answerBoolean, setAnswerBoolean] = useState('');
   const [answerMulti, setAnswerMulti] = useState<string[]>([]);
+  const [companion, setCompanion] = useState<LivingCompanion | null>(null);
+  const [companionStatus, setCompanionStatus] = useState('Aucun compagnon projetable.');
+  const [projectionOpen, setProjectionOpen] = useState(false);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -616,6 +622,34 @@ export function TeachingReadiness({
     setAnswerMulti([]);
   }, [currentQuestion?.question_id]);
 
+  useEffect(() => {
+    if (!activeSession || activeGuide?.domain !== 'cdc') {
+      setCompanion(null);
+      setProjectionOpen(false);
+      setCompanionStatus('Aucun compagnon CDC assigné à la session active.');
+      return;
+    }
+    let cancelled = false;
+    setCompanionStatus('Chargement du compagnon assigné.');
+    void getGuidedLivingCompanion(activeSession.session_id, token)
+      .then((nextCompanion) => {
+        if (cancelled) return;
+        setCompanion(nextCompanion);
+        setCompanionStatus('Compagnon assigné disponible.');
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setCompanion(null);
+        setProjectionOpen(false);
+        setCompanionStatus(error instanceof Error
+          ? error.message
+          : 'Compagnon assigné indisponible.');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeGuide?.domain, activeSession, token]);
+
   const startSession = useCallback(async (guide: ConversationGuide): Promise<void> => {
     const needsConsent = guide.consent_policy['required'] === true;
     if (needsConsent && !consentAccepted) {
@@ -843,6 +877,19 @@ export function TeachingReadiness({
       ) : undefined}
     >
       <div className="teaching-readiness">
+      {projectionOpen && companion ? (
+        <ClassProjection
+          companion={companion}
+          contextLabel={selectedCohort?.title ?? project?.name ?? context.room.name}
+          onClose={() => setProjectionOpen(false)}
+          onReturnToGuide={() => {
+            setProjectionOpen(false);
+            window.requestAnimationFrame(() => {
+              document.getElementById('teaching-guided')?.scrollIntoView({behavior: 'smooth'});
+            });
+          }}
+        />
+      ) : null}
 
       <div className="teaching-readiness__grid">
         {items.map((item) => (
@@ -1081,14 +1128,22 @@ export function TeachingReadiness({
         </div>
       </details>
 
-      <section className="teaching-guided" aria-label="Sujet et session guidée">
+      <section className="teaching-guided" id="teaching-guided" aria-label="Sujet et session guidée">
         <div className="teaching-guided__heading">
           <div>
             <strong>Sujet guidé actif</strong>
             <span>{activeSession?.status ?? activeGuide?.status ?? 'aucun'}</span>
           </div>
-          {activeSession ? <small>Progression {Math.round(activeSession.progress.completion_ratio * 100)} %</small> : null}
+          <div className="teaching-guided__actions">
+            {companion?.interaction_mode === 'full_page_guided' ? (
+              <button className="secondary" onClick={() => setProjectionOpen(true)} type="button">
+                Projeter {companion.display_name}
+              </button>
+            ) : null}
+            {activeSession ? <small>Progression {Math.round(activeSession.progress.completion_ratio * 100)} %</small> : null}
+          </div>
         </div>
+        <p className="muted compact">{companionStatus}</p>
         {activeGuide ? (
           <div className="teaching-guided__body">
             <div>
