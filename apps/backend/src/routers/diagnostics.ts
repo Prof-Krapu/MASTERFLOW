@@ -10,6 +10,9 @@ import {getInventoryDiagnostics} from '../services/inventory_diagnostics.ts';
 import {getOwnerCockpitStatus} from '../services/owner_cockpit.ts';
 import {getTrustFabricSnapshot} from '../services/trust_fabric.ts';
 import {getSafetyStateSnapshot} from '../services/safety_state.ts';
+import {buildSecurityTrustCapabilityMap} from '../services/security_trust_capability_map.ts';
+import {buildExpressiveCanonCapabilityMap} from '../services/expressive_canon_capability_map.ts';
+import {buildResourceOutputCapabilityMap} from '../services/resource_output_capability_map.ts';
 import {diagnoseProcessActivation} from '../services/process_activation.ts';
 import {
   CreateD12MissedTriggerFindingSchema,
@@ -198,6 +201,27 @@ export function createDiagnosticsRouter(): Router {
       ? req.query.room_id
       : undefined;
     res.json(getSafetyStateSnapshot(user, roomId));
+  });
+
+  router.get('/diagnostics/security-trust/capability-map', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) return void res.status(401).json({error: 'unauthorized'});
+    const roomId = typeof req.query.room_id === 'string' && req.query.room_id.length <= 120
+      ? req.query.room_id
+      : undefined;
+    res.json(buildSecurityTrustCapabilityMap(user, roomId));
+  });
+
+  router.get('/diagnostics/expressive-canon/capability-map', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) return void res.status(401).json({error: 'unauthorized'});
+    res.json(buildExpressiveCanonCapabilityMap(user));
+  });
+
+  router.get('/diagnostics/resource-output/capability-map', (req: Request, res: Response): void => {
+    const user = req.user;
+    if (!user) return void res.status(401).json({error: 'unauthorized'});
+    res.json(buildResourceOutputCapabilityMap(user));
   });
 
   router.post('/diagnostics/process-activation', (req: Request, res: Response): void => {

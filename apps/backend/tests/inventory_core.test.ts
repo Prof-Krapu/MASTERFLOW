@@ -10,6 +10,7 @@ import type {AuthUser} from '../src/middleware/auth.ts';
 import {addProjectMember, createProject} from '../src/services/projects.ts';
 import {
   archiveInventoryItem,
+  buildInventoryCapabilityMap,
   createInventoryCollection,
   createInventoryItem,
   getInventoryItem,
@@ -52,6 +53,33 @@ afterAll(() => {
 });
 
 describe('PR-INV-1 — Inventory Core', () => {
+  it('expose une carte capability scoped sans transformer les candidates en canon', () => {
+    const item = createInventoryItem(participant, {
+      type: 'custom',
+      label: 'Objet capability privé',
+      source_refs: ['manual:capability-map'],
+    });
+    const map = buildInventoryCapabilityMap(participant);
+
+    expect(map.execution_policy).toBe('diagnostic_only');
+    expect(map.counts.candidate_items).toBeGreaterThanOrEqual(1);
+    expect(map.counts.validated_items).toBe(0);
+    expect(map.primitives).toContainEqual(expect.objectContaining({
+      primitive_id: 'inventory_project_needs',
+      status: 'partial',
+    }));
+    expect(map.source_truth_policy).toMatchObject({
+      candidate_is_not_validated: true,
+      availability_guaranteed: false,
+      project_need_match_is_advisory: true,
+      ocr_candidate_requires_review: true,
+    });
+    expect(map.forbidden_shortcuts).toContain('candidate_as_canon');
+    expect(listInventoryItems(outsider, {include_candidates: true})).not.toContainEqual(
+      expect.objectContaining({item_id: item.item_id}),
+    );
+  });
+
   it('cree un item personnel candidat prive et invisible aux autres', () => {
     const item = createInventoryItem(participant, {
       type: 'book',

@@ -1,8 +1,10 @@
 import {
   FactoryBackflowIntakeSchema,
   FactoryBackflowCandidateUpdateSchema,
+  FactoryBackflowCapabilityMapSchema,
   type CreateFactoryBackflowIntakeRequest,
   type FactoryBackflowCandidateUpdate,
+  type FactoryBackflowCapabilityMap,
   type FactoryCandidateRoutingRecommendation,
   type FactoryBackflowIntake,
   type FactoryBackflowIntakeReviewStatus,
@@ -232,6 +234,110 @@ export function listFactoryBackflowCandidateUpdates(): FactoryBackflowCandidateU
     'SELECT * FROM factory_backflow_candidate_updates ORDER BY updated_at ASC',
   ).all() as FactoryBackflowCandidateUpdateRow[];
   return rows.map(toCandidateUpdate);
+}
+
+function countRows(sql: string): number {
+  return (getDb().prepare(sql).get() as {count: number}).count;
+}
+
+/** Carte native du backflow Factory : diagnostic only, aucun import ni canon write. */
+export function buildFactoryBackflowCapabilityMap(): FactoryBackflowCapabilityMap {
+  return FactoryBackflowCapabilityMapSchema.parse({
+    generated_at: Date.now(),
+    source_refs: [
+      'apps/backend/src/services/factory_backflow_intake.ts',
+      'apps/backend/src/routers/factory_backflow.ts',
+      '/Users/malex/Desktop/FACTORIES/_MASTERFLOW_ROUTER/00_README_ROUTER.md',
+      '/Users/malex/Desktop/FACTORIES/MASTERFLOW_FACTORY_COMMON_CDC_V1_CANDIDATE.md',
+    ],
+    counts: {
+      pending_intakes: countRows("SELECT COUNT(*) AS count FROM factory_backflow_intakes WHERE review_status = 'pending'"),
+      quarantined_intakes: countRows("SELECT COUNT(*) AS count FROM factory_backflow_intakes WHERE intake_status = 'quarantined'"),
+      approved_candidate_updates: countRows("SELECT COUNT(*) AS count FROM factory_backflow_candidate_updates WHERE candidate_status = 'approved_candidate'"),
+      routed_candidate_updates: countRows("SELECT COUNT(*) AS count FROM factory_backflow_candidate_routes"),
+    },
+    primitive_routes: [
+      {
+        classification: 'DA',
+        decision: 'MASTERFLOW_PRIMITIVE_CANDIDATE',
+        recommended_domains: ['D08_DA_VISUAL_ASSETS'],
+        owner_validation_required: true,
+        reason: 'Les primitives visuelles peuvent alimenter D08 après revue owner, jamais comme pack Factory complet.',
+      },
+      {
+        classification: 'PROJECT_LORE',
+        decision: 'MASTERFLOW_PRIMITIVE_CANDIDATE',
+        recommended_domains: ['D09_MASTERSTORY'],
+        owner_validation_required: true,
+        reason: 'Les éléments de lore deviennent des candidats MasterStory, pas du canon direct.',
+      },
+      {
+        classification: 'PEDAGOGY',
+        decision: 'DUAL_TRACK',
+        recommended_domains: ['D05_PEDAGOGY', 'D06_CORRECTION_FEEDBACK_EVALUATION'],
+        owner_validation_required: true,
+        reason: 'Une primitive pédagogique peut rester Factory tout en proposant un pont Teaching/Correction.',
+      },
+      {
+        classification: 'PRIVATE',
+        decision: 'BLOCKED',
+        recommended_domains: [],
+        owner_validation_required: true,
+        reason: 'Le contenu privé doit être retiré ou reformulé avant toute absorption.',
+      },
+      {
+        classification: 'SYSTEM',
+        decision: 'MASTERFLOW_RUNTIME_GAP',
+        recommended_domains: [],
+        owner_validation_required: true,
+        reason: 'Un pattern système doit être respecifié comme runtime MasterFlow avant code.',
+      },
+      {
+        classification: 'PERSONA',
+        decision: 'MASTERFLOW_PRIMITIVE_CANDIDATE',
+        recommended_domains: ['PERSONAS_EXPRESSIVE_CANON'],
+        owner_validation_required: true,
+        reason: 'Une primitive persona reste candidate et doit respecter consentement, source et rôle.',
+      },
+      {
+        classification: 'OUTPUT',
+        decision: 'MASTERFLOW_PRIMITIVE_CANDIDATE',
+        recommended_domains: ['OUTPUT_REGISTRY'],
+        owner_validation_required: true,
+        reason: 'Un format de sortie peut devenir recette d’output, pas publication automatique.',
+      },
+      {
+        classification: 'RESOURCE',
+        decision: 'MASTERFLOW_PRIMITIVE_CANDIDATE',
+        recommended_domains: ['RESOURCE_TRUTH'],
+        owner_validation_required: true,
+        reason: 'Une ressource remonte comme candidate avec provenance, jamais comme source validée.',
+      },
+      {
+        classification: 'PLATFORM',
+        decision: 'FACTORY_WORKSHOP',
+        recommended_domains: [],
+        owner_validation_required: true,
+        reason: 'Les adaptations GPT/Claude/Gem restent côté Factory sauf primitive runtime clairement isolée.',
+      },
+    ],
+    forbidden_imports: [
+      'full_factory_pack',
+      'zip_direct_import',
+      'external_url_fetch',
+      'auto_canon',
+      'runtime_activation',
+      'private_content',
+    ],
+    native_runtime_policy: {
+      full_factory_import_allowed: false,
+      zip_import_allowed: false,
+      external_fetch_allowed: false,
+      auto_canon_allowed: false,
+      runtime_activation_allowed: false,
+    },
+    execution_policy: 'diagnostic_only',
+  });
 }
 
 export function routeFactoryBackflowCandidateUpdate(actor: AuthUser, candidateUpdateId: string, targetDomain: string, note?: string): FactoryBackflowCandidateUpdate {
