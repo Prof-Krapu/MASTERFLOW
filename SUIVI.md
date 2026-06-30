@@ -6,16 +6,43 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-PROTOTYPE-NAVIGATION-001`
-- objectif : publier une simulation navigable de la Home MasterFlow avec dock rétractable, cockpit,
-  personas visuels et chat contextuel.
+- id : `DA-REGISTRY-ACTING-002`
+- objectif : rendre le resolver DA visible dans Theme Studio et D08 pour expliquer “pourquoi ce visuel ?”.
 - statut : `local_verified_pending_publication`
-- dernière action terminée : prototype UI isolé depuis le travail local, sans mélanger la vague DA.
-- prochaine action : validation build puis PR dédiée pour retour Vincent.
-- fichiers/domaines concernés : frontend demo, assets persona, SUIVI.
-- tests à relancer : build frontend + lint backend + diff check avant publication.
-- publication : en cours via branche dédiée ; GitHub main DA déjà publié via PR #209 (`760e70f`).
-- blocage : aucun blocage produit ; prototype non connecté au runtime backend.
+- dernière action terminée : API frontend, panneau preview DA, intégration Theme Studio/D08, build/lint/tests.
+- prochaine action : publication PR dédiée après validation explicite.
+- fichiers/domaines concernés : frontend API, Theme Studio, D08, styles, SUIVI.
+- tests à relancer : aucun contrôle local restant avant publication.
+- publication : non publiée ; GitHub main UI prototype déjà publié via PR #210 (`1b6c132`).
+- blocage : aucun blocage produit ; tranche frontend lecture seule, aucun provider image.
+
+## 2026-06-30 — DA-REGISTRY-ACTING-002 : surface “pourquoi ce visuel ?”
+
+Contrat :
+
+- exposer le resolver DA Registry déjà publié ;
+- permettre de lire stack DA, acting, références, jauges, gates, negative locks et manques ;
+- intégrer une surface dans Theme Studio et D08 ;
+- ne pas générer d’image ;
+- ne pas canoniser d’asset ;
+- ne pas modifier backend, schéma, permissions, provider ou pipeline de génération.
+
+Implémentation locale vérifiée :
+
+- `getVisualDaResolverPreview` ajouté au client frontend ;
+- nouveau composant `VisualDaPreviewPanel` réutilisable ;
+- Theme Studio affiche un bloc `Resolver DA Registry` avec contrôles persona/surface/état/couche ;
+- D08 peut préparer l’explication DA depuis un manifest sélectionné ;
+- affichage : statut, stack, acting narratif, références typées, jauges DA, gates, manques, interdits et cartes d’explication.
+
+Vérifications :
+
+- `npm run build:frontend` — OK ;
+- `npm run lint` — OK ;
+- `git diff --check` — OK ;
+- `npm test` — backend complet 121 fichiers, 673/673.
+
+Statut : local vérifié, non publié.
 
 ## 2026-06-30 — UI-PROTOTYPE-NAVIGATION-001 : protocole de visionnage Vincent
 
@@ -64,7 +91,7 @@ Retour demandé à Vincent :
 - la lecture Home / chat / personas tient-elle en usage quotidien ?
 - qu’est-ce qui doit rester prototype et qu’est-ce qui peut devenir composant runtime ?
 
-Statut : prêt pour PR dédiée.
+Statut : publié via PR #210 (`1b6c132`).
 
 ## 2026-06-30 — DA-REGISTRY-ACTING-001 : contrat de tranche
 
