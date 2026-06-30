@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-30
 ### updates
 > 2026-06-30 codex → claimed. Verticale Project retenue car ses données runtime existent déjà.
 > 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+> 2026-06-30 codex → PR #203 mergée (`74f7a5c`) ; GitHub `main` fait foi.
 
 ---
 
