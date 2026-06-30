@@ -35,7 +35,7 @@ Au démarrage d'une session :
 | 6 | Experience Fabric consolidation | Relier Event Spine, précédents, canon narratif, storylets et grammaire visuelle | bridge_map_pr_184_merged | ponts documentés entre DA, Theme Studio, D08, MasterStory et compagnons |
 | 7 | Theme Studio / DA / Assets | Piloter thèmes, typos, palettes, assets, lore et versions événementielles | activation_preflight_pr_188_merged | preview pack + préflight d'activation validable ; application réelle encore bloquée |
 | 8 | Learning / Teaching / Academic Integrity | Guider sans faire le travail à la place ; préparer tutos/timecodes | runtime_pr_191_merged | contrat et classifieur pur publiés |
-| 9 | UI progressive | Home légère puis surfaces Teaching, Learn, GodMode, Theme Studio, MasterStory | ui_005_class_projection_local_verified | projection Living Companion validée localement ; publication puis cockpit étudiant |
+| 9 | UI progressive | Home légère puis surfaces Teaching, Learn, GodMode, Theme Studio, MasterStory | ui_005_class_projection_pr_207_merged | projection Living Companion publiée ; prochaine tranche cockpit étudiant |
 | 10 | Observabilité / GodMode | Timeline, alertes groupées, incidents, confiance, coûts et providers | reconciled_existing_cockpit | OwnerCockpit, ExperienceCockpit et diagnostics privés existent ; ne pas créer de cockpit parallèle |
 | 11 | Red Team / Tests | Couvrir prompt injection, permissions, révocation, poisoning, UI safety states | red_team_tests_003_merged | sécurité/RAG/Safety, auth/révocation et permissions router/UI safety publiées |
 

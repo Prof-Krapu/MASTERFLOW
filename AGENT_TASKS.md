@@ -33,6 +33,7 @@ frozen_by: MALEX « go » 2026-06-30
 ### updates
 > 2026-06-30 codex → claimed. Endpoint Living Companion réel confirmé.
 > 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+> 2026-06-30 codex → PR #207 mergée (`931c796`) ; GitHub `main` fait foi.
 
 ---
 
