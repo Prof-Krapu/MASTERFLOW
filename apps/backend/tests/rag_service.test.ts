@@ -148,9 +148,9 @@ describe('PR-7 — service RAG permissionne', () => {
 
     const event = getDb()
       .prepare(
-        `SELECT detail_json FROM audit_logs
+         `SELECT detail_json FROM audit_logs
          WHERE user_id = ? AND event_type = 'security.input_refused'
-         ORDER BY created_at DESC`,
+         ORDER BY created_at DESC, rowid DESC`,
       )
       .get(student.id) as {detail_json: string};
     expect(event.detail_json).toContain('"threat_family":"prompt_override"');
@@ -174,9 +174,9 @@ describe('PR-7 — service RAG permissionne', () => {
 
     const event = getDb()
       .prepare(
-        `SELECT detail_json FROM audit_logs
+         `SELECT detail_json FROM audit_logs
          WHERE user_id = ? AND event_type = 'security.input_refused'
-         ORDER BY created_at DESC`,
+         ORDER BY created_at DESC, rowid DESC`,
       )
       .get(student.id) as {detail_json: string};
     expect(event.detail_json).toContain('"threat_family":"obfuscation"');

@@ -86,6 +86,18 @@ Statut : vérifié localement et publié en branche via PR #153 avant merge.
 - aucune donnée, permission ou route backend inventée ;
 - desktop 1280 px et mobile 390 px sans débordement.
 
+### Checkpoint UI-002 — Persona rail + chat extensible
+
+Statut : vérifié localement, prêt à publier.
+
+- persona actif visible sur la Home avec domaine et état conversationnel ;
+- fallback visuel clairement marqué provisoire, candidat, validé ou à créer ;
+- aides de la room visibles sans intervention ni permission implicite ;
+- chat compact au repos, extensible au focus ou à la demande ;
+- attribution des tours et TTS contrôlé existant conservés ;
+- aucun backend, schéma, permission, provider, génération ou canonisation ajouté ;
+- smoke navigateur localhost non contourné car refusé par la politique du navigateur intégré.
+
 ### Checkpoint UI-001B — 2026-06-28
 
 Statut : publié sur GitHub `main` via PR #150.

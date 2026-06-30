@@ -1,5 +1,13 @@
 import React, {useState} from 'react';
-import type {FormEvent, ReactElement, ReactNode} from 'react';
+import type {CSSProperties, FormEvent, ReactElement, ReactNode, RefObject} from 'react';
+import {
+  ChevronDown,
+  ChevronUp,
+  CircleHelp,
+  Info,
+  MessageCircle,
+  Volume2,
+} from 'lucide-react';
 
 import type {
   ActionRegistryEntry,
@@ -22,6 +30,17 @@ type ChatTurn = {
   content: string;
   speaker?: string;
 };
+
+export type PersonaVisualState =
+  | 'neutral'
+  | 'listening'
+  | 'thinking'
+  | 'responding'
+  | 'success'
+  | 'alert'
+  | 'error'
+  | 'playful'
+  | 'special';
 
 type RoomSyncState = {
   status: 'idle' | 'syncing' | 'synced' | 'error';
@@ -222,7 +241,137 @@ type ChatDockProps = {
   onChatSubmit: (event: FormEvent<HTMLFormElement>) => void;
   roomInstanceId: string;
   activePersonaId?: string | null;
+  activePersonaName?: string | null;
+  inputRef?: RefObject<HTMLInputElement | null>;
+  personaState?: PersonaVisualState;
 };
+
+type PersonaRailProps = {
+  activePersona: Persona | null;
+  availablePersonas: Persona[];
+  onRequestHelp: () => void;
+  onTalk: () => void;
+  visualState: PersonaVisualState;
+};
+
+const PERSONA_STATE_LABELS: Record<PersonaVisualState, string> = {
+  neutral: 'Disponible',
+  listening: 'À l’écoute',
+  thinking: 'Réflexion',
+  responding: 'Réponse',
+  success: 'Succès',
+  alert: 'Vigilant',
+  error: 'Indisponible',
+  playful: 'Amusé',
+  special: 'Intervention',
+};
+
+function resolvePersonaAccent(persona: Persona | null): string {
+  const palette = persona?.visual_config?.['color_palette'];
+  if (!palette || typeof palette !== 'object') return '#58c189';
+  const accent = (palette as Record<string, unknown>)['accent'];
+  return typeof accent === 'string' && /^#[0-9a-f]{6}$/i.test(accent)
+    ? accent
+    : '#58c189';
+}
+
+function resolveAssetStatus(persona: Persona | null): {
+  kind: 'validated' | 'candidate' | 'default' | 'missing';
+  label: string;
+} {
+  if (!persona?.visual_config) return {kind: 'missing', label: 'Visuel à créer'};
+  const rawStatus = persona.visual_config['asset_status'];
+  if (rawStatus === 'validated') return {kind: 'validated', label: 'Visuel validé'};
+  if (rawStatus === 'candidate') return {kind: 'candidate', label: 'Visuel candidat'};
+  return Object.keys(persona.visual_config).length > 0
+    ? {kind: 'default', label: 'Visuel provisoire'}
+    : {kind: 'missing', label: 'Visuel à créer'};
+}
+
+function personaInitials(persona: Persona | null): string {
+  if (!persona) return 'MF';
+  const parts = persona.name.trim().split(/\s+/).filter(Boolean);
+  return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('') || 'MF';
+}
+
+export function PersonaRail({
+  activePersona,
+  availablePersonas,
+  onRequestHelp,
+  onTalk,
+  visualState,
+}: PersonaRailProps): ReactElement {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const assetStatus = resolveAssetStatus(activePersona);
+  const accent = resolvePersonaAccent(activePersona);
+  const helpers = availablePersonas
+    .filter((persona) => persona.id !== activePersona?.id && persona.status === 'active')
+    .slice(0, 3);
+  const style = {'--persona-accent': accent} as CSSProperties;
+
+  return (
+    <aside className={`persona-rail persona-rail--${visualState}`} style={style} aria-label="Persona actif">
+      <div className="persona-rail__state">
+        <span className="persona-rail__pulse" aria-hidden="true" />
+        <span>{PERSONA_STATE_LABELS[visualState]}</span>
+      </div>
+
+      <div className="persona-rail__avatar" aria-hidden="true">
+        <span>{personaInitials(activePersona)}</span>
+      </div>
+
+      <div className="persona-rail__identity">
+        <p className="eyebrow">Compagnon actif</p>
+        <h2>{activePersona?.name ?? 'MasterFlow'}</h2>
+        <p>{activePersona?.domain ?? 'orientation / assistance'}</p>
+      </div>
+
+      <span className={`persona-rail__asset persona-rail__asset--${assetStatus.kind}`}>
+        {assetStatus.label}
+      </span>
+
+      <div className="persona-rail__actions">
+        <button onClick={onTalk} type="button">
+          <MessageCircle aria-hidden="true" size={16} />
+          Parler
+        </button>
+        <button className="secondary" onClick={onRequestHelp} type="button">
+          <CircleHelp aria-hidden="true" size={16} />
+          Aide
+        </button>
+        <button
+          aria-expanded={detailsOpen}
+          className="secondary"
+          onClick={() => setDetailsOpen((current) => !current)}
+          type="button"
+        >
+          <Info aria-hidden="true" size={16} />
+          Détails
+        </button>
+      </div>
+
+      {detailsOpen ? (
+        <div className="persona-rail__details">
+          <span>Type : {activePersona?.owner_type ?? 'system'}</span>
+          <span>Statut : {activePersona?.status ?? 'actif'}</span>
+          <small>Ce persona guide la conversation mais n’ajoute aucun droit.</small>
+        </div>
+      ) : null}
+
+      {helpers.length > 0 ? (
+        <div className="persona-rail__helpers">
+          <span>Aides disponibles dans la room</span>
+          <div>
+            {helpers.map((persona) => (
+              <span key={persona.id} title={persona.domain}>{persona.name}</span>
+            ))}
+          </div>
+          <small>Elles n’interviennent pas tant qu’elles ne sont pas appelées.</small>
+        </div>
+      ) : null}
+    </aside>
+  );
+}
 
 export function HomeDashboard(props: HomeDashboardProps): ReactElement {
   const {
@@ -326,8 +475,21 @@ export function HomeDashboard(props: HomeDashboardProps): ReactElement {
 }
 
 export function ChatDock(props: ChatDockProps): ReactElement {
-  const {wsState, conversationTurns, chatInput, onChatInputChange, onChatSubmit, roomInstanceId, activePersonaId} = props;
+  const {
+    wsState,
+    conversationTurns,
+    chatInput,
+    onChatInputChange,
+    onChatSubmit,
+    roomInstanceId,
+    activePersonaId,
+    activePersonaName,
+    inputRef,
+    personaState = 'neutral',
+  } = props;
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const visibleTurns = expanded ? conversationTurns : conversationTurns.slice(-3);
 
   const handlePlayTts = async (turnId: string, text: string) => {
     try {
@@ -341,28 +503,48 @@ export function ChatDock(props: ChatDockProps): ReactElement {
   };
 
   return (
-    <div className="chat-dock">
-      <div className="chat-dock__log">
-        {conversationTurns.length > 0 ? (
-          conversationTurns.slice(-3).map((turn) => (
-            <span className={`chat-dock__turn chat-dock__turn--${turn.role}`} key={turn.id}>
+    <div className={`chat-dock${expanded ? ' chat-dock--expanded' : ''}`}>
+      <div className="chat-dock__header">
+        <div>
+          <span className={`chat-dock__persona-state chat-dock__persona-state--${personaState}`}>
+            {activePersonaName ?? 'Assistant'} · {PERSONA_STATE_LABELS[personaState]}
+          </span>
+          <small>
+            {expanded ? `${conversationTurns.length} tour(s) visible(s)` : 'Conversation récente'}
+          </small>
+        </div>
+        <button
+          aria-expanded={expanded}
+          className="secondary chat-dock__expand"
+          onClick={() => setExpanded((current) => !current)}
+          type="button"
+        >
+          {expanded
+            ? <ChevronDown aria-hidden="true" size={16} />
+            : <ChevronUp aria-hidden="true" size={16} />}
+          {expanded ? 'Réduire' : 'Ouvrir'}
+        </button>
+      </div>
+      <div className="chat-dock__log" aria-live="polite">
+        {visibleTurns.length > 0 ? (
+          visibleTurns.map((turn) => (
+            <article className={`chat-dock__turn chat-dock__turn--${turn.role}`} key={turn.id}>
               <strong>
                 {turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}
-                {turn.role !== 'user' && (
-                  <button 
-                    type="button" 
+                {turn.role !== 'user' ? (
+                  <button
+                    aria-label={`Écouter la réponse de ${turn.speaker ?? 'l’assistant'}`}
                     className="tts-btn"
+                    disabled={playingId === turn.id || turn.content.trim().length === 0}
                     onClick={() => handlePlayTts(turn.id, turn.content)}
-                    disabled={playingId === turn.id}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', marginLeft: '0.5rem', fontSize: '1.2em' }}
-                    title="Écouter ce message"
+                    type="button"
                   >
-                    {playingId === turn.id ? '⏳' : '🔊'}
+                    <Volume2 aria-hidden="true" size={15} />
                   </button>
-                )}
+                ) : null}
               </strong>
-              <span>{turn.content}</span>
-            </span>
+              <p>{turn.content || '…'}</p>
+            </article>
           ))
         ) : (
           <span className="chat-dock__placeholder">
@@ -375,7 +557,9 @@ export function ChatDock(props: ChatDockProps): ReactElement {
           aria-label="Message"
           disabled={wsState !== 'connected'}
           onChange={(event) => onChatInputChange(event.target.value)}
+          onFocus={() => setExpanded(true)}
           placeholder={wsState === 'connected' ? 'Message court…' : 'WebSocket indisponible'}
+          ref={inputRef}
           type="text"
           value={chatInput}
         />

@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-351 — UI-002 : persona rail et chat extensible
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-30
+
+### scope
+- Ajouter le persona rail V1 sur la Home sans inventer d'asset canon.
+- Afficher état conversationnel, rôle simple, statut d'asset et aides disponibles.
+- Rendre le chat compact extensible avec attribution claire et TTS existant.
+- Ne modifier aucun backend, schéma, permission, provider, génération ou canon.
+
+### verification
+- Lint backend/frontend, build frontend, backend complet et `git diff --check`.
+- Responsive statique ; smoke localhost non contourné si la politique navigateur le refuse.
+
+### updates
+> 2026-06-30 codex → claimed. Préflight propre, branche dédiée créée.
+> 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+
+---
+
 ## TASK-350 — RED-TEAM-TESTS-003 : permissions router et UI Safety
 target: codex
 status: done
