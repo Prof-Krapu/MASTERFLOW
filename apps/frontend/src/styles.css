@@ -1632,6 +1632,12 @@ dd {
   justify-content: space-between;
 }
 
+.teaching-guided__actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
 .teaching-guided__heading span {
   color: var(--blue);
   font-size: 10px;
@@ -1718,6 +1724,180 @@ dd {
 .teaching-guided__answer fieldset label {
   align-items: center;
   grid-template-columns: auto minmax(0, 1fr);
+}
+
+/* ───────────────────────── Projection classe V1 ───────────────────────── */
+
+.class-projection {
+  background:
+    radial-gradient(circle at 16% 42%, rgba(88, 193, 137, 0.16), transparent 34%),
+    #0d0f14;
+  color: var(--text);
+  display: grid;
+  gap: clamp(18px, 3vh, 34px);
+  inset: 0;
+  min-height: 100dvh;
+  overflow-y: auto;
+  padding: clamp(18px, 4vw, 56px);
+  position: fixed;
+  z-index: 1000;
+}
+
+.class-projection--limited {
+  background:
+    radial-gradient(circle at 16% 42%, rgba(240, 195, 107, 0.18), transparent 34%),
+    #0d0f14;
+}
+
+.class-projection--blocked {
+  background:
+    radial-gradient(circle at 16% 42%, rgba(255, 143, 143, 0.16), transparent 34%),
+    #0d0f14;
+}
+
+.class-projection__header,
+.class-projection__controls,
+.class-projection__footer,
+.class-projection__progress > div {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.class-projection__header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.class-projection__header span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.class-projection__header button,
+.class-projection__voice-state {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.class-projection__stage {
+  align-items: center;
+  display: grid;
+  gap: clamp(24px, 5vw, 72px);
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+  margin: auto 0;
+}
+
+.class-projection__character {
+  align-items: center;
+  aspect-ratio: 1;
+  background:
+    linear-gradient(145deg, rgba(88, 193, 137, 0.2), rgba(16, 19, 25, 0.88));
+  border: 1px solid rgba(88, 193, 137, 0.48);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.class-projection__character > span {
+  color: var(--accent-strong);
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+}
+
+.class-projection__character small {
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.class-projection__dialogue {
+  display: grid;
+  gap: 16px;
+}
+
+.class-projection__dialogue h1 {
+  font-size: clamp(1.8rem, 4vw, 4rem);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.class-projection__dialogue blockquote {
+  border-left: 4px solid var(--accent);
+  font-size: clamp(1.2rem, 2.2vw, 2rem);
+  line-height: 1.35;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.class-projection__prompt {
+  align-items: flex-start;
+  background: rgba(126, 183, 255, 0.08);
+  border: 1px solid rgba(126, 183, 255, 0.36);
+  border-radius: 12px;
+  display: flex;
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  gap: 10px;
+  padding: 14px;
+}
+
+.class-projection__prompt svg {
+  flex: 0 0 auto;
+}
+
+.class-projection__progress {
+  display: grid;
+  gap: 7px;
+}
+
+.class-projection__progress span,
+.class-projection__progress small,
+.class-projection__voice-state span {
+  color: var(--muted);
+}
+
+.class-projection__progress progress {
+  accent-color: var(--accent);
+  height: 12px;
+  width: 100%;
+}
+
+.class-projection__voice-state > div {
+  display: grid;
+  gap: 2px;
+}
+
+.class-projection__voice-state span {
+  font-size: 12px;
+}
+
+.class-projection__footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  justify-content: flex-start;
+  padding-top: 14px;
+}
+
+@media (max-width: 720px) {
+  .class-projection__header,
+  .class-projection__controls,
+  .class-projection__stage,
+  .teaching-guided__actions {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .class-projection__character {
+    justify-self: center;
+    max-width: 260px;
+    width: 100%;
+  }
 }
 
 .resource-item {

@@ -119,6 +119,17 @@ Statut : publié sur GitHub `main` via PR #205 (`fb348b6`).
 - météo de classe explicitement absente tant qu'aucun read model collectif ne la calcule ;
 - aucun backend, endpoint, permission, schéma, provider ou migration.
 
+### Checkpoint UI-005 — Projection classe + Living Companion
+
+Statut : vérifié localement, prêt à publier.
+
+- compagnon chargé depuis l'endpoint Living Companion d'une session CDC assignée ;
+- projection plein écran avec rôle, bulle, question, progression, contexte et limites ;
+- fallback visuel explicitement provisoire ;
+- micro explicitement non activé, sans promesse STT ;
+- saisie renvoyée vers le vrai formulaire de session guidée ;
+- aucun dialogue autonome, asset généré, backend, permission ou provider ajouté.
+
 ### Checkpoint UI-001B — 2026-06-28
 
 Statut : publié sur GitHub `main` via PR #150.

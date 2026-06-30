@@ -6,16 +6,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-004-TEACHING-COCKPIT`
-- objectif : transformer la surface Teaching existante en cockpit prof lisible sans dupliquer son runtime.
-- statut : `published`
-- dernière action terminée : PR #205 mergée sur GitHub (`fb348b6`).
-- prochaine action : auditer puis construire `UI-005`, projection classe + subpersona.
-- fichiers/domaines concernés : `teaching-readiness.tsx`, styles et suivi UI.
-- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
-- publication : GitHub `main == origin/main == fb348b6` après merge de la PR #205.
+- id : `UI-005-CLASS-PROJECTION`
+- objectif : projeter en classe un Living Companion réellement assigné à une session guidée.
+- statut : `local_verified`
+- dernière action terminée : lecture companion et projection plein écran câblées dans Teaching.
+- prochaine action : commit, push, PR, merge et preuve GitHub.
+- fichiers/domaines concernés : API frontend, Teaching, projection classe, styles et suivi UI.
+- tests à relancer : aucun avant publication ; backend 665/665, lint back/front et build verts.
+- publication : branche locale `codex/ui-class-projection-005`, non publiée à ce checkpoint.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
+
+## 2026-06-30 — UI-005-CLASS-PROJECTION : contrat de tranche
+
+- consommer l'endpoint existant du `LivingCompanion` pour une session guidée CDC ;
+- afficher uniquement un compagnon réellement assigné, jamais un subpersona inventé ;
+- projection plein écran : rôle, bulle, question, progression, contexte et limites ;
+- micro marqué indisponible tant qu'aucun adapter STT live n'est prouvé ;
+- fallback texte par retour direct au formulaire réel du sujet guidé ;
+- aucun dialogue autonome, génération d'asset, météo collective, backend ou permission nouvelle.
+
+Implémentation vérifiée :
+
+- client frontend de l'endpoint Living Companion existant ;
+- chargement limité aux sessions actives CDC et compagnon réellement assigné ;
+- projection plein écran avec identité, rôle, bulle, question, progression et contexte ;
+- fallback visuel clairement provisoire ; fermeture, touche Échap et retour cockpit ;
+- micro indiqué indisponible et réponse routée vers le formulaire guidé existant.
+
+Vérifications : backend complet 665/665 ; lint backend/frontend ; build frontend ;
+`git diff --check`.
 
 ## 2026-06-30 — UI-004-TEACHING-COCKPIT : contrat de tranche
 

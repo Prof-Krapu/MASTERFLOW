@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-354 — UI-005 : projection classe / Living Companion
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-30
+
+### scope
+- Consommer le Living Companion existant d'une session guidée CDC.
+- Construire une projection plein écran avec contexte, question, progression et limites.
+- Afficher un fallback visuel honnête, sans asset canon inventé.
+- Renvoyer la saisie vers le vrai formulaire guidé ; micro explicitement indisponible.
+- Ne modifier aucun backend, endpoint, permission, provider ou génération.
+
+### verification
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+- Responsive statique ; smoke localhost non contourné si la politique navigateur le refuse.
+
+### updates
+> 2026-06-30 codex → claimed. Endpoint Living Companion réel confirmé.
+> 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+
+---
+
 ## TASK-353 — UI-004 : Teaching cockpit
 target: codex
 status: done
