@@ -94,6 +94,8 @@ import type {
   UpdateRoomInstance,
   ValidationInboxItem,
   ValidationDecision,
+  VisualDaResolverPreview,
+  VisualDaResolverPreviewQuery,
   VisualManifest,
   VisualNarrativeGrammarReport,
   ThemeStudioAssetPackPreview,
@@ -483,6 +485,24 @@ export async function getThemeStudioAssetPack(
 ): Promise<ThemeStudioAssetPackPreview> {
   return request<ThemeStudioAssetPackPreview>(
     `/experience/theme-studio/asset-pack?manifest_id=${encodeURIComponent(manifestId)}`,
+    {method: 'GET'},
+    token,
+  );
+}
+export async function getVisualDaResolverPreview(
+  query: VisualDaResolverPreviewQuery,
+  token?: string | null,
+): Promise<VisualDaResolverPreview> {
+  const params = new URLSearchParams({
+    entity_id: query.entity_id,
+    context: query.context,
+    output_surface: query.output_surface,
+    active_mode: query.active_mode,
+  });
+  if (query.optional_event_layer) params.set('optional_event_layer', query.optional_event_layer);
+  if (query.emotional_state) params.set('emotional_state', query.emotional_state);
+  return request<VisualDaResolverPreview>(
+    `/experience/da-registry/preview?${params.toString()}`,
     {method: 'GET'},
     token,
   );

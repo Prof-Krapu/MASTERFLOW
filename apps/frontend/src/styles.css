@@ -4264,6 +4264,45 @@ dd {
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.visual-da-preview {
+  border-color: rgba(180, 132, 76, 0.35);
+}
+
+.visual-da-preview--compact {
+  margin-top: 16px;
+}
+
+.visual-da-preview__controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.visual-da-preview__controls label {
+  display: grid;
+  gap: 6px;
+}
+
+.visual-da-preview__controls input,
+.visual-da-preview__controls select {
+  min-width: 0;
+}
+
+.visual-da-preview__controls button {
+  align-self: end;
+}
+
+.visual-da-preview__result {
+  display: grid;
+  gap: 16px;
+}
+
+.visual-da-preview small {
+  color: var(--muted);
+  display: block;
+  line-height: 1.45;
+}
+
 @media (max-width: 1024px) {
   .home-dashboard {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4300,6 +4339,10 @@ dd {
   .home-workspace,
   .home-dashboard,
   .chat-dock__form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .visual-da-preview__controls {
     grid-template-columns: minmax(0, 1fr);
   }
 

@@ -8,6 +8,7 @@ import {
   getVisualManifests,
   getVisualNarrativeGrammar,
 } from './api.ts';
+import {VisualDaPreviewPanel} from './visual-da-preview-panel.tsx';
 
 export function ThemeStudioPanel({token}: {token: string}): ReactElement {
   const [manifests, setManifests] = useState<VisualManifest[]>([]);
@@ -102,6 +103,15 @@ export function ThemeStudioPanel({token}: {token: string}): ReactElement {
         </button>
       </section>
       <p className="owner-cockpit__status" aria-live="polite">{status}</p>
+
+      <VisualDaPreviewPanel
+        token={token}
+        defaultQuery={{
+          context: 'theme_studio',
+          output_surface: 'ui_state_pack',
+          active_mode: 'theme_studio',
+        }}
+      />
 
       {report ? (
         <>
