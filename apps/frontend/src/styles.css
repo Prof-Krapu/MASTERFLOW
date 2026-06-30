@@ -1249,6 +1249,7 @@ dd {
 }
 
 .teaching-readiness {
+  display: grid;
   gap: 14px;
 }
 
@@ -1324,6 +1325,72 @@ dd {
 
 .teaching-readiness__limits strong {
   color: var(--text);
+}
+
+.teaching-cockpit__next {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.teaching-cockpit__next strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.teaching-cockpit__selector {
+  max-width: 440px;
+}
+
+.teaching-cockpit__weather {
+  background: rgba(240, 195, 107, 0.06);
+  border: 1px solid rgba(240, 195, 107, 0.28);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.teaching-cockpit__weather strong {
+  color: var(--amber);
+  font-size: 12px;
+}
+
+.teaching-cockpit__weather span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.teaching-advanced {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.teaching-advanced > summary {
+  align-items: center;
+  background: #12151b;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  list-style-position: inside;
+  padding: 14px;
+}
+
+.teaching-advanced > summary span {
+  font-weight: 800;
+}
+
+.teaching-advanced > summary small {
+  color: var(--muted);
+}
+
+.teaching-advanced__content {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
 }
 
 .pedagogical-assistance {
@@ -1478,6 +1545,12 @@ dd {
 @media (max-width: 720px) {
   .learning-profile-card dl {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teaching-cockpit__next,
+  .teaching-advanced > summary {
+    align-items: stretch;
+    display: grid;
   }
 }
 
