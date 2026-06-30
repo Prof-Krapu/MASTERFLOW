@@ -100,7 +100,7 @@ Statut : publié sur GitHub `main` via PR #201 (`8d41ea9`).
 
 ### Checkpoint UI-003 — Page complète adaptative / Project
 
-Statut : vérifié localement, prêt à publier.
+Statut : publié sur GitHub `main` via PR #203 (`74f7a5c`).
 
 - cadre commun avec contexte, résumé, statut, prochaine action, métier et colonne contextuelle ;
 - première consommation limitée au mode Project ;

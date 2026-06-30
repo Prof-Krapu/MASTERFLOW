@@ -8,12 +8,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 - id : `UI-003-ADAPTIVE-PROJECT-PAGE`
 - objectif : créer le modèle commun de page complète adaptative et l'appliquer d'abord au projet.
-- statut : `local_verified`
-- dernière action terminée : cadre adaptatif créé et surface Project recomposée sans nouveau runtime.
-- prochaine action : commit, push, PR, merge et preuve GitHub.
+- statut : `published`
+- dernière action terminée : PR #203 mergée sur GitHub (`74f7a5c`).
+- prochaine action : construire `UI-004`, Teaching cockpit, sur le cadre adaptatif validé.
 - fichiers/domaines concernés : frontend App, nouveau composant de page, styles et suivi UI.
-- tests à relancer : aucun avant publication ; backend 665/665, lint back/front et build verts.
-- publication : branche locale `codex/ui-adaptive-project-page-003`, non publiée à ce checkpoint.
+- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
+- publication : GitHub `main == origin/main == 74f7a5c` après merge de la PR #203.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
 
@@ -36,6 +36,8 @@ Implémentation vérifiée :
 
 Vérifications : backend complet 665/665 ; lint backend/frontend ; build frontend ;
 `git diff --check`.
+
+Statut : publié via PR #203 (`74f7a5c`).
 
 ## 2026-06-30 — UI-002-PERSONA-RAIL-CHAT : contrat de tranche
 
