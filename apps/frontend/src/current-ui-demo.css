@@ -1,0 +1,103 @@
+.current-demo {
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 24px;
+  width: min(1440px, 100%);
+}
+
+.current-demo__topbar {
+  margin-bottom: 18px;
+}
+
+.current-demo__exit {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 7px 11px;
+  text-decoration: none;
+}
+
+.current-demo__layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 180px minmax(0, 1fr) 230px;
+}
+
+.current-demo__nav {
+  position: sticky;
+  top: 18px;
+}
+
+.current-demo__nav .mode-button {
+  align-items: center;
+  grid-template-columns: 22px 1fr;
+}
+
+.current-demo__nav .mode-button span {
+  grid-column: 2;
+}
+
+.current-demo__workspace {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.current-demo__persona {
+  position: sticky;
+  top: 18px;
+}
+
+.current-demo__action {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.current-demo__learning-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.current-demo progress {
+  accent-color: var(--accent);
+  width: 100%;
+}
+
+@media (max-width: 1050px) {
+  .current-demo__layout {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+
+  .current-demo__persona {
+    grid-column: 2;
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .current-demo {
+    padding: 14px;
+  }
+
+  .current-demo__layout,
+  .current-demo__learning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .current-demo__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    position: static;
+  }
+
+  .current-demo__persona {
+    grid-column: 1;
+  }
+
+  .current-demo__action {
+    align-items: stretch;
+    display: grid;
+  }
+}

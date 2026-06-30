@@ -1,0 +1,66 @@
+.mf-shell-header,
+.mf-shell-navbar,
+.mf-shell-aside {
+  background: color-mix(in srgb, var(--mantine-color-dark-8) 92%, #6f2da8 8%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.mf-shell-main {
+  background:
+    radial-gradient(circle at 76% 4%, rgba(128, 65, 204, 0.14), transparent 28%),
+    radial-gradient(circle at 20% 92%, rgba(170, 132, 25, 0.1), transparent 30%),
+    var(--mantine-color-dark-9);
+  min-height: 100vh;
+}
+
+.mf-brand {
+  color: #e8d5ff;
+  letter-spacing: 0.08em;
+}
+
+.mf-card {
+  background: rgba(29, 31, 38, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.mf-hero {
+  background:
+    linear-gradient(135deg, rgba(100, 36, 152, 0.34), rgba(28, 31, 38, 0.9)),
+    var(--mantine-color-dark-7);
+  border: 1px solid rgba(185, 120, 255, 0.26);
+}
+
+.mf-next {
+  border-color: rgba(148, 216, 45, 0.28);
+}
+
+.mf-row,
+.mf-security,
+.mf-persona-bubble {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mf-persona-orb {
+  align-items: center;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 36% 28%, rgba(207, 169, 255, 0.78), transparent 16%),
+    linear-gradient(145deg, #6c2e91, #171923 72%);
+  border: 1px solid rgba(211, 168, 255, 0.5);
+  border-radius: 34% 54% 42% 48%;
+  box-shadow: 0 18px 60px rgba(83, 26, 120, 0.35);
+  color: white;
+  display: flex;
+  font-size: 3.2rem;
+  font-weight: 900;
+  justify-content: center;
+  width: min(180px, 70%);
+}
+
+@media (max-width: 768px) {
+  .mf-shell-main {
+    padding-inline: 14px;
+  }
+}
