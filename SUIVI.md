@@ -6,17 +6,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-002-PERSONA-RAIL-CHAT`
-- objectif : rendre le persona actif visible sur la Home et transformer le chat compact en surface
-  extensible, sans modifier le backend ni les permissions.
-- statut : `published`
-- dernière action terminée : PR #201 mergée sur GitHub (`8d41ea9`).
-- prochaine action : cadrer puis construire `UI-003`, page complète adaptative réutilisable.
-- fichiers/domaines concernés : `app-shell.tsx`, `App.tsx`, `styles.css`, suivi UI.
-- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
-- publication : GitHub `main == origin/main == 8d41ea9` après merge de la PR #201.
+- id : `UI-003-ADAPTIVE-PROJECT-PAGE`
+- objectif : créer le modèle commun de page complète adaptative et l'appliquer d'abord au projet.
+- statut : `local_verified`
+- dernière action terminée : cadre adaptatif créé et surface Project recomposée sans nouveau runtime.
+- prochaine action : commit, push, PR, merge et preuve GitHub.
+- fichiers/domaines concernés : frontend App, nouveau composant de page, styles et suivi UI.
+- tests à relancer : aucun avant publication ; backend 665/665, lint back/front et build verts.
+- publication : branche locale `codex/ui-adaptive-project-page-003`, non publiée à ce checkpoint.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
+
+## 2026-06-30 — UI-003-ADAPTIVE-PROJECT-PAGE : contrat de tranche
+
+- créer une structure réutilisable : contexte, résumé, statut, prochaine action, zone métier et
+  colonne contextuelle ;
+- l'appliquer au mode Project qui possède déjà projets, membres, ressources et permissions ;
+- préserver les appels API, la sélection de projet et le rattachement de ressource existants ;
+- ne pas généraliser aux classes/sujets tant que cette première verticale n'est pas validée ;
+- aucun backend, endpoint, permission, schéma, provider ou migration.
+
+Implémentation vérifiée :
+
+- composant `AdaptiveWorkspacePage` borné à la composition visuelle, sans inférence métier ;
+- Project expose projet actif, statut, prochaine action réelle, ressources et personnes liées ;
+- colonne contexte masquable localement, sans préférence persistante inventée ;
+- états vides et absence de rôle explicités sans surclasser l'utilisateur ;
+- anciens appels Project/Scope et contrôles de rattachement inchangés.
+
+Vérifications : backend complet 665/665 ; lint backend/frontend ; build frontend ;
+`git diff --check`.
 
 ## 2026-06-30 — UI-002-PERSONA-RAIL-CHAT : contrat de tranche
 

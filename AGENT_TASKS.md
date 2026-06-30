@@ -14,6 +14,27 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-352 — UI-003 : page projet adaptative
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-30
+
+### scope
+- Créer un cadre de page complète réutilisable sans moteur UI générique lourd.
+- Recomposer la surface Project avec résumé, statut, prochaine action, métier et contexte.
+- Préserver sélection, ressources, membres et permissions existantes.
+- Ne modifier aucun backend, endpoint, schéma, permission, provider ou migration.
+
+### verification
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+- Responsive statique ; smoke localhost non contourné si la politique navigateur le refuse.
+
+### updates
+> 2026-06-30 codex → claimed. Verticale Project retenue car ses données runtime existent déjà.
+> 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+
+---
+
 ## TASK-351 — UI-002 : persona rail et chat extensible
 target: codex
 status: done
