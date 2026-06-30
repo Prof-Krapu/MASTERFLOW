@@ -88,7 +88,7 @@ Statut : vérifié localement et publié en branche via PR #153 avant merge.
 
 ### Checkpoint UI-002 — Persona rail + chat extensible
 
-Statut : vérifié localement, prêt à publier.
+Statut : publié sur GitHub `main` via PR #201 (`8d41ea9`).
 
 - persona actif visible sur la Home avec domaine et état conversationnel ;
 - fallback visuel clairement marqué provisoire, candidat, validé ou à créer ;

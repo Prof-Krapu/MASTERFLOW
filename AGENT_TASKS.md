@@ -32,6 +32,7 @@ frozen_by: MALEX « go » 2026-06-30
 ### updates
 > 2026-06-30 codex → claimed. Préflight propre, branche dédiée créée.
 > 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+> 2026-06-30 codex → PR #201 mergée (`8d41ea9`) ; GitHub `main` fait foi.
 
 ---
 
