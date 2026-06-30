@@ -40,7 +40,15 @@ import {
   validateAction,
   validateResource,
 } from './api.ts';
-import {ChatDock, HomeDashboard, MasterFlowShell, ModeRail, SituationPanel} from './app-shell.tsx';
+import {
+  ChatDock,
+  HomeDashboard,
+  MasterFlowShell,
+  ModeRail,
+  PersonaRail,
+  SituationPanel,
+} from './app-shell.tsx';
+import type {PersonaVisualState} from './app-shell.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
 import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
@@ -295,6 +303,7 @@ function App(): ReactElement {
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
+  const chatInputRef = useRef<HTMLInputElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const assistantTurnRef = useRef<string | null>(null);
 
@@ -356,6 +365,26 @@ function App(): ReactElement {
       .map((turn) => ({id: turn.id, content: turn.content})),
     [chatTurns],
   );
+  const personaVisualState = useMemo<PersonaVisualState>(() => {
+    if (wsState === 'error') return 'error';
+    if (wsState === 'closed') return 'alert';
+    const lastTurn = conversationTurns.at(-1);
+    if (lastTurn?.role === 'assistant' && lastTurn.content.length === 0) return 'thinking';
+    if (chatInput.trim().length > 0) return 'listening';
+    if (lastTurn?.role === 'assistant') return 'responding';
+    return 'neutral';
+  }, [chatInput, conversationTurns, wsState]);
+
+  const focusChat = useCallback(() => {
+    chatInputRef.current?.focus();
+  }, []);
+
+  const prepareHelpRequest = useCallback(() => {
+    setChatInput((current) => current.trim().length > 0
+      ? current
+      : 'Aide-moi à choisir la prochaine action utile dans ce contexte.');
+    window.requestAnimationFrame(() => chatInputRef.current?.focus());
+  }, []);
 
   const situationStats = useMemo(() => [
     {label: 'Modes', value: availableModes.length.toString()},
@@ -1334,16 +1363,26 @@ function App(): ReactElement {
                     resources={resources}
                   />
                   <ChatDock
+                    activePersonaName={activePersona?.name ?? null}
                     chatInput={chatInput}
                     conversationTurns={conversationTurns}
                     activePersonaId={activePersona?.id}
+                    inputRef={chatInputRef}
                     roomInstanceId={context?.room_instance.id ?? ''}
                     onChatInputChange={(value) => setChatInput(value)}
                     onChatSubmit={handleChatSubmit}
+                    personaState={personaVisualState}
                     wsState={wsState}
                   />
                   <SystemMessages messages={systemMessages} />
                 </div>
+                <PersonaRail
+                  activePersona={activePersona}
+                  availablePersonas={visiblePersonas}
+                  onRequestHelp={prepareHelpRequest}
+                  onTalk={focusChat}
+                  visualState={personaVisualState}
+                />
               </div>
             </>
           ) : (

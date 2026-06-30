@@ -6,18 +6,38 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `RED-TEAM-TESTS-003`
-- objectif : couvrir les risques transverses restants par tests proportionnés : prompt injection,
-  permissions, révocation/confiance, poisoning de source et états Safety/UI.
-- statut : `published`
-- dernière action terminée : tests permissions router/UI safety publiés via PR #199 (`58992b2`).
-- prochaine action : décider si l'on poursuit Red Team UI navigateur ou si on revient au build
-  interface.
-- fichiers/domaines concernés : permissions router, UI safety, surfaces Safety/OwnerCockpit.
-- tests à relancer : backend complet, lint backend/frontend ; build frontend inutile si aucun
-  fichier frontend n'est touché.
-- publication : GitHub `main` fait foi ; `HEAD == origin/main == 58992b2` au préflight.
-- blocage : aucun ; Big Pickle en pause.
+- id : `UI-002-PERSONA-RAIL-CHAT`
+- objectif : rendre le persona actif visible sur la Home et transformer le chat compact en surface
+  extensible, sans modifier le backend ni les permissions.
+- statut : `local_verified`
+- dernière action terminée : persona rail, chat extensible et test RAG stabilisé ; validations vertes.
+- prochaine action : commit, push, PR, merge et preuve GitHub.
+- fichiers/domaines concernés : `app-shell.tsx`, `App.tsx`, `styles.css`, suivi UI.
+- tests à relancer : aucun avant publication ; backend 665/665, lint backend/frontend et build verts.
+- publication : branche locale `codex/ui-persona-rail-chat-002`, non publiée à ce checkpoint.
+- blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
+  visuel ne sera pas contourné.
+
+## 2026-06-30 — UI-002-PERSONA-RAIL-CHAT : contrat de tranche
+
+- persona actif visible sur la Home avec nom, domaine, état courant et statut d'asset explicite ;
+- fallback graphique local si aucun asset validé n'est disponible ;
+- chat compact au repos, extensible à la demande, attribution claire des tours ;
+- aides disponibles dans la room affichées sans prétendre les inviter ni leur donner des droits ;
+- WebSocket, porte-parole unique, permissions, historique et messages système inchangés ;
+- aucun backend, schéma, provider, migration, génération ou canonisation.
+
+Implémentation vérifiée :
+
+- état persona dérivé uniquement du socket, du texte saisi et du tour conversationnel courant ;
+- fallback visuel teinté par la palette déclarée, sans prétendre disposer d'un asset canon ;
+- actions `Parler`, `Aide` et `Détails` sans exécution métier silencieuse ;
+- chat extensible au focus, historique borné visuellement et TTS existant conservé ;
+- tri stable des audits RAG par `created_at, rowid` pour éviter deux événements à la même
+  milliseconde ; aucun runtime Security/RAG modifié.
+
+Vérifications : RAG ciblé 12/12 ; backend complet 665/665 ; lint backend/frontend ; build
+frontend ; `git diff --check`.
 
 ## 2026-06-29 — RED-TEAM-TESTS-003 : permissions router et UI Safety
 
