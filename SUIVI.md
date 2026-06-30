@@ -8,12 +8,12 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 - id : `UI-004-TEACHING-COCKPIT`
 - objectif : transformer la surface Teaching existante en cockpit prof lisible sans dupliquer son runtime.
-- statut : `local_verified`
-- dernière action terminée : Teaching recomposé sur la page adaptative ; ateliers lourds repliés.
-- prochaine action : commit, push, PR, merge et preuve GitHub.
+- statut : `published`
+- dernière action terminée : PR #205 mergée sur GitHub (`fb348b6`).
+- prochaine action : auditer puis construire `UI-005`, projection classe + subpersona.
 - fichiers/domaines concernés : `teaching-readiness.tsx`, styles et suivi UI.
-- tests à relancer : aucun avant publication ; backend 665/665, lint back/front et build verts.
-- publication : branche locale `codex/ui-teaching-cockpit-004`, non publiée à ce checkpoint.
+- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
+- publication : GitHub `main == origin/main == fb348b6` après merge de la PR #205.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
 
@@ -36,6 +36,8 @@ Implémentation vérifiée :
 
 Vérifications : backend complet 665/665 ; lint backend/frontend ; build frontend ;
 `git diff --check`.
+
+Statut : publié via PR #205 (`fb348b6`).
 
 ## 2026-06-30 — UI-003-ADAPTIVE-PROJECT-PAGE : contrat de tranche
 

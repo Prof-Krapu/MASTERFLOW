@@ -33,6 +33,7 @@ frozen_by: MALEX « go » 2026-06-30
 ### updates
 > 2026-06-30 codex → claimed. Runtime Teaching existant retenu ; aucun cockpit parallèle.
 > 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+> 2026-06-30 codex → PR #205 mergée (`fb348b6`) ; GitHub `main` fait foi.
 
 ---
 
