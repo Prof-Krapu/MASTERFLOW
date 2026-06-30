@@ -6,16 +6,49 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-005-CLASS-PROJECTION`
-- objectif : projeter en classe un Living Companion réellement assigné à une session guidée.
-- statut : `published`
-- dernière action terminée : PR #207 mergée sur GitHub (`931c796`).
-- prochaine action : construire `UI-006`, cockpit projet étudiant.
-- fichiers/domaines concernés : API frontend, Teaching, projection classe, styles et suivi UI.
-- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
-- publication : GitHub `main == origin/main == 931c796` après merge de la PR #207.
-- blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
-  visuel ne sera pas contourné.
+- id : `DA-REGISTRY-ACTING-001`
+- objectif : transformer les sources legacy DA/narratives en registre Git composable, pilote MasterFlex.
+- statut : `local_verified_targeted`
+- dernière action terminée : contrats partagés, seed déclaratif enrichi factories, resolver preview, endpoint et tests ciblés.
+- prochaine action : lint/build puis publication après validation explicite, sans mélanger les changements UI sales.
+- fichiers/domaines concernés : `packages/shared`, `apps/backend/src/services`, `experience_fabric`, seed DA,
+  tests, documentation Experience Fabric.
+- tests à relancer : aucun contrôle local restant avant publication, hors smoke navigateur si demandé.
+- publication : non publiée ; GitHub `origin/main` observé à `a6f978e`, branche locale `3e44424` + changements locaux.
+- blocage : aucun blocage produit ; commit/push/PR/merge demandent validation explicite.
+
+## 2026-06-30 — DA-REGISTRY-ACTING-001 : contrat de tranche
+
+- absorber uniquement les sources legacy utiles au registre DA/narratif, pas relancer un audit géant ;
+- poser MasterFlow Core comme racine DA et Ours d’Or comme couche événementielle branchable ;
+- piloter d’abord `masterflex-001` : canon visuel, acting, refs, anti-dérives et sorties UI/avatar ;
+- produire un resolver preview explicable : stack DA, acting, refs, briques, gates, negative locks, manques ;
+- ne générer aucune image, ne canoniser aucun asset, ne toucher à aucun provider ;
+- séparer ProfKrapu/Batrasia/Nicok en couches dédiées ou candidates sans polluer la racine globale.
+
+Implémentation locale vérifiée :
+
+- nouveaux contrats partagés `VisualDaRoot`, `VisualDaLayer`, `VisualEntityProfile`,
+  `VisualClassProfile`, `VisualAtomicBrick`, `VisualReferenceBoard`, `VisualPipelineSlice`,
+  `NarrativeActingProfile` et `VisualDaResolverPreview` ;
+- seed déclaratif `visual_da_registry_seed.v1.json` avec MasterFlow Core, MasterFlex, Ours d’Or,
+  ProfKrapu, Batrasia, Nicok, classes de rôles, briques, planches et slices ;
+- complément 001b depuis les factories Ours d’Or / Badge / ProfKrapu :
+  ProfKrapu comme entité dédiée, acting science-pulp, rôles Ours d’Or fins, badge container,
+  politique logo officiel et jauges DA ;
+- service `visual_da_registry` : preview only, aucune génération, aucune canonisation ;
+- endpoint authentifié `/api/v1/experience/da-registry/preview` ;
+- audit ciblé documenté dans `docs/experience-fabric/DA_REGISTRY_NARRATIVE_ACTING_ABSORPTION_2026-06-30.md`.
+
+Vérifications :
+
+- `npx vitest apps/backend/tests/visual_da_registry.test.ts` — 8/8 ;
+- `npm run lint` — OK ;
+- `git diff --check` — OK ;
+- `npm test` — backend complet 121 fichiers, 673/673 ;
+- `npm run build:frontend` — OK.
+
+Statut : local vérifié ciblé, non publié.
 
 ## 2026-06-30 — UI-005-CLASS-PROJECTION : contrat de tranche
 

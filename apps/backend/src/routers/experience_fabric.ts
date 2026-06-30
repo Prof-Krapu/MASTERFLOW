@@ -6,6 +6,7 @@ import {
   PrecedentSearchQuerySchema,
   StoryletEvaluationQuerySchema,
   ThemeStudioAssetPackQuerySchema,
+  VisualDaResolverPreviewQuerySchema,
   VisualNarrativeGrammarQuerySchema,
 } from '@masterflow/shared';
 
@@ -24,6 +25,7 @@ import {evaluateStorylets} from '../services/storylet_engine.ts';
 import {buildGuidedLivingCompanion} from '../services/living_companion.ts';
 import {buildProjectMonsterEvolutionReport} from '../services/project_monster.ts';
 import {buildThemeStudioAssetPackPreview} from '../services/theme_studio.ts';
+import {buildVisualDaResolverPreview} from '../services/visual_da_registry.ts';
 import {buildVisualNarrativeGrammarReport} from '../services/visual_narrative_grammar.ts';
 
 function actor(req: Request): AuthUser {
@@ -87,6 +89,17 @@ function themeStudioAssetPackQuery(req: Request) {
     workbench_id: req.query.workbench_id,
     manifest_id: req.query.manifest_id,
     project_id: req.query.project_id,
+  });
+}
+
+function visualDaResolverPreviewQuery(req: Request) {
+  return VisualDaResolverPreviewQuerySchema.safeParse({
+    entity_id: req.query.entity_id,
+    context: req.query.context,
+    output_surface: req.query.output_surface,
+    active_mode: req.query.active_mode,
+    optional_event_layer: req.query.optional_event_layer,
+    emotional_state: req.query.emotional_state,
   });
 }
 
@@ -194,6 +207,19 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildThemeStudioAssetPackPreview(actor(req), parsed.data));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/da-registry/preview', (req, res): void => {
+    const parsed = visualDaResolverPreviewQuery(req);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(buildVisualDaResolverPreview(actor(req), parsed.data));
     } catch (error) {
       fail(res, error);
     }

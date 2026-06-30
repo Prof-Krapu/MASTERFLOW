@@ -4723,6 +4723,245 @@ export const ThemeStudioAssetPackPreviewSchema = z.object({
 });
 export type ThemeStudioAssetPackPreview = z.infer<typeof ThemeStudioAssetPackPreviewSchema>;
 
+// ───────────────────── DA Registry + Narrative Acting : preview only ─────────────────────
+
+export const VisualDaAuthoritySchema = z.enum([
+  'masterflow_core',
+  'persona_visual_registry',
+  'event_da_layer',
+  'dedicated_da_layer',
+  'private_morph_registry',
+  'role_class_registry',
+  'world_decor_registry',
+  'living_companion_registry',
+  'pipeline_slice_registry',
+  'gate_retake_registry',
+]);
+export type VisualDaAuthority = z.infer<typeof VisualDaAuthoritySchema>;
+
+export const VisualDaRootSchema = z.object({
+  root_id: z.string().min(1),
+  label: z.string().min(1),
+  authority: z.literal('masterflow_core'),
+  status: z.enum(['active', 'candidate', 'blocked']),
+  summary: z.string().min(1).max(1000),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualDaRoot = z.infer<typeof VisualDaRootSchema>;
+
+export const VisualDaLayerSchema = z.object({
+  layer_id: z.string().min(1),
+  label: z.string().min(1),
+  authority: z.enum(['event_da_layer', 'dedicated_da_layer']),
+  status: z.enum(['active', 'candidate', 'blocked']),
+  priority_order: z.number().int().nonnegative(),
+  cannot_be_root: z.boolean(),
+  summary: z.string().min(1).max(1000),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualDaLayer = z.infer<typeof VisualDaLayerSchema>;
+
+export const VisualAtomicBrickSchema = z.object({
+  brick_id: z.string().min(1),
+  brick_type: z.enum([
+    'silhouette',
+    'head',
+    'eyes',
+    'expression',
+    'pose',
+    'hands',
+    'clothing',
+    'palette',
+    'style',
+    'texture',
+    'prop',
+    'composition',
+    'typography',
+    'negative_lock',
+    'output_protocol',
+    'validation_check',
+  ]),
+  authority: VisualDaAuthoritySchema,
+  scope_ref: z.string().min(1),
+  priority: z.enum(['mandatory', 'high', 'medium', 'low']),
+  positive_prompt: z.string().min(1).max(1000),
+  negative_prompt: z.string().max(1000).nullable(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualAtomicBrick = z.infer<typeof VisualAtomicBrickSchema>;
+
+export const VisualReferenceBoardSchema = z.object({
+  board_id: z.string().min(1),
+  label: z.string().min(1),
+  role: z.enum([
+    'canon_strict',
+    'identity_anchor',
+    'expression_only',
+    'outfit_only',
+    'pose_reference',
+    'world_style',
+    'graphic_language',
+    'color_palette',
+    'layout_reference',
+    'poster_energy',
+    'output_template',
+    'anti_pattern',
+  ]),
+  allowed_use: z.array(z.string().min(1)).min(1).max(12),
+  forbidden_use: z.array(z.string().min(1)).max(12),
+  source_ref: z.string().min(1),
+  provenance_state: z.enum(['declared', 'validated', 'weak']),
+});
+export type VisualReferenceBoard = z.infer<typeof VisualReferenceBoardSchema>;
+
+export const NarrativeActingStateSchema = z.object({
+  state_id: z.string().min(1),
+  label: z.string().min(1),
+  narrative_intent: z.string().min(1).max(500),
+  emotional_state: z.string().min(1).max(160),
+  expression: z.string().min(1).max(240),
+  pose: z.string().min(1).max(240),
+  gaze: z.string().min(1).max(240),
+  prop_policy: z.string().max(300).nullable(),
+  bubble_policy: z.string().max(300).nullable(),
+  negative_locks: z.array(z.string().min(1)).max(20),
+});
+export type NarrativeActingState = z.infer<typeof NarrativeActingStateSchema>;
+
+export const NarrativeActingProfileSchema = z.object({
+  acting_profile_id: z.string().min(1),
+  entity_id: z.string().min(1),
+  default_state_id: z.string().min(1),
+  states: z.array(NarrativeActingStateSchema).min(1).max(30),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type NarrativeActingProfile = z.infer<typeof NarrativeActingProfileSchema>;
+
+export const VisualEntityProfileSchema = z.object({
+  entity_id: z.string().min(1),
+  display_name: z.string().min(1),
+  entity_type: z.enum(['persona', 'subpersona', 'monster', 'role', 'decor', 'prop']),
+  authority: z.literal('persona_visual_registry'),
+  status: z.enum(['active', 'candidate', 'blocked']),
+  root_ref: z.string().min(1),
+  default_layer_refs: z.array(z.string().min(1)).max(12),
+  atomic_brick_refs: z.array(z.string().min(1)).min(1).max(80),
+  reference_board_refs: z.array(z.string().min(1)).max(30),
+  acting_profile_ref: z.string().min(1).nullable(),
+  summary: z.string().min(1).max(1000),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualEntityProfile = z.infer<typeof VisualEntityProfileSchema>;
+
+export const VisualClassProfileSchema = z.object({
+  class_id: z.string().min(1),
+  label: z.string().min(1),
+  authority: z.enum(['role_class_registry', 'world_decor_registry', 'living_companion_registry']),
+  allowed_layers: z.array(z.string().min(1)).max(12),
+  required_brick_refs: z.array(z.string().min(1)).max(30),
+  forbidden_uses: z.array(z.string().min(1)).max(20),
+  role_power: z.number().int().min(0).max(10).nullable().optional(),
+  strangeness: z.number().int().min(0).max(10).nullable().optional(),
+  visual_weight: z.enum(['minimal', 'reduced', 'normal', 'reinforced', 'ceremonial']).optional(),
+  badge_level: z.enum(['none', 'sober', 'signature', 'legendary']).optional(),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualClassProfile = z.infer<typeof VisualClassProfileSchema>;
+
+export const VisualDaGaugeSchema = z.object({
+  gauge_id: z.string().min(1),
+  label: z.string().min(1),
+  min: z.number().int(),
+  max: z.number().int(),
+  default_value: z.number().int(),
+  applies_to: z.array(z.string().min(1)).min(1).max(20),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualDaGauge = z.infer<typeof VisualDaGaugeSchema>;
+
+export const VisualPipelineSliceSchema = z.object({
+  slice_id: z.string().min(1),
+  label: z.string().min(1),
+  output_surface: z.string().min(1),
+  authority: z.literal('pipeline_slice_registry'),
+  entity_refs: z.array(z.string().min(1)).max(20),
+  class_refs: z.array(z.string().min(1)).max(20),
+  required_brick_refs: z.array(z.string().min(1)).min(1).max(60),
+  required_reference_roles: z.array(z.string().min(1)).max(20),
+  gate_refs: z.array(z.string().min(1)).max(30),
+  container_parts: z.array(z.string().min(1)).max(20).optional(),
+  output_requirements: z.array(z.string().min(1)).max(30).optional(),
+  logo_policy: z.string().min(1).max(500).nullable().optional(),
+  generation_allowed: z.literal(false),
+  canon_promotion_allowed: z.literal(false),
+  source_refs: z.array(z.string().min(1)).min(1).max(30),
+});
+export type VisualPipelineSlice = z.infer<typeof VisualPipelineSliceSchema>;
+
+export const VisualDaRegistryBundleSchema = z.object({
+  roots: z.array(VisualDaRootSchema),
+  layers: z.array(VisualDaLayerSchema),
+  entity_profiles: z.array(VisualEntityProfileSchema),
+  class_profiles: z.array(VisualClassProfileSchema),
+  atomic_bricks: z.array(VisualAtomicBrickSchema),
+  reference_boards: z.array(VisualReferenceBoardSchema),
+  pipeline_slices: z.array(VisualPipelineSliceSchema),
+  acting_profiles: z.array(NarrativeActingProfileSchema),
+  visual_gauges: z.array(VisualDaGaugeSchema).default([]),
+});
+export type VisualDaRegistryBundle = z.infer<typeof VisualDaRegistryBundleSchema>;
+
+export const VisualDaResolverPreviewQuerySchema = z.object({
+  entity_id: z.string().min(1),
+  context: z.string().min(1).max(160),
+  output_surface: z.string().min(1).max(160),
+  active_mode: z.string().min(1).max(160),
+  optional_event_layer: z.string().min(1).max(160).optional(),
+  emotional_state: z.string().min(1).max(160).optional(),
+});
+export type VisualDaResolverPreviewQuery = z.input<typeof VisualDaResolverPreviewQuerySchema>;
+
+export const VisualDaResolverPreviewSchema = z.object({
+  generated_at: z.number().int().nonnegative(),
+  entity_id: z.string().min(1),
+  resolution_status: z.enum(['ready_for_manifest_preview', 'limited_missing_inputs', 'blocked']),
+  da_stack: z.array(z.object({
+    stack_ref: z.string().min(1),
+    stack_type: z.enum(['root', 'entity', 'layer', 'output_surface']),
+    authority: VisualDaAuthoritySchema,
+    label: z.string().min(1),
+  })).min(1),
+  narrative_acting_payload: NarrativeActingStateSchema.nullable(),
+  activated_bricks: z.array(VisualAtomicBrickSchema),
+  reference_boards: z.array(VisualReferenceBoardSchema),
+  blocking_gates: z.array(z.string().min(1)),
+  negative_locks: z.array(z.string().min(1)),
+  missing_items: z.array(z.string().min(1)),
+  visual_gauges: z.array(VisualDaGaugeSchema),
+  source_refs: z.array(z.string().min(1)).min(1),
+  d08_manifest_preview: z.object({
+    intent: z.string().min(1),
+    da_root_ref: z.string().min(1).nullable(),
+    active_layers: z.array(z.string().min(1)),
+    canon_entity_refs: z.array(z.string().min(1)),
+    output_template: z.string().min(1),
+    status: z.enum(['action_ready_preview', 'readiness_blocked']),
+    generation_allowed: z.literal(false),
+    canon_promotion_allowed: z.literal(false),
+  }),
+  explanation_cards: z.array(z.object({
+    title: z.string().min(1),
+    explanation: z.string().min(1),
+    source_refs: z.array(z.string().min(1)).min(1),
+  })).min(1),
+  execution_policy: z.literal('preview_only'),
+});
+export type VisualDaResolverPreview = z.infer<typeof VisualDaResolverPreviewSchema>;
+
+export const VISUAL_DA_REGISTRY_API = {
+  preview: '/api/v1/experience/da-registry/preview',
+} as const;
+
 export const UserRuntimeLoadoutSchema = z.object({
   user_id: z.string().min(1),
   room_id: z.string().min(1),

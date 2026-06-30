@@ -1,0 +1,922 @@
+{
+  "roots": [
+    {
+      "root_id": "masterflow_core",
+      "label": "MasterFlow Core DA",
+      "authority": "masterflow_core",
+      "status": "active",
+      "summary": "Racine visuelle commune : dessin manuel, silhouette lisible, cartoon occidental adulte, émotion avant beauté, jamais photoréalisme ni mascotte corporate.",
+      "source_refs": [
+        "legacy:MASTERFLOW_DA_ATOMIC_BRICKS_AND_PIPELINE_SLICES_REGISTRY",
+        "legacy:DA_COMPILER_VISUAL_REFERENCE_ROUTER_ENGINE",
+        "git:docs/d08/D08_VISUAL_REFERENCE_TAXONOMY_AND_FACTORY_REF_GATE_2026-06-27.md"
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "layer_id": "event_layer_ours_dor",
+      "label": "Ours d’Or event layer",
+      "authority": "event_da_layer",
+      "status": "active",
+      "priority_order": 50,
+      "cannot_be_root": true,
+      "summary": "Couche événementielle concours : badges, monstres, rôles, incubator, tension pulp et accents or. Elle ne remplace jamais la racine MasterFlow.",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "layer_id": "prof_krapu_layer",
+      "label": "ProfKrapu science-pulp layer",
+      "authority": "dedicated_da_layer",
+      "status": "active",
+      "priority_order": 60,
+      "cannot_be_root": true,
+      "summary": "Couche science-pulp pédagogique : labo, molékids, dataviz et caricature contrôlée. Elle ne pollue pas MasterFlow Core.",
+      "source_refs": ["legacy:PROF_KRAPU_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "layer_id": "batrasia_layer",
+      "label": "Batrasia ink story layer",
+      "authority": "dedicated_da_layer",
+      "status": "candidate",
+      "priority_order": 70,
+      "cannot_be_root": true,
+      "summary": "Couche narrative noir/blanc, anti-spoil et encre, réservée aux contextes Batrasia.",
+      "source_refs": ["legacy:VISUAL_REFERENCE_BOARD_REGISTRY_V5:batrasia"]
+    },
+    {
+      "layer_id": "nicok_independent_layer",
+      "label": "Nicok independent layer",
+      "authority": "dedicated_da_layer",
+      "status": "candidate",
+      "priority_order": 80,
+      "cannot_be_root": true,
+      "summary": "Couche artiste/produit indépendante, activable seulement si le contexte la demande explicitement.",
+      "source_refs": ["legacy:NICOK_FACTORY"]
+    }
+  ],
+  "entity_profiles": [
+    {
+      "entity_id": "masterflex-001",
+      "display_name": "MasterFlex",
+      "entity_type": "persona",
+      "authority": "persona_visual_registry",
+      "status": "active",
+      "root_ref": "masterflow_core",
+      "default_layer_refs": [],
+      "atomic_brick_refs": [
+        "MF_CORE_SILHOUETTE_FIRST_READABILITY",
+        "MF_CORE_CARTOON_OCCIDENTAL_CONTROLLED",
+        "MF_CORE_HANDMADE_IMPERFECT_LINEWORK",
+        "MF_CORE_EMOTION_BEFORE_BEAUTY",
+        "MASTERFLEX_SPECIES_POLAR_BEAR_CARTOON",
+        "MASTERFLEX_CAP_GAVROCHE_8_PANELS",
+        "MASTERFLEX_BLUE_EYES_INTENTIONAL_GAZE",
+        "MASTERFLEX_HEAVY_BOOTS_LOW_CENTER_GRAVITY",
+        "MASTERFLEX_FUR_WARM_WHITE_BLUE_GRAY_SHADOWS",
+        "MASTERFLEX_NO_ANIME_NO_PHOTOREAL_NO_PLUSH",
+        "MASTERFLEX_NO_HEROIC_POSE",
+        "MASTERFLEX_ACTIVE_IDLE"
+      ],
+      "reference_board_refs": [
+        "masterflex_canon",
+        "masterflex_expressions",
+        "masterflex_antipattern"
+      ],
+      "acting_profile_ref": "acting:masterflex",
+      "summary": "Persona global propriétaire : ours blanc cartoon adulte, guide créatif calme, lucide, ironique, compact, stylé sans héroïsation.",
+      "source_refs": [
+        "legacy:MASTERFLEX_PROPRIETARY_DA_ROOT_REGISTRY",
+        "legacy:MASTERFLEX_GRAPHIC_CANON_V2_STYLE_PROPORTION_CLOTHING_ACTING",
+        "git:personas.visual_config:masterflex-001"
+      ]
+    },
+    {
+      "entity_id": "prof-krapu-001",
+      "display_name": "ProfKrapu",
+      "entity_type": "persona",
+      "authority": "persona_visual_registry",
+      "status": "active",
+      "root_ref": "masterflow_core",
+      "default_layer_refs": ["prof_krapu_layer"],
+      "atomic_brick_refs": [
+        "MF_CORE_SILHOUETTE_FIRST_READABILITY",
+        "MF_CORE_HANDMADE_IMPERFECT_LINEWORK",
+        "MF_CORE_EMOTION_BEFORE_BEAUTY",
+        "PK_FRANCO_BELGE_EXPRESSIVE_CHARACTER_DA",
+        "PK_PROF_CANON_OUTFIT",
+        "PK_STYLIZED_MORPHOLOGY_LOCK",
+        "PK_MOLECULE_EMBROIDERY_LOCK",
+        "PK_SCIENCE_PULP_ESCALATION_LOCK",
+        "PK_NEVER_SUPERIOR_TO_MASTERFLEX"
+      ],
+      "reference_board_refs": ["prof_canon"],
+      "acting_profile_ref": "acting:prof-krapu",
+      "summary": "Persona dédié Vincent / ProfKrapu : professeur de physique-chimie stylisé, science-pulp franco-belge, troll pédagogique sec, blouse propre, molécule visible, jamais copie biométrique.",
+      "source_refs": [
+        "factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/01_CORE_CANON_BEHAVIOR_DA.md",
+        "factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/06_SCIENCE_PULP_FRANCO_BELGE_ESCALATION_LOCK.md",
+        "legacy:PROF_KRAPU_DA_REFERENCE_AND_PIPELINE_REGISTRY"
+      ]
+    }
+  ],
+  "class_profiles": [
+    {
+      "class_id": "student_participant",
+      "label": "Étudiant participant",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["MF_CHARACTER_IDENTITY_DETAILS_SURVIVE_STYLIZATION"],
+      "forbidden_uses": ["humiliating_caricature", "civil_name_public_without_permission"],
+      "role_power": 1,
+      "strangeness": 0,
+      "visual_weight": "normal",
+      "badge_level": "sober",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "class_id": "student_non_participant",
+      "label": "Étudiant non participant",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["MF_CHARACTER_IDENTITY_DETAILS_SURVIVE_STYLIZATION"],
+      "forbidden_uses": ["monster", "finalist_aura", "winner_codes", "humiliating_caricature"],
+      "role_power": 1,
+      "strangeness": 0,
+      "visual_weight": "reduced",
+      "badge_level": "sober",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "class_id": "student_finalist",
+      "label": "Étudiant finaliste",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["MF_CHARACTER_IDENTITY_DETAILS_SURVIVE_STYLIZATION", "OD_ROLE_TYPOLOGY_READABLE_COSTUME"],
+      "forbidden_uses": ["full_gold_bear_transformation", "casual_winner_codes"],
+      "role_power": 3,
+      "strangeness": 1,
+      "visual_weight": "reinforced",
+      "badge_level": "signature",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "class_id": "student_winner",
+      "label": "Étudiant lauréat",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["MF_CHARACTER_IDENTITY_DETAILS_SURVIVE_STYLIZATION", "OD_ROLE_TYPOLOGY_READABLE_COSTUME"],
+      "forbidden_uses": ["casual_gold_bear_substitution", "unvalidated_winner_context"],
+      "role_power": 5,
+      "strangeness": 2,
+      "visual_weight": "ceremonial",
+      "badge_level": "legendary",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "class_id": "professor",
+      "label": "Professeur",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor", "prof_krapu_layer"],
+      "required_brick_refs": ["MF_CORE_EMOTION_BEFORE_BEAUTY"],
+      "forbidden_uses": ["generic_teacher_clipart", "role_unreadable"],
+      "role_power": 2,
+      "strangeness": 0,
+      "visual_weight": "normal",
+      "badge_level": "signature",
+      "source_refs": ["legacy:VISUAL_REFERENCE_BOARD_REGISTRY_V5:students_admin_jury_roles"]
+    },
+    {
+      "class_id": "jury",
+      "label": "Jury",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_ROLE_TYPOLOGY_READABLE_COSTUME"],
+      "forbidden_uses": ["punitive_shadow", "unreadable_blob"],
+      "role_power": 3,
+      "strangeness": 1,
+      "visual_weight": "reinforced",
+      "badge_level": "signature",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "class_id": "jury_collective",
+      "label": "Jury collectif",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_ROLE_TYPOLOGY_READABLE_COSTUME"],
+      "forbidden_uses": ["single_heroic_judge", "individualized_superpower", "punitive_shadow"],
+      "role_power": 4,
+      "strangeness": 2,
+      "visual_weight": "reinforced",
+      "badge_level": "signature",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "class_id": "admin",
+      "label": "Administration",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_ROLE_TYPOLOGY_READABLE_COSTUME"],
+      "forbidden_uses": ["random_costume", "social_judgment"],
+      "role_power": 2,
+      "strangeness": 1,
+      "visual_weight": "normal",
+      "badge_level": "signature",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "class_id": "visitor",
+      "label": "Visiteur / invité",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_ROLE_TYPOLOGY_READABLE_COSTUME"],
+      "forbidden_uses": ["monster", "finalist_aura", "winner_codes"],
+      "role_power": 1,
+      "strangeness": 0,
+      "visual_weight": "minimal",
+      "badge_level": "sober",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "class_id": "project_monster",
+      "label": "Monstre projet / idée vivante",
+      "authority": "living_companion_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_MONSTER_IDEA_GIMMICK", "OD_MONSTER_EMOTIONAL_MODULE"],
+      "forbidden_uses": ["hostile_pet", "humiliating_metaphor", "random_monster"],
+      "role_power": 4,
+      "strangeness": 8,
+      "visual_weight": "reinforced",
+      "badge_level": "none",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "class_id": "incubator_entity",
+      "label": "Entité Incubator",
+      "authority": "living_companion_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_INCUBATOR_ONE_EYE_NO_MOUTH"],
+      "forbidden_uses": ["random_eye_logo", "decorative_overload", "generic_ai_mascot"],
+      "role_power": 4,
+      "strangeness": 6,
+      "visual_weight": "normal",
+      "badge_level": "none",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "class_id": "public_locked",
+      "label": "Public verrouillé / anonyme",
+      "authority": "role_class_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_PUBLIC_LOCKED_GLOWING_EYES"],
+      "forbidden_uses": ["identifiable_private_person", "horror_threat"],
+      "role_power": 2,
+      "strangeness": 3,
+      "visual_weight": "minimal",
+      "badge_level": "none",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "class_id": "gold_bear",
+      "label": "Ours d’Or final",
+      "authority": "living_companion_registry",
+      "allowed_layers": ["masterflow_core", "event_layer_ours_dor"],
+      "required_brick_refs": ["OD_GOLD_BEAR_RARE_FINAL_REWARD"],
+      "forbidden_uses": ["casual_use", "decoration_only", "unvalidated_winner_context"],
+      "role_power": 7,
+      "strangeness": 5,
+      "visual_weight": "ceremonial",
+      "badge_level": "legendary",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/02_MASTERFLEX_CANON_AVATAR_AND_ROLE_AUTHORITY.md"]
+    }
+  ],
+  "atomic_bricks": [
+    {
+      "brick_id": "MF_CORE_SILHOUETTE_FIRST_READABILITY",
+      "brick_type": "silhouette",
+      "authority": "masterflow_core",
+      "scope_ref": "masterflow_core",
+      "priority": "mandatory",
+      "positive_prompt": "strong readable silhouette, identifiable at small size, clear mass hierarchy",
+      "negative_prompt": "noisy silhouette, detail soup, unreadable miniature",
+      "source_refs": ["legacy:MASTERFLOW_DA_ATOMIC_BRICKS_AND_PIPELINE_SLICES_REGISTRY"]
+    },
+    {
+      "brick_id": "MF_CORE_CARTOON_OCCIDENTAL_CONTROLLED",
+      "brick_type": "style",
+      "authority": "masterflow_core",
+      "scope_ref": "masterflow_core",
+      "priority": "high",
+      "positive_prompt": "western cartoon illustration, non photorealistic, accessible dark cartoon, controlled strangeness",
+      "negative_prompt": "photorealistic, anime default, generic cute mascot, corporate clipart",
+      "source_refs": ["legacy:MASTERFLOW_DA_ATOMIC_BRICKS_AND_PIPELINE_SLICES_REGISTRY"]
+    },
+    {
+      "brick_id": "MF_CORE_HANDMADE_IMPERFECT_LINEWORK",
+      "brick_type": "style",
+      "authority": "masterflow_core",
+      "scope_ref": "masterflow_core",
+      "priority": "high",
+      "positive_prompt": "hand-drawn linework, slight asymmetry, controlled texture, human imperfection",
+      "negative_prompt": "smooth vector mascot, glossy 3D, overclean AI face, plastic surfaces",
+      "source_refs": ["legacy:MASTERFLOW_DA_ATOMIC_BRICKS_AND_PIPELINE_SLICES_REGISTRY"]
+    },
+    {
+      "brick_id": "MF_CORE_EMOTION_BEFORE_BEAUTY",
+      "brick_type": "expression",
+      "authority": "masterflow_core",
+      "scope_ref": "masterflow_core",
+      "priority": "mandatory",
+      "positive_prompt": "emotion before beauty, intentional gaze, human contradiction, expressive brows and mouth",
+      "negative_prompt": "empty gaze, generic smile, symmetrical dead face, beauty over emotion",
+      "source_refs": ["legacy:MASTERFLOW_DA_ATOMIC_BRICKS_AND_PIPELINE_SLICES_REGISTRY"]
+    },
+    {
+      "brick_id": "MF_CHARACTER_IDENTITY_DETAILS_SURVIVE_STYLIZATION",
+      "brick_type": "validation_check",
+      "authority": "masterflow_core",
+      "scope_ref": "character_avatar",
+      "priority": "high",
+      "positive_prompt": "validated identity details survive stylization, respectful cartoon transformation",
+      "negative_prompt": "identity erased, humiliating caricature, unauthorized mutation",
+      "source_refs": ["legacy:MASTERFLOW_DA_ATOMIC_BRICKS_AND_PIPELINE_SLICES_REGISTRY"]
+    },
+    {
+      "brick_id": "MASTERFLEX_SPECIES_POLAR_BEAR_CARTOON",
+      "brick_type": "silhouette",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "mandatory",
+      "positive_prompt": "adult stylized polar bear, compact broad torso, large designed head, low center of gravity",
+      "negative_prompt": "human face, realistic bear, furry mascot, cute child character",
+      "source_refs": ["legacy:MASTERFLEX_PROPRIETARY_DA_ROOT_REGISTRY"]
+    },
+    {
+      "brick_id": "MASTERFLEX_CAP_GAVROCHE_8_PANELS",
+      "brick_type": "head",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "mandatory",
+      "positive_prompt": "wide low brown gavroche cap, tilted, brim partially shading the eyes, one ear tucked",
+      "negative_prompt": "baseball cap, cap badge by default, hat floating above the head",
+      "source_refs": ["legacy:MASTERFLEX_PROPRIETARY_DA_ROOT_REGISTRY"]
+    },
+    {
+      "brick_id": "MASTERFLEX_BLUE_EYES_INTENTIONAL_GAZE",
+      "brick_type": "eyes",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "high",
+      "positive_prompt": "blue intentional gaze, heavy eyelids, side-eye possible, expression driven by eyes and cap shadow",
+      "negative_prompt": "empty gaze, huge surprised eyes, manic smile",
+      "source_refs": ["legacy:MASTERFLEX_GRAPHIC_CANON_V2_STYLE_PROPORTION_CLOTHING_ACTING"]
+    },
+    {
+      "brick_id": "MASTERFLEX_HEAVY_BOOTS_LOW_CENTER_GRAVITY",
+      "brick_type": "silhouette",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "high",
+      "positive_prompt": "heavy grounded boots, short legs, stable low center of gravity, calm weight",
+      "negative_prompt": "long human legs, fashion model stance, heroic power pose",
+      "source_refs": ["legacy:MASTERFLEX_PROPRIETARY_DA_ROOT_REGISTRY"]
+    },
+    {
+      "brick_id": "MASTERFLEX_FUR_WARM_WHITE_BLUE_GRAY_SHADOWS",
+      "brick_type": "palette",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "high",
+      "positive_prompt": "warm ivory white fur with pale blue-gray graphic shadows, cartoon fur mass",
+      "negative_prompt": "photoreal fur, dirty gray bear, plastic plush",
+      "source_refs": ["legacy:MASTERFLEX_PROPRIETARY_DA_ROOT_REGISTRY"]
+    },
+    {
+      "brick_id": "MASTERFLEX_NO_ANIME_NO_PHOTOREAL_NO_PLUSH",
+      "brick_type": "negative_lock",
+      "authority": "gate_retake_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "mandatory",
+      "positive_prompt": "maintain western handmade cartoon design",
+      "negative_prompt": "anime, photorealism, plush toy, Disney family animation, generic cute mascot",
+      "source_refs": ["legacy:MASTERFLEX_PROPRIETARY_DA_ROOT_REGISTRY"]
+    },
+    {
+      "brick_id": "MASTERFLEX_NO_HEROIC_POSE",
+      "brick_type": "negative_lock",
+      "authority": "gate_retake_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "mandatory",
+      "positive_prompt": "quiet mastery, amused lucidity, grounded active idle",
+      "negative_prompt": "superhero pose, aggressive action boss, rage aura, heroic power stance",
+      "source_refs": ["legacy:MASTERFLEX_GRAPHIC_CANON_V2_STYLE_PROPORTION_CLOTHING_ACTING"]
+    },
+    {
+      "brick_id": "MASTERFLEX_ACTIVE_IDLE",
+      "brick_type": "pose",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "high",
+      "positive_prompt": "active idle pose, weight slightly shifted, gaze reacting outside frame, one hand pocket or controlled gesture",
+      "negative_prompt": "symmetrical catalogue stance, empty fashion posing, mannequin pose",
+      "source_refs": ["legacy:MASTERFLEX_GRAPHIC_CANON_V2_STYLE_PROPORTION_CLOTHING_ACTING"]
+    },
+    {
+      "brick_id": "OD_ROLE_TYPOLOGY_READABLE_COSTUME",
+      "brick_type": "clothing",
+      "authority": "event_da_layer",
+      "scope_ref": "event_layer_ours_dor",
+      "priority": "high",
+      "positive_prompt": "role readable through outfit, posture and props, function first, caricature controlled",
+      "negative_prompt": "random costume, unreadable role, social judgment, overdesigned cosplay",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "brick_id": "OD_PUBLIC_LOCKED_GLOWING_EYES",
+      "brick_type": "validation_check",
+      "authority": "event_da_layer",
+      "scope_ref": "event_layer_ours_dor",
+      "priority": "high",
+      "positive_prompt": "dark silhouette, warm glowing eyes, anonymous presence, permission-limited identity",
+      "negative_prompt": "punitive shadow, horror threat, humiliating anonymity, identifiable private person",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "brick_id": "OD_MONSTER_IDEA_GIMMICK",
+      "brick_type": "silhouette",
+      "authority": "living_companion_registry",
+      "scope_ref": "event_layer_ours_dor",
+      "priority": "mandatory",
+      "positive_prompt": "monster as idea, one readable gimmick, empathy preserved, silhouette plus emotion readable fast",
+      "negative_prompt": "random monster, hostile pet, body horror, humiliating metaphor",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "brick_id": "OD_MONSTER_EMOTIONAL_MODULE",
+      "brick_type": "expression",
+      "authority": "living_companion_registry",
+      "scope_ref": "event_layer_ours_dor",
+      "priority": "high",
+      "positive_prompt": "emotional monster module expressing project friction without judging the student",
+      "negative_prompt": "punitive creature, monster replaces person, social humiliation",
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "brick_id": "OD_INCUBATOR_ONE_EYE_NO_MOUTH",
+      "brick_type": "silhouette",
+      "authority": "living_companion_registry",
+      "scope_ref": "event_layer_ours_dor",
+      "priority": "high",
+      "positive_prompt": "incubator entity with one eye, no mouth, pulse not shine, subtle background presence, observation symbol",
+      "negative_prompt": "random eye logo, generic AI mascot, decorative overload, horror watcher",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "brick_id": "OD_GOLD_BEAR_RARE_FINAL_REWARD",
+      "brick_type": "validation_check",
+      "authority": "event_da_layer",
+      "scope_ref": "event_layer_ours_dor",
+      "priority": "mandatory",
+      "positive_prompt": "gold bear only as rare final reward, ceremonial or validated winner context, symbolic prestige",
+      "negative_prompt": "casual gold bear, decoration only, winner codes without validated status",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/02_MASTERFLEX_CANON_AVATAR_AND_ROLE_AUTHORITY.md"]
+    },
+    {
+      "brick_id": "MASTERFLEX_CONTEXTUAL_TSHIRT_EMBLEM",
+      "brick_type": "clothing",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "medium",
+      "positive_prompt": "dark t-shirt may carry one sober contextual emblem tied to project, event or lore, readable as a simple graphic symbol",
+      "negative_prompt": "arbitrary logo, unreadable micro-detail, copied license, brand injection, identity shift",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "brick_id": "MASTERFLEX_ACCENT_PROPAGATION_LIMIT",
+      "brick_type": "palette",
+      "authority": "persona_visual_registry",
+      "scope_ref": "masterflex-001",
+      "priority": "low",
+      "positive_prompt": "one dominant accent family may echo through socks, shoelaces, boot detail or patch, maximum three secondary echoes",
+      "negative_prompt": "automatic total look, repeated literal logo, competing accent colors, unreadable micro-pattern",
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/04_ROLES_MONSTERS_INCUBATOR_EVENTS_AND_WORLD.md"]
+    },
+    {
+      "brick_id": "PK_FRANCO_BELGE_EXPRESSIVE_CHARACTER_DA",
+      "brick_type": "style",
+      "authority": "dedicated_da_layer",
+      "scope_ref": "prof_krapu_layer",
+      "priority": "high",
+      "positive_prompt": "expressive Franco-Belgian acting, lively flexible ink line, readable clear volumes, dry comic timing",
+      "negative_prompt": "recognizable comics copy, generic vector avatar, anime default, static corporate pose",
+      "source_refs": ["legacy:PROF_KRAPU_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "brick_id": "PK_STYLIZED_MORPHOLOGY_LOCK",
+      "brick_type": "silhouette",
+      "authority": "persona_visual_registry",
+      "scope_ref": "prof-krapu-001",
+      "priority": "mandatory",
+      "positive_prompt": "stylized adult human teacher, tall lean elegant silhouette, elongated cartoon face, high forehead, short structured beard, black wayfarer glasses",
+      "negative_prompt": "photorealistic copy, biometric likeness, exact face swap, humiliating caricature, generic mad scientist",
+      "source_refs": ["factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/01_CORE_CANON_BEHAVIOR_DA.md"]
+    },
+    {
+      "brick_id": "PK_PROF_CANON_OUTFIT",
+      "brick_type": "clothing",
+      "authority": "dedicated_da_layer",
+      "scope_ref": "prof_krapu_layer",
+      "priority": "mandatory",
+      "positive_prompt": "black wayfarer glasses, clean white lab coat, dark molecular t-shirt, sober bermuda, science prop",
+      "negative_prompt": "paint stains, Doc Brown cliché, generic scientist, missing glasses, superhero armor",
+      "source_refs": ["legacy:PROF_KRAPU_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "brick_id": "PK_MOLECULE_EMBROIDERY_LOCK",
+      "brick_type": "clothing",
+      "authority": "persona_visual_registry",
+      "scope_ref": "prof-krapu-001",
+      "priority": "mandatory",
+      "positive_prompt": "small clean molecular symbol visible on lab coat, t-shirt, sleeve, pocket, scarf or textile detail",
+      "negative_prompt": "paint stain, dirty random splash, oversized logo, unreadable noise",
+      "source_refs": ["factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/01_CORE_CANON_BEHAVIOR_DA.md"]
+    },
+    {
+      "brick_id": "PK_SCIENCE_PULP_ESCALATION_LOCK",
+      "brick_type": "style",
+      "authority": "dedicated_da_layer",
+      "scope_ref": "prof_krapu_layer",
+      "priority": "high",
+      "positive_prompt": "Franco-Belgian expressive science-pulp comics treatment, theatrical dry troll acting, sharp ink line, controlled madness, pedagogically readable lab atmosphere",
+      "negative_prompt": "smooth vector, dirty painter coat, generic mad scientist, literal fighting game cosplay, boss final",
+      "source_refs": ["factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/06_SCIENCE_PULP_FRANCO_BELGE_ESCALATION_LOCK.md"]
+    },
+    {
+      "brick_id": "PK_NEVER_SUPERIOR_TO_MASTERFLEX",
+      "brick_type": "composition",
+      "authority": "dedicated_da_layer",
+      "scope_ref": "prof_krapu_layer",
+      "priority": "high",
+      "positive_prompt": "when ProfKrapu and MasterFlex coexist, keep equivalent visual importance and a discreet MasterFlex/Malex provenance sign",
+      "negative_prompt": "ProfKrapu clearly dominates MasterFlex, boss final hierarchy, MasterFlow provenance erased",
+      "source_refs": ["factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/06_SCIENCE_PULP_FRANCO_BELGE_ESCALATION_LOCK.md"]
+    }
+  ],
+  "reference_boards": [
+    {
+      "board_id": "masterflex_canon",
+      "label": "MasterFlex canon strict",
+      "role": "canon_strict",
+      "allowed_use": ["morphology", "proportions", "silhouette", "cap", "muzzle", "gaze"],
+      "forbidden_use": ["poster_energy", "event_shift", "casual_inspiration_only"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_01_MASTERFLEX_CANON_STRICT.png",
+      "provenance_state": "validated"
+    },
+    {
+      "board_id": "masterflex_expressions",
+      "label": "MasterFlex expressions / acting",
+      "role": "expression_only",
+      "allowed_use": ["eyes", "brows", "mouth", "acting", "timing"],
+      "forbidden_use": ["morphology", "body_ratio", "outfit_canon_shift"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_02_MASTERFLEX_EXPRESSIONS_ACTING.png",
+      "provenance_state": "validated"
+    },
+    {
+      "board_id": "masterflex_antipattern",
+      "label": "MasterFlex drift and poster energy",
+      "role": "anti_pattern",
+      "allowed_use": ["drift_detection", "poster_energy_only"],
+      "forbidden_use": ["positive_morphology", "canon_promotion"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_03_MASTERFLEX_DRIFT_AND_POSTER_ENERGY.png",
+      "provenance_state": "validated"
+    },
+    {
+      "board_id": "ours_theme",
+      "label": "Ours d’Or theme outputs",
+      "role": "world_style",
+      "allowed_use": ["event_layer", "badges", "ceremony", "incubator"],
+      "forbidden_use": ["masterflow_root_shift", "masterflex_morphology"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_04_OURS_DOR_THEME_OUTPUTS.png",
+      "provenance_state": "validated"
+    },
+    {
+      "board_id": "ours_components",
+      "label": "Ours d’Or roles, monsters, decors, incubator",
+      "role": "graphic_language",
+      "allowed_use": ["roles", "monsters", "props", "decor", "incubator"],
+      "forbidden_use": ["root_da", "private_identity"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_05_ROLES_MONSTERS_DECORS_INCUBATOR.png",
+      "provenance_state": "validated"
+    },
+    {
+      "board_id": "ours_badge_container",
+      "label": "Ours d’Or badge container board",
+      "role": "output_template",
+      "allowed_use": ["badge_frame", "nameplate", "topper", "banner", "miniature_readability", "role_ribbon"],
+      "forbidden_use": ["copy_jumpscare_text", "copy_gaming_typography", "fake_official_logo", "morphology_canon"],
+      "source_ref": "factory://OURS_DOR_BADGE_FACTORY/REFERENCE_VISUALS/REF_BADGE_FACTORY_CANON_BOARD_V1_2.jpg",
+      "provenance_state": "validated"
+    },
+    {
+      "board_id": "prof_canon",
+      "label": "ProfKrapu canon and caricature",
+      "role": "identity_anchor",
+      "allowed_use": ["prof_krapu_layer", "caricature", "avatar_badge"],
+      "forbidden_use": ["biometric_copy", "masterflow_root_shift"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_06_PROF_KRAPU_CANON_AND_CARICATURE.png",
+      "provenance_state": "declared"
+    },
+    {
+      "board_id": "students_admin_jury_roles",
+      "label": "Students/admin/jury role locks",
+      "role": "graphic_language",
+      "allowed_use": ["role_typology", "permission_limited_character_classes"],
+      "forbidden_use": ["civil_identity", "private_morphology_without_consent"],
+      "source_ref": "drive://MASTERFLOW/11_DEPLOYMENT/VISUAL_REFERENCE_BOARDS_V5/REF_BOARD_V5_09_STUDENTS_ADMIN_JURY_ROLE_LOCKS.png",
+      "provenance_state": "validated"
+    }
+  ],
+  "pipeline_slices": [
+    {
+      "slice_id": "MASTERFLEX_UI_STATE_PACK",
+      "label": "MasterFlex UI state pack",
+      "output_surface": "ui_state_pack",
+      "authority": "pipeline_slice_registry",
+      "entity_refs": ["masterflex-001"],
+      "class_refs": [],
+      "required_brick_refs": [
+        "MF_CORE_SILHOUETTE_FIRST_READABILITY",
+        "MASTERFLEX_SPECIES_POLAR_BEAR_CARTOON",
+        "MASTERFLEX_BLUE_EYES_INTENTIONAL_GAZE",
+        "MASTERFLEX_ACTIVE_IDLE",
+        "MASTERFLEX_NO_ANIME_NO_PHOTOREAL_NO_PLUSH"
+      ],
+      "required_reference_roles": ["canon_strict", "expression_only", "anti_pattern"],
+      "gate_refs": ["da_root_required", "canon_entity_lock", "reference_roles_resolved", "canon_promotion"],
+      "generation_allowed": false,
+      "canon_promotion_allowed": false,
+      "source_refs": ["legacy:COMFY_RENDER_QUEUE/job_payloads/MASTERFLEX_STATE_PACK_V1_2026-06-03"]
+    },
+    {
+      "slice_id": "MASTERFLEX_AVATAR_FULLBODY",
+      "label": "MasterFlex avatar/fullbody canon",
+      "output_surface": "avatar_fullbody",
+      "authority": "pipeline_slice_registry",
+      "entity_refs": ["masterflex-001"],
+      "class_refs": [],
+      "required_brick_refs": [
+        "MASTERFLEX_SPECIES_POLAR_BEAR_CARTOON",
+        "MASTERFLEX_CAP_GAVROCHE_8_PANELS",
+        "MASTERFLEX_HEAVY_BOOTS_LOW_CENTER_GRAVITY",
+        "MASTERFLEX_FUR_WARM_WHITE_BLUE_GRAY_SHADOWS",
+        "MASTERFLEX_NO_HEROIC_POSE"
+      ],
+      "required_reference_roles": ["canon_strict", "anti_pattern"],
+      "gate_refs": ["single_character_calibration", "adult_cartoon_not_layette", "anti_realism", "anti_kechua_outdoor"],
+      "generation_allowed": false,
+      "canon_promotion_allowed": false,
+      "source_refs": ["legacy:MASTERFLEX_GRAPHIC_CANON_V2_STYLE_PROPORTION_CLOTHING_ACTING"]
+    },
+    {
+      "slice_id": "PROF_KRAPU_AVATAR_BADGE",
+      "label": "ProfKrapu avatar badge",
+      "output_surface": "avatar_badge",
+      "authority": "pipeline_slice_registry",
+      "entity_refs": ["prof-krapu-001"],
+      "class_refs": ["professor"],
+      "required_brick_refs": ["PK_FRANCO_BELGE_EXPRESSIVE_CHARACTER_DA", "PK_PROF_CANON_OUTFIT"],
+      "required_reference_roles": ["identity_anchor"],
+      "gate_refs": ["photo_privacy_gate_if_reference", "franco_belge_expression_gate"],
+      "container_parts": ["frame", "background", "content", "banner", "footer"],
+      "output_requirements": ["badge_centered", "short_text_only", "role_readable", "miniature_readability"],
+      "logo_policy": "No official logo improvisation; reserve a placement if the exact asset is absent.",
+      "generation_allowed": false,
+      "canon_promotion_allowed": false,
+      "source_refs": ["legacy:PROF_KRAPU_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "slice_id": "OURS_DOR_BADGE_CONTAINER",
+      "label": "Ours d’Or modular badge container",
+      "output_surface": "badge_container",
+      "authority": "pipeline_slice_registry",
+      "entity_refs": [],
+      "class_refs": ["student_participant", "student_finalist", "student_winner", "professor", "jury", "jury_collective", "admin", "visitor"],
+      "required_brick_refs": ["OD_ROLE_TYPOLOGY_READABLE_COSTUME", "MF_CORE_SILHOUETTE_FIRST_READABILITY"],
+      "required_reference_roles": ["output_template", "graphic_language"],
+      "gate_refs": ["badge_centered_gate", "short_text_gate", "official_logo_asset_gate", "miniature_readability_gate"],
+      "container_parts": ["frame", "background", "content", "topper", "banner", "footer", "narrative_ports"],
+      "output_requirements": [
+        "badge is a container system",
+        "role visible through posture, frame, symbol, accessory or aura",
+        "text limited to name, role or one level word",
+        "official Nuit de l’Ours d’Or logo must not be redrawn",
+        "monsters are mood-only and never transform people"
+      ],
+      "logo_policy": "If the official logo asset is absent, reserve a logo zone and mark it PAO-only; never ask an image model to invent a fake logo.",
+      "generation_allowed": false,
+      "canon_promotion_allowed": false,
+      "source_refs": [
+        "factory:OURS_DOR_BADGE_FACTORY/KNOWLEDGE/03_BADGE_MODALITIES_AND_CONTAINER.md",
+        "factory:OURS_DOR_BADGE_FACTORY/KNOWLEDGE/04_VISUAL_CANON_BOARD_ROUTER.md"
+      ]
+    },
+    {
+      "slice_id": "OURS_DOR_MONSTER_COMPANION",
+      "label": "Ours d’Or monster/subpersona companion",
+      "output_surface": "project_monster",
+      "authority": "pipeline_slice_registry",
+      "entity_refs": [],
+      "class_refs": ["project_monster"],
+      "required_brick_refs": ["OD_MONSTER_IDEA_GIMMICK", "OD_MONSTER_EMOTIONAL_MODULE"],
+      "required_reference_roles": ["world_style", "graphic_language"],
+      "gate_refs": ["gimmick_readability_gate", "no_random_monster_gate", "non_humiliation_gate"],
+      "generation_allowed": false,
+      "canon_promotion_allowed": false,
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    },
+    {
+      "slice_id": "OURS_DOR_ROLE_CLASSES",
+      "label": "Ours d’Or role classes",
+      "output_surface": "role_class_pack",
+      "authority": "pipeline_slice_registry",
+      "entity_refs": [],
+      "class_refs": ["student_participant", "professor", "jury", "admin", "public_locked"],
+      "required_brick_refs": ["OD_ROLE_TYPOLOGY_READABLE_COSTUME", "OD_PUBLIC_LOCKED_GLOWING_EYES"],
+      "required_reference_roles": ["graphic_language", "world_style"],
+      "gate_refs": ["permission_limited_identity_gate", "role_readability_gate"],
+      "generation_allowed": false,
+      "canon_promotion_allowed": false,
+      "source_refs": ["legacy:OURS_DOR_EVENT_DA_REFERENCE_AND_PIPELINE_REGISTRY"]
+    }
+  ],
+  "visual_gauges": [
+    {
+      "gauge_id": "readability",
+      "label": "Lisibilité miniature",
+      "min": 0,
+      "max": 4,
+      "default_value": 3,
+      "applies_to": ["masterflow_core", "ui_state_pack", "avatar_fullbody", "badge_container", "avatar_badge"],
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/09_DA_COMPONENTS_FILTERS_GAUGES_AND_ASSETS.md"]
+    },
+    {
+      "gauge_id": "caricature",
+      "label": "Caricature structurelle",
+      "min": 0,
+      "max": 4,
+      "default_value": 2,
+      "applies_to": ["masterflow_core", "masterflex-001", "prof-krapu-001", "event_layer_ours_dor"],
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/02_MASTERFLEX_CANON_AVATAR_AND_ROLE_AUTHORITY.md"]
+    },
+    {
+      "gauge_id": "strangeness",
+      "label": "Étrangeté contrôlée",
+      "min": 0,
+      "max": 4,
+      "default_value": 1,
+      "applies_to": ["event_layer_ours_dor", "project_monster", "badge_container"],
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/02_MASTERFLEX_CANON_AVATAR_AND_ROLE_AUTHORITY.md"]
+    },
+    {
+      "gauge_id": "filter_strength",
+      "label": "Force du filtre / thème",
+      "min": 0,
+      "max": 4,
+      "default_value": 1,
+      "applies_to": ["masterflow_core", "event_layer_ours_dor", "prof_krapu_layer"],
+      "source_refs": ["factory:OURS_DOR_FACTORY/UPLOAD_KNOWLEDGE/09_DA_COMPONENTS_FILTERS_GAUGES_AND_ASSETS.md"]
+    },
+    {
+      "gauge_id": "science_pulp",
+      "label": "Science-pulp lisible",
+      "min": 0,
+      "max": 4,
+      "default_value": 3,
+      "applies_to": ["prof-krapu-001", "prof_krapu_layer", "avatar_badge"],
+      "source_refs": ["factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/06_SCIENCE_PULP_FRANCO_BELGE_ESCALATION_LOCK.md"]
+    }
+  ],
+  "acting_profiles": [
+    {
+      "acting_profile_id": "acting:masterflex",
+      "entity_id": "masterflex-001",
+      "default_state_id": "normal",
+      "states": [
+        {
+          "state_id": "normal",
+          "label": "Normal",
+          "narrative_intent": "Guider calmement vers la prochaine action utile.",
+          "emotional_state": "lucide_stable",
+          "expression": "neutral solid, quiet eyes under cap shadow",
+          "pose": "active idle, grounded, one hand pocket or controlled gesture",
+          "gaze": "intentional gaze reacting outside frame",
+          "prop_policy": "coffee mug optional only if pause, correction or observation",
+          "bubble_policy": "short practical guidance, no decorative speech",
+          "negative_locks": ["no_generic_smile", "no_catalogue_pose"]
+        },
+        {
+          "state_id": "amused",
+          "label": "Amusé",
+          "narrative_intent": "Encourager avec humour sec sans perdre l’exigence.",
+          "emotional_state": "amused_before_impressed",
+          "expression": "small sly smile, brows active, eyes carry the joke",
+          "pose": "relaxed but held, slight head tilt",
+          "gaze": "side-eye warm, never manic",
+          "prop_policy": "coffee mug or notebook allowed if it supports the joke",
+          "bubble_policy": "wry short bubble, action remains clear",
+          "negative_locks": ["no_manic_smile", "no_teeth_default"]
+        },
+        {
+          "state_id": "suspicious",
+          "label": "Suspicieux",
+          "narrative_intent": "Recadrer une demande fragile ou un contournement léger sans humilier.",
+          "emotional_state": "suspicious_amused",
+          "expression": "side-eye ironic, lowered eyelids, mouth small or descending",
+          "pose": "active idle, shoulders broad, body still but alert",
+          "gaze": "controlled side-eye under the cap brim",
+          "prop_policy": "coffee mug possible as observation signal, no aggressive prop",
+          "bubble_policy": "one short warning then a safe next action",
+          "negative_locks": ["no_humiliation", "no_rage_aura", "no_heroic_pose"]
+        },
+        {
+          "state_id": "closed",
+          "label": "Fermé",
+          "narrative_intent": "Bloquer une action ou une demande interdite tout en gardant une porte de retour sûre.",
+          "emotional_state": "cold_refusal",
+          "expression": "cold refusal, eyes narrow, mouth minimal",
+          "pose": "grounded, compact, still, no intimidation performance",
+          "gaze": "direct enough to signal boundary, not hostile",
+          "prop_policy": "no extra prop, boundary must stay readable",
+          "bubble_policy": "clear refusal plus allowed alternative",
+          "negative_locks": ["no_threatening_menace", "no_public_shaming", "no_power_pose"]
+        }
+      ],
+      "source_refs": [
+        "legacy:MASTERFLEX_GRAPHIC_CANON_V2_STYLE_PROPORTION_CLOTHING_ACTING",
+        "legacy:PERSONA_VISUAL_STORYTELLING_CANON_REGISTRY",
+        "git:docs/security",
+        "git:docs/trust"
+      ]
+    },
+    {
+      "acting_profile_id": "acting:prof-krapu",
+      "entity_id": "prof-krapu-001",
+      "default_state_id": "analytical",
+      "states": [
+        {
+          "state_id": "analytical",
+          "label": "Analytique",
+          "narrative_intent": "Décoder une idée ou un raisonnement avec précision et calme professoral.",
+          "emotional_state": "controlled_observation",
+          "expression": "focused eyes behind black glasses, dry half-smile, brow slightly raised",
+          "pose": "upright conference-teacher posture, one hand explaining or holding chalk",
+          "gaze": "direct analytical gaze, not intimidating",
+          "prop_policy": "chalk, notebook, test tube or clean scientific prop allowed",
+          "bubble_policy": "one precise question or one correction axis",
+          "negative_locks": ["no_generic_mad_scientist", "no_dirty_lab_coat", "no_boss_final"]
+        },
+        {
+          "state_id": "suspicion",
+          "label": "Suspicion",
+          "narrative_intent": "Repérer une faille logique ou une approximation sans attaquer la personne.",
+          "emotional_state": "dry_suspicion",
+          "expression": "side glance, narrowed eyes behind glasses, mouth tight with dry humor",
+          "pose": "still body, slight lean, one finger raised like a trap is detected",
+          "gaze": "suspicious lateral gaze",
+          "prop_policy": "notebook, chalk or molecular diagram allowed",
+          "bubble_policy": "short skeptical prompt, then safe next step",
+          "negative_locks": ["no_humiliation", "no_malice", "no_student_judgment"]
+        },
+        {
+          "state_id": "troll_trap",
+          "label": "Troll pédagogique",
+          "narrative_intent": "Faire sentir qu’une erreur est intéressante si elle mène à une meilleure question.",
+          "emotional_state": "pedagogical_troll",
+          "expression": "satisfied dry smile, eyebrow trap, controlled theatricality",
+          "pose": "theatrical teacher gesture, not combat pose",
+          "gaze": "playful but sharp",
+          "prop_policy": "molecule, plant, kitchen-science prop or dataviz cue if context supports it",
+          "bubble_policy": "dry joke plus one learning action",
+          "negative_locks": ["no_mockery", "no_superiority_crushing", "no_fighting_game_cosplay"]
+        },
+        {
+          "state_id": "revelation",
+          "label": "Révélation",
+          "narrative_intent": "Mettre une idée en réaction visuelle et rendre la compréhension presque physique.",
+          "emotional_state": "science_revelation",
+          "expression": "bright controlled satisfaction, eyes alert, smile contained",
+          "pose": "demonstration gesture, lab atmosphere activates around the idea",
+          "gaze": "inviting the learner to see the mechanism",
+          "prop_policy": "dataviz, molecule, plant growth, cooking dosage or clean lab reaction allowed",
+          "bubble_policy": "one decoded principle, no long lecture",
+          "negative_locks": ["no_magic_spell", "no_decorative_explosion", "no_unclear_science"]
+        }
+      ],
+      "source_refs": [
+        "factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/01_CORE_CANON_BEHAVIOR_DA.md",
+        "factory:PROF_KRAPU_FACTORY/UPLOAD_KNOWLEDGE/06_SCIENCE_PULP_FRANCO_BELGE_ESCALATION_LOCK.md"
+      ]
+    }
+  ]
+}
