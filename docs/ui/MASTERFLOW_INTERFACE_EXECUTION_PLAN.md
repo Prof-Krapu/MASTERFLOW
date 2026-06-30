@@ -108,6 +108,17 @@ Statut : publié sur GitHub `main` via PR #203 (`74f7a5c`).
 - colonne contexte masquable sans inventer de préférence persistante ;
 - aucun backend, endpoint, permission, schéma, provider ou migration.
 
+### Checkpoint UI-004 — Teaching cockpit
+
+Statut : vérifié localement, prêt à publier.
+
+- cohorte active, roster, sujets, assignments, corrections et alertes visibles en synthèse ;
+- prochaine action sûre affichée avant les outils ;
+- aide pédagogique et sujet guidé maintenus au premier niveau ;
+- ateliers de sujets, rosters, barèmes, identités et corrections repliés au repos ;
+- météo de classe explicitement absente tant qu'aucun read model collectif ne la calcule ;
+- aucun backend, endpoint, permission, schéma, provider ou migration.
+
 ### Checkpoint UI-001B — 2026-06-28
 
 Statut : publié sur GitHub `main` via PR #150.

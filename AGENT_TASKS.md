@@ -14,6 +14,28 @@ Chacun lit les tâches `target:` qui le concernent, exécute, et reporte dans l'
 
 ---
 
+## TASK-353 — UI-004 : Teaching cockpit
+target: codex
+status: done
+frozen_by: MALEX « go » 2026-06-30
+
+### scope
+- Réutiliser la surface Teaching et le cadre adaptatif existants.
+- Afficher cohorte, préparation, prochaine action et alertes avant les outils.
+- Maintenir le sujet guidé et l'aide visibles.
+- Ranger les formulaires lourds dans un atelier avancé fermé au repos.
+- Ne pas inventer de météo de classe ni modifier le runtime.
+
+### verification
+- Backend complet, lint backend/frontend, build frontend et `git diff --check`.
+- Responsive statique ; smoke localhost non contourné si la politique navigateur le refuse.
+
+### updates
+> 2026-06-30 codex → claimed. Runtime Teaching existant retenu ; aucun cockpit parallèle.
+> 2026-06-30 codex → done local. Backend 665/665, lint back/front et build frontend verts.
+
+---
+
 ## TASK-352 — UI-003 : page projet adaptative
 target: codex
 status: done

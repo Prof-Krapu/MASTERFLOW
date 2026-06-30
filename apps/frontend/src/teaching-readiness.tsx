@@ -68,6 +68,7 @@ import {
   updateCorrectionSheet,
   validateCorrectionSheet,
 } from './api.ts';
+import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
 
 type TeachingReadinessProps = {
@@ -758,21 +759,90 @@ export function TeachingReadiness({
   ]);
 
   const action = nextSafeAction(effectiveResources, validationItems, jobs);
+  const selectedCohort = cohorts.find((cohort) => cohort.cohort_id === selectedCohortId) ?? null;
+  const activeRoster = rosterVersions.find((version) => version.status === 'active') ?? null;
+  const blockedItems = items.filter((item) => item.level === 'blocked');
+  const partialItems = items.filter((item) => item.level === 'partial');
+  const priorityAlerts = failedJobs.length + identityReviews.length + validationItems.length;
 
   return (
-    <article className="panel panel--wide teaching-readiness">
-      <div className="panel-header">
-        <div>
-          <h2>Teaching · état de préparation</h2>
-          <p className="muted compact">Pilotage D05 : état, session privée et questions structurées.</p>
+    <AdaptiveWorkspacePage
+      alert={failedJobs.length > 0
+        ? <p>{failedJobs.length} échec(s) technique(s) demandent une revue avant de poursuivre.</p>
+        : identityReviews.length > 0
+          ? <p>{identityReviews.length} identité(s) étudiante(s) restent à confirmer humainement.</p>
+          : undefined}
+      context={(
+        <>
+          <section className="adaptive-context-block">
+            <div className="panel-header">
+              <h3>Classe active</h3>
+              <span className="counter">{cohorts.length}</span>
+            </div>
+            {selectedCohort ? (
+              <>
+                <strong>{selectedCohort.title}</strong>
+                <span className="muted compact">{selectedCohort.period_ref ?? 'Période non renseignée'}</span>
+                <span className="muted compact">
+                  {activeRoster
+                    ? `Roster V${activeRoster.version} · ${activeRoster.members.length} étudiant(s)`
+                    : 'Aucun roster actif'}
+                </span>
+              </>
+            ) : (
+              <p className="muted compact">Aucune cohorte sélectionnée.</p>
+            )}
+          </section>
+          <dl className="adaptive-context-facts">
+            <div><dt>Sujets</dt><dd>{subjects.length}</dd></div>
+            <div><dt>Assignments</dt><dd>{subjectAssignments.length}</dd></div>
+            <div><dt>Corrections</dt><dd>{correctionBatches.length}</dd></div>
+            <div><dt>Alertes utiles</dt><dd>{priorityAlerts}</dd></div>
+          </dl>
+          <div className="teaching-cockpit__weather">
+            <strong>Météo de classe</strong>
+            <span>Non calculée à ce scope : MasterFlow n’invente pas de climat collectif.</span>
+          </div>
+        </>
+      )}
+      eyebrow="Teaching / cockpit professeur"
+      nextAction={(
+        <div className="teaching-cockpit__next">
+          <strong>{action}</strong>
+          <button className="secondary" disabled={loading} onClick={() => void refresh()} type="button">
+            {loading ? 'Chargement…' : 'Rafraîchir'}
+          </button>
         </div>
-        <button className="secondary" disabled={loading} onClick={() => void refresh()} type="button">
-          {loading ? 'Chargement…' : 'Rafraîchir'}
-        </button>
-      </div>
-
-      <p className="teaching-readiness__next"><strong>Prochain geste sûr :</strong> {action}</p>
-      <p className="teaching-readiness__status" aria-live="polite">{status}</p>
+      )}
+      statusDetail={status}
+      statusLabel={failedJobs.length > 0
+        ? 'Intervention requise'
+        : blockedItems.length > 0
+          ? 'Contexte incomplet'
+          : partialItems.length > 0
+            ? 'Prêt avec réserves'
+            : 'Prêt'}
+      statusTone={failedJobs.length > 0
+        ? 'blocked'
+        : blockedItems.length > 0 || partialItems.length > 0
+          ? 'attention'
+          : 'ready'}
+      summary={`${cohorts.length} classe(s), ${subjects.length} sujet(s), ${correctionBatches.length} lot(s) de correction. Les opérations sensibles restent validées humainement.`}
+      title={selectedCohort?.title ?? project?.name ?? 'Teaching'}
+      toolbar={cohorts.length > 0 ? (
+        <label className="teaching-cockpit__selector">
+          Classe / cohorte active
+          <select onChange={(event) => setSelectedCohortId(event.target.value)} value={selectedCohortId}>
+            {cohorts.map((cohort) => (
+              <option key={cohort.cohort_id} value={cohort.cohort_id}>
+                {cohort.title}{cohort.period_ref ? ` · ${cohort.period_ref}` : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : undefined}
+    >
+      <div className="teaching-readiness">
 
       <div className="teaching-readiness__grid">
         {items.map((item) => (
@@ -792,7 +862,13 @@ export function TeachingReadiness({
         token={token}
       />
 
-      <section className="identity-review" aria-label="Identités étudiantes à confirmer">
+      <details className="teaching-advanced">
+        <summary>
+          <span>Atelier Teaching avancé</span>
+          <small>Sujets, rosters, barèmes, identités et corrections</small>
+        </summary>
+        <div className="teaching-advanced__content">
+        <section className="identity-review" aria-label="Identités étudiantes à confirmer">
         <div className="identity-review__heading">
           <div>
             <strong>Identités à confirmer</strong>
@@ -1002,6 +1078,9 @@ export function TeachingReadiness({
         </div>
       </section>
 
+        </div>
+      </details>
+
       <section className="teaching-guided" aria-label="Sujet et session guidée">
         <div className="teaching-guided__heading">
           <div>
@@ -1122,6 +1201,7 @@ export function TeachingReadiness({
         <strong>Verrous maintenus</strong>
         <span>Configuration D06 privée et versionnée · pas de lot · pas de correction · pas de note · pas de feedback · pas d’export · pas d’envoi étudiant.</span>
       </div>
-    </article>
+      </div>
+    </AdaptiveWorkspacePage>
   );
 }

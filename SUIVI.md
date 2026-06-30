@@ -6,16 +6,36 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `UI-003-ADAPTIVE-PROJECT-PAGE`
-- objectif : créer le modèle commun de page complète adaptative et l'appliquer d'abord au projet.
-- statut : `published`
-- dernière action terminée : PR #203 mergée sur GitHub (`74f7a5c`).
-- prochaine action : construire `UI-004`, Teaching cockpit, sur le cadre adaptatif validé.
-- fichiers/domaines concernés : frontend App, nouveau composant de page, styles et suivi UI.
-- tests à relancer : à la prochaine tranche runtime ; backend 665/665, lint back/front et build verts.
-- publication : GitHub `main == origin/main == 74f7a5c` après merge de la PR #203.
+- id : `UI-004-TEACHING-COCKPIT`
+- objectif : transformer la surface Teaching existante en cockpit prof lisible sans dupliquer son runtime.
+- statut : `local_verified`
+- dernière action terminée : Teaching recomposé sur la page adaptative ; ateliers lourds repliés.
+- prochaine action : commit, push, PR, merge et preuve GitHub.
+- fichiers/domaines concernés : `teaching-readiness.tsx`, styles et suivi UI.
+- tests à relancer : aucun avant publication ; backend 665/665, lint back/front et build verts.
+- publication : branche locale `codex/ui-teaching-cockpit-004`, non publiée à ce checkpoint.
 - blocage : smoke navigateur localhost interdit par la politique du navigateur intégré ; ce contrôle
   visuel ne sera pas contourné.
+
+## 2026-06-30 — UI-004-TEACHING-COCKPIT : contrat de tranche
+
+- réutiliser `TeachingReadiness`, les cohortes, rosters, sujets, assignments, corrections et revues ;
+- afficher d'abord classe/cohorte, état synthétique, prochaine action et alertes importantes ;
+- conserver le sujet guidé et l'aide pédagogique visibles ;
+- regrouper les formulaires de fabrication/correction dans un atelier avancé fermé au repos ;
+- ne pas inventer de météo de classe tant que le runtime ne la calcule pas à ce scope ;
+- aucun backend, endpoint, permission, schéma, provider ou migration.
+
+Implémentation vérifiée :
+
+- cohorte active, roster, sujets, assignments, corrections et alertes synthétisés ;
+- prochain geste sûr issu des données Teaching existantes, avec rafraîchissement explicite ;
+- aide pédagogique et sujet guidé gardés visibles ;
+- identités, sujets, rosters, barèmes et corrections regroupés dans un atelier fermé au repos ;
+- météo collective signalée indisponible au lieu d'être inférée depuis un utilisateur.
+
+Vérifications : backend complet 665/665 ; lint backend/frontend ; build frontend ;
+`git diff --check`.
 
 ## 2026-06-30 — UI-003-ADAPTIVE-PROJECT-PAGE : contrat de tranche
 
