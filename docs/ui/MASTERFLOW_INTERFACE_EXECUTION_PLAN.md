@@ -110,7 +110,7 @@ Statut : publié sur GitHub `main` via PR #203 (`74f7a5c`).
 
 ### Checkpoint UI-004 — Teaching cockpit
 
-Statut : vérifié localement, prêt à publier.
+Statut : publié sur GitHub `main` via PR #205 (`fb348b6`).
 
 - cohorte active, roster, sujets, assignments, corrections et alertes visibles en synthèse ;
 - prochaine action sûre affichée avant les outils ;
