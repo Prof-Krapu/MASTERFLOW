@@ -6,15 +6,117 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `PUBLICATION-GROUPED-REVIEW-001`
-- objectif : décider si la pile locale du rush système sans UI doit être publiée en PR groupée ou découpée.
-- statut : `awaiting_malex_validation`
-- dernière action terminée : cohérence globale verte après Expressive Canon et Resources/Outputs.
-- prochaine action : si MALEX valide, préparer le contrat de publication puis commit/push/PR ; sinon continuer audit ou découper.
-- fichiers/domaines concernés : Orientation Fabric, Inventory, Resources, DA assets, Expressive Canon, Security/Trust, Factory Backflow.
-- tests à relancer : aucun avant décision ; relancer backend complet, lint, build frontend et `git diff --check` juste avant publication.
-- publication : aucune ; branche locale `codex/visual-knowledge-fabric`, base GitHub `730e912`.
-- blocage : aucun ; UI, génération, canonisation, import massif DA, migration de données, provider voix/image et runner live restent fermés.
+- id : `UI-RESET-PROTOTYPE-LAB-001`
+- objectif : faire relire et tester le nouveau prototype UI et son Component Lab par MALEX et Vincent, sans l'intégrer au frontend runtime.
+- statut : `snapshot_published_for_review`
+- dernière action terminée : snapshot frontend vérifié, commité et poussé sur la branche dédiée.
+- prochaine action : Vincent consulte `/ui-reset` et `/ui-lab`, puis dépose uniquement observations, contraintes backend et besoins de profil ; MALEX garde la décision UI/DA.
+- fichiers/domaines concernés : `apps/frontend/src/current-ui-demo.*`, `apps/frontend/src/ui-reset/`, assets MasterFlex/ProfKrapu, `docs/ui/`.
+- tests à relancer : lint frontend, build frontend et `git diff --check` avant tout nouveau snapshot.
+- publication : branche `codex/ui-reset-prototype-lab`, commit `89a4f53`, poussée sur GitHub ; aucune PR, aucun merge dans `main`, aucun déploiement live.
+- blocage : aucun pour la consultation locale ; toute intégration runtime, PR, merge ou publication demande une validation explicite de MALEX.
+
+## 2026-07-03 — UI-RESET-PROTOTYPE-LAB-001 : handoff MALEX / Vincent
+
+### Statut exact
+
+- `/ui-reset` est le prototype navigable de référence pour la recherche UI actuelle ;
+- `/ui-lab` est l'atelier de composants isolés utilisé pour modifier et tester la coque sans refaire
+  toute l'interface ;
+- ce snapshot est une **preuve de prototype**, pas le frontend runtime, pas le canon produit final et
+  pas un déploiement ;
+- branche publiée : `codex/ui-reset-prototype-lab` ;
+- commit publié : `89a4f535c1b23e16b5ba027762e2176d2b3af9fa` ;
+- `main` n'a pas été modifiée par cette tranche ;
+- aucune PR n'est ouverte à ce checkpoint.
+
+### Lancer le prototype
+
+Depuis un clone du repo :
+
+```bash
+git fetch --all --prune
+git switch codex/ui-reset-prototype-lab
+git pull
+npm install
+npm run dev:frontend
+```
+
+Puis ouvrir :
+
+```txt
+http://localhost:5174/ui-reset
+http://localhost:5174/ui-lab
+```
+
+Le serveur local de MALEX n'est pas une URL partagée : Vincent doit lancer le frontend sur sa
+machine. Aucun backend n'est nécessaire pour consulter les fixtures du Lab.
+
+### Ce que contient le snapshot
+
+- nouvelle coque UI MasterFlow : navigation gauche, barre système, rail d'actions et dock
+  clavier/micro ;
+- Home de prototype, page personnage, skilltree et galaxies de compétences ;
+- raccourcis clavier centralisés, Mode Tunnel, historique, recherche, paramètres et bibliothèque
+  d'actions ;
+- profils locaux MasterFlex et ProfKrapu avec thèmes, assets, punchlines et compétences distincts ;
+- Component Lab avec scénarios desktop/mobile, clair/sombre, ouvert/fermé et états interactifs ;
+- documentation de travail dans `docs/ui/`, notamment le CDC reset, le contrat profils et le
+  processus de collaboration.
+
+### Répartition des rôles
+
+- **MALEX** : propriétaire de la vision UI, de la DA, des parcours, des couleurs et de la validation
+  visuelle ;
+- **Vincent** : peut signaler contraintes backend, permissions, données disponibles, besoins de
+  profil, collisions techniques et observations d'usage ;
+- **Codex** : transforme les décisions validées en composants, tests, documentation et snapshots
+  bornés ;
+- une proposition de Vincent ne modifie jamais automatiquement le prototype, le canon ou le
+  runtime ;
+- Vincent ne remplace pas les choix UI/DA de MALEX et ne branche pas le prototype au backend sans
+  contrat explicite.
+
+### Méthode de collaboration recommandée
+
+1. Consulter d'abord `/ui-reset` pour comprendre le parcours complet.
+2. Utiliser `/ui-lab` pour discuter ou modifier un composant isolé.
+3. Décrire chaque retour comme `observation`, `contrainte backend`, `besoin profil` ou
+   `proposition UI`.
+4. MALEX valide ou rejette les propositions UI/DA.
+5. Une modification acceptée est réalisée sur une branche dédiée, avec vérifications frontend.
+6. Un nouveau snapshot peut être commité et poussé uniquement après GO explicite de MALEX.
+7. Le passage prototype vers frontend exploitable fera l'objet d'une vague séparée avec matrice
+   surfaces → contrats backend, critères d'acceptation et non-régression.
+
+### Garde-fous
+
+- ne pas prendre l'ancien frontend, `/ui-reset` ou `/ui-lab` pour une vérité runtime ;
+- ne pas ajouter de backend, endpoint, permission, migration ou provider depuis cette branche ;
+- ne pas importer automatiquement les Factories ProfKrapu dans le canon ;
+- ne pas modifier les assets MasterFlex pour construire le profil Vincent ;
+- ne pas committer les PSD, fichiers temporaires ou dossiers `candidates/` sans validation ;
+- ne pas créer de PR, merge ou déploiement sans GO explicite de MALEX ;
+- conserver les animations d'entrée **et** de sortie pour tout composant ou panneau ajouté ;
+- conserver une navigation et un clavier cohérents entre toutes les surfaces.
+
+### Vérifications du snapshot
+
+- `npm run lint --workspace @masterflow/frontend` — OK ;
+- `npm run build:frontend` — OK ;
+- `git diff --check` — OK ;
+- `/ui-reset` et `/ui-lab` — HTTP 200 en local au moment du snapshot.
+
+### Retour attendu de Vincent
+
+- contraintes réelles de données ou permissions qui empêcheraient un composant de fonctionner ;
+- différences utiles entre le profil ProfKrapu et le profil MasterFlex ;
+- éléments backend déjà disponibles que le prototype pourra consommer plus tard ;
+- collisions prévisibles avec son travail en cours ;
+- aucune demande de redesign global sans décision produit MALEX.
+
+Statut : snapshot consultable sur GitHub, revue collaborative autorisée, intégration runtime et
+publication sur `main` fermées.
 
 ## 2026-06-30 — GLOBAL-COHERENCE-TESTS-001 : rush système sans UI vérifié
 
