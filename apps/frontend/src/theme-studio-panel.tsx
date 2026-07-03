@@ -1,22 +1,139 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {ReactElement} from 'react';
 
-import type {ThemeStudioAssetPackPreview, VisualManifest, VisualNarrativeGrammarReport} from '@masterflow/shared';
+import type {
+  CompiledVisualPlan,
+  D08VisualManifestCandidate,
+  ThemeStudioAssetPackPreview,
+  VisualKnowledgeRegistry,
+  VisualManifest,
+  VisualNarrativeGrammarReport,
+  VisualRegistryLintReport,
+} from '@masterflow/shared';
 
 import {
+  compileVisualKnowledgePlan,
   getThemeStudioAssetPack,
+  getD08VisualManifestCandidate,
+  getVisualKnowledgeRegistry,
+  getVisualKnowledgeRegistryLint,
   getVisualManifests,
   getVisualNarrativeGrammar,
 } from './api.ts';
 import {VisualDaPreviewPanel} from './visual-da-preview-panel.tsx';
 
 export function ThemeStudioPanel({token}: {token: string}): ReactElement {
+  const [registrySource, setRegistrySource] = useState<'empty_core' | 'legacy_adapter'>('empty_core');
+  const [registry, setRegistry] = useState<VisualKnowledgeRegistry | null>(null);
+  const [registryLint, setRegistryLint] = useState<VisualRegistryLintReport | null>(null);
+  const [compiledPlan, setCompiledPlan] = useState<CompiledVisualPlan | null>(null);
+  const [d08Candidate, setD08Candidate] = useState<D08VisualManifestCandidate | null>(null);
+  const [fabricStatus, setFabricStatus] = useState('Chargement du Registry Kernel…');
+  const [selectedEntityRef, setSelectedEntityRef] = useState('');
+  const [selectedOutputRef, setSelectedOutputRef] = useState('');
+  const [selectedLayerRefs, setSelectedLayerRefs] = useState<string[]>([]);
+  const [gaugePreferences, setGaugePreferences] = useState<Record<string, number>>({});
   const [manifests, setManifests] = useState<VisualManifest[]>([]);
   const [selected, setSelected] = useState('');
   const [report, setReport] = useState<VisualNarrativeGrammarReport | null>(null);
   const [assetPack, setAssetPack] = useState<ThemeStudioAssetPackPreview | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('Choisis un manifest pour lire sa grammaire.');
+
+  const refreshFabric = useCallback(async (source = registrySource): Promise<void> => {
+    setFabricStatus('Lecture du registre visuel…');
+    try {
+      const [next, lint] = await Promise.all([
+        getVisualKnowledgeRegistry(source, token),
+        getVisualKnowledgeRegistryLint(source, token),
+      ]);
+      setRegistry(next);
+      setRegistryLint(lint);
+      setCompiledPlan(null);
+      setD08Candidate(null);
+      setSelectedEntityRef((current) =>
+        next.entities.some((entity) => entity.entity_ref === current)
+          ? current
+          : next.entities[0]?.entity_ref ?? '',
+      );
+      setSelectedOutputRef((current) =>
+        next.output_recipes.some((output) => output.recipe_id === current)
+          ? current
+          : next.output_recipes[0]?.recipe_id ?? '',
+      );
+      setSelectedLayerRefs([]);
+      setGaugePreferences({});
+      setFabricStatus(source === 'empty_core'
+        ? 'Kernel vide opérationnel : aucune DA propriétaire absorbée.'
+        : 'Projection de compatibilité chargée : contenu historique non promu en nouveau canon.');
+    } catch (error) {
+      setRegistry(null);
+      setRegistryLint(null);
+      setFabricStatus(error instanceof Error ? error.message : 'Registry Kernel indisponible.');
+    }
+  }, [registrySource, token]);
+
+  useEffect(() => {
+    void refreshFabric();
+  }, [refreshFabric]);
+
+  const selectedEntity = useMemo(
+    () => registry?.entities.find((entity) => entity.entity_ref === selectedEntityRef) ?? null,
+    [registry, selectedEntityRef],
+  );
+  const selectedOutput = useMemo(
+    () => registry?.output_recipes.find((output) => output.recipe_id === selectedOutputRef) ?? null,
+    [registry, selectedOutputRef],
+  );
+  const selectedAnnotations = useMemo(() => {
+    if (!registry || !selectedEntity) return [];
+    const refs = new Set(selectedEntity.reference_annotation_refs);
+    return registry.reference_annotations.filter((annotation) => refs.has(annotation.annotation_id));
+  }, [registry, selectedEntity]);
+
+  const compileWorkspacePlan = useCallback(async (): Promise<void> => {
+    const entity = selectedEntity;
+    const output = selectedOutput;
+    if (!registry || !entity || !output) {
+      setFabricStatus('Ce registre est volontairement vide : ajoute une fixture ou ouvre la projection de compatibilité.');
+      return;
+    }
+    setFabricStatus('Compilation structurée en cours…');
+    try {
+      const request = {
+        registry_source: registrySource,
+        intent: `Prévisualiser ${entity.label} pour ${output.label}.`,
+        context: 'da_studio',
+        entity_refs: [entity.entity_ref],
+        active_mode: 'godmode',
+        output_recipe_ref: output.recipe_id,
+        requested_layer_refs: selectedLayerRefs,
+        acting_state_ref: null,
+        preference_gauge_values: gaugePreferences,
+      };
+      const [next, candidate] = await Promise.all([
+        compileVisualKnowledgePlan(request, token),
+        getD08VisualManifestCandidate(request, token),
+      ]);
+      setCompiledPlan(next);
+      setD08Candidate(candidate);
+      setFabricStatus(next.status === 'ready_for_manifest'
+        ? 'Plan déterministe prêt pour revue D08. Génération toujours fermée.'
+        : 'Plan compilé avec décisions ou ressources manquantes.');
+    } catch (error) {
+      setCompiledPlan(null);
+      setD08Candidate(null);
+      setFabricStatus(error instanceof Error ? error.message : 'Compilation impossible.');
+    }
+  }, [
+    gaugePreferences,
+    registry,
+    registrySource,
+    selectedEntity,
+    selectedLayerRefs,
+    selectedOutput,
+    token,
+  ]);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -68,15 +185,265 @@ export function ThemeStudioPanel({token}: {token: string}): ReactElement {
     <article className="panel panel--wide theme-studio">
       <header className="panel-header">
         <div>
-          <h2>Theme Studio · grammaire narrative</h2>
+          <h2>DA Studio · encyclopédie graphique</h2>
           <p className="muted compact">
-            Comprendre et contrôler la DA avant tout thème actif ou asset généré.
+            Composer, expliquer et contrôler une DA avant tout asset généré.
           </p>
         </div>
         <button className="secondary" disabled={loading} onClick={() => void refresh()} type="button">
           Rafraîchir
         </button>
       </header>
+
+      <section className="da-studio__fabric">
+        <div className="da-studio__fabric-header">
+          <div>
+            <strong>Visual Knowledge Fabric</strong>
+            <span>Registry Kernel + compilateur sans provider</span>
+          </div>
+          <label>
+            Source
+            <select
+              value={registrySource}
+              onChange={(event) => {
+                const source = event.target.value as 'empty_core' | 'legacy_adapter';
+                setRegistrySource(source);
+                void refreshFabric(source);
+              }}
+            >
+              <option value="empty_core">Kernel vide</option>
+              <option value="legacy_adapter">Compatibilité historique</option>
+            </select>
+          </label>
+        </div>
+        <p className="owner-cockpit__status" aria-live="polite">{fabricStatus}</p>
+        {registry ? (
+          <>
+            <dl className="theme-studio__summary">
+              <div><dt>Entités</dt><dd>{registry.entities.length}</dd></div>
+              <div><dt>Layers</dt><dd>{registry.layers.length}</dd></div>
+              <div><dt>Jauges</dt><dd>{registry.gauges.length}</dd></div>
+              <div><dt>Outputs</dt><dd>{registry.output_recipes.length}</dd></div>
+            </dl>
+            <div className="da-studio__fabric-actions">
+              <span>
+                {registry.status === 'empty_ready'
+                  ? 'Le moteur existe sans contenu canon inventé.'
+                  : 'Adapter de transition : les anciennes données restent explicitement séparées.'}
+              </span>
+              <button
+                disabled={!selectedEntity || !selectedOutput}
+                onClick={() => void compileWorkspacePlan()}
+                type="button"
+              >
+                Compiler ce plan
+              </button>
+            </div>
+            {selectedEntity && selectedOutput ? (
+              <div className="da-studio__workspace">
+                <section>
+                  <div className="da-studio__section-title">
+                    <strong>Explorer</strong>
+                    <span>entité et output</span>
+                  </div>
+                  <label>
+                    Entité
+                    <select
+                      value={selectedEntityRef}
+                      onChange={(event) => {
+                        setSelectedEntityRef(event.target.value);
+                        setCompiledPlan(null);
+                        setD08Candidate(null);
+                      }}
+                    >
+                      {registry.entities.map((entity) => (
+                        <option key={entity.entity_ref} value={entity.entity_ref}>
+                          {entity.label} · {entity.entity_kind}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Output Lab
+                    <select
+                      value={selectedOutputRef}
+                      onChange={(event) => {
+                        setSelectedOutputRef(event.target.value);
+                        setCompiledPlan(null);
+                        setD08Candidate(null);
+                      }}
+                    >
+                      {registry.output_recipes.map((output) => (
+                        <option key={output.recipe_id} value={output.recipe_id}>
+                          {output.label} · {output.family}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <small>
+                    {Object.entries(selectedOutput.technical_constraints)
+                      .map(([key, value]) => `${key}: ${String(value)}`)
+                      .join(' · ') || 'Aucune contrainte technique déclarée.'}
+                  </small>
+                </section>
+
+                <section>
+                  <div className="da-studio__section-title">
+                    <strong>Layer Composer</strong>
+                    <span>composition non destructive</span>
+                  </div>
+                  <p className="muted compact">
+                    Hérités : {selectedEntity.layer_refs.join(' · ') || 'aucun'}
+                  </p>
+                  <div className="da-studio__checks">
+                    {registry.layers
+                      .filter((layer) => !selectedEntity.layer_refs.includes(layer.layer_id))
+                      .map((layer) => (
+                        <label key={layer.layer_id}>
+                          <input
+                            checked={selectedLayerRefs.includes(layer.layer_id)}
+                            onChange={(event) => {
+                              setSelectedLayerRefs((current) => event.target.checked
+                                ? [...current, layer.layer_id]
+                                : current.filter((ref) => ref !== layer.layer_id));
+                              setCompiledPlan(null);
+                              setD08Candidate(null);
+                            }}
+                            type="checkbox"
+                          />
+                          <span>{layer.label}</span>
+                          <small>{layer.layer_kind}</small>
+                        </label>
+                      ))}
+                    {registry.layers.every((layer) => selectedEntity.layer_refs.includes(layer.layer_id))
+                      ? <p className="muted compact">Aucun layer optionnel dans ce registre.</p>
+                      : null}
+                  </div>
+                </section>
+
+                <section>
+                  <div className="da-studio__section-title">
+                    <strong>Gauge Console</strong>
+                    <span>plages sûres uniquement</span>
+                  </div>
+                  <div className="da-studio__gauges">
+                    {registry.gauges.map((gauge) => {
+                      const value = gaugePreferences[gauge.gauge_id] ?? gauge.default_value;
+                      return (
+                        <label key={gauge.gauge_id}>
+                          <span>{gauge.label}</span>
+                          <input
+                            disabled={!gauge.user_adjustable}
+                            max={gauge.safe_max}
+                            min={gauge.safe_min}
+                            onChange={(event) => {
+                              setGaugePreferences((current) => ({
+                                ...current,
+                                [gauge.gauge_id]: Number(event.target.value),
+                              }));
+                              setCompiledPlan(null);
+                              setD08Candidate(null);
+                            }}
+                            step={(gauge.safe_max - gauge.safe_min) / 20 || 1}
+                            type="range"
+                            value={value}
+                          />
+                          <output>{value.toFixed(2)} {gauge.unit}</output>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section>
+                  <div className="da-studio__section-title">
+                    <strong>Reference Board</strong>
+                    <span>régions et usages</span>
+                  </div>
+                  {selectedAnnotations.length > 0 ? selectedAnnotations.map((annotation) => (
+                    <article key={annotation.annotation_id}>
+                      <div>
+                        <strong>{annotation.label}</strong>
+                        <span>{annotation.role}</span>
+                      </div>
+                      <small>
+                        {annotation.selector.type} · droits {annotation.rights_status} · provenance {annotation.provenance_state}
+                      </small>
+                    </article>
+                  )) : <p className="muted compact">Aucune référence assignée : le compilateur devra le signaler si l’output en exige.</p>}
+                </section>
+              </div>
+            ) : null}
+            {registryLint ? (
+              <section className={`theme-studio__diagnostics ${registryLint.valid ? '' : 'theme-studio__diagnostics--warning'}`}>
+                <div className="da-studio__plan-title">
+                  <strong>{registryLint.valid ? 'Registre cohérent' : 'Registre bloqué par le lint'}</strong>
+                  <span>
+                    {registryLint.counts.block} blocage(s) · {registryLint.counts.warning} avertissement(s)
+                  </span>
+                </div>
+                {registryLint.diagnostics.length > 0 ? (
+                  <ul>
+                    {registryLint.diagnostics.slice(0, 8).map((item) => (
+                      <li key={`${item.code}:${item.target_ref}`}>{item.message}</li>
+                    ))}
+                  </ul>
+                ) : <p>Aucun lien cassé, cycle ou référence contaminée détecté.</p>}
+              </section>
+            ) : null}
+          </>
+        ) : null}
+        {compiledPlan ? (
+          <section className={`theme-studio__diagnostics ${compiledPlan.status === 'blocked' ? 'theme-studio__diagnostics--warning' : ''}`}>
+            <div className="da-studio__plan-title">
+              <strong>{compiledPlan.status === 'ready_for_manifest' ? 'Plan prêt pour manifest' : 'Plan à arbitrer'}</strong>
+              <span>{compiledPlan.deterministic_hash.slice(0, 12)}</span>
+            </div>
+            <p>
+              {compiledPlan.layer_stack.length} layer(s) · {compiledPlan.active_traits.length} trait(s) ·{' '}
+              {compiledPlan.reference_annotations.length} annotation(s) · génération fermée
+            </p>
+            <div className="da-studio__plan-grid">
+              <div>
+                <strong>Stack résolue</strong>
+                <p>{compiledPlan.layer_stack.map((layer) => layer.layer_ref).join(' → ') || 'aucune'}</p>
+              </div>
+              <div>
+                <strong>Jauges finales</strong>
+                <p>{compiledPlan.gauges.map((gauge) => `${gauge.gauge_id}: ${gauge.value}`).join(' · ') || 'aucune'}</p>
+              </div>
+            </div>
+            {compiledPlan.missing_items.length > 0 ? (
+              <ul>{compiledPlan.missing_items.map((item) => <li key={item}>{item}</li>)}</ul>
+            ) : null}
+            {compiledPlan.conflicts.length > 0 ? (
+              <ul>{compiledPlan.conflicts.map((item) => <li key={item}>{item}</li>)}</ul>
+            ) : null}
+          </section>
+        ) : null}
+        {d08Candidate ? (
+          <section className={`theme-studio__diagnostics ${d08Candidate.readiness === 'blocked' ? 'theme-studio__diagnostics--warning' : ''}`}>
+            <div className="da-studio__plan-title">
+              <strong>Pont D08 · {d08Candidate.readiness === 'ready_for_d08_review' ? 'candidat prêt à relire' : 'bloqué'}</strong>
+              <span>non persisté</span>
+            </div>
+            <p>
+              {d08Candidate.request_preview.request_title} · template {d08Candidate.request_preview.output_template}
+            </p>
+            <small>
+              Prochaine action : relire puis matérialiser les annotations comme références D08. Aucune génération ouverte.
+            </small>
+            {d08Candidate.blockers.length > 0 ? (
+              <ul>{d08Candidate.blockers.map((item) => <li key={item}>{item}</li>)}</ul>
+            ) : null}
+          </section>
+        ) : null}
+      </section>
+
+      <section className="theme-studio__explanations">
+        <div><strong>Theme Studio</strong><span>module du DA Studio</span></div>
+        <p className="muted compact">Analyse des manifests, grammaire narrative, palettes, typographies et packs candidats.</p>
+      </section>
 
       <section className="theme-studio__selector">
         <label>

@@ -2397,6 +2397,120 @@ dd {
   gap: 6px;
 }
 
+.da-studio__fabric {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.da-studio__fabric-header,
+.da-studio__fabric-actions,
+.da-studio__plan-title {
+  align-items: flex-end;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.da-studio__fabric-header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.da-studio__fabric-header span,
+.da-studio__fabric-actions span,
+.da-studio__plan-title span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.da-studio__fabric-header label {
+  display: grid;
+  gap: 5px;
+}
+
+.da-studio__workspace {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.da-studio__workspace > section {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.da-studio__workspace label {
+  display: grid;
+  gap: 5px;
+}
+
+.da-studio__section-title,
+.da-studio__checks label,
+.da-studio__gauges label {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+  justify-content: space-between;
+}
+
+.da-studio__section-title span,
+.da-studio__checks small,
+.da-studio__workspace > section > small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.da-studio__checks,
+.da-studio__gauges {
+  display: grid;
+  gap: 8px;
+}
+
+.da-studio__checks label {
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 8px;
+}
+
+.da-studio__gauges label {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(100px, 1fr) auto;
+}
+
+.da-studio__gauges output {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  min-width: 72px;
+  text-align: right;
+}
+
+.da-studio__plan-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.da-studio__plan-grid > div {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  min-width: 0;
+  padding: 9px;
+}
+
+.da-studio__plan-grid p {
+  overflow-wrap: anywhere;
+}
+
 .theme-studio__summary {
   display: grid;
   gap: 8px;
@@ -2511,6 +2625,21 @@ dd {
 }
 
 @media (max-width: 620px) {
+  .da-studio__fabric-header,
+  .da-studio__fabric-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .da-studio__workspace,
+  .da-studio__plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .da-studio__gauges label {
+    grid-template-columns: 1fr;
+  }
+
   .preflight-panel header,
   .preflight-impact {
     align-items: stretch;

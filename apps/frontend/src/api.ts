@@ -15,6 +15,9 @@ import type {
   CreateD12ReleaseReceipt,
   CreateInvitation,
   ConversationGuide,
+  CompileVisualPlanRequest,
+  CompiledVisualPlan,
+  D08VisualManifestCandidate,
   Cohort,
   CreateCohort,
   CreateCorrectionBatchRequest,
@@ -99,6 +102,8 @@ import type {
   VisualManifest,
   VisualNarrativeGrammarReport,
   ThemeStudioAssetPackPreview,
+  VisualKnowledgeRegistry,
+  VisualRegistryLintReport,
   VisualReference,
   CreateVisualManifestRequest,
   CreateVisualReferenceRequest,
@@ -486,6 +491,46 @@ export async function getThemeStudioAssetPack(
   return request<ThemeStudioAssetPackPreview>(
     `/experience/theme-studio/asset-pack?manifest_id=${encodeURIComponent(manifestId)}`,
     {method: 'GET'},
+    token,
+  );
+}
+export async function getVisualKnowledgeRegistry(
+  source: 'empty_core' | 'legacy_adapter',
+  token?: string | null,
+): Promise<VisualKnowledgeRegistry> {
+  return request<VisualKnowledgeRegistry>(
+    `/experience/visual-fabric/registry?source=${encodeURIComponent(source)}`,
+    {method: 'GET'},
+    token,
+  );
+}
+export async function getVisualKnowledgeRegistryLint(
+  source: 'empty_core' | 'legacy_adapter',
+  token?: string | null,
+): Promise<VisualRegistryLintReport> {
+  return request<VisualRegistryLintReport>(
+    `/experience/visual-fabric/lint?source=${encodeURIComponent(source)}`,
+    {method: 'GET'},
+    token,
+  );
+}
+export async function compileVisualKnowledgePlan(
+  body: CompileVisualPlanRequest,
+  token?: string | null,
+): Promise<CompiledVisualPlan> {
+  return request<CompiledVisualPlan>(
+    '/experience/visual-fabric/compile',
+    {method: 'POST', body: JSON.stringify(body)},
+    token,
+  );
+}
+export async function getD08VisualManifestCandidate(
+  body: CompileVisualPlanRequest,
+  token?: string | null,
+): Promise<D08VisualManifestCandidate> {
+  return request<D08VisualManifestCandidate>(
+    '/experience/visual-fabric/d08-candidate',
+    {method: 'POST', body: JSON.stringify(body)},
     token,
   );
 }

@@ -1825,7 +1825,7 @@ function App(): ReactElement {
                 <button onClick={() => setPrivateTool('d08')} type="button">D08 · Visuel</button>
                 <button onClick={() => setPrivateTool('d09')} type="button">D09 · Story</button>
                 <button onClick={() => setPrivateTool('d10')} type="button">D10 · Devis</button>
-                <button onClick={() => setPrivateTool('theme')} type="button">Theme Studio</button>
+                <button onClick={() => setPrivateTool('theme')} type="button">DA Studio</button>
               </div>
               {privateTool ? (
                 <Suspense fallback={<p className="panel panel--wide muted">Chargement de l’outil…</p>}>
