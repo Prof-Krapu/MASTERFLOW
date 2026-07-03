@@ -131,23 +131,57 @@ Tu transformes les retours en tâches courtes, fiches profils ou alertes.
 Tu ne publies rien.
 ```
 
-## Branches Et Publication
+## Espaces De Travail Partagés
 
-Pendant le prototypage :
+Le Component Lab est unique, mais ses états locaux sont séparés :
 
-- travail local autorisé ;
-- pas de commit sans validation explicite ;
-- pas de push sans validation explicite ;
-- pas de PR tant que MALEX n'a pas gelé une vague ;
-- pas de merge tant que le proto n'a pas un contrat clair.
+| Espace | URL | Profil initial | Configuration propriétaire |
+|---|---|---|---|
+| MALEX | `/ui-lab/malex` | MasterFlex | `component-lab-workspaces/malex.ts` |
+| Vincent | `/ui-lab/vincent` | ProfKrapu | `component-lab-workspaces/vincent.ts` |
 
-Quand une vague est validée :
+Les deux espaces consomment les mêmes composants partagés. Profil, thème, viewport et état du Lab
+sont persistés sous deux clés locales distinctes. Un espace n'est donc ni un fork visuel ni une
+copie du prototype.
 
-1. faire un inventaire des fichiers touchés ;
-2. séparer docs, assets, proto et intégration réelle ;
-3. créer une branche courte ;
-4. relancer lint/build proportionnés ;
-5. demander GO commit/push/PR.
+## Branches Et Intégration
+
+Branche d'intégration du prototype :
+
+```txt
+codex/ui-reset-prototype-lab
+```
+
+Règles de contribution :
+
+1. MALEX et Vincent créent chacun une branche courte depuis la branche d'intégration à jour.
+2. Une branche porte un composant ou une famille cohérente.
+3. Les réglages propres à un espace restent dans son fichier de workspace ou sa fiche profil.
+4. Les composants réutilisables restent dans les modules partagés `prototype-*`.
+5. Chacun commit et pousse sa branche de contribution ; personne ne pousse sur la branche de
+   travail de l'autre.
+6. MALEX valide la direction UI et choisit les composants à intégrer.
+7. L'intégration revient dans `codex/ui-reset-prototype-lab`, jamais directement dans `main`.
+8. À la fin de la vague intégrée, lancer :
+
+   ```bash
+   npm run build:ui-lab
+   ```
+
+   Cette commande exécute le lint frontend puis le build frontend complet.
+
+9. Une PR vers `main`, un raccord backend ou un déploiement restent des décisions séparées avec GO
+   explicite.
+
+Nommage recommandé :
+
+```txt
+codex/ui-lab-malex-<composant>
+vincent/ui-lab-<composant>
+```
+
+Une contribution peut être poussée pour collaboration sans devenir canon produit ni frontend
+runtime.
 
 ## Définition D'une Vague Validable
 

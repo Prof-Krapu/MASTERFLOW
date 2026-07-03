@@ -13,6 +13,8 @@
     "dev": "npm run dev --workspace apps/backend",
     "dev:backend": "npm run dev --workspace apps/backend",
     "dev:frontend": "npm run dev --workspace @masterflow/frontend",
+    "dev:ui-lab": "npm run dev --workspace @masterflow/frontend -- --open /ui-lab",
+    "build:ui-lab": "npm run lint:frontend && npm run build:frontend",
     "seed": "npm run seed --workspace apps/backend",
     "test": "npm run test --workspace apps/backend",
     "lint": "npm run lint --workspace apps/backend",

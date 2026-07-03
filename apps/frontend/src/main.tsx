@@ -11,10 +11,16 @@ if (!rootElement) {
   throw new Error('Element #root introuvable dans index.html');
 }
 
+const isComponentLab = window.location.pathname === '/ui-lab'
+  || window.location.pathname.startsWith('/ui-lab/');
+const componentLabWorkspace = window.location.pathname.startsWith('/ui-lab/vincent')
+  ? 'vincent'
+  : 'malex';
+
 createRoot(rootElement).render(
   <StrictMode>
-    {window.location.pathname === '/ui-lab'
-      ? <ComponentLab />
+    {isComponentLab
+      ? <ComponentLab key={componentLabWorkspace} workspaceId={componentLabWorkspace} />
       : window.location.pathname === '/current-ui' || window.location.pathname === '/ui-reset'
         ? <CurrentUiDemo />
         : <App />}

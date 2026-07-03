@@ -22,6 +22,36 @@
   min-width: max-content;
 }
 
+.ui-lab__workspaces {
+  align-items: center;
+  background: var(--proto-ghost);
+  border: 1px solid var(--proto-border);
+  border-radius: 999px;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  padding: 3px;
+}
+
+.ui-lab__workspaces a {
+  border-radius: 999px;
+  color: var(--proto-muted);
+  font-size: 10px;
+  font-weight: 850;
+  padding: 8px 10px;
+  text-decoration: none;
+}
+
+.ui-lab__workspaces a[aria-current="page"] {
+  background: var(--proto-accent);
+  color: #170b07;
+}
+
+.ui-lab__workspaces a:hover,
+.ui-lab__workspaces a:focus-visible {
+  color: var(--proto-text);
+}
+
 .ui-lab__toolbar nav,
 .ui-lab__scenarios,
 .ui-lab__controls {

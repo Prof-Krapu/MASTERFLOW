@@ -57,6 +57,8 @@ import {
 } from './prototype-ui-state-registry';
 import {resolveCycledShortcutDestination, usePrototypeShortcuts} from './use-prototype-shortcuts';
 import type {PrototypeDockPanel, PrototypeViewMode} from './use-prototype-shortcuts';
+import {componentLabWorkspaces} from './component-lab-workspaces';
+import type {ComponentLabWorkspaceId} from './component-lab-workspaces';
 import './component-lab.css';
 
 type LabTab = 'navigation' | 'home' | 'persona' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
@@ -64,6 +66,34 @@ type LabScenario = 'rest' | 'compose' | 'mobile' | 'tunnel' | 'collision';
 type CommandDockPreset = 'closed' | 'keyboard' | 'long' | 'history' | 'micro' | 'recording' | 'transcription';
 type SkilltreePreset = 'home' | 'overview' | 'mobile';
 type LabOverlay = 'actions' | 'settings' | 'shortcuts';
+
+interface ComponentLabProps {
+  workspaceId: ComponentLabWorkspaceId;
+}
+
+interface PersistedLabWorkspace {
+  accessLevel?: string;
+  activeMode?: string;
+  dockPanel?: PrototypeDockPanel;
+  light?: boolean;
+  mobile?: boolean;
+  profileId?: PrototypeProfileId;
+  railOpen?: boolean;
+  tab?: LabTab;
+}
+
+const labTabs: LabTab[] = ['navigation', 'home', 'persona', 'system', 'command', 'states', 'overlays', 'tunnel'];
+
+function readPersistedLabWorkspace(workspaceId: ComponentLabWorkspaceId): PersistedLabWorkspace {
+  try {
+    const raw = window.localStorage.getItem(`masterflow.ui-lab.${workspaceId}`);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as PersistedLabWorkspace;
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
 
 const labNavigationCycle = ['home', 'character', 'project', 'teaching', 'learn', 'story', 'da', 'inventory', 'companions'];
 
@@ -156,19 +186,32 @@ function useLabPresence<T>(value: T | null, duration = 240): {
   };
 }
 
-export function ComponentLab(): ReactElement {
-  const [tab, setTab] = useState<LabTab>('navigation');
-  const [profileId, setProfileId] = useState<PrototypeProfileId>('masterflex');
-  const [light, setLight] = useState(false);
-  const [mobile, setMobile] = useState(false);
-  const [railOpen, setRailOpen] = useState(true);
+export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
+  const workspace = componentLabWorkspaces[workspaceId];
+  const [initialWorkspaceState] = useState(() => readPersistedLabWorkspace(workspaceId));
+  const initialProfileId = initialWorkspaceState.profileId
+    && prototypeProfileIds.includes(initialWorkspaceState.profileId)
+    ? initialWorkspaceState.profileId
+    : workspace.defaultProfileId;
+  const initialTab = initialWorkspaceState.tab && labTabs.includes(initialWorkspaceState.tab)
+    ? initialWorkspaceState.tab
+    : 'navigation';
+  const [tab, setTab] = useState<LabTab>(initialTab);
+  const [profileId, setProfileId] = useState<PrototypeProfileId>(initialProfileId);
+  const [light, setLight] = useState(initialWorkspaceState.light ?? false);
+  const [mobile, setMobile] = useState(initialWorkspaceState.mobile ?? false);
+  const [railOpen, setRailOpen] = useState(initialWorkspaceState.railOpen ?? true);
   const [accessOpen, setAccessOpen] = useState(false);
-  const [accessLevel, setAccessLevel] = useState('teacher');
-  const [activeMode, setActiveMode] = useState('project');
+  const [accessLevel, setAccessLevel] = useState(initialWorkspaceState.accessLevel ?? 'teacher');
+  const [activeMode, setActiveMode] = useState(initialWorkspaceState.activeMode ?? 'project');
   const [characterOpen, setCharacterOpen] = useState(false);
   const [systemPanel, setSystemPanel] = useState<PrototypeSystemPanel>(null);
   const [quickSearch, setQuickSearch] = useState('');
-  const [dockPanel, setDockPanel] = useState<PrototypeDockPanel>('keyboard');
+  const [dockPanel, setDockPanel] = useState<PrototypeDockPanel>(
+    Object.prototype.hasOwnProperty.call(initialWorkspaceState, 'dockPanel')
+      ? initialWorkspaceState.dockPanel ?? null
+      : 'keyboard',
+  );
   const [historyOpen, setHistoryOpen] = useState(false);
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>('context');
   const [recording, setRecording] = useState(false);
@@ -182,7 +225,22 @@ export function ComponentLab(): ReactElement {
   const [activeFixtureArcId, setActiveFixtureArcId] = useState<PrototypeSkillArcId | null>(null);
   const [activeFixtureFamilyId, setActiveFixtureFamilyId] = useState<PrototypeSkillFamilyId | null>(null);
   const [skillsOverviewOpen, setSkillsOverviewOpen] = useState(false);
-  const navigationDestinationRef = useRef('project');
+  const navigationDestinationRef = useRef(initialWorkspaceState.activeMode ?? 'project');
+
+  useEffect(() => {
+    const snapshot: PersistedLabWorkspace = {
+      accessLevel,
+      activeMode,
+      dockPanel,
+      light,
+      mobile,
+      profileId,
+      railOpen,
+      tab,
+    };
+    window.localStorage.setItem(`masterflow.ui-lab.${workspaceId}`, JSON.stringify(snapshot));
+  }, [accessLevel, activeMode, dockPanel, light, mobile, profileId, railOpen, tab, workspaceId]);
+
   const profile = getPrototypeProfile(profileId);
   const profilePalette = getPrototypeThemePalette(profile.defaultThemePaletteId);
   const profileRankTitle = getPrototypeProfileRank(profile).title;
@@ -500,9 +558,16 @@ export function ComponentLab(): ReactElement {
       style={themeStyle}
     >
       <header className="ui-lab__toolbar">
-        <strong>Component Lab</strong>
+        <div className="ui-lab__workspaces" aria-label="Espaces de travail">
+          {(Object.keys(componentLabWorkspaces) as ComponentLabWorkspaceId[]).map((id) => (
+            <a aria-current={workspaceId === id ? 'page' : undefined} href={`/ui-lab/${id}`} key={id}>
+              {componentLabWorkspaces[id].label}
+            </a>
+          ))}
+        </div>
+        <strong>{workspace.owner} Lab</strong>
         <nav aria-label="Composants">
-          {(['navigation', 'home', 'persona', 'system', 'command', 'states', 'overlays', 'tunnel'] as LabTab[]).map((item) => (
+          {labTabs.map((item) => (
             <button aria-pressed={tab === item} key={item} onClick={() => setTab(item)} type="button">{item}</button>
           ))}
         </nav>
@@ -841,7 +906,7 @@ export function ComponentLab(): ReactElement {
       </section>
 
       <aside className="ui-lab__snapshot" aria-label="État courant du Lab">
-        <small>État courant</small>
+        <small>{workspace.label} · espace persistant</small>
         <strong>{profile.name} · {light ? 'clair' : 'sombre'} · {mobile ? '390 px' : 'desktop'}</strong>
         <span>{tab} · {activeDestination === 'character' ? 'persona' : activeDestination}</span>
         <div>

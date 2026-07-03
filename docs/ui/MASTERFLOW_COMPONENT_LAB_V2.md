@@ -18,6 +18,9 @@ Le Lab ne remplace pas `/ui-reset`. Il sert à tester les composants et leurs é
 
 ## Ajouts
 
+- Deux espaces persistants sur le même Lab :
+  - `/ui-lab/malex`
+  - `/ui-lab/vincent`
 - Scénarios rapides dans la barre du Lab :
   - `Repos`
   - `Édition`
@@ -34,6 +37,8 @@ Le Lab ne remplace pas `/ui-reset`. Il sert à tester les composants et leurs é
 
 ## Règles
 
+- Les espaces MALEX et Vincent partagent le même code composant.
+- Les préférences et l'état de travail sont persistés séparément.
 - Le Lab lit les mêmes profils que `/ui-reset`.
 - Un scénario ferme d'abord les surfaces temporaires, puis pose un état propre.
 - Le scénario `Conflit` sert à tester les priorités d'overlay, pas à représenter une vraie UX.
@@ -45,6 +50,7 @@ Le Lab ne remplace pas `/ui-reset`. Il sert à tester les composants et leurs é
 2. Tester les scénarios rapides.
 3. Vérifier ensuite seulement `/ui-reset` si le composant est stable.
 4. Ne pas recopier une fixture divergente si la donnée existe dans la registry prototype.
+5. Quand la vague de composants est terminée, lancer `npm run build:ui-lab`.
 
 ## Critère De Succès
 

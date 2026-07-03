@@ -13,7 +13,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - prochaine action : Vincent consulte `/ui-reset` et `/ui-lab`, puis dépose uniquement observations, contraintes backend et besoins de profil ; MALEX garde la décision UI/DA.
 - fichiers/domaines concernés : `apps/frontend/src/current-ui-demo.*`, `apps/frontend/src/ui-reset/`, assets MasterFlex/ProfKrapu, `docs/ui/`.
 - tests à relancer : lint frontend, build frontend et `git diff --check` avant tout nouveau snapshot.
-- publication : branche `codex/ui-reset-prototype-lab`, commit `89a4f53`, poussée sur GitHub ; aucune PR, aucun merge dans `main`, aucun déploiement live.
+- publication : branche `codex/ui-reset-prototype-lab`, snapshot UI `89a4f53`, handoff `2d9da07`, poussés sur GitHub ; aucune PR, aucun merge dans `main`, aucun déploiement live.
 - blocage : aucun pour la consultation locale ; toute intégration runtime, PR, merge ou publication demande une validation explicite de MALEX.
 
 ## 2026-07-03 — UI-RESET-PROTOTYPE-LAB-001 : handoff MALEX / Vincent
@@ -30,7 +30,35 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - `main` n'a pas été modifiée par cette tranche ;
 - aucune PR n'est ouverte à ce checkpoint.
 
-### Lancer le prototype
+### Component Lab partagé
+
+Le Lab commun expose deux espaces de travail qui utilisent exactement les mêmes composants :
+
+```txt
+http://localhost:5174/ui-lab/malex
+http://localhost:5174/ui-lab/vincent
+```
+
+- l'espace MALEX démarre sur MasterFlex ;
+- l'espace Vincent démarre sur ProfKrapu ;
+- profil, thème, viewport et état de travail sont persistés séparément dans chaque navigateur ;
+- changer d'espace ne duplique pas le composant et ne modifie pas l'état de l'autre espace ;
+- les réglages propres à chacun sont isolés dans
+  `apps/frontend/src/ui-reset/component-lab-workspaces/`.
+
+Pour lancer le Lab depuis la racine du repo :
+
+```bash
+git fetch --all --prune
+git switch codex/ui-reset-prototype-lab
+git pull --ff-only
+npm install
+npm run dev:ui-lab
+```
+
+Le Lab utilise des fixtures locales et ne nécessite pas le backend.
+
+### Lancer le prototype complet
 
 Depuis un clone du repo :
 
@@ -51,6 +79,19 @@ http://localhost:5174/ui-lab
 
 Le serveur local de MALEX n'est pas une URL partagée : Vincent doit lancer le frontend sur sa
 machine. Aucun backend n'est nécessaire pour consulter les fixtures du Lab.
+
+### Contributions parallèles MALEX / Vincent
+
+- branche d'intégration commune : `codex/ui-reset-prototype-lab` ;
+- MALEX travaille sur une branche courte issue de cette branche ;
+- Vincent travaille sur une autre branche courte issue de cette branche ;
+- personne ne pousse directement sur la branche de l'autre ;
+- chaque branche contient un composant ou une famille cohérente, pas une refonte globale ;
+- chacun peut pousser sa branche pour rendre le composant consultable ;
+- l'intégration dans la branche commune reste validée par MALEX ;
+- après intégration d'une vague terminée : `npm run build:ui-lab` lance directement lint frontend
+  puis build frontend ;
+- cette intégration ne constitue toujours ni merge dans `main`, ni raccord backend, ni déploiement.
 
 ### Ce que contient le snapshot
 
