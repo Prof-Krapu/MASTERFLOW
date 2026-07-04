@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-04T09:07:46+02:00",
+  "updated_at": "2026-07-04T09:23:40+02:00",
   "active_goal": {
     "goal_id": "MASTERBUILD-V1",
     "title": "Rendre MASTERBUILD opérationnel pour MALEX et Vincent",
     "owner": "malex",
-    "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
+    "status": "completed",
+    "stage_index": 8,
+    "stage_label": "Clôturer",
     "source_truth_layer": "git_operable",
     "success_criteria": [
       "Le cockpit démarre sans backend produit.",
@@ -68,13 +68,13 @@
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 8,
       "id": "close",
       "label": "Clôturer",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "shared_profiles": [
@@ -215,10 +215,10 @@
     }
   ],
   "publication": {
-    "state": "publish_authorized",
+    "state": "branch_published",
     "branch": "codex/ui-reset-prototype-lab",
-    "commit_sha": null,
+    "commit_sha": "b133283bd88895f79e45ccbbd1593a1791f3bf6a",
     "pull_request": null,
-    "runtime_proof": "unknown"
+    "runtime_proof": "local cockpit HTTP 200 on 127.0.0.1:5175; control API responding on 127.0.0.1:8010"
   }
 }

@@ -15,9 +15,12 @@ Pour reprendre :
 3. ouvrir le cockpit avec `npm run dev:masterbuild` puis `http://localhost:5175` ;
 4. consulter ensuite seulement la section `SUIVI.md` citée par l'objectif actif.
 
-État actuel MASTERBUILD : **publication autorisée par MALEX le 2026-07-04**, vérifications locales
-vertes, commit et push en cours sur `codex/ui-reset-prototype-lab`. L'ancienne vague UI publiée
-reste intacte ; les retouches frontend et assets candidats hors périmètre ne sont pas embarqués.
+État actuel MASTERBUILD : **publié sur `codex/ui-reset-prototype-lab`** le 2026-07-04, commit
+d'implémentation `b133283bd88895f79e45ccbbd1593a1791f3bf6a`. Doctor, tests `3/3`, TypeScript,
+build Vite et `git diff --check` sont verts. Le cockpit local répond sur `127.0.0.1:5175` et son
+service de contrôle sur `127.0.0.1:8010`. Aucune PR, aucun merge dans `main` et aucun déploiement
+live n'ont été réalisés. Les retouches frontend, assets candidats et CDC UI hors périmètre restent
+locaux et intacts.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
