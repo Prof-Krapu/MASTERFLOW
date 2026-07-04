@@ -1,0 +1,34 @@
+name: Proposition produit
+description: Proposer une évolution sans la déclarer canon.
+title: "[PROPOSITION] "
+labels: ["product", "proposal"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème utilisateur
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposition
+    validations:
+      required: true
+  - type: textarea
+    id: invariants
+    attributes:
+      label: Ce qui ne doit pas changer
+    validations:
+      required: true
+  - type: dropdown
+    id: validation
+    attributes:
+      label: Décision attendue
+      options:
+        - Tester dans le Lab
+        - Tester dans le prototype
+        - Auditer le canon
+        - Rejeter
+    validations:
+      required: true

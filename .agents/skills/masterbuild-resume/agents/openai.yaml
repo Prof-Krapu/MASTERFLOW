@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Resume"
+  short_description: "Reprendre une vague depuis l’état partagé"
+  default_prompt: "Utilise $masterbuild-resume pour reprendre MASTERBUILD depuis ses preuves locales et partagées."

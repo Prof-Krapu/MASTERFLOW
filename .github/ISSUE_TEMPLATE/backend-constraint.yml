@@ -1,0 +1,25 @@
+name: Contrainte backend
+description: Documenter une limite système ou un contrat technique à arbitrer.
+title: "[BACKEND] "
+labels: ["backend", "constraint"]
+body:
+  - type: textarea
+    id: constraint
+    attributes:
+      label: Contrainte vérifiée
+      description: Indiquer la preuve technique et le périmètre.
+    validations:
+      required: true
+  - type: textarea
+    id: product-effect
+    attributes:
+      label: Effet produit possible
+      description: Ce que cela change ou ne change pas pour l'utilisateur.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Fichiers, logs ou contrats
+    validations:
+      required: true

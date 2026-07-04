@@ -7,3 +7,4 @@ coverage/
 .env.local
 .DS_Store
 apps/desktop/src-tauri/target/
+.masterbuild/local/

@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-04T09:07:46+02:00",
+  "active_goal": {
+    "goal_id": "MASTERBUILD-V1",
+    "title": "Rendre MASTERBUILD opérationnel pour MALEX et Vincent",
+    "owner": "malex",
+    "status": "active",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "source_truth_layer": "git_operable",
+    "success_criteria": [
+      "Le cockpit démarre sans backend produit.",
+      "MALEX et Vincent partagent le même objectif et des préférences locales distinctes.",
+      "Git, cohérence, contexte, recherche et handoff sont expliqués en langage humain.",
+      "Aucune action sensible ne peut être exécutée depuis le cockpit."
+    ],
+    "blockers": [],
+    "validation_gates": [
+      "GO MALEX avant commit ou push",
+      "Revue MALEX pour UI, DA, canon et main"
+    ],
+    "source_refs": [
+      "CLAUDE.md",
+      "SUIVI.md",
+      "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
+      "docs/experience-fabric/SYSTEM_ORIENTATION_FABRIC_AUDIT_2026-06-30.md"
+    ]
+  },
+  "stages": [
+    {
+      "index": 1,
+      "id": "orient",
+      "label": "Orienter",
+      "status": "completed"
+    },
+    {
+      "index": 2,
+      "id": "frame",
+      "label": "Cadrer",
+      "status": "completed"
+    },
+    {
+      "index": 3,
+      "id": "audit",
+      "label": "Auditer",
+      "status": "completed"
+    },
+    {
+      "index": 4,
+      "id": "decide",
+      "label": "Décider",
+      "status": "completed"
+    },
+    {
+      "index": 5,
+      "id": "build",
+      "label": "Construire",
+      "status": "completed"
+    },
+    {
+      "index": 6,
+      "id": "verify",
+      "label": "Vérifier",
+      "status": "completed"
+    },
+    {
+      "index": 7,
+      "id": "publish",
+      "label": "Publier",
+      "status": "active"
+    },
+    {
+      "index": 8,
+      "id": "close",
+      "label": "Clôturer",
+      "status": "pending"
+    }
+  ],
+  "shared_profiles": [
+    {
+      "profile_id": "malex",
+      "display_name": "MALEX",
+      "github_handle": "malexcoulot-dev",
+      "ownership": [
+        "produit",
+        "ui",
+        "da",
+        "canon"
+      ],
+      "default_guidance": "assisted"
+    },
+    {
+      "profile_id": "vincent",
+      "display_name": "Vincent",
+      "github_handle": "Prof-Krapu",
+      "ownership": [
+        "backend",
+        "contraintes système",
+        "profil ProfKrapu"
+      ],
+      "default_guidance": "guided"
+    }
+  ],
+  "tone": {
+    "base": "friendly_brainy_pedagogical",
+    "fighter_mirror": "light",
+    "allowed_terms": [
+      "Round",
+      "Training",
+      "Drive gauge",
+      "Perfect parry",
+      "KO technique"
+    ],
+    "rule": "La vanne soutient l'explication et ne remplace jamais le statut réel."
+  },
+  "self_improvement": {
+    "mode": "proposal_only",
+    "rule": "Observer les frictions, produire une proposition testable, puis attendre validation avant de modifier le comportement ou le code.",
+    "learning_log": "docs/masterbuild/MASTERBUILD_LEARNING_LOG.json"
+  },
+  "external_agents": [
+    {
+      "agent_id": "big-pickle-opencode",
+      "label": "Big Pickle via OpenCode",
+      "status": "paused",
+      "channel": ".opencode/INBOX.md",
+      "allowed_work": [
+        "audit massif",
+        "extraction de patterns",
+        "comparaison docs/code",
+        "rapport done_unverified"
+      ],
+      "forbidden_work": [
+        "canon produit",
+        "UI/DA subjective",
+        "commit/push/PR/merge",
+        "provider/migration/deploiement",
+        "arbitrage produit"
+      ],
+      "handoff_doc": "docs/masterbuild/MASTERBUILD_EXTERNAL_AGENTS.md"
+    }
+  ],
+  "domains": [
+    {
+      "id": "D01",
+      "label": "Identité et accès",
+      "status": "implemented"
+    },
+    {
+      "id": "D02",
+      "label": "Contexte, mémoire et RAG",
+      "status": "partial"
+    },
+    {
+      "id": "D03",
+      "label": "Rooms et commandes",
+      "status": "partial"
+    },
+    {
+      "id": "D04",
+      "label": "Personas et compagnons",
+      "status": "partial"
+    },
+    {
+      "id": "D05",
+      "label": "Teaching",
+      "status": "implemented"
+    },
+    {
+      "id": "D06",
+      "label": "Correction et feedback",
+      "status": "partial"
+    },
+    {
+      "id": "D07",
+      "label": "Inventory",
+      "status": "partial"
+    },
+    {
+      "id": "D08",
+      "label": "DA et assets",
+      "status": "partial"
+    },
+    {
+      "id": "D09",
+      "label": "MasterStory",
+      "status": "partial"
+    },
+    {
+      "id": "D10",
+      "label": "Événements et sorties",
+      "status": "partial"
+    },
+    {
+      "id": "D11",
+      "label": "Factories et backflow",
+      "status": "implemented"
+    },
+    {
+      "id": "D12",
+      "label": "Pilotage et observabilité",
+      "status": "partial"
+    }
+  ],
+  "research_proposals": [
+    {
+      "id": "component-workbench",
+      "title": "Atelier de composants durable",
+      "reason": "Comparer les patterns Storybook, Vitest Browser et le Lab MasterFlow.",
+      "question": "Quels contrôles et recettes rendent un Component Lab partageable sans alourdir le build ?",
+      "cost": "light",
+      "expected_output": "decision",
+      "status": "candidate_evidence"
+    }
+  ],
+  "publication": {
+    "state": "publish_authorized",
+    "branch": "codex/ui-reset-prototype-lab",
+    "commit_sha": null,
+    "pull_request": null,
+    "runtime_proof": "unknown"
+  }
+}

@@ -7,12 +7,19 @@
   "workspaces": [
     "apps/backend",
     "apps/frontend",
+    "apps/masterbuild",
     "packages/shared"
   ],
   "scripts": {
     "dev": "npm run dev --workspace apps/backend",
     "dev:backend": "npm run dev --workspace apps/backend",
     "dev:frontend": "npm run dev --workspace @masterflow/frontend",
+    "dev:masterbuild": "npm run dev --workspace @masterflow/masterbuild",
+    "masterbuild:boot": "npm run boot --workspace @masterflow/masterbuild",
+    "masterbuild:doctor": "npm run doctor --workspace @masterflow/masterbuild",
+    "masterbuild:handoff": "npm run handoff --workspace @masterflow/masterbuild",
+    "test:masterbuild": "npm run test --workspace @masterflow/masterbuild",
+    "build:masterbuild": "npm run test:masterbuild && npm run lint --workspace @masterflow/masterbuild && npm run build --workspace @masterflow/masterbuild",
     "dev:ui-lab": "npm run dev --workspace @masterflow/frontend -- --open /ui-lab",
     "build:ui-lab": "npm run lint:frontend && npm run build:frontend",
     "seed": "npm run seed --workspace apps/backend",

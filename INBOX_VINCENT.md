@@ -1,5 +1,13 @@
 # INBOX VINCENT — MasterFlow
 
+> **Point d'entrée actuel : MASTERBUILD.** Lancer `npm run masterbuild:doctor`, puis
+> `npm run dev:masterbuild` et ouvrir `http://localhost:5175`. Cette inbox reste une archive de
+> demandes et une preuve historique. Les nouveaux recaps passent par
+> `docs/masterbuild/MASTERBUILD_RECAPS.json` et le cockpit.
+>
+> Petite règle de combat : pas besoin de relire les anciens rounds pour connaître le match en
+> cours. `docs/masterbuild/MASTERBUILD_STATE.json` donne l'objectif, l'étape et les gates.
+
 > État opérationnel au 2026-06-18 : **handoff Vincent clôturé**. Aucune entrée historique
 > marquée `open` ci-dessous ne constitue encore une dépendance ou une attente active. Elles sont
 > conservées comme traces de coordination et ne doivent être réactivées que par une nouvelle

@@ -93,7 +93,23 @@ result:
 ## Pilotage
 
 - Pilote : Codex.
+- Orchestrateur global : MASTERBUILD.
 - Déclencheur utilisateur : `go inbox`.
 - Big Pickle : exécution secondaire uniquement.
 - Autorité de validation : Codex puis MALEX lorsque la tâche le requiert.
 - État actuel : pause, aucune tâche prête.
+
+## Contrôle MASTERBUILD
+
+MASTERBUILD peut préparer une tâche Big Pickle seulement si le Round courant indique :
+
+- pourquoi déléguer ;
+- ce que Big Pickle peut lire ;
+- ce qu'il ne doit pas toucher ;
+- la sortie attendue ;
+- la vérification Codex ;
+- le coût probable en contexte.
+
+Tant que `status` n'est pas exactement `ready_for_big_pickle`, Big Pickle doit rester en pause.
+Un résultat `done_unverified` n'est jamais une validation : Codex relit, puis MALEX tranche si la
+tâche touche au produit, à l'UI, à la DA ou au canon.

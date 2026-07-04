@@ -4,6 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## NOUVEAU POINT D'ENTRÉE — MASTERBUILD
+
+`SUIVI.md` reste l'historique de preuve. Il n'est plus le fichier à relire intégralement au boot.
+
+Pour reprendre :
+
+1. ouvrir `docs/masterbuild/MASTERBUILD_STATE.json` ;
+2. lancer `npm run masterbuild:doctor` ;
+3. ouvrir le cockpit avec `npm run dev:masterbuild` puis `http://localhost:5175` ;
+4. consulter ensuite seulement la section `SUIVI.md` citée par l'objectif actif.
+
+État actuel MASTERBUILD : **publication autorisée par MALEX le 2026-07-04**, vérifications locales
+vertes, commit et push en cours sur `codex/ui-reset-prototype-lab`. L'ancienne vague UI publiée
+reste intacte ; les retouches frontend et assets candidats hors périmètre ne sont pas embarqués.
+
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
 - id : `UI-RESET-PROTOTYPE-LAB-001`
