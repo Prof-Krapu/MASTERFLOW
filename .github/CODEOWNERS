@@ -1,0 +1,9 @@
+# MASTERBUILD et frontières d'ownership.
+/apps/frontend/ @malexcoulot-dev
+/docs/ui/ @malexcoulot-dev
+/apps/backend/ @Prof-Krapu
+/packages/shared/ @malexcoulot-dev @Prof-Krapu
+/apps/masterbuild/ @malexcoulot-dev @Prof-Krapu
+/docs/masterbuild/ @malexcoulot-dev @Prof-Krapu
+/.agents/ @malexcoulot-dev @Prof-Krapu
+/.github/ @malexcoulot-dev @Prof-Krapu

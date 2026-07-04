@@ -1,0 +1,29 @@
+name: Observation terrain
+description: Consigner un usage réel sans le transformer automatiquement en canon.
+title: "[OBSERVATION] "
+labels: ["observation"]
+body:
+  - type: textarea
+    id: observation
+    attributes:
+      label: Ce qui a été observé
+      description: Décrire les faits, pas la solution.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte et impact
+    validations:
+      required: true
+  - type: dropdown
+    id: destination
+    attributes:
+      label: Destination proposée
+      options:
+        - Prototype
+        - Backlog
+        - Audit canon
+        - À décider
+    validations:
+      required: true

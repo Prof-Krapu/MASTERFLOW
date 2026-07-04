@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Boot"
+  short_description: "Aligner un profil local avec MasterFlow"
+  default_prompt: "Utilise $masterbuild-boot pour aligner mon poste et mon rôle avec MASTERBUILD."
