@@ -22,6 +22,23 @@ export const LEARNING_PATH = path.join(
   "docs/masterbuild/MASTERBUILD_LEARNING_LOG.json"
 );
 export const OPENCODE_INBOX_PATH = path.join(REPO_ROOT, ".opencode/INBOX.md");
+export const FEATURE_REGISTRY_PATH = path.join(
+  REPO_ROOT,
+  "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json"
+);
+export const DESIGN_RULES_PATH = path.join(
+  REPO_ROOT,
+  "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json"
+);
+export const WORKBOARD_PATH = path.join(
+  REPO_ROOT,
+  "docs/masterbuild/MASTERBUILD_WORKBOARD.json"
+);
+export const SOURCE_REGISTRY_PATH = path.join(
+  REPO_ROOT,
+  "docs/masterbuild/MASTERBUILD_SOURCE_REGISTRY.json"
+);
+export const EXPORT_DIR = path.join(REPO_ROOT, ".masterbuild/exports");
 
 export const STAGE_LABELS = [
   "Orienter",
@@ -145,6 +162,371 @@ export async function readLocalProfile() {
   return readJson(PROFILE_PATH);
 }
 
+export function buildFeatureSummary(features) {
+  const countBy = (field, values) =>
+    Object.fromEntries(values.map((value) => [value, features.filter((item) => item[field] === value).length]));
+  return {
+    total: features.length,
+    product: countBy("product_state", ["candidate", "validated", "future", "rejected"]),
+    backend: countBy("backend_state", ["absent", "documented", "partial", "ready", "verified"]),
+    ui: countBy("ui_state", ["absent", "lab", "prototype", "connected", "verified"]),
+    release: countBy("release_state", ["local", "branch", "draft_pr", "main", "live", "unknown"]),
+    likely_missing: features.filter(
+      (feature) =>
+        ["ready", "verified"].includes(feature.backend_state) &&
+        ["absent", "lab", "prototype"].includes(feature.ui_state)
+    ).length
+  };
+}
+
+export function selectDesignRules(rules, input = {}) {
+  const surface = String(input.surface ?? "global").toLowerCase();
+  const audience = String(input.audience ?? "all").toLowerCase();
+  return rules.filter((rule) => {
+    const surfaces = (rule.applies_to ?? []).map((value) => value.toLowerCase());
+    const audiences = (rule.audiences ?? []).map((value) => value.toLowerCase());
+    return (
+      (surfaces.includes("global") || surfaces.includes(surface)) &&
+      (audiences.includes("all") || audiences.includes(audience) || audience === "contributors")
+    );
+  });
+}
+
+export function assertPortableExportSafe(value) {
+  const serialized = typeof value === "string" ? value : JSON.stringify(value);
+  const forbidden = [
+    /gho_[A-Za-z0-9]+/,
+    /github_pat_[A-Za-z0-9_]+/,
+    /sk-[A-Za-z0-9_-]{12,}/,
+    /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
+    /"password"\s*:\s*"[^"]+"/i,
+    /"api_key"\s*:\s*"[^"]+"/i
+  ];
+  if (forbidden.some((pattern) => pattern.test(serialized))) {
+    throw new Error("Export MASTERBUILD bloqué : secret potentiel détecté.");
+  }
+  return true;
+}
+
+export function validateRoundAuthorization(input) {
+  const scope = input.scope ?? "build_test_commit_push_draft_pr";
+  if (input.actor !== "malex") {
+    return { allowed: false, reason: "Seul MALEX autorise un Round jusqu'à la draft PR." };
+  }
+  if (scope !== "build_test_commit_push_draft_pr") {
+    return { allowed: false, reason: "Scope d'autorisation non reconnu." };
+  }
+  return {
+    allowed: true,
+    scope,
+    excluded: ["merge", "deploy", "migration", "provider", "spend", "delete", "canon_scope_change"]
+  };
+}
+
+export function currentRound(state) {
+  return state.active_round ?? state.active_goal;
+}
+
+export function assessHandoffFreshness(content, state, git) {
+  if (!content) {
+    return {
+      exists: false,
+      stale: false,
+      reason: "Aucun handoff local. L'état partagé reste la référence.",
+      handoff_sha: null,
+      current_sha: git.sha ?? null,
+      handoff_round_id: null,
+      current_round_id: currentRound(state).round_id ?? currentRound(state).goal_id
+    };
+  }
+
+  const handoffSha = content.match(/^- Commit : ([0-9a-f]+|inconnu)$/m)?.[1] ?? null;
+  const handoffRoundId = content.match(/^- Round ID : (.+)$/m)?.[1]?.trim() ?? null;
+  const round = currentRound(state);
+  const currentRoundId = round.round_id ?? round.goal_id;
+  const reasons = [];
+
+  if (!handoffRoundId) reasons.push("format antérieur sans Round ID");
+  else if (handoffRoundId !== currentRoundId) reasons.push("Round différent");
+  if (git.sha && handoffSha && handoffSha !== git.sha) reasons.push("commit différent");
+
+  return {
+    exists: true,
+    stale: reasons.length > 0,
+    reason:
+      reasons.length > 0
+        ? `Handoff ignoré : ${reasons.join(", ")}.`
+        : "Handoff aligné avec le Round et le commit courants.",
+    handoff_sha: handoffSha,
+    current_sha: git.sha ?? null,
+    handoff_round_id: handoffRoundId,
+    current_round_id: currentRoundId
+  };
+}
+
+export async function collectHandoffStatus(state, git) {
+  const content = await readFile(HANDOFF_PATH, "utf8").catch(() => null);
+  return assessHandoffFreshness(content, state, git);
+}
+
+export async function buildDesignPreflight(input = {}) {
+  const [design, features, profiles] = await Promise.all([
+    readJson(DESIGN_RULES_PATH, { rules: [] }),
+    readJson(FEATURE_REGISTRY_PATH, { features: [] }),
+    readJson(PROFILE_AUDITS_PATH, { profiles: [] })
+  ]);
+  const surface = String(input.surface ?? "global").toLowerCase();
+  const audience = String(input.audience ?? "all").toLowerCase();
+  const contributor = input.contributor === "vincent" ? "vincent" : "malex";
+  const feature = features.features.find(
+    (item) =>
+      item.feature_id === input.feature_id ||
+      item.label.toLowerCase().includes(surface.replaceAll("-", " "))
+  );
+  const rules = selectDesignRules(design.rules, { surface, audience });
+  const profile = profiles.profiles.find((item) => item.profile_id === contributor);
+
+  return {
+    generated_at: new Date().toISOString(),
+    surface,
+    audience,
+    contributor,
+    feature_id: feature?.feature_id ?? null,
+    context: input.context ?? "Round actif MASTERBUILD",
+    existing_components: input.existing_components ?? [
+      "Component Lab",
+      "Prototype UI",
+      "Registre de composants partagé"
+    ],
+    applicable_rules: rules.map((rule) => ({
+      rule_id: rule.rule_id,
+      title: rule.title,
+      must: rule.must,
+      avoid: rule.avoid,
+      checks: rule.checks
+    })),
+    locked_decisions: [
+      ...(feature?.product_state === "validated"
+        ? [`La fonctionnalité ${feature.label} est validée au niveau produit.`]
+        : []),
+      ...rules.flatMap((rule) => rule.must).slice(0, 8)
+    ],
+    free_zones: [
+      "Composition locale dans les limites du composant existant",
+      "Microcopy et rythme proposés puis revus",
+      "Expérimentation dans le Lab avant promotion"
+    ],
+    required_states: [
+      "loaded",
+      "empty",
+      "partial",
+      "locked",
+      "future",
+      "error",
+      "validation_required",
+      "read_only",
+      "mobile"
+    ],
+    responsive: "Desktop full power ; mobile conversationnel et panneaux plein écran.",
+    accessibility: rules
+      .filter((rule) => rule.checks.some((check) => ["axe_targeted", "keyboard_smoke", "contrast"].includes(check)))
+      .map((rule) => rule.title),
+    backend: feature
+      ? {
+          state: feature.backend_state,
+          dependencies: feature.dependencies,
+          missing: feature.missing
+        }
+      : { state: "unknown", dependencies: [], missing: ["Feature non reliée au registre"] },
+    guidance: profile?.domain_guidance ?? {},
+    validations: {
+      malex: "Expérience, navigation, DA et comportement",
+      vincent: "Contrats, permissions, données et runtime"
+    }
+  };
+}
+
+export async function writePortableExport() {
+  const [state, features, design, workboard, sources, git, profile] = await Promise.all([
+    readState(),
+    readJson(FEATURE_REGISTRY_PATH, { features: [] }),
+    readJson(DESIGN_RULES_PATH, { rules: [] }),
+    readJson(WORKBOARD_PATH, { work_packages: [], authorizations: [] }),
+    readJson(SOURCE_REGISTRY_PATH, { sources: [] }),
+    collectGitStatus(),
+    readLocalProfile()
+  ]);
+  const activePackages = workboard.work_packages.filter((item) =>
+    ["in_progress", "pending", "blocked"].includes(item.status)
+  );
+  const payload = {
+    schema_version: 1,
+    generated_at: new Date().toISOString(),
+    program: state.program,
+    active_round: currentRound(state),
+    next_moves: state.next_moves,
+    feature_summary: buildFeatureSummary(features.features),
+    active_work_packages: activePackages,
+    design_rules: design.rules.map(({ rule_id, title, status, intent, applies_to, must, avoid, checks }) => ({
+      rule_id,
+      title,
+      status,
+      intent,
+      applies_to,
+      must,
+      avoid,
+      checks
+    })),
+    source_summary: sources.sources.map(({ source_id, path: sourcePath, status, absorbed_into }) => ({
+      source_id,
+      path: sourcePath,
+      status,
+      absorbed_into
+    })),
+    profile: profile
+      ? {
+          profile_id: profile.profile_id,
+          guidance: profile.guidance,
+          current_focus: profile.current_focus
+        }
+      : null,
+    git: {
+      branch: git.branch,
+      sha: git.sha,
+      dirty: git.dirty,
+      ahead: git.ahead,
+      behind: git.behind
+    },
+    resume_instruction:
+      "Présente le Round, recommande la suite et attends le GO. N'invente aucune tâche."
+  };
+  assertPortableExportSafe(payload);
+  await mkdir(EXPORT_DIR, { recursive: true });
+  const jsonPath = path.join(EXPORT_DIR, "MASTERBUILD_PORTABLE_CURRENT.json");
+  const markdownPath = path.join(EXPORT_DIR, "MASTERBUILD_PORTABLE_CURRENT.md");
+  const featureSummary = payload.feature_summary;
+  const markdown = `# MASTERBUILD — export portable
+
+Généré : ${payload.generated_at}
+
+## Programme
+
+${payload.program.title}
+
+## Round actif
+
+- ${payload.active_round.title}
+- Étape ${payload.active_round.stage_index}/8 — ${payload.active_round.stage_label}
+- Recommandation : ${payload.active_round.recommended_next_action}
+- Risque : ${payload.active_round.primary_risk}
+
+## Carte fonctionnelle
+
+- ${featureSummary.total} fonctionnalités suivies
+- ${featureSummary.backend.verified} backend vérifiées
+- ${featureSummary.ui.connected + featureSummary.ui.verified} UI connectées ou vérifiées
+- ${featureSummary.likely_missing} raccords probablement manquants
+
+## Work packages actifs
+
+${activePackages.map((item) => `- ${item.work_package_id} · ${item.label} · ${item.status} · ${item.owner}`).join("\n")}
+
+## Reprise
+
+Présente la situation, les preuves, une recommandation et deux alternatives maximum. Attends le GO.
+`;
+  assertPortableExportSafe(markdown);
+  await writeFile(jsonPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await writeFile(markdownPath, markdown, "utf8");
+  return { json_path: jsonPath, markdown_path: markdownPath, payload };
+}
+
+export async function authorizeRound(input) {
+  const validation = validateRoundAuthorization(input);
+  if (!validation.allowed) throw new Error(validation.reason);
+  const workboard = await readJson(WORKBOARD_PATH, { authorizations: [], work_packages: [] });
+  const now = new Date().toISOString();
+  const authorization = {
+    authorization_id: `AUTH-${input.round_id}-${Date.now()}`,
+    round_id: input.round_id,
+    actor: input.actor,
+    scope: validation.scope,
+    status: "active",
+    granted_at: now,
+    expires_on_scope_change: true,
+    excluded: validation.excluded
+  };
+  workboard.authorizations = [
+    authorization,
+    ...workboard.authorizations.map((item) =>
+      item.round_id === input.round_id ? { ...item, status: "superseded" } : item
+    )
+  ];
+  workboard.updated_at = now;
+  await writeJsonAtomic(WORKBOARD_PATH, workboard);
+  await writePortableExport();
+  return authorization;
+}
+
+export async function updateWorkPackage(input) {
+  const workboard = await readJson(WORKBOARD_PATH, { work_packages: [], authorizations: [] });
+  const allowedStatuses = ["pending", "in_progress", "blocked", "completed"];
+  const index = workboard.work_packages.findIndex(
+    (item) => item.work_package_id === input.work_package_id
+  );
+  if (index < 0) throw new Error("Work package MASTERBUILD introuvable.");
+  const current = workboard.work_packages[index];
+  workboard.work_packages[index] = {
+    ...current,
+    ...(allowedStatuses.includes(input.status) ? { status: input.status } : {}),
+    ...(input.owner ? { owner: String(input.owner).slice(0, 80) } : {})
+  };
+  workboard.updated_at = new Date().toISOString();
+  await writeJsonAtomic(WORKBOARD_PATH, workboard);
+  await writePortableExport();
+  return workboard;
+}
+
+export function formatResumeBrief(state, git, handoff) {
+  const round = currentRound(state);
+  const recommended = (state.next_moves ?? []).find((move) => move.recommended);
+  const alternatives = (state.next_moves ?? [])
+    .filter((move) => !move.recommended)
+    .slice(0, 2);
+  const completed = state.last_completed_round;
+  const handoffNote = handoff?.stale ? `\nAlerte : ${handoff.reason}` : "";
+
+  return `MASTERBUILD · Round ${round.stage_index}/8 — ${round.stage_label}
+
+Situation : ${state.program?.title ?? "Construire MasterFlow"}. Le chantier actif est « ${round.title} ».
+Fait : ${
+    completed
+      ? `le Round « ${completed.title} » est publié et clôturé.`
+      : "les preuves du Round précédent restent à confirmer."
+  }
+Je recommande : ${recommended?.label ?? round.recommended_next_action ?? "cadrer le prochain move"}.
+Pourquoi : ${recommended?.reason ?? "c'est la prochaine sortie attendue du Round."}
+Alternatives : ${
+    alternatives.length
+      ? alternatives.map((move) => `${move.label} — ${move.reason}`).join(" | ")
+      : "aucune alternative validée dans la queue."
+  }
+Risque principal : ${round.primary_risk ?? "dériver du canon ou du runtime réel."}${handoffNote}
+
+Dis « go recommandation » pour lancer. Aucune tâche n'a été exécutée pendant cette reprise.`;
+}
+
+export async function buildResumeBrief() {
+  const [state, git] = await Promise.all([readState(), collectGitStatus()]);
+  const handoff = await collectHandoffStatus(state, git);
+  return {
+    brief: formatResumeBrief(state, git, handoff),
+    state,
+    git,
+    handoff
+  };
+}
+
 export async function saveLocalProfile(input) {
   const allowedProfile = input.profile_id === "vincent" ? "vincent" : "malex";
   const allowedGuidance = ["guided", "assisted", "fast"].includes(input.guidance)
@@ -191,19 +573,30 @@ export async function ensureLocalProfile() {
 
 export async function updateGoal(input) {
   const state = await readState();
-  const nextStage = Math.max(1, Math.min(8, Number(input.stage_index ?? state.active_goal.stage_index)));
+  const round = currentRound(state);
+  const nextStage = Math.max(1, Math.min(8, Number(input.stage_index ?? round.stage_index)));
   const nextStatus = ["active", "blocked", "completed"].includes(input.status)
     ? input.status
-    : state.active_goal.status;
+    : round.status;
   const now = new Date().toISOString();
 
-  state.active_goal = {
-    ...state.active_goal,
+  const nextRound = {
+    ...round,
     ...(typeof input.title === "string" && input.title.trim() ? { title: input.title.trim() } : {}),
     ...(input.owner === "vincent" || input.owner === "malex" ? { owner: input.owner } : {}),
     status: nextStatus,
     stage_index: nextStage,
     stage_label: STAGE_LABELS[nextStage - 1]
+  };
+  state.active_round = nextRound;
+  state.active_goal = {
+    ...state.active_goal,
+    goal_id: nextRound.round_id ?? state.active_goal.goal_id,
+    title: nextRound.title,
+    owner: nextRound.owner,
+    status: nextRound.status,
+    stage_index: nextRound.stage_index,
+    stage_label: nextRound.stage_label
   };
   state.stages = state.stages.map((stage) => ({
     ...stage,
@@ -213,6 +606,7 @@ export async function updateGoal(input) {
   state.updated_at = now;
   state.publication.state = "local_uncommitted";
   await writeJsonAtomic(STATE_PATH, state);
+  await writePortableExport();
   return state;
 }
 
@@ -385,6 +779,7 @@ function recapTagline(stageIndex, recipient) {
 
 export async function addRecap(input) {
   const state = await readState();
+  const round = currentRound(state);
   const recaps = (await readJson(RECAPS_PATH)) ?? {
     schema_version: 1,
     updated_at: new Date().toISOString(),
@@ -402,10 +797,10 @@ export async function addRecap(input) {
     created_at: now,
     sender,
     recipient,
-    goal_id: state.active_goal.goal_id,
-    stage_index: state.active_goal.stage_index,
+    goal_id: round.round_id ?? round.goal_id,
+    stage_index: round.stage_index,
     body,
-    tagline: recapTagline(state.active_goal.stage_index, recipient),
+    tagline: recapTagline(round.stage_index, recipient),
     status: "shared_in_git_worktree"
   };
   recaps.messages.unshift(message);
@@ -449,20 +844,38 @@ export async function prepareHandoff() {
   ]);
   await mkdir(LOCAL_DIR, { recursive: true });
   const guidance = contextGuidance(profile?.context_percent ?? 0);
+  const round = currentRound(state);
+  const nextMoves = (state.next_moves ?? []).slice(0, 3);
   const content = `# Handoff MASTERBUILD
 
 Date : ${new Date().toISOString()}
 Profil local : ${profile?.profile_id ?? "à aligner"}
 
-## Objectif
+## Programme
 
-${state.active_goal.title}
+${state.program?.title ?? "Construire MasterFlow"}
+
+## Round actif
+
+- Round ID : ${round.round_id ?? round.goal_id}
+- Titre : ${round.title}
+- Objectif : ${round.objective ?? round.title}
 
 ## Progression
 
-- Étape : ${state.active_goal.stage_index}/8 — ${state.active_goal.stage_label}
-- Statut : ${state.active_goal.status}
+- Étape : ${round.stage_index}/8 — ${round.stage_label}
+- Statut : ${round.status}
+- Action recommandée : ${round.recommended_next_action ?? "À cadrer depuis la queue partagée"}
 - Prochaine consigne contexte : ${guidance.label}
+
+## Choix bornés
+
+${nextMoves
+  .map(
+    (move, index) =>
+      `${index + 1}. ${move.label}${move.recommended ? " — recommandé" : ""} : ${move.reason}`
+  )
+  .join("\n")}
 
 ## État Git
 
@@ -473,19 +886,20 @@ ${state.active_goal.title}
 
 ## Reprise
 
-\`Reprends MASTERBUILD. Lis docs/masterbuild/MASTERBUILD_STATE.json et ce handoff, vérifie Git, puis indique l'étape courante et la prochaine action sûre. Ne publie rien sans GO explicite.\`
+\`Reprends MASTERBUILD. Oriente-moi sur le Round actif, recommande la prochaine action et attends mon GO. N'exécute aucune tâche pendant la reprise.\`
 `;
   await writeFile(HANDOFF_PATH, content, "utf8");
+  await writePortableExport();
   return {
     path: HANDOFF_PATH,
     prompt:
-      "Reprends MASTERBUILD. Lis l’état partagé et le handoff local, vérifie Git, puis indique l’étape et la prochaine action sûre.",
+      "Reprends MASTERBUILD. Oriente-moi sur le Round actif, recommande la prochaine action et attends mon GO. N’exécute aucune tâche pendant la reprise.",
     content
   };
 }
 
 export async function collectStatus() {
-  const [state, profile, git, runtime, profileAudits, recaps, learning] =
+  const [state, profile, git, runtime, profileAudits, recaps, learning, features, design, workboard, sources] =
     await Promise.all([
     readState(),
     readLocalProfile(),
@@ -493,10 +907,15 @@ export async function collectStatus() {
     collectRuntimeStatus(),
     readJson(PROFILE_AUDITS_PATH, { profiles: [] }),
     readJson(RECAPS_PATH, { messages: [] }),
-    readJson(LEARNING_PATH, { observations: [], proposals: [] })
+    readJson(LEARNING_PATH, { observations: [], proposals: [] }),
+    readJson(FEATURE_REGISTRY_PATH, { features: [] }),
+    readJson(DESIGN_RULES_PATH, { rules: [] }),
+    readJson(WORKBOARD_PATH, { work_packages: [], authorizations: [] }),
+    readJson(SOURCE_REGISTRY_PATH, { sources: [] })
   ]);
   const findings = await collectWorkspaceFindings(git);
   const externalAgents = await collectExternalAgentStatus(state);
+  const handoff = await collectHandoffStatus(state, git);
   return {
     generated_at: new Date().toISOString(),
     state,
@@ -506,26 +925,50 @@ export async function collectStatus() {
     runtime,
     findings,
     external_agents: externalAgents,
+    handoff,
     profile_audits: profileAudits.profiles,
     recaps: recaps.messages,
-    learning
+    learning,
+    feature_registry: features.features,
+    feature_summary: buildFeatureSummary(features.features),
+    design_rules: design.rules,
+    workboard,
+    source_registry: sources.sources
   };
 }
 
 export async function doctor() {
-  const [state, profile, git, runtime] = await Promise.all([
+  const [state, profile, git, runtime, features, design, workboard] = await Promise.all([
     readState().catch(() => null),
     readLocalProfile(),
     collectGitStatus(),
-    collectRuntimeStatus()
+    collectRuntimeStatus(),
+    readJson(FEATURE_REGISTRY_PATH),
+    readJson(DESIGN_RULES_PATH),
+    readJson(WORKBOARD_PATH)
   ]);
+  const handoff = state ? await collectHandoffStatus(state, git) : null;
+  const round = state ? currentRound(state) : null;
   return {
     ok: Boolean(state && git.available),
     checks: [
       { id: "node", label: "Node.js", ok: Number(process.versions.node.split(".")[0]) >= 20, detail: process.versions.node },
       { id: "git", label: "Dépôt Git", ok: git.available, detail: git.branch },
-      { id: "state", label: "État partagé", ok: Boolean(state), detail: state?.active_goal?.title ?? "introuvable" },
+      { id: "state", label: "État partagé", ok: Boolean(state), detail: round?.title ?? "introuvable" },
+      {
+        id: "handoff",
+        label: "Handoff local",
+        ok: Boolean(handoff && !handoff.stale),
+        optional: true,
+        detail: handoff?.reason ?? "indisponible"
+      },
       { id: "profile", label: "Profil local", ok: Boolean(profile?.onboarding_complete), detail: profile?.profile_id ?? "enquête requise" },
+      {
+        id: "registries",
+        label: "Registres V2",
+        ok: Boolean(features?.features && design?.rules && workboard?.work_packages),
+        detail: `${features?.features?.length ?? 0} fonctionnalités · ${design?.rules?.length ?? 0} règles · ${workboard?.work_packages?.length ?? 0} work packages`
+      },
       { id: "runtime", label: "Backend produit facultatif", ok: runtime.available, optional: true, detail: runtime.available ? runtime.base_url : "arrêté, sans blocage" }
     ]
   };

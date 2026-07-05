@@ -4,6 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-07-05 — MASTERBUILD-V2 : pilote global et gouvernance design
+
+- branche/worktree dédié `codex/masterbuild-v2`, issu de `origin/main` ;
+- contrat universel `MASTERBUILD.md` et adaptateurs Codex, Claude, Copilot, Gemini, OpenCode ;
+- registre fonctionnel multidimensionnel produit/backend/UI/release ;
+- registre design issu de la doctrine UI, du CDC, de l'accessibilité, de l'agilité et des principes
+  MUI, sans dépendance Material UI ;
+- workboard MALEX/Vincent/agents avec GO du Round borné jusqu'à la draft PR ;
+- Design Preflight obligatoire avant une tâche UI ;
+- export Markdown/JSON portable et filtrage anti-secrets ;
+- cockpit V2 en huit vues opérationnelles.
+
+Gate : GO MALEX obtenu pour implémentation, tests, commit, push et draft PR. Merge, déploiement,
+migration, provider, suppression et changement de canon restent interdits sans nouveau GO.
+
+Vérification : 11/11 tests MASTERBUILD, TypeScript et build Vite passent. Le contrôle visuel HTTP
+reste volontairement humain ; aucun scan navigateur long n'a été exécuté.
+
 ## NOUVEAU POINT D'ENTRÉE — MASTERBUILD
 
 `SUIVI.md` reste l'historique de preuve. Il n'est plus le fichier à relire intégralement au boot.
@@ -14,6 +32,24 @@ Pour reprendre :
 2. lancer `npm run masterbuild:doctor` ;
 3. ouvrir le cockpit avec `npm run dev:masterbuild` puis `http://localhost:5175` ;
 4. consulter ensuite seulement la section `SUIVI.md` citée par l'objectif actif.
+
+### Correctif de continuité V1.1 — local
+
+Le premier test dans une nouvelle conversation a révélé un défaut de pilotage : l'objectif
+MASTERBUILD était clôturé sans Round suivant, tandis que le handoff local pointait vers un ancien
+commit. La reprise pouvait alors improviser une micro-tâche et terminer sans proposer de suite.
+
+Correctif local en cours :
+
+- programme MasterFlow permanent, distinct des Rounds bornés ;
+- Round actif `UI-SYSTEM-INTEGRATION-001` ;
+- recommandation et deux alternatives maximum dans l'état partagé ;
+- reprise strictement orientative : aucune exécution avant GO ;
+- handoff périmé détecté puis ignoré ;
+- prochaine action obligatoire dans chaque réponse de travail.
+
+Statut : modifications locales non committées et non poussées. Le Round recommandé est
+`Shell + navigation + Command Dock`, avant Home et personas.
 
 État actuel MASTERBUILD : **publié sur `codex/ui-reset-prototype-lab`** le 2026-07-04, commit
 d'implémentation `b133283bd88895f79e45ccbbd1593a1791f3bf6a`. Doctor, tests `3/3`, TypeScript,

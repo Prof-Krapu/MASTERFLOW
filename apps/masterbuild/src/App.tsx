@@ -30,6 +30,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { masterbuildApi } from "./api";
 import type {
+  DesignPreflight,
   Handoff,
   LocalProfile,
   MasterbuildStatus,
@@ -53,25 +54,24 @@ const navItems: Array<{
   icon: typeof Compass;
 }> = [
   { id: "cockpit", label: "Cockpit", icon: Compass },
-  { id: "goals", label: "Objectifs", icon: Target },
-  { id: "domains", label: "Carte D01–D12", icon: Layers3 },
-  { id: "lab", label: "Lab & Runtime", icon: Code2 },
-  { id: "git", label: "Git & preuves", icon: GitBranch },
-  { id: "research", label: "Recherche", icon: Search },
-  { id: "team", label: "MALEX / Vincent", icon: Users },
-  { id: "housekeeping", label: "Cohérence & ménage", icon: Archive },
-  { id: "resume", label: "Reprise", icon: PackageCheck }
+  { id: "domains", label: "Carte fonctionnelle", icon: Layers3 },
+  { id: "goals", label: "Workboard", icon: Target },
+  { id: "lab", label: "Intégration UI", icon: Code2 },
+  { id: "research", label: "Philosophie & Design", icon: Sparkles },
+  { id: "team", label: "Équipe", icon: Users },
+  { id: "housekeeping", label: "Sources & Cohérence", icon: Archive },
+  { id: "git", label: "Release", icon: GitBranch }
 ];
 
 const viewTitles: Record<ViewId, string> = {
   cockpit: "Prochaine action",
-  goals: "Objectif partagé",
-  domains: "Carte globale MasterFlow",
-  lab: "Promotion de l’interface",
-  git: "Git, releases et preuves",
-  research: "Recherche et sources",
-  team: "Collaboration",
-  housekeeping: "Cohérence et ménage",
+  goals: "Travail partagé",
+  domains: "Fonctionnalités MasterFlow",
+  lab: "Lab, prototype et runtime",
+  git: "Publication et preuves",
+  research: "Règles produit et UI",
+  team: "MALEX, Vincent et agents",
+  housekeeping: "Provenance et cohérence",
   resume: "Handoff et reprise"
 };
 
@@ -249,16 +249,11 @@ function CockpitView({
   onContextChange: (value: number) => Promise<void>;
   onNavigate: (view: ViewId) => void;
 }) {
-  const goal = status.state.active_goal;
+  const goal = status.state.active_round;
   const currentProfile = status.state.shared_profiles.find(
     (profile) => profile.profile_id === status.profile?.profile_id
   );
-  const nextAction =
-    goal.stage_index === 5
-      ? "Terminer la vague bornée, puis passer aux contrôles ciblés."
-      : goal.stage_index === 6
-        ? "Choisir ce que MALEX vérifie et ce que Codex teste."
-        : "Suivre la sortie attendue de l’étape active.";
+  const nextAction = goal.recommended_next_action;
 
   return (
     <div className="mb-view mb-view--cockpit">
@@ -320,11 +315,57 @@ function CockpitView({
         </div>
       </section>
 
+      <section className="mb-metric-grid" aria-label="Résumé fonctionnel MasterFlow">
+        <button onClick={() => onNavigate("domains")} type="button">
+          <strong>{status.feature_summary.total}</strong>
+          <span>fonctionnalités suivies</span>
+        </button>
+        <button onClick={() => onNavigate("domains")} type="button">
+          <strong>{status.feature_summary.backend.verified ?? 0}</strong>
+          <span>backend vérifiées</span>
+        </button>
+        <button onClick={() => onNavigate("lab")} type="button">
+          <strong>
+            {(status.feature_summary.ui.connected ?? 0) +
+              (status.feature_summary.ui.verified ?? 0)}
+          </strong>
+          <span>UI connectées</span>
+        </button>
+        <button onClick={() => onNavigate("domains")} type="button">
+          <strong>{status.feature_summary.likely_missing}</strong>
+          <span>raccords à surveiller</span>
+        </button>
+      </section>
+
+      <section className="mb-section mb-section--actions">
+        <div className="mb-section__heading">
+          <div>
+            <span className="mb-kicker">Choix bornés · attente du GO</span>
+            <h3>Quelle suite lancer ?</h3>
+          </div>
+        </div>
+        <div className="mb-action-list">
+          {status.state.next_moves.map((move) => (
+            <button onClick={() => onNavigate("goals")} type="button" key={move.move_id}>
+              <CircleDot aria-hidden="true" />
+              <span>
+                <strong>
+                  {move.label}
+                  {move.recommended ? " · recommandé" : ""}
+                </strong>
+                <small>{move.reason}</small>
+              </span>
+              <ChevronRight aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="mb-section mb-section--actions">
         <div className="mb-section__heading">
           <div>
             <span className="mb-kicker">État simple</span>
-            <h3>Ce qui compte maintenant</h3>
+            <h3>Ce qui accompagne le Round</h3>
           </div>
         </div>
         <div className="mb-action-list">
@@ -344,7 +385,7 @@ function CockpitView({
             </span>
             <ChevronRight aria-hidden="true" />
           </button>
-          <button onClick={() => onNavigate("resume")} type="button">
+          <button onClick={() => onNavigate("git")} type="button">
             <PackageCheck aria-hidden="true" />
             <span>
               <strong>Reprise portable</strong>
@@ -360,17 +401,19 @@ function CockpitView({
 
 function GoalsView({
   status,
-  onStageChange
+  onStageChange,
+  onWorkPackageUpdate
 }: {
   status: MasterbuildStatus;
   onStageChange: (stage: number) => Promise<void>;
+  onWorkPackageUpdate: (workPackageId: string, nextStatus: string) => Promise<void>;
 }) {
-  const goal = status.state.active_goal;
+  const goal = status.state.active_round;
   return (
     <div className="mb-view">
       <section className="mb-goal-header">
         <div>
-          <span className="mb-kicker">{goal.goal_id}</span>
+          <span className="mb-kicker">{goal.round_id}</span>
           <h2>{goal.title}</h2>
         </div>
         <StatusPill tone={goal.status === "blocked" ? "danger" : "good"}>
@@ -389,6 +432,47 @@ function GoalsView({
             </li>
           ))}
         </ul>
+      </section>
+      <section className="mb-workboard">
+        {status.workboard.work_packages.map((workPackage) => (
+          <article className={`is-${workPackage.status}`} key={workPackage.work_package_id}>
+            <div className="mb-workboard__status">
+              <span>{workPackage.work_package_id}</span>
+              <StatusPill
+                tone={
+                  workPackage.status === "completed"
+                    ? "good"
+                    : workPackage.status === "blocked"
+                      ? "danger"
+                      : workPackage.status === "in_progress"
+                        ? "warn"
+                        : "muted"
+                }
+              >
+                {workPackage.status}
+              </StatusPill>
+            </div>
+            <h3>{workPackage.label}</h3>
+            <p>
+              Owner : <strong>{workPackage.owner}</strong> · outil :{" "}
+              <strong>{workPackage.tool_route}</strong>
+            </p>
+            <small>
+              Preuves : {workPackage.expected_evidence.join(" · ")}
+            </small>
+            <button
+              onClick={() =>
+                onWorkPackageUpdate(
+                  workPackage.work_package_id,
+                  workPackage.status === "completed" ? "in_progress" : "completed"
+                )
+              }
+              type="button"
+            >
+              {workPackage.status === "completed" ? "Rouvrir" : "Marquer terminé"}
+            </button>
+          </article>
+        ))}
       </section>
       <section className="mb-stage-controls">
         <button
@@ -420,24 +504,59 @@ function GoalsView({
 }
 
 function DomainsView({ status }: { status: MasterbuildStatus }) {
-  const statusLabels = {
-    implemented: "En place",
-    partial: "Partiel",
-    future: "Futur",
-    unknown: "À auditer"
-  };
+  const [filter, setFilter] = useState("all");
+  const features = status.feature_registry.filter(
+    (feature) =>
+      filter === "all" ||
+      feature.domain === filter ||
+      feature.product_state === filter ||
+      feature.ui_state === filter
+  );
   return (
     <div className="mb-view">
-      <p className="mb-intro">
-        Lecture globale du système. Un statut partiel ne signifie pas cassé : il
-        indique que le contrat ou le runtime reste incomplet.
-      </p>
-      <section className="mb-domain-grid">
-        {status.state.domains.map((domain) => (
-          <article className={`mb-domain is-${domain.status}`} key={domain.id}>
-            <strong>{domain.id}</strong>
-            <h3>{domain.label}</h3>
-            <span>{statusLabels[domain.status]}</span>
+      <div className="mb-filter-bar">
+        <p>
+          Une fonctionnalité peut être validée produit sans être branchée, ou
+          exister en backend sans interface exploitable.
+        </p>
+        <label>
+          <span>Filtrer</span>
+          <select onChange={(event) => setFilter(event.target.value)} value={filter}>
+            <option value="all">Tout</option>
+            <option value="validated">Produit validé</option>
+            <option value="future">Futur</option>
+            <option value="prototype">UI prototype</option>
+            <option value="connected">UI connectée</option>
+            {Array.from(new Set(status.feature_registry.map((feature) => feature.domain))).map(
+              (domain) => (
+                <option key={domain} value={domain}>
+                  {domain}
+                </option>
+              )
+            )}
+          </select>
+        </label>
+      </div>
+      <section className="mb-feature-list">
+        {features.map((feature) => (
+          <article key={feature.feature_id}>
+            <div className="mb-feature-list__title">
+              <span>{feature.domain}</span>
+              <h3>{feature.label}</h3>
+              <small>{feature.owner}</small>
+            </div>
+            <div className="mb-state-strip">
+              <span>Produit · {feature.product_state}</span>
+              <span>Backend · {feature.backend_state}</span>
+              <span>UI · {feature.ui_state}</span>
+              <span>Release · {feature.release_state}</span>
+            </div>
+            <p>{feature.next_action}</p>
+            <details>
+              <summary>Manques et risque</summary>
+              <p>{feature.missing.join(" · ") || "Aucun manque déclaré."}</p>
+              <small>{feature.risk}</small>
+            </details>
           </article>
         ))}
       </section>
@@ -445,7 +564,7 @@ function DomainsView({ status }: { status: MasterbuildStatus }) {
   );
 }
 
-function LabView() {
+function LabView({ status }: { status: MasterbuildStatus }) {
   const layers = [
     {
       label: "Component Lab",
@@ -491,17 +610,51 @@ function LabView() {
           </div>
         ))}
       </section>
+      <section className="mb-section">
+        <div className="mb-section__heading">
+          <div>
+            <span className="mb-kicker">État des surfaces</span>
+            <h3>Ce qui doit encore traverser la chaîne</h3>
+          </div>
+        </div>
+        <div className="mb-ui-promotion-list">
+          {status.feature_registry
+            .filter((feature) => feature.ui_state !== "absent")
+            .map((feature) => (
+              <article key={feature.feature_id}>
+                <strong>{feature.label}</strong>
+                <span className="mb-ui-steps">
+                  <i className={["lab", "prototype", "connected", "verified"].includes(feature.ui_state) ? "is-done" : ""}>Lab</i>
+                  <i className={["prototype", "connected", "verified"].includes(feature.ui_state) ? "is-done" : ""}>Proto</i>
+                  <i className={["connected", "verified"].includes(feature.ui_state) ? "is-done" : ""}>Runtime</i>
+                  <i className={feature.ui_state === "verified" ? "is-done" : ""}>Vérifié</i>
+                </span>
+                <small>{feature.next_action}</small>
+              </article>
+            ))}
+        </div>
+      </section>
     </div>
   );
 }
 
 function GitView({
   status,
-  onPrepare
+  onPrepare,
+  onPrepareExport,
+  onPrepareHandoff,
+  exportResult
 }: {
   status: MasterbuildStatus;
   onPrepare: (action: string) => Promise<void>;
+  onPrepareExport: () => Promise<void>;
+  onPrepareHandoff: () => Promise<void>;
+  exportResult: string | null;
 }) {
+  const authorization = status.workboard.authorizations.find(
+    (item) =>
+      item.round_id === status.state.active_round.round_id && item.status === "active"
+  );
   return (
     <div className="mb-view">
       <section className="mb-git-summary">
@@ -522,6 +675,21 @@ function GitView({
         <div>
           <small>Publication</small>
           <strong>{status.state.publication.state}</strong>
+        </div>
+      </section>
+      <section className="mb-authorization">
+        <ShieldCheck aria-hidden="true" />
+        <div>
+          <strong>
+            {authorization
+              ? "GO Round actif jusqu’à la draft PR"
+              : "Aucune autorisation de publication active"}
+          </strong>
+          <span>
+            {authorization
+              ? `Exclus : ${authorization.excluded.join(" · ")}`
+              : "Commit, push et PR restent bloqués."}
+          </span>
         </div>
       </section>
       <section className="mb-section">
@@ -560,6 +728,12 @@ function GitView({
         <button onClick={() => onPrepare("merge")} type="button">
           Préparer le merge
         </button>
+        <button onClick={onPrepareExport} type="button">
+          Export multi-IA
+        </button>
+        <button onClick={onPrepareHandoff} type="button">
+          Handoff local
+        </button>
       </div>
       <p className="mb-warning">
         Ces boutons montrent la portée et le risque. Ils n’exécutent aucune
@@ -575,36 +749,98 @@ function GitView({
           )
         )}
       </section>
+      {exportResult && <p className="mb-note">Export prêt : <code>{exportResult}</code></p>}
     </div>
   );
 }
 
-function ResearchView({ status }: { status: MasterbuildStatus }) {
+function ResearchView({
+  status,
+  preflight,
+  onGeneratePreflight
+}: {
+  status: MasterbuildStatus;
+  preflight: DesignPreflight | null;
+  onGeneratePreflight: (surface: string, audience: string) => Promise<void>;
+}) {
+  const [surface, setSurface] = useState("navigation");
+  const [audience, setAudience] = useState("all");
   return (
     <div className="mb-view">
       <section className="mb-research-rule">
-        <FileSearch aria-hidden="true" />
+        <Sparkles aria-hidden="true" />
         <div>
-          <h3>Quand chercher en ligne ?</h3>
+          <h3>MUI inspire l’ergonomie, pas la DA</h3>
           <p>
-            Quand la fonction manque, que l’information peut avoir changé ou
-            qu’une norme externe décide du bon choix.
+            Les principes sont condensés ici. Les agents ne relisent pas tous les
+            PDF avant chaque composant.
           </p>
         </div>
       </section>
-      <section className="mb-research-list">
-        {status.state.research_proposals.map((proposal) => (
-          <article key={proposal.id}>
+      <form
+        className="mb-preflight-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void onGeneratePreflight(surface, audience);
+        }}
+      >
+        <label>
+          <span>Surface</span>
+          <select onChange={(event) => setSurface(event.target.value)} value={surface}>
+            <option value="navigation">Navigation</option>
+            <option value="command_dock">Command Dock</option>
+            <option value="home">Home</option>
+            <option value="teaching">Teaching</option>
+            <option value="global">Global</option>
+          </select>
+        </label>
+        <label>
+          <span>Utilisateur</span>
+          <select onChange={(event) => setAudience(event.target.value)} value={audience}>
+            <option value="all">Tous</option>
+            <option value="student">Élève</option>
+            <option value="teacher">Professeur</option>
+            <option value="supervision">Supervision</option>
+            <option value="admin">Admin</option>
+          </select>
+        </label>
+        <button type="submit">Générer le Design Preflight</button>
+      </form>
+      {preflight && (
+        <section className="mb-preflight-output">
+          <div>
+            <span className="mb-kicker">{preflight.surface} · {preflight.audience}</span>
+            <h3>Brief avant modification</h3>
+            <p>{preflight.context}</p>
+          </div>
+          <div className="mb-preflight-columns">
             <div>
-              <StatusPill tone="warn">Coût {proposal.cost}</StatusPill>
-              <span className="mb-kicker">{proposal.status}</span>
+              <strong>Décisions verrouillées</strong>
+              <ul>{preflight.locked_decisions.map((item) => <li key={item}>{item}</li>)}</ul>
             </div>
-            <h3>{proposal.title}</h3>
-            <p>{proposal.reason}</p>
-            <blockquote>{proposal.question}</blockquote>
-            <small>
-              Sortie attendue : <strong>{proposal.expected_output}</strong>
-            </small>
+            <div>
+              <strong>Zones libres</strong>
+              <ul>{preflight.free_zones.map((item) => <li key={item}>{item}</li>)}</ul>
+            </div>
+          </div>
+          <small>
+            Revue MALEX : {preflight.validations.malex} · Revue Vincent :{" "}
+            {preflight.validations.vincent}
+          </small>
+        </section>
+      )}
+      <section className="mb-design-rule-grid">
+        {status.design_rules.map((rule) => (
+          <article key={rule.rule_id}>
+            <div>
+              <span>{rule.rule_id}</span>
+              <StatusPill tone={rule.status === "canon" ? "good" : "muted"}>
+                {rule.status}
+              </StatusPill>
+            </div>
+            <h3>{rule.title}</h3>
+            <p>{rule.intent}</p>
+            <small>Contrôles : {rule.checks.join(" · ")}</small>
           </article>
         ))}
       </section>
@@ -653,6 +889,17 @@ function TeamView({
               ))}
             </div>
             <small>Mode par défaut : {profile.default_guidance}</small>
+            <div className="mb-guidance-grid">
+              {Object.entries(
+                status.profile_audits.find(
+                  (audit) => audit.profile_id === profile.profile_id
+                )?.domain_guidance ?? {}
+              ).map(([domain, guidance]) => (
+                <span key={domain}>
+                  {domain} · <strong>{guidance}</strong>
+                </span>
+              ))}
+            </div>
           </article>
         ))}
       </section>
@@ -791,6 +1038,33 @@ function HousekeepingView({
           </span>
         </div>
       </section>
+      <section className="mb-source-list">
+        <div className="mb-section__heading">
+          <div>
+            <span className="mb-kicker">Registre unique progressif</span>
+            <h3>Sources absorbées et encore actives</h3>
+          </div>
+        </div>
+        {status.source_registry.map((source) => (
+          <article key={source.source_id}>
+            <div>
+              <code>{source.path}</code>
+              <StatusPill
+                tone={
+                  source.status === "conflict"
+                    ? "danger"
+                    : source.status === "still_active"
+                      ? "good"
+                      : "muted"
+                }
+              >
+                {source.status}
+              </StatusPill>
+            </div>
+            <p>{source.note}</p>
+          </article>
+        ))}
+      </section>
       <form
         className="mb-learning-form"
         onSubmit={async (event) => {
@@ -864,10 +1138,16 @@ function ResumeView({
         </div>
       </section>
       <div className="mb-resume-status">
-        <span>Étape {status.state.active_goal.stage_index}/8</span>
+        <span>Étape {status.state.active_round.stage_index}/8</span>
         <span>{status.git.branch}</span>
         <span>{status.git.files.length} fichiers locaux</span>
       </div>
+      {status.handoff.stale && (
+        <p className="mb-warning">
+          {status.handoff.reason} MASTERBUILD utilise l’état partagé et ne reprend
+          aucune ancienne tâche.
+        </p>
+      )}
       <button className="mb-primary" onClick={onPrepareHandoff} type="button">
         Préparer le handoff
         <PackageCheck aria-hidden="true" />
@@ -934,6 +1214,9 @@ export function App() {
   const [preparedAction, setPreparedAction] =
     useState<SensitiveAction | null>(null);
   const [handoff, setHandoff] = useState<Handoff | null>(null);
+  const [designPreflight, setDesignPreflight] =
+    useState<DesignPreflight | null>(null);
+  const [exportResult, setExportResult] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setError(null);
@@ -996,6 +1279,30 @@ export function App() {
 
   async function prepareHandoff() {
     setHandoff(await masterbuildApi.prepareHandoff());
+  }
+
+  async function prepareExport() {
+    const result = await masterbuildApi.prepareExport();
+    setExportResult(result.markdown_path);
+  }
+
+  async function generateDesignPreflight(surface: string, audience: string) {
+    setDesignPreflight(
+      await masterbuildApi.designPreflight({
+        surface,
+        audience,
+        contributor:
+          status?.profile?.profile_id === "vincent" ? "vincent" : "malex"
+      })
+    );
+  }
+
+  async function updateWorkPackage(workPackageId: string, nextStatus: string) {
+    await masterbuildApi.updateWorkPackage({
+      work_package_id: workPackageId,
+      status: nextStatus
+    });
+    await refresh();
   }
 
   async function sendRecap(body: string) {
@@ -1093,7 +1400,7 @@ export function App() {
           </button>
           <div>
             <span className="mb-kicker">
-              {activeNav.label} · Étape {status.state.active_goal.stage_index}/8
+              {activeNav.label} · Étape {status.state.active_round.stage_index}/8
             </span>
             <h1>{viewTitles[view]}</h1>
           </div>
@@ -1126,14 +1433,30 @@ export function App() {
             />
           )}
           {view === "goals" && (
-            <GoalsView onStageChange={changeStage} status={status} />
+            <GoalsView
+              onStageChange={changeStage}
+              onWorkPackageUpdate={updateWorkPackage}
+              status={status}
+            />
           )}
           {view === "domains" && <DomainsView status={status} />}
-          {view === "lab" && <LabView />}
+          {view === "lab" && <LabView status={status} />}
           {view === "git" && (
-            <GitView onPrepare={prepareAction} status={status} />
+            <GitView
+              exportResult={exportResult}
+              onPrepare={prepareAction}
+              onPrepareExport={prepareExport}
+              onPrepareHandoff={prepareHandoff}
+              status={status}
+            />
           )}
-          {view === "research" && <ResearchView status={status} />}
+          {view === "research" && (
+            <ResearchView
+              onGeneratePreflight={generateDesignPreflight}
+              preflight={designPreflight}
+              status={status}
+            />
+          )}
           {view === "team" && (
             <TeamView onSendRecap={sendRecap} status={status} />
           )}

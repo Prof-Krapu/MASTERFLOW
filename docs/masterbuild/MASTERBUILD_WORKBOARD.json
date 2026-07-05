@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-05T12:14:14+02:00",
+  "active_round_id": "MASTERBUILD-V2",
+  "authorizations": [
+    {
+      "authorization_id": "AUTH-MB2-2026-07-05",
+      "round_id": "MASTERBUILD-V2",
+      "actor": "malex",
+      "scope": "build_test_commit_push_draft_pr",
+      "status": "active",
+      "granted_at": "2026-07-05",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "migration", "provider", "spend", "delete", "canon_scope_change"]
+    }
+  ],
+  "work_packages": [
+    {
+      "work_package_id": "MB2-WP1",
+      "label": "Contrat universel et registres V3",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": [],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["schema parse", "source provenance", "diff check"]
+    },
+    {
+      "work_package_id": "MB2-WP2",
+      "label": "Gouvernance design et Design Preflight",
+      "feature_ids": ["masterbuild-pilot", "ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP1"],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-010", "DES-014"],
+      "tool_route": "codex",
+      "expected_evidence": ["preflight Shell/Dock", "rule coverage test"]
+    },
+    {
+      "work_package_id": "MB2-WP3",
+      "label": "Moteur de Round, affectations et exports",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP1"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["authorization test", "portable export", "stale handoff test"]
+    },
+    {
+      "work_package_id": "MB2-WP4",
+      "label": "Cockpit V2 opérationnel",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex"],
+      "dependencies": ["MB2-WP2", "MB2-WP3"],
+      "design_rule_ids": ["DES-001", "DES-004", "DES-006", "DES-009", "DES-010"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["build", "responsive checklist", "keyboard labels"]
+    },
+    {
+      "work_package_id": "MB2-WP5",
+      "label": "Adaptateurs multi-IA",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP1", "MB2-WP3"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["adapter pointers", "chat-only export"]
+    },
+    {
+      "work_package_id": "MB2-WP6",
+      "label": "Vérification et draft PR",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "in_progress",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP4", "MB2-WP5"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": ["tests", "build", "commit", "push", "draft PR"]
+    }
+  ]
+}

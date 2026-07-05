@@ -29,7 +29,17 @@
         "assistant de publication préparé",
         "étapes 1 à 8 toujours visibles",
         "handoff court avant saturation du contexte"
-      ]
+      ],
+      "domain_guidance": {
+        "product": "autonomous",
+        "ui": "autonomous",
+        "da": "autonomous",
+        "canon": "autonomous",
+        "architecture": "assisted",
+        "backend": "assisted",
+        "git": "assisted",
+        "deployment": "guided"
+      }
     },
     {
       "profile_id": "vincent",
@@ -58,7 +68,17 @@
         "gates MALEX visibles",
         "inbox redirigée vers le cockpit",
         "contrats backend et effets produit séparés"
-      ]
+      ],
+      "domain_guidance": {
+        "backend": "autonomous",
+        "runtime": "autonomous",
+        "security": "autonomous",
+        "contracts": "autonomous",
+        "components": "assisted",
+        "navigation": "assisted",
+        "responsive": "assisted",
+        "da": "guided"
+      }
     }
   ]
 }

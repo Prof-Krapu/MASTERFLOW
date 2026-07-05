@@ -1,8 +1,49 @@
-# MASTERBUILD — protocole opérable V1
+# MASTERBUILD — protocole opérable V2
 
 MASTERBUILD pilote la construction de MasterFlow. Il ne remplace ni le canon produit, ni GitHub,
 ni le runtime. Il assemble leurs signaux pour expliquer où en est le travail et quelle est la
 prochaine action sûre.
+
+Le contrat universel est `MASTERBUILD.md`. Les adaptateurs d'IA ne doivent pas créer de variantes
+comportementales concurrentes.
+
+## Registres actifs
+
+- fonctionnalités : `MASTERBUILD_FEATURE_REGISTRY.json` ;
+- principes design : `MASTERBUILD_DESIGN_RULES.json` ;
+- tâches et autorisations : `MASTERBUILD_WORKBOARD.json` ;
+- sources et absorption : `MASTERBUILD_SOURCE_REGISTRY.json`.
+
+Une ancienne queue reste une preuve. Elle ne redevient pas active sans entrée vérifiée dans le
+workboard.
+
+## Programme permanent et Rounds
+
+MASTERBUILD distingue deux niveaux :
+
+- le **programme MasterFlow**, permanent jusqu'à une première version réellement utilisable ;
+- le **Round actif**, chantier borné qui suit les huit étapes.
+
+Clôturer un Round ne clôture jamais automatiquement le programme. MASTERBUILD choisit la suite
+uniquement dans `next_moves` ou dans une queue validée. Si aucune suite n'est disponible, il demande
+une décision produit ; il n'invente pas une tâche.
+
+## Contrat de reprise
+
+Une reprise de conversation sert à s'orienter. Elle ne produit aucun patch.
+
+Ordre obligatoire :
+
+1. situation en langage humain ;
+2. progression du Round ;
+3. preuves déjà acquises ;
+4. une recommandation ;
+5. deux alternatives maximum ;
+6. risque principal ;
+7. formulation du GO attendu.
+
+Un handoff dont le Round ID ou le commit diffère de l'état courant est signalé puis ignoré. L'état
+partagé reprend alors l'autorité.
 
 ## Ton miroir
 
@@ -64,6 +105,12 @@ jamais présentée comme poussée, mergée ou déployée.
 
 MASTERBUILD doit proposer une checklist humaine plutôt qu'une inspection navigateur longue lorsque
 la décision est visuelle et immédiatement observable par MALEX.
+
+## Design Preflight
+
+Toute tâche UI charge les règles applicables depuis le registre design. MUI fournit des principes,
+pas la bibliothèque visuelle. Une promotion UI exige revue MALEX sur l'expérience et revue Vincent
+sur les contrats.
 
 ## Recherche
 

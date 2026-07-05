@@ -1,4 +1,4 @@
 interface:
   display_name: "MASTERBUILD Pilot"
   short_description: "Piloter une vague MasterFlow de bout en bout"
-  default_prompt: "Utilise $masterbuild-pilot pour orienter et piloter cette vague MasterFlow."
+  default_prompt: "Utilise $masterbuild-pilot pour piloter ce Round, expliquer la progression et toujours annoncer la prochaine action."

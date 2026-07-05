@@ -1,4 +1,4 @@
 interface:
   display_name: "MASTERBUILD Resume"
-  short_description: "Reprendre une vague depuis l’état partagé"
-  default_prompt: "Utilise $masterbuild-resume pour reprendre MASTERBUILD depuis ses preuves locales et partagées."
+  short_description: "S’orienter, recommander, puis attendre le GO"
+  default_prompt: "Utilise $masterbuild-resume pour m’orienter sur le Round actif, recommander la suite et attendre mon GO sans exécuter de tâche."

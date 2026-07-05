@@ -2,13 +2,17 @@ import { createServer } from "node:http";
 import {
   addLearningProposal,
   addRecap,
+  authorizeRound,
+  buildDesignPreflight,
   collectGitStatus,
   collectStatus,
   doctor,
   prepareHandoff,
   prepareSensitiveAction,
   saveLocalProfile,
-  updateGoal
+  updateGoal,
+  updateWorkPackage,
+  writePortableExport
 } from "./lib.mjs";
 
 const HOST = "127.0.0.1";
@@ -62,6 +66,22 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === "POST" && url.pathname === "/control-api/goals") {
       send(response, 200, await updateGoal(await readBody(request)));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/control-api/design-preflight") {
+      send(response, 200, await buildDesignPreflight(await readBody(request)));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/control-api/rounds/authorize") {
+      send(response, 200, await authorizeRound(await readBody(request)));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/control-api/work-packages") {
+      send(response, 200, await updateWorkPackage(await readBody(request)));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/control-api/exports/prepare") {
+      send(response, 200, await writePortableExport());
       return;
     }
     if (request.method === "POST" && url.pathname === "/control-api/profile") {

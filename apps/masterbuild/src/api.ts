@@ -1,5 +1,6 @@
 import type {
   Handoff,
+  DesignPreflight,
   LocalProfile,
   MasterbuildStatus,
   SensitiveAction
@@ -31,6 +32,31 @@ export const masterbuildApi = {
     request<MasterbuildStatus["state"]>("/control-api/goals", {
       method: "POST",
       body: JSON.stringify(goal)
+    }),
+  designPreflight: (payload: {
+    surface: string;
+    audience: string;
+    contributor: "malex" | "vincent";
+    feature_id?: string;
+    context?: string;
+  }) =>
+    request<DesignPreflight>("/control-api/design-preflight", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  updateWorkPackage: (payload: {
+    work_package_id: string;
+    status: string;
+    owner?: string;
+  }) =>
+    request<MasterbuildStatus["workboard"]>("/control-api/work-packages", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  prepareExport: () =>
+    request<{ markdown_path: string; json_path: string }>("/control-api/exports/prepare", {
+      method: "POST",
+      body: "{}"
     }),
   prepareAction: (action: string) =>
     request<SensitiveAction>("/control-api/actions/prepare", {

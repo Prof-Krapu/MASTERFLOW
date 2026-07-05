@@ -19,8 +19,23 @@ pas le profil partagé sans action explicite.
 
 1. Ouvrir le dossier racine `MASTERFLOW`.
 2. Dire `Reprends MASTERBUILD` ou invoquer `$masterbuild-resume`.
-3. Lire l'étape affichée et la prochaine action.
-4. Utiliser `/status` au checkpoint de contexte recommandé.
+3. MASTERBUILD lance `npm run masterbuild:resume`.
+4. MASTERBUILD présente le programme, le Round, la progression et trois choix maximum.
+5. Il recommande une action, puis attend explicitement le GO.
+6. Utiliser `/status` au checkpoint de contexte recommandé.
+
+Pour toute autre IA avec accès au dépôt, commencer par `MASTERBUILD.md`. Sans accès au dépôt,
+joindre les fichiers générés par :
+
+```bash
+npm run masterbuild:export
+```
+
+Les exports vivent dans `.masterbuild/exports/` et ne contiennent ni secret ni contenu brut des
+sources.
+
+Une reprise ne doit valider aucun asset, modifier aucun fichier ou démarrer un audit long. Si elle
+commence à travailler avant le GO, la reprise est considérée comme incorrecte.
 
 ## Vérifier l'environnement
 
@@ -40,8 +55,10 @@ MASTERBUILD fonctionne sans backend.
 npm run masterbuild:handoff
 ```
 
-Le handoff local contient l'objectif, l'étape, l'état Git, les vérifications et un prompt de
+Le handoff local contient le programme, le Round ID, l'étape, l'état Git, les choix et un prompt de
 reprise. Il reste hors Git tant qu'il n'est pas explicitement promu comme handoff collaboratif.
+S'il pointe vers un ancien Round ou un ancien commit, MASTERBUILD l'ignore au lieu de reprendre une
+tâche périmée.
 
 ## Publication
 

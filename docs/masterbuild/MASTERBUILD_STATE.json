@@ -1,30 +1,117 @@
 {
-  "schema_version": 1,
-  "updated_at": "2026-07-04T09:23:40+02:00",
-  "active_goal": {
-    "goal_id": "MASTERBUILD-V1",
-    "title": "Rendre MASTERBUILD opérationnel pour MALEX et Vincent",
+  "schema_version": 3,
+  "updated_at": "2026-07-05T12:22:50+02:00",
+  "program": {
+    "program_id": "MASTERFLOW-BUILD",
+    "title": "Construire et livrer une première version utilisable de MasterFlow",
+    "status": "active",
     "owner": "malex",
-    "status": "completed",
-    "stage_index": 8,
-    "stage_label": "Clôturer",
-    "source_truth_layer": "git_operable",
+    "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
+  },
+  "last_completed_round": {
+    "round_id": "MASTERBUILD-V1",
+    "title": "Rendre MASTERBUILD opérationnel pour MALEX et Vincent",
+    "commit_sha": "7f02b020f2146a2fe672bd942be3f4a17d2f1a67"
+  },
+  "active_round": {
+    "round_id": "MASTERBUILD-V2",
+    "title": "Construire le pilote global et la gouvernance design",
+    "objective": "Unifier fonctionnalités, design, tâches, preuves et reprise multi-IA avant le raccord progressif de l'interface.",
+    "owner": "malex",
+    "status": "active",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Créer le commit V2, pousser la branche et ouvrir la draft PR sans merge.",
+    "primary_risk": "Créer un nouveau suivi documentaire au lieu d'une vue opérable reliée aux preuves existantes.",
+    "no_auto_execute": false,
+    "work_package_ids": ["MB2-WP1", "MB2-WP2", "MB2-WP3", "MB2-WP4", "MB2-WP5", "MB2-WP6"],
+    "authorization_id": "AUTH-MB2-2026-07-05",
     "success_criteria": [
-      "Le cockpit démarre sans backend produit.",
-      "MALEX et Vincent partagent le même objectif et des préférences locales distinctes.",
-      "Git, cohérence, contexte, recherche et handoff sont expliqués en langage humain.",
-      "Aucune action sensible ne peut être exécutée depuis le cockpit."
+      "MALEX voit ce qui est pensé, branché, vérifié, publié ou oublié.",
+      "Vincent reçoit les garde-fous UI adaptés à son domaine.",
+      "Toute IA peut reprendre depuis le repo ou un export portable.",
+      "Le prochain Round Shell/Dock est prêt mais non lancé."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO MALEX avant commit ou push",
-      "Revue MALEX pour UI, DA, canon et main"
+      "GO Round obtenu jusqu'à la draft PR",
+      "Nouveau GO avant merge ou déploiement",
+      "Aucun asset ou changement prototype hors périmètre"
     ],
     "source_refs": [
-      "CLAUDE.md",
-      "SUIVI.md",
-      "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
-      "docs/experience-fabric/SYSTEM_ORIENTATION_FABRIC_AUDIT_2026-06-30.md"
+      "MASTERBUILD.md",
+      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+      "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
+      "docs/masterbuild/MASTERBUILD_WORKBOARD.json",
+      "docs/masterbuild/MASTERBUILD_SOURCE_REGISTRY.json"
+    ]
+  },
+  "next_moves": [
+    {
+      "move_id": "complete-masterbuild-v2",
+      "label": "Terminer MASTERBUILD V2",
+      "reason": "Le pilote global doit être vérifié et partageable avant de conduire l'intégration produit.",
+      "recommended": true,
+      "status": "in_progress"
+    },
+    {
+      "move_id": "shell-dock-round",
+      "label": "Round Shell + navigation + Command Dock",
+      "reason": "Premier test produit complet de MASTERBUILD après publication V2.",
+      "recommended": false,
+      "status": "queued"
+    },
+    {
+      "move_id": "feature-gap-review",
+      "label": "Revue des fonctionnalités oubliées",
+      "reason": "MALEX valide la première carte fonctionnelle avant le prochain Round.",
+      "recommended": false,
+      "status": "queued"
+    }
+  ],
+  "registries": {
+    "features": "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+    "design_rules": "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
+    "workboard": "docs/masterbuild/MASTERBUILD_WORKBOARD.json",
+    "sources": "docs/masterbuild/MASTERBUILD_SOURCE_REGISTRY.json"
+  },
+  "continuity": {
+    "resume_mode": "orient_recommend_wait_for_go",
+    "never_execute_on_resume": true,
+    "stale_handoff_policy": "ignore_and_report",
+    "required_response_order": [
+      "situation_humaine",
+      "progression",
+      "fait",
+      "prochaine_action_recommandee",
+      "deux_alternatives_maximum",
+      "risques",
+      "commande_go"
+    ],
+    "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
+  },
+  "active_goal": {
+    "goal_id": "MASTERBUILD-V2",
+    "title": "Construire le pilote global et la gouvernance design",
+    "owner": "malex",
+    "status": "active",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "source_truth_layer": "git_operable",
+    "success_criteria": [
+      "Registre fonctionnel unique",
+      "Gouvernance design active",
+      "Reprise multi-IA portable"
+    ],
+    "blockers": [],
+    "validation_gates": [
+      "GO Round obtenu jusqu'à la draft PR",
+      "Nouveau GO avant merge ou déploiement"
+    ],
+    "source_refs": [
+      "MASTERBUILD.md",
+      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+      "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json"
     ]
   },
   "stages": [
@@ -68,13 +155,13 @@
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 8,
       "id": "close",
       "label": "Clôturer",
-      "status": "completed"
+      "status": "pending"
     }
   ],
   "shared_profiles": [
@@ -215,10 +302,10 @@
     }
   ],
   "publication": {
-    "state": "branch_published",
-    "branch": "codex/ui-reset-prototype-lab",
-    "commit_sha": "b133283bd88895f79e45ccbbd1593a1791f3bf6a",
+    "state": "local_verified_v2",
+    "branch": "codex/masterbuild-v2",
+    "commit_sha": null,
     "pull_request": null,
-    "runtime_proof": "local cockpit HTTP 200 on 127.0.0.1:5175; control API responding on 127.0.0.1:8010"
+    "runtime_proof": "11/11 tests, TypeScript and Vite build pass. HTTP visual smoke left to MALEX because the local launch approval quota was unavailable."
   }
 }

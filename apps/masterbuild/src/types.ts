@@ -27,10 +27,144 @@ export type LocalProfile = {
 
 export type GitFile = { status: string; path: string };
 
+export type ActiveRound = {
+  round_id: string;
+  title: string;
+  objective: string;
+  owner: "malex" | "vincent";
+  status: "active" | "blocked" | "completed";
+  stage_index: number;
+  stage_label: string;
+  recommended_next_action: string;
+  primary_risk: string;
+  no_auto_execute: boolean;
+  success_criteria: string[];
+  blockers: string[];
+  validation_gates: string[];
+  source_refs: string[];
+};
+
+export type NextMove = {
+  move_id: string;
+  label: string;
+  reason: string;
+  recommended: boolean;
+  status: "ready_for_decision" | "queued" | "blocked";
+};
+
+export type FeatureRecord = {
+  feature_id: string;
+  label: string;
+  domain: string;
+  product_state: "candidate" | "validated" | "future" | "rejected";
+  backend_state: "absent" | "documented" | "partial" | "ready" | "verified";
+  ui_state: "absent" | "lab" | "prototype" | "connected" | "verified";
+  release_state: "local" | "branch" | "draft_pr" | "main" | "live" | "unknown";
+  owner: string;
+  collaborators: string[];
+  source_refs: string[];
+  dependencies: string[];
+  missing: string[];
+  next_action: string;
+  risk: string;
+};
+
+export type DesignRule = {
+  rule_id: string;
+  title: string;
+  status: "canon" | "validated_principle" | "candidate_reference" | "experiment" | "rejected";
+  intent: string;
+  source_refs: string[];
+  applies_to: string[];
+  audiences: string[];
+  must: string[];
+  avoid: string[];
+  checks: string[];
+  exceptions: string[];
+  review_owner: string;
+};
+
+export type WorkPackage = {
+  work_package_id: string;
+  label: string;
+  feature_ids: string[];
+  status: "pending" | "in_progress" | "blocked" | "completed";
+  owner: string;
+  reviewers: string[];
+  dependencies: string[];
+  design_rule_ids: string[];
+  tool_route: string;
+  expected_evidence: string[];
+};
+
+export type SourceRecord = {
+  source_id: string;
+  path: string;
+  kind: string;
+  status: "absorbed" | "historical" | "conflict" | "still_active";
+  absorbed_into: string[];
+  note: string;
+};
+
+export type DesignPreflight = {
+  generated_at: string;
+  surface: string;
+  audience: string;
+  contributor: string;
+  feature_id: string | null;
+  context: string;
+  existing_components: string[];
+  applicable_rules: Array<{
+    rule_id: string;
+    title: string;
+    must: string[];
+    avoid: string[];
+    checks: string[];
+  }>;
+  locked_decisions: string[];
+  free_zones: string[];
+  required_states: string[];
+  responsive: string;
+  accessibility: string[];
+  backend: {
+    state: string;
+    dependencies: string[];
+    missing: string[];
+  };
+  guidance: Record<string, string>;
+  validations: {
+    malex: string;
+    vincent: string;
+  };
+};
+
 export type MasterbuildStatus = {
   generated_at: string;
   state: {
+    schema_version: number;
     updated_at: string;
+    program: {
+      program_id: string;
+      title: string;
+      status: "active" | "paused" | "completed";
+      owner: "malex" | "vincent";
+      rule: string;
+    };
+    registries: {
+      features: string;
+      design_rules: string;
+      workboard: string;
+      sources: string;
+    };
+    active_round: ActiveRound;
+    next_moves: NextMove[];
+    continuity: {
+      resume_mode: string;
+      never_execute_on_resume: boolean;
+      stale_handoff_policy: string;
+      required_response_order: string[];
+      mandatory_close: string;
+    };
     active_goal: {
       goal_id: string;
       title: string;
@@ -104,6 +238,15 @@ export type MasterbuildStatus = {
     ready: boolean;
     requires_codex_review: boolean;
   }>;
+  handoff: {
+    exists: boolean;
+    stale: boolean;
+    reason: string;
+    handoff_sha: string | null;
+    current_sha: string | null;
+    handoff_round_id: string | null;
+    current_round_id: string;
+  };
   findings: Array<{
     finding_id: string;
     source: string;
@@ -121,6 +264,7 @@ export type MasterbuildStatus = {
     working_style: string[];
     frictions: string[];
     masterbuild_response: string[];
+    domain_guidance?: Record<string, string>;
   }>;
   recaps: Array<{
     message_id: string;
@@ -149,6 +293,30 @@ export type MasterbuildStatus = {
       auto_apply: false;
     }>;
   };
+  feature_registry: FeatureRecord[];
+  feature_summary: {
+    total: number;
+    product: Record<string, number>;
+    backend: Record<string, number>;
+    ui: Record<string, number>;
+    release: Record<string, number>;
+    likely_missing: number;
+  };
+  design_rules: DesignRule[];
+  workboard: {
+    active_round_id: string;
+    authorizations: Array<{
+      authorization_id: string;
+      round_id: string;
+      actor: string;
+      scope: string;
+      status: string;
+      granted_at: string;
+      excluded: string[];
+    }>;
+    work_packages: WorkPackage[];
+  };
+  source_registry: SourceRecord[];
 };
 
 export type SensitiveAction = {
