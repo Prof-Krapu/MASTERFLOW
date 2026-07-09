@@ -25,6 +25,19 @@ reste volontairement humain ; aucun scan navigateur long n'a été exécuté.
 Publication : branche `codex/masterbuild-v2`, commit `fcfa68e`, draft PR #214
 `https://github.com/Prof-Krapu/MASTERFLOW/pull/214`. Aucun merge ni déploiement.
 
+### 2026-07-09 — Ouverture du Round UI-SHELL-DOCK-001
+
+Objectif : promouvoir Shell, navigation et Command Dock avant Home, personas et skilltree.
+
+Livrables créés :
+
+- `docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md` ;
+- `docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md`.
+
+Statut : Round actif en étape 1/8 — Orienter. GO obtenu pour cadrage, audit, build borné, tests,
+commit, push et draft PR. Merge, déploiement, migration, provider, suppression, Home, personas et
+skilltree restent hors périmètre sans nouveau GO.
+
 ## NOUVEAU POINT D'ENTRÉE — MASTERBUILD
 
 `SUIVI.md` reste l'historique de preuve. Il n'est plus le fichier à relire intégralement au boot.

@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-09T11:17:42+02:00",
+  "updated_at": "2026-07-09T13:00:29+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,41 +9,41 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "MASTERBUILD-V1",
-    "title": "Rendre MASTERBUILD opérationnel pour MALEX et Vincent",
-    "commit_sha": "7f02b020f2146a2fe672bd942be3f4a17d2f1a67"
-  },
-  "active_round": {
     "round_id": "MASTERBUILD-V2",
     "title": "Construire le pilote global et la gouvernance design",
-    "objective": "Unifier fonctionnalités, design, tâches, preuves et reprise multi-IA avant le raccord progressif de l'interface.",
+    "commit_sha": "45436a6",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
+  },
+  "active_round": {
+    "round_id": "UI-SHELL-DOCK-001",
+    "title": "Shell, navigation et Command Dock",
+    "objective": "Promouvoir la coque prototype vers une première couche intégrable : navigation, system bar, dock clavier/micro/actions et raccourcis, sans lancer Home, personas ou skilltree.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 8,
-    "stage_label": "Clôturer",
-    "recommended_next_action": "Relire la draft PR #214, puis décider du prochain Round Shell + Navigation + Command Dock.",
-    "primary_risk": "Créer un nouveau suivi documentaire au lieu d'une vue opérable reliée aux preuves existantes.",
+    "stage_index": 1,
+    "stage_label": "Orienter",
+    "recommended_next_action": "Auditer les composants Shell/Dock du Lab, du prototype et des endpoints existants avant toute retouche UI.",
+    "primary_risk": "Redessiner le prototype au lieu de brancher progressivement les composants et les contrats déjà validés.",
     "no_auto_execute": false,
-    "work_package_ids": ["MB2-WP1", "MB2-WP2", "MB2-WP3", "MB2-WP4", "MB2-WP5", "MB2-WP6"],
-    "authorization_id": "AUTH-MB2-2026-07-05",
+    "work_package_ids": ["USD-001", "USD-002", "USD-003", "USD-004", "USD-005", "USD-006"],
+    "authorization_id": "AUTH-USD-2026-07-09",
     "success_criteria": [
-      "MALEX voit ce qui est pensé, branché, vérifié, publié ou oublié.",
-      "Vincent reçoit les garde-fous UI adaptés à son domaine.",
-      "Toute IA peut reprendre depuis le repo ou un export portable.",
-      "Le prochain Round Shell/Dock est prêt mais non lancé."
+      "Une autre IA sait quoi brancher sans redessiner l'UI.",
+      "Vincent voit les contraintes UI avant de modifier un composant.",
+      "MALEX voit ce qui reste prototype, lab, connecté ou runtime.",
+      "Le Shell/Dock peut être promu avant Home."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO Round obtenu jusqu'à la draft PR",
+      "GO Round obtenu pour cadrage, audit, build borné, tests, commit, push et draft PR",
       "Nouveau GO avant merge ou déploiement",
-      "Aucun asset ou changement prototype hors périmètre"
+      "Home, personas et skilltree hors périmètre"
     ],
     "source_refs": [
-      "MASTERBUILD.md",
-      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+      "docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md",
+      "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
-      "docs/masterbuild/MASTERBUILD_WORKBOARD.json",
-      "docs/masterbuild/MASTERBUILD_SOURCE_REGISTRY.json"
+      "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md"
     ]
   },
   "next_moves": [
@@ -51,15 +51,15 @@
       "move_id": "complete-masterbuild-v2",
       "label": "Terminer MASTERBUILD V2",
       "reason": "Le pilote global doit être vérifié et partageable avant de conduire l'intégration produit.",
-      "recommended": true,
-      "status": "in_progress"
+      "recommended": false,
+      "status": "completed"
     },
     {
       "move_id": "shell-dock-round",
       "label": "Round Shell + navigation + Command Dock",
       "reason": "Premier test produit complet de MASTERBUILD après publication V2.",
-      "recommended": false,
-      "status": "queued"
+      "recommended": true,
+      "status": "in_progress"
     },
     {
       "move_id": "feature-gap-review",
@@ -91,27 +91,26 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "MASTERBUILD-V2",
-    "title": "Construire le pilote global et la gouvernance design",
+    "goal_id": "UI-SHELL-DOCK-001",
+    "title": "Shell, navigation et Command Dock",
     "owner": "malex",
     "status": "active",
-    "stage_index": 8,
-    "stage_label": "Clôturer",
+    "stage_index": 1,
+    "stage_label": "Orienter",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Registre fonctionnel unique",
-      "Gouvernance design active",
-      "Reprise multi-IA portable"
+      "Shell et navigation cadrés",
+      "Command Dock cadré",
+      "Contrats runtime et UI séparés"
     ],
     "blockers": [],
     "validation_gates": [
-      "GO Round obtenu jusqu'à la draft PR",
+      "Design Preflight obligatoire",
       "Nouveau GO avant merge ou déploiement"
     ],
     "source_refs": [
-      "MASTERBUILD.md",
-      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
-      "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json"
+      "docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md",
+      "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md"
     ]
   },
   "stages": [
@@ -119,49 +118,49 @@
       "index": 1,
       "id": "orient",
       "label": "Orienter",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 8,
       "id": "close",
       "label": "Clôturer",
-      "status": "active"
+      "status": "pending"
     }
   ],
   "shared_profiles": [
