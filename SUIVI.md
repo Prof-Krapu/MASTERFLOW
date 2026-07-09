@@ -38,6 +38,11 @@ Statut : Round actif en étape 1/8 — Orienter. GO obtenu pour cadrage, audit, 
 commit, push et draft PR. Merge, déploiement, migration, provider, suppression, Home, personas et
 skilltree restent hors périmètre sans nouveau GO.
 
+Audit USD-001 terminé : `docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md`.
+
+Décision recommandée : promouvoir les composants Shell/Dock du prototype avancé vers la branche V2
+en tranche contrôlée, sans assets candidats et sans récupérer Home/persona/skilltree.
+
 ## NOUVEAU POINT D'ENTRÉE — MASTERBUILD
 
 `SUIVI.md` reste l'historique de preuve. Il n'est plus le fichier à relire intégralement au boot.

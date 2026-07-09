@@ -101,6 +101,32 @@ test("le briefing de reprise recommande sans exécuter", () => {
   assert.match(brief, /Aucune tâche n'a été exécutée/);
 });
 
+test("le briefing de reprise ignore les alternatives terminées", () => {
+  const brief = formatResumeBrief(
+    {
+      program: { title: "Construire MasterFlow" },
+      last_completed_round: { title: "MASTERBUILD V2" },
+      active_round: {
+        round_id: "UI-SHELL-DOCK-001",
+        title: "Shell Dock",
+        stage_index: 4,
+        stage_label: "Décider",
+        recommended_next_action: "Décider la tranche Shell Dock"
+      },
+      next_moves: [
+        { label: "Terminer MASTERBUILD V2", reason: "Déjà fait.", recommended: false, status: "completed" },
+        { label: "Shell Dock", reason: "Round actif.", recommended: true, status: "in_progress" },
+        { label: "Feature gap review", reason: "Plus tard.", recommended: false, status: "queued" }
+      ]
+    },
+    { sha: "abc1234" },
+    { stale: false }
+  );
+  assert.match(brief, /Je recommande : Shell Dock/);
+  assert.doesNotMatch(brief, /Terminer MASTERBUILD V2/);
+  assert.match(brief, /Feature gap review/);
+});
+
 test("le registre fonctionnel distingue les raccords manquants", () => {
   const summary = buildFeatureSummary([
     {

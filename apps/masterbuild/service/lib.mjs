@@ -489,8 +489,9 @@ export async function updateWorkPackage(input) {
 
 export function formatResumeBrief(state, git, handoff) {
   const round = currentRound(state);
-  const recommended = (state.next_moves ?? []).find((move) => move.recommended);
-  const alternatives = (state.next_moves ?? [])
+  const activeMoves = (state.next_moves ?? []).filter((move) => move.status !== "completed");
+  const recommended = activeMoves.find((move) => move.recommended);
+  const alternatives = activeMoves
     .filter((move) => !move.recommended)
     .slice(0, 2);
   const completed = state.last_completed_round;
