@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-05T12:22:50+02:00",
+  "updated_at": "2026-07-09T11:17:42+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -19,9 +19,9 @@
     "objective": "Unifier fonctionnalités, design, tâches, preuves et reprise multi-IA avant le raccord progressif de l'interface.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
-    "recommended_next_action": "Créer le commit V2, pousser la branche et ouvrir la draft PR sans merge.",
+    "stage_index": 8,
+    "stage_label": "Clôturer",
+    "recommended_next_action": "Relire la draft PR #214, puis décider du prochain Round Shell + Navigation + Command Dock.",
     "primary_risk": "Créer un nouveau suivi documentaire au lieu d'une vue opérable reliée aux preuves existantes.",
     "no_auto_execute": false,
     "work_package_ids": ["MB2-WP1", "MB2-WP2", "MB2-WP3", "MB2-WP4", "MB2-WP5", "MB2-WP6"],
@@ -95,8 +95,8 @@
     "title": "Construire le pilote global et la gouvernance design",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
+    "stage_index": 8,
+    "stage_label": "Clôturer",
     "source_truth_layer": "git_operable",
     "success_criteria": [
       "Registre fonctionnel unique",
@@ -155,13 +155,13 @@
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 8,
       "id": "close",
       "label": "Clôturer",
-      "status": "pending"
+      "status": "active"
     }
   ],
   "shared_profiles": [
@@ -302,10 +302,10 @@
     }
   ],
   "publication": {
-    "state": "local_verified_v2",
+    "state": "draft_pr",
     "branch": "codex/masterbuild-v2",
-    "commit_sha": null,
-    "pull_request": null,
+    "commit_sha": "fcfa68e",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214",
     "runtime_proof": "11/11 tests, TypeScript and Vite build pass. HTTP visual smoke left to MALEX because the local launch approval quota was unavailable."
   }
 }

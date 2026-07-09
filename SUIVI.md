@@ -22,6 +22,9 @@ migration, provider, suppression et changement de canon restent interdits sans n
 Vérification : 11/11 tests MASTERBUILD, TypeScript et build Vite passent. Le contrôle visuel HTTP
 reste volontairement humain ; aucun scan navigateur long n'a été exécuté.
 
+Publication : branche `codex/masterbuild-v2`, commit `fcfa68e`, draft PR #214
+`https://github.com/Prof-Krapu/MASTERFLOW/pull/214`. Aucun merge ni déploiement.
+
 ## NOUVEAU POINT D'ENTRÉE — MASTERBUILD
 
 `SUIVI.md` reste l'historique de preuve. Il n'est plus le fichier à relire intégralement au boot.
