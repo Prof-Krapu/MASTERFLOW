@@ -43,11 +43,13 @@ import {
   PrototypeShortcuts,
   PrototypeSystemChrome,
   PrototypeTunnel,
+  PrototypeTunnelPromptCard,
 } from './ui-reset/prototype-shell-components';
 import type {PrototypeActionSuggestion, PrototypeModeGroup} from './ui-reset/prototype-shell-components';
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
 import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
+import {buildPrototypeTunnelFixture} from './ui-reset/prototype-tunnel-model';
 import {resolveKeyboardToggle, resolveMicroToggle} from './ui-reset/prototype-ui-state-registry';
 import {usePrototypeShortcuts} from './ui-reset/use-prototype-shortcuts';
 
@@ -287,6 +289,7 @@ export function CurrentUiDemo(): ReactElement {
   const [actionLibraryClosing, setActionLibraryClosing] = useState(false);
   const [tunnelOpen, setTunnelOpen] = useState(false);
   const [tunnelClosing, setTunnelClosing] = useState(false);
+  const [tunnelPromptVisible, setTunnelPromptVisible] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [shortcutsClosing, setShortcutsClosing] = useState(false);
   const [actionSearch, setActionSearch] = useState('');
@@ -332,6 +335,7 @@ export function CurrentUiDemo(): ReactElement {
     [accessLevel, runtimeModeIds],
   );
   const activePrototypeProfile = getPrototypeProfile(activePrototypeProfileId);
+  const tunnelFixture = buildPrototypeTunnelFixture(activePrototypeProfile);
   const modeCycle = useMemo<NavigationDestination[]>(
     () => ['home', 'character', ...modeGroups.flatMap((group) => group.ids).filter((id) => visibleModeIds.has(id))],
     [visibleModeIds],
@@ -1132,23 +1136,32 @@ export function CurrentUiDemo(): ReactElement {
           suggestions={commandSuggestions}
           transcribing={transcribing}
         />
+        {!tunnelOpen && tunnelPromptVisible ? (
+          <PrototypeTunnelPromptCard
+            onAccept={() => setTunnelOpen(true)}
+            onDismiss={() => setTunnelPromptVisible(false)}
+            prompt={tunnelFixture.prompt}
+          />
+        ) : null}
         {tunnelOpen ? (
           <PrototypeTunnel
-            avatarAsset={activePrototypeProfile.avatarAsset}
             closing={tunnelClosing}
+            contextSummary={tunnelFixture.contextSummary}
             input={input}
-            name={activePrototypeProfile.name}
+            messages={tunnelFixture.messages}
             onAnimationEnd={() => {
               setTunnelOpen(false);
               setTunnelClosing(false);
             }}
+            onAcceptPrompt={() => setInput('Oui, développe ce point.')}
             onClose={closeTunnel}
+            onDismissPrompt={closeTunnel}
             onInputChange={setInput}
             onInputKeyDown={submitOnEnter}
             onSubmit={submit}
+            participants={tunnelFixture.participants}
             prompt={activePrototypeProfile.tunnelPrompt}
-            punchline={activePrototypeProfile.defaultPunchline}
-            tunnelLine={activePrototypeProfile.tunnelLine}
+            tunnelPrompt={tunnelFixture.prompt}
           />
         ) : null}
       </section>

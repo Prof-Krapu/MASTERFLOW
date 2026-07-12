@@ -323,6 +323,542 @@
   padding: 9px 11px;
 }
 
+.ui-lab__actor {
+  color: var(--proto-text);
+  display: grid;
+  grid-template-columns: minmax(290px, 390px) 1fr;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.ui-lab__actor-controls {
+  align-self: start;
+  background: color-mix(in srgb, var(--proto-panel-strong) 82%, transparent);
+  border: 1px solid var(--proto-border);
+  border-radius: 24px;
+  display: grid;
+  gap: 14px;
+  margin: 28px 0 0 28px;
+  max-height: calc(100dvh - 128px);
+  overflow: auto;
+  padding: 18px;
+  position: relative;
+  z-index: 44;
+}
+
+.ui-lab__actor-controls small {
+  color: var(--proto-accent);
+  font-size: 11px;
+  font-weight: 880;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ui-lab__actor-controls h2 {
+  color: var(--proto-text);
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.05;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ui-lab__actor-controls p {
+  color: var(--proto-muted);
+  font-size: 12px;
+  font-weight: 680;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.ui-lab__actor-control-group {
+  display: grid;
+  gap: 8px;
+}
+
+.ui-lab__actor-control-group button,
+.ui-lab__actor-inline-controls button {
+  background: var(--proto-ghost);
+  border: 1px solid var(--proto-border);
+  border-radius: 16px;
+  color: var(--proto-text);
+  min-height: 44px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.ui-lab__actor-control-group button {
+  display: grid;
+  gap: 3px;
+}
+
+.ui-lab__actor-control-group button strong {
+  color: var(--proto-text);
+  font-size: 12px;
+  font-weight: 870;
+  text-transform: uppercase;
+}
+
+.ui-lab__actor-control-group button span {
+  color: var(--proto-muted);
+  font-size: 11px;
+  font-weight: 640;
+  line-height: 1.25;
+}
+
+.ui-lab__actor-control-group button[aria-pressed="true"],
+.ui-lab__actor-inline-controls button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--proto-accent) 24%, var(--proto-panel-strong));
+  border-color: color-mix(in srgb, var(--proto-accent) 56%, transparent);
+}
+
+.ui-lab__actor-inline-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ui-lab__actor-inline-controls button {
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 820;
+  min-height: 34px;
+  padding: 0 11px;
+  text-align: center;
+}
+
+.ui-lab__actor-stage {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--proto-panel-strong) 20%, transparent), transparent 38%),
+    radial-gradient(circle at 76% 75%, color-mix(in srgb, var(--proto-accent) 13%, transparent), transparent 34%);
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.ui-lab__actor-stage[data-direction="left"] {
+  background:
+    linear-gradient(270deg, color-mix(in srgb, var(--proto-panel-strong) 20%, transparent), transparent 38%),
+    radial-gradient(circle at 24% 75%, color-mix(in srgb, var(--proto-accent) 13%, transparent), transparent 34%);
+}
+
+.persona-stage-actor {
+  --actor-height: min(54vh, 540px);
+  bottom: clamp(18px, 2.4vh, 34px);
+  height: var(--actor-height);
+  margin: 0;
+  pointer-events: none;
+  position: absolute;
+  transition:
+    bottom 320ms var(--proto-menu-ease),
+    height 320ms var(--proto-menu-ease),
+    left 320ms var(--proto-menu-ease),
+    right 320ms var(--proto-menu-ease),
+    width 320ms var(--proto-menu-ease);
+  width: min(28vw, 360px);
+  z-index: 30;
+}
+
+.persona-stage-actor--compact {
+  --actor-height: min(40vh, 380px);
+  width: min(22vw, 280px);
+}
+
+.persona-stage-actor--tunnel {
+  --actor-height: min(62vh, 640px);
+  width: min(34vw, 440px);
+}
+
+.persona-stage-actor--left {
+  left: clamp(24px, 7vw, 98px);
+}
+
+.persona-stage-actor--right {
+  right: clamp(34px, 8vw, 118px);
+}
+
+.persona-stage-actor__plate {
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--actor-color) 44%, #000) 0%, transparent 68%);
+  bottom: 0;
+  filter: blur(12px);
+  height: 58px;
+  left: 16%;
+  opacity: 0.58;
+  position: absolute;
+  right: 16%;
+  transition:
+    background 220ms ease,
+    opacity 220ms ease,
+    transform 320ms var(--proto-menu-ease);
+}
+
+.persona-stage-actor__image {
+  bottom: 0;
+  filter: drop-shadow(0 24px 28px rgb(0 0 0 / 0.48));
+  height: 100%;
+  left: 50%;
+  object-fit: contain;
+  object-position: bottom center;
+  position: absolute;
+  transform: translateX(-50%);
+  transform-origin: bottom center;
+  transition: filter 240ms ease, transform 320ms var(--proto-menu-ease);
+}
+
+.persona-stage-actor--left .persona-stage-actor__image {
+  transform: translateX(-50%) scaleX(-1);
+}
+
+.persona-stage-actor__bubble {
+  --actor-bubble-bg-top: color-mix(in srgb, var(--actor-color) 92%, #fff 8%);
+  --actor-bubble-bg-bottom: color-mix(in srgb, var(--actor-color) 82%, #000 18%);
+  --actor-bubble-border: color-mix(in srgb, var(--actor-color) 66%, #fff 34%);
+  --actor-bubble-text: #fff;
+  background: linear-gradient(
+    180deg,
+    var(--actor-bubble-bg-top),
+    var(--actor-bubble-bg-bottom)
+  );
+  border: 2px solid var(--actor-bubble-border);
+  border-radius: 26px 26px 26px 12px;
+  bottom: min(66%, 430px);
+  box-shadow: 0 24px 54px color-mix(in srgb, var(--actor-color) 30%, rgb(0 0 0 / 0.42));
+  display: grid;
+  gap: 7px;
+  inline-size: clamp(300px, 24vw, 360px);
+  max-width: calc(100vw - 40px);
+  min-height: 82px;
+  padding: 18px 20px 19px;
+  position: absolute;
+  transition:
+    bottom 320ms var(--proto-menu-ease),
+    left 320ms var(--proto-menu-ease),
+    right 320ms var(--proto-menu-ease),
+    transform 220ms var(--proto-menu-ease);
+}
+
+.persona-stage-actor__bubble::before {
+  background: var(--actor-bubble-border);
+  clip-path: polygon(0 0, 100% 42%, 12% 100%);
+  content: "";
+  height: 24px;
+  position: absolute;
+  top: calc(100% - 10px);
+  width: 30px;
+}
+
+.persona-stage-actor__bubble::after {
+  background: var(--actor-bubble-bg-bottom);
+  clip-path: polygon(0 0, 100% 42%, 12% 100%);
+  content: "";
+  height: 19px;
+  position: absolute;
+  top: calc(100% - 10px);
+  width: 24px;
+}
+
+.persona-stage-actor--left .persona-stage-actor__bubble {
+  left: min(88%, 360px);
+}
+
+.persona-stage-actor--left .persona-stage-actor__bubble::before {
+  left: 20px;
+}
+
+.persona-stage-actor--left .persona-stage-actor__bubble::after {
+  left: 23px;
+}
+
+.persona-stage-actor--right .persona-stage-actor__bubble {
+  border-radius: 26px 26px 12px 26px;
+  right: min(88%, 360px);
+}
+
+.persona-stage-actor--right .persona-stage-actor__bubble::before {
+  right: 20px;
+  transform: scaleX(-1);
+}
+
+.persona-stage-actor--right .persona-stage-actor__bubble::after {
+  right: 23px;
+  transform: scaleX(-1);
+}
+
+.persona-stage-actor__bubble strong {
+  color: var(--actor-bubble-text);
+  display: block;
+  font-size: clamp(18px, 1.3vw, 23px);
+  font-weight: 910;
+  line-height: 1.08;
+  max-width: 100%;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.24);
+}
+
+.persona-stage-actor--state-listening .persona-stage-actor__bubble {
+  --actor-bubble-bg-top: color-mix(in srgb, var(--actor-support) 88%, #fff 12%);
+  --actor-bubble-bg-bottom: color-mix(in srgb, var(--actor-support) 78%, #000 22%);
+  --actor-bubble-border: color-mix(in srgb, var(--actor-support) 72%, #fff 28%);
+}
+
+.persona-stage-actor--state-thinking .persona-stage-actor__bubble,
+.persona-stage-actor--state-doubt .persona-stage-actor__bubble {
+  --actor-bubble-bg-top: color-mix(in srgb, var(--actor-color) 74%, var(--proto-panel-strong) 26%);
+  --actor-bubble-bg-bottom: color-mix(in srgb, var(--actor-color) 54%, #000 46%);
+  border-style: dashed;
+}
+
+.persona-stage-actor--state-negative .persona-stage-actor__bubble,
+.persona-stage-actor--state-warning .persona-stage-actor__bubble {
+  --actor-bubble-bg-top: color-mix(in srgb, var(--proto-accent) 88%, #fff 12%);
+  --actor-bubble-bg-bottom: color-mix(in srgb, var(--proto-accent-deep) 82%, #000 18%);
+  --actor-bubble-border: color-mix(in srgb, var(--proto-accent) 72%, #fff 28%);
+}
+
+.persona-stage-actor--tunnel .persona-stage-actor__bubble {
+  inline-size: clamp(360px, 30vw, 480px);
+  min-height: 112px;
+  padding: 20px 22px;
+}
+
+.persona-stage-actor--tunnel .persona-stage-actor__bubble strong {
+  font-size: clamp(17px, 1.18vw, 21px);
+  line-height: 1.18;
+}
+
+.persona-stage-actor--state-listening .persona-stage-actor__plate {
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--actor-support) 52%, #000) 0%, transparent 68%);
+}
+
+.persona-stage-actor--state-thinking .persona-stage-actor__image {
+  filter: drop-shadow(0 24px 28px rgb(0 0 0 / 0.48)) saturate(0.86);
+}
+
+.persona-stage-actor--state-positive .persona-stage-actor__plate,
+.persona-stage-actor--state-explaining .persona-stage-actor__plate {
+  opacity: 0.78;
+}
+
+.persona-stage-actor--state-negative .persona-stage-actor__image,
+.persona-stage-actor--state-warning .persona-stage-actor__image {
+  filter: drop-shadow(0 24px 28px rgb(0 0 0 / 0.48)) contrast(1.08);
+}
+
+.ui-lab__stage-layout {
+  color: var(--proto-text);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.ui-lab__stage-layout::before {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--proto-panel-strong) 26%, transparent), transparent 28%),
+    linear-gradient(270deg, color-mix(in srgb, var(--proto-panel-strong) 22%, transparent), transparent 26%),
+    radial-gradient(circle at 50% 78%, color-mix(in srgb, var(--proto-accent) 10%, transparent), transparent 32%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.ui-lab__stage-layout-header {
+  display: grid;
+  gap: 10px;
+  left: 50%;
+  max-width: min(620px, calc(100vw - 40px));
+  position: absolute;
+  text-align: center;
+  top: 28px;
+  transform: translateX(-50%);
+  z-index: 42;
+}
+
+.ui-lab__stage-layout-header small,
+.ui-lab__stage-board small {
+  color: var(--proto-accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ui-lab__stage-layout-header h2 {
+  color: var(--proto-text);
+  font-size: clamp(24px, 3vw, 42px);
+  font-weight: 900;
+  line-height: 0.96;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ui-lab__stage-layout-header p {
+  color: var(--proto-muted);
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.ui-lab__stage-layout-header div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.ui-lab__stage-layout-header button {
+  background: var(--proto-ghost);
+  border: 1px solid var(--proto-border);
+  border-radius: 999px;
+  color: var(--proto-text);
+  font-size: 11px;
+  font-weight: 840;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.ui-lab__stage-layout-header button[aria-pressed="true"] {
+  background: var(--proto-accent-gradient);
+  border-color: transparent;
+  color: #170b07;
+}
+
+.ui-lab__stage-layout-field {
+  height: 100%;
+  position: relative;
+}
+
+.ui-lab__stage-layout-field .persona-stage-actor--left {
+  left: clamp(18px, 4vw, 72px);
+}
+
+.ui-lab__stage-layout-field .persona-stage-actor--right {
+  right: clamp(18px, 4vw, 72px);
+}
+
+.ui-lab__stage-layout-field .persona-stage-actor--normal {
+  --actor-height: min(54vh, 540px);
+  width: min(26vw, 340px);
+}
+
+.ui-lab__stage-layout-field .persona-stage-actor--compact {
+  --actor-height: min(40vh, 360px);
+  width: min(20vw, 250px);
+}
+
+.ui-lab__stage-layout-field .persona-stage-actor--tunnel {
+  --actor-height: min(62vh, 640px);
+  width: min(32vw, 420px);
+}
+
+.ui-lab__stage-board,
+.ui-lab__stage-rules {
+  background: color-mix(in srgb, var(--proto-panel-strong) 80%, transparent);
+  border: 1px solid var(--proto-border);
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.26);
+  position: absolute;
+  z-index: 38;
+}
+
+.ui-lab__stage-board {
+  display: grid;
+  gap: 14px;
+  max-width: min(360px, 24vw);
+  padding: 18px;
+  right: clamp(24px, 5vw, 82px);
+  top: 170px;
+}
+
+.ui-lab__stage-layout--duo .ui-lab__stage-board {
+  max-width: min(300px, 22vw);
+  right: clamp(220px, 26vw, 420px);
+}
+
+.ui-lab__stage-board strong {
+  color: var(--proto-text);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.ui-lab__stage-board div {
+  border-top: 1px solid var(--proto-border);
+  display: grid;
+  gap: 5px;
+  padding-top: 12px;
+}
+
+.ui-lab__stage-board span,
+.ui-lab__stage-rules span {
+  color: var(--proto-muted);
+  font-size: 11px;
+  font-weight: 740;
+}
+
+.ui-lab__stage-board b {
+  color: var(--proto-text);
+  font-size: 13px;
+  font-weight: 860;
+}
+
+.ui-lab__stage-rules {
+  bottom: 150px;
+  display: grid;
+  gap: 8px;
+  left: 50%;
+  max-width: min(420px, calc(100vw - 540px));
+  padding: 14px 16px;
+  transform: translateX(-50%);
+}
+
+.ui-lab__stage-rules strong {
+  color: var(--proto-accent);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ui-lab__stage-layout .proto-commandbar {
+  --stage-dock-width: min(680px, calc(100vw - 560px));
+  bottom: 22px;
+  left: 50%;
+  max-width: 700px;
+  width: max(560px, var(--stage-dock-width));
+  z-index: 56;
+}
+
+.ui-lab__stage-layout--tunnel .proto-commandbar {
+  --stage-dock-width: min(860px, calc(100vw - 320px));
+  max-width: 900px;
+}
+
+.ui-lab__stage-layout .proto-dock-buttons {
+  display: none;
+}
+
+.ui-lab__stage-layout .proto-commandbar__chips {
+  max-width: min(560px, 100%);
+}
+
+.ui-lab__stage-layout .proto-dock-panel {
+  border-radius: 28px;
+}
+
+.ui-lab__stage-layout .proto-commandbar__input textarea {
+  min-height: 58px;
+}
+
+.ui-lab__stage-layout--tunnel .ui-lab__stage-rules {
+  display: none;
+}
+
+.ui-lab__stage-layout--tunnel .ui-lab__stage-board {
+  right: clamp(34px, 7vw, 110px);
+  top: 190px;
+}
+
 .ui-lab__snapshot {
   background: color-mix(in srgb, var(--proto-panel-strong) 84%, transparent);
   border: 1px solid var(--proto-border);
@@ -1193,6 +1729,216 @@
   display: none;
 }
 
+.ui-lab__tunnel {
+  color: var(--proto-text);
+  display: grid;
+  gap: 18px;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  overflow: hidden;
+  padding: 26px;
+}
+
+.ui-lab__tunnel > header {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  position: relative;
+  z-index: 4;
+}
+
+.ui-lab__tunnel > header small {
+  color: var(--proto-accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ui-lab__tunnel > header h2 {
+  color: var(--proto-text);
+  font-size: clamp(22px, 3vw, 42px);
+  font-weight: 900;
+  line-height: 0.98;
+  margin: 0;
+}
+
+.ui-lab__tunnel > header p {
+  color: var(--proto-muted);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ui-lab__tunnel > header div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: end;
+}
+
+.ui-lab__tunnel > header button {
+  background: var(--proto-ghost);
+  border: 1px solid var(--proto-border);
+  border-radius: 999px;
+  color: var(--proto-text);
+  font-size: 11px;
+  font-weight: 840;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.ui-lab__tunnel > header button[aria-pressed="true"] {
+  background: var(--proto-accent-gradient);
+  border-color: transparent;
+  color: #170b07;
+}
+
+.ui-lab__tunnel-preview {
+  background: color-mix(in srgb, var(--proto-panel-strong) 42%, transparent);
+  border: 1px solid var(--proto-border);
+  border-radius: 28px;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.ui-lab__tunnel-preview .proto-tunnel--embedded {
+  inset: 0;
+}
+
+.ui-lab__tunnel-preview .proto-tunnel-prompt {
+  bottom: auto;
+  left: 50%;
+  position: absolute;
+  top: 18px;
+  z-index: 88;
+}
+
+.ui-lab__tunnel-normal {
+  align-content: center;
+  color: var(--proto-text);
+  display: grid;
+  gap: 14px;
+  height: 100%;
+  justify-items: center;
+  margin: 0 auto;
+  max-width: 680px;
+  padding: 42px;
+  text-align: center;
+}
+
+.ui-lab__tunnel-normal small {
+  color: var(--proto-accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ui-lab__tunnel-normal strong {
+  color: var(--proto-text);
+  font-size: clamp(24px, 3vw, 42px);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.ui-lab__tunnel-normal p {
+  color: var(--proto-muted);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 520px;
+}
+
+.ui-lab__tunnel-normal div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.ui-lab__tunnel-normal button {
+  align-items: center;
+  background: var(--proto-ghost);
+  border: 1px solid var(--proto-border);
+  border-radius: 999px;
+  color: var(--proto-text);
+  display: inline-flex;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 830;
+  min-height: 38px;
+  padding: 0 13px;
+}
+
+.ui-lab__tunnel-preview--mobile {
+  justify-self: center;
+  max-width: 420px;
+  width: min(420px, 100%);
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel {
+  align-content: stretch;
+  gap: 16px;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  padding: 76px 14px 16px;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__body {
+  grid-template-columns: 1fr;
+  overflow: hidden;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__persona {
+  display: none;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__focus {
+  max-height: none;
+  padding: 14px;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__context,
+.ui-lab__tunnel-preview--mobile .proto-tunnel__decision {
+  grid-template-columns: 1fr;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__context small {
+  justify-self: start;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__message {
+  max-width: 100%;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__message--persona {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__message img {
+  height: 38px;
+  width: 38px;
+}
+
+.ui-lab__tunnel-preview--mobile .proto-tunnel__message p {
+  font-size: 14px;
+  padding: 13px 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .persona-stage-actor,
+  .persona-stage-actor__bubble,
+  .persona-stage-actor__image,
+  .persona-stage-actor__plate {
+    transition: none;
+  }
+}
+
 @media (max-width: 760px) {
   .ui-lab__toolbar {
     align-items: flex-start;
@@ -1225,6 +1971,121 @@
   .ui-lab__stage {
     height: calc(100dvh - 116px);
     inset-block-start: 116px;
+  }
+
+  .ui-lab__actor {
+    display: block;
+    overflow: auto;
+  }
+
+  .ui-lab__actor-controls {
+    margin: 12px;
+    max-height: none;
+  }
+
+  .persona-stage-actor {
+    --actor-height: min(46vh, 380px);
+    bottom: 72px;
+    width: 58vw;
+  }
+
+  .persona-stage-actor--left {
+    left: 8px;
+  }
+
+  .persona-stage-actor--right {
+    right: 8px;
+  }
+
+  .persona-stage-actor--tunnel {
+    --actor-height: min(54vh, 440px);
+    width: 70vw;
+  }
+
+  .persona-stage-actor__bubble {
+    bottom: 58%;
+    max-width: 160px;
+    padding: 11px 12px;
+  }
+
+  .persona-stage-actor__bubble strong {
+    font-size: 13px;
+  }
+
+  .ui-lab__stage-layout {
+    overflow: auto;
+  }
+
+  .ui-lab__stage-layout-header {
+    left: 12px;
+    max-width: calc(100vw - 24px);
+    position: relative;
+    text-align: left;
+    top: 14px;
+    transform: none;
+  }
+
+  .ui-lab__stage-layout-header div {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .ui-lab__stage-layout-field {
+    min-height: 680px;
+  }
+
+  .ui-lab__stage-layout-field .persona-stage-actor {
+    --actor-height: min(36vh, 300px);
+    bottom: 108px;
+    width: min(46vw, 210px);
+  }
+
+  .ui-lab__stage-layout-field .persona-stage-actor--left {
+    left: 4px;
+  }
+
+  .ui-lab__stage-layout-field .persona-stage-actor--right {
+    display: none;
+  }
+
+  .ui-lab__stage-layout-field .persona-stage-actor__bubble {
+    bottom: auto;
+    display: grid;
+    left: 12px;
+    max-width: calc(100vw - 24px);
+    right: 12px;
+    top: 300px;
+  }
+
+  .ui-lab__stage-board {
+    left: 12px;
+    max-width: calc(100vw - 24px);
+    right: 12px;
+    top: 150px;
+  }
+
+  .ui-lab__stage-layout--duo .ui-lab__stage-board,
+  .ui-lab__stage-layout--tunnel .ui-lab__stage-board {
+    left: 12px;
+    max-width: calc(100vw - 24px);
+    right: 12px;
+    top: 150px;
+  }
+
+  .ui-lab__stage-rules {
+    bottom: 210px;
+    left: auto;
+    max-width: calc(100vw - 24px);
+    right: 12px;
+    transform: none;
+  }
+
+  .ui-lab__stage-layout .proto-commandbar,
+  .ui-lab__stage-layout--tunnel .proto-commandbar {
+    bottom: 14px;
+    max-width: none;
+    width: calc(100vw - 24px);
   }
 
   .ui-lab__review {

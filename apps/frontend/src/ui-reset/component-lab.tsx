@@ -35,6 +35,7 @@ import {
   PrototypeShortcuts,
   PrototypeSystemChrome,
   PrototypeTunnel,
+  PrototypeTunnelPromptCard,
 } from './prototype-shell-components';
 import type {
   PrototypeActionSuggestion,
@@ -46,6 +47,7 @@ import {PrototypeCharacterSurface, PrototypeHomeSurface} from './prototype-produ
 import {PrototypeSkilltreeSurface} from './prototype-skilltree-surface';
 import type {PrototypePersonaMoodState, PrototypeSkillArcId, PrototypeSkillFamilyId} from './prototype-skilltree-surface';
 import {prototypeShortcutGroups, prototypeShortcutRules} from './prototype-shortcut-registry';
+import {buildPrototypeTunnelFixture} from './prototype-tunnel-model';
 import {
   getActivePrototypeUiStates,
   getTopBlockingPrototypeUiState,
@@ -59,13 +61,20 @@ import type {PrototypeDockPanel, PrototypeViewMode} from './use-prototype-shortc
 import {componentLabWorkspaces} from './component-lab-workspaces';
 import type {ComponentLabWorkspaceId} from './component-lab-workspaces';
 import {componentLabReviewState} from './component-lab-review-state';
+import {
+  PersonaStageActor,
+  personaStageActorStates,
+} from './persona-stage-actor';
+import type {PersonaStageActorDirection, PersonaStageActorScale, PersonaStageActorState} from './persona-stage-actor';
 import './component-lab.css';
 
-type LabTab = 'review' | 'navigation' | 'home' | 'persona' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
+type LabTab = 'review' | 'navigation' | 'home' | 'persona' | 'actor' | 'stage' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
 type LabScenario = 'rest' | 'compose' | 'mobile' | 'tunnel' | 'collision';
 type CommandDockPreset = 'closed' | 'keyboard' | 'long' | 'history' | 'micro' | 'recording' | 'transcription';
 type SkilltreePreset = 'home' | 'overview' | 'mobile';
 type LabOverlay = 'actions' | 'settings' | 'shortcuts';
+type StageLayoutPreset = 'cockpit' | 'dialogue' | 'board' | 'tunnel';
+type TunnelLabPreset = 'normal' | 'prompt' | 'tunnel' | 'mobileTunnel';
 
 interface ComponentLabProps {
   workspaceId: ComponentLabWorkspaceId;
@@ -108,7 +117,7 @@ interface PersistedLabWorkspace {
   tab?: LabTab;
 }
 
-const labTabs: LabTab[] = ['review', 'navigation', 'home', 'persona', 'system', 'command', 'states', 'overlays', 'tunnel'];
+const labTabs: LabTab[] = ['review', 'navigation', 'home', 'persona', 'actor', 'stage', 'system', 'command', 'states', 'overlays', 'tunnel'];
 
 function readPersistedLabWorkspace(workspaceId: ComponentLabWorkspaceId): PersistedLabWorkspace {
   try {
@@ -176,6 +185,65 @@ const skilltreePresets: Array<{id: SkilltreePreset; label: string}> = [
   {id: 'home', label: 'Profil'},
   {id: 'overview', label: 'Tableau'},
   {id: 'mobile', label: 'Mobile'},
+];
+
+const tunnelLabPresets: Array<{id: TunnelLabPreset; label: string; mobile: boolean; showTunnel: boolean}> = [
+  {id: 'normal', label: 'Normal court', mobile: false, showTunnel: false},
+  {id: 'prompt', label: 'Prompt', mobile: false, showTunnel: false},
+  {id: 'tunnel', label: 'Tunnel', mobile: false, showTunnel: true},
+  {id: 'mobileTunnel', label: 'Tunnel mobile', mobile: true, showTunnel: true},
+];
+
+const stageLayoutPresets: Array<{
+  actorScale: PersonaStageActorScale;
+  boardLabel: string;
+  boardTone: string;
+  dockPanel: PrototypeDockPanel;
+  id: StageLayoutPreset;
+  label: string;
+  rightActor: boolean;
+  summary: string;
+}> = [
+  {
+    actorScale: 'normal',
+    boardLabel: 'Board vivant',
+    boardTone: 'MasterFlex contextualise, le board porte les preuves.',
+    dockPanel: 'keyboard',
+    id: 'cockpit',
+    label: 'Cockpit',
+    rightActor: false,
+    summary: 'Commande stable au centre, persona lead à gauche, panneaux à droite.',
+  },
+  {
+    actorScale: 'compact',
+    boardLabel: 'Dialogue court',
+    boardTone: 'Deux présences, peu de texte, parole répartie.',
+    dockPanel: 'keyboard',
+    id: 'dialogue',
+    label: 'Dialogue',
+    rightActor: true,
+    summary: 'Mode échange : un persona lead, un interlocuteur ou témoin à droite.',
+  },
+  {
+    actorScale: 'normal',
+    boardLabel: 'Météo du système',
+    boardTone: 'Le persona explique ce qui change dans le contexte actif.',
+    dockPanel: 'keyboard',
+    id: 'board',
+    label: 'Board',
+    rightActor: false,
+    summary: 'Grand écran : le clavier ne grossit plus, les panneaux respirent.',
+  },
+  {
+    actorScale: 'tunnel',
+    boardLabel: 'Tunnel',
+    boardTone: 'Explication longue, champ confortable, interface arrière en retrait.',
+    dockPanel: 'keyboard',
+    id: 'tunnel',
+    label: 'Tunnel',
+    rightActor: false,
+    summary: 'Le clavier s’élargit seulement quand le contexte demande du blabla long.',
+  },
 ];
 
 const skillFamilyLabels: Record<PrototypeSkillFamilyId, string> = {
@@ -248,6 +316,13 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
   const [tunnelOpen, setTunnelOpen] = useState(false);
   const [tunnelClosing, setTunnelClosing] = useState(false);
   const [viewMode, setViewMode] = useState<PrototypeViewMode>('normal');
+  const [actorState, setActorState] = useState<PersonaStageActorState>('neutral');
+  const [actorDirection, setActorDirection] = useState<PersonaStageActorDirection>('left');
+  const [actorScale, setActorScale] = useState<PersonaStageActorScale>('normal');
+  const [actorBubbleVisible, setActorBubbleVisible] = useState(true);
+  const [actorCollisionDock, setActorCollisionDock] = useState(true);
+  const [stageLayoutPreset, setStageLayoutPreset] = useState<StageLayoutPreset>('cockpit');
+  const [tunnelLabPreset, setTunnelLabPreset] = useState<TunnelLabPreset>('normal');
   const [activeFixtureArcId, setActiveFixtureArcId] = useState<PrototypeSkillArcId | null>(null);
   const [activeFixtureFamilyId, setActiveFixtureFamilyId] = useState<PrototypeSkillFamilyId | null>(null);
   const [skillsOverviewOpen, setSkillsOverviewOpen] = useState(false);
@@ -270,6 +345,9 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
   const profile = getPrototypeProfile(profileId);
   const profilePalette = getPrototypeThemePalette(profile.defaultThemePaletteId);
   const profileRankTitle = getPrototypeProfileRank(profile).title;
+  const stagePreset = stageLayoutPresets.find((preset) => preset.id === stageLayoutPreset) ?? stageLayoutPresets[0]!;
+  const tunnelPreset = tunnelLabPresets.find((preset) => preset.id === tunnelLabPreset) ?? tunnelLabPresets[0]!;
+  const tunnelFixture = buildPrototypeTunnelFixture(profile);
   const labModeGroups = buildPrototypeModeGroups();
   const homePrimaryModes = buildPrototypeHomeModes(['project', 'teaching', 'learn']);
   const homeSecondaryModes = buildPrototypeHomeModes(['story', 'da', 'inventory', 'companions']);
@@ -837,6 +915,175 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
           </>
         ) : null}
 
+        {tab === 'actor' ? (
+          <section className="ui-lab__actor" aria-label="Persona Stage Actor">
+            <aside className="ui-lab__actor-controls" aria-label="Contrôles Persona Stage Actor">
+              <small>Persona Stage Actor</small>
+              <h2>{profile.name} · {actorState}</h2>
+              <p>Plan américain/bassin, ancré en bas. Les images actuelles sont des placeholders : les exports gauche/droite seront validés plus tard comme assets propres.</p>
+              <div className="ui-lab__actor-control-group" aria-label="États">
+                {personaStageActorStates.map((stateDefinition) => (
+                  <button
+                    aria-pressed={actorState === stateDefinition.id}
+                    key={stateDefinition.id}
+                    onClick={() => setActorState(stateDefinition.id)}
+                    type="button"
+                  >
+                    <strong>{stateDefinition.label}</strong>
+                    <span>{stateDefinition.intent}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="ui-lab__actor-inline-controls">
+                <button aria-pressed={actorDirection === 'left'} onClick={() => setActorDirection('left')} type="button">Gauche</button>
+                <button aria-pressed={actorDirection === 'right'} onClick={() => setActorDirection('right')} type="button">Droite</button>
+                <button aria-pressed={actorScale === 'compact'} onClick={() => setActorScale('compact')} type="button">Compact</button>
+                <button aria-pressed={actorScale === 'normal'} onClick={() => setActorScale('normal')} type="button">Normal</button>
+                <button aria-pressed={actorScale === 'tunnel'} onClick={() => setActorScale('tunnel')} type="button">Tunnel</button>
+                <button aria-pressed={actorBubbleVisible} onClick={() => setActorBubbleVisible((current) => !current)} type="button">Bulle</button>
+                <button aria-pressed={actorCollisionDock} onClick={() => setActorCollisionDock((current) => !current)} type="button">Dock</button>
+              </div>
+            </aside>
+
+            <div className="ui-lab__actor-stage" data-direction={actorDirection}>
+              <PersonaStageActor
+                bubbleVisible={actorBubbleVisible && actorCollisionDock}
+                direction={actorDirection}
+                profile={profile}
+                scale={actorScale}
+                state={actorState}
+              />
+              {actorCollisionDock ? (
+                <>
+                  <PrototypeActionRail libraryOpen={false} onOpenLibrary={() => setOverlay('actions')} />
+                  <PrototypeCommandDock
+                    dockPanel="keyboard"
+                    dockPanelClosing={false}
+                    expandedHistoryId={null}
+                    historyClosing={false}
+                    historyItems={labHistory}
+                    historyOpen={false}
+                    input={input}
+                    onCloseHistory={() => undefined}
+                    onInputChange={setInput}
+                    onInputKeyDown={submitOnEnter}
+                    onSubmit={submit}
+                    onToggleExpandedHistory={() => undefined}
+                    onToggleHistory={() => undefined}
+                    onToggleKeyboard={() => setActorCollisionDock(false)}
+                    onToggleMicro={() => {
+                      setActorState('listening');
+                      setActorCollisionDock(true);
+                    }}
+                    onToggleRecording={() => undefined}
+                    onToggleTranscription={() => setActorState('listening')}
+                    recording={actorState === 'listening'}
+                    renderedDockPanel="keyboard"
+                    showSuggestions
+                    suggestions={labSuggestions}
+                    transcribing={actorState === 'listening'}
+                  />
+                </>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {tab === 'stage' ? (
+          <section
+            className={`ui-lab__stage-layout ui-lab__stage-layout--${stageLayoutPreset}${stagePreset.rightActor ? ' ui-lab__stage-layout--duo' : ''}`}
+            aria-label="Stage Layout Matrix"
+          >
+            <header className="ui-lab__stage-layout-header">
+              <small>Stage Layout Matrix</small>
+              <h2>{stagePreset.label}</h2>
+              <p>{stagePreset.summary}</p>
+              <div aria-label="Presets de mise en scène">
+                {stageLayoutPresets.map((preset) => (
+                  <button
+                    aria-pressed={stageLayoutPreset === preset.id}
+                    key={preset.id}
+                    onClick={() => setStageLayoutPreset(preset.id)}
+                    type="button"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </header>
+
+            <div className="ui-lab__stage-layout-field">
+              <PersonaStageActor
+                bubbleVisible
+                direction="left"
+                profile={profile}
+                scale={stagePreset.actorScale}
+                state={stageLayoutPreset === 'board' || stageLayoutPreset === 'tunnel' ? 'explaining' : stageLayoutPreset === 'dialogue' ? 'listening' : 'neutral'}
+              />
+
+              {stagePreset.rightActor ? (
+                <PersonaStageActor
+                  bubbleVisible
+                  direction="right"
+                  profile={profile}
+                  scale="compact"
+                  state="doubt"
+                />
+              ) : null}
+
+              <section className="ui-lab__stage-board" aria-label="Board contextuel">
+                <small>{stagePreset.boardLabel}</small>
+                <strong>{stagePreset.boardTone}</strong>
+                <div>
+                  <span>Contexte actif</span>
+                  <b>{profile.modePunchlines.home ?? profile.defaultPunchline}</b>
+                </div>
+                <div>
+                  <span>Réponse attendue</span>
+                  <b>{stageLayoutPreset === 'tunnel' ? 'explication longue' : 'action utile'}</b>
+                </div>
+                <div>
+                  <span>Espace gagné</span>
+                  <b>personas + panneaux, pas clavier géant</b>
+                </div>
+              </section>
+
+              <aside className="ui-lab__stage-rules" aria-label="Règles de format">
+                <strong>Règles testées</strong>
+                <span>Clavier max lisible : 720–920 px</span>
+                <span>Personas ancrés en bas, hors cercle</span>
+                <span>Panneaux à droite sur grand écran</span>
+                <span>Mobile : avatar compact ou masqué</span>
+              </aside>
+
+              <PrototypeCommandDock
+                dockPanel={stagePreset.dockPanel}
+                dockPanelClosing={false}
+                expandedHistoryId={null}
+                historyClosing={false}
+                historyItems={labHistory}
+                historyOpen={false}
+                input={input}
+                onCloseHistory={() => undefined}
+                onInputChange={setInput}
+                onInputKeyDown={submitOnEnter}
+                onSubmit={submit}
+                onToggleExpandedHistory={() => undefined}
+                onToggleHistory={() => undefined}
+                onToggleKeyboard={() => undefined}
+                onToggleMicro={() => setStageLayoutPreset('dialogue')}
+                onToggleRecording={() => undefined}
+                onToggleTranscription={() => undefined}
+                recording={stageLayoutPreset === 'dialogue'}
+                renderedDockPanel={stagePreset.dockPanel}
+                showSuggestions
+                suggestions={labSuggestions}
+                transcribing={false}
+              />
+            </div>
+          </section>
+        ) : null}
+
         {tab === 'system' ? (
           <PrototypeSystemChrome
             appearanceLight={light}
@@ -971,20 +1218,94 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
           </div>
         ) : null}
 
-        {tab === 'tunnel' || tunnelOpen ? (
+        {tab === 'tunnel' && !tunnelOpen ? (
+          <section className="ui-lab__tunnel" aria-label="Tunnel V3 Lab">
+            <header>
+              <small>Tunnel V3</small>
+              <h2>Normal court / Tunnel long</h2>
+              <p>Hors tunnel : cockpit, pas de fil. Le prompt est ponctuel. Dans le tunnel : conversation longue, persona plus présent, choix rapides.</p>
+              <div>
+                {tunnelLabPresets.map((preset) => (
+                  <button
+                    aria-pressed={tunnelLabPreset === preset.id}
+                    key={preset.id}
+                    onClick={() => {
+                      setTunnelLabPreset(preset.id);
+                      setMobile(preset.mobile);
+                    }}
+                    type="button"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+                <button onClick={() => setTunnelOpen(true)} type="button">Ouvrir en overlay</button>
+              </div>
+            </header>
+            <div className={`ui-lab__tunnel-preview${tunnelPreset.mobile ? ' ui-lab__tunnel-preview--mobile' : ''}`}>
+              {tunnelLabPreset === 'normal' ? (
+                <section className="ui-lab__tunnel-normal" aria-label="Mode normal sans fil de conversation">
+                  <small>Mode normal</small>
+                  <strong>Cockpit actif, réponse courte.</strong>
+                  <p>{profile.name} parle peu. Si le clavier se ferme, la bulle disparaît et l’interface reprend la main.</p>
+                  <div>
+                    {labSuggestions.slice(0, 4).map((suggestion) => {
+                      const Icon = suggestion.icon;
+                      return (
+                        <button key={suggestion.id} type="button">
+                          <Icon size={16} />
+                          <span>{suggestion.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              ) : null}
+              {tunnelLabPreset === 'prompt' ? (
+                <PrototypeTunnelPromptCard
+                  onAccept={() => setTunnelOpen(true)}
+                  onDismiss={() => setTunnelLabPreset('normal')}
+                  prompt={tunnelFixture.prompt}
+                />
+              ) : null}
+              {tunnelPreset.showTunnel ? (
+                <PrototypeTunnel
+                  closing={false}
+                  contextSummary={tunnelFixture.contextSummary}
+                  embedded
+                  input={input}
+                  messages={tunnelFixture.messages}
+                  onAcceptPrompt={() => setInput('Oui, développe ce point.')}
+                  onAnimationEnd={finishTunnelClose}
+                  onClose={() => undefined}
+                  onDismissPrompt={() => setTunnelLabPreset('prompt')}
+                  onInputChange={setInput}
+                  onInputKeyDown={submitOnEnter}
+                  onSubmit={submit}
+                  participants={tunnelFixture.participants}
+                  prompt={profile.tunnelPrompt}
+                  tunnelPrompt={tunnelFixture.prompt}
+                />
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {tunnelOpen ? (
           <PrototypeTunnel
-            avatarAsset={profile.avatarAsset}
             closing={tunnelClosing}
+            contextSummary={tunnelFixture.contextSummary}
             input={input}
-            name={profile.name}
+            messages={tunnelFixture.messages}
+            onAcceptPrompt={() => setInput('Oui, développe ce point.')}
             onAnimationEnd={finishTunnelClose}
             onClose={closeTunnel}
+            onDismissPrompt={closeTunnel}
             onInputChange={setInput}
             onInputKeyDown={submitOnEnter}
             onSubmit={submit}
+            participants={tunnelFixture.participants}
             prompt={profile.tunnelPrompt}
-            punchline={profile.defaultPunchline}
-            tunnelLine={profile.tunnelLine}
+            tunnelPrompt={tunnelFixture.prompt}
           />
         ) : null}
       </section>

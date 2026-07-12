@@ -21,8 +21,9 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import type {FormEventHandler, KeyboardEventHandler, ReactElement, ReactNode} from 'react';
+import type {CSSProperties, FormEventHandler, KeyboardEventHandler, ReactElement, ReactNode} from 'react';
 
+import type {TunnelContextSummary, TunnelMessage, TunnelParticipant, TunnelPrompt} from './prototype-tunnel-model';
 import type {PrototypeDockPanel} from './use-prototype-shortcuts';
 
 export type PrototypeMode = {
@@ -713,39 +714,71 @@ export function PrototypeCommandDock({
 }
 
 type TunnelProps = {
-  avatarAsset: string;
   closing: boolean;
+  contextSummary: TunnelContextSummary;
+  embedded?: boolean;
   input: string;
-  name: string;
+  messages: TunnelMessage[];
+  participants: TunnelParticipant[];
   prompt: string;
-  punchline: string;
-  tunnelLine: string;
+  tunnelPrompt: TunnelPrompt;
   onAnimationEnd: () => void;
+  onAcceptPrompt?: () => void;
   onClose: () => void;
+  onDismissPrompt?: () => void;
   onInputChange: (value: string) => void;
   onInputKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
   onSubmit: FormEventHandler<HTMLFormElement>;
 };
 
+type TunnelPromptCardProps = {
+  prompt: TunnelPrompt;
+  onAccept: () => void;
+  onDismiss: () => void;
+};
+
+export function PrototypeTunnelPromptCard({
+  onAccept,
+  onDismiss,
+  prompt,
+}: TunnelPromptCardProps): ReactElement {
+  return (
+    <aside className="proto-tunnel-prompt" aria-label="Proposition Tunnel">
+      <span>{prompt.source}</span>
+      <strong>{prompt.question}</strong>
+      <div>
+        <button onClick={onAccept} type="button">{prompt.yesLabel}</button>
+        <button onClick={onDismiss} type="button">{prompt.noLabel}</button>
+      </div>
+    </aside>
+  );
+}
+
 export function PrototypeTunnel({
-  avatarAsset,
   closing,
+  contextSummary,
+  embedded = false,
   input,
-  name,
+  messages,
   onAnimationEnd,
+  onAcceptPrompt,
   onClose,
+  onDismissPrompt,
   onInputChange,
   onInputKeyDown,
   onSubmit,
+  participants,
   prompt,
-  punchline,
-  tunnelLine,
+  tunnelPrompt,
 }: TunnelProps): ReactElement {
+  const lead = participants[0]!;
+  const getParticipant = (participantId: string) => participants.find((participant) => participant.id === participantId);
+
   return (
     <section
       aria-label="Mode Tunnel"
       aria-modal="true"
-      className={`proto-tunnel${closing ? ' is-closing' : ''}`}
+      className={`proto-tunnel proto-tunnel--conversation${embedded ? ' proto-tunnel--embedded' : ''}${closing ? ' is-closing' : ''}`}
       onAnimationEnd={(event) => {
         if (!closing || event.animationName !== 'proto-tunnel-out') return;
         onAnimationEnd();
@@ -756,33 +789,50 @@ export function PrototypeTunnel({
         <X size={20} />
       </button>
       <header className="proto-tunnel__title">
-        <small>Mode Tunnel activé</small>
-        <strong>{tunnelLine}</strong>
+        <small>Mode Tunnel</small>
+        <strong>{contextSummary.whyTunnel}</strong>
       </header>
       <div className="proto-tunnel__body">
         <figure className="proto-tunnel__persona">
           <span>
-            <img alt="" src={avatarAsset} />
+            <img alt="" src={lead.canonAsset} />
           </span>
           <figcaption>
-            <strong>{name}</strong>
-            <small>{punchline}</small>
+            <strong>{lead.name}</strong>
+            <small>{lead.role}</small>
           </figcaption>
         </figure>
-        <article className="proto-tunnel__answer">
-          <small>Réponse longue mockée</small>
-          <p>
-            Là, on sort du pilotage rapide. Le Tunnel sert à prendre le point en cours, le déplier, poser les nuances,
-            puis revenir au cockpit sans perdre le fil. En vrai produit, {name} utiliserait le contexte actif,
-            les ressources liées et l’état de la page pour répondre plus longuement sans transformer toute l’interface
-            en tableau de bord bavard.
-          </p>
-          <p>
-            Tu peux t’en servir quand une icône, une compétence, un projet ou une décision mérite une explication
-            complète. Le reste de MasterFlow reste derrière, figé, parce que le tunnel n’est pas une navigation :
-            c’est une parenthèse de blabla utile.
-          </p>
-        </article>
+        <section className="proto-tunnel__focus" aria-label="Conversation Tunnel">
+          <aside className="proto-tunnel__context" aria-label="Résumé cockpit">
+            <span>{contextSummary.surface}</span>
+            <strong>{contextSummary.currentObject}</strong>
+            <small>{contextSummary.returnTarget}</small>
+          </aside>
+          <div className="proto-tunnel__thread" aria-label="Fil de conversation">
+            {messages.map((message) => {
+              const participant = getParticipant(message.participantId);
+              const isUser = message.participantId === 'user';
+              return (
+                <div
+                  className={`proto-tunnel__message proto-tunnel__message--${isUser ? 'user' : 'persona'} proto-tunnel__message--${message.kind}`}
+                  key={message.id}
+                  style={participant ? {'--message-color': participant.personaColor} as CSSProperties : undefined}
+                >
+                  {!isUser && participant ? <img alt="" src={participant.avatarAsset} /> : null}
+                  <p>{message.text}</p>
+                </div>
+              );
+            })}
+          </div>
+          <article className="proto-tunnel__decision" aria-label="Décision rapide Tunnel">
+            <span>{tunnelPrompt.source}</span>
+            <strong>{tunnelPrompt.question}</strong>
+            <div>
+              <button onClick={onAcceptPrompt} type="button">{tunnelPrompt.yesLabel}</button>
+              <button onClick={onDismissPrompt} type="button">{tunnelPrompt.noLabel}</button>
+            </div>
+          </article>
+        </section>
       </div>
       <form className="proto-tunnel__composer" onSubmit={onSubmit}>
         <textarea
