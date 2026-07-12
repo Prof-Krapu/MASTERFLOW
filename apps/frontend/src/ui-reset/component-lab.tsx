@@ -58,9 +58,10 @@ import {resolveCycledShortcutDestination, usePrototypeShortcuts} from './use-pro
 import type {PrototypeDockPanel, PrototypeViewMode} from './use-prototype-shortcuts';
 import {componentLabWorkspaces} from './component-lab-workspaces';
 import type {ComponentLabWorkspaceId} from './component-lab-workspaces';
+import {componentLabReviewState} from './component-lab-review-state';
 import './component-lab.css';
 
-type LabTab = 'navigation' | 'home' | 'persona' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
+type LabTab = 'review' | 'navigation' | 'home' | 'persona' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
 type LabScenario = 'rest' | 'compose' | 'mobile' | 'tunnel' | 'collision';
 type CommandDockPreset = 'closed' | 'keyboard' | 'long' | 'history' | 'micro' | 'recording' | 'transcription';
 type SkilltreePreset = 'home' | 'overview' | 'mobile';
@@ -107,7 +108,7 @@ interface PersistedLabWorkspace {
   tab?: LabTab;
 }
 
-const labTabs: LabTab[] = ['navigation', 'home', 'persona', 'system', 'command', 'states', 'overlays', 'tunnel'];
+const labTabs: LabTab[] = ['review', 'navigation', 'home', 'persona', 'system', 'command', 'states', 'overlays', 'tunnel'];
 
 function readPersistedLabWorkspace(workspaceId: ComponentLabWorkspaceId): PersistedLabWorkspace {
   try {
@@ -220,7 +221,7 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
     : workspace.defaultProfileId;
   const initialTab = initialWorkspaceState.tab && labTabs.includes(initialWorkspaceState.tab)
     ? initialWorkspaceState.tab
-    : 'navigation';
+    : 'review';
   const [tab, setTab] = useState<LabTab>(initialTab);
   const [profileId, setProfileId] = useState<PrototypeProfileId>(initialProfileId);
   const [light, setLight] = useState(initialWorkspaceState.light ?? false);
@@ -617,6 +618,66 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
       </header>
 
       <section className="ui-lab__stage" aria-label={`Aperçu ${tab}`}>
+        {tab === 'review' ? (
+          <section className="ui-lab__review" aria-label="Cockpit de review partagé">
+            <header className="ui-lab__review-hero">
+              <small>{componentLabReviewState.round.id} · {componentLabReviewState.pullRequest.id}</small>
+              <h1>{componentLabReviewState.round.title}</h1>
+              <p>{componentLabReviewState.decisionExpected}</p>
+              <div className="ui-lab__review-links" aria-label="Liens de test">
+                {componentLabReviewState.links.map((link) => (
+                  <a href={link.href} key={link.href} rel={link.role === 'github' ? 'noreferrer' : undefined} target={link.role === 'github' ? '_blank' : undefined}>
+                    <span>{link.role}</span>
+                    <strong>{link.label}</strong>
+                  </a>
+                ))}
+              </div>
+            </header>
+
+            <section className="ui-lab__review-status" aria-label="Statuts de review">
+              {componentLabReviewState.statusCards.map((card) => (
+                <article key={card.id} style={{'--review-status-color': card.color} as CSSProperties}>
+                  <span>{card.count}</span>
+                  <strong>{card.label}</strong>
+                  <p>{card.summary}</p>
+                </article>
+              ))}
+            </section>
+
+            <section className="ui-lab__review-columns" aria-label="Checklists de validation">
+              {componentLabReviewState.validation.map((checklist) => (
+                <article className="ui-lab__review-checklist" key={checklist.owner}>
+                  <header>
+                    <small>{checklist.owner}</small>
+                    <h2>{checklist.title}</h2>
+                  </header>
+                  <div>
+                    {checklist.items.map((item) => (
+                      <label className={item.done ? 'is-done' : undefined} key={item.id}>
+                        <input checked={item.done} readOnly type="checkbox" />
+                        <span>
+                          <strong>{item.label}</strong>
+                          <small>{item.detail}</small>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </article>
+              ))}
+
+              <aside className="ui-lab__review-scope" aria-label="Hors périmètre">
+                <small>Hors périmètre</small>
+                <h2>Pas dans ce round</h2>
+                <ul>
+                  {componentLabReviewState.outOfScope.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </aside>
+            </section>
+          </section>
+        ) : null}
+
         {tab === 'navigation' ? (
           <>
             <PrototypeNavigationRail
