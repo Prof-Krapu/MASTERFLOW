@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-12T02:28:58+02:00",
+  "updated_at": "2026-07-12T03:10:21+02:00",
   "active_round_id": "UI-SHELL-DOCK-001",
   "authorizations": [
     {
@@ -75,7 +75,7 @@
     },
     {
       "work_package_id": "USD-005",
-      "label": "Implémentation bornée Shell/Dock",
+      "label": "Implémentation bornée Shell/Dock et restauration Lab",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
       "status": "completed",
       "owner": "codex",
@@ -83,7 +83,7 @@
       "dependencies": ["USD-004"],
       "design_rule_ids": ["DES-004", "DES-006", "DES-008", "DES-010", "DES-011"],
       "tool_route": "component_lab",
-      "expected_evidence": ["build frontend", "smoke ciblé", "validation humaine MALEX"]
+      "expected_evidence": ["build frontend", "routes /ui-reset /ui-lab /ui-lab/vincent", "validation humaine MALEX"]
     },
     {
       "work_package_id": "USD-006",

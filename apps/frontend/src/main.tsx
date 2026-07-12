@@ -16,14 +16,12 @@ const isComponentLab = window.location.pathname === '/ui-lab'
 const componentLabWorkspace = window.location.pathname.startsWith('/ui-lab/vincent')
   ? 'vincent'
   : 'malex';
-const isUiReset = window.location.pathname === '/current-ui'
-  || window.location.pathname === '/ui-reset';
 
 createRoot(rootElement).render(
   <StrictMode>
     {isComponentLab
-      ? <ComponentLab workspaceId={componentLabWorkspace} />
-      : isUiReset
+      ? <ComponentLab key={componentLabWorkspace} workspaceId={componentLabWorkspace} />
+      : window.location.pathname === '/current-ui' || window.location.pathname === '/ui-reset'
         ? <CurrentUiDemo />
         : <App />}
   </StrictMode>,

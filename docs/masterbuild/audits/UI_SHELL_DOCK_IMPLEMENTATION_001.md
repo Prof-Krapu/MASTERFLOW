@@ -67,3 +67,20 @@ MALEX doit vérifier rapidement dans le navigateur :
 ## Prochaine action
 
 Publier cette tranche sur la draft PR #214, puis demander une validation visuelle humaine courte.
+
+## Correctif 2026-07-12 — Lab/proto restaurés
+
+La première promotion avait trop réduit le prototype en remplaçant le vrai Lab par une coquille
+Shell/Dock minimale. Cette approche était techniquement propre mais inutilisable pour le travail UI
+partagé.
+
+Correction appliquée :
+
+- restauration du vrai `/ui-reset` depuis le prototype local avancé ;
+- restauration du vrai `/ui-lab` avec workspaces MALEX et Vincent ;
+- versionnement des assets actifs nécessaires uniquement ;
+- exclusion maintenue des assets candidats, backups, sources lourdes et PSD ;
+- ajout du pipeline `MASTERBUILD_UI_LAB_PIPELINE.md`.
+
+Nouveau critère de validation : MALEX et Vincent doivent pouvoir travailler dans leurs Labs respectifs
+et voir leurs composants se refléter dans le prototype unique.

@@ -1,16 +1,16 @@
 import {
+  CircleHelp,
   Bell,
   BookOpen,
   Boxes,
   Check,
-  CircleHelp,
   Clapperboard,
-  Command,
   FileText,
   FolderKanban,
   GraduationCap,
   History,
   LoaderCircle,
+  Lock,
   MessageCircle,
   Mic,
   Monitor,
@@ -21,31 +21,22 @@ import {
   Pencil,
   Plus,
   Save,
-  Send,
   ShieldCheck,
-  Sparkles,
   Sun,
   Upload,
   UserRound,
   Workflow,
   X,
 } from 'lucide-react';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import type {
-  CSSProperties,
-  FormEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  ReactElement,
-} from 'react';
+import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react';
+import type {CSSProperties, FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactElement} from 'react';
 import type {ActionRegistryEntry, CurrentContext, Job, ValidationInboxItem} from '@masterflow/shared';
 
-import {getCurrentContext, getJobs, getValidationInboxItems} from './api';
-import masterflexAsset from './assets/masterflex-ui-v2.png';
-import profKrapuAsset from './assets/profkrapu-ui-v2.png';
 import './current-ui-demo.css';
+import {getCurrentContext, getJobs, getValidationInboxItems} from './api';
 import {
-  PrototypeActionLibrary,
   PrototypeActionRail,
+  PrototypeActionLibrary,
   PrototypeCommandDock,
   PrototypeNavigationRail,
   PrototypeOverlayFrame,
@@ -53,31 +44,121 @@ import {
   PrototypeSystemChrome,
   PrototypeTunnel,
 } from './ui-reset/prototype-shell-components';
-import type {
-  PrototypeActionSuggestion,
-  PrototypeLibraryAction,
-  PrototypeModeGroup,
-  PrototypeSearchResult,
-  PrototypeSystemPanel,
-} from './ui-reset/prototype-shell-components';
+import type {PrototypeActionSuggestion, PrototypeModeGroup} from './ui-reset/prototype-shell-components';
+import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
+import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
 import {resolveKeyboardToggle, resolveMicroToggle} from './ui-reset/prototype-ui-state-registry';
-import {resolveCycledShortcutDestination, usePrototypeShortcuts} from './ui-reset/use-prototype-shortcuts';
-import type {PrototypeDockPanel, PrototypeViewMode} from './ui-reset/use-prototype-shortcuts';
+import {usePrototypeShortcuts} from './ui-reset/use-prototype-shortcuts';
 
-type DemoMode =
-  | 'home'
-  | 'character'
-  | 'project'
-  | 'teaching'
-  | 'learn'
-  | 'story'
-  | 'da'
-  | 'inventory'
-  | 'companions';
+import {
+  accessLevels,
+  accessModeMap,
+  actionCategories,
+  buildPrototypeHomeModes,
+  buildPrototypeModeGroups,
+  getPrototypeProfile,
+  getPrototypeProfileRank,
+  getPrototypeThemePalette,
+  libraryActions,
+  modeGroups,
+  personaStats,
+  prototypeProfileIds,
+  resolvePersonaMoodState,
+  skillFamilyColors,
+  themePalettes,
+} from './ui-reset/prototype-profile-registry';
+import type {
+  AccessLevel,
+  ActiveSurface,
+  AppearanceTheme,
+  DemoMode,
+  DockPanel,
+  NavigationDestination,
+  PersonaMetric,
+  PersonaMoodState,
+  PrototypeProfileId,
+  SkillArc,
+  SkillArcId,
+  SkillFamilyId,
+  SystemPanel,
+  ThemePaletteId,
+  ViewMode,
+} from './ui-reset/prototype-profile-registry';
 
-type AccessLevel = 'student' | 'teacher' | 'supervision' | 'admin' | 'godmode';
-type ShellProfileId = 'masterflex' | 'profkrapu';
+function MasterflowMark({className}: {className: string}): ReactElement {
+  const shadowId = `mf-shadow-${useId().replace(/:/g, '')}`;
+
+  return (
+    <svg aria-hidden="true" className={className} viewBox="-12 -12 344.315 344.315">
+      <defs>
+        <filter id={shadowId} height="140%" width="140%" x="-20%" y="-20%">
+          <feDropShadow dx="0" dy="5" floodColor="#000" floodOpacity="0.38" stdDeviation="4" />
+        </filter>
+      </defs>
+      <g filter={`url(#${shadowId})`} transform="translate(0 320.315) scale(1 -1)">
+        <path
+          d="M0 0 C-4.381 21.746 -8.236 38.507 -10.341 58.447 L-14.531 98.134 L-17.124 118.898 C-17.437 121.407 -18.282 122.847 -19.748 125.022 C-20.932 126.778 -22.95 130.507 -25.803 129.115 C-27.345 128.363 -28.555 127.534 -30.398 128.511 C-33.491 127.47 -35.064 124.093 -34.845 120.716 C-37.746 114.371 -39.792 108.113 -41.185 101.34 L-45.179 81.926 L-57.427 25.841 L-59.94 13.266 C-68.465 27.819 -75.84 42.368 -82.7 57.683 L-93.224 81.181 C-94.774 84.641 -95.667 88.346 -96.602 91.917 C-97.681 95.236 -100.384 97.217 -103.601 95.766 C-106.431 97.34 -109.262 96.465 -111.539 94.458 L-115.114 93.695 C-117.234 91.184 -115.512 88.69 -115.421 85.879 C-114.352 52.66 -110.578 20.018 -102.901 -12.253 C-102.234 -15.06 -101.014 -17.858 -99.525 -19.815 C-94.707 -18.752 -94.633 -24.03 -92.687 -23.843 C-92.193 -23.796 -90.559 -23.086 -90.471 -22.602 L-89.513 -17.376 C-89.188 -17.47 -87.922 -17.985 -87.869 -17.556 L-87.618 -15.545 L-91.205 13.336 C-92.102 20.204 -92.839 26.663 -93.158 33.834 L-64.981 -18.69 C-63.564 -21.332 -62.569 -22.512 -59.458 -23.583 L-51.681 -26.259 C-50.124 -26.795 -48.983 -27.605 -47.456 -26.757 C-46.557 -26.259 -45.997 -24.57 -45.535 -23.432 C-43.927 -19.463 -43.932 -16.219 -43.898 -12.029 C-43.841 -5.04 -42.689 1.921 -41.456 9.007 C-38.691 24.902 -35.18 40.285 -31.345 55.887 C-27.854 31.372 -24.142 8.025 -18.286 -15.584 C-14.21 -32.015 -14.904 -30.728 -9.201 -46.695 C-7.537 -51.353 -4.656 -55.383 -3.299 -60.213 C-2.318 -63.706 -0.372 -66.578 2.968 -68.339 C5.306 -67.221 6.929 -68.156 8.317 -70.222 C9.587 -71.534 11.202 -72.417 13.043 -71.581 C14.148 -71.079 14.628 -69.415 14.595 -67.889 C15.126 -67.407 16.479 -66.512 16.418 -65.886 L16.196 -63.613 L18.746 -63.978 C19.186 -64.041 19.601 -62.302 19.612 -61.83 C19.69 -58.778 18.199 -55.816 17.091 -52.969 C4.381 -21.746 0 0 0 0 Z"
+          fill="var(--proto-accent)"
+          transform="translate(213.7575 97.6511)"
+        />
+        <path
+          d="M0 0 L-10.613 8.8 L-34.779 23.609 C-34.641 23.672 -34.5 23.735 -34.361 23.797 L-39.825 25.488 C-39.85 25.289 -39.913 25.099 -40.048 24.923 C-40.909 23.797 -41.476 23.635 -42.898 23.482 C-45.074 23.247 -43.497 19.759 -46.121 16.721 C-46.488 16.297 -46.651 15.809 -46.622 15.377 C-46.565 14.536 -46.171 13.597 -45.57 13.202 L-24.839 0.724 L-36.003 -2.167 C-50.959 -6.04 -65.327 -10.595 -79.904 -15.307 L-119.466 -27.558 L-169.772 -42.657 C-169.74 -42.482 -169.706 -42.305 -169.673 -42.129 L-177.706 -46.789 C-177.407 -46.923 -177.161 -47.089 -177.006 -47.322 C-176.012 -48.809 -176.296 -49.475 -177.424 -51.008 C-179.232 -53.465 -171.269 -53.654 -169.269 -58.588 C-168.091 -59.422 -156.264 -58.087 -154.551 -57.526 L-117.741 -45.584 L-90.046 -36.933 L-53.433 -24.895 L-28.335 -16.911 C-25.794 -16.103 -23.076 -14.707 -20.422 -14.502 L-22.931 -17.83 L-35.187 -34.857 C-35.725 -35.605 -36.004 -36.753 -35.967 -37.599 C-35.948 -38.035 -35.738 -38.407 -35.337 -38.594 C-32.471 -39.933 -33.615 -44.263 -31.487 -43.165 C-30.096 -42.447 -29.531 -42.259 -28.577 -42.824 C-28.427 -42.912 -28.345 -43.056 -28.299 -43.233 L-23.203 -38.274 C-23.344 -38.298 -23.487 -38.323 -23.627 -38.347 L-9.412 -18.437 L0.102 -2.203 C0.747 -1.365 0.704 -0.429 0 0 Z"
+          fill="var(--proto-user-color)"
+          transform="translate(231.9357 269.0836)"
+        />
+      </g>
+    </svg>
+  );
+}
+
+const historyItems = [
+  {
+    id: 'home-orchestration',
+    speaker: 'MasterFlex',
+    summary: 'La Home devient un point de départ, pas un tableau de bord.',
+    detail: 'Les accès principaux donnent le cap, les actions restent près du clavier et le persona n’intervient que lorsqu’un contexte mérite une explication.',
+  },
+  {
+    id: 'resume',
+    speaker: 'Malex',
+    summary: 'On repart sur la navigation, le fond et les boutons fixes.',
+    detail: 'Prototype reset : fond noir, MasterFlow centré, dock bas permanent, menu gauche hiérarchisé et actions limitées.',
+  },
+  {
+    id: 'buttons',
+    speaker: 'MasterFlex',
+    summary: 'Les actions doivent partager la même charte.',
+    detail: 'Même forme de bouton, même animation au survol, même pression au clic, tooltip systématique si l’icône est seule.',
+  },
+  {
+    id: 'shortcuts',
+    speaker: 'Malex',
+    summary: 'Chercher des raccourcis clavier simples.',
+    detail: 'K pour clavier, M pour micro, H pour historique, Entrée pour valider selon le contexte.',
+  },
+];
+
+const quickSearchItems = [
+  {id: 'teacher', label: 'Chercher un prof', detail: 'Personnes', icon: GraduationCap, keywords: 'prof enseignant teaching coach personne masterflex'},
+  {id: 'resource', label: 'Chercher une ressource', detail: 'Ressources', icon: PackageOpen, keywords: 'ressource fichier lien support asset'},
+  {id: 'course', label: 'Trouver un cours', detail: 'Cours', icon: BookOpen, keywords: 'cours learn teaching pedagogie module'},
+  {id: 'project', label: 'Ouvrir un projet', detail: 'Projets', icon: FolderKanban, keywords: 'project projet actif brief'},
+  {id: 'document', label: 'Chercher un document', detail: 'Documents', icon: FileText, keywords: 'document pdf note texte fiche'},
+  {id: 'video', label: 'Chercher une vidéo', detail: 'Médias', icon: Clapperboard, keywords: 'video tuto recording cours media'},
+  {id: 'subject', label: 'Chercher un sujet', detail: 'Sujets', icon: Network, keywords: 'sujet theme notion skill galaxy'},
+  {id: 'validation', label: 'Voir les décisions', detail: 'Validation', icon: Check, keywords: 'validation inbox decision attention'},
+  {id: 'mode', label: 'Changer de mode', detail: 'Navigation', icon: Workflow, keywords: 'mode project learn teaching story da inventory companions'},
+  {id: 'persona', label: 'Demander à MasterFlex', detail: 'Persona', icon: MessageCircle, keywords: 'masterflex persona tunnel question aide'},
+] as const;
+
+const getQuickSearchResults = (query: string) => {
+  const normalizedQuery = query.trim().toLocaleLowerCase('fr');
+  if (!normalizedQuery) return quickSearchItems.slice(0, 6);
+  return quickSearchItems
+    .filter((item) => `${item.label} ${item.detail} ${item.keywords}`.toLocaleLowerCase('fr').includes(normalizedQuery))
+    .slice(0, 6);
+};
 
 type RuntimeBridgeState = {
   context: CurrentContext | null;
@@ -86,154 +167,6 @@ type RuntimeBridgeState = {
   status: 'prototype' | 'runtime' | 'degraded';
   error: string | null;
 };
-
-const accessLevels = [
-  {id: 'student', label: 'Élève', icon: UserRound},
-  {id: 'teacher', label: 'Prof', icon: GraduationCap},
-  {id: 'supervision', label: 'Supervision', icon: Monitor},
-  {id: 'admin', label: 'Admin', icon: ShieldCheck},
-  {id: 'godmode', label: 'GodMode', icon: Sparkles},
-] as const;
-
-const modeIcons = {
-  home: Command,
-  character: UserRound,
-  project: Boxes,
-  teaching: GraduationCap,
-  learn: BookOpen,
-  story: FileText,
-  da: Palette,
-  inventory: PackageOpen,
-  companions: MessageCircle,
-} as const;
-
-const fallbackModeGroups: PrototypeModeGroup[] = [
-  {
-    label: 'Projet actif',
-    kind: 'project',
-    modes: [{id: 'project', label: 'Project', icon: Boxes, featured: true}],
-  },
-  {
-    label: 'Expériences',
-    kind: 'experience',
-    modes: [
-      {id: 'teaching', label: 'Teaching', icon: GraduationCap},
-      {id: 'learn', label: 'Learn', icon: BookOpen},
-    ],
-  },
-  {
-    label: 'Studios',
-    kind: 'studios',
-    modes: [
-      {id: 'story', label: 'MasterStory', icon: FileText},
-      {id: 'da', label: 'DA Studio', icon: Palette},
-    ],
-  },
-  {
-    label: 'Personnel',
-    kind: 'personal',
-    modes: [
-      {id: 'inventory', label: 'Inventory', icon: PackageOpen},
-      {id: 'companions', label: 'Companions', icon: MessageCircle},
-    ],
-  },
-];
-
-const profileMap: Record<ShellProfileId, {
-  avatar: string;
-  defaultPunchline: string;
-  mobileLabel: string;
-  name: string;
-  theme: {
-    accent: string;
-    accentDeep: string;
-    support: string;
-    user: string;
-  };
-  tunnelLine: string;
-  tunnelPrompt: string;
-}> = {
-  masterflex: {
-    avatar: masterflexAsset,
-    defaultPunchline: 'Plus croustillant qu’un Corn Flakes',
-    mobileLabel: 'MasterFlex',
-    name: 'MasterFlex',
-    theme: {
-      accent: '#ff6a3a',
-      accentDeep: '#9f2f20',
-      support: '#3979e8',
-      user: '#3979e8',
-    },
-    tunnelLine: 'On pose le pad et on explique.',
-    tunnelPrompt: 'Demande à MasterFlex de développer le point en cours',
-  },
-  profkrapu: {
-    avatar: profKrapuAsset,
-    defaultPunchline: 'Précision source, troll pédagogique.',
-    mobileLabel: 'ProfKrapu',
-    name: 'ProfKrapu',
-    theme: {
-      accent: '#ec5aa6',
-      accentDeep: '#912958',
-      support: '#60b6f0',
-      user: '#52b36c',
-    },
-    tunnelLine: 'On vérifie avant de faire le malin.',
-    tunnelPrompt: 'Demande à ProfKrapu de clarifier scientifiquement',
-  },
-};
-
-const historyItems = [
-  {
-    id: 'shell',
-    speaker: 'MASTERBUILD',
-    summary: 'Shell/Dock est le premier raccord UI.',
-    detail: 'On promeut la navigation, la system bar et le dock avant Home, persona et skilltree.',
-  },
-  {
-    id: 'runtime',
-    speaker: 'Runtime',
-    summary: 'Lecture backend optionnelle.',
-    detail: 'Le prototype fonctionne sans backend, puis enrichit modes, actions, jobs et inbox quand le runtime répond.',
-  },
-  {
-    id: 'risk',
-    speaker: 'MasterFlex',
-    summary: 'Pas de bouton mytho.',
-    detail: 'Une action visible peut expliquer ou préparer, mais aucune action sensible ne part depuis une suggestion.',
-  },
-];
-
-const fallbackSuggestions: PrototypeActionSuggestion[] = [
-  {id: 'resume', label: 'Reprendre', icon: MessageCircle},
-  {id: 'save', label: 'Sauvegarder', icon: Save},
-  {id: 'edit', label: 'Modifier', icon: Pencil},
-  {id: 'history', label: 'Historique', icon: History},
-  {id: 'export', label: 'Exporter', icon: Upload},
-];
-
-const libraryActions: PrototypeLibraryAction[] = [
-  {id: 'open-project', label: 'Ouvrir un projet', category: 'Projet', icon: FolderKanban, relevant: true},
-  {id: 'resume', label: 'Reprendre le contexte', category: 'Projet', icon: MessageCircle, relevant: true},
-  {id: 'preflight', label: 'Préflight action sensible', category: 'Sécurité', icon: ShieldCheck, relevant: true},
-  {id: 'save', label: 'Sauvegarder', category: 'Outils', icon: Save},
-  {id: 'share', label: 'Partager', category: 'Partage', icon: Send},
-  {id: 'new', label: 'Nouveau', category: 'Création', icon: Plus},
-  {id: 'export', label: 'Exporter', category: 'Partage', icon: Upload},
-  {id: 'resource', label: 'Chercher une ressource', category: 'Ressources', icon: PackageOpen},
-  {id: 'course', label: 'Trouver un cours', category: 'Ressources', icon: BookOpen},
-];
-
-const quickSearchItems: PrototypeSearchResult[] = [
-  {id: 'teacher', label: 'Chercher un prof', detail: 'Personnes', icon: GraduationCap},
-  {id: 'resource', label: 'Chercher une ressource', detail: 'Ressources', icon: PackageOpen},
-  {id: 'course', label: 'Trouver un cours', detail: 'Cours', icon: BookOpen},
-  {id: 'project', label: 'Ouvrir un projet', detail: 'Projets', icon: FolderKanban},
-  {id: 'document', label: 'Chercher un document', detail: 'Documents', icon: FileText},
-  {id: 'video', label: 'Chercher une vidéo', detail: 'Médias', icon: Clapperboard},
-  {id: 'subject', label: 'Chercher un sujet', detail: 'Sujets', icon: Network},
-  {id: 'validation', label: 'Voir les décisions', detail: 'Validation', icon: Check},
-];
 
 const runtimeModeAliases: Record<string, DemoMode> = {
   course: 'teaching',
@@ -251,17 +184,68 @@ const runtimeModeAliases: Record<string, DemoMode> = {
   companions: 'companions',
 };
 
-function MasterflowMark({className}: {className: string}): ReactElement {
-  return (
-    <svg aria-hidden="true" className={className} viewBox="0 0 64 64">
-      <path d="M8 48 18 14l14 25 14-25 10 34H44l-3-12-9 15-9-15-3 12Z" fill="var(--proto-accent)" />
-      <path d="m37 19 18 10-18 10 4-10Z" fill="var(--proto-user-color)" />
-      <circle cx="49" cy="46" fill="var(--proto-user-color)" r="4" />
-    </svg>
-  );
-}
+const actionIconFor = (action: ActionRegistryEntry): PrototypeActionSuggestion['icon'] => {
+  const haystack = `${action.action_id} ${action.label} ${action.ui_surface}`.toLocaleLowerCase('fr');
+  if (haystack.includes('context')) return MessageCircle;
+  if (haystack.includes('save') || haystack.includes('validate') || haystack.includes('approval')) return Check;
+  if (haystack.includes('preflight') || haystack.includes('verify') || haystack.includes('verifier')) return ShieldCheck;
+  if (haystack.includes('export') || haystack.includes('send')) return Upload;
+  if (haystack.includes('project')) return FolderKanban;
+  if (haystack.includes('inventory') || haystack.includes('resource')) return PackageOpen;
+  if (haystack.includes('visual') || haystack.includes('da') || haystack.includes('theme')) return Palette;
+  if (haystack.includes('story') || haystack.includes('narrative')) return FileText;
+  if (haystack.includes('job') || haystack.includes('queue')) return LoaderCircle;
+  if (haystack.includes('action')) return Workflow;
+  return CircleHelp;
+};
 
-function usePresence<T>(value: T | null, duration = 240): {closing: boolean; renderedValue: T | null} {
+const runtimeModesFromContext = (context: CurrentContext | null): Set<DemoMode> | null => {
+  if (!context) return null;
+  const rawModes = [
+    ...context.user_runtime_loadout.active_mode_cycle,
+    ...context.user_runtime_loadout.available_apps,
+  ];
+  const modesFromRuntime = rawModes
+    .map((id) => runtimeModeAliases[id])
+    .filter((id): id is DemoMode => Boolean(id));
+  return new Set(modesFromRuntime);
+};
+
+const buildRuntimeSuggestions = (
+  context: CurrentContext | null,
+  fallback: PrototypeActionSuggestion[],
+): PrototypeActionSuggestion[] => {
+  if (!context) return fallback;
+  const actionsById = new Map(context.available_actions.map((action) => [action.action_id, action]));
+  const preferredIds = [
+    ...context.user_runtime_loadout.suggested_first_action_ids,
+    ...context.user_runtime_loadout.quick_palette_action_ids,
+    ...context.user_runtime_loadout.default_action_ids,
+  ];
+  const ordered = [
+    ...preferredIds.map((id) => actionsById.get(id)).filter((action): action is ActionRegistryEntry => Boolean(action)),
+    ...context.available_actions,
+  ];
+  const unique = [...new Map(ordered.map((action) => [action.action_id, action])).values()]
+    .filter((action) => action.status === 'live')
+    .slice(0, 5);
+  return unique.map((action) => ({
+    id: action.action_id,
+    label: action.label,
+    icon: actionIconFor(action),
+  }));
+};
+
+const countAttentionJobs = (jobs: Job[]): number =>
+  jobs.filter((job) => ['queued', 'running', 'needs_review', 'failed'].includes(job.status)).length;
+
+const countOpenInboxItems = (items: ValidationInboxItem[]): number =>
+  items.filter((item) => ['draft', 'candidate', 'needs_review', 'blocked'].includes(item.current_status)).length;
+
+function useAnimatedPresence<T>(value: T | null, duration = 220): {
+  closing: boolean;
+  renderedValue: T | null;
+} {
   const [renderedValue, setRenderedValue] = useState<T | null>(value);
 
   useEffect(() => {
@@ -284,107 +268,51 @@ function usePresence<T>(value: T | null, duration = 240): {closing: boolean; ren
   };
 }
 
-function getQuickSearchResults(query: string): PrototypeSearchResult[] {
-  const normalizedQuery = query.trim().toLocaleLowerCase('fr');
-  if (!normalizedQuery) return quickSearchItems.slice(0, 6);
-  return quickSearchItems.filter((item) => (
-    `${item.label} ${item.detail}`.toLocaleLowerCase('fr').includes(normalizedQuery)
-  )).slice(0, 6);
-}
-
-function actionIconFor(action: ActionRegistryEntry): PrototypeActionSuggestion['icon'] {
-  const haystack = `${action.action_id} ${action.label} ${action.ui_surface}`.toLocaleLowerCase('fr');
-  if (haystack.includes('context')) return MessageCircle;
-  if (haystack.includes('save') || haystack.includes('validate') || haystack.includes('approval')) return Check;
-  if (haystack.includes('preflight') || haystack.includes('verify')) return ShieldCheck;
-  if (haystack.includes('export') || haystack.includes('send')) return Upload;
-  if (haystack.includes('project')) return FolderKanban;
-  if (haystack.includes('inventory') || haystack.includes('resource')) return PackageOpen;
-  if (haystack.includes('visual') || haystack.includes('da') || haystack.includes('theme')) return Palette;
-  if (haystack.includes('story') || haystack.includes('narrative')) return FileText;
-  if (haystack.includes('job') || haystack.includes('queue')) return LoaderCircle;
-  if (haystack.includes('action')) return Workflow;
-  return CircleHelp;
-}
-
-function buildRuntimeSuggestions(context: CurrentContext | null): PrototypeActionSuggestion[] {
-  if (!context) return fallbackSuggestions;
-  return context.available_actions.slice(0, 5).map((action) => ({
-    id: action.action_id,
-    icon: actionIconFor(action),
-    label: action.label,
-    onClick: () => undefined,
-  }));
-}
-
-function buildRuntimeModeGroups(context: CurrentContext | null): PrototypeModeGroup[] {
-  if (!context) return fallbackModeGroups;
-  const rawModes = [
-    ...context.user_runtime_loadout.active_mode_cycle,
-    ...context.user_runtime_loadout.available_apps,
-  ];
-  const visibleModes = new Set<DemoMode>(['home']);
-  rawModes.forEach((id) => {
-    const mode = runtimeModeAliases[id];
-    if (mode) visibleModes.add(mode);
-  });
-  if (visibleModes.size <= 1) return fallbackModeGroups;
-  const modeGroups = fallbackModeGroups
-    .map((group) => ({
-      ...group,
-      modes: group.modes.filter((mode) => visibleModes.has(mode.id as DemoMode)),
-    }))
-    .filter((group) => group.modes.length > 0);
-  return modeGroups.length > 0 ? modeGroups : fallbackModeGroups;
-}
-
-function countAttentionJobs(jobs: Job[]): number {
-  return jobs.filter((job) => ['queued', 'running', 'pending'].includes(job.status)).length;
-}
-
-function countOpenInboxItems(items: ValidationInboxItem[]): number {
-  return items.filter((item) => item.status === 'pending').length;
-}
-
-function modeTitle(mode: DemoMode): string {
-  const labels: Record<DemoMode, string> = {
-    home: 'Accueil Shell',
-    character: 'Page personnage',
-    project: 'Project',
-    teaching: 'Teaching',
-    learn: 'Learn',
-    story: 'MasterStory',
-    da: 'DA Studio',
-    inventory: 'Inventory',
-    companions: 'Companions',
-  };
-  return labels[mode];
-}
-
 export function CurrentUiDemo(): ReactElement {
-  const [activeMode, setActiveMode] = useState<DemoMode>('home');
-  const [profileId, setProfileId] = useState<ShellProfileId>('masterflex');
-  const activeProfile = profileMap[profileId];
+  const [activeMode, setActiveMode] = useState<ActiveSurface>('home');
+  const [activePrototypeProfileId, setActivePrototypeProfileId] = useState<PrototypeProfileId>('masterflex');
+  const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>('auto');
+  const [themePaletteId, setThemePaletteId] = useState<ThemePaletteId>('masterflow');
+  const [paletteValuesInverted, setPaletteValuesInverted] = useState(false);
+  const [personaColor, setPersonaColor] = useState('#3979e8');
+  const [input, setInput] = useState('');
+  const [railOpen, setRailOpen] = useState(false);
   const [accessLevel, setAccessLevel] = useState<AccessLevel>('teacher');
   const [accessOpen, setAccessOpen] = useState(false);
-  const [actionLibraryOpen, setActionLibraryOpen] = useState(false);
-  const [actionSearch, setActionSearch] = useState('');
-  const [appearanceLight, setAppearanceLight] = useState(false);
-  const [dockPanel, setDockPanel] = useState<PrototypeDockPanel>('keyboard');
-  const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>('shell');
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [input, setInput] = useState('');
-  const [quickSearch, setQuickSearch] = useState('');
-  const [railOpen, setRailOpen] = useState(false);
-  const [recording, setRecording] = useState(false);
+  const [characterOpen, setCharacterOpen] = useState(false);
+  const [characterClosing, setCharacterClosing] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [shortcutsClosing, setShortcutsClosing] = useState(false);
-  const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const [systemPanel, setSystemPanel] = useState<PrototypeSystemPanel>(null);
-  const [transcribing, setTranscribing] = useState(false);
-  const [tunnelClosing, setTunnelClosing] = useState(false);
+  const [actionLibraryOpen, setActionLibraryOpen] = useState(false);
+  const [renderedActionLibraryOpen, setRenderedActionLibraryOpen] = useState(false);
+  const [actionLibraryClosing, setActionLibraryClosing] = useState(false);
   const [tunnelOpen, setTunnelOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<PrototypeViewMode>('normal');
+  const [tunnelClosing, setTunnelClosing] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [shortcutsClosing, setShortcutsClosing] = useState(false);
+  const [actionSearch, setActionSearch] = useState('');
+  const [dockPanel, setDockPanel] = useState<DockPanel>('keyboard');
+  const [renderedDockPanel, setRenderedDockPanel] = useState<DockPanel>('keyboard');
+  const [dockPanelClosing, setDockPanelClosing] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>('buttons');
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('normal');
+  const [systemPanel, setSystemPanel] = useState<SystemPanel>(null);
+  const [quickSearch, setQuickSearch] = useState('');
+  const [selectedSkillArcId, setSelectedSkillArcId] = useState<SkillArcId | null>(null);
+  const [skillsOverviewOpen, setSkillsOverviewOpen] = useState(false);
+  const [personaStatIndex, setPersonaStatIndex] = useState(0);
+  const [skillFamilyIndex, setSkillFamilyIndex] = useState(0);
+  const [personaDisplayValue, setPersonaDisplayValue] = useState(0);
+  const [personaDisplayMasteryValue, setPersonaDisplayMasteryValue] = useState(0);
+  const [portraitLayers, setPortraitLayers] = useState<{
+    current: PersonaMoodState;
+    previous: PersonaMoodState | null;
+  }>(() => ({
+    current: resolvePersonaMoodState(personaStats[0]!.masteryValue),
+    previous: null,
+  }));
   const [runtimeBridge, setRuntimeBridge] = useState<RuntimeBridgeState>({
     context: null,
     error: null,
@@ -392,72 +320,297 @@ export function CurrentUiDemo(): ReactElement {
     jobs: [],
     status: 'prototype',
   });
-
-  const navigationDestinationRef = useRef<string>('home');
-  const modeGroups = useMemo(() => buildRuntimeModeGroups(runtimeBridge.context), [runtimeBridge.context]);
-  const modeCycle = useMemo(() => {
-    const modes = ['home', 'character'];
-    modeGroups.forEach((group) => group.modes.forEach((mode) => modes.push(mode.id)));
-    return [...new Set(modes)];
-  }, [modeGroups]);
-  const commandSuggestions = useMemo(() => buildRuntimeSuggestions(runtimeBridge.context), [runtimeBridge.context]);
-
-  const accessPresence = usePresence(accessOpen ? 'access' : null, 180);
-  const actionLibraryPresence = usePresence(actionLibraryOpen ? 'actions' : null, 240);
-  const dockPresence = usePresence(dockPanel, 220);
-  const historyPresence = usePresence(historyOpen ? 'history' : null, 220);
-  const settingsPresence = usePresence(settingsOpen ? 'settings' : null, 240);
-  const systemPanelPresence = usePresence(systemPanel, 180);
-
-  const selectMode = useCallback((mode: DemoMode) => {
+  const navigationDestinationRef = useRef<NavigationDestination>('home');
+  const [systemPrefersLight, setSystemPrefersLight] = useState(false);
+  const settingsPresence = useAnimatedPresence(settingsOpen ? true : null);
+  const accessPresence = useAnimatedPresence(accessOpen ? true : null, 180);
+  const historyPresence = useAnimatedPresence(historyOpen ? true : null);
+  const systemPanelPresence = useAnimatedPresence(systemPanel);
+  const runtimeModeIds = useMemo(() => runtimeModesFromContext(runtimeBridge.context), [runtimeBridge.context]);
+  const visibleModeIds = useMemo(
+    () => runtimeModeIds ?? new Set(accessModeMap[accessLevel]),
+    [accessLevel, runtimeModeIds],
+  );
+  const activePrototypeProfile = getPrototypeProfile(activePrototypeProfileId);
+  const modeCycle = useMemo<NavigationDestination[]>(
+    () => ['home', 'character', ...modeGroups.flatMap((group) => group.ids).filter((id) => visibleModeIds.has(id))],
+    [visibleModeIds],
+  );
+  const resolvedAppearance = appearanceTheme === 'auto' ? (systemPrefersLight ? 'light' : 'dark') : appearanceTheme;
+  const themePalette = getPrototypeThemePalette(themePaletteId);
+  const activeSkillArcs = activePrototypeProfile.skillArcs;
+  const selectedSkillArc = activeSkillArcs.find((arc) => arc.id === selectedSkillArcId) ?? null;
+  const skillGalaxyOpen = selectedSkillArc !== null || skillsOverviewOpen;
+  const activeMetricSet = selectedSkillArc?.metrics ?? activePrototypeProfile.stats;
+  const activePersonaStat = activeMetricSet[personaStatIndex] ?? activeMetricSet[0] ?? activePrototypeProfile.stats[0]!;
+  const activeSkillFamilies = useMemo(
+    () => selectedSkillArc ? Array.from(new Set(selectedSkillArc.skills.map((skill) => skill.family))) : [],
+    [selectedSkillArc],
+  );
+  const activeSkillFamily = activeSkillFamilies[skillFamilyIndex % activeSkillFamilies.length] ?? null;
+  const skillSliderIndex = skillsOverviewOpen
+    ? activeSkillArcs.length + 1
+    : selectedSkillArc
+      ? activeSkillArcs.findIndex((arc) => arc.id === selectedSkillArc.id) + 1
+      : 0;
+  const selectSkillSliderIndex = useCallback((nextIndex: number): void => {
+    const normalizedIndex = (nextIndex + activeSkillArcs.length + 2) % (activeSkillArcs.length + 2);
+    if (normalizedIndex === 0) {
+      setSelectedSkillArcId(null);
+      setSkillsOverviewOpen(false);
+      return;
+    }
+    if (normalizedIndex === activeSkillArcs.length + 1) {
+      setSelectedSkillArcId(null);
+      setSkillsOverviewOpen(true);
+      return;
+    }
+    setSelectedSkillArcId(activeSkillArcs[normalizedIndex - 1]?.id ?? null);
+    setSkillsOverviewOpen(false);
+  }, [activeSkillArcs]);
+  const activePersonaMood = useMemo(
+    () => {
+      const mood = resolvePersonaMoodState(activePersonaStat.masteryValue);
+      return {...mood, asset: activePrototypeProfile.moodAssets[mood.id]};
+    },
+    [activePersonaStat.masteryValue, activePrototypeProfile],
+  );
+  const displayedPersonaMood = useMemo(
+    () => resolvePersonaMoodState(personaDisplayMasteryValue),
+    [personaDisplayMasteryValue],
+  );
+  const characterPunchline = useMemo((): string => {
+    if (selectedSkillArc) return activePrototypeProfile.skillPunchlines[selectedSkillArc.id] ?? activePrototypeProfile.defaultPunchline;
+    if (activePrototypeProfile.id !== 'masterflex') {
+      if (recording || dockPanel === 'micro') return 'Vous parlez, il vérifie déjà.';
+      if (transcribing) return 'Dictée reçue, folklore filtré.';
+      if (actionLibraryOpen || systemPanel === 'search') return 'Cherchez, mais proprement.';
+      if (historyOpen || systemPanel === 'queue') return 'La preuve ne dort jamais.';
+      if (settingsOpen) return 'Palette rose, science verte.';
+      return activePrototypeProfile.modePunchlines[activeMode] ?? activePrototypeProfile.defaultPunchline;
+    }
+    if (recording || dockPanel === 'micro') return 'Plus réactif qu’un cortex';
+    if (transcribing) return 'Plus rapide que Fedex';
+    if (actionLibraryOpen || systemPanel === 'search') return 'Plus attirant qu’un vortex';
+    if (historyOpen || systemPanel === 'queue') return 'Plus Minus que Cortex';
+    if (settingsOpen) return 'Plus épicé qu’un Tex-Mex';
+    if (systemPanel === 'notifications') return 'Plus pétillant qu’un Fervex';
+    if (systemPanel === 'dm') return 'Plus attirant qu’un vortex';
+    return activePrototypeProfile.modePunchlines[activeMode] ?? activePrototypeProfile.defaultPunchline;
+  }, [activeMode, activePrototypeProfile, actionLibraryOpen, dockPanel, historyOpen, recording, selectedSkillArc, settingsOpen, systemPanel, transcribing]);
+  const profileRank = getPrototypeProfileRank(activePrototypeProfile);
+  const homeCopy = activePrototypeProfile.id === 'profkrapu'
+    ? {
+        eyebrow: 'Oh, vous voilà.',
+        title: 'Bonjour Vincent.',
+        body: 'ProfKrapu est branché. Les molécules attendent, les approximations tremblent.',
+      }
+    : {
+        eyebrow: 'Oh, te revoilà toi.',
+        title: 'Bonjour Malex.',
+        body: 'MasterFlow est prêt. Toi, on va vérifier. Tu attaques quoi ?',
+      };
+  const interfaceColor = paletteValuesInverted ? personaColor : themePalette.color;
+  const interfaceTop = paletteValuesInverted ? `color-mix(in srgb, ${personaColor} 74%, white)` : themePalette.top;
+  const interfaceDeep = paletteValuesInverted ? `color-mix(in srgb, ${personaColor} 74%, black)` : themePalette.deep;
+  const userRoleColor = paletteValuesInverted ? themePalette.color : personaColor;
+  const themeStyle = {
+    '--persona-color': personaColor,
+    '--proto-user-color': userRoleColor,
+    '--proto-support': themePalette.supportColor,
+    '--proto-blue': themePalette.supportColor,
+    '--proto-accent': interfaceColor,
+    '--proto-accent-top': interfaceTop,
+    '--proto-accent-deep': interfaceDeep,
+    '--proto-accent-gradient': `linear-gradient(180deg, ${interfaceTop} 0%, ${interfaceColor} 55%, ${interfaceDeep} 100%)`,
+  } as CSSProperties;
+  const closeTunnel = useCallback((): void => {
+    if (tunnelClosing) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTunnelOpen(false);
+      setTunnelClosing(false);
+      return;
+    }
+    setTunnelClosing(true);
+  }, [tunnelClosing]);
+  const closeShortcuts = useCallback((): void => {
+    if (shortcutsClosing) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setShortcutsOpen(false);
+      setShortcutsClosing(false);
+      return;
+    }
+    setShortcutsClosing(true);
+  }, [shortcutsClosing]);
+  const closeCharacterPage = useCallback((): void => {
+    if (characterClosing) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setCharacterOpen(false);
+      setSelectedSkillArcId(null);
+      setSkillsOverviewOpen(false);
+      return;
+    }
+    setCharacterClosing(true);
+  }, [characterClosing]);
+  const applyPrototypeProfile = useCallback((profileId: PrototypeProfileId): void => {
+    const profile = getPrototypeProfile(profileId);
+    setActivePrototypeProfileId(profileId);
+    setThemePaletteId(profile.defaultThemePaletteId);
+    setPersonaColor(profile.personaColor);
+    setPaletteValuesInverted(false);
+    setSelectedSkillArcId(null);
+    setSkillsOverviewOpen(false);
+    setPersonaStatIndex(0);
+    setSkillFamilyIndex(0);
+    const baseMood = resolvePersonaMoodState(profile.stats[0]!.masteryValue);
+    setPortraitLayers({
+      current: {...baseMood, asset: profile.moodAssets[baseMood.id]},
+      previous: null,
+    });
+  }, []);
+  const selectMode = useCallback((mode: DemoMode): void => {
     navigationDestinationRef.current = mode;
     setActiveMode(mode);
     setRailOpen(false);
-    setSettingsOpen(false);
+    setAccessOpen(false);
     setActionLibraryOpen(false);
+    setActionLibraryClosing(false);
+    setShortcutsOpen(false);
+    setShortcutsClosing(false);
+    setSettingsOpen(false);
+    setSystemPanel(null);
+    setQuickSearch('');
+    setHistoryOpen(false);
+    setRecording(false);
+    setTranscribing(false);
+    setDockPanel(null);
+    if (characterOpen) closeCharacterPage();
+  }, [characterOpen, closeCharacterPage]);
+  const selectHome = useCallback((): void => {
+    navigationDestinationRef.current = 'home';
+    setActiveMode('home');
+    if (window.matchMedia('(max-width: 760px)').matches) setRailOpen(false);
+    setAccessOpen(false);
+    setActionLibraryOpen(false);
+    setActionLibraryClosing(false);
+    setShortcutsOpen(false);
+    setShortcutsClosing(false);
+    setSettingsOpen(false);
+    setSystemPanel(null);
+    setQuickSearch('');
+    setHistoryOpen(false);
+    setRecording(false);
+    setTranscribing(false);
+    setDockPanel('keyboard');
+    if (characterOpen) closeCharacterPage();
+  }, [characterOpen, closeCharacterPage]);
+  const openCharacterPage = useCallback((): void => {
+    navigationDestinationRef.current = 'character';
+    setCharacterClosing(false);
+    setCharacterOpen(true);
+    setSelectedSkillArcId(null);
+    setSkillsOverviewOpen(false);
+    setRailOpen(false);
+    setActionLibraryOpen(false);
+    setActionLibraryClosing(false);
+    setShortcutsOpen(false);
+    setShortcutsClosing(false);
+    setSettingsOpen(false);
+    setSystemPanel(null);
+    setQuickSearch('');
+    setDockPanel(null);
+    setHistoryOpen(false);
+    setRecording(false);
+    setTranscribing(false);
+  }, []);
+  const openActionLibrary = useCallback((): void => {
+    setActionSearch('');
+    setSettingsOpen(false);
+    setShortcutsOpen(false);
+    setShortcutsClosing(false);
+    setSystemPanel(null);
+    setActionLibraryOpen(true);
+  }, []);
+  const openSettingsPanel = useCallback((): void => {
+    setActionLibraryOpen(false);
+    setActionLibraryClosing(false);
+    setShortcutsOpen(false);
+    setShortcutsClosing(false);
+    setSystemPanel(null);
+    setSettingsOpen(true);
   }, []);
 
-  const closeShortcuts = useCallback(() => {
-    if (!shortcutsOpen) return;
-    setShortcutsClosing(true);
-  }, [shortcutsOpen]);
+  useEffect(() => {
+    if (dockPanel !== 'keyboard') setTranscribing(false);
+  }, [dockPanel]);
 
-  const closeTunnel = useCallback(() => {
-    if (!tunnelOpen) return;
-    setTunnelClosing(true);
-  }, [tunnelOpen]);
+  useEffect(() => {
+    if (actionLibraryOpen) {
+      setRenderedActionLibraryOpen(true);
+      setActionLibraryClosing(false);
+      return;
+    }
+    if (!renderedActionLibraryOpen) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setRenderedActionLibraryOpen(false);
+      setActionLibraryClosing(false);
+      return;
+    }
 
-  const submit = useCallback((event?: FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
-    if (!input.trim()) return;
-    setInput('');
-    setHistoryOpen(false);
-  }, [input]);
+    setActionLibraryClosing(true);
+    const timer = window.setTimeout(() => {
+      setRenderedActionLibraryOpen(false);
+      setActionLibraryClosing(false);
+    }, 240);
+    return () => window.clearTimeout(timer);
+  }, [actionLibraryOpen, renderedActionLibraryOpen]);
 
-  const submitOnEnter = useCallback((event: ReactKeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key !== 'Enter' || event.shiftKey) return;
-    event.preventDefault();
-    if (!input.trim()) return;
-    setInput('');
-    setHistoryOpen(false);
-  }, [input]);
+  useEffect(() => {
+    if (dockPanel) {
+      setRenderedDockPanel(dockPanel);
+      setDockPanelClosing(false);
+      return;
+    }
+    if (!renderedDockPanel) return;
+
+    setDockPanelClosing(true);
+    const timer = window.setTimeout(() => {
+      setRenderedDockPanel(null);
+      setDockPanelClosing(false);
+    }, 220);
+    return () => window.clearTimeout(timer);
+  }, [dockPanel, renderedDockPanel]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: light)');
+    const syncTheme = (): void => setSystemPrefersLight(media.matches);
+    syncTheme();
+    media.addEventListener('change', syncTheme);
+    return () => media.removeEventListener('change', syncTheme);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    async function loadRuntime(): Promise<void> {
+    const loadRuntimeBridge = async (): Promise<void> => {
       try {
-        const [context, jobs, inboxItems] = await Promise.all([
-          getCurrentContext().catch(() => null),
-          getJobs().catch(() => []),
-          getValidationInboxItems().catch(() => []),
+        const context = await getCurrentContext();
+        const [jobsResult, inboxResult] = await Promise.allSettled([
+          getJobs(),
+          getValidationInboxItems(),
         ]);
         if (cancelled) return;
+        const nextAccessLevel = accessLevels.some((level) => level.id === context.user.role)
+          ? context.user.role as AccessLevel
+          : 'student';
+        setAccessLevel(nextAccessLevel);
         setRuntimeBridge({
           context,
-          error: context ? null : 'Runtime indisponible ou non connecté.',
-          inboxItems,
-          jobs,
-          status: context ? 'runtime' : 'degraded',
+          error: jobsResult.status === 'rejected' || inboxResult.status === 'rejected'
+            ? 'Runtime partiel : certains panneaux sont indisponibles.'
+            : null,
+          inboxItems: inboxResult.status === 'fulfilled' ? inboxResult.value : [],
+          jobs: jobsResult.status === 'fulfilled' ? jobsResult.value : [],
+          status: 'runtime',
         });
       } catch (error) {
         if (cancelled) return;
@@ -469,27 +622,97 @@ export function CurrentUiDemo(): ReactElement {
           status: 'degraded',
         });
       }
-    }
-    void loadRuntime();
+    };
+    void loadRuntimeBridge();
     return () => {
       cancelled = true;
     };
   }, []);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPersonaStatIndex((current) => (current + 1) % activeMetricSet.length);
+      if (activeSkillFamilies.length > 0) {
+        setSkillFamilyIndex((current) => (current + 1) % activeSkillFamilies.length);
+      }
+    }, 5600);
+    return () => window.clearInterval(timer);
+  }, [activeMetricSet.length, activeSkillFamilies.length]);
+
+  useEffect(() => {
+    setPersonaStatIndex(0);
+    setSkillFamilyIndex(0);
+  }, [activePrototypeProfileId, selectedSkillArcId]);
+
+  useEffect(() => {
+    if (!selectedSkillArcId) return;
+    if (activeSkillArcs.some((arc) => arc.id === selectedSkillArcId)) return;
+    setSelectedSkillArcId(null);
+    setSkillsOverviewOpen(false);
+  }, [activeSkillArcs, selectedSkillArcId]);
+
+  useEffect(() => {
+    if (portraitLayers.current.id === activePersonaMood.id) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPortraitLayers({current: activePersonaMood, previous: null});
+      return;
+    }
+
+    setPortraitLayers((current) => ({
+      current: activePersonaMood,
+      previous: current.current,
+    }));
+    const timer = window.setTimeout(() => {
+      setPortraitLayers((current) => current.current.id === activePersonaMood.id
+        ? {...current, previous: null}
+        : current);
+    }, 420);
+    return () => window.clearTimeout(timer);
+  }, [activePersonaMood]);
+
+  useEffect(() => {
+    const target = activePersonaStat.value;
+    const masteryTarget = activePersonaStat.masteryValue;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPersonaDisplayValue(target);
+      setPersonaDisplayMasteryValue(masteryTarget);
+      return;
+    }
+
+    setPersonaDisplayValue(0);
+    setPersonaDisplayMasteryValue(0);
+    const duration = 1600;
+    const start = window.performance.now();
+    let frame = 0;
+    const tick = (now: number): void => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - ((1 - progress) ** 3);
+      setPersonaDisplayValue(Math.round(target * eased));
+      setPersonaDisplayMasteryValue(Math.round(masteryTarget * eased));
+      if (progress < 1) frame = window.requestAnimationFrame(tick);
+    };
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [activePersonaStat]);
+
   usePrototypeShortcuts({
     accessOpen,
     actionLibraryOpen,
-    characterOpen: activeMode === 'character',
-    closeCharacterPage: () => selectMode('home'),
+    characterOpen,
+    closeCharacterPage,
     closeShortcuts,
     closeTunnel,
     dockPanel,
     historyOpen,
     modeCycle,
-    navigateTo: (destination) => selectMode(destination as DemoMode),
+    navigateTo: (destination) => {
+      if (destination === 'home') selectHome();
+      else if (destination === 'character') openCharacterPage();
+      else selectMode(destination as DemoMode);
+    },
     navigationDestinationRef,
     railOpen,
-    selectSkillSliderIndex: () => undefined,
+    selectSkillSliderIndex,
     setAccessOpen,
     setActionLibraryOpen,
     setActionSearch,
@@ -502,31 +725,69 @@ export function CurrentUiDemo(): ReactElement {
     setShortcutsClosing,
     setShortcutsOpen,
     setSystemPanelClosed: () => setSystemPanel(null),
-    setSystemPanelSearch: () => setSystemPanel('search'),
+    setSystemPanelSearch: () => setSystemPanel((current) => current === 'search' ? null : 'search'),
     setTunnelClosing,
     setTunnelOpen,
     setViewMode,
     settingsOpen,
     shortcutsOpen,
-    skillSliderIndex: 0,
-    systemPanelOpen: systemPanel !== null,
+    skillSliderIndex,
+    systemPanelOpen: Boolean(systemPanel),
     tunnelOpen,
     viewMode,
   });
 
+  useEffect(() => {
+    const syncFullscreenState = (): void => {
+      if (!document.fullscreenElement) {
+        setViewMode((current) => current === 'normal' ? current : 'normal');
+      }
+    };
+
+    document.addEventListener('fullscreenchange', syncFullscreenState);
+    return () => document.removeEventListener('fullscreenchange', syncFullscreenState);
+  }, []);
+
+  const submit = useCallback((event?: FormEvent<HTMLFormElement>): void => {
+    event?.preventDefault();
+    if (!input.trim()) return;
+    setInput('');
+    setHistoryOpen(false);
+  }, [input]);
+
+  const submitOnEnter = (event: ReactKeyboardEvent<HTMLTextAreaElement>): void => {
+    if (event.key !== 'Enter' || event.shiftKey) return;
+    event.preventDefault();
+    submit();
+  };
+
+  const fallbackCommandSuggestions: PrototypeActionSuggestion[] = activeMode === 'home'
+    ? [
+        {id: 'resume', label: 'Reprendre', icon: MessageCircle},
+        {id: 'new', label: 'Nouveau', icon: Plus},
+        {id: 'save', label: 'Sauvegarder', icon: Save},
+        {id: 'history', label: 'Historique', icon: History, onClick: () => setHistoryOpen((current) => !current)},
+        {id: 'project', label: 'Projet', icon: Boxes, onClick: () => selectMode('project')},
+      ]
+    : [
+        {id: 'resume', label: 'Reprendre', icon: MessageCircle},
+        {id: 'save', label: 'Sauvegarder', icon: Save},
+        {id: 'edit', label: 'Modifier', icon: Pencil},
+        {id: 'history', label: 'Historique', icon: History, onClick: () => setHistoryOpen((current) => !current)},
+        {id: 'export', label: 'Exporter', icon: Upload},
+      ];
+  const commandSuggestions = buildRuntimeSuggestions(runtimeBridge.context, fallbackCommandSuggestions);
   const queueCount = runtimeBridge.status === 'runtime' ? countAttentionJobs(runtimeBridge.jobs) : 0;
   const notificationCount = runtimeBridge.status === 'runtime' ? countOpenInboxItems(runtimeBridge.inboxItems) : 0;
-  const libraryCategories = [...new Set(libraryActions.map((action) => action.category))];
-  const themeStyle = {
-    '--proto-accent': activeProfile.theme.accent,
-    '--proto-accent-deep': activeProfile.theme.accentDeep,
-    '--proto-support': activeProfile.theme.support,
-    '--proto-user-color': activeProfile.theme.user,
-  } as CSSProperties;
+  const dmCount = 0;
+  const navigationModeGroups: PrototypeModeGroup[] = buildPrototypeModeGroups(visibleModeIds);
+  const homePrimaryModes = buildPrototypeHomeModes(['project', 'teaching', 'learn'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[]);
+  const homeSecondaryModes = buildPrototypeHomeModes(['story', 'da', 'inventory', 'companions'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[]);
 
   return (
     <main
-      className={`proto-shell proto-shell--theme-${appearanceLight ? 'light' : 'dark'} proto-shell--view-${viewMode} proto-shell--dock-${dockPanel ?? 'closed'}${recording ? ' proto-shell--recording' : ''}${railOpen ? ' proto-shell--rail-open' : ''}${tunnelOpen ? ' proto-shell--tunnel-open' : ''}`}
+      className={`proto-shell proto-shell--theme-${resolvedAppearance} proto-shell--view-${viewMode} proto-shell--dock-${dockPanel ?? 'closed'}${recording ? ' proto-shell--recording' : ''}${railOpen ? ' proto-shell--rail-open' : ''}${tunnelOpen ? ' proto-shell--tunnel-open' : ''}`}
+      style={themeStyle}
       onPointerDown={(event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
@@ -534,6 +795,7 @@ export function CurrentUiDemo(): ReactElement {
           historyOpen
           && !target.closest('.proto-history-panel')
           && !target.closest('.proto-action-button--history')
+          && !target.closest('button[aria-label="Historique"]')
         ) setHistoryOpen(false);
         if (target.closest('.proto-tunnel') || target.closest('.proto-shortcuts-overlay')) return;
         if (target.closest('.proto-commandbar')) return;
@@ -543,15 +805,8 @@ export function CurrentUiDemo(): ReactElement {
         }
         if (railOpen && !target.closest('.proto-nav') && !target.closest('.proto-mobile-nav')) setRailOpen(false);
         if (accessOpen && !target.closest('.proto-access')) setAccessOpen(false);
-        if (
-          systemPanel
-          && !target.closest('.proto-systembar__actions')
-          && !target.closest('.proto-system-popover')
-          && !target.closest('.proto-mobile-nav')
-          && !target.closest('.proto-mobile-system-page')
-        ) setSystemPanel(null);
+        if (systemPanel && !target.closest('.proto-systembar__actions') && !target.closest('.proto-system-popover') && !target.closest('.proto-mobile-nav') && !target.closest('.proto-mobile-system-page')) setSystemPanel(null);
       }}
-      style={themeStyle}
     >
       <PrototypeNavigationRail
         accessClosing={accessPresence.closing}
@@ -560,18 +815,20 @@ export function CurrentUiDemo(): ReactElement {
         accessOpen={Boolean(accessPresence.renderedValue)}
         activeMode={activeMode}
         brandMark={<MasterflowMark className="proto-mf-mark" />}
-        characterActive={activeMode === 'character'}
-        homeActive={activeMode === 'home'}
-        mobileLabel={activeProfile.mobileLabel}
-        modeGroups={modeGroups}
+        characterActive={characterOpen}
+        homeActive={!characterOpen && activeMode === 'home'}
+        mobileLabel={activePrototypeProfile.mobileLabel}
+        modeGroups={navigationModeGroups}
         onCloseRail={() => setRailOpen(false)}
         onOpenActions={() => {
           setRailOpen(false);
-          setActionLibraryOpen(true);
+          openActionLibrary();
         }}
-        onOpenCharacter={() => selectMode('character')}
-        onOpenHome={() => selectMode('home')}
-        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenCharacter={() => {
+          if (!characterOpen) openCharacterPage();
+        }}
+        onOpenHome={selectHome}
+        onOpenSettings={openSettingsPanel}
         onPointerEnter={() => {
           if (window.matchMedia('(min-width: 761px)').matches) setRailOpen(true);
         }}
@@ -582,71 +839,203 @@ export function CurrentUiDemo(): ReactElement {
         }}
         onSelectAccess={(id) => {
           setAccessLevel(id as AccessLevel);
+          selectMode('project');
           setAccessOpen(false);
         }}
         onSelectMode={(id) => selectMode(id as DemoMode)}
         onToggleAccess={() => setAccessOpen((current) => !current)}
-        profileAvatar={activeProfile.avatar}
-        profileName={activeProfile.name}
+        profileAvatar={activePrototypeProfile.avatarAsset}
+        profileName={activePrototypeProfile.name}
       />
 
-      <section className="proto-workspace" aria-label="Prototype Shell et Command Dock">
+      <section className="proto-workspace" aria-label="Prototype shell Step 1">
+        {characterOpen ? (
+          <PrototypeCharacterSurface
+            canonAlt={activePrototypeProfile.canonAlt}
+            canonAsset={activePrototypeProfile.canonAsset}
+            closing={characterClosing}
+            galaxyOpen={skillGalaxyOpen}
+            inventoryItems={activePrototypeProfile.inventoryConnections}
+            name={activePrototypeProfile.name}
+            onAnimationEnd={(event) => {
+              if (!characterClosing || event.animationName !== 'proto-page-out') return;
+              setCharacterOpen(false);
+              setCharacterClosing(false);
+              setSelectedSkillArcId(null);
+              setSkillsOverviewOpen(false);
+            }}
+            onClose={closeCharacterPage}
+            profileId={activePrototypeProfile.id}
+            punchline={characterPunchline}
+            rankTitle={profileRank.title}
+            skillsOverviewOpen={skillsOverviewOpen}
+          >
+            <PrototypeSkilltreeSurface
+              activePersonaMood={activePersonaMood}
+              activePersonaStat={activePersonaStat}
+              activeProfileName={activePrototypeProfile.name}
+              activeSkillArcs={activeSkillArcs}
+              activeSkillFamily={activeSkillFamily}
+              displayedPersonaMood={displayedPersonaMood}
+              onSelectArc={(arcId) => {
+                setSelectedSkillArcId(arcId);
+                setSkillsOverviewOpen(false);
+              }}
+              onSelectSkillSliderIndex={selectSkillSliderIndex}
+              personaDisplayValue={personaDisplayValue}
+              portraitLayers={portraitLayers}
+              selectedSkillArc={selectedSkillArc}
+              shortLabels={activePrototypeProfile.shortLabels}
+              skillFamilyColors={skillFamilyColors}
+              skillGalaxyOpen={skillGalaxyOpen}
+              skillSliderIndex={skillSliderIndex}
+              skillsOverviewOpen={skillsOverviewOpen}
+            />
+          </PrototypeCharacterSurface>
+        ) : null}
+
         {settingsPresence.renderedValue ? (
           <PrototypeOverlayFrame
             className="proto-overlay"
             closing={settingsPresence.closing}
             onClose={() => setSettingsOpen(false)}
           >
-            <div aria-label="Paramètres prototype" aria-modal="true" className={`proto-settings${settingsPresence.closing ? ' is-closing' : ''}`} role="dialog">
+            <div aria-label="Paramètres du profil" aria-modal="true" className={`proto-settings${settingsPresence.closing ? ' is-closing' : ''}`} role="dialog">
               <button aria-label="Fermer les paramètres" className="proto-settings__close" onClick={() => setSettingsOpen(false)} type="button">
                 <X size={19} />
               </button>
               <aside className="proto-settings__menu">
                 <strong>Paramètres</strong>
+                <button type="button"><UserRound size={17} /> Compte</button>
                 <button className="is-active" type="button"><Palette size={17} /> Interface</button>
                 <button type="button"><ShieldCheck size={17} /> Accessibilité</button>
-                <button type="button"><Mic size={17} /> Voix</button>
+                <button type="button"><Mic size={17} /> Voix et transcription</button>
+                <button type="button"><Bell size={17} /> Notifications</button>
+                <button type="button"><Lock size={17} /> Confidentialité</button>
               </aside>
               <div className="proto-settings__content">
-                <small>Prototype</small>
-                <h2>Profil et thème</h2>
-                <section className="proto-profile-switcher" aria-label="Profil actif">
-                  <h3>Profil testable</h3>
+                <small>Interface</small>
+                <h2>Apparence</h2>
+                <section className="proto-profile-switcher" aria-label="Profil prototype actif">
+                  <h3>Profil prototype</h3>
                   <div>
-                    {Object.entries(profileMap).map(([id, profile]) => (
+                    {prototypeProfileIds.map((profileId) => {
+                      const profile = getPrototypeProfile(profileId);
+                      return (
                       <button
-                        aria-pressed={profileId === id}
-                        key={id}
-                        onClick={() => setProfileId(id as ShellProfileId)}
+                        aria-pressed={activePrototypeProfileId === profile.id}
+                        key={profile.id}
+                        onClick={() => applyPrototypeProfile(profile.id)}
                         type="button"
                       >
-                        <span><img alt="" src={profile.avatar} /></span>
+                        <span>
+                          <img alt="" src={profile.avatarAsset} />
+                        </span>
                         <strong>{profile.name}</strong>
-                        <small>{id === 'profkrapu' ? 'Orchidée rose' : 'Orange / bleu'}</small>
+                        <small>{profile.id === 'profkrapu' ? 'Orchidée rose · science verte' : 'MasterFlow · bleu persona'}</small>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </section>
                 <div className="proto-theme-choice" role="group" aria-label="Thème de l’interface">
-                  <button aria-pressed={!appearanceLight} onClick={() => setAppearanceLight(false)} type="button">
+                  <button aria-pressed={appearanceTheme === 'auto'} onClick={() => setAppearanceTheme('auto')} type="button">
+                    <Monitor size={20} />
+                    <span>Automatique</span>
+                  </button>
+                  <button aria-pressed={appearanceTheme === 'dark'} onClick={() => setAppearanceTheme('dark')} type="button">
                     <Moon size={20} />
                     <span>Sombre</span>
                   </button>
-                  <button aria-pressed={appearanceLight} onClick={() => setAppearanceLight(true)} type="button">
+                  <button aria-pressed={appearanceTheme === 'light'} onClick={() => setAppearanceTheme('light')} type="button">
                     <Sun size={20} />
                     <span>Clair</span>
                   </button>
+                </div>
+                <div className="proto-theme-customizer">
+                  <section>
+                    <h3>Palettes recommandées</h3>
+                    <div className="proto-palette-presets" role="group" aria-label="Palettes recommandées">
+                      {themePalettes.map((palette) => (
+                        <button
+                          aria-label={palette.label}
+                          aria-pressed={themePaletteId === palette.id}
+                          key={palette.id}
+                          onClick={() => {
+                            setThemePaletteId(palette.id);
+                            setPersonaColor(palette.userColor);
+                          }}
+                          type="button"
+                        >
+                          <span className="proto-palette-presets__colors" aria-hidden="true">
+                            <i style={{background: palette.color}} />
+                            <i style={{background: palette.userColor}} />
+                            <i style={{background: palette.supportColor}} />
+                          </span>
+                          <strong>{palette.label}</strong>
+                          <small>{palette.logic}</small>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                  <section>
+                    <h3>Ta nuance</h3>
+                    <div className="proto-color-swatches" role="group" aria-label="Couleur personnelle et bulles utilisateur">
+                      {themePalette.userTones.map((option) => (
+                        <button
+                          aria-label={option.label}
+                          aria-pressed={personaColor === option.color}
+                          key={option.color}
+                          onClick={() => setPersonaColor(option.color)}
+                          style={{'--swatch-color': option.color} as CSSProperties}
+                          type="button"
+                        >
+                          <span />
+                          <small>{option.label}</small>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                  <section>
+                    <h3>Valeurs</h3>
+                    <button
+                      aria-pressed={paletteValuesInverted}
+                      className="proto-value-switch"
+                      onClick={() => setPaletteValuesInverted((current) => !current)}
+                      type="button"
+                    >
+                      <span aria-hidden="true">
+                        <i style={{background: interfaceColor}} />
+                      </span>
+                      <strong>{paletteValuesInverted ? 'Valeurs inversées' : 'Valeurs originales'}</strong>
+                      <small>{paletteValuesInverted ? 'La couleur solo pilote l’interface' : 'La palette pilote l’interface'}</small>
+                    </button>
+                  </section>
+                  <section className="proto-theme-preview" aria-label="Aperçu des rôles de couleur">
+                    <div>
+                      <span style={{background: interfaceColor}} />
+                      <small>Interface</small>
+                    </div>
+                    <div>
+                      <span style={{background: userRoleColor}} />
+                      <small>Toi · bulles</small>
+                    </div>
+                    <div>
+                      <span style={{background: themePalette.supportColor}} />
+                      <small>Signal secondaire</small>
+                    </div>
+                  </section>
                 </div>
               </div>
             </div>
           </PrototypeOverlayFrame>
         ) : null}
 
-        {actionLibraryPresence.renderedValue ? (
+        {renderedActionLibraryOpen ? (
           <PrototypeActionLibrary
             actions={libraryActions}
-            categories={libraryCategories}
-            closing={actionLibraryPresence.closing}
+            categories={actionCategories}
+            closing={actionLibraryClosing}
             onClose={() => setActionLibraryOpen(false)}
             onSearchChange={setActionSearch}
             onSelectAction={() => setActionLibraryOpen(false)}
@@ -667,25 +1056,25 @@ export function CurrentUiDemo(): ReactElement {
         ) : null}
 
         <PrototypeSystemChrome
-          appearanceLight={appearanceLight}
+          appearanceLight={resolvedAppearance === 'light'}
           brandMark={<MasterflowMark className="proto-wordmark__mark" />}
-          dmCount={0}
+          dmCount={dmCount}
           notificationCount={notificationCount}
           onClosePanel={() => setSystemPanel(null)}
           onExit={() => window.location.assign('/')}
-          onOpenCharacter={() => selectMode('character')}
-          onOpenHome={() => selectMode('home')}
+          onOpenCharacter={openCharacterPage}
+          onOpenHome={selectHome}
           onQuickSearchChange={setQuickSearch}
           onTogglePanel={(panel) => {
             if (panel === 'search') setQuickSearch('');
             setSystemPanel((current) => current === panel ? null : panel);
           }}
           onToggleRail={() => setRailOpen((current) => !current)}
-          onToggleTheme={() => setAppearanceLight((current) => !current)}
+          onToggleTheme={() => setAppearanceTheme(resolvedAppearance === 'light' ? 'dark' : 'light')}
           panel={systemPanel}
           panelClosing={systemPanelPresence.closing}
-          profileAvatar={activeProfile.avatar}
-          profileName={activeProfile.name}
+          profileAvatar={activePrototypeProfile.avatarAsset}
+          profileName={activePrototypeProfile.name}
           quickSearch={quickSearch}
           queueCount={queueCount}
           railOpen={railOpen}
@@ -694,32 +1083,24 @@ export function CurrentUiDemo(): ReactElement {
         />
 
         <div className="proto-canvas-empty">
-          <section className="mf-room-preview proto-shell-contract" aria-label="Contrat Shell Dock">
-            <span className="mf-kicker">
-              {runtimeBridge.status === 'runtime' ? 'Runtime branché' : 'Prototype autonome'}
-            </span>
-            <h1>{modeTitle(activeMode)}</h1>
-            <p>
-              Tranche P1 : navigation, barre système, actions, clavier, micro, raccourcis et overlays.
-              Home, personas et skilltree restent volontairement hors périmètre de ce round.
-            </p>
-            <div className="mf-room-preview__facts">
-              <span>{modeCycle.length} entrées nav</span>
-              <span>{commandSuggestions.length} actions</span>
-              <span>{runtimeBridge.status}</span>
-            </div>
-            {runtimeBridge.error ? <p className="proto-shell-contract__note">{runtimeBridge.error}</p> : null}
-          </section>
+          {activeMode === 'home' ? (
+            <PrototypeHomeSurface
+              copy={homeCopy}
+              onSelectMode={(mode) => selectMode(mode as DemoMode)}
+              primaryModes={homePrimaryModes}
+              secondaryModes={homeSecondaryModes}
+            />
+          ) : null}
         </div>
 
         <PrototypeActionRail
           libraryOpen={actionLibraryOpen}
-          onOpenLibrary={() => setActionLibraryOpen(true)}
+          onOpenLibrary={openActionLibrary}
         />
 
         <PrototypeCommandDock
           dockPanel={dockPanel}
-          dockPanelClosing={dockPresence.closing}
+          dockPanelClosing={dockPanelClosing}
           expandedHistoryId={expandedHistoryId}
           historyClosing={historyPresence.closing}
           historyItems={historyItems}
@@ -746,18 +1127,17 @@ export function CurrentUiDemo(): ReactElement {
           onToggleRecording={() => setRecording((current) => !current)}
           onToggleTranscription={() => setTranscribing((current) => !current)}
           recording={recording}
-          renderedDockPanel={dockPresence.renderedValue}
+          renderedDockPanel={renderedDockPanel}
           showSuggestions={Boolean(dockPanel || historyPresence.renderedValue)}
           suggestions={commandSuggestions}
           transcribing={transcribing}
         />
-
         {tunnelOpen ? (
           <PrototypeTunnel
-            avatarAsset={activeProfile.avatar}
+            avatarAsset={activePrototypeProfile.avatarAsset}
             closing={tunnelClosing}
             input={input}
-            name={activeProfile.name}
+            name={activePrototypeProfile.name}
             onAnimationEnd={() => {
               setTunnelOpen(false);
               setTunnelClosing(false);
@@ -766,9 +1146,9 @@ export function CurrentUiDemo(): ReactElement {
             onInputChange={setInput}
             onInputKeyDown={submitOnEnter}
             onSubmit={submit}
-            prompt={activeProfile.tunnelPrompt}
-            punchline={activeProfile.defaultPunchline}
-            tunnelLine={activeProfile.tunnelLine}
+            prompt={activePrototypeProfile.tunnelPrompt}
+            punchline={activePrototypeProfile.defaultPunchline}
+            tunnelLine={activePrototypeProfile.tunnelLine}
           />
         ) : null}
       </section>

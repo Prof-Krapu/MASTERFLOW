@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-12T02:28:58+02:00",
+  "updated_at": "2026-07-12T03:10:21+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,8 +22,8 @@
     "status": "active",
     "stage_index": 8,
     "stage_label": "Clôturer",
-    "recommended_next_action": "Faire une validation visuelle humaine courte sur /ui-reset, /ui-lab et /ui-lab/vincent, puis décider si le Round Shell/Dock P1 peut être marqué clos.",
-    "primary_risk": "Redessiner le prototype au lieu de brancher progressivement les composants et les contrats déjà validés.",
+    "recommended_next_action": "Valider humainement que /ui-reset, /ui-lab et /ui-lab/vincent utilisent bien le vrai Lab/proto restauré, avec assets actifs et workspaces distincts.",
+    "primary_risk": "Appauvrir le Lab en le remplaçant par une intégration minimale non utilisable par MALEX ou Vincent.",
     "no_auto_execute": false,
     "work_package_ids": ["USD-001", "USD-002", "USD-003", "USD-004", "USD-005", "USD-006"],
     "authorization_id": "AUTH-USD-2026-07-09",
@@ -44,6 +44,7 @@
       "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md",
       "docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md",
       "docs/masterbuild/audits/UI_SHELL_DOCK_IMPLEMENTATION_001.md",
+      "docs/masterbuild/MASTERBUILD_UI_LAB_PIPELINE.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
       "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md"
     ]
