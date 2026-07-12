@@ -2,380 +2,776 @@ import {
   Bell,
   BookOpen,
   Boxes,
-  ChevronRight,
-  Clock3,
+  Check,
+  CircleHelp,
+  Clapperboard,
   Command,
   FileText,
+  FolderKanban,
   GraduationCap,
-  Home,
-  LogOut,
-  Maximize2,
+  History,
+  LoaderCircle,
   MessageCircle,
   Mic,
-  MoreHorizontal,
+  Monitor,
+  Moon,
+  Network,
+  PackageOpen,
   Palette,
-  PanelRightOpen,
-  PlayCircle,
-  Search,
+  Pencil,
+  Plus,
+  Save,
   Send,
-  Settings,
+  ShieldCheck,
   Sparkles,
+  Sun,
+  Upload,
   UserRound,
+  Workflow,
   X,
 } from 'lucide-react';
-import {useState} from 'react';
-import type {FormEvent, ReactElement} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import type {
+  CSSProperties,
+  FormEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  ReactElement,
+} from 'react';
+import type {ActionRegistryEntry, CurrentContext, Job, ValidationInboxItem} from '@masterflow/shared';
 
+import {getCurrentContext, getJobs, getValidationInboxItems} from './api';
 import masterflexAsset from './assets/masterflex-ui-v2.png';
 import profKrapuAsset from './assets/profkrapu-ui-v2.png';
 import './current-ui-demo.css';
+import {
+  PrototypeActionLibrary,
+  PrototypeActionRail,
+  PrototypeCommandDock,
+  PrototypeNavigationRail,
+  PrototypeOverlayFrame,
+  PrototypeShortcuts,
+  PrototypeSystemChrome,
+  PrototypeTunnel,
+} from './ui-reset/prototype-shell-components';
+import type {
+  PrototypeActionSuggestion,
+  PrototypeLibraryAction,
+  PrototypeModeGroup,
+  PrototypeSearchResult,
+  PrototypeSystemPanel,
+} from './ui-reset/prototype-shell-components';
+import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
+import {resolveKeyboardToggle, resolveMicroToggle} from './ui-reset/prototype-ui-state-registry';
+import {resolveCycledShortcutDestination, usePrototypeShortcuts} from './ui-reset/use-prototype-shortcuts';
+import type {PrototypeDockPanel, PrototypeViewMode} from './ui-reset/use-prototype-shortcuts';
 
-type DemoMode = 'home' | 'teaching' | 'project' | 'learning';
-type ContextPanel = 'notifications' | 'resources' | 'profile' | null;
-type PersonaState =
-  | 'idle'
-  | 'listening'
-  | 'thinking'
-  | 'speaking'
-  | 'success'
-  | 'soft_alert'
-  | 'validation_required'
-  | 'inactive'
-  | 'summoned'
-  | 'handoff';
+type DemoMode =
+  | 'home'
+  | 'character'
+  | 'project'
+  | 'teaching'
+  | 'learn'
+  | 'story'
+  | 'da'
+  | 'inventory'
+  | 'companions';
 
-const personaStateLabels: Record<PersonaState, string> = {
-  idle: 'Disponible',
-  listening: 'Écoute',
-  thinking: 'Analyse',
-  speaking: 'Réponse',
-  success: 'Validé',
-  soft_alert: 'À préciser',
-  validation_required: 'Validation',
-  inactive: 'En veille',
-  summoned: 'Invoqué',
-  handoff: 'Relais',
+type AccessLevel = 'student' | 'teacher' | 'supervision' | 'admin' | 'godmode';
+type ShellProfileId = 'masterflex' | 'profkrapu';
+
+type RuntimeBridgeState = {
+  context: CurrentContext | null;
+  inboxItems: ValidationInboxItem[];
+  jobs: Job[];
+  status: 'prototype' | 'runtime' | 'degraded';
+  error: string | null;
 };
 
-const modes = [
-  {id: 'home', label: 'Home', icon: Home},
-  {id: 'teaching', label: 'Teaching', icon: GraduationCap},
-  {id: 'project', label: 'Project', icon: Boxes},
-  {id: 'learning', label: 'Learning', icon: BookOpen},
+const accessLevels = [
+  {id: 'student', label: 'Élève', icon: UserRound},
+  {id: 'teacher', label: 'Prof', icon: GraduationCap},
+  {id: 'supervision', label: 'Supervision', icon: Monitor},
+  {id: 'admin', label: 'Admin', icon: ShieldCheck},
+  {id: 'godmode', label: 'GodMode', icon: Sparkles},
 ] as const;
 
-const actions = [
-  {
-    id: 'teaching',
-    eyebrow: 'Teaching',
-    title: 'Reprendre 4CREA A',
-    detail: '18 rendus à relire',
-    icon: GraduationCap,
-    accent: 'orange',
-  },
-  {
-    id: 'project',
-    eyebrow: 'Projet actif',
-    title: 'Ours d’Or 2026',
-    detail: 'Valider le prochain palier',
-    icon: Sparkles,
-    accent: 'gold',
-  },
-  {
-    id: 'learning',
-    eyebrow: 'Learning',
-    title: 'Continuer le parcours IA',
-    detail: 'Étape 3 sur 7',
-    icon: PlayCircle,
-    accent: 'blue',
-  },
-  {
-    id: 'resources',
-    eyebrow: 'Ressources',
-    title: 'Ouvrir les références',
-    detail: '6 ressources utiles',
-    icon: FileText,
-    accent: 'violet',
-  },
-] as const;
+const modeIcons = {
+  home: Command,
+  character: UserRound,
+  project: Boxes,
+  teaching: GraduationCap,
+  learn: BookOpen,
+  story: FileText,
+  da: Palette,
+  inventory: PackageOpen,
+  companions: MessageCircle,
+} as const;
 
-const resources = [
-  {label: 'CDC d’un outil IA', type: 'Document', icon: FileText},
-  {label: 'Du besoin au prototype', type: 'Vidéo · 08:42', icon: PlayCircle},
-  {label: 'Références Ours d’Or', type: 'Projet', icon: Sparkles},
-] as const;
+const fallbackModeGroups: PrototypeModeGroup[] = [
+  {
+    label: 'Projet actif',
+    kind: 'project',
+    modes: [{id: 'project', label: 'Project', icon: Boxes, featured: true}],
+  },
+  {
+    label: 'Expériences',
+    kind: 'experience',
+    modes: [
+      {id: 'teaching', label: 'Teaching', icon: GraduationCap},
+      {id: 'learn', label: 'Learn', icon: BookOpen},
+    ],
+  },
+  {
+    label: 'Studios',
+    kind: 'studios',
+    modes: [
+      {id: 'story', label: 'MasterStory', icon: FileText},
+      {id: 'da', label: 'DA Studio', icon: Palette},
+    ],
+  },
+  {
+    label: 'Personnel',
+    kind: 'personal',
+    modes: [
+      {id: 'inventory', label: 'Inventory', icon: PackageOpen},
+      {id: 'companions', label: 'Companions', icon: MessageCircle},
+    ],
+  },
+];
 
-function HomeView({
-  onMode,
-  onResources,
-}: {
-  onMode: (mode: DemoMode) => void;
-  onResources: () => void;
-}): ReactElement {
+const profileMap: Record<ShellProfileId, {
+  avatar: string;
+  defaultPunchline: string;
+  mobileLabel: string;
+  name: string;
+  theme: {
+    accent: string;
+    accentDeep: string;
+    support: string;
+    user: string;
+  };
+  tunnelLine: string;
+  tunnelPrompt: string;
+}> = {
+  masterflex: {
+    avatar: masterflexAsset,
+    defaultPunchline: 'Plus croustillant qu’un Corn Flakes',
+    mobileLabel: 'MasterFlex',
+    name: 'MasterFlex',
+    theme: {
+      accent: '#ff6a3a',
+      accentDeep: '#9f2f20',
+      support: '#3979e8',
+      user: '#3979e8',
+    },
+    tunnelLine: 'On pose le pad et on explique.',
+    tunnelPrompt: 'Demande à MasterFlex de développer le point en cours',
+  },
+  profkrapu: {
+    avatar: profKrapuAsset,
+    defaultPunchline: 'Précision source, troll pédagogique.',
+    mobileLabel: 'ProfKrapu',
+    name: 'ProfKrapu',
+    theme: {
+      accent: '#ec5aa6',
+      accentDeep: '#912958',
+      support: '#60b6f0',
+      user: '#52b36c',
+    },
+    tunnelLine: 'On vérifie avant de faire le malin.',
+    tunnelPrompt: 'Demande à ProfKrapu de clarifier scientifiquement',
+  },
+};
+
+const historyItems = [
+  {
+    id: 'shell',
+    speaker: 'MASTERBUILD',
+    summary: 'Shell/Dock est le premier raccord UI.',
+    detail: 'On promeut la navigation, la system bar et le dock avant Home, persona et skilltree.',
+  },
+  {
+    id: 'runtime',
+    speaker: 'Runtime',
+    summary: 'Lecture backend optionnelle.',
+    detail: 'Le prototype fonctionne sans backend, puis enrichit modes, actions, jobs et inbox quand le runtime répond.',
+  },
+  {
+    id: 'risk',
+    speaker: 'MasterFlex',
+    summary: 'Pas de bouton mytho.',
+    detail: 'Une action visible peut expliquer ou préparer, mais aucune action sensible ne part depuis une suggestion.',
+  },
+];
+
+const fallbackSuggestions: PrototypeActionSuggestion[] = [
+  {id: 'resume', label: 'Reprendre', icon: MessageCircle},
+  {id: 'save', label: 'Sauvegarder', icon: Save},
+  {id: 'edit', label: 'Modifier', icon: Pencil},
+  {id: 'history', label: 'Historique', icon: History},
+  {id: 'export', label: 'Exporter', icon: Upload},
+];
+
+const libraryActions: PrototypeLibraryAction[] = [
+  {id: 'open-project', label: 'Ouvrir un projet', category: 'Projet', icon: FolderKanban, relevant: true},
+  {id: 'resume', label: 'Reprendre le contexte', category: 'Projet', icon: MessageCircle, relevant: true},
+  {id: 'preflight', label: 'Préflight action sensible', category: 'Sécurité', icon: ShieldCheck, relevant: true},
+  {id: 'save', label: 'Sauvegarder', category: 'Outils', icon: Save},
+  {id: 'share', label: 'Partager', category: 'Partage', icon: Send},
+  {id: 'new', label: 'Nouveau', category: 'Création', icon: Plus},
+  {id: 'export', label: 'Exporter', category: 'Partage', icon: Upload},
+  {id: 'resource', label: 'Chercher une ressource', category: 'Ressources', icon: PackageOpen},
+  {id: 'course', label: 'Trouver un cours', category: 'Ressources', icon: BookOpen},
+];
+
+const quickSearchItems: PrototypeSearchResult[] = [
+  {id: 'teacher', label: 'Chercher un prof', detail: 'Personnes', icon: GraduationCap},
+  {id: 'resource', label: 'Chercher une ressource', detail: 'Ressources', icon: PackageOpen},
+  {id: 'course', label: 'Trouver un cours', detail: 'Cours', icon: BookOpen},
+  {id: 'project', label: 'Ouvrir un projet', detail: 'Projets', icon: FolderKanban},
+  {id: 'document', label: 'Chercher un document', detail: 'Documents', icon: FileText},
+  {id: 'video', label: 'Chercher une vidéo', detail: 'Médias', icon: Clapperboard},
+  {id: 'subject', label: 'Chercher un sujet', detail: 'Sujets', icon: Network},
+  {id: 'validation', label: 'Voir les décisions', detail: 'Validation', icon: Check},
+];
+
+const runtimeModeAliases: Record<string, DemoMode> = {
+  course: 'teaching',
+  da: 'da',
+  da_studio: 'da',
+  daStudio: 'da',
+  inventory: 'inventory',
+  learn: 'learn',
+  learning: 'learn',
+  narrative: 'story',
+  project: 'project',
+  story: 'story',
+  teaching: 'teaching',
+  workspace: 'project',
+  companions: 'companions',
+};
+
+function MasterflowMark({className}: {className: string}): ReactElement {
   return (
-    <section className="mf-home" aria-labelledby="mf-home-title">
-      <header className="mf-home__welcome">
-        <p>30 juin · Ton espace est prêt</p>
-        <h1 id="mf-home-title">Bonjour Malex.</h1>
-        <span>Trois dynamiques avancent. Une attention mérite ton regard.</span>
-      </header>
-
-      <article className="mf-atmosphere" aria-label="État pédagogique général">
-        <div className="mf-atmosphere__copy">
-          <span className="mf-kicker"><Sparkles size={15} /> Météo pédagogique</span>
-          <h2>Le terrain est vivant.</h2>
-          <p>Les projets progressent bien. La correction de 4CREA A concentre l’attention du moment.</p>
-        </div>
-
-        <div className="mf-landscape" aria-hidden="true">
-          <div className="mf-landscape__glow" />
-          <div className="mf-landscape__line mf-landscape__line--one" />
-          <div className="mf-landscape__line mf-landscape__line--two" />
-          <div className="mf-landscape__line mf-landscape__line--three" />
-          <span className="mf-landscape__node mf-landscape__node--teaching"><i />4CREA A</span>
-          <span className="mf-landscape__node mf-landscape__node--project"><i />Ours d’Or</span>
-          <span className="mf-landscape__node mf-landscape__node--learning"><i />Parcours IA</span>
-        </div>
-
-        <dl className="mf-atmosphere__signals">
-          <div><dt>En mouvement</dt><dd>3 pôles</dd></div>
-          <div><dt>À reprendre</dt><dd>1 priorité</dd></div>
-          <div><dt>Énergie</dt><dd>Stable</dd></div>
-        </dl>
-      </article>
-
-      <section className="mf-home__actions" aria-labelledby="mf-actions-title">
-        <div className="mf-section-heading">
-          <div><span>Maintenant</span><h2 id="mf-actions-title">Où veux-tu reprendre ?</h2></div>
-          <button aria-label="Afficher plus d’actions" className="mf-icon-button" type="button">
-            <MoreHorizontal size={20} />
-          </button>
-        </div>
-        <div className="mf-action-grid">
-          {actions.map((action) => {
-            const Icon = action.icon;
-            return (
-              <button
-                className={`mf-action-card mf-action-card--${action.accent}`}
-                key={action.id}
-                onClick={() => {
-                  if (action.id === 'resources') onResources();
-                  else onMode(action.id);
-                }}
-                type="button"
-              >
-                <span className="mf-action-card__icon"><Icon size={22} /></span>
-                <span className="mf-action-card__copy">
-                  <small>{action.eyebrow}</small>
-                  <strong>{action.title}</strong>
-                  <em>{action.detail}</em>
-                </span>
-                <ChevronRight className="mf-action-card__arrow" size={18} />
-              </button>
-            );
-          })}
-        </div>
-      </section>
-    </section>
+    <svg aria-hidden="true" className={className} viewBox="0 0 64 64">
+      <path d="M8 48 18 14l14 25 14-25 10 34H44l-3-12-9 15-9-15-3 12Z" fill="var(--proto-accent)" />
+      <path d="m37 19 18 10-18 10 4-10Z" fill="var(--proto-user-color)" />
+      <circle cx="49" cy="46" fill="var(--proto-user-color)" r="4" />
+    </svg>
   );
 }
 
-function ModePreview({mode}: {mode: Exclude<DemoMode, 'home'>}): ReactElement {
-  const content = {
-    teaching: {
-      eyebrow: 'Teaching',
-      title: 'Vue pédagogique',
-      copy: 'Classes, sujets et corrections seront recomposés dans ce visualiseur après validation de la Home.',
-      facts: ['4 classes', '3 sujets actifs', '18 corrections'],
-    },
-    project: {
-      eyebrow: 'Project',
-      title: 'Ours d’Or 2026',
-      copy: 'Le contexte, le brief, le canon et les participants prendront place dans la prochaine composition.',
-      facts: ['64 %', '12 membres', '3 validations'],
-    },
-    learning: {
-      eyebrow: 'Learning',
-      title: 'Concevoir un outil IA',
-      copy: 'Progression, compétences et ressources seront visualisées sans revenir à un dashboard textuel.',
-      facts: ['Étape 3/7', '3 compétences', '6 ressources'],
-    },
-  }[mode];
+function usePresence<T>(value: T | null, duration = 240): {closing: boolean; renderedValue: T | null} {
+  const [renderedValue, setRenderedValue] = useState<T | null>(value);
 
-  return (
-    <section className="mf-room-preview">
-      <span className="mf-kicker">{content.eyebrow}</span>
-      <h1>{content.title}</h1>
-      <p>{content.copy}</p>
-      <div className="mf-room-preview__facts">
-        {content.facts.map((fact) => <span key={fact}>{fact}</span>)}
-      </div>
-    </section>
-  );
+  useEffect(() => {
+    if (value !== null) {
+      setRenderedValue(value);
+      return;
+    }
+    if (renderedValue === null) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setRenderedValue(null);
+      return;
+    }
+    const timer = window.setTimeout(() => setRenderedValue(null), duration);
+    return () => window.clearTimeout(timer);
+  }, [duration, renderedValue, value]);
+
+  return {
+    closing: value === null && renderedValue !== null,
+    renderedValue,
+  };
 }
 
-function ContextDrawer({panel, onClose}: {panel: Exclude<ContextPanel, null>; onClose: () => void}): ReactElement {
-  const heading = panel === 'resources' ? 'Ressources utiles' : panel === 'notifications' ? 'À regarder' : 'Ton espace';
-  return (
-    <aside className="mf-context" aria-label={heading}>
-      <header>
-        <div><span>Contexte</span><h2>{heading}</h2></div>
-        <button aria-label="Fermer le panneau" className="mf-icon-button" onClick={onClose} type="button"><X size={19} /></button>
-      </header>
-      {panel === 'resources' ? (
-        <div className="mf-resource-list">
-          {resources.map((resource) => {
-            const Icon = resource.icon;
-            return <button key={resource.label} type="button"><Icon size={19} /><span><strong>{resource.label}</strong><small>{resource.type}</small></span><ChevronRight size={16} /></button>;
-          })}
-        </div>
-      ) : null}
-      {panel === 'notifications' ? (
-        <div className="mf-notification-list">
-          <article><i className="mf-dot mf-dot--orange" /><div><strong>4CREA A</strong><p>Quatre identités restent à confirmer.</p></div></article>
-          <article><i className="mf-dot mf-dot--blue" /><div><strong>Parcours IA</strong><p>Une nouvelle ressource est disponible.</p></div></article>
-        </div>
-      ) : null}
-      {panel === 'profile' ? (
-        <div className="mf-profile-panel">
-          <div className="mf-profile-panel__avatar">M</div>
-          <strong>Malex</strong>
-          <span>Godmode · thème graphite</span>
-          <button type="button"><Palette size={17} /> Personnaliser le thème</button>
-          <button type="button"><Settings size={17} /> Préférences</button>
-        </div>
-      ) : null}
-    </aside>
-  );
+function getQuickSearchResults(query: string): PrototypeSearchResult[] {
+  const normalizedQuery = query.trim().toLocaleLowerCase('fr');
+  if (!normalizedQuery) return quickSearchItems.slice(0, 6);
+  return quickSearchItems.filter((item) => (
+    `${item.label} ${item.detail}`.toLocaleLowerCase('fr').includes(normalizedQuery)
+  )).slice(0, 6);
+}
+
+function actionIconFor(action: ActionRegistryEntry): PrototypeActionSuggestion['icon'] {
+  const haystack = `${action.action_id} ${action.label} ${action.ui_surface}`.toLocaleLowerCase('fr');
+  if (haystack.includes('context')) return MessageCircle;
+  if (haystack.includes('save') || haystack.includes('validate') || haystack.includes('approval')) return Check;
+  if (haystack.includes('preflight') || haystack.includes('verify')) return ShieldCheck;
+  if (haystack.includes('export') || haystack.includes('send')) return Upload;
+  if (haystack.includes('project')) return FolderKanban;
+  if (haystack.includes('inventory') || haystack.includes('resource')) return PackageOpen;
+  if (haystack.includes('visual') || haystack.includes('da') || haystack.includes('theme')) return Palette;
+  if (haystack.includes('story') || haystack.includes('narrative')) return FileText;
+  if (haystack.includes('job') || haystack.includes('queue')) return LoaderCircle;
+  if (haystack.includes('action')) return Workflow;
+  return CircleHelp;
+}
+
+function buildRuntimeSuggestions(context: CurrentContext | null): PrototypeActionSuggestion[] {
+  if (!context) return fallbackSuggestions;
+  return context.available_actions.slice(0, 5).map((action) => ({
+    id: action.action_id,
+    icon: actionIconFor(action),
+    label: action.label,
+    onClick: () => undefined,
+  }));
+}
+
+function buildRuntimeModeGroups(context: CurrentContext | null): PrototypeModeGroup[] {
+  if (!context) return fallbackModeGroups;
+  const rawModes = [
+    ...context.user_runtime_loadout.active_mode_cycle,
+    ...context.user_runtime_loadout.available_apps,
+  ];
+  const visibleModes = new Set<DemoMode>(['home']);
+  rawModes.forEach((id) => {
+    const mode = runtimeModeAliases[id];
+    if (mode) visibleModes.add(mode);
+  });
+  if (visibleModes.size <= 1) return fallbackModeGroups;
+  const modeGroups = fallbackModeGroups
+    .map((group) => ({
+      ...group,
+      modes: group.modes.filter((mode) => visibleModes.has(mode.id as DemoMode)),
+    }))
+    .filter((group) => group.modes.length > 0);
+  return modeGroups.length > 0 ? modeGroups : fallbackModeGroups;
+}
+
+function countAttentionJobs(jobs: Job[]): number {
+  return jobs.filter((job) => ['queued', 'running', 'pending'].includes(job.status)).length;
+}
+
+function countOpenInboxItems(items: ValidationInboxItem[]): number {
+  return items.filter((item) => item.status === 'pending').length;
+}
+
+function modeTitle(mode: DemoMode): string {
+  const labels: Record<DemoMode, string> = {
+    home: 'Accueil Shell',
+    character: 'Page personnage',
+    project: 'Project',
+    teaching: 'Teaching',
+    learn: 'Learn',
+    story: 'MasterStory',
+    da: 'DA Studio',
+    inventory: 'Inventory',
+    companions: 'Companions',
+  };
+  return labels[mode];
 }
 
 export function CurrentUiDemo(): ReactElement {
-  const [mode, setMode] = useState<DemoMode>('home');
-  const [contextPanel, setContextPanel] = useState<ContextPanel>(null);
-  const [focusMode, setFocusMode] = useState(false);
-  const [personaState, setPersonaState] = useState<PersonaState>('idle');
+  const [activeMode, setActiveMode] = useState<DemoMode>('home');
+  const [profileId, setProfileId] = useState<ShellProfileId>('masterflex');
+  const activeProfile = profileMap[profileId];
+  const [accessLevel, setAccessLevel] = useState<AccessLevel>('teacher');
+  const [accessOpen, setAccessOpen] = useState(false);
+  const [actionLibraryOpen, setActionLibraryOpen] = useState(false);
+  const [actionSearch, setActionSearch] = useState('');
+  const [appearanceLight, setAppearanceLight] = useState(false);
+  const [dockPanel, setDockPanel] = useState<PrototypeDockPanel>('keyboard');
+  const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>('shell');
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [lastMessage, setLastMessage] = useState<string | null>(null);
+  const [quickSearch, setQuickSearch] = useState('');
+  const [railOpen, setRailOpen] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [shortcutsClosing, setShortcutsClosing] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [systemPanel, setSystemPanel] = useState<PrototypeSystemPanel>(null);
+  const [transcribing, setTranscribing] = useState(false);
+  const [tunnelClosing, setTunnelClosing] = useState(false);
+  const [tunnelOpen, setTunnelOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<PrototypeViewMode>('normal');
+  const [runtimeBridge, setRuntimeBridge] = useState<RuntimeBridgeState>({
+    context: null,
+    error: null,
+    inboxItems: [],
+    jobs: [],
+    status: 'prototype',
+  });
 
-  const submit = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const message = input.trim();
-    if (!message) return;
-    setLastMessage(`On reprend « ${message} ». Je prépare le bon espace.`);
-    setPersonaState('speaking');
+  const navigationDestinationRef = useRef<string>('home');
+  const modeGroups = useMemo(() => buildRuntimeModeGroups(runtimeBridge.context), [runtimeBridge.context]);
+  const modeCycle = useMemo(() => {
+    const modes = ['home', 'character'];
+    modeGroups.forEach((group) => group.modes.forEach((mode) => modes.push(mode.id)));
+    return [...new Set(modes)];
+  }, [modeGroups]);
+  const commandSuggestions = useMemo(() => buildRuntimeSuggestions(runtimeBridge.context), [runtimeBridge.context]);
+
+  const accessPresence = usePresence(accessOpen ? 'access' : null, 180);
+  const actionLibraryPresence = usePresence(actionLibraryOpen ? 'actions' : null, 240);
+  const dockPresence = usePresence(dockPanel, 220);
+  const historyPresence = usePresence(historyOpen ? 'history' : null, 220);
+  const settingsPresence = usePresence(settingsOpen ? 'settings' : null, 240);
+  const systemPanelPresence = usePresence(systemPanel, 180);
+
+  const selectMode = useCallback((mode: DemoMode) => {
+    navigationDestinationRef.current = mode;
+    setActiveMode(mode);
+    setRailOpen(false);
+    setSettingsOpen(false);
+    setActionLibraryOpen(false);
+  }, []);
+
+  const closeShortcuts = useCallback(() => {
+    if (!shortcutsOpen) return;
+    setShortcutsClosing(true);
+  }, [shortcutsOpen]);
+
+  const closeTunnel = useCallback(() => {
+    if (!tunnelOpen) return;
+    setTunnelClosing(true);
+  }, [tunnelOpen]);
+
+  const submit = useCallback((event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    if (!input.trim()) return;
     setInput('');
-  };
+    setHistoryOpen(false);
+  }, [input]);
+
+  const submitOnEnter = useCallback((event: ReactKeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== 'Enter' || event.shiftKey) return;
+    event.preventDefault();
+    if (!input.trim()) return;
+    setInput('');
+    setHistoryOpen(false);
+  }, [input]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRuntime(): Promise<void> {
+      try {
+        const [context, jobs, inboxItems] = await Promise.all([
+          getCurrentContext().catch(() => null),
+          getJobs().catch(() => []),
+          getValidationInboxItems().catch(() => []),
+        ]);
+        if (cancelled) return;
+        setRuntimeBridge({
+          context,
+          error: context ? null : 'Runtime indisponible ou non connecté.',
+          inboxItems,
+          jobs,
+          status: context ? 'runtime' : 'degraded',
+        });
+      } catch (error) {
+        if (cancelled) return;
+        setRuntimeBridge({
+          context: null,
+          error: error instanceof Error ? error.message : 'Runtime indisponible.',
+          inboxItems: [],
+          jobs: [],
+          status: 'degraded',
+        });
+      }
+    }
+    void loadRuntime();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  usePrototypeShortcuts({
+    accessOpen,
+    actionLibraryOpen,
+    characterOpen: activeMode === 'character',
+    closeCharacterPage: () => selectMode('home'),
+    closeShortcuts,
+    closeTunnel,
+    dockPanel,
+    historyOpen,
+    modeCycle,
+    navigateTo: (destination) => selectMode(destination as DemoMode),
+    navigationDestinationRef,
+    railOpen,
+    selectSkillSliderIndex: () => undefined,
+    setAccessOpen,
+    setActionLibraryOpen,
+    setActionSearch,
+    setDockPanel,
+    setHistoryOpen,
+    setQuickSearch,
+    setRailOpen,
+    setRecording,
+    setSettingsOpen,
+    setShortcutsClosing,
+    setShortcutsOpen,
+    setSystemPanelClosed: () => setSystemPanel(null),
+    setSystemPanelSearch: () => setSystemPanel('search'),
+    setTunnelClosing,
+    setTunnelOpen,
+    setViewMode,
+    settingsOpen,
+    shortcutsOpen,
+    skillSliderIndex: 0,
+    systemPanelOpen: systemPanel !== null,
+    tunnelOpen,
+    viewMode,
+  });
+
+  const queueCount = runtimeBridge.status === 'runtime' ? countAttentionJobs(runtimeBridge.jobs) : 0;
+  const notificationCount = runtimeBridge.status === 'runtime' ? countOpenInboxItems(runtimeBridge.inboxItems) : 0;
+  const libraryCategories = [...new Set(libraryActions.map((action) => action.category))];
+  const themeStyle = {
+    '--proto-accent': activeProfile.theme.accent,
+    '--proto-accent-deep': activeProfile.theme.accentDeep,
+    '--proto-support': activeProfile.theme.support,
+    '--proto-user-color': activeProfile.theme.user,
+  } as CSSProperties;
 
   return (
-    <main className={`mf-os${focusMode ? ' mf-os--focus' : ''}`} data-persona-state={personaState}>
-      <nav className="mf-dock" aria-label="Navigation principale">
-        <button className="mf-dock__profile" onClick={() => setContextPanel('profile')} title="Profil Malex" type="button">
-          <span>M</span><strong>Malex</strong>
-        </button>
-        <div className="mf-dock__modes">
-          {modes.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                aria-current={mode === item.id ? 'page' : undefined}
-                className={mode === item.id ? 'is-active' : ''}
-                key={item.id}
-                onClick={() => setMode(item.id)}
-                title={item.label}
-                type="button"
-              >
-                <Icon size={21} /><strong>{item.label}</strong>
-              </button>
-            );
-          })}
-        </div>
-        <div className="mf-dock__tools">
-          <button title="Rechercher" type="button"><Search size={20} /><strong>Rechercher</strong></button>
-          <button title="Theme Studio" type="button"><Palette size={20} /><strong>Theme Studio</strong></button>
-          <button title="Réglages" type="button"><Settings size={20} /><strong>Réglages</strong></button>
-        </div>
-      </nav>
+    <main
+      className={`proto-shell proto-shell--theme-${appearanceLight ? 'light' : 'dark'} proto-shell--view-${viewMode} proto-shell--dock-${dockPanel ?? 'closed'}${recording ? ' proto-shell--recording' : ''}${railOpen ? ' proto-shell--rail-open' : ''}${tunnelOpen ? ' proto-shell--tunnel-open' : ''}`}
+      onPointerDown={(event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (
+          historyOpen
+          && !target.closest('.proto-history-panel')
+          && !target.closest('.proto-action-button--history')
+        ) setHistoryOpen(false);
+        if (target.closest('.proto-tunnel') || target.closest('.proto-shortcuts-overlay')) return;
+        if (target.closest('.proto-commandbar')) return;
+        if (dockPanel) {
+          setDockPanel(null);
+          setRecording(false);
+        }
+        if (railOpen && !target.closest('.proto-nav') && !target.closest('.proto-mobile-nav')) setRailOpen(false);
+        if (accessOpen && !target.closest('.proto-access')) setAccessOpen(false);
+        if (
+          systemPanel
+          && !target.closest('.proto-systembar__actions')
+          && !target.closest('.proto-system-popover')
+          && !target.closest('.proto-mobile-nav')
+          && !target.closest('.proto-mobile-system-page')
+        ) setSystemPanel(null);
+      }}
+      style={themeStyle}
+    >
+      <PrototypeNavigationRail
+        accessClosing={accessPresence.closing}
+        accessLevel={accessLevel}
+        accessLevels={accessLevels}
+        accessOpen={Boolean(accessPresence.renderedValue)}
+        activeMode={activeMode}
+        brandMark={<MasterflowMark className="proto-mf-mark" />}
+        characterActive={activeMode === 'character'}
+        homeActive={activeMode === 'home'}
+        mobileLabel={activeProfile.mobileLabel}
+        modeGroups={modeGroups}
+        onCloseRail={() => setRailOpen(false)}
+        onOpenActions={() => {
+          setRailOpen(false);
+          setActionLibraryOpen(true);
+        }}
+        onOpenCharacter={() => selectMode('character')}
+        onOpenHome={() => selectMode('home')}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onPointerEnter={() => {
+          if (window.matchMedia('(min-width: 761px)').matches) setRailOpen(true);
+        }}
+        onPointerLeave={() => {
+          if (!window.matchMedia('(min-width: 761px)').matches) return;
+          setRailOpen(false);
+          setAccessOpen(false);
+        }}
+        onSelectAccess={(id) => {
+          setAccessLevel(id as AccessLevel);
+          setAccessOpen(false);
+        }}
+        onSelectMode={(id) => selectMode(id as DemoMode)}
+        onToggleAccess={() => setAccessOpen((current) => !current)}
+        profileAvatar={activeProfile.avatar}
+        profileName={activeProfile.name}
+      />
 
-      <section className="mf-stage">
-        <header className="mf-toolbar">
-          <a className="mf-wordmark" href="?ui_spike=current">MasterFlow</a>
-          <div>
-            <button aria-label="Ouvrir les notifications" className="mf-icon-button mf-toolbar__notification" onClick={() => setContextPanel('notifications')} type="button">
-              <Bell size={19} /><span />
-            </button>
-            <button aria-label="Basculer le mode focus" className="mf-icon-button" onClick={() => setFocusMode((current) => !current)} type="button"><Maximize2 size={19} /></button>
-            <button aria-label="Ouvrir le panneau contextuel" className="mf-icon-button" onClick={() => setContextPanel('resources')} type="button"><PanelRightOpen size={19} /></button>
-            <a aria-label="Quitter le prototype" className="mf-icon-button" href="/"><LogOut size={19} /></a>
-          </div>
-        </header>
-
-        <div className="mf-visualizer">
-          {mode === 'home' ? <HomeView onMode={setMode} onResources={() => setContextPanel('resources')} /> : <ModePreview mode={mode} />}
-        </div>
-
-        <aside className="mf-persona-rail" aria-label="Compagnon MasterFlex">
-          <div className="mf-persona-rail__status">
-            <span data-state={personaState} />
-            {personaStateLabels[personaState]}
-          </div>
-          <div className={`mf-persona-bubble${lastMessage ? ' is-visible' : ''}`} role="status">
-            {lastMessage ? (
-              <button aria-label="Fermer la réponse" onClick={() => { setLastMessage(null); setPersonaState('idle'); }} type="button"><X size={14} /></button>
-            ) : null}
-            <strong>MasterFlex</strong>
-            <span>{lastMessage ?? 'Je suis là. Dis-moi ce que tu veux reprendre, je garde le cockpit clair.'}</span>
-          </div>
-          <div className="mf-persona" aria-hidden="true">
-            <div className="mf-persona__halo" />
-            <img alt="" src={masterflexAsset} />
-          </div>
-        </aside>
-
-        <aside className="mf-interlocutor" aria-label="Interlocuteur consulté">
-          <div className="mf-interlocutor__bubble">
-            <strong>ProfKrapu</strong>
-            <span>Consulté si la réponse touche à la pédagogie ou au cadrage de classe.</span>
-          </div>
-          <div className="mf-interlocutor__avatar" aria-hidden="true">
-            <img alt="" src={profKrapuAsset} />
-          </div>
-        </aside>
-
-        <form className="mf-launcher" onSubmit={submit}>
-          <button aria-label="Commandes rapides" className="mf-icon-button" type="button"><Command size={19} /></button>
-          <input
-            aria-label="Demander à MasterFlow"
-            onChange={(event) => {
-              setInput(event.target.value);
-              if (personaState !== 'listening') setPersonaState(event.target.value ? 'thinking' : 'idle');
-            }}
-            placeholder="Que veux-tu faire ?"
-            value={input}
-          />
-          <button
-            aria-label={personaState === 'listening' ? 'Arrêter l’écoute' : 'Activer le micro'}
-            className={`mf-icon-button${personaState === 'listening' ? ' is-listening' : ''}`}
-            onClick={() => setPersonaState((current) => current === 'listening' ? 'idle' : 'listening')}
-            type="button"
+      <section className="proto-workspace" aria-label="Prototype Shell et Command Dock">
+        {settingsPresence.renderedValue ? (
+          <PrototypeOverlayFrame
+            className="proto-overlay"
+            closing={settingsPresence.closing}
+            onClose={() => setSettingsOpen(false)}
           >
-            <Mic size={19} />
-          </button>
-          <button aria-label="Envoyer" className="mf-launcher__send" disabled={!input.trim()} type="submit"><Send size={18} /></button>
-        </form>
+            <div aria-label="Paramètres prototype" aria-modal="true" className={`proto-settings${settingsPresence.closing ? ' is-closing' : ''}`} role="dialog">
+              <button aria-label="Fermer les paramètres" className="proto-settings__close" onClick={() => setSettingsOpen(false)} type="button">
+                <X size={19} />
+              </button>
+              <aside className="proto-settings__menu">
+                <strong>Paramètres</strong>
+                <button className="is-active" type="button"><Palette size={17} /> Interface</button>
+                <button type="button"><ShieldCheck size={17} /> Accessibilité</button>
+                <button type="button"><Mic size={17} /> Voix</button>
+              </aside>
+              <div className="proto-settings__content">
+                <small>Prototype</small>
+                <h2>Profil et thème</h2>
+                <section className="proto-profile-switcher" aria-label="Profil actif">
+                  <h3>Profil testable</h3>
+                  <div>
+                    {Object.entries(profileMap).map(([id, profile]) => (
+                      <button
+                        aria-pressed={profileId === id}
+                        key={id}
+                        onClick={() => setProfileId(id as ShellProfileId)}
+                        type="button"
+                      >
+                        <span><img alt="" src={profile.avatar} /></span>
+                        <strong>{profile.name}</strong>
+                        <small>{id === 'profkrapu' ? 'Orchidée rose' : 'Orange / bleu'}</small>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+                <div className="proto-theme-choice" role="group" aria-label="Thème de l’interface">
+                  <button aria-pressed={!appearanceLight} onClick={() => setAppearanceLight(false)} type="button">
+                    <Moon size={20} />
+                    <span>Sombre</span>
+                  </button>
+                  <button aria-pressed={appearanceLight} onClick={() => setAppearanceLight(true)} type="button">
+                    <Sun size={20} />
+                    <span>Clair</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </PrototypeOverlayFrame>
+        ) : null}
+
+        {actionLibraryPresence.renderedValue ? (
+          <PrototypeActionLibrary
+            actions={libraryActions}
+            categories={libraryCategories}
+            closing={actionLibraryPresence.closing}
+            onClose={() => setActionLibraryOpen(false)}
+            onSearchChange={setActionSearch}
+            onSelectAction={() => setActionLibraryOpen(false)}
+            search={actionSearch}
+          />
+        ) : null}
+
+        {shortcutsOpen ? (
+          <PrototypeShortcuts
+            closing={shortcutsClosing}
+            groups={prototypeShortcutGroups}
+            onClose={closeShortcuts}
+            onClosed={() => {
+              setShortcutsOpen(false);
+              setShortcutsClosing(false);
+            }}
+          />
+        ) : null}
+
+        <PrototypeSystemChrome
+          appearanceLight={appearanceLight}
+          brandMark={<MasterflowMark className="proto-wordmark__mark" />}
+          dmCount={0}
+          notificationCount={notificationCount}
+          onClosePanel={() => setSystemPanel(null)}
+          onExit={() => window.location.assign('/')}
+          onOpenCharacter={() => selectMode('character')}
+          onOpenHome={() => selectMode('home')}
+          onQuickSearchChange={setQuickSearch}
+          onTogglePanel={(panel) => {
+            if (panel === 'search') setQuickSearch('');
+            setSystemPanel((current) => current === panel ? null : panel);
+          }}
+          onToggleRail={() => setRailOpen((current) => !current)}
+          onToggleTheme={() => setAppearanceLight((current) => !current)}
+          panel={systemPanel}
+          panelClosing={systemPanelPresence.closing}
+          profileAvatar={activeProfile.avatar}
+          profileName={activeProfile.name}
+          quickSearch={quickSearch}
+          queueCount={queueCount}
+          railOpen={railOpen}
+          renderedPanel={systemPanelPresence.renderedValue}
+          searchResults={getQuickSearchResults(quickSearch)}
+        />
+
+        <div className="proto-canvas-empty">
+          <section className="mf-room-preview proto-shell-contract" aria-label="Contrat Shell Dock">
+            <span className="mf-kicker">
+              {runtimeBridge.status === 'runtime' ? 'Runtime branché' : 'Prototype autonome'}
+            </span>
+            <h1>{modeTitle(activeMode)}</h1>
+            <p>
+              Tranche P1 : navigation, barre système, actions, clavier, micro, raccourcis et overlays.
+              Home, personas et skilltree restent volontairement hors périmètre de ce round.
+            </p>
+            <div className="mf-room-preview__facts">
+              <span>{modeCycle.length} entrées nav</span>
+              <span>{commandSuggestions.length} actions</span>
+              <span>{runtimeBridge.status}</span>
+            </div>
+            {runtimeBridge.error ? <p className="proto-shell-contract__note">{runtimeBridge.error}</p> : null}
+          </section>
+        </div>
+
+        <PrototypeActionRail
+          libraryOpen={actionLibraryOpen}
+          onOpenLibrary={() => setActionLibraryOpen(true)}
+        />
+
+        <PrototypeCommandDock
+          dockPanel={dockPanel}
+          dockPanelClosing={dockPresence.closing}
+          expandedHistoryId={expandedHistoryId}
+          historyClosing={historyPresence.closing}
+          historyItems={historyItems}
+          historyOpen={Boolean(historyPresence.renderedValue)}
+          input={input}
+          onCloseHistory={() => setHistoryOpen(false)}
+          onInputChange={setInput}
+          onInputKeyDown={submitOnEnter}
+          onSubmit={submit}
+          onToggleExpandedHistory={(id) => setExpandedHistoryId((current) => current === id ? null : id)}
+          onToggleHistory={() => setHistoryOpen((current) => !current)}
+          onToggleKeyboard={() => {
+            const nextDock = resolveKeyboardToggle({dockPanel});
+            setRecording(nextDock.recording);
+            setDockPanel(nextDock.dockPanel);
+            setHistoryOpen(nextDock.historyOpen);
+          }}
+          onToggleMicro={() => {
+            const nextDock = resolveMicroToggle({dockPanel});
+            setRecording(nextDock.recording);
+            setDockPanel(nextDock.dockPanel);
+            setHistoryOpen(nextDock.historyOpen);
+          }}
+          onToggleRecording={() => setRecording((current) => !current)}
+          onToggleTranscription={() => setTranscribing((current) => !current)}
+          recording={recording}
+          renderedDockPanel={dockPresence.renderedValue}
+          showSuggestions={Boolean(dockPanel || historyPresence.renderedValue)}
+          suggestions={commandSuggestions}
+          transcribing={transcribing}
+        />
+
+        {tunnelOpen ? (
+          <PrototypeTunnel
+            avatarAsset={activeProfile.avatar}
+            closing={tunnelClosing}
+            input={input}
+            name={activeProfile.name}
+            onAnimationEnd={() => {
+              setTunnelOpen(false);
+              setTunnelClosing(false);
+            }}
+            onClose={closeTunnel}
+            onInputChange={setInput}
+            onInputKeyDown={submitOnEnter}
+            onSubmit={submit}
+            prompt={activeProfile.tunnelPrompt}
+            punchline={activeProfile.defaultPunchline}
+            tunnelLine={activeProfile.tunnelLine}
+          />
+        ) : null}
       </section>
-
-      {contextPanel ? <ContextDrawer onClose={() => setContextPanel(null)} panel={contextPanel} /> : null}
-
-      <nav className="mf-mobile-nav" aria-label="Navigation mobile">
-        {modes.map((item) => {
-          const Icon = item.icon;
-          return <button aria-current={mode === item.id ? 'page' : undefined} key={item.id} onClick={() => setMode(item.id)} type="button"><Icon size={19} /><span>{item.label}</span></button>;
-        })}
-        <button onClick={() => setContextPanel('profile')} type="button"><UserRound size={19} /><span>Profil</span></button>
-      </nav>
-
-      <span className="mf-clock"><Clock3 size={14} /> 09:42</span>
-      <MessageCircle className="mf-sr-only" />
     </main>
   );
 }

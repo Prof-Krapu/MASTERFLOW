@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-09T13:30:00+02:00",
+  "updated_at": "2026-07-12T02:21:39+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -20,9 +20,9 @@
     "objective": "Promouvoir la coque prototype vers une première couche intégrable : navigation, system bar, dock clavier/micro/actions et raccourcis, sans lancer Home, personas ou skilltree.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 4,
-    "stage_label": "Décider",
-    "recommended_next_action": "Valider la tranche USD-002/003 : promouvoir les composants Shell/Dock du prototype avancé vers la branche V2, sans assets candidats ni Home/persona/skilltree.",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Publier la tranche Shell/Dock P1 sur la draft PR #214, puis demander une validation visuelle humaine courte sur /ui-reset, /ui-lab et /ui-lab/vincent.",
     "primary_risk": "Redessiner le prototype au lieu de brancher progressivement les composants et les contrats déjà validés.",
     "no_auto_execute": false,
     "work_package_ids": ["USD-001", "USD-002", "USD-003", "USD-004", "USD-005", "USD-006"],
@@ -43,6 +43,7 @@
       "docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md",
       "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md",
       "docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md",
+      "docs/masterbuild/audits/UI_SHELL_DOCK_IMPLEMENTATION_001.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
       "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md"
     ]
@@ -96,8 +97,8 @@
     "title": "Shell, navigation et Command Dock",
     "owner": "malex",
     "status": "active",
-    "stage_index": 4,
-    "stage_label": "Décider",
+    "stage_index": 7,
+    "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
       "Shell et navigation cadrés",
@@ -112,7 +113,8 @@
     "source_refs": [
       "docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md",
       "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md",
-      "docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md"
+      "docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md",
+      "docs/masterbuild/audits/UI_SHELL_DOCK_IMPLEMENTATION_001.md"
     ]
   },
   "stages": [
@@ -138,25 +140,25 @@
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "pending"
+      "status": "active"
     },
     {
       "index": 8,
