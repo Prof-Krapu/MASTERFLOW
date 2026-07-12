@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-12T02:21:39+02:00",
+  "updated_at": "2026-07-12T02:28:58+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -20,9 +20,9 @@
     "objective": "Promouvoir la coque prototype vers une première couche intégrable : navigation, system bar, dock clavier/micro/actions et raccourcis, sans lancer Home, personas ou skilltree.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
-    "recommended_next_action": "Publier la tranche Shell/Dock P1 sur la draft PR #214, puis demander une validation visuelle humaine courte sur /ui-reset, /ui-lab et /ui-lab/vincent.",
+    "stage_index": 8,
+    "stage_label": "Clôturer",
+    "recommended_next_action": "Faire une validation visuelle humaine courte sur /ui-reset, /ui-lab et /ui-lab/vincent, puis décider si le Round Shell/Dock P1 peut être marqué clos.",
     "primary_risk": "Redessiner le prototype au lieu de brancher progressivement les composants et les contrats déjà validés.",
     "no_auto_execute": false,
     "work_package_ids": ["USD-001", "USD-002", "USD-003", "USD-004", "USD-005", "USD-006"],
@@ -97,8 +97,8 @@
     "title": "Shell, navigation et Command Dock",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
+    "stage_index": 8,
+    "stage_label": "Clôturer",
     "source_truth_layer": "git_operable",
     "success_criteria": [
       "Shell et navigation cadrés",
@@ -158,13 +158,13 @@
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 8,
       "id": "close",
       "label": "Clôturer",
-      "status": "pending"
+      "status": "active"
     }
   ],
   "shared_profiles": [
