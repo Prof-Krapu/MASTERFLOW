@@ -6,15 +6,29 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
-- id : `PUBLICATION-GROUPED-REVIEW-001`
-- objectif : décider si la pile locale du rush système sans UI doit être publiée en PR groupée ou découpée.
-- statut : `awaiting_malex_validation`
-- dernière action terminée : cohérence globale verte après Expressive Canon et Resources/Outputs.
-- prochaine action : si MALEX valide, préparer le contrat de publication puis commit/push/PR ; sinon continuer audit ou découper.
-- fichiers/domaines concernés : Orientation Fabric, Inventory, Resources, DA assets, Expressive Canon, Security/Trust, Factory Backflow.
-- tests à relancer : aucun avant décision ; relancer backend complet, lint, build frontend et `git diff --check` juste avant publication.
-- publication : aucune ; branche locale `codex/visual-knowledge-fabric`, base GitHub `730e912`.
-- blocage : aucun ; UI, génération, canonisation, import massif DA, migration de données, provider voix/image et runner live restent fermés.
+- id : `—` (aucune vague active)
+- objectif : aucune vague en vol. La précédente (`PUBLICATION-GROUPED-REVIEW-001`) est **résolue**.
+- statut : `resolved` — la pile « rush système sans UI » a été **publiée et mergée** en **PR #213**
+  (`codex/visual-knowledge-fabric`) ; `origin/main` = `github_main` = `bf041f7`.
+- dernière action terminée : merge PR #213 (system orientation capability maps) sur `main`.
+- prochaine action : attendre une nouvelle direction MALEX. Rien à reprendre en autonomie —
+  les items ouverts sont tous en **attente de validation humaine** (voir ci-dessous).
+- prochaine vague recommandée : arbitrer un des `open` inbox — `INBOX_MALEX` 2026-06-28
+  (DeepSeek test + TUI, branche `codex/deepseek-tui`, provider live = dépense) ou `INBOX_VINCENT`
+  2026-06-19 (`REQ-LIVE-RUNTIME-RECOVERY-001`, instance historique 502, modifie l'hôte).
+- fichiers/domaines concernés : coordination uniquement (ce bloc).
+- tests à relancer : aucun (mise à jour de journal seule).
+- publication : `main` à jour à `bf041f7` ; ce rafraîchissement du bloc est sur la branche
+  `claude/gitlab-audit-suivi-6PjDS` (restartée depuis `main`).
+- blocage : aucun ; UI, génération, canonisation, import massif DA, migration de données,
+  provider voix/image et runner live restent fermés.
+
+### note — synchro registre d'actions (vérifiée ce tour)
+
+Le seed `action_registry_seed.v1.json` (champs `minimum_role`/`validator_role`/`status`) est
+**cohérent** avec `ActionRegistryEntrySchema` (`packages/shared`, l.1359) : `minimum_role`
+(`default 'student'`), `validator_role` (optionnel), `status` (`default 'future'`) sont bien
+typés — aucun champ silencieusement strippé par Zod.
 
 ## 2026-06-30 — GLOBAL-COHERENCE-TESTS-001 : rush système sans UI vérifié
 
