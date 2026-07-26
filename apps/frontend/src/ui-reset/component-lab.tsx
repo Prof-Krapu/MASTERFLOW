@@ -1,7 +1,10 @@
 import {
+  Archive,
+  CircleCheck,
   FolderKanban,
   GraduationCap,
   History,
+  Images,
   MessageCircle,
   PackageOpen,
   Pencil,
@@ -58,6 +61,12 @@ import {
 } from './prototype-ui-state-registry';
 import {resolveCycledShortcutDestination, usePrototypeShortcuts} from './use-prototype-shortcuts';
 import type {PrototypeDockPanel, PrototypeViewMode} from './use-prototype-shortcuts';
+import {
+  componentLabAssetNextActions,
+  componentLabAssetRegistry,
+  componentLabAssetStatusCards,
+} from './component-lab-asset-registry';
+import type {LabAssetPersonaId, LabAssetStatus} from './component-lab-asset-registry';
 import {componentLabWorkspaces} from './component-lab-workspaces';
 import type {ComponentLabWorkspaceId} from './component-lab-workspaces';
 import {componentLabReviewState} from './component-lab-review-state';
@@ -68,7 +77,7 @@ import {
 import type {PersonaStageActorDirection, PersonaStageActorScale, PersonaStageActorState} from './persona-stage-actor';
 import './component-lab.css';
 
-type LabTab = 'review' | 'navigation' | 'home' | 'persona' | 'actor' | 'stage' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
+type LabTab = 'review' | 'assets' | 'navigation' | 'home' | 'persona' | 'actor' | 'stage' | 'system' | 'command' | 'states' | 'overlays' | 'tunnel';
 type LabScenario = 'rest' | 'compose' | 'mobile' | 'tunnel' | 'collision';
 type CommandDockPreset = 'closed' | 'keyboard' | 'long' | 'history' | 'micro' | 'recording' | 'transcription';
 type SkilltreePreset = 'home' | 'overview' | 'mobile';
@@ -117,7 +126,20 @@ interface PersistedLabWorkspace {
   tab?: LabTab;
 }
 
-const labTabs: LabTab[] = ['review', 'navigation', 'home', 'persona', 'actor', 'stage', 'system', 'command', 'states', 'overlays', 'tunnel'];
+const labTabs: LabTab[] = ['review', 'assets', 'navigation', 'home', 'persona', 'actor', 'stage', 'system', 'command', 'states', 'overlays', 'tunnel'];
+const assetPersonaFilters: Array<{id: 'all' | LabAssetPersonaId; label: string}> = [
+  {id: 'all', label: 'Tout'},
+  {id: 'masterflex', label: 'MasterFlex'},
+  {id: 'profkrapu', label: 'ProfKrapu'},
+  {id: 'masterflow', label: 'MasterFlow'},
+];
+const assetStatusFilters: Array<{id: 'all' | LabAssetStatus; label: string}> = [
+  {id: 'all', label: 'Tous statuts'},
+  {id: 'active', label: 'Actif'},
+  {id: 'candidate', label: 'Candidat'},
+  {id: 'archive', label: 'Archive'},
+  {id: 'decision', label: 'À décider'},
+];
 
 function readPersistedLabWorkspace(workspaceId: ComponentLabWorkspaceId): PersistedLabWorkspace {
   try {
@@ -321,6 +343,8 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
   const [actorScale, setActorScale] = useState<PersonaStageActorScale>('normal');
   const [actorBubbleVisible, setActorBubbleVisible] = useState(true);
   const [actorCollisionDock, setActorCollisionDock] = useState(true);
+  const [assetPersonaFilter, setAssetPersonaFilter] = useState<'all' | LabAssetPersonaId>('all');
+  const [assetStatusFilter, setAssetStatusFilter] = useState<'all' | LabAssetStatus>('all');
   const [stageLayoutPreset, setStageLayoutPreset] = useState<StageLayoutPreset>('cockpit');
   const [tunnelLabPreset, setTunnelLabPreset] = useState<TunnelLabPreset>('normal');
   const [activeFixtureArcId, setActiveFixtureArcId] = useState<PrototypeSkillArcId | null>(null);
@@ -343,6 +367,10 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
   }, [accessLevel, activeMode, dockPanel, light, mobile, profileId, railOpen, tab, workspaceId]);
 
   const profile = getPrototypeProfile(profileId);
+  const visibleAssetEntries = componentLabAssetRegistry.filter((entry) => (
+    (assetPersonaFilter === 'all' || entry.persona === assetPersonaFilter)
+    && (assetStatusFilter === 'all' || entry.status === assetStatusFilter)
+  ));
   const profilePalette = getPrototypeThemePalette(profile.defaultThemePaletteId);
   const profileRankTitle = getPrototypeProfileRank(profile).title;
   const stagePreset = stageLayoutPresets.find((preset) => preset.id === stageLayoutPreset) ?? stageLayoutPresets[0]!;
@@ -751,6 +779,116 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
+              </aside>
+            </section>
+          </section>
+        ) : null}
+
+        {tab === 'assets' ? (
+          <section className="ui-lab__assets" aria-label="Registre des assets prototype">
+            <header className="ui-lab__assets-hero">
+              <small>Asset Registry · Git truth</small>
+              <h1>Ce qui charge, ce qui attend, ce qui dort.</h1>
+              <p>
+                Vue lisible des assets personas et MasterFlow avant promotion. Le Lab montre l’état réel
+                sans importer la cave entière ni transformer un candidat en canon par accident.
+              </p>
+            </header>
+
+            <section className="ui-lab__asset-status" aria-label="Résumé des statuts assets">
+              {componentLabAssetStatusCards.map((card) => {
+                const Icon = card.status === 'active'
+                  ? CircleCheck
+                  : card.status === 'archive'
+                    ? Archive
+                    : card.status === 'decision'
+                      ? History
+                      : Images;
+                return (
+                  <article key={card.status} style={{'--asset-status-color': card.color} as CSSProperties}>
+                    <Icon size={22} />
+                    <span>{card.count}</span>
+                    <strong>{card.label}</strong>
+                    <p>{card.summary}</p>
+                  </article>
+                );
+              })}
+            </section>
+
+            <section className="ui-lab__asset-filters" aria-label="Filtres assets">
+              <div>
+                {assetPersonaFilters.map((filter) => (
+                  <button
+                    aria-pressed={assetPersonaFilter === filter.id}
+                    key={filter.id}
+                    onClick={() => setAssetPersonaFilter(filter.id)}
+                    type="button"
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+              <div>
+                {assetStatusFilters.map((filter) => (
+                  <button
+                    aria-pressed={assetStatusFilter === filter.id}
+                    key={filter.id}
+                    onClick={() => setAssetStatusFilter(filter.id)}
+                    type="button"
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="ui-lab__asset-layout">
+              <div className="ui-lab__asset-grid" aria-label="Assets filtrés">
+                {visibleAssetEntries.map((entry) => (
+                  <article className={`ui-lab__asset-card ui-lab__asset-card--${entry.status}`} key={entry.id}>
+                    <header>
+                      <small>{entry.persona} · {entry.type}</small>
+                      <strong>{entry.title}</strong>
+                    </header>
+                    <dl>
+                      <div>
+                        <dt>Statut</dt>
+                        <dd>{entry.status}</dd>
+                      </div>
+                      <div>
+                        <dt>Format</dt>
+                        <dd>{entry.format}</dd>
+                      </div>
+                      <div>
+                        <dt>Alpha</dt>
+                        <dd>{entry.alpha}</dd>
+                      </div>
+                      <div>
+                        <dt>Usage</dt>
+                        <dd>{entry.usedIn}</dd>
+                      </div>
+                    </dl>
+                    <p>{entry.notes}</p>
+                    <code>{entry.path}</code>
+                    <footer>
+                      <span>{entry.quantity} fichier(s)</span>
+                      <b>{entry.action}</b>
+                    </footer>
+                  </article>
+                ))}
+              </div>
+
+              <aside className="ui-lab__asset-next" aria-label="Prochaines décisions assets">
+                <small>Prochain move</small>
+                <h2>Pas de promotion sauvage.</h2>
+                <ul>
+                  {componentLabAssetNextActions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+                <a href="/ui-lab" onClick={(event) => event.preventDefault()}>
+                  Source : docs/masterbuild/ASSET_CANDIDATES_REVIEW_2026-07-26.md
+                </a>
               </aside>
             </section>
           </section>
