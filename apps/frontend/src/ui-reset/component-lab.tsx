@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   Archive,
   CircleCheck,
   FolderKanban,
@@ -66,7 +67,7 @@ import {
   componentLabAssetRegistry,
   componentLabAssetStatusCards,
 } from './component-lab-asset-registry';
-import type {LabAssetPersonaId, LabAssetStatus} from './component-lab-asset-registry';
+import type {ComponentLabAssetEntry, LabAssetPersonaId, LabAssetStatus} from './component-lab-asset-registry';
 import {componentLabWorkspaces} from './component-lab-workspaces';
 import type {ComponentLabWorkspaceId} from './component-lab-workspaces';
 import {componentLabReviewState} from './component-lab-review-state';
@@ -140,6 +141,43 @@ const assetStatusFilters: Array<{id: 'all' | LabAssetStatus; label: string}> = [
   {id: 'archive', label: 'Archive'},
   {id: 'decision', label: 'À décider'},
 ];
+const assetStatusLabels: Record<LabAssetStatus, string> = {
+  active: 'Actif',
+  archive: 'Archive',
+  candidate: 'Candidat',
+  decision: 'À décider',
+};
+
+function renderLabAssetPreview(entry: ComponentLabAssetEntry): ReactElement {
+  if (entry.preview.kind === 'image') {
+    return (
+      <div className={`ui-lab__asset-preview ui-lab__asset-preview--${entry.preview.tone}`}>
+        <img alt={entry.preview.alt} src={entry.preview.src} />
+      </div>
+    );
+  }
+
+  if (entry.preview.kind === 'strip' || entry.preview.kind === 'logo') {
+    return (
+      <div className={`ui-lab__asset-preview ui-lab__asset-preview--${entry.preview.kind}`}>
+        {entry.preview.images.map((image) => (
+          <figure key={`${entry.id}-${image.label}`}>
+            <img alt={image.alt} src={image.src} />
+            <figcaption>{image.label}</figcaption>
+          </figure>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="ui-lab__asset-preview ui-lab__asset-preview--placeholder">
+      <Images size={28} />
+      <strong>{entry.preview.label}</strong>
+      <span>{entry.preview.detail}</span>
+    </div>
+  );
+}
 
 function readPersistedLabWorkspace(workspaceId: ComponentLabWorkspaceId): PersistedLabWorkspace {
   try {
@@ -846,8 +884,14 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
               <div className="ui-lab__asset-grid" aria-label="Assets filtrés">
                 {visibleAssetEntries.map((entry) => (
                   <article className={`ui-lab__asset-card ui-lab__asset-card--${entry.status}`} key={entry.id}>
+                    {renderLabAssetPreview(entry)}
                     <header>
-                      <small>{entry.persona} · {entry.type}</small>
+                      <div>
+                        <small>{entry.persona} · {entry.type}</small>
+                        <span className={`ui-lab__asset-badge ui-lab__asset-badge--${entry.status}`}>
+                          {assetStatusLabels[entry.status]}
+                        </span>
+                      </div>
                       <strong>{entry.title}</strong>
                     </header>
                     <dl>
@@ -868,10 +912,17 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
                         <dd>{entry.usedIn}</dd>
                       </div>
                     </dl>
+                    {entry.formatWarning ? (
+                      <aside className="ui-lab__asset-warning">
+                        <AlertTriangle size={15} />
+                        <span>{entry.formatWarning}</span>
+                      </aside>
+                    ) : null}
                     <p>{entry.notes}</p>
                     <code>{entry.path}</code>
                     <footer>
                       <span>{entry.quantity} fichier(s)</span>
+                      <em>Voir : {entry.usedIn}</em>
                       <b>{entry.action}</b>
                     </footer>
                   </article>
