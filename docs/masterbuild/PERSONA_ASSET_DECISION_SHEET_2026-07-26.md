@@ -18,13 +18,14 @@ Cette fiche sert de point de reprise court pour éviter de mélanger actif, cand
 |---|---|---|---|
 | MasterFlex | Stage Actor gauche/droite normalisé | candidat Lab | revue visuelle finale avant promotion proto |
 | MasterFlex | Stage Actor alpha sources | archive process | garder pour diagnostic de cadrage |
+| ProfKrapu | Stage Actor pack | candidat à produire | fallback canon visible dans le Lab en attendant |
 | MasterFlow | pipeline Identity Assets | candidat process | intégrer plus tard dans Theme Studio / MASTERBUILD |
 
 ## À Refaire / À Produire
 
 | Persona | Besoin | Règle |
 |---|---|---|
-| ProfKrapu | Stage Actor pack | même format logique que MasterFlex, sans génération automatique en bloc |
+| ProfKrapu | Stage Actor pack | 20 images cible `960x1728`, `left/right`, même logique que MasterFlex, sans génération automatique en bloc |
 | MasterFlex | éventuelles poses refusées | repartir des versions validées, jamais d’une dérive précédente |
 
 ## À Décider

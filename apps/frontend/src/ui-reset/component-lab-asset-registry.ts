@@ -71,7 +71,7 @@ export const componentLabAssetStatusCards: ComponentLabAssetStatusCard[] = [
   },
   {
     color: '#ff6a35',
-    count: 2,
+    count: 3,
     label: 'Candidats',
     status: 'candidate',
     summary: 'Utiles en Lab, mais pas encore canon/runtime.',
@@ -322,6 +322,24 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     type: 'process',
     usedIn: 'MASTERBUILD · Theme Studio futur',
     visibility: 'Process',
+  },
+  {
+    action: 'Produire après brief Vincent, puis intégrer en Lab seulement.',
+    alpha: 'n/a',
+    decisionOwner: 'MALEX + Vincent',
+    format: 'cible 20 x 960x1728 PNG',
+    gate: 'Même gabarit que MasterFlex, revue acting avant usage proto.',
+    id: 'profkrapu-stage-pack-needed',
+    notes: 'Le composant Stage Actor fonctionne déjà avec ProfKrapu, mais il utilise son canon full body en fallback tant que le pack dédié n’existe pas.',
+    path: 'apps/frontend/src/assets/profkrapu-stage-actor/candidates/',
+    persona: 'profkrapu',
+    preview: {detail: 'À produire : left/right pour les 10 états Persona Stage Actor.', kind: 'placeholder', label: 'Stage Actor à créer'},
+    quantity: '0 / 20',
+    status: 'candidate',
+    title: 'Stage Actor ProfKrapu à produire',
+    type: 'stage-actor',
+    usedIn: '/ui-lab · actor · stage fallback',
+    visibility: 'Lab à préparer',
   },
 ];
 
