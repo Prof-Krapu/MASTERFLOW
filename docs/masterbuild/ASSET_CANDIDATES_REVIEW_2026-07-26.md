@@ -27,7 +27,7 @@ Le reste reste en quarantaine jusqu'à décision.
 | Famille | Chemin V2 | Format constaté | Statut | Action |
 |---|---|---:|---|---|
 | MasterFlex portraits | `apps/frontend/src/assets/masterflex-portraits/*.png` | 6 fichiers `640 x 640`, RGBA alpha | actif proto | garder |
-| ProfKrapu portraits | `apps/frontend/src/assets/profkrapu-portraits/*.png` | 6 fichiers `1254 x 1254`, RGBA alpha | actif proto | à normaliser plus tard si besoin UI |
+| ProfKrapu portraits | `apps/frontend/src/assets/profkrapu-portraits/*.png` | 6 fichiers `640 x 640`, RGBA alpha | actif proto standard | garder |
 | MasterFlex canon | `apps/frontend/src/assets/masterflex-canon-full.png` | `829 x 1500`, RGBA alpha | actif proto | garder |
 | ProfKrapu canon | `apps/frontend/src/assets/profkrapu-canon/profkrapu-canon-v3.png` | `829 x 1500`, RGBA alpha | actif proto | garder |
 | MasterFlex Stage Actor normalisé | `apps/frontend/src/assets/masterflex-stage-actor/candidates/*-normalized/*.png` | 20 fichiers `960 x 1728`, RGBA alpha | candidat intégré Lab | garder |
@@ -53,17 +53,14 @@ Le reste reste en quarantaine jusqu'à décision.
 
 ### ProfKrapu Portraits
 
-Les portraits ProfKrapu actifs chargent dans le proto, mais ils sont en `1254 x 1254`.
+Les portraits ProfKrapu actifs ont été normalisés en `640 x 640`, RGBA alpha.
 
-Ce n'est pas bloquant aujourd'hui, mais la règle UI cible reste :
+Les sources `1254 x 1254` sont conservées dans :
 
-- portrait UI final : `640 x 640` ;
-- alpha réel ;
-- bbox stable entre états ;
-- aucune saute visible en transition.
+`apps/frontend/src/assets/profkrapu-portraits/backup-before-640-20260726/`
 
-Décision recommandée : garder l'actif pour le moment, puis créer une vague dédiée
-`profkrapu-portrait-normalization`.
+Décision recommandée : garder les actifs `640 x 640` comme standard UI, et ne revenir aux
+sources que si MALEX demande une retouche visuelle.
 
 ### Sources DA
 

@@ -61,7 +61,7 @@ export interface ComponentLabAssetStatusCard {
 export const componentLabAssetStatusCards: ComponentLabAssetStatusCard[] = [
   {
     color: '#4b9eea',
-    count: 4,
+    count: 5,
     label: 'Actifs',
     status: 'active',
     summary: 'Chargent déjà dans le proto ou le Lab partagé.',
@@ -82,7 +82,7 @@ export const componentLabAssetStatusCards: ComponentLabAssetStatusCard[] = [
   },
   {
     color: '#ffbd4a',
-    count: 2,
+    count: 1,
     label: 'À décider',
     status: 'decision',
     summary: 'À trancher avant import massif ou normalisation.',
@@ -167,12 +167,11 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     usedIn: 'preuve process',
   },
   {
-    action: 'Garder actif pour le moment, normaliser plus tard si saute UI.',
+    action: 'Garder actif standard.',
     alpha: 'yes',
-    formatWarning: 'Non standard UI : cible finale recommandée 640x640.',
-    format: '6 x 1254x1254 PNG',
+    format: '6 x 640x640 PNG',
     id: 'profkrapu-portraits-active',
-    notes: 'Fonctionne dans le proto, mais ne respecte pas encore le standard 640x640.',
+    notes: 'Pack Vincent normalisé pour les états skilltree et la navigation profil.',
     path: 'apps/frontend/src/assets/profkrapu-portraits/*.png',
     persona: 'profkrapu',
     preview: {
@@ -187,7 +186,7 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
       ],
     },
     quantity: '6',
-    status: 'decision',
+    status: 'active',
     title: 'Portraits ProfKrapu',
     type: 'portrait',
     usedIn: '/ui-reset · profil Vincent',
@@ -292,7 +291,8 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
 
 export const componentLabAssetNextActions = [
   'Ne pas importer les candidats de l’ancien clone en vrac.',
-  'Normaliser ProfKrapu portraits en 640x640 si l’UI montre une saute.',
+  'Vérifier ProfKrapu portraits dans /ui-reset et /ui-lab/vincent.',
+  'Préparer ProfKrapu Stage Actor avec les mêmes contraintes que MasterFlex.',
   'Décider si les PSD et sources lourdes restent hors Git.',
   'Promouvoir Stage Actor seulement après validation visuelle finale.',
 ];
