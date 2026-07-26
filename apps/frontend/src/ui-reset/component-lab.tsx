@@ -911,6 +911,14 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
                         <dt>Usage</dt>
                         <dd>{entry.usedIn}</dd>
                       </div>
+                      <div>
+                        <dt>Visible</dt>
+                        <dd>{entry.visibility}</dd>
+                      </div>
+                      <div>
+                        <dt>Owner</dt>
+                        <dd>{entry.decisionOwner}</dd>
+                      </div>
                     </dl>
                     {entry.formatWarning ? (
                       <aside className="ui-lab__asset-warning">
@@ -918,13 +926,19 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
                         <span>{entry.formatWarning}</span>
                       </aside>
                     ) : null}
+                    <aside className="ui-lab__asset-gate">
+                      <CircleCheck size={15} />
+                      <span>{entry.gate}</span>
+                    </aside>
                     <p>{entry.notes}</p>
                     <code>{entry.path}</code>
                     <footer>
                       <span>{entry.quantity} fichier(s)</span>
                       <em>Voir : {entry.usedIn}</em>
-                      <b>{entry.action}</b>
                     </footer>
+                    <div className="ui-lab__asset-action-chip">
+                      <b>{entry.action}</b>
+                    </div>
                   </article>
                 ))}
               </div>

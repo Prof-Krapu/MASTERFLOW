@@ -36,8 +36,10 @@ export type ComponentLabAssetPreview =
 export interface ComponentLabAssetEntry {
   action: string;
   alpha: 'yes' | 'no' | 'mixed' | 'n/a';
+  decisionOwner: string;
   formatWarning?: string;
   format: string;
+  gate: string;
   id: string;
   notes: string;
   path: string;
@@ -48,6 +50,7 @@ export interface ComponentLabAssetEntry {
   title: string;
   type: LabAssetType;
   usedIn: string;
+  visibility: string;
 }
 
 export interface ComponentLabAssetStatusCard {
@@ -93,7 +96,9 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
   {
     action: 'Garder actif.',
     alpha: 'yes',
+    decisionOwner: 'MALEX',
     format: '6 x 640x640 PNG',
+    gate: 'Déjà validé visuel + format.',
     id: 'masterflex-portraits-active',
     notes: 'Pack stable pour les états skilltree. Format UI cible déjà respecté.',
     path: 'apps/frontend/src/assets/masterflex-portraits/*.png',
@@ -114,11 +119,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Portraits MasterFlex',
     type: 'portrait',
     usedIn: '/ui-reset · skilltree · navigation',
+    visibility: 'Proto + Lab',
   },
   {
     action: 'Garder actif.',
     alpha: 'yes',
+    decisionOwner: 'MALEX',
     format: '829x1500 PNG',
+    gate: 'Canon visuel validé.',
     id: 'masterflex-canon-active',
     notes: 'Visuel canon en pied intégré. Sert de référence d’occupation verticale.',
     path: 'apps/frontend/src/assets/masterflex-canon-full.png',
@@ -129,11 +137,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Canon full body MasterFlex',
     type: 'canon',
     usedIn: '/ui-reset · page personnage',
+    visibility: 'Proto + Lab',
   },
   {
     action: 'Garder en Lab, ne pas promouvoir sans revue.',
     alpha: 'yes',
+    decisionOwner: 'MALEX',
     format: '20 x 960x1728 PNG',
+    gate: 'Revue acting + collision UI avant promotion.',
     id: 'masterflex-stage-normalized',
     notes: 'Pack gauche/droite validé pour test, encore candidat produit.',
     path: 'apps/frontend/src/assets/masterflex-stage-actor/candidates/*-normalized/*.png',
@@ -150,11 +161,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Stage Actor MasterFlex normalisé',
     type: 'stage-actor',
     usedIn: '/ui-lab · actor · stage',
+    visibility: 'Lab seulement',
   },
   {
     action: 'Conserver provisoirement comme source de vérif.',
     alpha: 'yes',
+    decisionOwner: 'Codex',
     format: '20 PNG RGBA',
+    gate: 'Archive process, pas de promotion UI.',
     id: 'masterflex-stage-alpha',
     notes: 'Versions détourées avant normalisation. Utiles pour diagnostiquer une saute de taille.',
     path: 'apps/frontend/src/assets/masterflex-stage-actor/candidates/*-alpha/*.png',
@@ -165,11 +179,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Stage Actor MasterFlex alpha',
     type: 'source',
     usedIn: 'preuve process',
+    visibility: 'Source Git',
   },
   {
     action: 'Garder actif standard.',
     alpha: 'yes',
+    decisionOwner: 'MALEX + Vincent',
     format: '6 x 640x640 PNG',
+    gate: 'Format standard, revue humaine dans profil Vincent.',
     id: 'profkrapu-portraits-active',
     notes: 'Pack Vincent normalisé pour les états skilltree et la navigation profil.',
     path: 'apps/frontend/src/assets/profkrapu-portraits/*.png',
@@ -190,11 +207,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Portraits ProfKrapu',
     type: 'portrait',
     usedIn: '/ui-reset · profil Vincent',
+    visibility: 'Proto + Lab',
   },
   {
     action: 'Garder actif.',
     alpha: 'yes',
+    decisionOwner: 'MALEX',
     format: '829x1500 PNG',
+    gate: 'Canon V3 actif, V2 non promue.',
     id: 'profkrapu-canon-active',
     notes: 'V3 intégrée. La V2 reste hors promotion.',
     path: 'apps/frontend/src/assets/profkrapu-canon/profkrapu-canon-v3.png',
@@ -205,11 +225,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Canon full body ProfKrapu',
     type: 'canon',
     usedIn: '/ui-reset · page personnage',
+    visibility: 'Proto + Lab',
   },
   {
     action: 'Ne pas importer en bloc.',
     alpha: 'mixed',
+    decisionOwner: 'MALEX',
     format: 'sources RGB + previews + composites',
+    gate: 'Sélection manuelle obligatoire.',
     id: 'old-masterflex-denim-candidates',
     notes: 'Mélange de sources, contact sheets et previews. Certaines images sont opaques.',
     path: 'ancien clone MASTERFLOW/apps/frontend/src/assets/masterflex-portraits/candidates/',
@@ -220,11 +243,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Candidats portraits denim MasterFlex',
     type: 'source',
     usedIn: 'historique génération',
+    visibility: 'Archive hors runtime',
   },
   {
     action: 'Importer seulement si besoin de preuve DA.',
     alpha: 'mixed',
+    decisionOwner: 'MALEX + Codex',
     format: 'sources + cutouts + contact sheets',
+    gate: 'Importer une preuve, jamais le dossier brut.',
     id: 'old-profkrapu-candidates',
     notes: 'Utile pour retracer la génération, pas nécessaire au runtime.',
     path: 'ancien clone MASTERFLOW/apps/frontend/src/assets/profkrapu-*/candidates/',
@@ -235,11 +261,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Candidats ProfKrapu',
     type: 'source',
     usedIn: 'historique génération',
+    visibility: 'Archive hors runtime',
   },
   {
     action: 'Décider si Git doit porter les sources lourdes.',
     alpha: 'yes',
+    decisionOwner: 'MALEX',
     format: 'PSD 8 MB + PNG variante',
+    gate: 'GO explicite avant import source lourde.',
     id: 'masterflex-heavy-sources',
     notes: 'Utile pour édition manuelle, mais peut alourdir Git sans bénéfice direct.',
     path: 'ancien clone MASTERFLOW/apps/frontend/src/assets/masterflex-canon-full.psd',
@@ -250,11 +279,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Sources lourdes MasterFlex',
     type: 'source',
     usedIn: 'édition DA',
+    visibility: 'Hors runtime',
   },
   {
     action: 'Garder actif.',
     alpha: 'n/a',
+    decisionOwner: 'MALEX',
     format: 'SVG dynamique',
+    gate: 'Dynamique thème, pas de PNG figé.',
     id: 'masterflow-logo-wordmark',
     notes: 'Logo et typo réagissent aux variables de thème. Pas de PNG figé.',
     path: 'apps/frontend/src/assets/masterflow-*.svg',
@@ -271,11 +303,14 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Logo et wordmark MasterFlow',
     type: 'logo',
     usedIn: '/ui-reset · /ui-lab',
+    visibility: 'Proto + Lab',
   },
   {
     action: 'Garder comme process canon candidat.',
     alpha: 'n/a',
+    decisionOwner: 'MALEX + Codex',
     format: 'Markdown + Python',
+    gate: 'À transformer en process MASTERBUILD avant automatisation.',
     id: 'identity-asset-pipeline',
     notes: 'Runbook et scripts récupérés depuis l’ancien clone pour éviter de réinventer.',
     path: 'docs/theme-studio/* · scripts/*identity* · scripts/*chroma*',
@@ -286,6 +321,7 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     title: 'Pipeline Identity Assets',
     type: 'process',
     usedIn: 'MASTERBUILD · Theme Studio futur',
+    visibility: 'Process',
   },
 ];
 
