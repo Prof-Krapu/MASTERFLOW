@@ -16,6 +16,8 @@ import profkrapuFearPortraitAsset from '../assets/profkrapu-portraits/fear.png';
 import profkrapuJoyPortraitAsset from '../assets/profkrapu-portraits/joy.png';
 import profkrapuNeutralPortraitAsset from '../assets/profkrapu-portraits/neutral.png';
 import profkrapuSadPortraitAsset from '../assets/profkrapu-portraits/sad.png';
+import profkrapuNeutralLeftStageAsset from '../assets/profkrapu-stage-actor/candidates/normalized/neutral-left.png';
+import profkrapuNeutralRightStageAsset from '../assets/profkrapu-stage-actor/candidates/normalized/neutral-right.png';
 
 export type LabAssetPersonaId = 'masterflex' | 'profkrapu' | 'masterflow';
 export type LabAssetStatus = 'active' | 'candidate' | 'archive' | 'decision';
@@ -324,22 +326,28 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     visibility: 'Process',
   },
   {
-    action: 'Produire après brief Vincent, puis intégrer en Lab seulement.',
-    alpha: 'n/a',
+    action: 'Tester en Lab, puis régénérer les placeholders état par état.',
+    alpha: 'yes',
     decisionOwner: 'MALEX + Vincent',
-    format: 'cible 20 x 960x1728 PNG',
-    gate: 'Même gabarit que MasterFlex, revue acting avant usage proto.',
+    format: '20 x 960x1728 PNG',
+    gate: 'Candidat Lab : 2 assets générés réels, 18 placeholders de layout à remplacer avant promotion.',
     id: 'profkrapu-stage-pack-needed',
-    notes: 'Le composant Stage Actor fonctionne déjà avec ProfKrapu, mais il utilise son canon full body en fallback tant que le pack dédié n’existe pas.',
+    notes: 'Pack complet pour tester le pipeline actor/stage. Neutral-left et listening-left sont générés ; les autres slots sécurisent le gabarit Lab mais ne sont pas des acting finals.',
     path: 'apps/frontend/src/assets/profkrapu-stage-actor/candidates/',
     persona: 'profkrapu',
-    preview: {detail: 'À produire : left/right pour les 10 états Persona Stage Actor.', kind: 'placeholder', label: 'Stage Actor à créer'},
-    quantity: '0 / 20',
+    preview: {
+      kind: 'strip',
+      images: [
+        {alt: 'ProfKrapu stage actor gauche', label: 'left', src: profkrapuNeutralLeftStageAsset},
+        {alt: 'ProfKrapu stage actor droite', label: 'right', src: profkrapuNeutralRightStageAsset},
+      ],
+    },
+    quantity: '20',
     status: 'candidate',
-    title: 'Stage Actor ProfKrapu à produire',
+    title: 'Stage Actor ProfKrapu candidat',
     type: 'stage-actor',
-    usedIn: '/ui-lab · actor · stage fallback',
-    visibility: 'Lab à préparer',
+    usedIn: '/ui-lab · actor · stage',
+    visibility: 'Lab seulement',
   },
 ];
 

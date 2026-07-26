@@ -20,6 +20,26 @@ import masterflexPositiveRight from '../assets/masterflex-stage-actor/candidates
 import masterflexThinkingRight from '../assets/masterflex-stage-actor/candidates/right-normalized/thinking-right.png';
 import masterflexTrollRight from '../assets/masterflex-stage-actor/candidates/right-normalized/troll-right.png';
 import masterflexWarningRight from '../assets/masterflex-stage-actor/candidates/right-normalized/warning-right.png';
+import profkrapuDoubtLeft from '../assets/profkrapu-stage-actor/candidates/normalized/doubt-left.png';
+import profkrapuExplainingLeft from '../assets/profkrapu-stage-actor/candidates/normalized/explaining-left.png';
+import profkrapuFearLeft from '../assets/profkrapu-stage-actor/candidates/normalized/fear-left.png';
+import profkrapuListeningLeft from '../assets/profkrapu-stage-actor/candidates/normalized/listening-left.png';
+import profkrapuNegativeLeft from '../assets/profkrapu-stage-actor/candidates/normalized/negative-left.png';
+import profkrapuNeutralLeft from '../assets/profkrapu-stage-actor/candidates/normalized/neutral-left.png';
+import profkrapuPositiveLeft from '../assets/profkrapu-stage-actor/candidates/normalized/positive-left.png';
+import profkrapuThinkingLeft from '../assets/profkrapu-stage-actor/candidates/normalized/thinking-left.png';
+import profkrapuTrollLeft from '../assets/profkrapu-stage-actor/candidates/normalized/troll-left.png';
+import profkrapuWarningLeft from '../assets/profkrapu-stage-actor/candidates/normalized/warning-left.png';
+import profkrapuDoubtRight from '../assets/profkrapu-stage-actor/candidates/normalized/doubt-right.png';
+import profkrapuExplainingRight from '../assets/profkrapu-stage-actor/candidates/normalized/explaining-right.png';
+import profkrapuFearRight from '../assets/profkrapu-stage-actor/candidates/normalized/fear-right.png';
+import profkrapuListeningRight from '../assets/profkrapu-stage-actor/candidates/normalized/listening-right.png';
+import profkrapuNegativeRight from '../assets/profkrapu-stage-actor/candidates/normalized/negative-right.png';
+import profkrapuNeutralRight from '../assets/profkrapu-stage-actor/candidates/normalized/neutral-right.png';
+import profkrapuPositiveRight from '../assets/profkrapu-stage-actor/candidates/normalized/positive-right.png';
+import profkrapuThinkingRight from '../assets/profkrapu-stage-actor/candidates/normalized/thinking-right.png';
+import profkrapuTrollRight from '../assets/profkrapu-stage-actor/candidates/normalized/troll-right.png';
+import profkrapuWarningRight from '../assets/profkrapu-stage-actor/candidates/normalized/warning-right.png';
 import type {PrototypeProfile} from './prototype-profile-registry';
 
 export type PersonaStageActorState =
@@ -151,6 +171,36 @@ const masterflexStageActorAssets: Record<
   },
 };
 
+const profkrapuStageActorAssets: Record<
+  PersonaStageActorDirection,
+  Record<PersonaStageActorState, string>
+> = {
+  left: {
+    doubt: profkrapuDoubtLeft,
+    explaining: profkrapuExplainingLeft,
+    fear: profkrapuFearLeft,
+    listening: profkrapuListeningLeft,
+    negative: profkrapuNegativeLeft,
+    neutral: profkrapuNeutralLeft,
+    positive: profkrapuPositiveLeft,
+    thinking: profkrapuThinkingLeft,
+    troll: profkrapuTrollLeft,
+    warning: profkrapuWarningLeft,
+  },
+  right: {
+    doubt: profkrapuDoubtRight,
+    explaining: profkrapuExplainingRight,
+    fear: profkrapuFearRight,
+    listening: profkrapuListeningRight,
+    negative: profkrapuNegativeRight,
+    neutral: profkrapuNeutralRight,
+    positive: profkrapuPositiveRight,
+    thinking: profkrapuThinkingRight,
+    troll: profkrapuTrollRight,
+    warning: profkrapuWarningRight,
+  },
+};
+
 const getPersonaStageActorAsset = (
   profile: PrototypeProfile,
   direction: PersonaStageActorDirection,
@@ -158,6 +208,10 @@ const getPersonaStageActorAsset = (
 ) => {
   if (profile.id === 'masterflex') {
     return masterflexStageActorAssets[direction][state];
+  }
+
+  if (profile.id === 'profkrapu') {
+    return profkrapuStageActorAssets[direction][state];
   }
 
   return profile.canonAsset;
