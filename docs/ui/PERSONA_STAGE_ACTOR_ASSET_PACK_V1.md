@@ -4,6 +4,8 @@ Statut : contrat de génération candidat
 Owner : MALEX
 Surface : Component Lab / futur onboarding / futur tunnel
 
+Brief opérable associé : `docs/ui/PERSONA_STAGE_GENERATION_BRIEF_V1.md`
+
 ## Intention
 
 Créer un pack d'assets de personnage d'interface pour le persona lead. Le personnage n'est pas un
@@ -83,11 +85,14 @@ ProfKrapu :
 ## Process de validation
 
 1. Valider le composant Lab avec placeholders.
-2. Générer un seul persona complet en candidat.
-3. Produire une planche contact : 8 états x 2 directions.
-4. Vérifier cohérence de cadrage, alpha, posture et acting.
-5. Corriger le pack complet si une dérive touche le gabarit.
-6. Intégrer seulement après GO MALEX explicite.
+2. Lire le brief opérable et verrouiller la DA / le lore / les negative locks.
+3. Générer d'abord le neutre d'un seul persona en candidat.
+4. Valider gabarit, DA, costume, silhouette et ancrage.
+5. Générer le persona complet en candidat.
+6. Produire une planche contact : 8 états x 2 directions.
+7. Vérifier cohérence de cadrage, alpha, posture et acting.
+8. Corriger le pack complet si une dérive touche le gabarit.
+9. Intégrer seulement après GO MALEX explicite.
 
 ## Interdits
 

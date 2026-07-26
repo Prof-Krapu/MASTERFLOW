@@ -506,10 +506,6 @@
   transition: filter 240ms ease, transform 320ms var(--proto-menu-ease);
 }
 
-.persona-stage-actor--left .persona-stage-actor__image {
-  transform: translateX(-50%) scaleX(-1);
-}
-
 .persona-stage-actor__bubble {
   --actor-bubble-bg-top: color-mix(in srgb, var(--actor-color) 92%, #fff 8%);
   --actor-bubble-bg-bottom: color-mix(in srgb, var(--actor-color) 82%, #000 18%);
