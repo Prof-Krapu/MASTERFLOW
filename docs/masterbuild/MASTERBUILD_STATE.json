@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-01T00:20:40+02:00",
+  "updated_at": "2026-08-01T00:41:02+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,10 +22,10 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Faire relire la draft PR #217 par MALEX et Vincent, puis demander un GO distinct avant merge.",
-    "primary_risk": "Publier CODEOWNERS et les templates GitHub sans revue de leur impact sur l'ownership et la charge opérationnelle.",
+    "recommended_next_action": "Décider le GO de GTC-L3-001 pour reconstruire Shell/Dock avec une allowlist d'assets actifs uniquement.",
+    "primary_risk": "Réintroduire dans le Lot 3 des assets candidats ou archivés, ou brancher l'UI au backend hors contrat.",
     "no_auto_execute": true,
-    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001"],
+    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001", "GTC-L2-PM-001", "GTC-L3-001"],
     "authorization_id": null,
     "success_criteria": [
       "Une lecture distingue local, branche, PR, main et live.",
@@ -35,16 +35,16 @@
       "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
     ],
     "blockers": [
-      "La draft PR #217 attend la revue MALEX + Vincent avant merge.",
-      "Le Lot 3 Shell/Dock doit exclure les assets candidats et archivés.",
+      "Le Lot 3 Shell/Dock attend une allowlist vérifiée de code et d'assets actifs.",
+      "Les imports statiques du Component Lab ne doivent pas embarquer candidats ou archives dans le Lot 3.",
       "Le Lot 4 Component Lab et candidats reste en draft ou hold.",
       "La PR #214 reste une source à ne pas merger en bloc."
     ],
     "validation_gates": [
       "Lot 1 mergé dans main via PR #215 au SHA 65807a8",
-      "Lot 2 publié en draft PR #217 après GO branche, analyse, commit et push",
-      "Nouveau GO avant merge du Lot 2 ou modification des protections GitHub",
-      "Revue MALEX et Vincent sur CODEOWNERS et les templates GitHub",
+      "Lot 2 mergé dans main via PR #217 au SHA cd9f26b",
+      "Nouveau GO avant branche, reconstruction, commit, push, PR ou merge du Lot 3",
+      "Design Preflight et revue MALEX/Vincent avant publication du Lot 3",
       "Nouveau GO avant déploiement",
       "Aucun asset candidat n'est promu automatiquement",
       "Aucun raccord UI au backend pendant la vérification",
@@ -60,6 +60,7 @@
       "docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md",
       "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
       "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
+      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_POSTMERGE_CLOSURE_CONTRACT_001.md",
       "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
       "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
@@ -68,6 +69,8 @@
       "https://github.com/Prof-Krapu/MASTERFLOW/commit/65807a8b7ad1aba2efbd8f8deee9db884e99796e",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/217",
+      "https://github.com/Prof-Krapu/MASTERFLOW/commit/cd9f26ba62f464c4acfb30f061a5ee39bece2796",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/218",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },
@@ -118,6 +121,13 @@
       "move_id": "github-governance-review",
       "label": "Relire la draft PR #217",
       "reason": "Le Lot 2 est publié et techniquement vérifié ; MALEX et Vincent doivent valider ownership et charge avant merge.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "shell-dock-active-lot",
+      "label": "Préparer le Lot 3 Shell/Dock et assets actifs",
+      "reason": "Les Lots 1 et 2 sont dans main ; la prochaine tranche doit isoler l'expérience active sans candidats, archives ni nouveau raccord backend.",
       "recommended": true,
       "status": "ready_for_decision"
     },
@@ -164,15 +174,15 @@
       "Round d'intégration suivant préparé"
     ],
     "blockers": [
-      "Draft PR #217 soumise à revue MALEX + Vincent avant merge",
-      "Lot 3 doit exclure les assets candidats et archivés",
+      "Lot 3 non autorisé et non reconstruit",
+      "Lot 3 doit exclure les assets candidats et archivés ainsi que les imports Lab associés",
       "Lot 4 maintenu en draft ou hold",
       "PR #214 toujours ouverte comme source"
     ],
     "validation_gates": [
       "Lot 1 mergé via PR #215 au SHA 65807a8",
-      "Lot 2 publié en draft PR #217",
-      "Nouveau GO avant merge du Lot 2",
+      "Lot 2 mergé via PR #217 au SHA cd9f26b",
+      "Nouveau GO avant publication du Lot 3",
       "Nouveau GO avant déploiement"
     ],
     "source_refs": [
@@ -184,6 +194,7 @@
       "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
       "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
       "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
+      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_POSTMERGE_CLOSURE_CONTRACT_001.md",
       "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md"
     ]
