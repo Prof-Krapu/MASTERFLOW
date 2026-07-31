@@ -16,13 +16,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 - id : `GIT-CONSOLIDATION-001`
 - objectif : obtenir une vérité Git unique avant le raccord progressif de l'UI au système
-- statut : étape `7/8 — Publier`, Lots 1 et 2 mergés dans `main`
-- dernière action terminée : merge de la PR #217 au SHA `cd9f26b`, puis clôture documentaire PR #218
-- prochaine action : décision GTC-L3-001 pour Shell/Dock et assets actifs
+- statut : étape `7/8 — Publier`, Lot 3 Shell/Dock publié en draft PR #219
+- dernière action terminée : commit, push et publication de la draft PR #219 depuis une base `origin/main` propre
+- prochaine action : revue MALEX/Vincent du rendu, de l'allowlist active et des exclusions avant tout merge
 - fichiers/domaines concernés : MASTERBUILD, Git/PR, UI Lab, prototype et assets personas
 - tests : JSON, MASTERBUILD 12/12, lint MASTERBUILD et builds MASTERBUILD/frontend verts ; diff local propre
-- publication : Lots 1 et 2 dans `main` via #215/#217 ; réconciliation Lot 2 via #218 ; #214 inchangée
-- blocage : Lot 3 non autorisé ; Lot 4 non reconstruit ; aucun déploiement autorisé
+- publication : Lots 1 et 2 dans `main` via #215/#217 ; Lot 3 en draft #219 ; #214 inchangée
+- blocage : revue et merge du Lot 3 nécessitent un GO distinct ; Lot 4 non reconstruit ; aucun déploiement autorisé
 
 Preuve consolidée :
 `docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md`.
@@ -34,6 +34,9 @@ Contrats GTC-005 :
 
 - `docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md` ;
 - `docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md`.
+
+Contrat de publication GTC-L3-001 :
+`docs/masterbuild/contracts/SHELL_DOCK_ACTIVE_LOT_PUBLICATION_CONTRACT_001.md`.
 
 Rapport GTC-006 :
 `docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md`.

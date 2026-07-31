@@ -12,6 +12,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    {window.location.pathname === '/current-ui' ? <CurrentUiDemo /> : <App />}
+    {window.location.pathname === '/current-ui' || window.location.pathname === '/ui-reset'
+      ? <CurrentUiDemo />
+      : <App />}
   </StrictMode>,
 );
