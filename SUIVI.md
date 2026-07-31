@@ -4,7 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-07-31 — POINT DE REPRISE ACTIF MASTERBUILD
+## 2026-08-01 — CORRECTION ACTIVE : RÉTABLIR L’UI UTILISÉE
+
+- source produit : runtime frontend du checkpoint `65e9c0e7` de la PR #214 ;
+- correction : remplacer la tranche Shell/Dock réduite mergée par #219 par le prototype complet utilisé
+  par MALEX, sans reprendre le Component Lab, les archives ou les packs d’assets candidats ;
+- preuve : les dix fichiers runtime restaurés sont identiques à la source, build et lint frontend verts,
+  699/699 tests backend, rendu desktop et mobile 390 px sans erreur console ;
+- publication : branche corrective et draft PR, sans déploiement ; la PR #220 ne doit pas être mergée.
+
+---
+
+## 2026-07-31 — POINT DE REPRISE HISTORIQUE MASTERBUILD
 
 `SUIVI.md` reste un journal historique. Pour agir, lire d'abord :
 
