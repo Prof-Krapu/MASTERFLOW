@@ -82,3 +82,9 @@ sans encore le publier.
 GO exact requis :
 
 `go Lot 1 MASTERBUILD Core — créer une branche propre depuis origin/main et reconstruire uniquement le lot 1 localement, sans commit, push, PR, merge ou déploiement`
+
+## Suite publiée
+
+Après un GO distinct, le Lot 1 a été reconstruit depuis `origin/main`, vérifié, committé et poussé
+sur `codex/masterbuild-core`. La draft PR #215 est ouverte pour revue MALEX + Vincent. Aucun merge,
+déploiement, raccord UI/backend, asset ou changement de la PR #214 n'a été exécuté.

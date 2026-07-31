@@ -38,6 +38,9 @@ code. Le volet local de GTC-006 est terminé : JSON, tests MASTERBUILD, lint, bu
 été vérifiés. Le GO du Lot 1 autorise maintenant une branche propre depuis `origin/main`, sa
 reconstruction, les tests, le commit, le push et une draft PR. Merge et déploiement restent fermés.
 
+Le Lot 1 est publié en draft PR #215 depuis `codex/masterbuild-core`. Sa revue MALEX + Vincent est
+la gate active. Les Lots 2 à 4, la fermeture de #214 et le merge restent hors autorisation.
+
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
 
@@ -54,3 +57,4 @@ métier et changement de canon.
 - `docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json` ;
 - `docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md` ;
 - draft PR #214.
+- draft PR #215 — Lot 1 MASTERBUILD Core.

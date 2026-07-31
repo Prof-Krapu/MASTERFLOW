@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-31T04:49:42+02:00",
+  "updated_at": "2026-07-31T04:54:27+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,7 +22,7 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Publier le Lot 1 MASTERBUILD Core en draft PR, puis demander la revue de MALEX et Vincent avant merge.",
+    "recommended_next_action": "Faire relire la draft PR #215 par MALEX et Vincent, puis demander un GO distinct avant merge.",
     "primary_risk": "Publier la PR #214 en bloc alors que le frontend embarque des assets candidats ou archivés et que son diff complet contient des écarts de whitespace.",
     "no_auto_execute": true,
     "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006"],
@@ -58,6 +58,7 @@
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
       "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
       "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },
@@ -87,8 +88,15 @@
       "move_id": "publication-decision",
       "label": "Préparer le Lot 1 MASTERBUILD Core",
       "reason": "Les preuves locales sont vérifiées ; la publication doit maintenant suivre le découpage validé, un lot à la fois.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "masterbuild-core-review",
+      "label": "Relire la draft PR #215",
+      "reason": "Le Lot 1 est publié sans frontend, backend ni asset ; MALEX et Vincent doivent valider son entrée dans main.",
       "recommended": true,
-      "status": "in_progress"
+      "status": "ready_for_decision"
     },
     {
       "move_id": "feature-registry-review",

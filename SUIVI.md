@@ -17,11 +17,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - id : `GIT-CONSOLIDATION-001`
 - objectif : obtenir une vérité Git unique avant le raccord progressif de l'UI au système
 - statut : étape `7/8 — Publier`, Lot 1 autorisé et en cours
-- dernière action terminée : volet local de GTC-006, vérifications proportionnées et rapport final
-- prochaine action : publier la draft PR du Lot 1 MASTERBUILD Core depuis `origin/main`
+- dernière action terminée : Lot 1 MASTERBUILD Core publié en draft PR #215
+- prochaine action : revue MALEX + Vincent de la draft PR #215 avant décision de merge
 - fichiers/domaines concernés : MASTERBUILD, Git/PR, UI Lab, prototype et assets personas
 - tests : JSON, MASTERBUILD 12/12, lint MASTERBUILD et builds MASTERBUILD/frontend verts ; diff local propre
-- publication : branche `codex/masterbuild-core` créée depuis `bf041f7` ; draft PR en préparation ;
+- publication : branche `codex/masterbuild-core`, commit initial `6ae8d94`, draft PR #215 ;
   #214 reste inchangée comme source
 - blocage : merge et déploiement non autorisés ; Lots 2 à 4 non reconstruits
 

@@ -2,7 +2,7 @@
 
 Date : 2026-07-31
 Décision : découper
-Statut : décision locale persistée, exécution non autorisée
+Statut : Lot 1 publié en draft PR #215 ; Lots 2 à 4 non exécutés
 Source : branche `codex/masterbuild-v2`, checkpoint `65e9c0e`
 
 ## Décision
@@ -36,6 +36,8 @@ Exclure :
 - toute connexion UI/backend supplémentaire.
 
 Gate : tests MASTERBUILD, JSON, TypeScript, build du cockpit et `git diff --check`.
+
+Publication : draft PR #215, branche `codex/masterbuild-core`, pour revue MALEX + Vincent.
 
 ## Lot 2 — Gouvernance GitHub
 

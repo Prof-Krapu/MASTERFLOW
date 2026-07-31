@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T04:49:42+02:00",
+  "updated_at": "2026-07-31T04:54:27+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -87,6 +87,17 @@
         "MASTERBUILD_WORKBOARD.json"
       ],
       "note": "Contrat du Lot 1 : MASTERBUILD publiable sans frontend, backend, asset, merge ou déploiement."
+    },
+    {
+      "source_id": "masterbuild-core-draft-pr-215",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
+      "kind": "draft_pull_request",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Lot 1 MASTERBUILD Core publié pour revue MALEX et Vincent ; merge non autorisé."
     },
     {
       "source_id": "persona-asset-decision-sheet-2026-07-26",

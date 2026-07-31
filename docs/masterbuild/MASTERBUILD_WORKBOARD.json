@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T04:49:42+02:00",
+  "updated_at": "2026-07-31T04:54:27+02:00",
   "active_round_id": "GIT-CONSOLIDATION-001",
   "authorizations": [
     {
@@ -28,7 +28,7 @@
       "round_id": "GIT-CONSOLIDATION-001",
       "actor": "malex",
       "scope": "create_branch_rebuild_masterbuild_core_test_commit_push_draft_pr",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-07-31",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "delete", "pr_214_change", "frontend", "backend", "asset", "ui_backend_connection"]
@@ -117,7 +117,7 @@
       "work_package_id": "GTC-L1-001",
       "label": "Publier le Lot 1 MASTERBUILD Core",
       "feature_ids": ["masterbuild-pilot"],
-      "status": "in_progress",
+      "status": "completed",
       "owner": "codex",
       "reviewers": ["malex", "vincent"],
       "dependencies": ["GTC-006"],
@@ -128,7 +128,7 @@
         "allowlist sans frontend, backend ou asset",
         "tests MASTERBUILD",
         "commit et push",
-        "draft PR distincte"
+        "draft PR #215 distincte"
       ]
     },
     {
