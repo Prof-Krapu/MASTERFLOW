@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Context"
+  short_description: "Réduire le contexte et préparer les reprises"
+  default_prompt: "Utilise $masterbuild-context pour faire un checkpoint sobre de cette conversation."

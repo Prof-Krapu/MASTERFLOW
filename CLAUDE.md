@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+> **Entrée universelle :** lire `MASTERBUILD.md`, puis
+> `docs/masterbuild/MASTERBUILD_STATE.json`. Les règles ci-dessous détaillent le dépôt mais ne
+> remplacent pas le programme, le Round, le workboard ou la gouvernance design MASTERBUILD.
+
 Guide pour Claude Code travaillant dans **ce dépôt de code** (`~/Documents/masterflow/`).
 
 Doctrine active depuis 2026-06-27 : la source de vérité **opérable** est désormais ce repo Git

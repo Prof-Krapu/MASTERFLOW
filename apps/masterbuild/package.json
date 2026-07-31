@@ -1,0 +1,32 @@
+{
+  "name": "@masterflow/masterbuild",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "service": "node service/server.mjs",
+    "boot": "node scripts/boot.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "resume": "node scripts/resume.mjs",
+    "export": "node scripts/export.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "handoff": "node scripts/handoff.mjs",
+    "test": "node --test service/lib.test.mjs",
+    "lint": "tsc --noEmit",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 5175"
+  },
+  "dependencies": {
+    "lucide-react": "^1.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "~5.8.2",
+    "vite": "^8.0.16"
+  }
+}

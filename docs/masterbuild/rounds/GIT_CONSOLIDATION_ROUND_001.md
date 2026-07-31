@@ -1,0 +1,60 @@
+# GIT-CONSOLIDATION-001 — Vérité unique et préparation du raccord UI
+
+Date : 2026-07-31
+Statut : actif, étape 7/8 — Publier
+Owner : MALEX
+Revue système : Vincent
+
+## Objectif
+
+Transformer la branche, la draft PR #214, les registres et les assets en une vérité Git lisible,
+puis préparer le premier raccord UI sans merger ni déployer.
+
+## Work packages
+
+| ID | Travail | Owner | Statut | Preuve attendue |
+|---|---|---|---|---|
+| GTC-001 | Inventorier branche, PR, fichiers locaux et assets | Codex | completed | matrice exacte des états |
+| GTC-002 | Classer garder, séparer, archiver, rejeter | MALEX + Codex | completed | décision PR et assets |
+| GTC-003 | Réconcilier état, registres et suivi | Codex | completed | aucune queue active concurrente |
+| GTC-004 | Décider la stratégie de la PR #214 | MALEX + Vincent | completed | décision : découper en quatre lots |
+| GTC-005 | Préparer le raccord Shell/Dock | Codex + Vincent | completed | preflight, mapping et première tranche bornée |
+| GTC-006 | Publier les preuves et clôturer | Codex | partial | vérification locale terminée ; publication et clôture en attente |
+
+## Critères de succès
+
+- une seule lecture permet de distinguer local, branche, PR, `main` et live ;
+- chaque asset est actif, candidat, archive ou rejeté ;
+- les fonctionnalités backend utiles ne sont pas perdues pendant la migration UI ;
+- la PR #214 reçoit une décision explicite ;
+- le prochain Round d'intégration possède un périmètre et des contrats précis.
+
+## Autorisation
+
+GTC-001 à GTC-004 ont été autorisés séparément par MALEX et exécutés sans modification de la PR.
+La stratégie retenue est le découpage en quatre lots. Son exécution Git n'est pas autorisée.
+GTC-005 a été exécuté en préparation contractuelle, sans raccord UI/backend ni modification de
+code. Le volet local de GTC-006 est terminé : JSON, tests MASTERBUILD, lint, builds et état Git ont
+été vérifiés. Le GO du Lot 1 autorise maintenant une branche propre depuis `origin/main`, sa
+reconstruction, les tests, le commit, le push et une draft PR. Merge et déploiement restent fermés.
+
+Le Lot 1 est publié en draft PR #215 depuis `codex/masterbuild-core`. Sa revue MALEX + Vincent est
+la gate active. Les Lots 2 à 4, la fermeture de #214 et le merge restent hors autorisation.
+
+Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
+métier et changement de canon.
+
+## Sources
+
+- `docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md` ;
+- `docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md` ;
+- `docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md` ;
+- `docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md` ;
+- `docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md` ;
+- `docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md` ;
+- `docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md` ;
+- `docs/masterbuild/MASTERBUILD_STATE.json` ;
+- `docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json` ;
+- `docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md` ;
+- draft PR #214.
+- draft PR #215 — Lot 1 MASTERBUILD Core.

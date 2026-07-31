@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Housekeeping"
+  short_description: "Classer et préparer le ménage sans risque"
+  default_prompt: "Utilise $masterbuild-housekeeping pour classer ces éléments sans rien supprimer."

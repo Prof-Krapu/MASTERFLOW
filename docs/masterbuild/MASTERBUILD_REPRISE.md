@@ -1,0 +1,94 @@
+# Reprendre MASTERBUILD ailleurs
+
+## Première installation
+
+```bash
+git clone git@github.com:Prof-Krapu/MASTERFLOW.git
+cd MASTERFLOW
+npm install
+npm run masterbuild:boot
+npm run dev:masterbuild
+```
+
+Ouvrir `http://localhost:5175`.
+
+Le boot crée uniquement un profil local non sensible dans `.masterbuild/local/`. Il ne modifie
+pas le profil partagé sans action explicite.
+
+## Reprendre dans Codex
+
+1. Ouvrir le dossier racine `MASTERFLOW`.
+2. Dire `Reprends MASTERBUILD` ou invoquer `$masterbuild-resume`.
+3. MASTERBUILD lance `npm run masterbuild:resume`.
+4. MASTERBUILD présente le programme, le Round, la progression et trois choix maximum.
+5. Il recommande une action, puis attend explicitement le GO.
+6. Utiliser `/status` au checkpoint de contexte recommandé.
+
+Quand l'état partagé référence un fichier dans `docs/masterbuild/handoffs/`, lire ce handoff après
+`MASTERBUILD_STATE.json`. Il s'agit du point de reprise collaboratif visible par MALEX, Vincent et
+les autres clones. Le handoff `.masterbuild/local/HANDOFF_CURRENT.md` reste une preuve locale du
+SHA courant et ne remplace pas l'état partagé.
+
+Pour toute autre IA avec accès au dépôt, commencer par `MASTERBUILD.md`. Sans accès au dépôt,
+joindre les fichiers générés par :
+
+```bash
+npm run masterbuild:export
+```
+
+Les exports vivent dans `.masterbuild/exports/` et ne contiennent ni secret ni contenu brut des
+sources.
+
+Une reprise ne doit valider aucun asset, modifier aucun fichier ou démarrer un audit long. Si elle
+commence à travailler avant le GO, la reprise est considérée comme incorrecte.
+
+## Vérifier l'environnement
+
+```bash
+npm run masterbuild:doctor
+```
+
+Le diagnostic vérifie Node, Git, l'état partagé, les profils et la disponibilité facultative du
+backend. Il n'effectue ni installation, ni commit, ni push.
+
+Le diagnostic affiche aussi si le backend produit est arrêté. Ce statut est informatif :
+MASTERBUILD fonctionne sans backend.
+
+## Changer de conversation
+
+```bash
+npm run masterbuild:handoff
+```
+
+Le handoff local contient le programme, le Round ID, l'étape, l'état Git, les choix et un prompt de
+reprise. Il reste hors Git tant qu'il n'est pas explicitement promu comme handoff collaboratif.
+S'il pointe vers un ancien Round ou un ancien commit, MASTERBUILD l'ignore au lieu de reprendre une
+tâche périmée.
+
+## Publication
+
+MASTERBUILD prépare les commandes et explique leur portée. Le commit, le push, la PR et le
+déploiement restent exécutés par Codex après GO explicite.
+
+## Premier exercice MALEX
+
+1. Ouvrir le cockpit.
+2. Vérifier l'étape et la Drive gauge reportée depuis `/status`.
+3. Ouvrir `Git & preuves`.
+4. Préparer la séquence complète sans l'exécuter.
+5. Créer un handoff.
+
+## Premier exercice Vincent
+
+1. Lancer `npm run masterbuild:doctor`.
+2. Sélectionner le profil Vincent lors du premier boot.
+3. Ouvrir `MALEX / Vincent` et relire l'audit métier prérempli.
+4. Ouvrir le Lab Vincent depuis `Lab & Runtime`.
+5. Envoyer un recap court à MALEX.
+
+Le recap est une modification locale Git tant qu'il n'est pas committé et poussé.
+
+## Veille
+
+L'automation `MASTERBUILD coherence hebdo` reste en pause jusqu'à publication de cette brique.
+L'activer ensuite dans Codex pour recevoir un audit read-only hebdomadaire en worktree.

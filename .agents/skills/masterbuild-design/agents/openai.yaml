@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Design"
+  short_description: "Générer le brief UI avant toute modification"
+  default_prompt: "Utilise $masterbuild-design pour cadrer cette tâche UI depuis les règles MasterFlow avant de modifier un composant."

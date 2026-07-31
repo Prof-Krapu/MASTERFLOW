@@ -28,3 +28,29 @@ curl http://localhost:8000/health                 # { ok: true, ... }
 ```
 
 API : `http://localhost:8000/api/v1` · WebSocket : `ws://localhost:8000/ws/{room_instance_id}`.
+
+## MASTERBUILD
+
+MASTERBUILD est le cockpit local qui pilote la construction de MasterFlow sans exécuter
+silencieusement commit, push, merge, migration ou déploiement.
+
+Toute IA commence par [`MASTERBUILD.md`](MASTERBUILD.md), contrat universel indépendant de l'outil.
+
+```bash
+npm run masterbuild:boot
+npm run masterbuild:doctor
+npm run masterbuild:resume
+npm run masterbuild:export
+npm run dev:masterbuild
+```
+
+Cockpit : `http://127.0.0.1:5175` · service local : `http://127.0.0.1:8010`.
+
+L'objectif et l'étape sont partagés dans `docs/masterbuild/MASTERBUILD_STATE.json`. Les préférences
+de chaque poste restent dans `.masterbuild/local/`, ignoré par Git.
+
+Design Preflight ciblé :
+
+```bash
+npm run masterbuild:preflight -- navigation all malex
+```
