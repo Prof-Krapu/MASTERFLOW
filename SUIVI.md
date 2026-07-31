@@ -4,7 +4,24 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-07-31 — POINT DE REPRISE ACTIF MASTERBUILD
+## 2026-08-01 — VAGUE PRODUIT ACTIVE : SHELL RUNTIME EN LECTURE SEULE
+
+- objectif : rendre `/ui-reset` réellement utilisable avec le contexte déjà fourni par le backend ;
+- résultat local : connexion, utilisateur, room, modes, actions disponibles, permissions et capacités
+  verrouillées sont lus depuis `GET /api/v1/context/current` ;
+- Command Dock : recherche et explication uniquement, aucune Action n'est exécutée ;
+- périmètre : deux fichiers frontend ; aucun backend, contrat partagé, Component Lab ou asset modifié ;
+- vérifications : 699/699 tests backend, lint backend/frontend, build frontend, recette navigateur
+  desktop et mobile 390 px sans débordement ni erreur console ;
+- publication autorisée : branche dédiée, commit, push et draft PR ; aucun déploiement ;
+- prochaine décision produit : vérifier l'écran avec un compte réel, puis décider du merge de la draft PR.
+
+La PR #219 a été mergée dans `main` au SHA `a3aff41a1d6eb702974b2eb966d94caecb7dac3d`.
+La PR #214, le Component Lab et les assets candidats restent inchangés.
+
+---
+
+## 2026-07-31 — POINT DE REPRISE HISTORIQUE MASTERBUILD
 
 `SUIVI.md` reste un journal historique. Pour agir, lire d'abord :
 
