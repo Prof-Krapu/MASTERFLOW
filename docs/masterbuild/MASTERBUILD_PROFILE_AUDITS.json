@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-04T00:00:00.000Z",
+  "profiles": [
+    {
+      "profile_id": "malex",
+      "status": "seed_to_confirm",
+      "role": "owner produit, enseignant, directeur artistique et opérateur du canon",
+      "strengths": [
+        "vision produit globale",
+        "direction UI et DA",
+        "tests d'usage rapides",
+        "construction de méthodes pédagogiques"
+      ],
+      "working_style": [
+        "itération visuelle en tunnel",
+        "décisions rapides sur rendu observable",
+        "besoin de progression explicite",
+        "préférence pour les preuves réutilisables"
+      ],
+      "frictions": [
+        "coût des vérifications automatisées inutiles",
+        "confusion entre local, GitHub et runtime",
+        "charge mentale de la mécanique Git",
+        "conversations trop longues sans checkpoint"
+      ],
+      "masterbuild_response": [
+        "contrôle humain prioritaire pour le visuel",
+        "assistant de publication préparé",
+        "étapes 1 à 8 toujours visibles",
+        "handoff court avant saturation du contexte"
+      ],
+      "domain_guidance": {
+        "product": "autonomous",
+        "ui": "autonomous",
+        "da": "autonomous",
+        "canon": "autonomous",
+        "architecture": "assisted",
+        "backend": "assisted",
+        "git": "assisted",
+        "deployment": "guided"
+      }
+    },
+    {
+      "profile_id": "vincent",
+      "status": "seed_to_confirm",
+      "role": "responsable backend, contraintes système et profil ProfKrapu",
+      "strengths": [
+        "architecture backend",
+        "diagnostic runtime",
+        "contraintes de sécurité",
+        "validation de contrats"
+      ],
+      "working_style": [
+        "preuves techniques",
+        "besoin d'un périmètre explicite",
+        "guidance initiale renforcée",
+        "travail par branches courtes"
+      ],
+      "frictions": [
+        "frontière prototype versus runtime",
+        "ownership UI et canon",
+        "visibilité de l'état partagé",
+        "mécanique de reprise entre machines"
+      ],
+      "masterbuild_response": [
+        "boot guidé avec contexte prérempli",
+        "gates MALEX visibles",
+        "inbox redirigée vers le cockpit",
+        "contrats backend et effets produit séparés"
+      ],
+      "domain_guidance": {
+        "backend": "autonomous",
+        "runtime": "autonomous",
+        "security": "autonomous",
+        "contracts": "autonomous",
+        "components": "assisted",
+        "navigation": "assisted",
+        "responsive": "assisted",
+        "da": "guided"
+      }
+    }
+  ]
+}

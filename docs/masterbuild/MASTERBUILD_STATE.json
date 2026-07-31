@@ -1,0 +1,349 @@
+{
+  "schema_version": 3,
+  "updated_at": "2026-07-31T04:49:42+02:00",
+  "program": {
+    "program_id": "MASTERFLOW-BUILD",
+    "title": "Construire et livrer une première version utilisable de MasterFlow",
+    "status": "active",
+    "owner": "malex",
+    "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
+  },
+  "last_completed_round": {
+    "round_id": "UI-SHELL-DOCK-001",
+    "title": "Shell, navigation et Command Dock",
+    "commit_sha": "b0fdcf165b270fc7203eb404cee014b7caf4413c",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
+  },
+  "active_round": {
+    "round_id": "GIT-CONSOLIDATION-001",
+    "title": "Vérité Git unique et préparation du raccord UI",
+    "objective": "Classer la branche, la draft PR #214, les registres et les assets avant de préparer le premier raccord UI au système réel.",
+    "owner": "malex",
+    "status": "active",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Publier le Lot 1 MASTERBUILD Core en draft PR, puis demander la revue de MALEX et Vincent avant merge.",
+    "primary_risk": "Publier la PR #214 en bloc alors que le frontend embarque des assets candidats ou archivés et que son diff complet contient des écarts de whitespace.",
+    "no_auto_execute": true,
+    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006"],
+    "authorization_id": "AUTH-GTC-L1-2026-07-31",
+    "success_criteria": [
+      "Une lecture distingue local, branche, PR, main et live.",
+      "Chaque asset est actif, candidat, archive ou rejeté.",
+      "Les fonctionnalités backend utiles restent identifiées pendant la migration UI.",
+      "La PR #214 reçoit une stratégie explicite.",
+      "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
+    ],
+    "blockers": [
+      "Le build frontend embarque des assets Stage Actor candidats ou archivés via le Component Lab.",
+      "Le diff complet origin/main...HEAD contient des espaces de fin de ligne dans quatre documents historiques Shell/Dock.",
+      "Les Lots 2 à 4 restent à reconstruire après le Lot 1.",
+      "Le merge du Lot 1 n'est pas autorisé."
+    ],
+    "validation_gates": [
+      "GO Lot 1 obtenu pour branche, reconstruction, tests, commit, push et draft PR",
+      "Nouveau GO avant merge ou déploiement",
+      "Aucun asset candidat n'est promu automatiquement",
+      "Aucun raccord UI au backend pendant la vérification",
+      "Aucune branche de découpe sans autorisation distincte"
+    ],
+    "source_refs": [
+      "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
+      "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
+      "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
+      "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
+      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
+      "docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md",
+      "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
+      "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
+      "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
+    ]
+  },
+  "next_moves": [
+    {
+      "move_id": "git-consolidation",
+      "label": "Décider la stratégie de la PR #214",
+      "reason": "Les lots et assets sont classés ; il faut maintenant choisir conserver, découper ou remplacer.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "shell-dock-runtime",
+      "label": "Préparer le raccord Shell/Dock",
+      "reason": "C'est la première intégration recommandée après consolidation.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "git-consolidation-verify",
+      "label": "Vérifier les preuves et préparer la clôture",
+      "reason": "La stratégie Git et le contrat Shell/Dock sont prêts localement ; il faut vérifier sans publier.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "publication-decision",
+      "label": "Préparer le Lot 1 MASTERBUILD Core",
+      "reason": "Les preuves locales sont vérifiées ; la publication doit maintenant suivre le découpage validé, un lot à la fois.",
+      "recommended": true,
+      "status": "in_progress"
+    },
+    {
+      "move_id": "feature-registry-review",
+      "label": "Relire la carte fonctionnelle",
+      "reason": "MALEX et Vincent doivent vérifier les fonctionnalités oubliées avant la migration des verticales.",
+      "recommended": false,
+      "status": "queued"
+    }
+  ],
+  "registries": {
+    "features": "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+    "design_rules": "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
+    "workboard": "docs/masterbuild/MASTERBUILD_WORKBOARD.json",
+    "sources": "docs/masterbuild/MASTERBUILD_SOURCE_REGISTRY.json"
+  },
+  "continuity": {
+    "resume_mode": "orient_recommend_wait_for_go",
+    "never_execute_on_resume": true,
+    "stale_handoff_policy": "ignore_and_report",
+    "required_response_order": [
+      "situation_humaine",
+      "progression",
+      "fait",
+      "prochaine_action_recommandee",
+      "deux_alternatives_maximum",
+      "risques",
+      "commande_go"
+    ],
+    "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
+  },
+  "active_goal": {
+    "goal_id": "GIT-CONSOLIDATION-001",
+    "title": "Vérité Git unique et préparation du raccord UI",
+    "owner": "malex",
+    "status": "active",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "source_truth_layer": "git_operable",
+    "success_criteria": [
+      "Branche et PR classées",
+      "Assets classés",
+      "Round d'intégration suivant préparé"
+    ],
+    "blockers": [
+      "Assets candidats ou archivés présents dans le bundle frontend du Component Lab",
+      "Diff complet de la PR #214 avec écarts de whitespace historiques",
+      "Lots 2 à 4 non reconstruits",
+      "Merge du Lot 1 non autorisé"
+    ],
+    "validation_gates": [
+      "GO Lot 1 obtenu pour branche, reconstruction, tests, commit, push et draft PR",
+      "Nouveau GO avant merge ou déploiement"
+    ],
+    "source_refs": [
+      "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
+      "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
+      "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
+      "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
+      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
+      "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md"
+    ]
+  },
+  "stages": [
+    {
+      "index": 1,
+      "id": "orient",
+      "label": "Orienter",
+      "status": "completed"
+    },
+    {
+      "index": 2,
+      "id": "frame",
+      "label": "Cadrer",
+      "status": "completed"
+    },
+    {
+      "index": 3,
+      "id": "audit",
+      "label": "Auditer",
+      "status": "completed"
+    },
+    {
+      "index": 4,
+      "id": "decide",
+      "label": "Décider",
+      "status": "completed"
+    },
+    {
+      "index": 5,
+      "id": "build",
+      "label": "Construire",
+      "status": "completed"
+    },
+    {
+      "index": 6,
+      "id": "verify",
+      "label": "Vérifier",
+      "status": "completed"
+    },
+    {
+      "index": 7,
+      "id": "publish",
+      "label": "Publier",
+      "status": "active"
+    },
+    {
+      "index": 8,
+      "id": "close",
+      "label": "Clôturer",
+      "status": "pending"
+    }
+  ],
+  "shared_profiles": [
+    {
+      "profile_id": "malex",
+      "display_name": "MALEX",
+      "github_handle": "malexcoulot-dev",
+      "ownership": [
+        "produit",
+        "ui",
+        "da",
+        "canon"
+      ],
+      "default_guidance": "assisted"
+    },
+    {
+      "profile_id": "vincent",
+      "display_name": "Vincent",
+      "github_handle": "Prof-Krapu",
+      "ownership": [
+        "backend",
+        "contraintes système",
+        "profil ProfKrapu"
+      ],
+      "default_guidance": "guided"
+    }
+  ],
+  "tone": {
+    "base": "friendly_brainy_pedagogical",
+    "fighter_mirror": "light",
+    "allowed_terms": [
+      "Round",
+      "Training",
+      "Drive gauge",
+      "Perfect parry",
+      "KO technique"
+    ],
+    "rule": "La vanne soutient l'explication et ne remplace jamais le statut réel."
+  },
+  "self_improvement": {
+    "mode": "proposal_only",
+    "rule": "Observer les frictions, produire une proposition testable, puis attendre validation avant de modifier le comportement ou le code.",
+    "learning_log": "docs/masterbuild/MASTERBUILD_LEARNING_LOG.json"
+  },
+  "external_agents": [
+    {
+      "agent_id": "big-pickle-opencode",
+      "label": "Big Pickle via OpenCode",
+      "status": "paused",
+      "channel": ".opencode/INBOX.md",
+      "allowed_work": [
+        "audit massif",
+        "extraction de patterns",
+        "comparaison docs/code",
+        "rapport done_unverified"
+      ],
+      "forbidden_work": [
+        "canon produit",
+        "UI/DA subjective",
+        "commit/push/PR/merge",
+        "provider/migration/deploiement",
+        "arbitrage produit"
+      ],
+      "handoff_doc": "docs/masterbuild/MASTERBUILD_EXTERNAL_AGENTS.md"
+    }
+  ],
+  "domains": [
+    {
+      "id": "D01",
+      "label": "Identité et accès",
+      "status": "implemented"
+    },
+    {
+      "id": "D02",
+      "label": "Contexte, mémoire et RAG",
+      "status": "partial"
+    },
+    {
+      "id": "D03",
+      "label": "Rooms et commandes",
+      "status": "partial"
+    },
+    {
+      "id": "D04",
+      "label": "Personas et compagnons",
+      "status": "partial"
+    },
+    {
+      "id": "D05",
+      "label": "Teaching",
+      "status": "implemented"
+    },
+    {
+      "id": "D06",
+      "label": "Correction et feedback",
+      "status": "partial"
+    },
+    {
+      "id": "D07",
+      "label": "Inventory",
+      "status": "partial"
+    },
+    {
+      "id": "D08",
+      "label": "DA et assets",
+      "status": "partial"
+    },
+    {
+      "id": "D09",
+      "label": "MasterStory",
+      "status": "partial"
+    },
+    {
+      "id": "D10",
+      "label": "Événements et sorties",
+      "status": "partial"
+    },
+    {
+      "id": "D11",
+      "label": "Factories et backflow",
+      "status": "implemented"
+    },
+    {
+      "id": "D12",
+      "label": "Pilotage et observabilité",
+      "status": "partial"
+    }
+  ],
+  "research_proposals": [
+    {
+      "id": "component-workbench",
+      "title": "Atelier de composants durable",
+      "reason": "Comparer les patterns Storybook, Vitest Browser et le Lab MasterFlow.",
+      "question": "Quels contrôles et recettes rendent un Component Lab partageable sans alourdir le build ?",
+      "cost": "light",
+      "expected_output": "decision",
+      "status": "candidate_evidence"
+    }
+  ],
+  "publication": {
+    "state": "draft_pr",
+    "branch": "codex/masterbuild-v2",
+    "commit_sha": "65e9c0e7b31c1b5e294cba00ba37915184c6e002",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214",
+    "runtime_proof": "Branche et draft PR alignées sur 65e9c0e ; aucun merge dans main et aucune preuve de déploiement live."
+  }
+}

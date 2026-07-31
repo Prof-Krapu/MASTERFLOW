@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Coherence"
+  short_description: "Comparer canon, Git, proto et runtime"
+  default_prompt: "Utilise $masterbuild-coherence pour auditer cet écart entre canon et implémentation."

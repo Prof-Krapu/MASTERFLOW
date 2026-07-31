@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "mode": "proposal_only",
+  "updated_at": "2026-07-04T00:00:00.000Z",
+  "observations": [
+    {
+      "id": "learning-001",
+      "source": "malex_feedback",
+      "signal": "Une vérification visuelle longue a consommé du temps alors que la validation humaine suffisait.",
+      "proposal": "Demander une validation humaine pour les décisions visuelles subjectives et réserver le navigateur aux interactions ciblées.",
+      "status": "accepted_in_protocol"
+    }
+  ],
+  "proposals": []
+}

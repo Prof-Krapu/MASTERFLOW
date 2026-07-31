@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-31T04:49:42+02:00",
+  "active_round_id": "GIT-CONSOLIDATION-001",
+  "authorizations": [
+    {
+      "authorization_id": "AUTH-MB2-2026-07-05",
+      "round_id": "MASTERBUILD-V2",
+      "actor": "malex",
+      "scope": "build_test_commit_push_draft_pr",
+      "status": "completed",
+      "granted_at": "2026-07-05",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "migration", "provider", "spend", "delete", "canon_scope_change"]
+    },
+    {
+      "authorization_id": "AUTH-USD-2026-07-09",
+      "round_id": "UI-SHELL-DOCK-001",
+      "actor": "malex",
+      "scope": "frame_audit_bounded_build_test_commit_push_draft_pr",
+      "status": "completed",
+      "granted_at": "2026-07-09",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "migration", "provider", "spend", "delete", "canon_scope_change", "home_redesign", "persona_redesign", "skilltree_redesign"]
+    },
+    {
+      "authorization_id": "AUTH-GTC-L1-2026-07-31",
+      "round_id": "GIT-CONSOLIDATION-001",
+      "actor": "malex",
+      "scope": "create_branch_rebuild_masterbuild_core_test_commit_push_draft_pr",
+      "status": "active",
+      "granted_at": "2026-07-31",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "delete", "pr_214_change", "frontend", "backend", "asset", "ui_backend_connection"]
+    }
+  ],
+  "work_packages": [
+    {
+      "work_package_id": "GTC-001",
+      "label": "Inventorier branche, PR, fichiers locaux et assets",
+      "feature_ids": ["masterbuild-pilot", "persona-asset-pipeline"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": [],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["état Git", "contenu PR #214", "matrice assets et registres"]
+    },
+    {
+      "work_package_id": "GTC-002",
+      "label": "Classer garder, séparer, archiver et rejeter",
+      "feature_ids": ["masterbuild-pilot", "persona-asset-pipeline"],
+      "status": "completed",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["GTC-001"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["décision PR", "statut de chaque famille d'assets", "aucune canonisation implicite"]
+    },
+    {
+      "work_package_id": "GTC-003",
+      "label": "Réconcilier état, registres et suivi",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-001", "GTC-002"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["état partagé frais", "sources actives", "aucune queue concurrente"]
+    },
+    {
+      "work_package_id": "GTC-004",
+      "label": "Décider la stratégie de la PR #214",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["GTC-003"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": ["conserver, découper ou remplacer", "périmètre de merge explicite"]
+    },
+    {
+      "work_package_id": "GTC-005",
+      "label": "Préparer le raccord Shell et Command Dock",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-004"],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-010"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["contrats runtime", "design preflight", "première tranche bornée"]
+    },
+    {
+      "work_package_id": "GTC-006",
+      "label": "Publier les preuves et clôturer",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "partial",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-005"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": [
+        "tests locaux verts",
+        "rapport de vérification locale",
+        "alertes de publication",
+        "handoff étape 7",
+        "GO distinct avant toute publication"
+      ]
+    },
+    {
+      "work_package_id": "GTC-L1-001",
+      "label": "Publier le Lot 1 MASTERBUILD Core",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "in_progress",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-006"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": [
+        "branche propre issue de origin/main",
+        "allowlist sans frontend, backend ou asset",
+        "tests MASTERBUILD",
+        "commit et push",
+        "draft PR distincte"
+      ]
+    },
+    {
+      "work_package_id": "USD-001",
+      "label": "Audit Lab / prototype / runtime existant",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": [],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-010"],
+      "tool_route": "codex",
+      "expected_evidence": ["matrice composants", "endpoints disponibles", "écarts lab/proto/runtime"]
+    },
+    {
+      "work_package_id": "USD-002",
+      "label": "Contrat Shell + navigation",
+      "feature_ids": ["ui-shell-navigation"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["USD-001"],
+      "design_rule_ids": ["DES-002", "DES-003", "DES-006", "DES-007", "DES-010"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["Design Preflight", "états desktop/mobile", "raccourcis et loadout"]
+    },
+    {
+      "work_package_id": "USD-003",
+      "label": "Contrat Command Dock",
+      "feature_ids": ["ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["USD-001"],
+      "design_rule_ids": ["DES-001", "DES-004", "DES-007", "DES-008", "DES-010"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["actions max visibles", "Enter/Esc/raccourcis", "préflight actions sensibles"]
+    },
+    {
+      "work_package_id": "USD-004",
+      "label": "Mapping backend lecture seule",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["vincent", "malex"],
+      "dependencies": ["USD-002", "USD-003"],
+      "design_rule_ids": ["DES-002", "DES-009", "DES-010"],
+      "tool_route": "codex",
+      "expected_evidence": ["context/current", "actions disponibles", "permissions et états verrouillés"]
+    },
+    {
+      "work_package_id": "USD-005",
+      "label": "Implémentation bornée Shell/Dock et restauration Lab",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["USD-004"],
+      "design_rule_ids": ["DES-004", "DES-006", "DES-008", "DES-010", "DES-011"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["build frontend", "routes /ui-reset /ui-lab /ui-lab/vincent", "validation humaine MALEX"]
+    },
+    {
+      "work_package_id": "USD-006",
+      "label": "Publication draft PR Shell/Dock",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["USD-005"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": ["commit", "push", "draft PR", "pas de merge"]
+    },
+    {
+      "work_package_id": "MB2-WP1",
+      "label": "Contrat universel et registres V3",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": [],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["schema parse", "source provenance", "diff check"]
+    },
+    {
+      "work_package_id": "MB2-WP2",
+      "label": "Gouvernance design et Design Preflight",
+      "feature_ids": ["masterbuild-pilot", "ui-shell-navigation", "ui-command-dock"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP1"],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-010", "DES-014"],
+      "tool_route": "codex",
+      "expected_evidence": ["preflight Shell/Dock", "rule coverage test"]
+    },
+    {
+      "work_package_id": "MB2-WP3",
+      "label": "Moteur de Round, affectations et exports",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP1"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["authorization test", "portable export", "stale handoff test"]
+    },
+    {
+      "work_package_id": "MB2-WP4",
+      "label": "Cockpit V2 opérationnel",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex"],
+      "dependencies": ["MB2-WP2", "MB2-WP3"],
+      "design_rule_ids": ["DES-001", "DES-004", "DES-006", "DES-009", "DES-010"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["build", "responsive checklist", "keyboard labels"]
+    },
+    {
+      "work_package_id": "MB2-WP5",
+      "label": "Adaptateurs multi-IA",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP1", "MB2-WP3"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["adapter pointers", "chat-only export"]
+    },
+    {
+      "work_package_id": "MB2-WP6",
+      "label": "Vérification et draft PR",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "completed",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["MB2-WP4", "MB2-WP5"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": ["tests", "build", "commit", "push", "draft PR"]
+    }
+  ]
+}

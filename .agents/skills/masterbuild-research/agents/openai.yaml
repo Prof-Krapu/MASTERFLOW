@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Research"
+  short_description: "Proposer et cadrer une recherche utile"
+  default_prompt: "Utilise $masterbuild-research pour décider si cette question mérite une recherche en ligne."

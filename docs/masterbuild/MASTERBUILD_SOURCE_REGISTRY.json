@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-31T04:49:42+02:00",
+  "sources": [
+    {
+      "source_id": "global-system-ui-audit-2026-07-31",
+      "path": "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
+      "kind": "integration_audit",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Baseline système, prototype, runtime et Git du Round de consolidation."
+    },
+    {
+      "source_id": "git-consolidation-round-001",
+      "path": "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "kind": "active_round",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Round actif avant tout raccord UI au système."
+    },
+    {
+      "source_id": "git-consolidation-classification-2026-07-31",
+      "path": "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
+      "kind": "git_asset_classification",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json",
+        "MASTERBUILD_FEATURE_REGISTRY.json"
+      ],
+      "note": "Preuve GTC-001 à GTC-003 : lots de PR, assets, queues et écarts documentaires."
+    },
+    {
+      "source_id": "pr-214-split-strategy-2026-07-31",
+      "path": "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
+      "kind": "publication_strategy",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json",
+        "MASTERBUILD_FEATURE_REGISTRY.json"
+      ],
+      "note": "Décision GTC-004 : découper #214 en quatre lots sans exécution Git automatique."
+    },
+    {
+      "source_id": "shell-dock-runtime-preflight-001",
+      "path": "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
+      "kind": "design_preflight",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json",
+        "MASTERBUILD_FEATURE_REGISTRY.json"
+      ],
+      "note": "Preflight GTC-005 : surface, états, responsive, accessibilité, données et validations."
+    },
+    {
+      "source_id": "shell-dock-runtime-mapping-001",
+      "path": "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
+      "kind": "runtime_mapping",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json",
+        "MASTERBUILD_FEATURE_REGISTRY.json"
+      ],
+      "note": "Mapping GTC-005 entre Shell/Dock, CurrentContext, loadout, actions et permissions."
+    },
+    {
+      "source_id": "git-consolidation-local-verification-2026-07-31",
+      "path": "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
+      "kind": "local_verification_report",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Preuve GTC-006 : contrôles locaux, état Git, alertes de publication et gate du Lot 1."
+    },
+    {
+      "source_id": "masterbuild-core-publication-contract-001",
+      "path": "docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md",
+      "kind": "deployment_contract",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Contrat du Lot 1 : MASTERBUILD publiable sans frontend, backend, asset, merge ou déploiement."
+    },
+    {
+      "source_id": "persona-asset-decision-sheet-2026-07-26",
+      "path": "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
+      "kind": "asset_decision_registry",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Distingue assets actifs, candidats, archives et rejets."
+    },
+    {
+      "source_id": "ui-doctrine",
+      "path": "FRONTEND_UI_DOCTRINE.md",
+      "kind": "product_doctrine",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_DESIGN_RULES.json"],
+      "note": "Source fondatrice situation plutôt que catalogue."
+    },
+    {
+      "source_id": "ui-cdc-canon-v2",
+      "path": "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
+      "kind": "canon_ui",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json", "MASTERBUILD_DESIGN_RULES.json"],
+      "note": "Référence UI principale."
+    },
+    {
+      "source_id": "ui-integration-registry-v1",
+      "path": "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V1.md",
+      "kind": "integration_registry",
+      "status": "absorbed",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Reste preuve détaillée ; la vue active passe dans MASTERBUILD."
+    },
+    {
+      "source_id": "ui-shell-dock-v1",
+      "path": "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md",
+      "kind": "surface_contract",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Contrat du prochain Round produit."
+    },
+    {
+      "source_id": "ui-cdc-active-legacy",
+      "path": "docs/ui/MASTERFLOW_UI_CDC_ACTIVE.md",
+      "kind": "historical_cdc",
+      "status": "historical",
+      "absorbed_into": ["docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md", "MASTERBUILD_DESIGN_RULES.json"],
+      "note": "Consulter uniquement pour provenance ou détail non absorbé."
+    },
+    {
+      "source_id": "action-queue",
+      "path": "MASTERFLOW_ACTION_QUEUE.md",
+      "kind": "legacy_operational_queue",
+      "status": "historical",
+      "absorbed_into": ["docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md"],
+      "note": "Source historique non active ; chaque entrée non résolue doit être vérifiée avant absorption dans le workboard."
+    },
+    {
+      "source_id": "runtime-queue-2026-06-18",
+      "path": "docs/runtime-queue/MASTERFLOW_RUNTIME_ACTION_QUEUE_2026-06-18.md",
+      "kind": "historical_runtime_queue",
+      "status": "historical",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Baseline historique, pas queue active concurrente."
+    },
+    {
+      "source_id": "orientation-fabric",
+      "path": "docs/experience-fabric/SYSTEM_ORIENTATION_FABRIC_AUDIT_2026-06-30.md",
+      "kind": "system_capability_map",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Source de diagnostic D01-D12."
+    },
+    {
+      "source_id": "ui-masterflow-research",
+      "path": "/Users/malex/Desktop/UI_MASTERFLOW/",
+      "kind": "external_research_pack",
+      "status": "absorbed",
+      "absorbed_into": ["MASTERBUILD_DESIGN_RULES.json"],
+      "note": "Les principes utiles sont condensés ; les PDF restent sources externes."
+    }
+  ]
+}

@@ -4,6 +4,125 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-07-31 — POINT DE REPRISE ACTIF MASTERBUILD
+
+`SUIVI.md` reste un journal historique. Pour agir, lire d'abord :
+
+1. `MASTERBUILD.md` ;
+2. `docs/masterbuild/MASTERBUILD_STATE.json` ;
+3. `docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md`.
+
+### VAGUE ACTIVE
+
+- id : `GIT-CONSOLIDATION-001`
+- objectif : obtenir une vérité Git unique avant le raccord progressif de l'UI au système
+- statut : étape `7/8 — Publier`, Lot 1 autorisé et en cours
+- dernière action terminée : volet local de GTC-006, vérifications proportionnées et rapport final
+- prochaine action : publier la draft PR du Lot 1 MASTERBUILD Core depuis `origin/main`
+- fichiers/domaines concernés : MASTERBUILD, Git/PR, UI Lab, prototype et assets personas
+- tests : JSON, MASTERBUILD 12/12, lint MASTERBUILD et builds MASTERBUILD/frontend verts ; diff local propre
+- publication : branche `codex/masterbuild-core` créée depuis `bf041f7` ; draft PR en préparation ;
+  #214 reste inchangée comme source
+- blocage : merge et déploiement non autorisés ; Lots 2 à 4 non reconstruits
+
+Preuve consolidée :
+`docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md`.
+
+Stratégie de publication :
+`docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md`.
+
+Contrats GTC-005 :
+
+- `docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md` ;
+- `docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md`.
+
+Rapport GTC-006 :
+`docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md`.
+
+Queue active unique : `docs/masterbuild/MASTERBUILD_WORKBOARD.json`. `MASTERFLOW_ACTION_QUEUE.md`,
+les inbox historiques et `AGENT_TASKS.md` restent des sources à absorber explicitement, jamais des
+queues concurrentes auto-exécutables.
+
+Le SHA exact du checkpoint est fourni par Git et le handoff local généré après le push. Les sections
+plus anciennes ci-dessous restent des preuves historiques et ne réactivent aucune vague.
+
+---
+
+## 2026-07-05 — MASTERBUILD-V2 : pilote global et gouvernance design
+
+- branche/worktree dédié `codex/masterbuild-v2`, issu de `origin/main` ;
+- contrat universel `MASTERBUILD.md` et adaptateurs Codex, Claude, Copilot, Gemini, OpenCode ;
+- registre fonctionnel multidimensionnel produit/backend/UI/release ;
+- registre design issu de la doctrine UI, du CDC, de l'accessibilité, de l'agilité et des principes
+  MUI, sans dépendance Material UI ;
+- workboard MALEX/Vincent/agents avec GO du Round borné jusqu'à la draft PR ;
+- Design Preflight obligatoire avant une tâche UI ;
+- export Markdown/JSON portable et filtrage anti-secrets ;
+- cockpit V2 en huit vues opérationnelles.
+
+Gate : GO MALEX obtenu pour implémentation, tests, commit, push et draft PR. Merge, déploiement,
+migration, provider, suppression et changement de canon restent interdits sans nouveau GO.
+
+Vérification : 11/11 tests MASTERBUILD, TypeScript et build Vite passent. Le contrôle visuel HTTP
+reste volontairement humain ; aucun scan navigateur long n'a été exécuté.
+
+Publication : branche `codex/masterbuild-v2`, commit `fcfa68e`, draft PR #214
+`https://github.com/Prof-Krapu/MASTERFLOW/pull/214`. Aucun merge ni déploiement.
+
+### 2026-07-09 — Ouverture du Round UI-SHELL-DOCK-001
+
+Objectif : promouvoir Shell, navigation et Command Dock avant Home, personas et skilltree.
+
+Livrables créés :
+
+- `docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md` ;
+- `docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md`.
+
+Statut : Round actif en étape 1/8 — Orienter. GO obtenu pour cadrage, audit, build borné, tests,
+commit, push et draft PR. Merge, déploiement, migration, provider, suppression, Home, personas et
+skilltree restent hors périmètre sans nouveau GO.
+
+Audit USD-001 terminé : `docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md`.
+
+Décision recommandée : promouvoir les composants Shell/Dock du prototype avancé vers la branche V2
+en tranche contrôlée, sans assets candidats et sans récupérer Home/persona/skilltree.
+
+## NOUVEAU POINT D'ENTRÉE — MASTERBUILD
+
+`SUIVI.md` reste l'historique de preuve. Il n'est plus le fichier à relire intégralement au boot.
+
+Pour reprendre :
+
+1. ouvrir `docs/masterbuild/MASTERBUILD_STATE.json` ;
+2. lancer `npm run masterbuild:doctor` ;
+3. ouvrir le cockpit avec `npm run dev:masterbuild` puis `http://localhost:5175` ;
+4. consulter ensuite seulement la section `SUIVI.md` citée par l'objectif actif.
+
+### Correctif de continuité V1.1 — local
+
+Le premier test dans une nouvelle conversation a révélé un défaut de pilotage : l'objectif
+MASTERBUILD était clôturé sans Round suivant, tandis que le handoff local pointait vers un ancien
+commit. La reprise pouvait alors improviser une micro-tâche et terminer sans proposer de suite.
+
+Correctif local en cours :
+
+- programme MasterFlow permanent, distinct des Rounds bornés ;
+- Round actif `UI-SYSTEM-INTEGRATION-001` ;
+- recommandation et deux alternatives maximum dans l'état partagé ;
+- reprise strictement orientative : aucune exécution avant GO ;
+- handoff périmé détecté puis ignoré ;
+- prochaine action obligatoire dans chaque réponse de travail.
+
+Statut : modifications locales non committées et non poussées. Le Round recommandé est
+`Shell + navigation + Command Dock`, avant Home et personas.
+
+État actuel MASTERBUILD : **publié sur `codex/ui-reset-prototype-lab`** le 2026-07-04, commit
+d'implémentation `b133283bd88895f79e45ccbbd1593a1791f3bf6a`. Doctor, tests `3/3`, TypeScript,
+build Vite et `git diff --check` sont verts. Le cockpit local répond sur `127.0.0.1:5175` et son
+service de contrôle sur `127.0.0.1:8010`. Aucune PR, aucun merge dans `main` et aucun déploiement
+live n'ont été réalisés. Les retouches frontend, assets candidats et CDC UI hors périmètre restent
+locaux et intacts.
+
 ## VAGUE ACTIVE — reprise anti-coupure crédits
 
 - id : `PUBLICATION-GROUPED-REVIEW-001`

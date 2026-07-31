@@ -1,0 +1,53 @@
+# Handoff partagé — GIT-CONSOLIDATION-001
+
+Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
+`git rev-parse HEAD` ou `npm run masterbuild:doctor`.
+
+## À lire
+
+1. `MASTERBUILD.md`
+2. `docs/masterbuild/MASTERBUILD_STATE.json`
+3. `docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md`
+4. `docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md`
+5. `docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md`
+6. `docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md`
+7. `docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md`
+8. `docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md`
+9. `docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md`
+
+## Situation
+
+- le backend MasterFlow est riche et doit être raccordé, pas reconstruit ;
+- le prototype est la référence d'expérience, pas une preuve de raccord complet ;
+- la PR #214 reste draft et non mergée ;
+- le canon ProfKrapu V4 est actif ;
+- les essais Stage Actor ProfKrapu sont archivés ou rejetés ;
+- GTC-001 à GTC-005 ont inventorié, classé, réconcilié, décidé puis préparé les contrats ;
+- la vérification locale de GTC-006 est terminée : JSON, tests, lint et builds sont verts ;
+- le diff complet de la PR conserve des écarts de whitespace historiques dans quatre documents ;
+- le build frontend embarque des assets candidats ou archivés via le Component Lab ;
+- la décision est de découper la PR #214 en quatre lots, sans exécution Git autorisée ;
+- le mapping Shell/Dock est documenté, sans raccord UI/backend exécuté ;
+- le Round est en étape `7/8 — Publier`, sans autorisation de publication ;
+- le prochain travail recommandé est la préparation locale du Lot 1 depuis `origin/main`, après GO.
+
+## Prompt
+
+```text
+Reprends MASTERBUILD dans /Users/malex/Documents/Playground/MASTERFLOW_MASTERBUILD_V2.
+
+Lis MASTERBUILD.md et docs/masterbuild/MASTERBUILD_STATE.json, puis lance :
+npm run masterbuild:doctor
+npm run masterbuild:resume
+
+Le Round attendu est GIT-CONSOLIDATION-001, étape 7/8 — Publier.
+
+Présente-moi simplement :
+1. les preuves GTC-001 à GTC-006 ;
+2. les alertes de publication encore ouvertes ;
+3. ce qui est local, draft PR, main ou live ;
+4. le GO exact nécessaire pour préparer localement le Lot 1 sans publication.
+
+Ne crée aucune branche de découpe et ne modifie pas la PR. Ne branche pas l'UI au backend, ne
+valide aucun nouvel asset, ne supprime rien, ne commit, ne push, ne merge et ne déploie rien.
+```

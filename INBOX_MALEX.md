@@ -1,5 +1,13 @@
 # INBOX MALEX — MasterFlow
 
+> **Point d'entrée actuel : MASTERBUILD.** Lancer `npm run masterbuild:doctor`, puis
+> `npm run dev:masterbuild` et ouvrir `http://localhost:5175`. Cette inbox reste une archive de
+> demandes et une preuve historique. Les nouveaux recaps passent par
+> `docs/masterbuild/MASTERBUILD_RECAPS.json` et le cockpit.
+>
+> L'état partagé indique le round en cours. Les entrées historiques ne reviennent pas en jeu sans
+> nouvelle décision explicite.
+
 Objectif : point d'entrée court pour les demandes Vincent/Codex à traiter côté MALEX.
 
 Règles de lecture :

@@ -2,6 +2,17 @@
 
 Dernière mise à jour : 2026-06-29
 
+## Statut de gouvernance depuis MASTERBUILD
+
+Ce fichier est une queue historique, pas une queue d'exécution active.
+
+- queue active : `docs/masterbuild/MASTERBUILD_WORKBOARD.json` ;
+- aucune entrée ci-dessous n'est réactivée automatiquement ;
+- les statuts `open`, `local`, `à publier` ou `à faire maintenant` sont des états datés à vérifier ;
+- toute reprise exige une absorption explicite dans le workboard avec source, risque et validation.
+
+Les contenus ci-dessous restent intacts comme preuves et matière de réconciliation.
+
 ## 1. À faire maintenant
 
 ### AUDIT-BP-PLAN-001 — Valider l'arbitrage des 8 rapports Big Pickle

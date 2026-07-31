@@ -1,0 +1,4 @@
+interface:
+  display_name: "MASTERBUILD Release"
+  short_description: "Préparer une publication avec preuves et gates"
+  default_prompt: "Utilise $masterbuild-release pour préparer cette publication sans l’exécuter avant validation."
