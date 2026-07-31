@@ -2,7 +2,7 @@
 
 Date : 2026-07-31
 Décision : découper
-Statut : Lot 1 publié en draft PR #215 ; Lots 2 à 4 non exécutés
+Statut : Lot 1 mergé via PR #215 au SHA `65807a8` ; Lots 2 à 4 non exécutés
 Source : branche `codex/masterbuild-v2`, checkpoint `65e9c0e`
 
 ## Décision
@@ -37,7 +37,7 @@ Exclure :
 
 Gate : tests MASTERBUILD, JSON, TypeScript, build du cockpit et `git diff --check`.
 
-Publication : draft PR #215, branche `codex/masterbuild-core`, pour revue MALEX + Vincent.
+Publication : PR #215 mergée dans `main` au SHA `65807a8`.
 
 ## Lot 2 — Gouvernance GitHub
 

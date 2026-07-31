@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T04:54:27+02:00",
+  "updated_at": "2026-07-31T14:18:24+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -92,12 +92,45 @@
       "source_id": "masterbuild-core-draft-pr-215",
       "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
       "kind": "draft_pull_request",
+      "status": "absorbed",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Lot 1 MASTERBUILD Core mergé dans main le 2026-07-31."
+    },
+    {
+      "source_id": "masterbuild-core-merge-65807a8",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/commit/65807a8b7ad1aba2efbd8f8deee9db884e99796e",
+      "kind": "merge_commit",
       "status": "still_active",
       "absorbed_into": [
         "MASTERBUILD_STATE.json",
         "MASTERBUILD_WORKBOARD.json"
       ],
-      "note": "Lot 1 MASTERBUILD Core publié pour revue MALEX et Vincent ; merge non autorisé."
+      "note": "Preuve GitHub que le Lot 1 MASTERBUILD Core est présent dans main."
+    },
+    {
+      "source_id": "masterbuild-postmerge-closure-contract-001",
+      "path": "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
+      "kind": "deployment_contract",
+      "status": "still_active",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Contrat de réconciliation documentaire après merge de la PR #215."
+    },
+    {
+      "source_id": "masterbuild-postmerge-closure-pr-216",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
+      "kind": "pull_request",
+      "status": "absorbed",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Clôture documentaire post-merge du Lot 1, mergée dans main sans déploiement."
     },
     {
       "source_id": "persona-asset-decision-sheet-2026-07-26",

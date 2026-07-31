@@ -27,15 +27,16 @@ Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
 - le diff complet de la PR conserve des écarts de whitespace historiques dans quatre documents ;
 - le build frontend embarque des assets candidats ou archivés via le Component Lab ;
 - la décision est de découper la PR #214 en quatre lots ;
-- le Lot 1 MASTERBUILD Core est publié en draft PR #215 depuis une base `origin/main` propre ;
+- le Lot 1 MASTERBUILD Core est mergé dans `main` via la PR #215 au SHA `65807a8` ;
+- la réconciliation documentaire post-merge passe par la PR #216 ;
 - le mapping Shell/Dock est documenté, sans raccord UI/backend exécuté ;
 - le Round est en étape `7/8 — Publier` ;
-- le prochain travail recommandé est la revue MALEX + Vincent de la draft PR #215 avant tout merge.
+- le prochain travail recommandé est la décision GTC-L2-001 sur la gouvernance GitHub.
 
 ## Prompt
 
 ```text
-Reprends MASTERBUILD dans /Users/malex/Documents/Playground/MASTERFLOW_MASTERBUILD_CORE_PR.
+Reprends MASTERBUILD dans un clone aligné sur `origin/main`.
 
 Lis MASTERBUILD.md et docs/masterbuild/MASTERBUILD_STATE.json, puis lance :
 npm run masterbuild:doctor
@@ -47,8 +48,8 @@ Présente-moi simplement :
 1. les preuves GTC-001 à GTC-006 ;
 2. les alertes de publication encore ouvertes ;
 3. ce qui est local, draft PR, main ou live ;
-4. le GO exact nécessaire après revue pour merger ou corriger le Lot 1.
+4. le GO exact nécessaire pour préparer le Lot 2 Gouvernance GitHub.
 
 Ne branche pas l'UI au backend, ne valide aucun nouvel asset, ne ferme pas la PR #214, ne merge
-et ne déploie rien sans nouveau GO.
+aucun nouveau lot et ne déploie rien sans nouveau GO.
 ```
