@@ -33,8 +33,9 @@ Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
 - le Round est en étape `7/8 — Publier` ;
 - GTC-L2-001 reconstruit sept fichiers de gouvernance avec des labels existants uniquement ;
 - aucun ruleset ni protection `main` n'est actif, donc CODEOWNERS reste consultatif ;
-- le Lot 2 est publié en draft PR #217 ;
-- le prochain travail recommandé est la revue MALEX + Vincent de #217 avant tout merge.
+- le Lot 2 est mergé dans `main` via la PR #217 au SHA `cd9f26b` ;
+- le prochain travail recommandé est la décision GTC-L3-001 Shell/Dock et assets actifs ;
+- le Lot 3 doit exclure candidats, archives, rejets et tout nouveau raccord UI/backend.
 
 ## Prompt
 
@@ -51,7 +52,7 @@ Présente-moi simplement :
 1. les preuves GTC-001 à GTC-006 ;
 2. les alertes de publication encore ouvertes ;
 3. ce qui est local, draft PR, main ou live ;
-4. le GO exact nécessaire après revue pour merger ou corriger le Lot 2.
+4. le GO exact nécessaire pour préparer le Lot 3 Shell/Dock et assets actifs.
 
 Ne branche pas l'UI au backend, ne valide aucun nouvel asset, ne ferme pas la PR #214, ne merge
 aucun nouveau lot et ne déploie rien sans nouveau GO.
