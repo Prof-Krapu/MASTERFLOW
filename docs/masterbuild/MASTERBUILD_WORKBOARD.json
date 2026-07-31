@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T14:18:24+02:00",
+  "updated_at": "2026-08-01T00:20:40+02:00",
   "active_round_id": "GIT-CONSOLIDATION-001",
   "authorizations": [
     {
@@ -42,6 +42,16 @@
       "granted_at": "2026-07-31",
       "expires_on_scope_change": true,
       "excluded": ["deploy", "delete", "pr_214_change", "frontend", "backend", "asset", "runtime"]
+    },
+    {
+      "authorization_id": "AUTH-GTC-L2-2026-08-01",
+      "round_id": "GIT-CONSOLIDATION-001",
+      "actor": "malex",
+      "scope": "create_branch_analyze_github_governance_commit_push_draft_pr",
+      "status": "completed",
+      "granted_at": "2026-08-01",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "branch_protection", "label_creation", "delete", "pr_214_change", "code", "asset", "runtime"]
     }
   ],
   "work_packages": [
@@ -163,7 +173,7 @@
       "work_package_id": "GTC-L2-001",
       "label": "Publier le Lot 2 Gouvernance GitHub",
       "feature_ids": ["masterbuild-pilot"],
-      "status": "ready_for_decision",
+      "status": "partial",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["GTC-L1-001"],
@@ -171,7 +181,9 @@
       "tool_route": "github",
       "expected_evidence": [
         "allowlist CODEOWNERS et templates GitHub",
-        "revue ownership MALEX et Vincent",
+        "rapport d'impact ownership MALEX et Vincent",
+        "labels existants uniquement",
+        "draft PR #217 distincte",
         "aucun code, asset, runtime ou déploiement"
       ]
     },

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T14:18:24+02:00",
+  "updated_at": "2026-08-01T00:20:40+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -131,6 +131,30 @@
         "MASTERBUILD_WORKBOARD.json"
       ],
       "note": "Clôture documentaire post-merge du Lot 1, mergée dans main sans déploiement."
+    },
+    {
+      "source_id": "github-governance-publication-contract-001",
+      "path": "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
+      "kind": "deployment_contract",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Contrat du Lot 2 limité à CODEOWNERS, formulaires et template PR."
+    },
+    {
+      "source_id": "github-governance-impact-review-001",
+      "path": "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
+      "kind": "governance_impact_review",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Impact ownership, protection de branche, labels et charge opérationnelle du Lot 2."
+    },
+    {
+      "source_id": "github-governance-draft-pr-217",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/217",
+      "kind": "draft_pull_request",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Lot 2 Gouvernance GitHub publié pour revue MALEX et Vincent ; merge non autorisé."
     },
     {
       "source_id": "persona-asset-decision-sheet-2026-07-26",

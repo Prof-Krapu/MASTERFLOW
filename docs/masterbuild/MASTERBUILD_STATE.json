@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-31T14:18:24+02:00",
+  "updated_at": "2026-08-01T00:20:40+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,7 +22,7 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Décider le GO de GTC-L2-001 pour publier séparément la gouvernance GitHub avec revue MALEX et Vincent.",
+    "recommended_next_action": "Faire relire la draft PR #217 par MALEX et Vincent, puis demander un GO distinct avant merge.",
     "primary_risk": "Publier CODEOWNERS et les templates GitHub sans revue de leur impact sur l'ownership et la charge opérationnelle.",
     "no_auto_execute": true,
     "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001"],
@@ -35,14 +35,15 @@
       "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
     ],
     "blockers": [
-      "Le Lot 2 Gouvernance GitHub attend une autorisation et une revue MALEX + Vincent.",
+      "La draft PR #217 attend la revue MALEX + Vincent avant merge.",
       "Le Lot 3 Shell/Dock doit exclure les assets candidats et archivés.",
       "Le Lot 4 Component Lab et candidats reste en draft ou hold.",
       "La PR #214 reste une source à ne pas merger en bloc."
     ],
     "validation_gates": [
       "Lot 1 mergé dans main via PR #215 au SHA 65807a8",
-      "Nouveau GO avant branche, commit, push, PR ou merge du Lot 2",
+      "Lot 2 publié en draft PR #217 après GO branche, analyse, commit et push",
+      "Nouveau GO avant merge du Lot 2 ou modification des protections GitHub",
       "Revue MALEX et Vincent sur CODEOWNERS et les templates GitHub",
       "Nouveau GO avant déploiement",
       "Aucun asset candidat n'est promu automatiquement",
@@ -58,12 +59,15 @@
       "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
       "docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md",
       "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
+      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
+      "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
       "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
       "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
       "https://github.com/Prof-Krapu/MASTERFLOW/commit/65807a8b7ad1aba2efbd8f8deee9db884e99796e",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/217",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },
@@ -105,8 +109,15 @@
     },
     {
       "move_id": "github-governance-lot",
-      "label": "Préparer le Lot 2 Gouvernance GitHub",
-      "reason": "MASTERBUILD Core est dans main ; les règles de contribution doivent être revues séparément avant publication.",
+      "label": "Publier la draft du Lot 2 Gouvernance GitHub",
+      "reason": "L'allowlist et l'impact sont vérifiés ; MALEX et Vincent doivent maintenant relire la gouvernance avant merge.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "github-governance-review",
+      "label": "Relire la draft PR #217",
+      "reason": "Le Lot 2 est publié et techniquement vérifié ; MALEX et Vincent doivent valider ownership et charge avant merge.",
       "recommended": true,
       "status": "ready_for_decision"
     },
@@ -153,14 +164,15 @@
       "Round d'intégration suivant préparé"
     ],
     "blockers": [
-      "Lot 2 non autorisé et non revu",
+      "Draft PR #217 soumise à revue MALEX + Vincent avant merge",
       "Lot 3 doit exclure les assets candidats et archivés",
       "Lot 4 maintenu en draft ou hold",
       "PR #214 toujours ouverte comme source"
     ],
     "validation_gates": [
       "Lot 1 mergé via PR #215 au SHA 65807a8",
-      "Nouveau GO avant publication du Lot 2",
+      "Lot 2 publié en draft PR #217",
+      "Nouveau GO avant merge du Lot 2",
       "Nouveau GO avant déploiement"
     ],
     "source_refs": [
@@ -171,6 +183,8 @@
       "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
       "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
       "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
+      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
+      "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md"
     ]
   },

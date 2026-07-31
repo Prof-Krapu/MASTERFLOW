@@ -31,7 +31,10 @@ Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
 - la réconciliation documentaire post-merge passe par la PR #216 ;
 - le mapping Shell/Dock est documenté, sans raccord UI/backend exécuté ;
 - le Round est en étape `7/8 — Publier` ;
-- le prochain travail recommandé est la décision GTC-L2-001 sur la gouvernance GitHub.
+- GTC-L2-001 reconstruit sept fichiers de gouvernance avec des labels existants uniquement ;
+- aucun ruleset ni protection `main` n'est actif, donc CODEOWNERS reste consultatif ;
+- le Lot 2 est publié en draft PR #217 ;
+- le prochain travail recommandé est la revue MALEX + Vincent de #217 avant tout merge.
 
 ## Prompt
 
@@ -48,7 +51,7 @@ Présente-moi simplement :
 1. les preuves GTC-001 à GTC-006 ;
 2. les alertes de publication encore ouvertes ;
 3. ce qui est local, draft PR, main ou live ;
-4. le GO exact nécessaire pour préparer le Lot 2 Gouvernance GitHub.
+4. le GO exact nécessaire après revue pour merger ou corriger le Lot 2.
 
 Ne branche pas l'UI au backend, ne valide aucun nouvel asset, ne ferme pas la PR #214, ne merge
 aucun nouveau lot et ne déploie rien sans nouveau GO.

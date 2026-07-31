@@ -2,7 +2,7 @@
 
 Date : 2026-07-31
 Décision : découper
-Statut : Lot 1 mergé via PR #215 au SHA `65807a8` ; Lots 2 à 4 non exécutés
+Statut : Lot 1 mergé ; Lot 2 publié en draft PR #217 ; Lots 3 et 4 non exécutés
 Source : branche `codex/masterbuild-v2`, checkpoint `65e9c0e`
 
 ## Décision
@@ -57,6 +57,11 @@ Exclure :
 - changement de permission, déploiement ou runtime.
 
 Gate : revue MALEX et Vincent sur ownership, catégories et charge opérationnelle.
+
+Préparation : allowlist de sept fichiers, labels existants uniquement, aucune protection de branche
+ajoutée. Rapport : `docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md`.
+
+Publication : draft PR #217, branche `codex/github-governance`, en attente de revue MALEX + Vincent.
 
 ## Lot 3 — Shell/Dock et assets actifs
 
