@@ -23,7 +23,7 @@ puis préparer le premier raccord UI sans merger ni déployer.
 | GTC-L1-001 | Publier le Lot 1 MASTERBUILD Core | Codex | completed | PR #215 mergée au SHA `65807a8` |
 | GTC-L2-001 | Publier le Lot 2 Gouvernance GitHub | MALEX + Vincent | completed | PR #217 mergée au SHA `cd9f26b` |
 | GTC-L2-PM-001 | Réconcilier le merge du Lot 2 | Codex | completed | PR #218 mergée |
-| GTC-L3-001 | Publier Shell/Dock et assets actifs | MALEX + Vincent | in_progress | allowlist sans candidat/archive, build et draft PR |
+| GTC-L3-001 | Publier Shell/Dock et assets actifs | MALEX + Vincent | pending_review | draft PR #219, allowlist active, aucun raccord backend |
 
 ## Critères de succès
 
@@ -56,6 +56,8 @@ Shell/Dock avec assets actifs uniquement, les contrôles, le commit, le push et 
 merge, le déploiement, la suppression des anciens assets et tout nouveau raccord UI/backend restent
 fermés. Allowlist :
 `docs/masterbuild/contracts/SHELL_DOCK_ACTIVE_LOT_PUBLICATION_CONTRACT_001.md`.
+La branche `codex/shell-dock-active-lot` est publiée en draft PR #219. La gate active est désormais
+la revue MALEX/Vincent ; aucun merge ni déploiement n'est autorisé par ce GO.
 
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
@@ -78,3 +80,4 @@ métier et changement de canon.
 - `docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md` — impact du Lot 2.
 - PR #217 mergée — Lot 2 Gouvernance GitHub, SHA `cd9f26b`.
 - PR #218 mergée — clôture documentaire post-merge du Lot 2.
+- draft PR #219 — Lot 3 Shell/Dock et assets actifs, en attente de revue.

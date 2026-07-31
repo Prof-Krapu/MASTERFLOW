@@ -68,7 +68,7 @@
       "round_id": "GIT-CONSOLIDATION-001",
       "actor": "malex",
       "scope": "create_branch_rebuild_shell_dock_active_assets_test_commit_push_draft_pr",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-01",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "delete", "pr_214_change", "backend", "shared_contract", "ui_backend_connection", "candidate_asset", "archive_asset", "rejected_asset", "component_lab"]
@@ -229,7 +229,7 @@
       "work_package_id": "GTC-L3-001",
       "label": "Publier le Lot 3 Shell/Dock et assets actifs",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock", "persona-asset-pipeline"],
-      "status": "in_progress",
+      "status": "pending_review",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["GTC-L2-001", "GTC-005"],
@@ -240,7 +240,8 @@
         "assets actifs uniquement",
         "aucun candidat, archive ou rejet",
         "aucun nouveau raccord UI/backend",
-        "build frontend et contrôles ciblés"
+        "build frontend et contrôles ciblés",
+        "draft PR #219 publiée sans merge ni déploiement"
       ]
     },
     {

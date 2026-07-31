@@ -73,3 +73,11 @@ importés par la route reconstruite. Leur suppression nécessite un GO séparé.
 
 La publication autorisée s'arrête à une draft PR. La revue MALEX/Vincent, le merge et tout
 déploiement nécessitent une décision distincte.
+
+## Reçu de publication
+
+- branche : `codex/shell-dock-active-lot` ;
+- commit d'implémentation : `e6865b4` ;
+- draft PR : https://github.com/Prof-Krapu/MASTERFLOW/pull/219 ;
+- statut : publiée, non mergée, non déployée ;
+- prochaine gate : revue MALEX/Vincent et GO distinct avant merge.
