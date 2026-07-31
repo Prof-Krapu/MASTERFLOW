@@ -92,3 +92,6 @@ déploiement, raccord UI/backend, asset ou changement de la PR #214 n'a été ex
 La PR #215 a ensuite été mergée avec un GO MALEX distinct. GitHub `main` pointe sur le commit
 `65807a8b7ad1aba2efbd8f8deee9db884e99796e`. Aucun déploiement n'a été exécuté et la PR #214 reste
 ouverte, draft et inchangée.
+
+La PR #216 réconcilie ensuite les registres, le Round, le handoff, le suivi et le ledger avec ce
+merge. Elle oriente MASTERBUILD vers le Lot 2 sans l'exécuter et sans déploiement.

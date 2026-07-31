@@ -28,6 +28,7 @@ Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
 - le build frontend embarque des assets candidats ou archivés via le Component Lab ;
 - la décision est de découper la PR #214 en quatre lots ;
 - le Lot 1 MASTERBUILD Core est mergé dans `main` via la PR #215 au SHA `65807a8` ;
+- la réconciliation documentaire post-merge passe par la PR #216 ;
 - le mapping Shell/Dock est documenté, sans raccord UI/backend exécuté ;
 - le Round est en étape `7/8 — Publier` ;
 - le prochain travail recommandé est la décision GTC-L2-001 sur la gouvernance GitHub.

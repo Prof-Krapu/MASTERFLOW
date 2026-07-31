@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T14:15:23+02:00",
+  "updated_at": "2026-07-31T14:18:24+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -120,6 +120,17 @@
         "MASTERBUILD_WORKBOARD.json"
       ],
       "note": "Contrat de réconciliation documentaire après merge de la PR #215."
+    },
+    {
+      "source_id": "masterbuild-postmerge-closure-pr-216",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
+      "kind": "pull_request",
+      "status": "absorbed",
+      "absorbed_into": [
+        "MASTERBUILD_STATE.json",
+        "MASTERBUILD_WORKBOARD.json"
+      ],
+      "note": "Clôture documentaire post-merge du Lot 1, mergée dans main sans déploiement."
     },
     {
       "source_id": "persona-asset-decision-sheet-2026-07-26",

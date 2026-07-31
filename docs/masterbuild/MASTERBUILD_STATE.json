@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-31T14:15:23+02:00",
+  "updated_at": "2026-07-31T14:18:24+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -26,7 +26,7 @@
     "primary_risk": "Publier CODEOWNERS et les templates GitHub sans revue de leur impact sur l'ownership et la charge opérationnelle.",
     "no_auto_execute": true,
     "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001"],
-    "authorization_id": "AUTH-GTC-POSTMERGE-2026-07-31",
+    "authorization_id": null,
     "success_criteria": [
       "Une lecture distingue local, branche, PR, main et live.",
       "Chaque asset est actif, candidat, archive ou rejeté.",
@@ -63,6 +63,7 @@
       "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
       "https://github.com/Prof-Krapu/MASTERFLOW/commit/65807a8b7ad1aba2efbd8f8deee9db884e99796e",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },

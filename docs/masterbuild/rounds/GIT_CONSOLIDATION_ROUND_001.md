@@ -42,6 +42,7 @@ reconstruction, les tests, le commit, le push et une draft PR. Merge et déploie
 
 Le Lot 1 est mergé dans `main` via la PR #215 au SHA `65807a8`. La gate active devient la décision
 du Lot 2 Gouvernance GitHub. Les Lots 2 à 4 et la fermeture de #214 restent hors autorisation.
+La réconciliation documentaire post-merge est publiée via la PR #216.
 
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
@@ -60,3 +61,4 @@ métier et changement de canon.
 - `docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md` ;
 - draft PR #214.
 - PR #215 mergée — Lot 1 MASTERBUILD Core, SHA `65807a8`.
+- PR #216 mergée — clôture documentaire post-merge.

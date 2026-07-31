@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T14:15:23+02:00",
+  "updated_at": "2026-07-31T14:18:24+02:00",
   "active_round_id": "GIT-CONSOLIDATION-001",
   "authorizations": [
     {
@@ -38,7 +38,7 @@
       "round_id": "GIT-CONSOLIDATION-001",
       "actor": "malex",
       "scope": "document_commit_push_pr_merge_postmerge_closure",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-07-31",
       "expires_on_scope_change": true,
       "excluded": ["deploy", "delete", "pr_214_change", "frontend", "backend", "asset", "runtime"]
@@ -145,7 +145,7 @@
       "work_package_id": "GTC-PM-001",
       "label": "Réconcilier le merge du Lot 1 dans les registres",
       "feature_ids": ["masterbuild-pilot"],
-      "status": "in_progress",
+      "status": "completed",
       "owner": "codex",
       "reviewers": ["malex"],
       "dependencies": ["GTC-L1-001"],
@@ -155,7 +155,7 @@
         "main = 65807a8",
         "PR #215 mergée",
         "état et handoff orientés vers le Lot 2",
-        "PR de clôture documentaire mergée",
+        "PR #216 de clôture documentaire mergée",
         "aucun déploiement"
       ]
     },
