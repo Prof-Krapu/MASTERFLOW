@@ -59,3 +59,6 @@ protection de branche, label ou déploiement n'a été créé.
 La PR #217 a ensuite été mergée dans `main` au SHA
 `cd9f26ba62f464c4acfb30f061a5ee39bece2796`. Aucun ruleset, protection, label ou déploiement n'a
 été créé pendant le merge.
+
+La PR #218 réconcilie ensuite les registres et oriente MASTERBUILD vers GTC-L3-001 sans reconstruire
+de code ou d'asset et sans créer de protection, label ou déploiement.

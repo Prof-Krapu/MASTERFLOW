@@ -49,6 +49,7 @@ Le GO GTC-L2-001 autorise la reconstruction, l'analyse, le commit, le push et un
 protection de branche, création de labels et déploiement restent fermés.
 Le Lot 2 est mergé dans `main` via la PR #217 au SHA `cd9f26b`. La gate active devient la décision
 du Lot 3 Shell/Dock et assets actifs. Aucun code ou asset du Lot 3 n'est encore reconstruit.
+La réconciliation documentaire post-merge du Lot 2 est publiée via la PR #218.
 
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
@@ -70,3 +71,4 @@ métier et changement de canon.
 - PR #216 mergée — clôture documentaire post-merge.
 - `docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md` — impact du Lot 2.
 - PR #217 mergée — Lot 2 Gouvernance GitHub, SHA `cd9f26b`.
+- PR #218 mergée — clôture documentaire post-merge du Lot 2.

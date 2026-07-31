@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-01T00:38:40+02:00",
+  "updated_at": "2026-08-01T00:41:02+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -26,7 +26,7 @@
     "primary_risk": "Réintroduire dans le Lot 3 des assets candidats ou archivés, ou brancher l'UI au backend hors contrat.",
     "no_auto_execute": true,
     "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001", "GTC-L2-PM-001", "GTC-L3-001"],
-    "authorization_id": "AUTH-GTC-L2-POSTMERGE-2026-08-01",
+    "authorization_id": null,
     "success_criteria": [
       "Une lecture distingue local, branche, PR, main et live.",
       "Chaque asset est actif, candidat, archive ou rejeté.",
@@ -70,6 +70,7 @@
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/217",
       "https://github.com/Prof-Krapu/MASTERFLOW/commit/cd9f26ba62f464c4acfb30f061a5ee39bece2796",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/218",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },

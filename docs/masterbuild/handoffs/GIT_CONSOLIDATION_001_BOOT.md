@@ -34,6 +34,7 @@ Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
 - GTC-L2-001 reconstruit sept fichiers de gouvernance avec des labels existants uniquement ;
 - aucun ruleset ni protection `main` n'est actif, donc CODEOWNERS reste consultatif ;
 - le Lot 2 est mergé dans `main` via la PR #217 au SHA `cd9f26b` ;
+- la réconciliation documentaire post-merge du Lot 2 passe par la PR #218 ;
 - le prochain travail recommandé est la décision GTC-L3-001 Shell/Dock et assets actifs ;
 - le Lot 3 doit exclure candidats, archives, rejets et tout nouveau raccord UI/backend.
 

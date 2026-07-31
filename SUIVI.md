@@ -17,11 +17,11 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - id : `GIT-CONSOLIDATION-001`
 - objectif : obtenir une vérité Git unique avant le raccord progressif de l'UI au système
 - statut : étape `7/8 — Publier`, Lots 1 et 2 mergés dans `main`
-- dernière action terminée : merge de la PR #217 au SHA GitHub `cd9f26b`
+- dernière action terminée : merge de la PR #217 au SHA `cd9f26b`, puis clôture documentaire PR #218
 - prochaine action : décision GTC-L3-001 pour Shell/Dock et assets actifs
 - fichiers/domaines concernés : MASTERBUILD, Git/PR, UI Lab, prototype et assets personas
 - tests : JSON, MASTERBUILD 12/12, lint MASTERBUILD et builds MASTERBUILD/frontend verts ; diff local propre
-- publication : Lots 1 et 2 dans `main` via #215 et #217 ; #214 reste draft et inchangée
+- publication : Lots 1 et 2 dans `main` via #215/#217 ; réconciliation Lot 2 via #218 ; #214 inchangée
 - blocage : Lot 3 non autorisé ; Lot 4 non reconstruit ; aucun déploiement autorisé
 
 Preuve consolidée :
