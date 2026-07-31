@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-31T04:54:27+02:00",
+  "updated_at": "2026-07-31T14:15:23+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,11 +22,11 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Faire relire la draft PR #215 par MALEX et Vincent, puis demander un GO distinct avant merge.",
-    "primary_risk": "Publier la PR #214 en bloc alors que le frontend embarque des assets candidats ou archivés et que son diff complet contient des écarts de whitespace.",
+    "recommended_next_action": "Décider le GO de GTC-L2-001 pour publier séparément la gouvernance GitHub avec revue MALEX et Vincent.",
+    "primary_risk": "Publier CODEOWNERS et les templates GitHub sans revue de leur impact sur l'ownership et la charge opérationnelle.",
     "no_auto_execute": true,
-    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006"],
-    "authorization_id": "AUTH-GTC-L1-2026-07-31",
+    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001"],
+    "authorization_id": "AUTH-GTC-POSTMERGE-2026-07-31",
     "success_criteria": [
       "Une lecture distingue local, branche, PR, main et live.",
       "Chaque asset est actif, candidat, archive ou rejeté.",
@@ -35,14 +35,16 @@
       "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
     ],
     "blockers": [
-      "Le build frontend embarque des assets Stage Actor candidats ou archivés via le Component Lab.",
-      "Le diff complet origin/main...HEAD contient des espaces de fin de ligne dans quatre documents historiques Shell/Dock.",
-      "Les Lots 2 à 4 restent à reconstruire après le Lot 1.",
-      "Le merge du Lot 1 n'est pas autorisé."
+      "Le Lot 2 Gouvernance GitHub attend une autorisation et une revue MALEX + Vincent.",
+      "Le Lot 3 Shell/Dock doit exclure les assets candidats et archivés.",
+      "Le Lot 4 Component Lab et candidats reste en draft ou hold.",
+      "La PR #214 reste une source à ne pas merger en bloc."
     ],
     "validation_gates": [
-      "GO Lot 1 obtenu pour branche, reconstruction, tests, commit, push et draft PR",
-      "Nouveau GO avant merge ou déploiement",
+      "Lot 1 mergé dans main via PR #215 au SHA 65807a8",
+      "Nouveau GO avant branche, commit, push, PR ou merge du Lot 2",
+      "Revue MALEX et Vincent sur CODEOWNERS et les templates GitHub",
+      "Nouveau GO avant déploiement",
       "Aucun asset candidat n'est promu automatiquement",
       "Aucun raccord UI au backend pendant la vérification",
       "Aucune branche de découpe sans autorisation distincte"
@@ -55,10 +57,12 @@
       "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
       "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
       "docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md",
+      "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
       "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
       "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
+      "https://github.com/Prof-Krapu/MASTERFLOW/commit/65807a8b7ad1aba2efbd8f8deee9db884e99796e",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },
@@ -95,6 +99,13 @@
       "move_id": "masterbuild-core-review",
       "label": "Relire la draft PR #215",
       "reason": "Le Lot 1 est publié sans frontend, backend ni asset ; MALEX et Vincent doivent valider son entrée dans main.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "github-governance-lot",
+      "label": "Préparer le Lot 2 Gouvernance GitHub",
+      "reason": "MASTERBUILD Core est dans main ; les règles de contribution doivent être revues séparément avant publication.",
       "recommended": true,
       "status": "ready_for_decision"
     },
@@ -141,14 +152,15 @@
       "Round d'intégration suivant préparé"
     ],
     "blockers": [
-      "Assets candidats ou archivés présents dans le bundle frontend du Component Lab",
-      "Diff complet de la PR #214 avec écarts de whitespace historiques",
-      "Lots 2 à 4 non reconstruits",
-      "Merge du Lot 1 non autorisé"
+      "Lot 2 non autorisé et non revu",
+      "Lot 3 doit exclure les assets candidats et archivés",
+      "Lot 4 maintenu en draft ou hold",
+      "PR #214 toujours ouverte comme source"
     ],
     "validation_gates": [
-      "GO Lot 1 obtenu pour branche, reconstruction, tests, commit, push et draft PR",
-      "Nouveau GO avant merge ou déploiement"
+      "Lot 1 mergé via PR #215 au SHA 65807a8",
+      "Nouveau GO avant publication du Lot 2",
+      "Nouveau GO avant déploiement"
     ],
     "source_refs": [
       "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
@@ -157,6 +169,7 @@
       "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
       "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
       "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
+      "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
       "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md"
     ]
   },

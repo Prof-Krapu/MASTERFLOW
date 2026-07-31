@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-31T04:54:27+02:00",
+  "updated_at": "2026-07-31T14:15:23+02:00",
   "active_round_id": "GIT-CONSOLIDATION-001",
   "authorizations": [
     {
@@ -32,6 +32,16 @@
       "granted_at": "2026-07-31",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "delete", "pr_214_change", "frontend", "backend", "asset", "ui_backend_connection"]
+    },
+    {
+      "authorization_id": "AUTH-GTC-POSTMERGE-2026-07-31",
+      "round_id": "GIT-CONSOLIDATION-001",
+      "actor": "malex",
+      "scope": "document_commit_push_pr_merge_postmerge_closure",
+      "status": "active",
+      "granted_at": "2026-07-31",
+      "expires_on_scope_change": true,
+      "excluded": ["deploy", "delete", "pr_214_change", "frontend", "backend", "asset", "runtime"]
     }
   ],
   "work_packages": [
@@ -129,6 +139,40 @@
         "tests MASTERBUILD",
         "commit et push",
         "draft PR #215 distincte"
+      ]
+    },
+    {
+      "work_package_id": "GTC-PM-001",
+      "label": "Réconcilier le merge du Lot 1 dans les registres",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "in_progress",
+      "owner": "codex",
+      "reviewers": ["malex"],
+      "dependencies": ["GTC-L1-001"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": [
+        "main = 65807a8",
+        "PR #215 mergée",
+        "état et handoff orientés vers le Lot 2",
+        "PR de clôture documentaire mergée",
+        "aucun déploiement"
+      ]
+    },
+    {
+      "work_package_id": "GTC-L2-001",
+      "label": "Publier le Lot 2 Gouvernance GitHub",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "ready_for_decision",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["GTC-L1-001"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": [
+        "allowlist CODEOWNERS et templates GitHub",
+        "revue ownership MALEX et Vincent",
+        "aucun code, asset, runtime ou déploiement"
       ]
     },
     {

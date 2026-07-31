@@ -20,6 +20,8 @@ puis préparer le premier raccord UI sans merger ni déployer.
 | GTC-004 | Décider la stratégie de la PR #214 | MALEX + Vincent | completed | décision : découper en quatre lots |
 | GTC-005 | Préparer le raccord Shell/Dock | Codex + Vincent | completed | preflight, mapping et première tranche bornée |
 | GTC-006 | Publier les preuves et clôturer | Codex | partial | vérification locale terminée ; publication et clôture en attente |
+| GTC-L1-001 | Publier le Lot 1 MASTERBUILD Core | Codex | completed | PR #215 mergée au SHA `65807a8` |
+| GTC-L2-001 | Publier le Lot 2 Gouvernance GitHub | MALEX + Vincent | ready_for_decision | allowlist et revue ownership |
 
 ## Critères de succès
 
@@ -32,14 +34,14 @@ puis préparer le premier raccord UI sans merger ni déployer.
 ## Autorisation
 
 GTC-001 à GTC-004 ont été autorisés séparément par MALEX et exécutés sans modification de la PR.
-La stratégie retenue est le découpage en quatre lots. Son exécution Git n'est pas autorisée.
+La stratégie retenue est le découpage en quatre lots.
 GTC-005 a été exécuté en préparation contractuelle, sans raccord UI/backend ni modification de
 code. Le volet local de GTC-006 est terminé : JSON, tests MASTERBUILD, lint, builds et état Git ont
 été vérifiés. Le GO du Lot 1 autorise maintenant une branche propre depuis `origin/main`, sa
 reconstruction, les tests, le commit, le push et une draft PR. Merge et déploiement restent fermés.
 
-Le Lot 1 est publié en draft PR #215 depuis `codex/masterbuild-core`. Sa revue MALEX + Vincent est
-la gate active. Les Lots 2 à 4, la fermeture de #214 et le merge restent hors autorisation.
+Le Lot 1 est mergé dans `main` via la PR #215 au SHA `65807a8`. La gate active devient la décision
+du Lot 2 Gouvernance GitHub. Les Lots 2 à 4 et la fermeture de #214 restent hors autorisation.
 
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
@@ -57,4 +59,4 @@ métier et changement de canon.
 - `docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json` ;
 - `docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md` ;
 - draft PR #214.
-- draft PR #215 — Lot 1 MASTERBUILD Core.
+- PR #215 mergée — Lot 1 MASTERBUILD Core, SHA `65807a8`.

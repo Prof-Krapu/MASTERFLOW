@@ -88,3 +88,7 @@ GO exact requis :
 Après un GO distinct, le Lot 1 a été reconstruit depuis `origin/main`, vérifié, committé et poussé
 sur `codex/masterbuild-core`. La draft PR #215 est ouverte pour revue MALEX + Vincent. Aucun merge,
 déploiement, raccord UI/backend, asset ou changement de la PR #214 n'a été exécuté.
+
+La PR #215 a ensuite été mergée avec un GO MALEX distinct. GitHub `main` pointe sur le commit
+`65807a8b7ad1aba2efbd8f8deee9db884e99796e`. Aucun déploiement n'a été exécuté et la PR #214 reste
+ouverte, draft et inchangée.
