@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-01T00:41:02+02:00",
+  "updated_at": "2026-08-01T00:55:46+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,11 +22,11 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Décider le GO de GTC-L3-001 pour reconstruire Shell/Dock avec une allowlist d'assets actifs uniquement.",
+    "recommended_next_action": "Publier la draft PR du Lot 3 Shell/Dock, puis demander la revue MALEX/Vincent avant tout merge.",
     "primary_risk": "Réintroduire dans le Lot 3 des assets candidats ou archivés, ou brancher l'UI au backend hors contrat.",
     "no_auto_execute": true,
     "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001", "GTC-L2-PM-001", "GTC-L3-001"],
-    "authorization_id": null,
+    "authorization_id": "AUTH-GTC-L3-2026-08-01",
     "success_criteria": [
       "Une lecture distingue local, branche, PR, main et live.",
       "Chaque asset est actif, candidat, archive ou rejeté.",
@@ -35,7 +35,7 @@
       "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
     ],
     "blockers": [
-      "Le Lot 3 Shell/Dock attend une allowlist vérifiée de code et d'assets actifs.",
+      "Le Lot 3 Shell/Dock est reconstruit localement ; sa publication draft et sa revue restent à terminer.",
       "Les imports statiques du Component Lab ne doivent pas embarquer candidats ou archives dans le Lot 3.",
       "Le Lot 4 Component Lab et candidats reste en draft ou hold.",
       "La PR #214 reste une source à ne pas merger en bloc."
@@ -43,7 +43,7 @@
     "validation_gates": [
       "Lot 1 mergé dans main via PR #215 au SHA 65807a8",
       "Lot 2 mergé dans main via PR #217 au SHA cd9f26b",
-      "Nouveau GO avant branche, reconstruction, commit, push, PR ou merge du Lot 3",
+      "GO GTC-L3-001 obtenu pour branche, reconstruction, commit, push et draft PR ; merge exclu",
       "Design Preflight et revue MALEX/Vincent avant publication du Lot 3",
       "Nouveau GO avant déploiement",
       "Aucun asset candidat n'est promu automatiquement",
@@ -129,7 +129,7 @@
       "label": "Préparer le Lot 3 Shell/Dock et assets actifs",
       "reason": "Les Lots 1 et 2 sont dans main ; la prochaine tranche doit isoler l'expérience active sans candidats, archives ni nouveau raccord backend.",
       "recommended": true,
-      "status": "ready_for_decision"
+      "status": "in_progress"
     },
     {
       "move_id": "feature-registry-review",
@@ -174,15 +174,15 @@
       "Round d'intégration suivant préparé"
     ],
     "blockers": [
-      "Lot 3 non autorisé et non reconstruit",
-      "Lot 3 doit exclure les assets candidats et archivés ainsi que les imports Lab associés",
+      "Lot 3 reconstruit localement ; draft PR et revue MALEX/Vincent à terminer",
+      "Lot 3 doit continuer d'exclure les assets candidats et archivés ainsi que les imports Lab associés",
       "Lot 4 maintenu en draft ou hold",
       "PR #214 toujours ouverte comme source"
     ],
     "validation_gates": [
       "Lot 1 mergé via PR #215 au SHA 65807a8",
       "Lot 2 mergé via PR #217 au SHA cd9f26b",
-      "Nouveau GO avant publication du Lot 3",
+      "GO GTC-L3-001 obtenu jusqu'à la draft PR ; nouveau GO avant merge",
       "Nouveau GO avant déploiement"
     ],
     "source_refs": [

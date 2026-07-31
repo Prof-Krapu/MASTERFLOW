@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-01T00:41:02+02:00",
+  "updated_at": "2026-08-01T00:55:46+02:00",
   "active_round_id": "GIT-CONSOLIDATION-001",
   "authorizations": [
     {
@@ -62,6 +62,16 @@
       "granted_at": "2026-08-01",
       "expires_on_scope_change": true,
       "excluded": ["deploy", "branch_protection", "label_creation", "delete", "pr_214_change", "code", "asset", "runtime", "ui_backend_connection"]
+    },
+    {
+      "authorization_id": "AUTH-GTC-L3-2026-08-01",
+      "round_id": "GIT-CONSOLIDATION-001",
+      "actor": "malex",
+      "scope": "create_branch_rebuild_shell_dock_active_assets_test_commit_push_draft_pr",
+      "status": "active",
+      "granted_at": "2026-08-01",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "delete", "pr_214_change", "backend", "shared_contract", "ui_backend_connection", "candidate_asset", "archive_asset", "rejected_asset", "component_lab"]
     }
   ],
   "work_packages": [
@@ -219,7 +229,7 @@
       "work_package_id": "GTC-L3-001",
       "label": "Publier le Lot 3 Shell/Dock et assets actifs",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock", "persona-asset-pipeline"],
-      "status": "ready_for_decision",
+      "status": "in_progress",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["GTC-L2-001", "GTC-005"],
