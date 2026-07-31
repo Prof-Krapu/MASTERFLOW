@@ -33,7 +33,8 @@ Ce fichier est le point de reprise collaboratif. Le SHA exact doit être lu avec
 - le Round est en étape `7/8 — Publier` ;
 - GTC-L2-001 reconstruit sept fichiers de gouvernance avec des labels existants uniquement ;
 - aucun ruleset ni protection `main` n'est actif, donc CODEOWNERS reste consultatif ;
-- le prochain travail recommandé est la revue MALEX + Vincent de la draft PR du Lot 2.
+- le Lot 2 est publié en draft PR #217 ;
+- le prochain travail recommandé est la revue MALEX + Vincent de #217 avant tout merge.
 
 ## Prompt
 

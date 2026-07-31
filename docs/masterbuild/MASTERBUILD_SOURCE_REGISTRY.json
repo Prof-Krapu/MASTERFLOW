@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-01T00:16:53+02:00",
+  "updated_at": "2026-08-01T00:20:40+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -147,6 +147,14 @@
       "status": "still_active",
       "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
       "note": "Impact ownership, protection de branche, labels et charge opérationnelle du Lot 2."
+    },
+    {
+      "source_id": "github-governance-draft-pr-217",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/217",
+      "kind": "draft_pull_request",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Lot 2 Gouvernance GitHub publié pour revue MALEX et Vincent ; merge non autorisé."
     },
     {
       "source_id": "persona-asset-decision-sheet-2026-07-26",

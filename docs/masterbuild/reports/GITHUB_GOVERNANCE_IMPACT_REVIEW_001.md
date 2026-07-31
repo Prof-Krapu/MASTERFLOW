@@ -50,3 +50,8 @@ une gouvernance partiellement inopérante.
 - les templates structurent les demandes mais ne valent ni validation produit ni GO technique ;
 - aucune règle ne merge, ne déploie ou ne modifie automatiquement le canon ;
 - nouveau GO requis avant merge de ce lot ou changement des protections GitHub.
+
+## Publication
+
+Le Lot 2 est publié en draft PR #217 depuis `codex/github-governance`. Aucun merge, ruleset,
+protection de branche, label ou déploiement n'a été créé.

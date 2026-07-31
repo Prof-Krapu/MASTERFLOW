@@ -21,7 +21,7 @@ puis préparer le premier raccord UI sans merger ni déployer.
 | GTC-005 | Préparer le raccord Shell/Dock | Codex + Vincent | completed | preflight, mapping et première tranche bornée |
 | GTC-006 | Publier les preuves et clôturer | Codex | partial | vérification locale terminée ; publication et clôture en attente |
 | GTC-L1-001 | Publier le Lot 1 MASTERBUILD Core | Codex | completed | PR #215 mergée au SHA `65807a8` |
-| GTC-L2-001 | Publier le Lot 2 Gouvernance GitHub | MALEX + Vincent | in_progress | allowlist, impact ownership et draft PR |
+| GTC-L2-001 | Publier le Lot 2 Gouvernance GitHub | MALEX + Vincent | partial | draft PR #217 publiée ; revue et merge en attente |
 
 ## Critères de succès
 
@@ -45,6 +45,7 @@ du Lot 2 Gouvernance GitHub. Les Lots 2 à 4 et la fermeture de #214 restent hor
 La réconciliation documentaire post-merge est publiée via la PR #216.
 Le GO GTC-L2-001 autorise la reconstruction, l'analyse, le commit, le push et une draft PR. Merge,
 protection de branche, création de labels et déploiement restent fermés.
+Le Lot 2 est publié en draft PR #217. La gate active est la revue MALEX + Vincent.
 
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
@@ -65,3 +66,4 @@ métier et changement de canon.
 - PR #215 mergée — Lot 1 MASTERBUILD Core, SHA `65807a8`.
 - PR #216 mergée — clôture documentaire post-merge.
 - `docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md` — impact du Lot 2.
+- draft PR #217 — Lot 2 Gouvernance GitHub.
