@@ -16,13 +16,13 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 - id : `GIT-CONSOLIDATION-001`
 - objectif : obtenir une vérité Git unique avant le raccord progressif de l'UI au système
-- statut : étape `7/8 — Publier`, Lot 1 mergé dans `main`
+- statut : étape `7/8 — Publier`, Lot 2 Gouvernance GitHub en préparation
 - dernière action terminée : merge de la PR #215 au SHA GitHub `65807a8`, puis clôture documentaire PR #216
-- prochaine action : décision GTC-L2-001 pour le Lot 2 Gouvernance GitHub
+- prochaine action : publier la draft PR du Lot 2 puis demander la revue MALEX + Vincent
 - fichiers/domaines concernés : MASTERBUILD, Git/PR, UI Lab, prototype et assets personas
 - tests : JSON, MASTERBUILD 12/12, lint MASTERBUILD et builds MASTERBUILD/frontend verts ; diff local propre
 - publication : Lot 1 dans `main` via #215 ; réconciliation via #216 ; #214 reste draft et inchangée
-- blocage : Lot 2 non autorisé ; Lots 3 et 4 non reconstruits ; aucun déploiement autorisé
+- blocage : merge du Lot 2 non autorisé ; Lots 3 et 4 non reconstruits ; aucun déploiement autorisé
 
 Preuve consolidée :
 `docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md`.

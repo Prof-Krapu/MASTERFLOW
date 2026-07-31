@@ -1,0 +1,10 @@
+# MASTERBUILD et frontières d'ownership.
+# Ce fichier propose les reviewers ; leur approbation n'est obligatoire que si une protection de branche l'impose.
+/apps/frontend/ @malexcoulot-dev
+/docs/ui/ @malexcoulot-dev
+/apps/backend/ @Prof-Krapu
+/packages/shared/ @malexcoulot-dev @Prof-Krapu
+/apps/masterbuild/ @malexcoulot-dev @Prof-Krapu
+/docs/masterbuild/ @malexcoulot-dev @Prof-Krapu
+/.agents/ @malexcoulot-dev @Prof-Krapu
+/.github/ @malexcoulot-dev @Prof-Krapu
