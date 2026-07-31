@@ -1,7 +1,31 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-05T12:00:00+02:00",
+  "updated_at": "2026-07-31T03:30:57+02:00",
   "sources": [
+    {
+      "source_id": "global-system-ui-audit-2026-07-31",
+      "path": "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
+      "kind": "integration_audit",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Baseline système, prototype, runtime et Git du Round de consolidation."
+    },
+    {
+      "source_id": "git-consolidation-round-001",
+      "path": "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "kind": "active_round",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Round actif avant tout raccord UI au système."
+    },
+    {
+      "source_id": "persona-asset-decision-sheet-2026-07-26",
+      "path": "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
+      "kind": "asset_decision_registry",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Distingue assets actifs, candidats, archives et rejets."
+    },
     {
       "source_id": "ui-doctrine",
       "path": "FRONTEND_UI_DOCTRINE.md",

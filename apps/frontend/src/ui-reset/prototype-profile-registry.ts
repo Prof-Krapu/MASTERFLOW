@@ -45,7 +45,7 @@ import fearPortraitAsset from '../assets/masterflex-portraits/fear.png';
 import joyPortraitAsset from '../assets/masterflex-portraits/joy.png';
 import neutralPortraitAsset from '../assets/masterflex-portraits/neutral.png';
 import sadPortraitAsset from '../assets/masterflex-portraits/sad.png';
-import profkrapuCanonAsset from '../assets/profkrapu-canon/profkrapu-canon-v3.png';
+import profkrapuCanonAsset from '../assets/profkrapu-canon/profkrapu-canon-v4.png';
 import profkrapuConfidentPortraitAsset from '../assets/profkrapu-portraits/confident.png';
 import profkrapuDisgustPortraitAsset from '../assets/profkrapu-portraits/disgust.png';
 import profkrapuFearPortraitAsset from '../assets/profkrapu-portraits/fear.png';

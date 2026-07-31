@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-07-12T03:10:21+02:00",
+  "updated_at": "2026-07-31T03:30:57+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,65 +9,65 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "MASTERBUILD-V2",
-    "title": "Construire le pilote global et la gouvernance design",
-    "commit_sha": "45436a6",
+    "round_id": "UI-SHELL-DOCK-001",
+    "title": "Shell, navigation et Command Dock",
+    "commit_sha": "b0fdcf165b270fc7203eb404cee014b7caf4413c",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
   },
   "active_round": {
-    "round_id": "UI-SHELL-DOCK-001",
-    "title": "Shell, navigation et Command Dock",
-    "objective": "Promouvoir la coque prototype vers une première couche intégrable : navigation, system bar, dock clavier/micro/actions et raccourcis, sans lancer Home, personas ou skilltree.",
+    "round_id": "GIT-CONSOLIDATION-001",
+    "title": "Vérité Git unique et préparation du raccord UI",
+    "objective": "Classer la branche, la draft PR #214, les registres et les assets avant de préparer le premier raccord UI au système réel.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 8,
-    "stage_label": "Clôturer",
-    "recommended_next_action": "Valider humainement que /ui-reset, /ui-lab et /ui-lab/vincent utilisent bien le vrai Lab/proto restauré, avec assets actifs et workspaces distincts.",
-    "primary_risk": "Appauvrir le Lab en le remplaçant par une intégration minimale non utilisable par MALEX ou Vincent.",
-    "no_auto_execute": false,
-    "work_package_ids": ["USD-001", "USD-002", "USD-003", "USD-004", "USD-005", "USD-006"],
-    "authorization_id": "AUTH-USD-2026-07-09",
+    "stage_index": 1,
+    "stage_label": "Orienter",
+    "recommended_next_action": "Lancer GTC-001 après GO : inventorier exactement ce que contient la branche, la PR #214 et les archives assets.",
+    "primary_risk": "Merger une branche volumineuse sans distinguer prototype, runtime, assets actifs et preuves historiques.",
+    "no_auto_execute": true,
+    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006"],
+    "authorization_id": null,
     "success_criteria": [
-      "Une autre IA sait quoi brancher sans redessiner l'UI.",
-      "Vincent voit les contraintes UI avant de modifier un composant.",
-      "MALEX voit ce qui reste prototype, lab, connecté ou runtime.",
-      "Le Shell/Dock peut être promu avant Home."
+      "Une lecture distingue local, branche, PR, main et live.",
+      "Chaque asset est actif, candidat, archive ou rejeté.",
+      "Les fonctionnalités backend utiles restent identifiées pendant la migration UI.",
+      "La PR #214 reçoit une stratégie explicite.",
+      "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO Round obtenu pour cadrage, audit, build borné, tests, commit, push et draft PR",
+      "La reprise oriente puis attend le GO avant GTC-001",
       "Nouveau GO avant merge ou déploiement",
-      "Home, personas et skilltree hors périmètre"
+      "Aucun asset candidat n'est promu automatiquement",
+      "Aucun raccord UI au backend pendant la reprise"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md",
-      "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md",
-      "docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md",
-      "docs/masterbuild/audits/UI_SHELL_DOCK_IMPLEMENTATION_001.md",
-      "docs/masterbuild/MASTERBUILD_UI_LAB_PIPELINE.md",
-      "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
-      "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md"
+      "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
+      "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
+      "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
     ]
   },
   "next_moves": [
     {
-      "move_id": "complete-masterbuild-v2",
-      "label": "Terminer MASTERBUILD V2",
-      "reason": "Le pilote global doit être vérifié et partageable avant de conduire l'intégration produit.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "shell-dock-round",
-      "label": "Round Shell + navigation + Command Dock",
-      "reason": "Premier test produit complet de MASTERBUILD après publication V2.",
+      "move_id": "git-consolidation",
+      "label": "Consolider Git et la PR #214",
+      "reason": "La vérité de branche doit être classée avant tout raccord produit ou merge.",
       "recommended": true,
-      "status": "in_progress"
+      "status": "ready_for_decision"
     },
     {
-      "move_id": "feature-gap-review",
-      "label": "Revue des fonctionnalités oubliées",
-      "reason": "MALEX valide la première carte fonctionnelle avant le prochain Round.",
+      "move_id": "shell-dock-runtime",
+      "label": "Préparer le raccord Shell/Dock",
+      "reason": "C'est la première intégration recommandée après consolidation.",
+      "recommended": false,
+      "status": "queued"
+    },
+    {
+      "move_id": "feature-registry-review",
+      "label": "Relire la carte fonctionnelle",
+      "reason": "MALEX et Vincent doivent vérifier les fonctionnalités oubliées avant la migration des verticales.",
       "recommended": false,
       "status": "queued"
     }
@@ -94,28 +94,26 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "UI-SHELL-DOCK-001",
-    "title": "Shell, navigation et Command Dock",
+    "goal_id": "GIT-CONSOLIDATION-001",
+    "title": "Vérité Git unique et préparation du raccord UI",
     "owner": "malex",
     "status": "active",
-    "stage_index": 8,
-    "stage_label": "Clôturer",
+    "stage_index": 1,
+    "stage_label": "Orienter",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Shell et navigation cadrés",
-      "Command Dock cadré",
-      "Contrats runtime et UI séparés"
+      "Branche et PR classées",
+      "Assets classés",
+      "Round d'intégration suivant préparé"
     ],
     "blockers": [],
     "validation_gates": [
-      "Design Preflight obligatoire",
+      "GO explicite avant GTC-001",
       "Nouveau GO avant merge ou déploiement"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_SHELL_DOCK_ROUND_001.md",
-      "docs/masterbuild/preflights/UI_SHELL_DOCK_PREFLIGHT_001.md",
-      "docs/masterbuild/audits/UI_SHELL_DOCK_AUDIT_001.md",
-      "docs/masterbuild/audits/UI_SHELL_DOCK_IMPLEMENTATION_001.md"
+      "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md"
     ]
   },
   "stages": [
@@ -123,49 +121,49 @@
       "index": 1,
       "id": "orient",
       "label": "Orienter",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 8,
       "id": "close",
       "label": "Clôturer",
-      "status": "active"
+      "status": "pending"
     }
   ],
   "shared_profiles": [
@@ -308,8 +306,8 @@
   "publication": {
     "state": "draft_pr",
     "branch": "codex/masterbuild-v2",
-    "commit_sha": "fcfa68e",
+    "commit_sha": "b0fdcf165b270fc7203eb404cee014b7caf4413c",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214",
-    "runtime_proof": "11/11 tests, TypeScript and Vite build pass. HTTP visual smoke left to MALEX because the local launch approval quota was unavailable."
+    "runtime_proof": "Dernière base distante avant checkpoint. Le SHA final est lu depuis Git et le handoff généré après push."
   }
 }

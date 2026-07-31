@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-05T12:00:00+02:00",
+  "updated_at": "2026-07-31T03:30:57+02:00",
   "status_taxonomy": {
     "product": ["candidate", "validated", "future", "rejected"],
     "backend": ["absent", "documented", "partial", "ready", "verified"],
@@ -71,6 +71,25 @@
       "missing": ["séparation compte, persona, permissions et profil prototype"],
       "next_action": "Écrire le contrat de promotion profil prototype vers runtime.",
       "risk": "Un avatar ne doit pas devenir une identité ou permission runtime implicite."
+    },
+    {
+      "feature_id": "persona-asset-pipeline",
+      "label": "Pipeline d'assets personas",
+      "domain": "D08",
+      "product_state": "validated",
+      "backend_state": "documented",
+      "ui_state": "lab",
+      "release_state": "branch",
+      "owner": "malex",
+      "collaborators": ["vincent", "codex"],
+      "source_refs": [
+        "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
+        "docs/masterbuild/PROFKRAPU_CANON_REBOOT_BRIEF_2026-07-27.md"
+      ],
+      "dependencies": ["persona-profiles"],
+      "missing": ["pack Stage Actor ProfKrapu directionnel validé", "promotion runtime gouvernée"],
+      "next_action": "Conserver le canon V4 actif et refaire le couple neutral left/right avant tout pack ProfKrapu.",
+      "risk": "Une source, une archive ou une dérive directionnelle ne doit pas devenir un asset actif implicite."
     },
     {
       "feature_id": "skilltree-galaxy",

@@ -9,15 +9,18 @@ import masterflexNeutralLeftStageAsset from '../assets/masterflex-stage-actor/ca
 import masterflexNeutralRightStageAsset from '../assets/masterflex-stage-actor/candidates/right-normalized/neutral-right.png';
 import masterflowMarkAsset from '../assets/masterflow-mark-graff.svg';
 import masterflowWordmarkAsset from '../assets/masterflow-wordmark.svg';
-import profkrapuCanonAsset from '../assets/profkrapu-canon/profkrapu-canon-v3.png';
+import profkrapuCanonAsset from '../assets/profkrapu-canon/profkrapu-canon-v4.png';
+import profkrapuCanonRebootCandidate01Asset from '../assets/profkrapu-canon/candidates/reboot-20260727/normalized/profkrapu-canon-reboot-candidate-01-829x1500.png';
 import profkrapuConfidentPortraitAsset from '../assets/profkrapu-portraits/confident.png';
 import profkrapuDisgustPortraitAsset from '../assets/profkrapu-portraits/disgust.png';
 import profkrapuFearPortraitAsset from '../assets/profkrapu-portraits/fear.png';
 import profkrapuJoyPortraitAsset from '../assets/profkrapu-portraits/joy.png';
 import profkrapuNeutralPortraitAsset from '../assets/profkrapu-portraits/neutral.png';
 import profkrapuSadPortraitAsset from '../assets/profkrapu-portraits/sad.png';
-import profkrapuNeutralLeftStageAsset from '../assets/profkrapu-stage-actor/candidates/normalized/neutral-left.png';
-import profkrapuNeutralRightStageAsset from '../assets/profkrapu-stage-actor/candidates/normalized/neutral-right.png';
+import profkrapuListeningLeftStageAsset from '../assets/profkrapu-stage-actor/archive-process/reboot-20260727/normalized/listening-left.png';
+import profkrapuListeningRightStageAsset from '../assets/profkrapu-stage-actor/archive-process/reboot-20260727/normalized/listening-right.png';
+import profkrapuNeutralLeftStageAsset from '../assets/profkrapu-stage-actor/archive-process/reboot-20260727/normalized/neutral-left.png';
+import profkrapuNeutralRightStageAsset from '../assets/profkrapu-stage-actor/archive-process/reboot-20260727/normalized/neutral-right.png';
 
 export type LabAssetPersonaId = 'masterflex' | 'profkrapu' | 'masterflow';
 export type LabAssetStatus = 'active' | 'candidate' | 'archive' | 'decision';
@@ -73,14 +76,14 @@ export const componentLabAssetStatusCards: ComponentLabAssetStatusCard[] = [
   },
   {
     color: '#ff6a35',
-    count: 3,
+    count: 2,
     label: 'Candidats',
     status: 'candidate',
     summary: 'Utiles en Lab, mais pas encore canon/runtime.',
   },
   {
     color: '#9b7cff',
-    count: 3,
+    count: 6,
     label: 'Archives',
     status: 'archive',
     summary: 'Preuves ou sources à conserver sans promotion automatique.',
@@ -216,10 +219,10 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     alpha: 'yes',
     decisionOwner: 'MALEX',
     format: '829x1500 PNG',
-    gate: 'Canon V3 actif, V2 non promue.',
+    gate: 'Direction validée par MALEX, visible dans proto et Lab.',
     id: 'profkrapu-canon-active',
-    notes: 'V3 intégrée. La V2 reste hors promotion.',
-    path: 'apps/frontend/src/assets/profkrapu-canon/profkrapu-canon-v3.png',
+    notes: 'V4 promue depuis la candidate reboot 2026-07-27. Sert désormais de canon visible pour Vincent.',
+    path: 'apps/frontend/src/assets/profkrapu-canon/profkrapu-canon-v4.png',
     persona: 'profkrapu',
     preview: {alt: 'Canon full body ProfKrapu', kind: 'image', src: profkrapuCanonAsset, tone: 'canon'},
     quantity: '1',
@@ -228,6 +231,24 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     type: 'canon',
     usedIn: '/ui-reset · page personnage',
     visibility: 'Proto + Lab',
+  },
+  {
+    action: 'Conserver comme source de promotion v4.',
+    alpha: 'yes',
+    decisionOwner: 'MALEX + Vincent',
+    format: '829x1500 PNG',
+    gate: 'Promue en v4 ; garder comme preuve source du reboot.',
+    id: 'profkrapu-canon-reboot-candidate-01',
+    notes: 'Source normalisée utilisée pour créer profkrapu-canon-v4.png. Ne pas réutiliser comme canon parallèle.',
+    path: 'apps/frontend/src/assets/profkrapu-canon/candidates/reboot-20260727/normalized/profkrapu-canon-reboot-candidate-01-829x1500.png',
+    persona: 'profkrapu',
+    preview: {alt: 'Canon reboot ProfKrapu candidate 01', kind: 'image', src: profkrapuCanonRebootCandidate01Asset, tone: 'canon'},
+    quantity: '1',
+    status: 'archive',
+    title: 'Source reboot ProfKrapu candidate 01',
+    type: 'canon',
+    usedIn: 'preuve process · source v4',
+    visibility: 'Source Git',
   },
   {
     action: 'Ne pas importer en bloc.',
@@ -326,35 +347,37 @@ export const componentLabAssetRegistry: ComponentLabAssetEntry[] = [
     visibility: 'Process',
   },
   {
-    action: 'Tester en Lab, puis régénérer les placeholders état par état.',
+    action: 'Archiver comme preuve de génération, refaire le left/right.',
     alpha: 'yes',
     decisionOwner: 'MALEX + Vincent',
     format: '20 x 960x1728 PNG',
-    gate: 'Candidat Lab : 2 assets générés réels, 18 placeholders de layout à remplacer avant promotion.',
+    gate: 'Direction incorrecte : ne pas utiliser comme pack left/right.',
     id: 'profkrapu-stage-pack-needed',
-    notes: 'Pack complet pour tester le pipeline actor/stage. Neutral-left et listening-left sont générés ; les autres slots sécurisent le gabarit Lab mais ne sont pas des acting finals.',
-    path: 'apps/frontend/src/assets/profkrapu-stage-actor/candidates/',
+    notes: 'Paires neutral et listening générées depuis le canon V4, mais elles ne respectent pas assez le contrat left/right UI. À conserver comme preuve et refaire.',
+    path: 'apps/frontend/src/assets/profkrapu-stage-actor/archive-process/reboot-20260727/',
     persona: 'profkrapu',
     preview: {
       kind: 'strip',
       images: [
         {alt: 'ProfKrapu stage actor gauche', label: 'left', src: profkrapuNeutralLeftStageAsset},
         {alt: 'ProfKrapu stage actor droite', label: 'right', src: profkrapuNeutralRightStageAsset},
+        {alt: 'ProfKrapu listening gauche', label: 'listen L', src: profkrapuListeningLeftStageAsset},
+        {alt: 'ProfKrapu listening droite', label: 'listen R', src: profkrapuListeningRightStageAsset},
       ],
     },
-    quantity: '20',
-    status: 'candidate',
-    title: 'Stage Actor ProfKrapu candidat',
+    quantity: '4',
+    status: 'archive',
+    title: 'Stage Actor ProfKrapu direction draft',
     type: 'stage-actor',
-    usedIn: '/ui-lab · actor · stage',
-    visibility: 'Lab seulement',
+    usedIn: 'preuve process',
+    visibility: 'Archive process',
   },
 ];
 
 export const componentLabAssetNextActions = [
   'Ne pas importer les candidats de l’ancien clone en vrac.',
   'Vérifier ProfKrapu portraits dans /ui-reset et /ui-lab/vincent.',
-  'Préparer ProfKrapu Stage Actor avec les mêmes contraintes que MasterFlex.',
+  'Régénérer ProfKrapu Stage Actor depuis le canon V4.',
   'Décider si les PSD et sources lourdes restent hors Git.',
   'Promouvoir Stage Actor seulement après validation visuelle finale.',
 ];

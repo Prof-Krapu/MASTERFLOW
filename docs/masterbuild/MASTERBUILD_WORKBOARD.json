@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-12T03:10:21+02:00",
-  "active_round_id": "UI-SHELL-DOCK-001",
+  "updated_at": "2026-07-31T03:30:57+02:00",
+  "active_round_id": "GIT-CONSOLIDATION-001",
   "authorizations": [
     {
       "authorization_id": "AUTH-MB2-2026-07-05",
@@ -18,13 +18,85 @@
       "round_id": "UI-SHELL-DOCK-001",
       "actor": "malex",
       "scope": "frame_audit_bounded_build_test_commit_push_draft_pr",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-07-09",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "migration", "provider", "spend", "delete", "canon_scope_change", "home_redesign", "persona_redesign", "skilltree_redesign"]
     }
   ],
   "work_packages": [
+    {
+      "work_package_id": "GTC-001",
+      "label": "Inventorier branche, PR, fichiers locaux et assets",
+      "feature_ids": ["masterbuild-pilot", "persona-asset-pipeline"],
+      "status": "pending",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": [],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["état Git", "contenu PR #214", "matrice assets et registres"]
+    },
+    {
+      "work_package_id": "GTC-002",
+      "label": "Classer garder, séparer, archiver et rejeter",
+      "feature_ids": ["masterbuild-pilot", "persona-asset-pipeline"],
+      "status": "pending",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["GTC-001"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["décision PR", "statut de chaque famille d'assets", "aucune canonisation implicite"]
+    },
+    {
+      "work_package_id": "GTC-003",
+      "label": "Réconcilier état, registres et suivi",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "pending",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-001", "GTC-002"],
+      "design_rule_ids": [],
+      "tool_route": "codex",
+      "expected_evidence": ["état partagé frais", "sources actives", "aucune queue concurrente"]
+    },
+    {
+      "work_package_id": "GTC-004",
+      "label": "Décider la stratégie de la PR #214",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "pending",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["GTC-003"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": ["conserver, découper ou remplacer", "périmètre de merge explicite"]
+    },
+    {
+      "work_package_id": "GTC-005",
+      "label": "Préparer le raccord Shell et Command Dock",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "pending",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-004"],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-010"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["contrats runtime", "design preflight", "première tranche bornée"]
+    },
+    {
+      "work_package_id": "GTC-006",
+      "label": "Publier les preuves et clôturer",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "pending",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": ["GTC-005"],
+      "design_rule_ids": [],
+      "tool_route": "github",
+      "expected_evidence": ["tests", "Git propre", "handoff", "Round suivant"]
+    },
     {
       "work_package_id": "USD-001",
       "label": "Audit Lab / prototype / runtime existant",

@@ -1,10 +1,22 @@
 # ProfKrapu Stage Actor Generation Report — 2026-07-26
 
-Statut : candidat Lab, non canon.
+Statut : `archive_process`, non canon.
+
+Mise a jour 2026-07-27 :
+
+Le pack reste conserve comme preuve technique, mais il est superseded par le reboot canon
+ProfKrapu canon V4.
+
+Il ne doit plus servir de direction DA ni de pack affiché prioritaire dans le Lab.
+
+Les quatre essais issus du canon V4 sont rangés dans
+`apps/frontend/src/assets/profkrapu-stage-actor/archive-process/reboot-20260727/`.
+L'essai directionnel isolé du 30 juillet est rangé dans
+`apps/frontend/src/assets/profkrapu-stage-actor/rejected/reboot-20260730-directional/`.
 
 ## Résumé
 
-Le pack ProfKrapu Stage Actor est intégré pour rendre le pipeline `actor/stage/assets`
+Le pack ProfKrapu Stage Actor a été intégré pour rendre le pipeline `actor/stage/assets`
 testable dans `/ui-lab` et `/ui-lab/vincent`.
 
 Le pack contient 20 fichiers normalisés `960x1728`, RGBA alpha :
@@ -72,11 +84,12 @@ Contrôle attendu :
 
 ## Décision
 
-Le pack est utilisable dans le Component Lab comme candidat technique.
+Le pack est utilisable comme preuve technique uniquement.
 
 Avant promotion prototype ou runtime :
 
-1. régénérer les états placeholders un par un ;
-2. valider l’acting MALEX + Vincent ;
-3. remplacer uniquement les fichiers validés ;
-4. relancer build et revue Lab.
+1. repartir du canon reboot ProfKrapu V4 ;
+2. régénérer les états Stage Actor un par un ;
+3. valider l’acting MALEX + Vincent ;
+4. remplacer uniquement les fichiers validés ;
+5. relancer build et revue Lab.

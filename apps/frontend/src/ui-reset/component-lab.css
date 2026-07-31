@@ -876,6 +876,15 @@
   color: #4b9eea;
 }
 
+.ui-lab__actor-pack-status.is-partial {
+  background: color-mix(in srgb, var(--proto-support) 13%, var(--proto-panel-strong));
+  border-color: color-mix(in srgb, var(--proto-support) 36%, var(--proto-border));
+}
+
+.ui-lab__actor-pack-status.is-partial svg {
+  color: var(--proto-support);
+}
+
 .ui-lab__actor-control-group {
   display: grid;
   gap: 8px;

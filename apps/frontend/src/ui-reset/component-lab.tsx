@@ -409,7 +409,7 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
     (assetPersonaFilter === 'all' || entry.persona === assetPersonaFilter)
     && (assetStatusFilter === 'all' || entry.status === assetStatusFilter)
   ));
-  const actorHasDedicatedPack = profile.id === 'masterflex' || profile.id === 'profkrapu';
+  const actorHasDedicatedPack = profile.id === 'masterflex';
   const profilePalette = getPrototypeThemePalette(profile.defaultThemePaletteId);
   const profileRankTitle = getPrototypeProfileRank(profile).title;
   const stagePreset = stageLayoutPresets.find((preset) => preset.id === stageLayoutPreset) ?? stageLayoutPresets[0]!;
@@ -1129,7 +1129,7 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
                 {actorHasDedicatedPack ? <CircleCheck size={16} /> : <AlertTriangle size={16} />}
                 <span>
                   {profile.id === 'profkrapu'
-                    ? 'Pack candidat chargé : pipeline testable, acting à finaliser.'
+                    ? 'Canon V4 chargé : left/right à régénérer avec le contrat directionnel.'
                     : actorHasDedicatedPack
                       ? 'Pack dédié chargé : left/right + états testables.'
                       : 'Fallback canon : pack Stage Actor à produire.'}

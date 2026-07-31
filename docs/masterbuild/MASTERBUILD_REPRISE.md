@@ -24,6 +24,11 @@ pas le profil partagé sans action explicite.
 5. Il recommande une action, puis attend explicitement le GO.
 6. Utiliser `/status` au checkpoint de contexte recommandé.
 
+Quand l'état partagé référence un fichier dans `docs/masterbuild/handoffs/`, lire ce handoff après
+`MASTERBUILD_STATE.json`. Il s'agit du point de reprise collaboratif visible par MALEX, Vincent et
+les autres clones. Le handoff `.masterbuild/local/HANDOFF_CURRENT.md` reste une preuve locale du
+SHA courant et ne remplace pas l'état partagé.
+
 Pour toute autre IA avec accès au dépôt, commencer par `MASTERBUILD.md`. Sans accès au dépôt,
 joindre les fichiers générés par :
 

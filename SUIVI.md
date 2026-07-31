@@ -4,6 +4,31 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-07-31 — POINT DE REPRISE ACTIF MASTERBUILD
+
+`SUIVI.md` reste un journal historique. Pour agir, lire d'abord :
+
+1. `MASTERBUILD.md` ;
+2. `docs/masterbuild/MASTERBUILD_STATE.json` ;
+3. `docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md`.
+
+### VAGUE ACTIVE
+
+- id : `GIT-CONSOLIDATION-001`
+- objectif : obtenir une vérité Git unique avant le raccord progressif de l'UI au système
+- statut : étape `1/8 — Orienter`, prête mais sans autorisation d'exécution automatique
+- dernière action terminée : checkpoint ProfKrapu V4, archives Stage Actor et audit global
+- prochaine action : après GO, inventorier exactement branche, PR #214, registres et assets
+- fichiers/domaines concernés : MASTERBUILD, Git/PR, UI Lab, prototype et assets personas
+- tests à relancer : frontend, MASTERBUILD, contrôles assets et `git diff --check`
+- publication : draft PR #214 sur `codex/masterbuild-v2`, aucun merge ni déploiement
+- blocage : décision de stratégie de PR à prendre pendant le Round
+
+Le SHA exact du checkpoint est fourni par Git et le handoff local généré après le push. Les sections
+plus anciennes ci-dessous restent des preuves historiques et ne réactivent aucune vague.
+
+---
+
 ## 2026-07-05 — MASTERBUILD-V2 : pilote global et gouvernance design
 
 - branche/worktree dédié `codex/masterbuild-v2`, issu de `origin/main` ;
