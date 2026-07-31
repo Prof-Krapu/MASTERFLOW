@@ -21,9 +21,10 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import type {FormEventHandler, KeyboardEventHandler, ReactElement, ReactNode} from 'react';
+import type {CSSProperties, FormEventHandler, KeyboardEventHandler, ReactElement, ReactNode} from 'react';
 
-export type PrototypeDockPanel = 'keyboard' | 'micro' | null;
+import type {TunnelContextSummary, TunnelMessage, TunnelParticipant, TunnelPrompt} from './prototype-tunnel-model';
+import type {PrototypeDockPanel} from './use-prototype-shortcuts';
 
 export type PrototypeMode = {
   id: string;
@@ -709,6 +710,146 @@ export function PrototypeCommandDock({
         </button>
       </div>
     </form>
+  );
+}
+
+type TunnelProps = {
+  closing: boolean;
+  contextSummary: TunnelContextSummary;
+  embedded?: boolean;
+  input: string;
+  messages: TunnelMessage[];
+  participants: TunnelParticipant[];
+  prompt: string;
+  tunnelPrompt: TunnelPrompt;
+  onAnimationEnd: () => void;
+  onAcceptPrompt?: () => void;
+  onClose: () => void;
+  onDismissPrompt?: () => void;
+  onInputChange: (value: string) => void;
+  onInputKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
+  onSubmit: FormEventHandler<HTMLFormElement>;
+};
+
+type TunnelPromptCardProps = {
+  prompt: TunnelPrompt;
+  onAccept: () => void;
+  onDismiss: () => void;
+};
+
+export function PrototypeTunnelPromptCard({
+  onAccept,
+  onDismiss,
+  prompt,
+}: TunnelPromptCardProps): ReactElement {
+  return (
+    <aside className="proto-tunnel-prompt" aria-label="Proposition Tunnel">
+      <span>{prompt.source}</span>
+      <strong>{prompt.question}</strong>
+      <div>
+        <button onClick={onAccept} type="button">{prompt.yesLabel}</button>
+        <button onClick={onDismiss} type="button">{prompt.noLabel}</button>
+      </div>
+    </aside>
+  );
+}
+
+export function PrototypeTunnel({
+  closing,
+  contextSummary,
+  embedded = false,
+  input,
+  messages,
+  onAnimationEnd,
+  onAcceptPrompt,
+  onClose,
+  onDismissPrompt,
+  onInputChange,
+  onInputKeyDown,
+  onSubmit,
+  participants,
+  prompt,
+  tunnelPrompt,
+}: TunnelProps): ReactElement {
+  const lead = participants[0]!;
+  const getParticipant = (participantId: string) => participants.find((participant) => participant.id === participantId);
+
+  return (
+    <section
+      aria-label="Mode Tunnel"
+      aria-modal="true"
+      className={`proto-tunnel proto-tunnel--conversation${embedded ? ' proto-tunnel--embedded' : ''}${closing ? ' is-closing' : ''}`}
+      onAnimationEnd={(event) => {
+        if (!closing || event.animationName !== 'proto-tunnel-out') return;
+        onAnimationEnd();
+      }}
+      role="dialog"
+    >
+      <button aria-label="Fermer le mode Tunnel" className="proto-tunnel__close" onClick={onClose} type="button">
+        <X size={20} />
+      </button>
+      <header className="proto-tunnel__title">
+        <small>Mode Tunnel</small>
+        <strong>{contextSummary.whyTunnel}</strong>
+      </header>
+      <div className="proto-tunnel__body">
+        <figure className="proto-tunnel__persona">
+          <span>
+            <img alt="" src={lead.canonAsset} />
+          </span>
+          <figcaption>
+            <strong>{lead.name}</strong>
+            <small>{lead.role}</small>
+          </figcaption>
+        </figure>
+        <section className="proto-tunnel__focus" aria-label="Conversation Tunnel">
+          <aside className="proto-tunnel__context" aria-label="Résumé cockpit">
+            <span>{contextSummary.surface}</span>
+            <strong>{contextSummary.currentObject}</strong>
+            <small>{contextSummary.returnTarget}</small>
+          </aside>
+          <div className="proto-tunnel__thread" aria-label="Fil de conversation">
+            {messages.map((message) => {
+              const participant = getParticipant(message.participantId);
+              const isUser = message.participantId === 'user';
+              return (
+                <div
+                  className={`proto-tunnel__message proto-tunnel__message--${isUser ? 'user' : 'persona'} proto-tunnel__message--${message.kind}`}
+                  key={message.id}
+                  style={participant ? {'--message-color': participant.personaColor} as CSSProperties : undefined}
+                >
+                  {!isUser && participant ? <img alt="" src={participant.avatarAsset} /> : null}
+                  <p>{message.text}</p>
+                </div>
+              );
+            })}
+          </div>
+          <article className="proto-tunnel__decision" aria-label="Décision rapide Tunnel">
+            <span>{tunnelPrompt.source}</span>
+            <strong>{tunnelPrompt.question}</strong>
+            <div>
+              <button onClick={onAcceptPrompt} type="button">{tunnelPrompt.yesLabel}</button>
+              <button onClick={onDismissPrompt} type="button">{tunnelPrompt.noLabel}</button>
+            </div>
+          </article>
+        </section>
+      </div>
+      <form className="proto-tunnel__composer" onSubmit={onSubmit}>
+        <textarea
+          aria-label="Écrire dans le tunnel"
+          autoFocus
+          onChange={(event) => onInputChange(event.target.value)}
+          onKeyDown={onInputKeyDown}
+          placeholder={prompt}
+          rows={4}
+          spellCheck={false}
+          value={input}
+        />
+        <button aria-label="Envoyer dans le tunnel" className="proto-action-button proto-action-button--send" disabled={!input.trim()} type="submit">
+          <Send size={20} />
+        </button>
+      </form>
+    </section>
   );
 }
 
