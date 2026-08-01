@@ -59,6 +59,7 @@ import type {
 } from './ui-reset/prototype-shell-components';
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
 import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
+import {MasterbuildConsole} from './masterbuild-console';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
 import {buildPrototypeTunnelFixture} from './ui-reset/prototype-tunnel-model';
 import {resolveKeyboardToggle, resolveMicroToggle} from './ui-reset/prototype-ui-state-registry';
@@ -175,6 +176,16 @@ const runtimeModeAliases: Record<string, DemoMode> = {
   companions: 'companions',
 };
 
+const runtimeSurfaceModes: Array<{mode: DemoMode; pattern: RegExp}> = [
+  {mode: 'project', pattern: /(^|_)project(_|$)/},
+  {mode: 'story', pattern: /(story|narrative|workbench)/},
+  {mode: 'da', pattern: /(^|_)(da|theme|manifest)(_|$)/},
+  {mode: 'inventory', pattern: /(inventory|asset_storage|asset_review|asset_gallery)/},
+  {mode: 'teaching', pattern: /(teaching|pedagogical|competency|badge|skill_tree)/},
+  {mode: 'learn', pattern: /(learning|help_context|style_profile)/},
+  {mode: 'companions', pattern: /companion/},
+];
+
 const actionIconFor = (action: ActionRegistryEntry): PrototypeActionSuggestion['icon'] => {
   const haystack = `${action.action_id} ${action.label} ${action.ui_surface}`.toLocaleLowerCase('fr');
   if (haystack.includes('context')) return MessageCircle;
@@ -192,14 +203,16 @@ const actionIconFor = (action: ActionRegistryEntry): PrototypeActionSuggestion['
 
 const runtimeModesFromContext = (context: CurrentContext | null): Set<DemoMode> | null => {
   if (!context) return null;
-  const rawModes = [
-    ...context.user_runtime_loadout.active_mode_cycle,
-    ...context.user_runtime_loadout.available_apps,
-  ];
-  const modesFromRuntime = rawModes
+  const modesFromRuntime = context.user_runtime_loadout.active_mode_cycle
     .map((id) => runtimeModeAliases[id])
     .filter((id): id is DemoMode => Boolean(id));
-  return new Set(modesFromRuntime);
+  const modes = new Set(modesFromRuntime);
+  for (const surface of context.user_runtime_loadout.available_apps) {
+    const match = runtimeSurfaceModes.find((candidate) => candidate.pattern.test(surface));
+    if (match) modes.add(match.mode);
+  }
+  if (context.user.role === 'godmode') modes.add('masterbuild');
+  return modes;
 };
 
 const buildRuntimeSuggestions = (
@@ -1157,6 +1170,9 @@ export function CurrentUiDemo(): ReactElement {
               primaryModes={homePrimaryModes}
               secondaryModes={homeSecondaryModes}
             />
+          ) : null}
+          {activeMode === 'masterbuild' && runtimeBridge.context?.user.role === 'godmode' ? (
+            <MasterbuildConsole operator={runtimeBridge.context.user.display_name} />
           ) : null}
         </div>
 

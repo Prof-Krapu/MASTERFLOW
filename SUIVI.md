@@ -15,6 +15,17 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   390 × 844 ; aucun changement de design, de code backend ou d’asset ;
 - publication : branche dédiée et draft PR, sans merge ni déploiement.
 
+### Correction locale GodMode en attente de publication
+
+- `active_mode_cycle` reste un ordre de navigation, pas une allowlist exhaustive ;
+- Project, MasterStory et DA Studio sont restaurés depuis leurs surfaces backend `live` ;
+- MasterBuild est exposé au seul rôle GodMode dans une console simplifiée intégrée à MasterFlow ;
+- la console agrège l’état global local et son chat transforme chaque retour en proposition candidate
+  à auditer, sans modifier automatiquement le canon, le code, Git ou le runtime ;
+- le statut `future` de `compile_subject_fullstack` doit être réaligné séparément avec son contrat,
+  sa route et ses tests déjà présents ; aucun déverrouillage artificiel n’est appliqué ici ;
+- preuves locales : frontend build vert, MASTERBUILD 12/12 et build vert, contrôle visuel desktop.
+
 ---
 
 ## 2026-08-01 — CORRECTION ACTIVE : RÉTABLIR L’UI UTILISÉE
