@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-01 — COMPONENT LAB UNIQUE : RESTAURATION SÉLECTIVE
+
+- base : `main` au SHA de merge `f8f6136ff28db817862c09f43c1e4b24a23696ec` ;
+- sources historiques relues : routes et séparation MALEX/Vincent de la branche fermée #214 ;
+- restauration : `/ui-lab` pour MALEX et `/ui-lab/vincent` pour Vincent, avec état local séparé ;
+- composants : Home, navigation, profils et assets déjà actifs sur `main` uniquement ;
+- pipeline visible : Lab → `/ui-reset` → runtime → draft PR → merge ;
+- exclusions : registre d’assets candidats, stage actors candidats, archives, backend et données réelles ;
+- publication : branche dédiée et draft PR autorisées, sans merge ni déploiement.
+
+---
+
 ## 2026-08-01 — HOME RUNTIME : CONTEXTE ET ACCÈS RÉELS
 
 - base : `origin/main` au SHA `2e00081242bee76b847953467e4ec4dce4fb3fef` ;
