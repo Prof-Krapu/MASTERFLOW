@@ -28,6 +28,18 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-08-01 — MALEX/Codex vers Vincent : hébergement privé commun à orienter
+
+Nouvelle demande `REQ-PRIVATE-SHARED-DEPLOYMENT-001` dans `INBOX_VINCENT.md`.
+
+But : proposer l'hôte, l'accès privé, la persistance SQLite, le canal de secrets et le patch minimal
+du contrat d'environnement pour rendre le SHA `7eb19ae` accessible à MALEX et Vincent.
+
+Cette entrée demande une orientation et un plan, pas un déploiement. Aucun hôte, réseau, secret,
+provider ou runtime live ne doit être modifié sans nouveau GO MALEX.
+
+---
+
 ## 2026-06-14 — MALEX/Codex vers Vincent : PR-INVENTORY-UI-3 pilotage
 
 `PR-INVENTORY-UI-3` prolonge la surface Inventory sans nouveau endpoint.

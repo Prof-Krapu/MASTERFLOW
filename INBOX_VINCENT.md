@@ -35,6 +35,62 @@ Règles de lecture :
 
 ---
 
+## 2026-08-01 — open — REQ-PRIVATE-SHARED-DEPLOYMENT-001
+
+MALEX/Codex → Vincent.
+
+### Contexte vérifié
+
+```yaml
+github_main: 7eb19ae074daffcfa6d32d7966fd727a3130781a
+product_state: UI commune restaurée et mergée via PR #221
+local_only_url: http://localhost:5174/ui-reset
+shared_deployment: absent
+deployment_contract: deploy/docker-compose.yml
+```
+
+### Demande
+
+Prendre en charge l'orientation de l'hébergement privé commun à MALEX et Vincent.
+
+Merci de vérifier et proposer, sans déployer à ce stade :
+
+1. la machine ou le serveur capable d'héberger durablement la stack Docker ;
+2. l'état de Docker Engine, Docker Compose et du stockage persistant sur cet hôte ;
+3. le mode d'accès privé recommandé pour MALEX et Vincent : Tailscale/VPN ou reverse proxy HTTPS ;
+4. le canal hors Git prévu pour transmettre les secrets et identifiants ;
+5. la sauvegarde et le rollback du volume SQLite avant une première release ;
+6. le patch minimal du contrat d'environnement : `deploy/.env.example` ne contient pas encore
+   `MALEX_USERNAME` et `MALEX_PASSWORD`, pourtant exigés en production par `apps/backend/src/lib/env.ts`.
+
+### Limites
+
+- aucun déploiement, exposition réseau, création de secret ou modification de l'hôte sans nouveau GO MALEX ;
+- aucun secret dans Git, une inbox, une PR ou un log ;
+- conserver `LLM_PROVIDER=mock` pour la première instance partagée ;
+- déployer uniquement un SHA explicite de `main`, puis exécuter `npm run smoke:public` ;
+- ne pas réutiliser l'ancien runtime Tailscale/Funnel sans audit de son état, de sa base et de son SHA.
+
+### Réponse attendue
+
+```yaml
+request_id: REQ-PRIVATE-SHARED-DEPLOYMENT-001
+candidate_host:
+host_owner:
+docker_compose_status: ready | install_required | unknown
+private_access_method: tailscale | vpn | https_proxy | other | unknown
+proposed_shared_url:
+sqlite_persistence_and_backup:
+secret_delivery_channel:
+env_contract_patch: proposed | not_needed | blocked
+predeployment_checks:
+risks:
+blocker:
+next_action_requiring_malex_go:
+```
+
+---
+
 ## 2026-06-19 — open — REQ-LIVE-RUNTIME-RECOVERY-001
 
 MALEX/Codex → Vincent.
