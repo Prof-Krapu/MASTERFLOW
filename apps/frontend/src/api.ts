@@ -115,11 +115,28 @@ import type {
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
+const RUNTIME_AUTH_STORAGE_KEY = 'masterflow.runtime-auth-token';
 
 let authToken: string | null = null;
 
 export function setToken(token: string | null): void {
   authToken = token;
+}
+
+export function persistRuntimeAuthToken(token: string): void {
+  window.sessionStorage.setItem(RUNTIME_AUTH_STORAGE_KEY, token);
+  setToken(token);
+}
+
+export function restoreRuntimeAuthToken(): string | null {
+  const token = window.sessionStorage.getItem(RUNTIME_AUTH_STORAGE_KEY);
+  setToken(token);
+  return token;
+}
+
+export function clearRuntimeAuthToken(): void {
+  window.sessionStorage.removeItem(RUNTIME_AUTH_STORAGE_KEY);
+  setToken(null);
 }
 
 function headers(token?: string | null): Record<string, string> {
@@ -171,7 +188,7 @@ export async function login(username: string, password: string): Promise<AuthRes
     method: 'POST',
     body: JSON.stringify({username, password}),
   });
-  setToken(auth.token);
+  persistRuntimeAuthToken(auth.token);
   return auth;
 }
 
@@ -953,7 +970,7 @@ export async function register(
     method: 'POST',
     body: JSON.stringify(body),
   });
-  setToken(auth.token);
+  persistRuntimeAuthToken(auth.token);
   return auth;
 }
 

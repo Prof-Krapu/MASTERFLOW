@@ -33,7 +33,13 @@ import type {CSSProperties, FormEvent, KeyboardEvent as ReactKeyboardEvent, Reac
 import type {ActionRegistryEntry, CurrentContext, Job, ValidationInboxItem} from '@masterflow/shared';
 
 import './current-ui-demo.css';
-import {getCurrentContext, getJobs, getValidationInboxItems} from './api';
+import {
+  clearRuntimeAuthToken,
+  getCurrentContext,
+  getJobs,
+  getValidationInboxItems,
+  restoreRuntimeAuthToken,
+} from './api';
 import {
   PrototypeActionRail,
   PrototypeActionLibrary,
@@ -45,7 +51,12 @@ import {
   PrototypeTunnel,
   PrototypeTunnelPromptCard,
 } from './ui-reset/prototype-shell-components';
-import type {PrototypeActionSuggestion, PrototypeModeGroup} from './ui-reset/prototype-shell-components';
+import type {
+  PrototypeActionSuggestion,
+  PrototypeLibraryAction,
+  PrototypeModeGroup,
+  PrototypeSearchResult,
+} from './ui-reset/prototype-shell-components';
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
 import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
@@ -62,7 +73,6 @@ import {
   getPrototypeProfile,
   getPrototypeProfileRank,
   getPrototypeThemePalette,
-  libraryActions,
   modeGroups,
   personaStats,
   prototypeProfileIds,
@@ -141,27 +151,6 @@ const historyItems = [
   },
 ];
 
-const quickSearchItems = [
-  {id: 'teacher', label: 'Chercher un prof', detail: 'Personnes', icon: GraduationCap, keywords: 'prof enseignant teaching coach personne masterflex'},
-  {id: 'resource', label: 'Chercher une ressource', detail: 'Ressources', icon: PackageOpen, keywords: 'ressource fichier lien support asset'},
-  {id: 'course', label: 'Trouver un cours', detail: 'Cours', icon: BookOpen, keywords: 'cours learn teaching pedagogie module'},
-  {id: 'project', label: 'Ouvrir un projet', detail: 'Projets', icon: FolderKanban, keywords: 'project projet actif brief'},
-  {id: 'document', label: 'Chercher un document', detail: 'Documents', icon: FileText, keywords: 'document pdf note texte fiche'},
-  {id: 'video', label: 'Chercher une vidéo', detail: 'Médias', icon: Clapperboard, keywords: 'video tuto recording cours media'},
-  {id: 'subject', label: 'Chercher un sujet', detail: 'Sujets', icon: Network, keywords: 'sujet theme notion skill galaxy'},
-  {id: 'validation', label: 'Voir les décisions', detail: 'Validation', icon: Check, keywords: 'validation inbox decision attention'},
-  {id: 'mode', label: 'Changer de mode', detail: 'Navigation', icon: Workflow, keywords: 'mode project learn teaching story da inventory companions'},
-  {id: 'persona', label: 'Demander à MasterFlex', detail: 'Persona', icon: MessageCircle, keywords: 'masterflex persona tunnel question aide'},
-] as const;
-
-const getQuickSearchResults = (query: string) => {
-  const normalizedQuery = query.trim().toLocaleLowerCase('fr');
-  if (!normalizedQuery) return quickSearchItems.slice(0, 6);
-  return quickSearchItems
-    .filter((item) => `${item.label} ${item.detail} ${item.keywords}`.toLocaleLowerCase('fr').includes(normalizedQuery))
-    .slice(0, 6);
-};
-
 type RuntimeBridgeState = {
   context: CurrentContext | null;
   inboxItems: ValidationInboxItem[];
@@ -236,6 +225,49 @@ const buildRuntimeSuggestions = (
     label: action.label,
     icon: actionIconFor(action),
   }));
+};
+
+const actionCategoryFor = (action: ActionRegistryEntry): PrototypeLibraryAction['category'] => {
+  const haystack = `${action.action_id} ${action.label} ${action.ui_surface}`.toLocaleLowerCase('fr');
+  if (haystack.includes('share') || haystack.includes('send') || haystack.includes('export')) return 'Partage';
+  if (haystack.includes('visual') || haystack.includes('story') || haystack.includes('create') || haystack.includes('generate')) return 'Création';
+  if (haystack.includes('project') || haystack.includes('inventory') || haystack.includes('resource')) return 'Projet';
+  return 'Outils';
+};
+
+const buildRuntimeLibraryActions = (context: CurrentContext | null): PrototypeLibraryAction[] => {
+  if (!context) return [];
+  const relevantIds = new Set([
+    ...context.user_runtime_loadout.suggested_first_action_ids,
+    ...context.user_runtime_loadout.quick_palette_action_ids,
+    ...context.user_runtime_loadout.default_action_ids,
+  ]);
+  return context.available_actions
+    .filter((action) => action.status === 'live')
+    .map((action) => ({
+      category: actionCategoryFor(action),
+      icon: actionIconFor(action),
+      id: action.action_id,
+      keywords: `${action.action_id} ${action.ui_surface}`,
+      label: action.label,
+      relevant: relevantIds.has(action.action_id),
+    }));
+};
+
+const getRuntimeSearchResults = (context: CurrentContext | null, query: string): PrototypeSearchResult[] => {
+  if (!context) return [];
+  const normalizedQuery = query.trim().toLocaleLowerCase('fr');
+  return context.available_actions
+    .filter((action) => action.status === 'live')
+    .filter((action) => !normalizedQuery
+      || `${action.label} ${action.action_id} ${action.ui_surface}`.toLocaleLowerCase('fr').includes(normalizedQuery))
+    .slice(0, 6)
+    .map((action) => ({
+      detail: action.preflight_required ? 'Action réelle · préflight requis' : 'Action réelle',
+      icon: actionIconFor(action),
+      id: action.action_id,
+      label: action.label,
+    }));
 };
 
 const countAttentionJobs = (jobs: Job[]): number =>
@@ -331,8 +363,9 @@ export function CurrentUiDemo(): ReactElement {
   const systemPanelPresence = useAnimatedPresence(systemPanel);
   const runtimeModeIds = useMemo(() => runtimeModesFromContext(runtimeBridge.context), [runtimeBridge.context]);
   const visibleModeIds = useMemo(
-    () => runtimeModeIds ?? new Set(accessModeMap[accessLevel]),
-    [accessLevel, runtimeModeIds],
+    () => runtimeModeIds
+      ?? (runtimeBridge.status === 'degraded' ? new Set<DemoMode>() : new Set(accessModeMap[accessLevel])),
+    [accessLevel, runtimeBridge.status, runtimeModeIds],
   );
   const activePrototypeProfile = getPrototypeProfile(activePrototypeProfileId);
   const tunnelFixture = buildPrototypeTunnelFixture(activePrototypeProfile);
@@ -403,7 +436,19 @@ export function CurrentUiDemo(): ReactElement {
     return activePrototypeProfile.modePunchlines[activeMode] ?? activePrototypeProfile.defaultPunchline;
   }, [activeMode, activePrototypeProfile, actionLibraryOpen, dockPanel, historyOpen, recording, selectedSkillArc, settingsOpen, systemPanel, transcribing]);
   const profileRank = getPrototypeProfileRank(activePrototypeProfile);
-  const homeCopy = activePrototypeProfile.id === 'profkrapu'
+  const homeCopy = runtimeBridge.context
+    ? {
+        eyebrow: runtimeBridge.context.room.name,
+        title: `Bonjour ${runtimeBridge.context.user.display_name}.`,
+        body: 'Ton contexte, tes accès et tes actions sont chargés depuis cette Room.',
+      }
+    : runtimeBridge.status === 'degraded'
+      ? {
+          eyebrow: 'Runtime indisponible',
+          title: 'Connexion requise.',
+          body: 'Reconnecte-toi pour charger ton contexte, tes accès et tes actions réels.',
+        }
+      : activePrototypeProfile.id === 'profkrapu'
     ? {
         eyebrow: 'Oh, vous voilà.',
         title: 'Bonjour Vincent.',
@@ -597,6 +642,7 @@ export function CurrentUiDemo(): ReactElement {
     let cancelled = false;
     const loadRuntimeBridge = async (): Promise<void> => {
       try {
+        restoreRuntimeAuthToken();
         const context = await getCurrentContext();
         const [jobsResult, inboxResult] = await Promise.allSettled([
           getJobs(),
@@ -780,11 +826,21 @@ export function CurrentUiDemo(): ReactElement {
         {id: 'history', label: 'Historique', icon: History, onClick: () => setHistoryOpen((current) => !current)},
         {id: 'export', label: 'Exporter', icon: Upload},
       ];
-  const commandSuggestions = buildRuntimeSuggestions(runtimeBridge.context, fallbackCommandSuggestions);
+  const commandSuggestions = buildRuntimeSuggestions(
+    runtimeBridge.context,
+    runtimeBridge.status === 'prototype' ? fallbackCommandSuggestions : [],
+  );
+  const runtimeLibraryActions = buildRuntimeLibraryActions(runtimeBridge.context);
+  const runtimeSearchResults = getRuntimeSearchResults(runtimeBridge.context, quickSearch);
   const queueCount = runtimeBridge.status === 'runtime' ? countAttentionJobs(runtimeBridge.jobs) : 0;
   const notificationCount = runtimeBridge.status === 'runtime' ? countOpenInboxItems(runtimeBridge.inboxItems) : 0;
   const dmCount = 0;
-  const navigationModeGroups: PrototypeModeGroup[] = buildPrototypeModeGroups(visibleModeIds);
+  const navigationModeGroups: PrototypeModeGroup[] = buildPrototypeModeGroups(visibleModeIds, runtimeBridge.status === 'runtime');
+  const visibleAccessLevels = runtimeBridge.context
+    ? accessLevels.filter((level) => level.id === runtimeBridge.context?.user.role)
+    : runtimeBridge.status === 'degraded'
+      ? accessLevels.filter((level) => level.id === accessLevel)
+      : accessLevels;
   const homePrimaryModes = buildPrototypeHomeModes(['project', 'teaching', 'learn'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[]);
   const homeSecondaryModes = buildPrototypeHomeModes(['story', 'da', 'inventory', 'companions'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[]);
 
@@ -815,7 +871,7 @@ export function CurrentUiDemo(): ReactElement {
       <PrototypeNavigationRail
         accessClosing={accessPresence.closing}
         accessLevel={accessLevel}
-        accessLevels={accessLevels}
+        accessLevels={visibleAccessLevels}
         accessOpen={Boolean(accessPresence.renderedValue)}
         activeMode={activeMode}
         brandMark={<MasterflowMark className="proto-mf-mark" />}
@@ -842,6 +898,10 @@ export function CurrentUiDemo(): ReactElement {
           setAccessOpen(false);
         }}
         onSelectAccess={(id) => {
+          if (runtimeBridge.context) {
+            setAccessOpen(false);
+            return;
+          }
           setAccessLevel(id as AccessLevel);
           selectMode('project');
           setAccessOpen(false);
@@ -1037,7 +1097,7 @@ export function CurrentUiDemo(): ReactElement {
 
         {renderedActionLibraryOpen ? (
           <PrototypeActionLibrary
-            actions={libraryActions}
+            actions={runtimeLibraryActions}
             categories={actionCategories}
             closing={actionLibraryClosing}
             onClose={() => setActionLibraryOpen(false)}
@@ -1065,7 +1125,10 @@ export function CurrentUiDemo(): ReactElement {
           dmCount={dmCount}
           notificationCount={notificationCount}
           onClosePanel={() => setSystemPanel(null)}
-          onExit={() => window.location.assign('/')}
+          onExit={() => {
+            clearRuntimeAuthToken();
+            window.location.assign('/');
+          }}
           onOpenCharacter={openCharacterPage}
           onOpenHome={selectHome}
           onQuickSearchChange={setQuickSearch}
@@ -1083,7 +1146,7 @@ export function CurrentUiDemo(): ReactElement {
           queueCount={queueCount}
           railOpen={railOpen}
           renderedPanel={systemPanelPresence.renderedValue}
-          searchResults={getQuickSearchResults(quickSearch)}
+          searchResults={runtimeSearchResults}
         />
 
         <div className="proto-canvas-empty">
@@ -1098,6 +1161,7 @@ export function CurrentUiDemo(): ReactElement {
         </div>
 
         <PrototypeActionRail
+          actions={commandSuggestions.slice(0, 3)}
           libraryOpen={actionLibraryOpen}
           onOpenLibrary={openActionLibrary}
         />

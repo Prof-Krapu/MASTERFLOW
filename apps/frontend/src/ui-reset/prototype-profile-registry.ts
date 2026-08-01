@@ -700,7 +700,10 @@ export const getPrototypeThemePalette = (paletteId: ThemePaletteId) =>
 export const getPrototypeProfileRank = (profile: PrototypeProfile) =>
   [...profileRankLadder].reverse().find((rank) => profile.rankScore >= rank.minimum) ?? profileRankLadder[0];
 
-export const buildPrototypeModeGroups = (visibleModeIds?: Set<DemoMode>): PrototypeModeGroup[] => modeGroups
+export const buildPrototypeModeGroups = (
+  visibleModeIds?: Set<DemoMode>,
+  runtimeAuthoritative = false,
+): PrototypeModeGroup[] => modeGroups
   .map((group) => ({
     kind: group.kind,
     label: group.label,
@@ -713,7 +716,7 @@ export const buildPrototypeModeGroups = (visibleModeIds?: Set<DemoMode>): Protot
         icon: mode.icon,
         id: mode.id,
         label: mode.label,
-        locked: mode.status === 'locked',
+        locked: runtimeAuthoritative ? false : mode.status === 'locked',
       })),
   }))
   .filter((group) => group.modes.length > 0);
