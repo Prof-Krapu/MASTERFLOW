@@ -2528,6 +2528,258 @@
   position: absolute;
 }
 
+.proto-masterbuild-console {
+  color: var(--proto-text);
+  display: grid;
+  gap: 22px;
+  height: 100%;
+  overflow: auto;
+  padding: 38px 44px 150px;
+  position: relative;
+  z-index: 1;
+}
+
+.proto-masterbuild-console--loading,
+.proto-masterbuild-console--unavailable {
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.proto-masterbuild-console--unavailable button,
+.proto-masterbuild-console__header button {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--proto-border);
+  border-radius: 999px;
+  color: inherit;
+  display: inline-flex;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.proto-masterbuild-console__header {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.proto-masterbuild-console__header small,
+.proto-masterbuild-console__orientation > section > small,
+.proto-masterbuild-console__risk small,
+.proto-masterbuild-console__blockers small,
+.proto-masterbuild-chat header small {
+  color: var(--proto-accent);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.proto-masterbuild-console__header h1 {
+  font-size: clamp(2rem, 4vw, 4.4rem);
+  line-height: 0.9;
+  margin: 7px 0 10px;
+}
+
+.proto-masterbuild-console__header p,
+.proto-masterbuild-console__orientation p,
+.proto-masterbuild-console__blockers li {
+  color: var(--proto-muted);
+}
+
+.proto-masterbuild-console__signals {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.proto-masterbuild-console__signals article {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--proto-border);
+  border-radius: 16px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 16px;
+}
+
+.proto-masterbuild-console__signals article > svg {
+  color: var(--proto-accent);
+}
+
+.proto-masterbuild-console__signals span small,
+.proto-masterbuild-console__signals span strong {
+  display: block;
+}
+
+.proto-masterbuild-console__signals span small,
+.proto-masterbuild-console__signals em {
+  color: var(--proto-muted);
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
+.proto-masterbuild-console__signals em {
+  grid-column: 1 / -1;
+}
+
+.proto-masterbuild-console__signals .is-good {
+  color: #65c98b;
+}
+
+.proto-masterbuild-console__signals .is-warn {
+  color: #e5a66c;
+}
+
+.proto-masterbuild-console__runtime-dot {
+  background: #be6c61;
+  border-radius: 999px;
+  height: 12px;
+  width: 12px;
+}
+
+.proto-masterbuild-console__runtime-dot[data-live='true'] {
+  background: #65c98b;
+  box-shadow: 0 0 18px rgba(101, 201, 139, 0.45);
+}
+
+.proto-masterbuild-console__body {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+}
+
+.proto-masterbuild-console__orientation,
+.proto-masterbuild-chat {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--proto-border);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.proto-masterbuild-console__orientation h2 {
+  font-size: clamp(1.35rem, 2.2vw, 2.4rem);
+  margin: 8px 0;
+}
+
+.proto-masterbuild-console__risk {
+  align-items: start;
+  background: rgba(229, 166, 108, 0.08);
+  border: 1px solid rgba(229, 166, 108, 0.18);
+  border-radius: 14px;
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 14px;
+}
+
+.proto-masterbuild-console__risk p {
+  margin: 5px 0 0;
+}
+
+.proto-masterbuild-console__blockers {
+  margin-top: 20px;
+}
+
+.proto-masterbuild-console__blockers ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.proto-masterbuild-chat {
+  display: grid;
+  gap: 14px;
+  grid-template-rows: auto minmax(100px, 1fr) auto auto;
+}
+
+.proto-masterbuild-chat header {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.proto-masterbuild-chat header span strong,
+.proto-masterbuild-chat header span small {
+  display: block;
+}
+
+.proto-masterbuild-chat header em,
+.proto-masterbuild-chat > small {
+  color: var(--proto-muted);
+  font-size: 0.7rem;
+  font-style: normal;
+}
+
+.proto-masterbuild-chat__turns {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+}
+
+.proto-masterbuild-chat__turns p {
+  border-radius: 12px;
+  font-size: 0.84rem;
+  margin: 0;
+  max-width: 90%;
+  padding: 10px 12px;
+}
+
+.proto-masterbuild-chat__turns .is-masterbuild {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.proto-masterbuild-chat__turns .is-user {
+  background: color-mix(in srgb, var(--proto-user-color) 25%, transparent);
+  justify-self: end;
+}
+
+.proto-masterbuild-chat form {
+  display: grid;
+  gap: 8px;
+}
+
+.proto-masterbuild-chat textarea {
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid var(--proto-border);
+  border-radius: 12px;
+  color: inherit;
+  font: inherit;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.proto-masterbuild-chat form button {
+  align-items: center;
+  background: var(--proto-accent);
+  border: 0;
+  border-radius: 999px;
+  color: #111;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-self: end;
+  padding: 10px 15px;
+}
+
+.proto-masterbuild-chat form button:disabled {
+  opacity: 0.45;
+}
+
+@media (max-width: 900px) {
+  .proto-masterbuild-console {
+    padding: 26px 20px 150px;
+  }
+
+  .proto-masterbuild-console__signals,
+  .proto-masterbuild-console__body {
+    grid-template-columns: 1fr;
+  }
+}
+
 .proto-entry-greeting {
   display: grid;
   gap: 10px;

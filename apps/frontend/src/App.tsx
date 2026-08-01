@@ -20,6 +20,7 @@ import type {
 
 import {
   attachProjectResource,
+  clearRuntimeAuthToken,
   createAction,
   decideValidationInboxItem,
   executeAction,
@@ -34,7 +35,6 @@ import {
   preflightAction,
   proposeResource,
   queryRag,
-  setToken,
   syncCoordinationRag,
   updateRoomInstance,
   validateAction,
@@ -463,13 +463,13 @@ function App(): ReactElement {
       try {
         const nextAuth = await login(username, password);
         setAuth(nextAuth);
-        await loadContext(nextAuth.token);
+        window.location.assign('/ui-reset');
       } catch (err) {
         setState('error');
         setError(err instanceof Error ? err.message : 'Connexion impossible.');
       }
     },
-    [loadContext, password, username],
+    [password, username],
   );
 
   const handleLogout = useCallback((): void => {
@@ -490,7 +490,7 @@ function App(): ReactElement {
     setProjectResourceId('');
     setRagQuestion('');
     setRagSync({status: 'idle', message: 'Memoire de coordination non interrogee.'});
-    setToken(null);
+    clearRuntimeAuthToken();
     setState('idle');
     setSelectedMode('home');
     setPilotageOpen(false);
@@ -1267,7 +1267,7 @@ function App(): ReactElement {
           <RegisterWithCode
             onAuthed={(nextAuth) => {
               setAuth(nextAuth);
-              void loadContext(nextAuth.token);
+              window.location.assign('/ui-reset');
             }}
           />
         </form>

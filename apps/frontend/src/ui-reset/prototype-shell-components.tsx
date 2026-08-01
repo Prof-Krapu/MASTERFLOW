@@ -495,19 +495,33 @@ export type PrototypeHistoryItem = {
 };
 
 type ActionRailProps = {
+  actions: PrototypeActionSuggestion[];
   libraryOpen: boolean;
   onOpenLibrary: () => void;
 };
 
 export function PrototypeActionRail({
+  actions,
   libraryOpen,
   onOpenLibrary,
 }: ActionRailProps): ReactElement {
   return (
     <aside className="proto-stage-tools" aria-label="Outils contextuels flottants">
-      <button aria-label="Pilotage contextuel" className="proto-action-button proto-action-button--icon" data-tooltip="Piloter" type="button"><Command size={19} /></button>
-      <button aria-label="Voir l’historique" className="proto-action-button proto-action-button--icon" data-tooltip="Historique" type="button"><History size={19} /></button>
-      <button aria-label="Exporter" className="proto-action-button proto-action-button--icon" data-tooltip="Exporter" type="button"><Upload size={19} /></button>
+      {actions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <button
+            aria-label={action.label}
+            className="proto-action-button proto-action-button--icon"
+            data-tooltip={action.label}
+            key={action.id}
+            onClick={onOpenLibrary}
+            type="button"
+          >
+            <Icon size={19} />
+          </button>
+        );
+      })}
       <button
         aria-expanded={libraryOpen}
         aria-label={libraryOpen ? 'Fermer la bibliothèque d’actions' : 'Ouvrir la bibliothèque d’actions'}

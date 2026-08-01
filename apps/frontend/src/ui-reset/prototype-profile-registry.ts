@@ -10,6 +10,7 @@ import {
   Gem,
   GraduationCap,
   History,
+  Hammer,
   LoaderCircle,
   MessageCircle,
   Mic,
@@ -64,7 +65,7 @@ import type {
 import type {PrototypeModeGroup} from './prototype-shell-components';
 import type {PrototypeHomeMode} from './prototype-product-surfaces';
 
-export type DemoMode = 'teaching' | 'learn' | 'project' | 'inventory' | 'da' | 'story' | 'companions';
+export type DemoMode = 'teaching' | 'learn' | 'project' | 'inventory' | 'da' | 'story' | 'companions' | 'masterbuild';
 export type ActiveSurface = 'home' | DemoMode;
 export type AppearanceTheme = 'auto' | 'dark' | 'light';
 export type DockPanel = 'keyboard' | 'micro' | null;
@@ -137,6 +138,7 @@ export const modes: ModeItem[] = [
   {id: 'da', label: 'DA Studio', icon: Paintbrush, status: 'locked'},
   {id: 'story', label: 'MasterStory', icon: ScrollText, status: 'locked'},
   {id: 'companions', label: 'Companions', icon: UsersRound, status: 'available'},
+  {id: 'masterbuild', label: 'MasterBuild', icon: Hammer, status: 'available'},
 ];
 
 export const modeGroups = [
@@ -144,6 +146,7 @@ export const modeGroups = [
   {label: 'Expériences', ids: ['teaching', 'learn'] as DemoMode[], kind: 'experience'},
   {label: 'Studios', ids: ['story', 'da'] as DemoMode[], kind: 'studio'},
   {label: 'Personnel', ids: ['inventory', 'companions'] as DemoMode[], kind: 'personal'},
+  {label: 'Système', ids: ['masterbuild'] as DemoMode[], kind: 'system'},
 ];
 
 export const accessLevels: Array<{id: AccessLevel; label: string; icon: LucideIcon}> = [
@@ -159,7 +162,7 @@ export const accessModeMap: Record<AccessLevel, DemoMode[]> = {
   teacher: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'companions'],
   supervision: ['project', 'teaching', 'learn', 'inventory'],
   admin: ['project', 'da', 'inventory'],
-  godmode: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'companions'],
+  godmode: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'companions', 'masterbuild'],
 };
 
 export const libraryActions: LibraryAction[] = [
@@ -310,6 +313,7 @@ export const modePunchlines: Record<ActiveSurface, MasterflexPunchline> = {
   da: 'Plus instinctif qu’un réflexe',
   story: 'Plus épicé qu’un Tex-Mex',
   companions: 'Plus fluffy que des pancakes',
+  masterbuild: 'Plus rapide que Fedex',
 };
 
 export const skillPunchlines: Partial<Record<SkillArcId, MasterflexPunchline>> = {
@@ -630,6 +634,7 @@ export const profKrapuPunchlines = {
   da: 'Le style attendra les données.',
   story: 'Narration oui, intox non.',
   companions: 'Équipe calme, microscope ouvert.',
+  masterbuild: 'Système visible, preuves exigées.',
 } satisfies Record<ActiveSurface | 'default', string>;
 
 export const profKrapuSkillPunchlines: Partial<Record<SkillArcId, string>> = {
@@ -700,7 +705,10 @@ export const getPrototypeThemePalette = (paletteId: ThemePaletteId) =>
 export const getPrototypeProfileRank = (profile: PrototypeProfile) =>
   [...profileRankLadder].reverse().find((rank) => profile.rankScore >= rank.minimum) ?? profileRankLadder[0];
 
-export const buildPrototypeModeGroups = (visibleModeIds?: Set<DemoMode>): PrototypeModeGroup[] => modeGroups
+export const buildPrototypeModeGroups = (
+  visibleModeIds?: Set<DemoMode>,
+  runtimeAuthoritative = false,
+): PrototypeModeGroup[] => modeGroups
   .map((group) => ({
     kind: group.kind,
     label: group.label,
@@ -713,7 +721,7 @@ export const buildPrototypeModeGroups = (visibleModeIds?: Set<DemoMode>): Protot
         icon: mode.icon,
         id: mode.id,
         label: mode.label,
-        locked: mode.status === 'locked',
+        locked: runtimeAuthoritative ? false : mode.status === 'locked',
       })),
   }))
   .filter((group) => group.modes.length > 0);
