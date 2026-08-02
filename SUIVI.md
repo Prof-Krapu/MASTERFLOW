@@ -4,6 +4,39 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-02 — UI RUNTIME UNIQUE : ONE SHOT PRÊT À PUBLIER
+
+### VAGUE ACTIVE
+
+- id : `UI-RUNTIME-CONSOLIDATION-001` ;
+- statut : étape `7/8 — Publier` ;
+- objectif : une seule application pilotable pour MALEX et Vincent depuis le shell actuel ;
+- branche : `codex/ui-runtime-consolidation-one-shot` ;
+- base : `origin/main` au SHA `29f08287db1893b2a535c13dbf684e0185546057` ;
+- publication : push, PR prête et merge autorisés ; aucun déploiement ;
+- blocage : merge interdit si les checks GitHub ne sont pas verts.
+
+Livré dans cette branche :
+
+- `/`, `/ui-reset` et `/current-ui` utilisent désormais le même orchestrateur `App.tsx` ;
+- Home, Project, Teaching, Learn et Inventory sont rendus dans le shell actuel depuis les raccords
+  runtime existants ;
+- MasterStory et DA Studio ne produisent plus de canvas vide et déclarent honnêtement leur absence
+  de raccord ;
+- MasterBuild reste une console privée du GodMode ;
+- chat et historique consomment le vrai WebSocket ; micro et transcription sont désactivés ;
+- les actions passent par création, preflight, validation et exécution existants ;
+- Companions quitte la navigation principale et devient une vue read-only d'Inventory, alimentée par
+  `GET /api/v1/experience/companions` avec filtres `project_id` et `room_id` ;
+- aucune table, migration, dépendance UI, génération ou validation d'asset n'a été ajoutée.
+
+Preuves locales : backend `701/701`, Living Companion `9/9`, lint backend/frontend verts, build
+frontend vert, MASTERBUILD `12/12` et doctor vert. Smoke navigateur GodMode, professeur et étudiant :
+navigation permissionnée, chat mock via WebSocket, états indisponibles honnêtes, aucun log console et
+aucun débordement horizontal observé à 390 px.
+
+---
+
 ## 2026-08-02 — MASTERBUILD RÉALIGNÉ : AUDIT UI PAGE PAR PAGE
 
 ### VAGUE ACTIVE

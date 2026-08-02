@@ -70,6 +70,24 @@ Les statuts distinguent désormais rendu, données, action et publication.
 
 ## 5. Réconciliation Home
 
+### Promotion runtime du one shot 2026-08-02
+
+La branche `codex/ui-runtime-consolidation-one-shot` résout les écarts transverses identifiés dans
+la matrice sans déclarer MasterStory ou DA Studio terminés :
+
+| Surface | Décision implémentée | Statut candidat au merge |
+|---|---|---|
+| Routes `/`, `/ui-reset`, `/current-ui` | un seul orchestrateur et un seul shell runtime | `connected_verified` |
+| Home | reprise, attention, une action principale de navigation et trois raccourcis maximum | `connected_verified` |
+| Project / Teaching / Learn / Inventory | composants runtime existants remontés dans le shell | `connected_verified` |
+| MasterStory / DA Studio | page indisponible explicite, aucune simulation | `unavailable_honest` |
+| MasterBuild | console privée, visible au GodMode seulement | `connected_partial` |
+| Command Dock | chat/historique WS réels, micro/transcription désactivés | `connected_verified` |
+| Actions | cycle backend réel et résultat visible | `connected_partial` |
+| Companions | vue read-only dans Inventory, absente du menu principal | `connected_verified` |
+
+Cette promotion ne vaut vérité publiée qu'après merge de la PR et ne prouve aucun déploiement.
+
 ### Valeur visible aujourd'hui
 
 - identité de l'utilisateur ;

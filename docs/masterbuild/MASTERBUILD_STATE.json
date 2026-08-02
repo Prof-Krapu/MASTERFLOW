@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-02T14:33:27+02:00",
+  "updated_at": "2026-08-02T17:58:22+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -16,31 +16,32 @@
   },
   "active_round": {
     "round_id": "UI-PAGE-AUDIT-001",
-    "title": "Audit UI page par page depuis la version Git unique",
-    "objective": "Auditer et contractualiser les pages réellement présentes dans main, une par une, en commençant par Home avant toute nouvelle modification UI.",
+    "title": "Consolider l'interface MasterFlow réellement utilisable",
+    "objective": "Publier un runtime unique dans le shell actuel, avec pages métier raccordées, états honnêtes et Companions en lecture seule dans Inventory.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 2,
-    "stage_label": "Cadrer",
-    "recommended_next_action": "Faire valider par MALEX le contrat Home V1 issu de l'audit : point de reprise, une action principale réelle, attention utile et trois raccourcis maximum vers des pages rendues.",
-    "primary_risk": "Recommencer à modifier l'UI avant d'avoir distingué, page par page, l'expérience publiée, le prototype et les raccords runtime réels.",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Publier la branche, ouvrir une PR prête, obtenir la revue Vincent et merger uniquement après tous les checks verts.",
+    "primary_risk": "Merger malgré un contrôle rouge, une dérive de base ou en confondant publication Git et déploiement.",
     "no_auto_execute": true,
     "work_package_ids": ["UPA-001"],
-    "authorization_id": null,
+    "authorization_id": "GO-UI-RUNTIME-CONSOLIDATION-2026-08-02",
     "success_criteria": [
-      "Chaque page auditée possède un objectif utilisateur, une première valeur et une action principale explicites.",
-      "Les données, permissions, états et raccords runtime réellement utilisés sont identifiés.",
+      "Un seul orchestrateur alimente les routes produit et le shell visuel courant.",
+      "Home, Project, Teaching, Learn et Inventory consomment les raccords runtime existants.",
+      "Companions est une vue Inventory en lecture seule, filtrée par les permissions existantes.",
       "Prototype, main, live, candidat, futur et indisponible restent impossibles à confondre.",
-      "MALEX valide le contrat de page avant toute construction.",
-      "Aucun code, backend ou asset n'est modifié pendant l'orientation et l'audit."
+      "Les trois rôles passent les contrôles locaux et aucun asset, migration ou déploiement n'est ajouté.",
+      "La PR est mergée uniquement après revue et checks GitHub verts."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant l'audit détaillé de Home",
-      "Design Preflight et validation MALEX avant toute modification UI",
-      "Contrat backend confirmé avant tout nouveau raccord runtime",
+      "Contrat partagé et permissions Companion à relire par Vincent",
+      "Diff UI/canon à relire par MALEX",
+      "Tous les checks GitHub verts avant merge",
       "Aucun asset candidat promu automatiquement",
-      "Nouveau GO avant branche, commit, push, PR, merge ou déploiement"
+      "Aucun déploiement dans ce Round"
     ],
     "source_refs": [
       "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
@@ -57,25 +58,25 @@
   },
   "next_moves": [
     {
-      "move_id": "home-page-contract-validation",
-      "label": "Valider le contrat Home V1",
-      "reason": "L'audit a confirmé une Home raccordée mais sans reprise ni action principale ; MALEX doit valider le contrat avant tout Design Preflight ou build.",
+      "move_id": "publish-ui-runtime-one-shot",
+      "label": "Publier et faire relire la PR du runtime unique",
+      "reason": "Le contrat validé est implémenté et les contrôles locaux sont verts ; la publication reste la dernière porte avant clôture.",
       "recommended": true,
-      "status": "awaiting_malex_validation"
+      "status": "in_progress"
     },
     {
-      "move_id": "godmode-page-audit",
-      "label": "Auditer GodMode et son accès système",
-      "reason": "Le rôle GodMode agrège plusieurs surfaces et exige une lecture claire des permissions.",
+      "move_id": "review-vincent-companion-contract",
+      "label": "Faire relire le contrat Companion par Vincent",
+      "reason": "L'endpoint partagé et ses permissions doivent recevoir la revue backend prévue par le contrat de publication.",
       "recommended": false,
-      "status": "queued"
+      "status": "awaiting_review"
     },
     {
-      "move_id": "project-page-audit",
-      "label": "Auditer Project",
-      "reason": "Project est la première verticale métier à traiter après l'entrée Home.",
+      "move_id": "deploy-ui-runtime",
+      "label": "Décider séparément du déploiement",
+      "reason": "Le merge Git ne publie pas automatiquement l'application dans un environnement partagé.",
       "recommended": false,
-      "status": "queued"
+      "status": "future_requires_separate_go"
     }
   ],
   "registries": {
@@ -101,21 +102,21 @@
   },
   "active_goal": {
     "goal_id": "UI-PAGE-AUDIT-001",
-    "title": "Audit UI page par page depuis la version Git unique",
+    "title": "Consolider l'interface MasterFlow réellement utilisable",
     "owner": "malex",
     "status": "active",
-    "stage_index": 2,
-    "stage_label": "Cadrer",
+    "stage_index": 7,
+    "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Contrat de page vérifiable avant construction",
-      "Données et permissions réelles identifiées",
-      "Validation MALEX page par page"
+      "Runtime et shell uniques",
+      "Données et permissions réelles identifiées et vérifiées",
+      "PR prête puis merge après checks verts"
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant audit détaillé",
-      "GO distinct avant toute modification UI ou publication",
+      "Revue MALEX du diff UI/canon",
+      "Revue Vincent du contrat partagé et des permissions",
       "Aucun déploiement dans ce Round sans autorisation séparée"
     ],
     "source_refs": [
@@ -138,37 +139,37 @@
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "pending"
+      "status": "active"
     },
     {
       "index": 8,

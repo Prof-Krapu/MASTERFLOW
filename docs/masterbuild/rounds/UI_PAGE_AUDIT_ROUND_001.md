@@ -1,7 +1,7 @@
 # UI-PAGE-AUDIT-001 — Audit UI page par page
 
 Date : 2026-08-02
-Statut : actif, étape 2/8 — Cadrer
+Statut : actif, étape 7/8 — Publier
 Owner : MALEX
 Revue système : Vincent
 
@@ -93,5 +93,21 @@ de reconnexion. Un contrôle non raccordé doit être identifié comme prototype
 
 ## Prochaine action recommandée
 
-Faire valider par MALEX ce contrat Home V1 et le statut de Companions avant de produire un Design
-Preflight ou de modifier l'interface.
+Publier la branche `codex/ui-runtime-consolidation-one-shot`, ouvrir une PR prête, demander la revue
+Vincent du contrat Companion et merger uniquement après tous les checks verts.
+
+## Résultat du one shot validé
+
+Le plan global validé par MALEX remplace, pour ce lot borné, la restriction initiale de construction
+page par page. Il ne transforme pas automatiquement les idées ou archives en canon.
+
+- `/`, `/ui-reset` et `/current-ui` reposent sur le même orchestrateur et le même shell ;
+- Home, Project, Teaching, Learn et Inventory utilisent les raccords runtime existants ;
+- MasterStory et DA Studio présentent un état indisponible explicite ;
+- MasterBuild reste privé au GodMode ;
+- chat et historique utilisent le WebSocket réel ; micro et transcription restent désactivés ;
+- Companions est une section read-only d'Inventory, servie sans table ni migration nouvelle ;
+- tests backend et permissions, lints, builds, MASTERBUILD et smoke trois rôles sont verts localement.
+
+Le merge GitHub ne constitue pas un déploiement. Aucun nouvel asset, fournisseur, coût, déplacement,
+suppression, migration ou déploiement ne fait partie de ce Round.

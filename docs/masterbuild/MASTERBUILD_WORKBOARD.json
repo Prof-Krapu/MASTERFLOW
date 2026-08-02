@@ -268,8 +268,8 @@
     },
     {
       "work_package_id": "UPA-001",
-      "label": "Auditer et contractualiser la Home actuelle",
-      "feature_ids": ["ui-home", "ui-shell-navigation", "ui-command-dock"],
+      "label": "Consolider le runtime UI unique et ses pages utilisables",
+      "feature_ids": ["ui-home", "ui-shell-navigation", "ui-command-dock", "ui-inventory", "living-companion"],
       "status": "in_progress",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
@@ -277,11 +277,13 @@
       "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-006", "DES-007", "DES-010"],
       "tool_route": "codex",
       "expected_evidence": [
-        "objectif utilisateur et valeur visible en dix secondes",
-        "action principale et choix secondaires",
-        "données runtime, permissions et états réellement consommés",
-        "écarts entre main, prototype et expérience attendue",
-        "validation MALEX avant toute construction"
+        "routes produit servies par App.tsx et le même shell",
+        "Home avec reprise, attention, action principale et trois raccourcis maximum",
+        "Project, Teaching, Learn et Inventory rendus depuis les composants existants",
+        "chat WebSocket réel et capacités non raccordées désactivées",
+        "Companions read-only dans Inventory avec tests de permissions",
+        "smoke GodMode, professeur, étudiant et largeur 390 px",
+        "PR prête et merge uniquement après checks GitHub verts"
       ]
     },
     {
