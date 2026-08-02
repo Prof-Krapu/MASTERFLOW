@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-01T00:55:46+02:00",
-  "active_round_id": "GIT-CONSOLIDATION-001",
+  "updated_at": "2026-08-02T14:33:27+02:00",
+  "active_round_id": "UI-PAGE-AUDIT-001",
   "authorizations": [
     {
       "authorization_id": "AUTH-MB2-2026-07-05",
@@ -72,6 +72,26 @@
       "granted_at": "2026-08-01",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "delete", "pr_214_change", "backend", "shared_contract", "ui_backend_connection", "candidate_asset", "archive_asset", "rejected_asset", "component_lab"]
+    },
+    {
+      "authorization_id": "AUTH-UPA-OPEN-2026-08-02",
+      "round_id": "UI-PAGE-AUDIT-001",
+      "actor": "malex",
+      "scope": "document_local_close_git_consolidation_open_ui_page_audit_home",
+      "status": "completed",
+      "granted_at": "2026-08-02",
+      "expires_on_scope_change": true,
+      "excluded": ["code", "frontend_change", "backend", "asset", "branch", "commit", "push", "pull_request", "merge", "deploy"]
+    },
+    {
+      "authorization_id": "AUTH-UPA-CANON-RECOVERY-2026-08-02",
+      "round_id": "UI-PAGE-AUDIT-001",
+      "actor": "malex",
+      "scope": "restore_ui_canon_baseline_reconcile_integration_registry_v2_document_local",
+      "status": "completed",
+      "granted_at": "2026-08-02",
+      "expires_on_scope_change": true,
+      "excluded": ["code", "frontend_change", "backend", "asset", "branch", "commit", "push", "pull_request", "merge", "deploy"]
     }
   ],
   "work_packages": [
@@ -139,7 +159,7 @@
       "work_package_id": "GTC-006",
       "label": "Publier les preuves et clôturer",
       "feature_ids": ["masterbuild-pilot"],
-      "status": "partial",
+      "status": "completed",
       "owner": "codex",
       "reviewers": ["malex", "vincent"],
       "dependencies": ["GTC-005"],
@@ -229,7 +249,7 @@
       "work_package_id": "GTC-L3-001",
       "label": "Publier le Lot 3 Shell/Dock et assets actifs",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock", "persona-asset-pipeline"],
-      "status": "pending_review",
+      "status": "completed",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["GTC-L2-001", "GTC-005"],
@@ -241,7 +261,27 @@
         "aucun candidat, archive ou rejet",
         "aucun nouveau raccord UI/backend",
         "build frontend et contrôles ciblés",
-        "draft PR #219 publiée sans merge ni déploiement"
+        "PR #219 mergée au SHA a3aff41",
+        "UI réellement utilisée restaurée par la PR #221",
+        "aucun déploiement"
+      ]
+    },
+    {
+      "work_package_id": "UPA-001",
+      "label": "Auditer et contractualiser la Home actuelle",
+      "feature_ids": ["ui-home", "ui-shell-navigation", "ui-command-dock"],
+      "status": "in_progress",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": [],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-006", "DES-007", "DES-010"],
+      "tool_route": "codex",
+      "expected_evidence": [
+        "objectif utilisateur et valeur visible en dix secondes",
+        "action principale et choix secondaires",
+        "données runtime, permissions et états réellement consommés",
+        "écarts entre main, prototype et expérience attendue",
+        "validation MALEX avant toute construction"
       ]
     },
     {

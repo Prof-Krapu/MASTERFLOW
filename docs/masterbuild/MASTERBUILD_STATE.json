@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-01T01:04:50+02:00",
+  "updated_at": "2026-08-02T14:33:27+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,141 +9,71 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "UI-SHELL-DOCK-001",
-    "title": "Shell, navigation et Command Dock",
-    "commit_sha": "b0fdcf165b270fc7203eb404cee014b7caf4413c",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
-  },
-  "active_round": {
     "round_id": "GIT-CONSOLIDATION-001",
     "title": "Vérité Git unique et préparation du raccord UI",
-    "objective": "Classer la branche, la draft PR #214, les registres et les assets avant de préparer le premier raccord UI au système réel.",
+    "commit_sha": "29f08287db1893b2a535c13dbf684e0185546057",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/224"
+  },
+  "active_round": {
+    "round_id": "UI-PAGE-AUDIT-001",
+    "title": "Audit UI page par page depuis la version Git unique",
+    "objective": "Auditer et contractualiser les pages réellement présentes dans main, une par une, en commençant par Home avant toute nouvelle modification UI.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
-    "recommended_next_action": "Relire la draft PR #219 du Lot 3 Shell/Dock avec MALEX/Vincent avant tout merge.",
-    "primary_risk": "Réintroduire dans le Lot 3 des assets candidats ou archivés, ou brancher l'UI au backend hors contrat.",
+    "stage_index": 2,
+    "stage_label": "Cadrer",
+    "recommended_next_action": "Faire valider par MALEX le contrat Home V1 issu de l'audit : point de reprise, une action principale réelle, attention utile et trois raccourcis maximum vers des pages rendues.",
+    "primary_risk": "Recommencer à modifier l'UI avant d'avoir distingué, page par page, l'expérience publiée, le prototype et les raccords runtime réels.",
     "no_auto_execute": true,
-    "work_package_ids": ["GTC-001", "GTC-002", "GTC-003", "GTC-004", "GTC-005", "GTC-006", "GTC-L1-001", "GTC-PM-001", "GTC-L2-001", "GTC-L2-PM-001", "GTC-L3-001"],
+    "work_package_ids": ["UPA-001"],
     "authorization_id": null,
     "success_criteria": [
-      "Une lecture distingue local, branche, PR, main et live.",
-      "Chaque asset est actif, candidat, archive ou rejeté.",
-      "Les fonctionnalités backend utiles restent identifiées pendant la migration UI.",
-      "La PR #214 reçoit une stratégie explicite.",
-      "Le premier Round d'intégration UI est borné et raccordé à des contrats réels."
+      "Chaque page auditée possède un objectif utilisateur, une première valeur et une action principale explicites.",
+      "Les données, permissions, états et raccords runtime réellement utilisés sont identifiés.",
+      "Prototype, main, live, candidat, futur et indisponible restent impossibles à confondre.",
+      "MALEX valide le contrat de page avant toute construction.",
+      "Aucun code, backend ou asset n'est modifié pendant l'orientation et l'audit."
     ],
-    "blockers": [
-      "Le Lot 3 Shell/Dock est publié en draft PR #219 ; sa revue et tout merge restent à décider.",
-      "Les imports statiques du Component Lab ne doivent pas embarquer candidats ou archives dans le Lot 3.",
-      "Le Lot 4 Component Lab et candidats reste en draft ou hold.",
-      "La PR #214 reste une source à ne pas merger en bloc."
-    ],
+    "blockers": [],
     "validation_gates": [
-      "Lot 1 mergé dans main via PR #215 au SHA 65807a8",
-      "Lot 2 mergé dans main via PR #217 au SHA cd9f26b",
-      "GO GTC-L3-001 obtenu pour branche, reconstruction, commit, push et draft PR ; merge exclu",
-      "Draft PR #219 publiée depuis la branche codex/shell-dock-active-lot",
-      "Design Preflight et revue MALEX/Vincent avant merge du Lot 3",
-      "Nouveau GO avant déploiement",
-      "Aucun asset candidat n'est promu automatiquement",
-      "Aucun raccord UI au backend pendant la vérification",
-      "Aucune branche de découpe sans autorisation distincte"
+      "GO distinct avant l'audit détaillé de Home",
+      "Design Preflight et validation MALEX avant toute modification UI",
+      "Contrat backend confirmé avant tout nouveau raccord runtime",
+      "Aucun asset candidat promu automatiquement",
+      "Nouveau GO avant branche, commit, push, PR, merge ou déploiement"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
-      "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
-      "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
-      "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
-      "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
-      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
-      "docs/masterbuild/contracts/MASTERBUILD_CORE_PUBLICATION_CONTRACT_001.md",
-      "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
-      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
-      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_POSTMERGE_CLOSURE_CONTRACT_001.md",
-      "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
-      "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
-      "docs/masterbuild/handoffs/GIT_CONSOLIDATION_001_BOOT.md",
-      "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/215",
-      "https://github.com/Prof-Krapu/MASTERFLOW/commit/65807a8b7ad1aba2efbd8f8deee9db884e99796e",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/216",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/217",
-      "https://github.com/Prof-Krapu/MASTERFLOW/commit/cd9f26ba62f464c4acfb30f061a5ee39bece2796",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/218",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/219",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/214"
+      "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
+      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+      "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
+      "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
+      "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+      "apps/frontend/src/current-ui-demo.tsx",
+      "apps/frontend/src/ui-reset/prototype-profile-registry.ts",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/221",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/223",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/224"
     ]
   },
   "next_moves": [
     {
-      "move_id": "git-consolidation",
-      "label": "Décider la stratégie de la PR #214",
-      "reason": "Les lots et assets sont classés ; il faut maintenant choisir conserver, découper ou remplacer.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "shell-dock-runtime",
-      "label": "Préparer le raccord Shell/Dock",
-      "reason": "C'est la première intégration recommandée après consolidation.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "git-consolidation-verify",
-      "label": "Vérifier les preuves et préparer la clôture",
-      "reason": "La stratégie Git et le contrat Shell/Dock sont prêts localement ; il faut vérifier sans publier.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "publication-decision",
-      "label": "Préparer le Lot 1 MASTERBUILD Core",
-      "reason": "Les preuves locales sont vérifiées ; la publication doit maintenant suivre le découpage validé, un lot à la fois.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "masterbuild-core-review",
-      "label": "Relire la draft PR #215",
-      "reason": "Le Lot 1 est publié sans frontend, backend ni asset ; MALEX et Vincent doivent valider son entrée dans main.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "github-governance-lot",
-      "label": "Publier la draft du Lot 2 Gouvernance GitHub",
-      "reason": "L'allowlist et l'impact sont vérifiés ; MALEX et Vincent doivent maintenant relire la gouvernance avant merge.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "github-governance-review",
-      "label": "Relire la draft PR #217",
-      "reason": "Le Lot 2 est publié et techniquement vérifié ; MALEX et Vincent doivent valider ownership et charge avant merge.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "shell-dock-active-lot",
-      "label": "Préparer le Lot 3 Shell/Dock et assets actifs",
-      "reason": "Les Lots 1 et 2 sont dans main ; la prochaine tranche doit isoler l'expérience active sans candidats, archives ni nouveau raccord backend.",
-      "recommended": false,
-      "status": "completed"
-    },
-    {
-      "move_id": "shell-dock-active-review",
-      "label": "Relire la draft PR #219",
-      "reason": "Le Lot 3 est publié et vérifié ; MALEX et Vincent doivent valider le Shell/Dock, l'allowlist active et les exclusions avant tout merge.",
+      "move_id": "home-page-contract-validation",
+      "label": "Valider le contrat Home V1",
+      "reason": "L'audit a confirmé une Home raccordée mais sans reprise ni action principale ; MALEX doit valider le contrat avant tout Design Preflight ou build.",
       "recommended": true,
-      "status": "ready_for_decision"
+      "status": "awaiting_malex_validation"
     },
     {
-      "move_id": "feature-registry-review",
-      "label": "Relire la carte fonctionnelle",
-      "reason": "MALEX et Vincent doivent vérifier les fonctionnalités oubliées avant la migration des verticales.",
+      "move_id": "godmode-page-audit",
+      "label": "Auditer GodMode et son accès système",
+      "reason": "Le rôle GodMode agrège plusieurs surfaces et exige une lecture claire des permissions.",
+      "recommended": false,
+      "status": "queued"
+    },
+    {
+      "move_id": "project-page-audit",
+      "label": "Auditer Project",
+      "reason": "Project est la première verticale métier à traiter après l'entrée Home.",
       "recommended": false,
       "status": "queued"
     }
@@ -170,43 +100,31 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "GIT-CONSOLIDATION-001",
-    "title": "Vérité Git unique et préparation du raccord UI",
+    "goal_id": "UI-PAGE-AUDIT-001",
+    "title": "Audit UI page par page depuis la version Git unique",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
+    "stage_index": 2,
+    "stage_label": "Cadrer",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Branche et PR classées",
-      "Assets classés",
-      "Round d'intégration suivant préparé"
+      "Contrat de page vérifiable avant construction",
+      "Données et permissions réelles identifiées",
+      "Validation MALEX page par page"
     ],
-    "blockers": [
-      "Lot 3 publié en draft PR #219 ; revue MALEX/Vincent et merge à décider",
-      "Lot 3 doit continuer d'exclure les assets candidats et archivés ainsi que les imports Lab associés",
-      "Lot 4 maintenu en draft ou hold",
-      "PR #214 toujours ouverte comme source"
-    ],
+    "blockers": [],
     "validation_gates": [
-      "Lot 1 mergé via PR #215 au SHA 65807a8",
-      "Lot 2 mergé via PR #217 au SHA cd9f26b",
-      "GO GTC-L3-001 obtenu jusqu'à la draft PR ; nouveau GO avant merge",
-      "Nouveau GO avant déploiement"
+      "GO distinct avant audit détaillé",
+      "GO distinct avant toute modification UI ou publication",
+      "Aucun déploiement dans ce Round sans autorisation séparée"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
-      "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",
-      "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
-      "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
-      "docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md",
-      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
-      "docs/masterbuild/contracts/MASTERBUILD_POSTMERGE_CLOSURE_CONTRACT_001.md",
-      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_PUBLICATION_CONTRACT_001.md",
-      "docs/masterbuild/contracts/GITHUB_GOVERNANCE_POSTMERGE_CLOSURE_CONTRACT_001.md",
-      "docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md",
-      "docs/masterbuild/reports/GIT_CONSOLIDATION_001_LOCAL_VERIFICATION_2026-07-31.md",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/219"
+      "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
+      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+      "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
+      "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+      "apps/frontend/src/current-ui-demo.tsx",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/223"
     ]
   },
   "stages": [
@@ -220,37 +138,37 @@
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "active"
+      "status": "pending"
     },
     {
       "index": 8,
@@ -397,10 +315,10 @@
     }
   ],
   "publication": {
-    "state": "draft_pr",
-    "branch": "codex/masterbuild-v2",
-    "commit_sha": "65e9c0e7b31c1b5e294cba00ba37915184c6e002",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/214",
-    "runtime_proof": "Branche et draft PR alignées sur 65e9c0e ; aucun merge dans main et aucune preuve de déploiement live."
+    "state": "main",
+    "branch": "main",
+    "commit_sha": "29f08287db1893b2a535c13dbf684e0185546057",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/224",
+    "runtime_proof": "GitHub main inclut les PR #215 à #219, #221 à #224 ; PR #214 et #220 sont fermées sans merge. Aucun déploiement partagé n'est prouvé."
   }
 }

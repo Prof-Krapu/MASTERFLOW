@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-01T00:41:02+02:00",
+  "updated_at": "2026-08-02T14:33:27+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -13,16 +13,24 @@
     {
       "source_id": "git-consolidation-round-001",
       "path": "docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md",
+      "kind": "historical_round",
+      "status": "absorbed",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Round clôturé après réconciliation des PR #214 à #224 et création d'une copie Git locale unique."
+    },
+    {
+      "source_id": "ui-page-audit-round-001",
+      "path": "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
       "kind": "active_round",
       "status": "still_active",
-      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
-      "note": "Round actif avant tout raccord UI au système."
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Round actif d'audit UI page par page, Home en première page."
     },
     {
       "source_id": "git-consolidation-classification-2026-07-31",
       "path": "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
       "kind": "git_asset_classification",
-      "status": "still_active",
+      "status": "absorbed",
       "absorbed_into": [
         "MASTERBUILD_STATE.json",
         "MASTERBUILD_WORKBOARD.json",
@@ -34,7 +42,7 @@
       "source_id": "pr-214-split-strategy-2026-07-31",
       "path": "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
       "kind": "publication_strategy",
-      "status": "still_active",
+      "status": "absorbed",
       "absorbed_into": [
         "MASTERBUILD_STATE.json",
         "MASTERBUILD_WORKBOARD.json",
@@ -181,6 +189,54 @@
       "note": "Clôture documentaire post-merge du Lot 2, mergée dans main sans protection, label ou déploiement."
     },
     {
+      "source_id": "shell-dock-active-pr-219",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/219",
+      "kind": "pull_request",
+      "status": "absorbed",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Lot 3 Shell/Dock mergé dans main, ensuite corrigé par la PR #221."
+    },
+    {
+      "source_id": "shell-runtime-superseded-pr-220",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/220",
+      "kind": "closed_pull_request",
+      "status": "historical",
+      "absorbed_into": ["docs/masterbuild/rounds/GIT_CONSOLIDATION_ROUND_001.md"],
+      "note": "PR fermée sans merge et explicitement remplacée par #221."
+    },
+    {
+      "source_id": "current-ui-restoration-pr-221",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/221",
+      "kind": "pull_request",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Restauration dans main de l'UI réellement utilisée par MALEX."
+    },
+    {
+      "source_id": "private-deployment-request-pr-222",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/222",
+      "kind": "coordination_pull_request",
+      "status": "still_active",
+      "absorbed_into": ["INBOX_VINCENT.md", "SYNC_THREAD_MALEX_VINCENT.md"],
+      "note": "Demande de préparation du déploiement privé ; aucune preuve de déploiement."
+    },
+    {
+      "source_id": "home-godmode-runtime-pr-223",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/223",
+      "kind": "pull_request",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Home raccordée au contexte runtime et console MasterBuild ajoutée au GodMode."
+    },
+    {
+      "source_id": "component-lab-shared-pr-224",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/224",
+      "kind": "pull_request",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Component Lab partagé MALEX/Vincent mergé dans main au SHA 29f0828."
+    },
+    {
       "source_id": "persona-asset-decision-sheet-2026-07-26",
       "path": "docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md",
       "kind": "asset_decision_registry",
@@ -201,24 +257,32 @@
       "path": "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
       "kind": "canon_ui",
       "status": "still_active",
-      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json", "MASTERBUILD_DESIGN_RULES.json"],
-      "note": "Référence UI principale."
+      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json", "MASTERBUILD_DESIGN_RULES.json", "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md"],
+      "note": "Canon UI de cadrage validé le 2026-07-04, restauré depuis le commit fcfa68e sans promotion d'asset ni de runtime."
     },
     {
       "source_id": "ui-integration-registry-v1",
       "path": "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V1.md",
       "kind": "integration_registry",
       "status": "absorbed",
-      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
-      "note": "Reste preuve détaillée ; la vue active passe dans MASTERBUILD."
+      "absorbed_into": ["docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Baseline historique du 2026-07-04 ; ses statuts et sa queue ne pilotent plus le travail courant."
+    },
+    {
+      "source_id": "ui-integration-registry-v2",
+      "path": "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+      "kind": "integration_registry",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_FEATURE_REGISTRY.json", "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md"],
+      "note": "Registre UI actif réconcilié avec main 29f0828 : Home partielle, MasterBuild GodMode, pages non rendues et conflit Companions."
     },
     {
       "source_id": "ui-shell-dock-v1",
       "path": "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md",
       "kind": "surface_contract",
-      "status": "still_active",
-      "absorbed_into": ["MASTERBUILD_FEATURE_REGISTRY.json"],
-      "note": "Contrat du prochain Round produit."
+      "status": "historical",
+      "absorbed_into": ["docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md", "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md", "MASTERBUILD_FEATURE_REGISTRY.json"],
+      "note": "Source historique présente sur l'ancienne branche mais absente de main ; ses décisions opérables sont reprises par le preflight et le mapping MASTERBUILD."
     },
     {
       "source_id": "ui-cdc-active-legacy",

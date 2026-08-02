@@ -4,6 +4,43 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-02 — MASTERBUILD RÉALIGNÉ : AUDIT UI PAGE PAR PAGE
+
+### VAGUE ACTIVE
+
+- id : `UI-PAGE-AUDIT-001` ;
+- statut : étape `2/8 — Cadrer` ;
+- objectif : auditer et contractualiser chaque page réellement présente dans `main` avant toute retouche ;
+- première page : Home ;
+- prochaine action : validation MALEX du contrat Home V1 et arbitrage de l'exposition Companions ;
+- queue active : `UPA-001` dans `docs/masterbuild/MASTERBUILD_WORKBOARD.json` ;
+- publication : aucune pour ce Round ;
+- blocage : aucun, mais toute construction exige une validation MALEX séparée.
+
+Récupération documentaire UI du 2026-08-02 :
+
+- `MASTERFLOW_UI_CDC_CANON_V2.md` retrouvé dans la branche historique `codex/masterbuild-v2`,
+  identique au commit `fcfa68e`, puis restauré localement comme canon de cadrage validé ;
+- `MASTERFLOW_UI_INTEGRATION_REGISTRY_V1.md` restauré et marqué baseline historique ;
+- `MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md` créé face au `main` `29f0828` ;
+- écarts actifs inscrits : Home partielle, actions inertes, chat/micro prototype, six modes sans page
+  rendue dans `/ui-reset`, MasterBuild GodMode ajouté après la baseline et Companions futur exposé ;
+- aucun code, backend, asset, branche, commit, push, PR, merge ou déploiement.
+
+Réconciliation précédente :
+
+- `GIT-CONSOLIDATION-001` clôturé en étape 8/8 ;
+- PR #214 fermée sans merge et conservée comme source historique ;
+- PR #215 à #219 mergées ; #220 fermée et remplacée par #221 ; #221 à #224 mergées ;
+- UI réellement utilisée, Home/GodMode et Component Lab partagé présents dans `main` au SHA `29f0828` ;
+- aucune PR ouverte et aucun déploiement partagé prouvé ;
+- copie locale active unique, propre et alignée avec `origin/main` ; anciens travaux sécurisés en quarantaine.
+
+MASTERBUILD est piloté conversationnellement dans le chat. Le cockpit web reste une visualisation
+facultative, pas un passage obligé.
+
+---
+
 ## 2026-08-01 — COMPONENT LAB UNIQUE : RESTAURATION SÉLECTIVE
 
 - base : `main` au SHA de merge `f8f6136ff28db817862c09f43c1e4b24a23696ec` ;
