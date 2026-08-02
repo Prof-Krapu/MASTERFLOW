@@ -145,7 +145,7 @@ export const modeGroups = [
   {label: 'Projet actif', ids: ['project'] as DemoMode[], kind: 'project'},
   {label: 'Expériences', ids: ['teaching', 'learn'] as DemoMode[], kind: 'experience'},
   {label: 'Studios', ids: ['story', 'da'] as DemoMode[], kind: 'studio'},
-  {label: 'Personnel', ids: ['inventory', 'companions'] as DemoMode[], kind: 'personal'},
+  {label: 'Personnel', ids: ['inventory'] as DemoMode[], kind: 'personal'},
   {label: 'Système', ids: ['masterbuild'] as DemoMode[], kind: 'system'},
 ];
 
@@ -158,11 +158,11 @@ export const accessLevels: Array<{id: AccessLevel; label: string; icon: LucideIc
 ];
 
 export const accessModeMap: Record<AccessLevel, DemoMode[]> = {
-  student: ['project', 'learn', 'story', 'companions'],
-  teacher: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'companions'],
+  student: ['project', 'learn', 'story'],
+  teacher: ['project', 'teaching', 'learn', 'story', 'da', 'inventory'],
   supervision: ['project', 'teaching', 'learn', 'inventory'],
   admin: ['project', 'da', 'inventory'],
-  godmode: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'companions', 'masterbuild'],
+  godmode: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'masterbuild'],
 };
 
 export const libraryActions: LibraryAction[] = [

@@ -29,7 +29,7 @@ import {
   X,
 } from 'lucide-react';
 import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react';
-import type {CSSProperties, FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactElement} from 'react';
+import type {CSSProperties, FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactElement, ReactNode} from 'react';
 import type {ActionRegistryEntry, CurrentContext, Job, ValidationInboxItem} from '@masterflow/shared';
 
 import './current-ui-demo.css';
@@ -55,6 +55,7 @@ import type {
   PrototypeActionSuggestion,
   PrototypeLibraryAction,
   PrototypeModeGroup,
+  PrototypeHistoryItem,
   PrototypeSearchResult,
 } from './ui-reset/prototype-shell-components';
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
@@ -160,6 +161,34 @@ type RuntimeBridgeState = {
   error: string | null;
 };
 
+export type CurrentUiRuntime = {
+  context: CurrentContext;
+  inboxItems: ValidationInboxItem[];
+  jobs: Job[];
+  renderWorkspace: (mode: ActiveSurface) => ReactNode;
+  checkpointLabel: string;
+  attentionLabel: string;
+  actionState: {
+    status: string;
+    message: string;
+  };
+  chat: {
+    input: string;
+    state: string;
+    turns: Array<{
+      id: string;
+      role: 'user' | 'assistant' | 'system';
+      content: string;
+      speaker?: string;
+    }>;
+    onInputChange: (value: string) => void;
+    onSubmit: () => void;
+  };
+  onActionSelect: (action: ActionRegistryEntry) => void;
+  onLogout: () => void;
+  onModeSelect: (mode: ActiveSurface) => void;
+};
+
 const runtimeModeAliases: Record<string, DemoMode> = {
   course: 'teaching',
   da: 'da',
@@ -183,7 +212,6 @@ const runtimeSurfaceModes: Array<{mode: DemoMode; pattern: RegExp}> = [
   {mode: 'inventory', pattern: /(inventory|asset_storage|asset_review|asset_gallery)/},
   {mode: 'teaching', pattern: /(teaching|pedagogical|competency|badge|skill_tree)/},
   {mode: 'learn', pattern: /(learning|help_context|style_profile)/},
-  {mode: 'companions', pattern: /companion/},
 ];
 
 const actionIconFor = (action: ActionRegistryEntry): PrototypeActionSuggestion['icon'] => {
@@ -218,6 +246,7 @@ const runtimeModesFromContext = (context: CurrentContext | null): Set<DemoMode> 
 const buildRuntimeSuggestions = (
   context: CurrentContext | null,
   fallback: PrototypeActionSuggestion[],
+  onActionSelect?: (action: ActionRegistryEntry) => void,
 ): PrototypeActionSuggestion[] => {
   if (!context) return fallback;
   const actionsById = new Map(context.available_actions.map((action) => [action.action_id, action]));
@@ -237,6 +266,7 @@ const buildRuntimeSuggestions = (
     id: action.action_id,
     label: action.label,
     icon: actionIconFor(action),
+    onClick: onActionSelect ? () => onActionSelect(action) : undefined,
   }));
 };
 
@@ -315,7 +345,7 @@ function useAnimatedPresence<T>(value: T | null, duration = 220): {
   };
 }
 
-export function CurrentUiDemo(): ReactElement {
+export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactElement {
   const [activeMode, setActiveMode] = useState<ActiveSurface>('home');
   const [activePrototypeProfileId, setActivePrototypeProfileId] = useState<PrototypeProfileId>('masterflex');
   const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>('auto');
@@ -361,13 +391,22 @@ export function CurrentUiDemo(): ReactElement {
     current: resolvePersonaMoodState(personaStats[0]!.masteryValue),
     previous: null,
   }));
-  const [runtimeBridge, setRuntimeBridge] = useState<RuntimeBridgeState>({
+  const [runtimeBridgeState, setRuntimeBridge] = useState<RuntimeBridgeState>({
     context: null,
     error: null,
     inboxItems: [],
     jobs: [],
     status: 'prototype',
   });
+  const runtimeBridge: RuntimeBridgeState = runtime
+    ? {
+        context: runtime.context,
+        error: null,
+        inboxItems: runtime.inboxItems,
+        jobs: runtime.jobs,
+        status: 'runtime',
+      }
+    : runtimeBridgeState;
   const navigationDestinationRef = useRef<NavigationDestination>('home');
   const [systemPrefersLight, setSystemPrefersLight] = useState(false);
   const settingsPresence = useAnimatedPresence(settingsOpen ? true : null);
@@ -533,6 +572,7 @@ export function CurrentUiDemo(): ReactElement {
   const selectMode = useCallback((mode: DemoMode): void => {
     navigationDestinationRef.current = mode;
     setActiveMode(mode);
+    runtime?.onModeSelect(mode);
     setRailOpen(false);
     setAccessOpen(false);
     setActionLibraryOpen(false);
@@ -547,10 +587,11 @@ export function CurrentUiDemo(): ReactElement {
     setTranscribing(false);
     setDockPanel(null);
     if (characterOpen) closeCharacterPage();
-  }, [characterOpen, closeCharacterPage]);
+  }, [characterOpen, closeCharacterPage, runtime]);
   const selectHome = useCallback((): void => {
     navigationDestinationRef.current = 'home';
     setActiveMode('home');
+    runtime?.onModeSelect('home');
     if (window.matchMedia('(max-width: 760px)').matches) setRailOpen(false);
     setAccessOpen(false);
     setActionLibraryOpen(false);
@@ -565,7 +606,7 @@ export function CurrentUiDemo(): ReactElement {
     setTranscribing(false);
     setDockPanel('keyboard');
     if (characterOpen) closeCharacterPage();
-  }, [characterOpen, closeCharacterPage]);
+  }, [characterOpen, closeCharacterPage, runtime]);
   const openCharacterPage = useCallback((): void => {
     navigationDestinationRef.current = 'character';
     setCharacterClosing(false);
@@ -652,6 +693,7 @@ export function CurrentUiDemo(): ReactElement {
   }, []);
 
   useEffect(() => {
+    if (runtime) return undefined;
     let cancelled = false;
     const loadRuntimeBridge = async (): Promise<void> => {
       try {
@@ -690,7 +732,18 @@ export function CurrentUiDemo(): ReactElement {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [runtime]);
+
+  useEffect(() => {
+    if (!runtime) return;
+    const nextAccessLevel = accessLevels.some((level) => level.id === runtime.context.user.role)
+      ? runtime.context.user.role as AccessLevel
+      : 'student';
+    setAccessLevel(nextAccessLevel);
+    if (runtime.context.user.username.toLocaleLowerCase('fr').includes('vincent')) {
+      applyPrototypeProfile('profkrapu');
+    }
+  }, [applyPrototypeProfile, runtime?.context.user.role, runtime?.context.user.username]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -813,10 +866,12 @@ export function CurrentUiDemo(): ReactElement {
 
   const submit = useCallback((event?: FormEvent<HTMLFormElement>): void => {
     event?.preventDefault();
-    if (!input.trim()) return;
-    setInput('');
+    const activeInput = runtime?.chat.input ?? input;
+    if (!activeInput.trim()) return;
+    if (runtime) runtime.chat.onSubmit();
+    else setInput('');
     setHistoryOpen(false);
-  }, [input]);
+  }, [input, runtime]);
 
   const submitOnEnter = (event: ReactKeyboardEvent<HTMLTextAreaElement>): void => {
     if (event.key !== 'Enter' || event.shiftKey) return;
@@ -842,6 +897,7 @@ export function CurrentUiDemo(): ReactElement {
   const commandSuggestions = buildRuntimeSuggestions(
     runtimeBridge.context,
     runtimeBridge.status === 'prototype' ? fallbackCommandSuggestions : [],
+    runtime?.onActionSelect,
   );
   const runtimeLibraryActions = buildRuntimeLibraryActions(runtimeBridge.context);
   const runtimeSearchResults = getRuntimeSearchResults(runtimeBridge.context, quickSearch);
@@ -854,8 +910,25 @@ export function CurrentUiDemo(): ReactElement {
     : runtimeBridge.status === 'degraded'
       ? accessLevels.filter((level) => level.id === accessLevel)
       : accessLevels;
-  const homePrimaryModes = buildPrototypeHomeModes(['project', 'teaching', 'learn'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[]);
-  const homeSecondaryModes = buildPrototypeHomeModes(['story', 'da', 'inventory', 'companions'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[]);
+  const homePrimaryModes = buildPrototypeHomeModes(
+    ['project', 'teaching', 'learn', 'inventory']
+      .filter((id) => visibleModeIds.has(id as DemoMode))
+      .slice(0, 3) as DemoMode[],
+  );
+  const homeSecondaryModes = buildPrototypeHomeModes([]);
+  const dockInput = runtime?.chat.input ?? input;
+  const runtimeHistoryItems: PrototypeHistoryItem[] = runtime
+    ? runtime.chat.turns
+        .filter((turn) => turn.role !== 'system')
+        .slice(-12)
+        .reverse()
+        .map((turn) => ({
+          id: turn.id,
+          speaker: turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'MasterFlow'),
+          summary: turn.content || 'Réponse en cours…',
+          detail: turn.content || 'Réponse en cours…',
+        }))
+    : historyItems;
 
   return (
     <main
@@ -1115,7 +1188,11 @@ export function CurrentUiDemo(): ReactElement {
             closing={actionLibraryClosing}
             onClose={() => setActionLibraryOpen(false)}
             onSearchChange={setActionSearch}
-            onSelectAction={() => setActionLibraryOpen(false)}
+            onSelectAction={(actionId) => {
+              const action = runtimeBridge.context?.available_actions.find((candidate) => candidate.action_id === actionId);
+              if (runtime && action) runtime.onActionSelect(action);
+              setActionLibraryOpen(false);
+            }}
             search={actionSearch}
           />
         ) : null}
@@ -1139,8 +1216,11 @@ export function CurrentUiDemo(): ReactElement {
           notificationCount={notificationCount}
           onClosePanel={() => setSystemPanel(null)}
           onExit={() => {
-            clearRuntimeAuthToken();
-            window.location.assign('/');
+            if (runtime) runtime.onLogout();
+            else {
+              clearRuntimeAuthToken();
+              window.location.assign('/');
+            }
           }}
           onOpenCharacter={openCharacterPage}
           onOpenHome={selectHome}
@@ -1165,14 +1245,25 @@ export function CurrentUiDemo(): ReactElement {
         <div className="proto-canvas-empty">
           {activeMode === 'home' ? (
             <PrototypeHomeSurface
+              attentionLabel={runtime?.attentionLabel}
+              checkpointLabel={runtime?.checkpointLabel}
               copy={homeCopy}
+              onPrimaryAction={homePrimaryModes[0] ? () => selectMode(homePrimaryModes[0]!.id as DemoMode) : undefined}
               onSelectMode={(mode) => selectMode(mode as DemoMode)}
+              primaryActionLabel={homePrimaryModes[0] ? `Reprendre ${homePrimaryModes[0]!.label}` : undefined}
               primaryModes={homePrimaryModes}
               secondaryModes={homeSecondaryModes}
             />
           ) : null}
           {activeMode === 'masterbuild' && runtimeBridge.context?.user.role === 'godmode' ? (
             <MasterbuildConsole operator={runtimeBridge.context.user.display_name} />
+          ) : null}
+          {activeMode !== 'home' && activeMode !== 'masterbuild' ? runtime?.renderWorkspace(activeMode) : null}
+          {runtime && runtime.actionState.status !== 'idle' ? (
+            <aside className={`proto-runtime-status proto-runtime-status--${runtime.actionState.status}`} aria-live="polite">
+              <strong>{runtime.actionState.status}</strong>
+              <span>{runtime.actionState.message}</span>
+            </aside>
           ) : null}
         </div>
 
@@ -1187,11 +1278,11 @@ export function CurrentUiDemo(): ReactElement {
           dockPanelClosing={dockPanelClosing}
           expandedHistoryId={expandedHistoryId}
           historyClosing={historyPresence.closing}
-          historyItems={historyItems}
+          historyItems={runtimeHistoryItems}
           historyOpen={Boolean(historyPresence.renderedValue)}
-          input={input}
+          input={dockInput}
           onCloseHistory={() => setHistoryOpen(false)}
-          onInputChange={setInput}
+          onInputChange={runtime ? runtime.chat.onInputChange : setInput}
           onInputKeyDown={submitOnEnter}
           onSubmit={submit}
           onToggleExpandedHistory={(id) => setExpandedHistoryId((current) => current === id ? null : id)}
@@ -1203,13 +1294,20 @@ export function CurrentUiDemo(): ReactElement {
             setHistoryOpen(nextDock.historyOpen);
           }}
           onToggleMicro={() => {
+            if (runtime) return;
             const nextDock = resolveMicroToggle({dockPanel});
             setRecording(nextDock.recording);
             setDockPanel(nextDock.dockPanel);
             setHistoryOpen(nextDock.historyOpen);
           }}
-          onToggleRecording={() => setRecording((current) => !current)}
-          onToggleTranscription={() => setTranscribing((current) => !current)}
+          onToggleRecording={() => {
+            if (!runtime) setRecording((current) => !current);
+          }}
+          onToggleTranscription={() => {
+            if (!runtime) setTranscribing((current) => !current);
+          }}
+          microAvailable={!runtime}
+          runtimeState={runtime?.chat.state}
           recording={recording}
           renderedDockPanel={renderedDockPanel}
           showSuggestions={Boolean(dockPanel || historyPresence.renderedValue)}

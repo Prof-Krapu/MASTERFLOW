@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-05T12:00:00+02:00",
+  "updated_at": "2026-08-02T14:33:27+02:00",
   "mui_policy": "principles_only_no_material_ui_dependency",
   "rules": [
     {
@@ -22,7 +22,7 @@
       "title": "Révélation progressive par contexte et loadout",
       "status": "canon",
       "intent": "N'afficher que les modes et actions réellement disponibles pour le rôle courant.",
-      "source_refs": ["FRONTEND_UI_DOCTRINE.md", "docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md"],
+      "source_refs": ["FRONTEND_UI_DOCTRINE.md", "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md"],
       "applies_to": ["navigation", "command_dock", "shortcuts"],
       "audiences": ["student", "teacher", "supervision", "admin", "godmode"],
       "must": ["Lire le loadout", "Expliquer un verrou utile"],
@@ -50,7 +50,7 @@
       "title": "Composants et comportements cohérents",
       "status": "validated_principle",
       "intent": "Une même commande garde le même aspect, la même position logique et le même comportement.",
-      "source_refs": ["docs/ui/MASTERFLOW_COMPONENT_LAB_V2.md", "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md"],
+      "source_refs": ["apps/frontend/src/ui-reset/component-lab.tsx", "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md"],
       "applies_to": ["global", "overlays", "command_dock"],
       "audiences": ["all"],
       "must": ["Réutiliser le Lab", "Documenter toute exception"],
@@ -92,7 +92,7 @@
       "title": "Raccourcis optionnels et cohérents",
       "status": "canon",
       "intent": "Accélérer les power users sans cacher les commandes importantes.",
-      "source_refs": ["docs/ui/MASTERFLOW_SHORTCUTS_LAB_V1.md", "docs/ui/MASTERFLOW_UI_CDC_ACTIVE.md"],
+      "source_refs": ["apps/frontend/src/ui-reset/prototype-shortcut-registry.ts", "docs/ui/MASTERFLOW_UI_CDC_ACTIVE.md"],
       "applies_to": ["global", "navigation", "command_dock"],
       "audiences": ["all"],
       "must": ["Alternative visible", "Ne pas voler la saisie texte"],
@@ -176,7 +176,7 @@
       "title": "Action sensible séparée de la suggestion",
       "status": "canon",
       "intent": "Conserver la vitesse sans contourner permission, préflight et validation.",
-      "source_refs": ["docs/ui/MASTERFLOW_UI_SURFACE_SHELL_DOCK_V1.md"],
+      "source_refs": ["docs/masterbuild/preflights/SHELL_DOCK_RUNTIME_PREFLIGHT_001.md", "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md"],
       "applies_to": ["command_dock", "actions", "validation"],
       "audiences": ["all"],
       "must": ["Afficher le risque", "Passer par le lifecycle d'action"],

@@ -9,6 +9,7 @@ import type {
   InventoryNeedMatchResult,
   InventorySearchResult,
   InventoryValidationStatus,
+  LivingCompanion,
   Project,
   ProjectMemberRole,
   Role,
@@ -37,6 +38,7 @@ import {
   createInventoryProjectNeed,
   getInventoryCollections,
   getInventoryItems,
+  getLivingCompanions,
   indexInventoryItem,
   matchInventoryProjectNeed,
   searchInventory,
@@ -151,6 +153,7 @@ export function InventoryWorkspace({
   const [view, setView] = useState<InventoryView>('catalog');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [collections, setCollections] = useState<InventoryCollection[]>([]);
+  const [companions, setCompanions] = useState<LivingCompanion[]>([]);
   const [searchResults, setSearchResults] = useState<InventorySearchResult[]>([]);
   const [needResult, setNeedResult] = useState<InventoryNeedMatchResult | null>(null);
   const [operation, setOperation] = useState<OperationState>({
@@ -216,12 +219,13 @@ export function InventoryWorkspace({
     if (scope === 'project' && !selectedProjectId) {
       setItems([]);
       setCollections([]);
+      setCompanions([]);
       setOperation({status: 'idle', message: 'Selectionnez un projet pour ouvrir son inventaire.'});
       return;
     }
     setOperation({status: 'loading', message: 'Chargement de l inventaire.'});
     try {
-      const [nextItems, nextCollections] = await Promise.all([
+      const [nextItems, nextCollections, nextCompanions] = await Promise.all([
         getInventoryItems({
           projectId: effectiveProjectId,
           includeCandidates: canManage,
@@ -230,17 +234,23 @@ export function InventoryWorkspace({
           projectId: effectiveProjectId,
           includeCandidates: canManage,
         }, token),
+        getLivingCompanions(
+          effectiveProjectId ? {project_id: effectiveProjectId} : {},
+          token,
+        ),
       ]);
       setItems(nextItems);
       setCollections(nextCollections);
+      setCompanions(nextCompanions);
       setSearchResults([]);
       setOperation({
         status: 'ready',
-        message: `${nextItems.length} item(s), ${nextCollections.length} collection(s).`,
+        message: `${nextItems.length} item(s), ${nextCollections.length} collection(s), ${nextCompanions.length} companion(s).`,
       });
     } catch (error) {
       setItems([]);
       setCollections([]);
+      setCompanions([]);
       setOperation({status: 'error', message: formatInventoryError(error)});
     }
   }, [canManage, effectiveProjectId, scope, selectedProjectId, token]);
@@ -494,6 +504,11 @@ export function InventoryWorkspace({
           <LibraryBig aria-hidden="true" size={17} />
           Collections
         </button>
+        <button className={view === 'companions' ? 'is-active' : ''} onClick={() => setView('companions')} type="button">
+          <UserRound aria-hidden="true" size={17} />
+          Companions
+          {companions.length > 0 ? <span>{companions.length}</span> : null}
+        </button>
         {scope === 'project' ? (
           <button className={view === 'needs' ? 'is-active' : ''} onClick={() => setView('needs')} type="button">
             <CircleHelp aria-hidden="true" size={17} />
@@ -701,6 +716,57 @@ export function InventoryWorkspace({
               </article>
             )) : <div className="inventory-empty"><LibraryBig aria-hidden="true" size={28} /><strong>Aucune collection</strong><span>Les collections regroupent les items sans changer leur ownership.</span></div>}
           </div>
+        </section>
+      ) : null}
+
+      {view === 'companions' ? (
+        <section className="inventory-pane inventory-companions" aria-label="Companions assignés">
+          <div className="inventory-pane__heading">
+            <div>
+              <h3>Companions assignés</h3>
+              <p className="muted compact">Objets vivants en lecture seule, distincts des items et des ressources.</p>
+            </div>
+            <span className="counter">{companions.length}</span>
+          </div>
+          {companions.length > 0 ? (
+            <div className="inventory-companion-list">
+              {companions.map((companion) => (
+                <article className="inventory-companion" key={companion.companion_id}>
+                  <header>
+                    <div>
+                      <UserRound aria-hidden="true" size={21} />
+                      <span>
+                        <strong>{companion.display_name}</strong>
+                        <small>{companion.companion_type.replaceAll('_', ' ')}</small>
+                      </span>
+                    </div>
+                    <span className={`inventory-badge inventory-badge--companion-${companion.readiness}`}>
+                      {companion.readiness}
+                    </span>
+                  </header>
+                  <p>{companion.role_summary}</p>
+                  <blockquote>{companion.dialogue_bubble}</blockquote>
+                  <dl>
+                    <div><dt>Projet</dt><dd>{companion.project_ref ?? 'Non assigné'}</dd></div>
+                    <div><dt>Room</dt><dd>{companion.room_ref ?? 'Non assignée'}</dd></div>
+                    <div><dt>Progression</dt><dd>{Math.round(companion.progress.completion_ratio * 100)}%</dd></div>
+                    <div><dt>Présence</dt><dd>{companion.presence_policy}</dd></div>
+                  </dl>
+                  <details>
+                    <summary>Limites et sources</summary>
+                    <ul>{companion.boundaries.map((boundary) => <li key={boundary}>{boundary}</li>)}</ul>
+                    <small>{companion.assignment_scope_refs.join(' · ')}</small>
+                  </details>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="inventory-empty">
+              <UserRound aria-hidden="true" size={28} />
+              <strong>Aucun Companion assigné</strong>
+              <span>Cette liste reste vide tant qu’une session guidée compatible ne vous est pas affectée.</span>
+            </div>
+          )}
         </section>
       ) : null}
 

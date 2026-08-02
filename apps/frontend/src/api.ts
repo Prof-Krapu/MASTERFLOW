@@ -627,6 +627,22 @@ export async function getGuidedLivingCompanion(
   );
 }
 
+export async function getLivingCompanions(
+  query: {project_id?: string; room_id?: string} = {},
+  token?: string | null,
+): Promise<LivingCompanion[]> {
+  const params = new URLSearchParams();
+  if (query.project_id) params.set('project_id', query.project_id);
+  if (query.room_id) params.set('room_id', query.room_id);
+  const suffix = params.size > 0 ? `?${params.toString()}` : '';
+  const response = await request<{results: LivingCompanion[]}>(
+    `/experience/companions${suffix}`,
+    {method: 'GET'},
+    token,
+  );
+  return response.results;
+}
+
 export async function createGuidedSession(
   body: CreateGuidedSessionRequest,
   token?: string | null,

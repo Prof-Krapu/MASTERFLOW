@@ -2920,6 +2920,17 @@ export const LivingCompanionSchema = z.object({
 });
 export type LivingCompanion = z.infer<typeof LivingCompanionSchema>;
 
+export const LivingCompanionListQuerySchema = z.object({
+  project_id: z.string().min(1).optional(),
+  room_id: z.string().min(1).optional(),
+});
+export type LivingCompanionListQuery = z.infer<typeof LivingCompanionListQuerySchema>;
+
+export const LivingCompanionListResponseSchema = z.object({
+  results: z.array(LivingCompanionSchema),
+});
+export type LivingCompanionListResponse = z.infer<typeof LivingCompanionListResponseSchema>;
+
 export const ProjectMonsterEvolutionStageSchema = z.enum([
   'seed',
   'mutation',
@@ -4036,6 +4047,7 @@ export const EXPERIENCE_FABRIC_API = {
   precedents: '/api/v1/experience/precedents',
   storylets: '/api/v1/experience/storylets',
   visualGrammar: '/api/v1/experience/visual-grammar',
+  companions: '/api/v1/experience/companions',
   guidedCompanion: '/api/v1/experience/companions/guided-sessions/:sessionId',
   projectMonster: '/api/v1/experience/companions/project-monsters/guided-sessions/:sessionId',
   autonomyCycle: '/api/v1/experience/autonomy/cycle',

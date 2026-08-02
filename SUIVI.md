@@ -4,6 +4,76 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-02 — UI RUNTIME UNIQUE : ONE SHOT PRÊT À PUBLIER
+
+### VAGUE ACTIVE
+
+- id : `UI-RUNTIME-CONSOLIDATION-001` ;
+- statut : étape `7/8 — Publier` ;
+- objectif : une seule application pilotable pour MALEX et Vincent depuis le shell actuel ;
+- branche : `codex/ui-runtime-consolidation-one-shot` ;
+- base : `origin/main` au SHA `29f08287db1893b2a535c13dbf684e0185546057` ;
+- publication : push, PR prête et merge autorisés ; aucun déploiement ;
+- blocage : merge interdit si les checks GitHub ne sont pas verts.
+
+Livré dans cette branche :
+
+- `/`, `/ui-reset` et `/current-ui` utilisent désormais le même orchestrateur `App.tsx` ;
+- Home, Project, Teaching, Learn et Inventory sont rendus dans le shell actuel depuis les raccords
+  runtime existants ;
+- MasterStory et DA Studio ne produisent plus de canvas vide et déclarent honnêtement leur absence
+  de raccord ;
+- MasterBuild reste une console privée du GodMode ;
+- chat et historique consomment le vrai WebSocket ; micro et transcription sont désactivés ;
+- les actions passent par création, preflight, validation et exécution existants ;
+- Companions quitte la navigation principale et devient une vue read-only d'Inventory, alimentée par
+  `GET /api/v1/experience/companions` avec filtres `project_id` et `room_id` ;
+- aucune table, migration, dépendance UI, génération ou validation d'asset n'a été ajoutée.
+
+Preuves locales : backend `701/701`, Living Companion `9/9`, lint backend/frontend verts, build
+frontend vert, MASTERBUILD `12/12` et doctor vert. Smoke navigateur GodMode, professeur et étudiant :
+navigation permissionnée, chat mock via WebSocket, états indisponibles honnêtes, aucun log console et
+aucun débordement horizontal observé à 390 px.
+
+---
+
+## 2026-08-02 — MASTERBUILD RÉALIGNÉ : AUDIT UI PAGE PAR PAGE
+
+### VAGUE ACTIVE
+
+- id : `UI-PAGE-AUDIT-001` ;
+- statut : étape `2/8 — Cadrer` ;
+- objectif : auditer et contractualiser chaque page réellement présente dans `main` avant toute retouche ;
+- première page : Home ;
+- prochaine action : validation MALEX du contrat Home V1 et arbitrage de l'exposition Companions ;
+- queue active : `UPA-001` dans `docs/masterbuild/MASTERBUILD_WORKBOARD.json` ;
+- publication : aucune pour ce Round ;
+- blocage : aucun, mais toute construction exige une validation MALEX séparée.
+
+Récupération documentaire UI du 2026-08-02 :
+
+- `MASTERFLOW_UI_CDC_CANON_V2.md` retrouvé dans la branche historique `codex/masterbuild-v2`,
+  identique au commit `fcfa68e`, puis restauré localement comme canon de cadrage validé ;
+- `MASTERFLOW_UI_INTEGRATION_REGISTRY_V1.md` restauré et marqué baseline historique ;
+- `MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md` créé face au `main` `29f0828` ;
+- écarts actifs inscrits : Home partielle, actions inertes, chat/micro prototype, six modes sans page
+  rendue dans `/ui-reset`, MasterBuild GodMode ajouté après la baseline et Companions futur exposé ;
+- aucun code, backend, asset, branche, commit, push, PR, merge ou déploiement.
+
+Réconciliation précédente :
+
+- `GIT-CONSOLIDATION-001` clôturé en étape 8/8 ;
+- PR #214 fermée sans merge et conservée comme source historique ;
+- PR #215 à #219 mergées ; #220 fermée et remplacée par #221 ; #221 à #224 mergées ;
+- UI réellement utilisée, Home/GodMode et Component Lab partagé présents dans `main` au SHA `29f0828` ;
+- aucune PR ouverte et aucun déploiement partagé prouvé ;
+- copie locale active unique, propre et alignée avec `origin/main` ; anciens travaux sécurisés en quarantaine.
+
+MASTERBUILD est piloté conversationnellement dans le chat. Le cockpit web reste une visualisation
+facultative, pas un passage obligé.
+
+---
+
 ## 2026-08-01 — COMPONENT LAB UNIQUE : RESTAURATION SÉLECTIVE
 
 - base : `main` au SHA de merge `f8f6136ff28db817862c09f43c1e4b24a23696ec` ;

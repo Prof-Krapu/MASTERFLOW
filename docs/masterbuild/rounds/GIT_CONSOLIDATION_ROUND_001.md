@@ -1,7 +1,7 @@
 # GIT-CONSOLIDATION-001 — Vérité unique et préparation du raccord UI
 
 Date : 2026-07-31
-Statut : actif, étape 7/8 — Publier
+Statut : terminé, étape 8/8 — Clôturer
 Owner : MALEX
 Revue système : Vincent
 
@@ -19,11 +19,11 @@ puis préparer le premier raccord UI sans merger ni déployer.
 | GTC-003 | Réconcilier état, registres et suivi | Codex | completed | aucune queue active concurrente |
 | GTC-004 | Décider la stratégie de la PR #214 | MALEX + Vincent | completed | décision : découper en quatre lots |
 | GTC-005 | Préparer le raccord Shell/Dock | Codex + Vincent | completed | preflight, mapping et première tranche bornée |
-| GTC-006 | Publier les preuves et clôturer | Codex | partial | vérification locale terminée ; publication et clôture en attente |
+| GTC-006 | Publier les preuves et clôturer | Codex | completed | preuves publiées, PR classées et vérité Git unique vérifiée |
 | GTC-L1-001 | Publier le Lot 1 MASTERBUILD Core | Codex | completed | PR #215 mergée au SHA `65807a8` |
 | GTC-L2-001 | Publier le Lot 2 Gouvernance GitHub | MALEX + Vincent | completed | PR #217 mergée au SHA `cd9f26b` |
 | GTC-L2-PM-001 | Réconcilier le merge du Lot 2 | Codex | completed | PR #218 mergée |
-| GTC-L3-001 | Publier Shell/Dock et assets actifs | MALEX + Vincent | pending_review | draft PR #219, allowlist active, aucun raccord backend |
+| GTC-L3-001 | Publier Shell/Dock et assets actifs | MALEX + Vincent | completed | PR #219 mergée, puis UI réellement utilisée restaurée par #221 |
 
 ## Critères de succès
 
@@ -56,8 +56,14 @@ Shell/Dock avec assets actifs uniquement, les contrôles, le commit, le push et 
 merge, le déploiement, la suppression des anciens assets et tout nouveau raccord UI/backend restent
 fermés. Allowlist :
 `docs/masterbuild/contracts/SHELL_DOCK_ACTIVE_LOT_PUBLICATION_CONTRACT_001.md`.
-La branche `codex/shell-dock-active-lot` est publiée en draft PR #219. La gate active est désormais
-la revue MALEX/Vincent ; aucun merge ni déploiement n'est autorisé par ce GO.
+La branche `codex/shell-dock-active-lot` a été mergée via la PR #219. La tranche réduite a ensuite
+été remplacée par la PR #221, qui restaure l'UI réellement utilisée sans reprendre les candidats ou
+archives de la PR #214. La PR #220 a été fermée sans merge et explicitement remplacée par #221.
+
+La Home et la console GodMode ont été mergées par #223. Le Component Lab partagé MALEX/Vincent a
+été mergé par #224. La PR #214 est fermée sans merge et reste une source historique. `main` au SHA
+`29f08287db1893b2a535c13dbf684e0185546057` constitue la vérité Git unique ; aucun déploiement
+partagé n'est prouvé.
 
 Restent interdits sans nouveau GO : merge, déploiement, migration, provider, dépense, suppression
 métier et changement de canon.
@@ -74,10 +80,23 @@ métier et changement de canon.
 - `docs/masterbuild/MASTERBUILD_STATE.json` ;
 - `docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json` ;
 - `docs/masterbuild/PERSONA_ASSET_DECISION_SHEET_2026-07-26.md` ;
-- draft PR #214.
+- PR #214 fermée sans merge — source historique conservée.
 - PR #215 mergée — Lot 1 MASTERBUILD Core, SHA `65807a8`.
 - PR #216 mergée — clôture documentaire post-merge.
 - `docs/masterbuild/reports/GITHUB_GOVERNANCE_IMPACT_REVIEW_001.md` — impact du Lot 2.
 - PR #217 mergée — Lot 2 Gouvernance GitHub, SHA `cd9f26b`.
 - PR #218 mergée — clôture documentaire post-merge du Lot 2.
-- draft PR #219 — Lot 3 Shell/Dock et assets actifs, en attente de revue.
+- PR #219 mergée — Lot 3 Shell/Dock et assets actifs.
+- PR #220 fermée sans merge — remplacée par #221.
+- PR #221 mergée — restauration de l'UI réellement utilisée.
+- PR #222 mergée — demande de préparation du déploiement privé, sans déploiement.
+- PR #223 mergée — Home runtime et console GodMode.
+- PR #224 mergée — Component Lab partagé, SHA final de clôture `29f0828`.
+
+## Clôture vérifiée le 2026-08-02
+
+- clone local unique, propre et aligné sur `origin/main` ;
+- aucune PR ouverte ;
+- anciens worktrees retirés et travaux sales sauvegardés en quarantaine locale ;
+- statuts GitHub #214 à #224 réconciliés ;
+- Round suivant : `UI-PAGE-AUDIT-001`, Home en première page, audit avant construction.
