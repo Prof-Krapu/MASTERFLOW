@@ -1248,9 +1248,9 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
               attentionLabel={runtime?.attentionLabel}
               checkpointLabel={runtime?.checkpointLabel}
               copy={homeCopy}
-              onPrimaryAction={commandSuggestions[0]?.onClick}
+              onPrimaryAction={homePrimaryModes[0] ? () => selectMode(homePrimaryModes[0]!.id as DemoMode) : undefined}
               onSelectMode={(mode) => selectMode(mode as DemoMode)}
-              primaryActionLabel={commandSuggestions[0]?.label}
+              primaryActionLabel={homePrimaryModes[0] ? `Reprendre ${homePrimaryModes[0]!.label}` : undefined}
               primaryModes={homePrimaryModes}
               secondaryModes={homeSecondaryModes}
             />
