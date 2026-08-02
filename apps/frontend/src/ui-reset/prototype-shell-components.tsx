@@ -515,7 +515,7 @@ export function PrototypeActionRail({
             className="proto-action-button proto-action-button--icon"
             data-tooltip={action.label}
             key={action.id}
-            onClick={onOpenLibrary}
+            onClick={action.onClick ?? onOpenLibrary}
             type="button"
           >
             <Icon size={19} />
@@ -549,6 +549,8 @@ type CommandDockProps = {
   showSuggestions: boolean;
   suggestions: PrototypeActionSuggestion[];
   transcribing: boolean;
+  microAvailable?: boolean;
+  runtimeState?: string;
   onCloseHistory: () => void;
   onInputChange: (value: string) => void;
   onInputKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
@@ -569,6 +571,7 @@ export function PrototypeCommandDock({
   historyItems,
   historyOpen,
   input,
+  microAvailable = true,
   onCloseHistory,
   onInputChange,
   onInputKeyDown,
@@ -581,6 +584,7 @@ export function PrototypeCommandDock({
   onToggleTranscription,
   recording,
   renderedDockPanel,
+  runtimeState,
   showSuggestions,
   suggestions,
   transcribing,
@@ -653,10 +657,11 @@ export function PrototypeCommandDock({
                 value={input}
               />
               <button
-                aria-label={transcribing ? 'Arrêter la transcription' : 'Démarrer la transcription'}
+                aria-label={microAvailable ? (transcribing ? 'Arrêter la transcription' : 'Démarrer la transcription') : 'Transcription indisponible'}
                 aria-pressed={transcribing}
                 className="proto-action-button proto-action-button--transcribe"
-                data-tooltip={transcribing ? 'Arrêter la dictée' : 'Dicter du texte'}
+                data-tooltip={microAvailable ? (transcribing ? 'Arrêter la dictée' : 'Dicter du texte') : 'Transcription non raccordée'}
+                disabled={!microAvailable}
                 onClick={onToggleTranscription}
                 type="button"
               >
@@ -714,14 +719,18 @@ export function PrototypeCommandDock({
         ) : null}
         <button
           aria-expanded={dockPanel === 'micro'}
-          aria-label={recording ? 'Arrêter l’enregistrement' : 'Ouvrir le micro'}
+          aria-label={microAvailable ? (recording ? 'Arrêter l’enregistrement' : 'Ouvrir le micro') : 'Micro indisponible'}
           className={`proto-action-button proto-action-button--dock proto-action-button--micro${recording ? ' is-recording' : ''}`}
-          data-tooltip={recording ? 'Stop REC' : 'Micro'}
+          data-tooltip={microAvailable ? (recording ? 'Stop REC' : 'Micro') : 'Micro non raccordé'}
+          disabled={!microAvailable}
           onClick={onToggleMicro}
           type="button"
         >
           {recording ? <span className="proto-rec-label">REC</span> : <Mic size={22} />}
         </button>
+        {runtimeState ? (
+          <span className={`proto-runtime-connection proto-runtime-connection--${runtimeState}`}>{runtimeState}</span>
+        ) : null}
       </div>
     </form>
   );

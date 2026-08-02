@@ -6,6 +6,7 @@ import type {
   ActionRegistryEntry,
   AuthResponse,
   CurrentContext,
+  Job,
   Persona,
   Project,
   ProjectMember,
@@ -25,6 +26,7 @@ import {
   decideValidationInboxItem,
   executeAction,
   getCurrentContext,
+  getJobs,
   getLatestRoomCheckpoint,
   getValidationInboxItems,
   getProjectMembers,
@@ -39,6 +41,7 @@ import {
   updateRoomInstance,
   validateAction,
   validateResource,
+  restoreRuntimeAuthToken,
 } from './api.ts';
 import {
   ChatDock,
@@ -60,6 +63,8 @@ import {
   WORK_MODES,
 } from './mode-runtime.ts';
 import type {WorkModeId} from './mode-runtime.ts';
+import {CurrentUiDemo} from './current-ui-demo.tsx';
+import type {CurrentUiRuntime} from './current-ui-demo.tsx';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type WsState = 'idle' | 'connecting' | 'connected' | 'closed' | 'error';
@@ -291,6 +296,7 @@ function App(): ReactElement {
   const [entryProfile, setEntryProfile] = useState<EntryProfile | null>(null);
   const [actionRun, setActionRun] = useState<ActionRunState>({status: 'idle', message: 'Aucune action lancee.'});
   const [pendingActions, setPendingActions] = useState<ValidationInboxItem[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [validationNotes, setValidationNotes] = useState<Record<string, string>>({});
   const [validationRun, setValidationRun] = useState<ValidationRunState>({status: 'idle', message: 'Inbox non chargee.'});
   const [resourceTitle, setResourceTitle] = useState('');
@@ -420,9 +426,10 @@ function App(): ReactElement {
     setState('loading');
     setError(null);
     try {
-      const [current, nextResources] = await Promise.all([
+      const [current, nextResources, nextJobs] = await Promise.all([
         getCurrentContext(token),
         getResources(token),
+        getJobs(token),
       ]);
       const checkpoint = await getLatestRoomCheckpoint(current.room.id, token);
       const nextProjects = await getProjects(token);
@@ -436,6 +443,7 @@ function App(): ReactElement {
       setPersonas(current.personas);
       setActions(current.available_actions);
       setResources(nextResources);
+      setJobs(nextJobs);
       setProjects(nextProjects);
       setSelectedProjectId((currentProjectId) => (
         currentProjectId && nextProjects.some((project) => project.project_id === currentProjectId)
@@ -455,6 +463,30 @@ function App(): ReactElement {
     }
   }, []);
 
+  useEffect(() => {
+    const token = restoreRuntimeAuthToken();
+    if (!token || auth) return;
+    let cancelled = false;
+
+    const restoreSession = async (): Promise<void> => {
+      try {
+        const current = await getCurrentContext(token);
+        if (cancelled) return;
+        setAuth({token, user: current.user});
+        await loadContext(token);
+      } catch {
+        if (cancelled) return;
+        clearRuntimeAuthToken();
+        setState('idle');
+      }
+    };
+
+    void restoreSession();
+    return () => {
+      cancelled = true;
+    };
+  }, [auth, loadContext]);
+
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>): Promise<void> => {
       event.preventDefault();
@@ -463,13 +495,13 @@ function App(): ReactElement {
       try {
         const nextAuth = await login(username, password);
         setAuth(nextAuth);
-        window.location.assign('/ui-reset');
+        await loadContext(nextAuth.token);
       } catch (err) {
         setState('error');
         setError(err instanceof Error ? err.message : 'Connexion impossible.');
       }
     },
-    [password, username],
+    [loadContext, password, username],
   );
 
   const handleLogout = useCallback((): void => {
@@ -501,6 +533,7 @@ function App(): ReactElement {
     setEntryProfile(null);
     setActionRun({status: 'idle', message: 'Aucune action lancee.'});
     setPendingActions([]);
+    setJobs([]);
     setValidationRun({status: 'idle', message: 'Inbox non chargee.'});
     setResourceTitle('');
     setResourceUrl('');
@@ -514,21 +547,22 @@ function App(): ReactElement {
     setError(null);
   }, []);
 
-  const handleChatSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>): void => {
-      event.preventDefault();
-      const content = chatInput.trim();
-      if (!content || wsRef.current?.readyState !== WebSocket.OPEN) return;
+  const sendChat = useCallback((): void => {
+    const content = chatInput.trim();
+    if (!content || wsRef.current?.readyState !== WebSocket.OPEN) return;
 
-      wsRef.current.send(JSON.stringify({type: 'chat', content}));
-      setChatTurns((current) => [
-        ...current,
-        {id: nextId('user'), role: 'user', content},
-      ]);
-      setChatInput('');
-    },
-    [chatInput],
-  );
+    wsRef.current.send(JSON.stringify({type: 'chat', content}));
+    setChatTurns((current) => [
+      ...current,
+      {id: nextId('user'), role: 'user', content},
+    ]);
+    setChatInput('');
+  }, [chatInput]);
+
+  const handleChatSubmit = useCallback((event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    sendChat();
+  }, [sendChat]);
 
   const persistRoomInstance = useCallback(async (
     mode: WorkModeId,
@@ -1230,6 +1264,177 @@ function App(): ReactElement {
     );
   };
 
+  const handleCurrentModeSelect = (surface: Parameters<CurrentUiRuntime['onModeSelect']>[0]): void => {
+    const mappedMode: WorkModeId | null = surface === 'learn'
+      ? 'learning'
+      : surface === 'home' || surface === 'project' || surface === 'teaching' || surface === 'inventory' || surface === 'story'
+        ? surface
+        : null;
+    if (mappedMode) handleModeSelect(mappedMode);
+  };
+
+  const renderCurrentWorkspace = (
+    surface: Parameters<CurrentUiRuntime['onModeSelect']>[0],
+  ): ReactElement => {
+    if (!auth || !context) {
+      return <section className="proto-runtime-workspace"><p className="panel muted">Session expirée. Reconnectez-vous.</p></section>;
+    }
+
+    if (surface === 'inventory') {
+      return (
+        <section className="proto-runtime-workspace" aria-label="Inventory">
+          <Suspense fallback={<p className="panel panel--wide muted">Chargement Inventory…</p>}>
+            <InventoryWorkspace
+              onProjectChange={setSelectedProjectId}
+              projectMemberRole={currentProjectMember?.role ?? null}
+              projects={projects}
+              role={context.user.role}
+              selectedProjectId={selectedProjectId}
+              token={auth.token}
+            />
+          </Suspense>
+        </section>
+      );
+    }
+
+    if (surface === 'teaching') {
+      return (
+        <section className="proto-runtime-workspace" aria-label="Teaching">
+          <Suspense fallback={<p className="panel panel--wide muted">Chargement Teaching…</p>}>
+            <TeachingReadiness
+              context={context}
+              project={selectedProject}
+              projectResources={projectResources}
+              resources={resources}
+              token={auth.token}
+              validationItems={pendingActions}
+            />
+          </Suspense>
+          {renderValidationInbox()}
+        </section>
+      );
+    }
+
+    if (surface === 'learn') {
+      return (
+        <section className="proto-runtime-workspace" aria-label="Learn">
+          <Suspense fallback={<p className="panel panel--wide muted">Chargement Learn…</p>}>
+            <LearningWorkspace resources={resources} token={auth.token} userId={context.user.id} />
+          </Suspense>
+        </section>
+      );
+    }
+
+    if (surface === 'project') {
+      return (
+        <section className="proto-runtime-workspace" aria-label="Project">
+          <AdaptiveWorkspacePage
+            alert={projects.length === 0 ? <p>Aucun projet n’est assigné à ce compte.</p> : undefined}
+            context={selectedProject ? (
+              <dl className="adaptive-context-facts">
+                <div><dt>Rôle projet</dt><dd>{currentProjectMember ? PROJECT_ROLE_LABEL[currentProjectMember.role] : 'non déclaré'}</dd></div>
+                <div><dt>Membres</dt><dd>{projectMembers.length}</dd></div>
+                <div><dt>Sources partagées</dt><dd>{projectResources.length}</dd></div>
+                <div><dt>Visibilité</dt><dd>{selectedProject.visibility}</dd></div>
+              </dl>
+            ) : <p className="muted compact">Aucun contexte projet chargé.</p>}
+            eyebrow="Project / espace de travail"
+            nextAction={projects.length > 0 ? (
+              <div className="project-attach">
+                <div>
+                  <strong>Partager une ressource validée</strong>
+                  <span>{canAttachCurrentProjectResource ? 'Choisissez une source existante.' : 'Lecture seule pour ce rôle projet.'}</span>
+                </div>
+                <select
+                  aria-label="Ressource à partager"
+                  disabled={!canAttachCurrentProjectResource || attachableResources.length === 0}
+                  onChange={(event) => setProjectResourceId(event.target.value)}
+                  value={projectResourceId}
+                >
+                  <option value="">Choisir une source</option>
+                  {attachableResources.map((resource) => <option key={resource.id} value={resource.id}>{resource.title}</option>)}
+                </select>
+                <button
+                  disabled={!canAttachCurrentProjectResource || projectSync.status === 'attaching' || !projectResourceId}
+                  onClick={() => void handleAttachProjectResource()}
+                  type="button"
+                >
+                  Partager
+                </button>
+              </div>
+            ) : <p className="muted compact">Aucun projet disponible.</p>}
+            statusDetail={projectSync.message}
+            statusLabel={projectSync.status}
+            statusTone={projectSync.status === 'error' ? 'blocked' : projectSync.status === 'loading' ? 'attention' : 'ready'}
+            summary={selectedProject ? 'Les personnes, les sources et la prochaine action utile du projet.' : 'Sélectionnez un projet.'}
+            title={selectedProject?.name ?? 'Projets'}
+            toolbar={projects.length > 0 ? (
+              <label className="project-selector">
+                Projet actif
+                <select onChange={(event) => setSelectedProjectId(event.target.value)} value={selectedProjectId}>
+                  {projects.map((project) => <option key={project.project_id} value={project.project_id}>{project.name}</option>)}
+                </select>
+              </label>
+            ) : undefined}
+          >
+            <section className="project-section">
+              <div className="panel-header"><h3>Ressources partagées</h3><span className="counter">{projectResources.length}</span></div>
+              {projectResources.length > 0 ? (
+                <div className="resource-list">
+                  {projectResources.slice(0, 6).map((resource) => (
+                    <a className="resource-item" href={resource.url ?? '#'} key={resource.id}>
+                      <strong>{resource.title}</strong><span>{resource.source}</span>
+                    </a>
+                  ))}
+                </div>
+              ) : <p className="muted compact">Aucune ressource partagée.</p>}
+            </section>
+          </AdaptiveWorkspacePage>
+        </section>
+      );
+    }
+
+    const unavailableTitle = surface === 'da' ? 'DA Studio' : surface === 'story' ? 'MasterStory' : 'Surface indisponible';
+    return (
+      <section className="proto-runtime-workspace" aria-label={unavailableTitle}>
+        <article className="panel panel--wide unavailable-surface">
+          <p className="eyebrow">Indisponible honnêtement</p>
+          <h2>{unavailableTitle}</h2>
+          <p>Cette surface existe dans le canon, mais elle n’est pas encore raccordée à ce shell runtime.</p>
+          <p className="muted compact">Aucune action, génération ou validation n’est simulée ici.</p>
+        </article>
+      </section>
+    );
+  };
+
+  const currentUiRuntime: CurrentUiRuntime | null = auth && context ? {
+    context,
+    inboxItems: pendingActions,
+    jobs,
+    checkpointLabel: latestCheckpoint?.summary ?? 'Aucun point de reprise enregistré.',
+    attentionLabel: pendingActions.length > 0
+      ? `${pendingActions.length} validation(s) demandent une décision.`
+      : jobs.some((job) => ['failed', 'needs_review'].includes(job.status))
+        ? 'Une tâche demande une vérification.'
+        : 'Aucune attention urgente.',
+    actionState: {status: actionRun.status, message: actionRun.message},
+    chat: {
+      input: chatInput,
+      state: wsState,
+      turns: chatTurns,
+      onInputChange: setChatInput,
+      onSubmit: sendChat,
+    },
+    onActionSelect: (action) => void handleActionClick(action),
+    onLogout: handleLogout,
+    onModeSelect: handleCurrentModeSelect,
+    renderWorkspace: renderCurrentWorkspace,
+  } : null;
+
+  if (currentUiRuntime && !showEntryGate) {
+    return <CurrentUiDemo runtime={currentUiRuntime} />;
+  }
+
   return (
     <MasterFlowShell
       activePersonaName={activePersona?.name ?? null}
@@ -1267,7 +1472,7 @@ function App(): ReactElement {
           <RegisterWithCode
             onAuthed={(nextAuth) => {
               setAuth(nextAuth);
-              window.location.assign('/ui-reset');
+              void loadContext(nextAuth.token);
             }}
           />
         </form>

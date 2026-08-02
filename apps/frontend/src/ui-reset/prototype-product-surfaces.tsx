@@ -20,11 +20,19 @@ type HomeSurfaceProps = {
   primaryModes: PrototypeHomeMode[];
   secondaryModes: PrototypeHomeMode[];
   onSelectMode: (mode: string) => void;
+  checkpointLabel?: string;
+  attentionLabel?: string;
+  primaryActionLabel?: string;
+  onPrimaryAction?: () => void;
 };
 
 export function PrototypeHomeSurface({
   copy,
+  attentionLabel,
+  checkpointLabel,
   onSelectMode,
+  onPrimaryAction,
+  primaryActionLabel,
   primaryModes,
   secondaryModes,
 }: HomeSurfaceProps): ReactElement {
@@ -34,6 +42,17 @@ export function PrototypeHomeSurface({
       <small>{copy.eyebrow}</small>
       <strong>{copy.title}</strong>
       <span>{copy.body}</span>
+      {checkpointLabel || attentionLabel || primaryActionLabel ? (
+        <section className="proto-home-runtime" aria-label="Reprise du contexte">
+          {checkpointLabel ? <p><small>Dernière reprise</small><strong>{checkpointLabel}</strong></p> : null}
+          {attentionLabel ? <p><small>Attention utile</small><strong>{attentionLabel}</strong></p> : null}
+          {primaryActionLabel && onPrimaryAction ? (
+            <button className="proto-home-runtime__primary" onClick={onPrimaryAction} type="button">
+              {primaryActionLabel}
+            </button>
+          ) : null}
+        </section>
+      ) : null}
       <nav className="proto-home-access" aria-label="Accès principaux">
         <div className="proto-home-access__row proto-home-access__row--primary">
           {primaryModes.map((mode) => {
