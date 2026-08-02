@@ -4,6 +4,7 @@ import {
   AutonomyCycleQuerySchema,
   CompileVisualPlanRequestSchema,
   ExperienceTimelineQuerySchema,
+  LivingCompanionListQuerySchema,
   MasterFlowOrientationQuerySchema,
   PrecedentSearchQuerySchema,
   StoryletEvaluationQuerySchema,
@@ -24,7 +25,10 @@ import {
   searchPrecedentCases,
 } from '../services/precedent_engine.ts';
 import {evaluateStorylets} from '../services/storylet_engine.ts';
-import {buildGuidedLivingCompanion} from '../services/living_companion.ts';
+import {
+  buildGuidedLivingCompanion,
+  listGuidedLivingCompanions,
+} from '../services/living_companion.ts';
 import {buildMasterFlowOrientationSnapshot} from '../services/orientation_fabric.ts';
 import {buildProjectMonsterEvolutionReport} from '../services/project_monster.ts';
 import {buildThemeStudioAssetPackPreview} from '../services/theme_studio.ts';
@@ -295,6 +299,22 @@ export function createExperienceFabricRouter(): Router {
     }
     try {
       res.json(buildD08VisualManifestCandidate(compileVisualPlan(parsed.data)));
+    } catch (error) {
+      fail(res, error);
+    }
+  });
+
+  router.get('/experience/companions', (req, res): void => {
+    const parsed = LivingCompanionListQuerySchema.safeParse({
+      project_id: typeof req.query.project_id === 'string' ? req.query.project_id : undefined,
+      room_id: typeof req.query.room_id === 'string' ? req.query.room_id : undefined,
+    });
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_query', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json({results: listGuidedLivingCompanions(actor(req), parsed.data)});
     } catch (error) {
       fail(res, error);
     }

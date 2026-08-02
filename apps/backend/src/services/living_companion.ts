@@ -1,11 +1,12 @@
 import {
   LivingCompanionSchema,
   type LivingCompanion,
+  type LivingCompanionListQuery,
 } from '@masterflow/shared';
 
 import {getPersona} from '../engines/persona_engine.ts';
 import type {AuthUser} from '../middleware/auth.ts';
-import {getGuidedSessionContext} from './guided_runtime.ts';
+import {getGuidedSessionContext, listGuidedSessions} from './guided_runtime.ts';
 import {evaluateStorylets} from './storylet_engine.ts';
 
 type CompanionType = LivingCompanion['companion_type'];
@@ -84,6 +85,29 @@ function companionBoundaries(type: CompanionType): string[] {
     'demande une validation humaine en cas de contradiction',
     'ne publie, n’exporte et ne génère aucun asset',
   ];
+}
+
+/**
+ * Liste les compagnons dérivés des sessions guidées que l'acteur peut déjà lire.
+ * Les guides hors domaine CDC ne deviennent pas artificiellement des compagnons.
+ */
+export function listGuidedLivingCompanions(
+  actor: AuthUser,
+  query: LivingCompanionListQuery = {},
+): LivingCompanion[] {
+  return listGuidedSessions(actor)
+    .filter((session) => !query.project_id || session.project_id === query.project_id)
+    .filter((session) => !query.room_id || session.room_id === query.room_id)
+    .flatMap((session) => {
+      try {
+        return [buildGuidedLivingCompanion(actor, session.session_id)];
+      } catch (error) {
+        if (error instanceof Error && error.message === 'living_companion_domain_not_supported') {
+          return [];
+        }
+        throw error;
+      }
+    });
 }
 
 export function buildGuidedLivingCompanion(

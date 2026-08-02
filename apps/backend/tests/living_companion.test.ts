@@ -3,7 +3,7 @@ import {createServer, type Server} from 'node:http';
 import express from 'express';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
-import {LivingCompanionSchema} from '@masterflow/shared';
+import {LivingCompanionListResponseSchema, LivingCompanionSchema} from '@masterflow/shared';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
@@ -16,7 +16,11 @@ import {
   createGuidedSession,
   submitGuidedAnswer,
 } from '../src/services/guided_runtime.ts';
-import {buildGuidedLivingCompanion} from '../src/services/living_companion.ts';
+import {
+  buildGuidedLivingCompanion,
+  listGuidedLivingCompanions,
+} from '../src/services/living_companion.ts';
+import {createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {
   id: 'living-companion-teacher',
@@ -66,11 +70,13 @@ afterAll(async () => {
 function createCdcSession(
   name: string,
   companion: {type?: string; name?: string} = {},
+  projectId?: string,
 ) {
   const guide = createGuide(teacher, {
     name,
     purpose: 'Aider un groupe à comprendre et cadrer un outil IA.',
     domain: 'cdc',
+    project_id: projectId,
     target_schema_id: 'cdc-template-candidate-v1',
     question_flow: [
       {
@@ -212,6 +218,18 @@ describe('Experience Fabric — Living Companion Robot CDC', () => {
     );
   });
 
+  it('liste seulement les companions lisibles et filtre par projet', () => {
+    const project = createProject(teacher, {name: 'Projet companions Inventory'});
+    const session = createCdcSession('Robot CDC projet', {}, project.project_id);
+    createCdcSession('Robot CDC sans projet');
+
+    const results = listGuidedLivingCompanions(teacher, {project_id: project.project_id});
+    expect(results.map((companion) => companion.session_ref)).toEqual([
+      `guided_session:${session.session_id}`,
+    ]);
+    expect(listGuidedLivingCompanions(outsider, {project_id: project.project_id})).toEqual([]);
+  });
+
   it('active MOTH seulement lorsqu’il est explicitement assigné par le guide', () => {
     const session = createCdcSession(
       'MOTH CDC assigné',
@@ -259,5 +277,27 @@ describe('Experience Fabric — Living Companion Robot CDC', () => {
       companion_type: 'cdc_robot',
       execution_policy: 'guide_only',
     });
+  });
+
+  it('expose la liste read-only filtrée sans fuite inter-utilisateur', async () => {
+    const project = createProject(teacher, {name: 'Projet companions HTTP'});
+    const session = createCdcSession('Robot CDC liste HTTP', {}, project.project_id);
+    const teacherHeaders = {Authorization: `Bearer ${signToken(teacher)}`};
+    const teacherResponse = await fetch(
+      `${base}/experience/companions?project_id=${encodeURIComponent(project.project_id)}`,
+      {headers: teacherHeaders},
+    );
+
+    expect(teacherResponse.status).toBe(200);
+    const payload = LivingCompanionListResponseSchema.parse(await teacherResponse.json());
+    expect(payload.results.map((companion) => companion.session_ref)).toEqual([
+      `guided_session:${session.session_id}`,
+    ]);
+
+    const outsiderResponse = await fetch(`${base}/experience/companions`, {
+      headers: {Authorization: `Bearer ${signToken(outsider)}`},
+    });
+    expect(outsiderResponse.status).toBe(200);
+    expect(await outsiderResponse.json()).toEqual({results: []});
   });
 });

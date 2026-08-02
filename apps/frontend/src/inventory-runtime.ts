@@ -8,7 +8,7 @@ import type {
 } from '@masterflow/shared';
 
 export type InventoryScopeMode = 'personal' | 'project';
-export type InventoryView = 'catalog' | 'review' | 'collections' | 'needs';
+export type InventoryView = 'catalog' | 'review' | 'collections' | 'companions' | 'needs';
 
 export const INVENTORY_TYPE_LABELS: Record<InventoryItemType, string> = {
   book: 'Livre',

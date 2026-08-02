@@ -2836,6 +2836,78 @@ dd {
   min-width: 0;
 }
 
+.inventory-companion-list {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+}
+
+.inventory-companion {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.inventory-companion header,
+.inventory-companion header > div,
+.inventory-companion header > div > span {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.inventory-companion header {
+  justify-content: space-between;
+}
+
+.inventory-companion header > div > span {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inventory-companion p,
+.inventory-companion blockquote {
+  margin: 0;
+}
+
+.inventory-companion blockquote {
+  border-left: 2px solid var(--accent, #4c79ff);
+  color: var(--muted, #aaa);
+  padding-left: 12px;
+}
+
+.inventory-companion dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.inventory-companion dl div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.inventory-companion dt {
+  color: var(--muted, #aaa);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.inventory-companion dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.inventory-companion details ul {
+  padding-left: 18px;
+}
+
 .inventory-header,
 .inventory-toolbar,
 .inventory-pane__heading {
