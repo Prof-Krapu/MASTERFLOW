@@ -14,7 +14,7 @@ function fail(res: Response, error: unknown): void {
 
 export function createCorrectionBatchesRouter(): Router {
   const router = Router();
-  router.use(requireUser, requireRole('teacher'));
+  router.use('/correction', requireUser, requireRole('teacher'));
   router.get('/correction/batches', (req: Request, res: Response): void => {
     const projectId = req.query.project_id === undefined ? undefined : typeof req.query.project_id === 'string' && req.query.project_id ? req.query.project_id : '';
     if (projectId === '') { res.status(400).json({error: 'invalid_project_id'}); return; }

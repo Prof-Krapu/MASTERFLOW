@@ -45,7 +45,7 @@ function fail(res: Response, error: unknown): void {
 
 export function createCorrectionSetupRouter(): Router {
   const router = Router();
-  router.use(requireUser, requireRole('teacher'));
+  router.use('/correction', requireUser, requireRole('teacher'));
 
   router.get('/correction/rubric-templates', (req, res): void => {
     try {

@@ -142,3 +142,15 @@ GodMode créent leur première classe au premier plan, l'ouvrent, ajoutent les �
 La recette isolée confirme les créations professeur et GodMode, l'ajout d'une liste d'étudiants,
 l'isolation privée et l'absence de débordement à 390 px. Aucun backend, endpoint, schéma, permission,
 asset, migration ou déploiement n'a été ajouté. La prochaine page à auditer est Learn (`UPA-004`).
+
+## Clôture LEARN-001 — PR #229
+
+L'audit Learn a distingué l'aide personnelle de Teaching et révélé un blocage étudiant réel : des
+gates `teacher` montés à la racine interceptaient Learning Mirror et l'aide pédagogique. Les gates
+sont désormais scopés à leurs propres domaines, sans élargissement de permission métier.
+
+Learn présente le besoin actuel, les sources validées et une action principale qui prépare une
+demande dans le vrai chat sans l'envoyer. Le profil reste en lecture seule. La progression reste
+honnêtement indisponible jusqu'à l'arbitrage Vincent de sa source primaire. La recette confirme les
+trois rôles, le maintien des interdictions professeur, `703/703` tests backend, aucun débordement à
+390 px et aucune erreur console. La prochaine page à auditer est Inventory (`UPA-005`).

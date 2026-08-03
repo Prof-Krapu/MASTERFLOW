@@ -13,7 +13,7 @@ function fail(res: Response, error: unknown): void {
 }
 export function createVisualManifestsRouter(): Router {
   const router = Router();
-  router.use(requireUser, requireRole('teacher'));
+  router.use(['/visual-references', '/visual-manifests'], requireUser, requireRole('teacher'));
   router.get('/visual-references', (req, res) => { try { res.json(listVisualReferences(actor(req), typeof req.query.project_id === 'string' ? req.query.project_id : undefined)); } catch (error) { fail(res, error); } });
   router.post('/visual-references', (req, res) => { const body = CreateVisualReferenceRequestSchema.safeParse(req.body); if (!body.success) return void res.status(400).json({error: 'invalid_body', detail: body.error.flatten()}); try { res.status(201).json(createVisualReference(actor(req), body.data)); } catch (error) { fail(res, error); } });
   router.patch('/visual-references/:id', (req, res) => { const body = UpdateVisualReferenceRequestSchema.safeParse(req.body); if (!body.success) return void res.status(400).json({error: 'invalid_body', detail: body.error.flatten()}); try { res.json(updateVisualReference(actor(req), req.params.id ?? '', body.data)); } catch (error) { fail(res, error); } });

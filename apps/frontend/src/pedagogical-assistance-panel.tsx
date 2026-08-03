@@ -53,15 +53,28 @@ const KIND_LABELS: Record<PedagogicalAssistanceDecision['assistance_kind'], stri
   blocked_integrity: 'Demande recadrée',
 };
 
+const HELP_PROMPTS: Record<PedagogicalAssistanceRequestType, string> = {
+  understand_concept: 'Aide-moi à comprendre cette notion, puis vérifie ma compréhension avec une question.',
+  advance_project: 'Aide-moi à identifier la prochaine étape utile de mon projet sans faire le travail à ma place.',
+  frame_subject: 'Aide-moi à cadrer ce sujet avec des objectifs et des contraintes clairs.',
+  review_user_work: 'Aide-moi à relire ce travail existant et à repérer ce que je peux améliorer.',
+  correct_or_evaluate: 'Aide-moi à préparer une correction explicable, sans produire de note finale automatique.',
+  request_learning_resource: 'Aide-moi à trouver une ressource fiable et indique-moi précisément ce qu’elle peut m’apprendre.',
+  request_final_deliverable: 'Aide-moi à construire mon livrable étape par étape sans le produire à ma place.',
+  attempt_circumvention: 'Aide-moi dans les limites autorisées et explique-moi pourquoi une demande doit être recadrée.',
+};
+
 type Props = {
   hasValidatedResources: boolean;
   mode: 'learn' | 'teaching';
+  onRequestHelp?: (draft: string) => void;
   token: string;
 };
 
 export function PedagogicalAssistancePanel({
   hasValidatedResources,
   mode,
+  onRequestHelp,
   token,
 }: Props): ReactElement {
   const availableIntents = mode === 'learn'
@@ -74,9 +87,10 @@ export function PedagogicalAssistancePanel({
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
 
-  async function inspectAssistance(): Promise<void> {
+  async function inspectAssistance(continueToChat = false): Promise<void> {
     setLoading(true);
     setStatus('');
+    setDecision(null);
     try {
       const next = await classifyPedagogicalAssistance({
         active_mode: mode,
@@ -87,6 +101,10 @@ export function PedagogicalAssistancePanel({
         resource_timecode_requested: intent === 'request_learning_resource',
       }, token);
       setDecision(next);
+      if (continueToChat && onRequestHelp) {
+        onRequestHelp(HELP_PROMPTS[intent]);
+        setStatus('Demande préparée dans le chat. Relis-la puis envoie-la quand elle te convient.');
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Cadre d’aide indisponible.');
     } finally {
@@ -123,12 +141,35 @@ export function PedagogicalAssistancePanel({
             ))}
           </select>
         </label>
-        <button disabled={loading} onClick={() => void inspectAssistance()} type="button">
-          {loading ? 'Vérification…' : 'Voir le cadre d’aide'}
-        </button>
+        <div className="pedagogical-assistance__actions">
+          {onRequestHelp ? (
+            <button
+              disabled={loading}
+              onClick={() => void inspectAssistance(true)}
+              type="button"
+            >
+              {loading ? 'Préparation…' : 'Demander de l’aide'}
+            </button>
+          ) : null}
+          <button
+            className={onRequestHelp ? 'secondary' : undefined}
+            disabled={loading}
+            onClick={() => void inspectAssistance(false)}
+            type="button"
+          >
+            {onRequestHelp ? 'Voir les limites' : 'Voir le cadre d’aide'}
+          </button>
+        </div>
       </div>
 
-      {status ? <p className="pedagogical-assistance__error" role="alert">{status}</p> : null}
+      {status ? (
+        <p
+          className={decision ? 'pedagogical-assistance__status' : 'pedagogical-assistance__error'}
+          role={decision ? 'status' : 'alert'}
+        >
+          {status}
+        </p>
+      ) : null}
 
       {decision ? (
         <div className="pedagogical-assistance__decision" aria-live="polite">

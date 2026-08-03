@@ -29,13 +29,22 @@ const DENSITY_LABELS: Record<NonNullable<PersonalLearningProfile['help_density']
   detailed: 'détaillé',
 };
 
+const GUIDANCE_LABELS: Record<PersonalLearningProfile['guidance_mode'], string> = {
+  auto: 'adapté au besoin',
+  discovery: 'découverte',
+  structured: 'structuré',
+  challenge: 'mise au défi',
+  mentor: 'mentorat',
+};
+
 type Props = {
+  onRequestHelp: (draft: string) => void;
   resources: Resource[];
   token: string;
   userId: string;
 };
 
-export function LearningWorkspace({resources, token, userId}: Props): ReactElement {
+export function LearningWorkspace({onRequestHelp, resources, token, userId}: Props): ReactElement {
   const [profile, setProfile] = useState<PersonalLearningProfile | null>(null);
   const [status, setStatus] = useState('Chargement du profil d’aide.');
   const [loading, setLoading] = useState(true);
@@ -73,9 +82,9 @@ export function LearningWorkspace({resources, token, userId}: Props): ReactEleme
     <article className="panel panel--wide learning-workspace">
       <div className="panel-header">
         <div>
-          <h2>Learning · parcours guidé</h2>
+          <h2>Learn · aide personnelle</h2>
           <p className="muted compact">
-            Comprendre, pratiquer et avancer depuis des sources fiables, sans faire le travail à ta place.
+            Comprendre, pratiquer et avancer pour toi. La gestion des classes et des sujets reste dans Teaching.
           </p>
         </div>
         <span className="counter">{resources.length} source(s)</span>
@@ -105,17 +114,54 @@ export function LearningWorkspace({resources, token, userId}: Props): ReactEleme
             </div>
             <div>
               <dt>Guidage</dt>
-              <dd>{profile.guidance_mode}</dd>
+              <dd>{GUIDANCE_LABELS[profile.guidance_mode]}</dd>
             </div>
           </dl>
         </section>
       ) : null}
 
-      <PedagogicalAssistancePanel
-        hasValidatedResources={resources.length > 0}
-        mode="learn"
-        token={token}
-      />
+      <section className="learning-workspace__start" aria-labelledby="learning-start-title">
+        <div>
+          <p className="eyebrow">Ton besoin maintenant</p>
+          <h3 id="learning-start-title">Qu’est-ce que tu veux comprendre ou pratiquer ?</h3>
+          <p>Choisis un objectif : MasterFlow prépare une demande dans le chat, mais ne l’envoie jamais sans toi.</p>
+        </div>
+        <PedagogicalAssistancePanel
+          hasValidatedResources={resources.length > 0}
+          mode="learn"
+          onRequestHelp={onRequestHelp}
+          token={token}
+        />
+      </section>
+
+      <section className="learning-resources" aria-labelledby="learning-resources-title">
+        <div className="learning-resources__heading">
+          <div>
+            <p className="eyebrow">Sources fiables</p>
+            <h3 id="learning-resources-title">Pour aller plus loin</h3>
+          </div>
+          <span>{resources.length} disponible(s)</span>
+        </div>
+        {resources.length > 0 ? (
+          <ul>
+            {resources.slice(0, 3).map((resource) => (
+              <li key={resource.id}>
+                <strong>{resource.title}</strong>
+                <span>{resource.subjects?.join(' · ') || resource.source}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted compact">Aucune source validée n’est disponible dans ce contexte.</p>
+        )}
+      </section>
+
+      <aside className="learning-progression-pending">
+        <strong>Progression personnelle</strong>
+        <span>
+          Elle n’est pas encore affichée : sa source unique doit être arbitrée avant de devenir une vérité visible.
+        </span>
+      </aside>
 
       <p className="learning-workspace__guardrail">
         Les ressources non vérifiées restent candidates. Aucune vidéo ne démarre seule et aucun

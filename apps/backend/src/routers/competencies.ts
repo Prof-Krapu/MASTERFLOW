@@ -19,7 +19,7 @@ const SignalDecisionSchema = z.object({decision: z.enum(['validated', 'rejected'
 
 export function createCompetenciesRouter(): Router {
   const r = Router();
-  r.use(requireUser, requireRole('teacher'));
+  r.use('/competencies', requireUser, requireRole('teacher'));
 
   // Frameworks
   r.get('/competencies/frameworks', (q, s) => {

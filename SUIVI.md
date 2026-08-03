@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-04 — LEARN-001 : AIDE PERSONNELLE UTILISABLE
+
+- source : audit réel de Learn et contrat validé par MALEX ;
+- publication : PR #229 prête, à merger uniquement après contrôle final de la base ;
+- distinction : Learn aide chaque utilisateur à comprendre et pratiquer ; Teaching reste la gestion
+  professeur des classes, sujets et corrections ;
+- première action : `Demander de l'aide` cadre la demande puis ouvre le vrai chat avec un brouillon
+  que l'utilisateur doit relire et envoyer lui-même ;
+- données : profil personnel en lecture seule et ressources validées visibles ;
+- permissions : les gates `teacher` des routeurs racine sont scopés à leurs domaines, sans élargir
+  leurs permissions métier ; l'étudiant atteint enfin Learning Mirror et l'aide pédagogique ;
+- progression : non affichée tant que Vincent n'a pas arbitré sa source runtime primaire ;
+- responsive : `clientWidth = scrollWidth = 390` ;
+- preuves locales : régression `8/8`, backend `703/703`, lints backend/frontend, builds
+  frontend/MASTERBUILD, MASTERBUILD `12/12` et smoke trois rôles verts ;
+- exclusions : aucun asset, migration, provider, coût ou déploiement ;
+- prochaine page recommandée : Inventory, en audit avant toute modification.
+
+---
+
 ## 2026-08-03 — TEACHING-001 : ÉTAT VIDE UTILISABLE
 
 - source : audit réel de Teaching puis contrat validé par MALEX ;

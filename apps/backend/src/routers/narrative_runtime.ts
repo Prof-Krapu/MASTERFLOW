@@ -20,7 +20,7 @@ const fail = (s: Response, e: unknown): void => {
 
 export function createNarrativeRuntimeRouter(): Router {
   const r = Router();
-  r.use(requireUser, requireRole('teacher'));
+  r.use('/narrative', requireUser, requireRole('teacher'));
 
   // Workbench status lifecycle
   r.post('/narrative/workbench/:id/status', (q, s) => {
