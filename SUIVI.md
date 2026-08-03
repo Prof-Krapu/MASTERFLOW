@@ -7,7 +7,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 ## 2026-08-04 — LEARN-001 : AIDE PERSONNELLE UTILISABLE
 
 - source : audit réel de Learn et contrat validé par MALEX ;
-- publication : PR #229 prête, à merger uniquement après contrôle final de la base ;
+- publication : PR #229 mergée dans `main` au SHA `d257aa0` après contrôle final de la base ;
 - distinction : Learn aide chaque utilisateur à comprendre et pratiquer ; Teaching reste la gestion
   professeur des classes, sujets et corrections ;
 - première action : `Demander de l'aide` cadre la demande puis ouvre le vrai chat avec un brouillon

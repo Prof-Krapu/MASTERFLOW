@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-04T01:08:31+02:00",
+  "updated_at": "2026-08-04T01:13:11+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -11,7 +11,7 @@
   "last_completed_round": {
     "round_id": "LEARN-001",
     "title": "Aide personnelle Learn utilisable",
-    "commit_sha": "9febf80",
+    "commit_sha": "d257aa0aef1f3120a186dac5ed823c3d3562ae9e",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
   },
   "active_round": {
@@ -320,10 +320,10 @@
     }
   ],
   "publication": {
-    "state": "pull_request_ready",
-    "branch": "codex/learn-001-personal-help",
-    "commit_sha": "9febf80",
+    "state": "main",
+    "branch": "main",
+    "commit_sha": "d257aa0aef1f3120a186dac5ed823c3d3562ae9e",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229",
-    "runtime_proof": "La PR #229 est prête avec les preuves locales Learn ; main reste inchangé jusqu'au merge. Aucun déploiement partagé n'est inclus ni prouvé."
+    "runtime_proof": "GitHub main inclut la PR #229 au merge d257aa0 ; les preuves Learn sont vertes. Aucun déploiement partagé n'est inclus ni prouvé."
   }
 }
