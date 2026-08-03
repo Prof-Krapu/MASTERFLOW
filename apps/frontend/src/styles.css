@@ -1351,6 +1351,43 @@ dd {
   font-weight: 700;
 }
 
+.teaching-cockpit__setup {
+  display: grid;
+  gap: 12px;
+}
+
+.teaching-cockpit__setup > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.teaching-cockpit__setup > div:first-child span,
+.teaching-cockpit__setup label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.teaching-cockpit__setup label {
+  display: grid;
+  gap: 6px;
+}
+
+.teaching-cockpit__setup input,
+.teaching-cockpit__setup textarea {
+  min-width: 0;
+  width: 100%;
+}
+
+.teaching-cockpit__setup textarea {
+  resize: vertical;
+}
+
+.teaching-cockpit__setup-fields {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .teaching-cockpit__selector {
   max-width: 440px;
 }
@@ -1563,6 +1600,10 @@ dd {
   .teaching-advanced > summary {
     align-items: stretch;
     display: grid;
+  }
+
+  .teaching-cockpit__setup-fields {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -110,6 +110,7 @@ function nextSafeAction(
   resources: Resource[],
   validationItems: ValidationInboxItem[],
   jobs: Job[],
+  hasSubject: boolean,
 ): string {
   const riskyValidation = validationItems.find((item) =>
     item.risk_level === 'critical' || item.risk_level === 'high'
@@ -122,6 +123,8 @@ function nextSafeAction(
   if (resources.length === 0) {
     return 'Ajouter puis valider une source avant de préparer un travail pédagogique.';
   }
+
+  if (!hasSubject) return 'Créer le premier sujet de cette classe.';
 
   return 'Le contexte est exploitable en lecture. Préparer le sujet guidé sans lancer de correction automatique.';
 }
@@ -217,7 +220,7 @@ export function TeachingReadiness({
   const [assignmentSubjectVersionId, setAssignmentSubjectVersionId] = useState('');
   const [correctionSheets, setCorrectionSheets] = useState<CorrectionSheetDraft[]>([]);
   const [sheetFieldDrafts, setSheetFieldDrafts] = useState<Record<string, {evaluation_mode: string; teacher_notes: string}>>({});
-  const [status, setStatus] = useState('Chargement de l’état Teaching.');
+  const [status, setStatus] = useState('Chargement de Teaching.');
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
@@ -260,7 +263,11 @@ export function TeachingReadiness({
       setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
       setSelectedBatchId((current) => current || nextBatches.find((batch) => batch.status === 'draft')?.batch_id || '');
       setSelectedSubjectId((current) => current || nextSubjects[0]?.template_id || '');
-      setStatus('État synchronisé depuis les surfaces runtime existantes.');
+      setStatus(nextCohorts.length === 0
+        ? 'Aucune classe créée pour ce compte.'
+        : nextCohorts.length === 1
+          ? '1 classe accessible.'
+          : `${nextCohorts.length} classes accessibles.`);
     } catch (error) {
       setJobs([]);
       setGuides([]);
@@ -326,7 +333,7 @@ export function TeachingReadiness({
       }, token);
       setCohortTitle(''); setCohortPeriod('');
       await refresh(); setSelectedCohortId(created.cohort_id);
-      setStatus('Cohorte privée créée. Ajoute maintenant sa première version de roster.');
+      setStatus('Classe privée créée. Ajoutez maintenant ses étudiants.');
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Création impossible.'); }
     finally { setMutating(false); }
   }, [cohortPeriod, cohortTitle, project?.project_id, refresh, token]);
@@ -344,7 +351,7 @@ export function TeachingReadiness({
         members,
       }, token);
       setRosterText(''); setRosterVersions(await getRosterVersions(selectedCohortId, token));
-      setStatus(`Roster V${created.version} activé. La version précédente reste archivée.`);
+      setStatus(`Liste des étudiants V${created.version} enregistrée. La version précédente reste archivée.`);
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Roster impossible.'); }
     finally { setMutating(false); }
   }, [rosterText, selectedCohortId, token]);
@@ -737,8 +744,8 @@ export function TeachingReadiness({
   const items = useMemo<ReadinessItem[]>(() => [
     {
       id: 'room',
-      label: 'Room active',
-      detail: `${context.room.name} · contexte ${context.runtime_context.trace.granted_tier}`,
+      label: 'Espace actif',
+      detail: `${context.room.name} · contexte chargé`,
       level: 'ready',
     },
     {
@@ -792,9 +799,9 @@ export function TeachingReadiness({
     validationItems.length,
   ]);
 
-  const action = nextSafeAction(effectiveResources, validationItems, jobs);
   const selectedCohort = cohorts.find((cohort) => cohort.cohort_id === selectedCohortId) ?? null;
   const activeRoster = rosterVersions.find((version) => version.status === 'active') ?? null;
+  const action = nextSafeAction(effectiveResources, validationItems, jobs, subjects.length > 0);
   const blockedItems = items.filter((item) => item.level === 'blocked');
   const partialItems = items.filter((item) => item.level === 'partial');
   const priorityAlerts = failedJobs.length + identityReviews.length + validationItems.length;
@@ -816,12 +823,12 @@ export function TeachingReadiness({
             {selectedCohort ? (
               <>
                 <strong>{selectedCohort.title}</strong>
-                <span className="muted compact">{selectedCohort.period_ref ?? 'Période non renseignée'}</span>
-                <span className="muted compact">
-                  {activeRoster
-                    ? `Roster V${activeRoster.version} · ${activeRoster.members.length} étudiant(s)`
-                    : 'Aucun roster actif'}
-                </span>
+              <span className="muted compact">{selectedCohort.period_ref ?? 'Période non renseignée'}</span>
+              <span className="muted compact">
+                {activeRoster
+                    ? `${activeRoster.members.length} étudiant${activeRoster.members.length > 1 ? 's' : ''} · liste V${activeRoster.version}`
+                    : 'Aucun étudiant ajouté'}
+              </span>
               </>
             ) : (
               <p className="muted compact">Aucune cohorte sélectionnée.</p>
@@ -829,7 +836,7 @@ export function TeachingReadiness({
           </section>
           <dl className="adaptive-context-facts">
             <div><dt>Sujets</dt><dd>{subjects.length}</dd></div>
-            <div><dt>Assignments</dt><dd>{subjectAssignments.length}</dd></div>
+            <div><dt>Sujets attribués</dt><dd>{subjectAssignments.length}</dd></div>
             <div><dt>Corrections</dt><dd>{correctionBatches.length}</dd></div>
             <div><dt>Alertes utiles</dt><dd>{priorityAlerts}</dd></div>
           </dl>
@@ -840,32 +847,112 @@ export function TeachingReadiness({
         </>
       )}
       eyebrow="Teaching / cockpit professeur"
-      nextAction={(
+      nextAction={cohorts.length === 0 ? (
+        <form className="teaching-cockpit__setup" onSubmit={(event) => {
+          event.preventDefault();
+          void addCohort();
+        }}>
+          <div>
+            <strong>Créer votre première classe</strong>
+            <span>Elle restera privée et visible uniquement selon les permissions actuelles.</span>
+          </div>
+          <div className="teaching-cockpit__setup-fields">
+            <label>
+              Nom de la classe
+              <input
+                autoComplete="off"
+                onChange={(event) => setCohortTitle(event.target.value)}
+                placeholder="Ex. 4CREA A"
+                required
+                value={cohortTitle}
+              />
+            </label>
+            <label>
+              Période
+              <input
+                autoComplete="off"
+                onChange={(event) => setCohortPeriod(event.target.value)}
+                placeholder="Ex. 2026-2027"
+                value={cohortPeriod}
+              />
+            </label>
+          </div>
+          <button disabled={mutating || cohortTitle.trim().length === 0} type="submit">
+            {mutating ? 'Création…' : 'Créer la classe'}
+          </button>
+        </form>
+      ) : selectedCohort && !activeRoster ? (
+        <form className="teaching-cockpit__setup" onSubmit={(event) => {
+          event.preventDefault();
+          void addRoster();
+        }}>
+          <div>
+            <strong>Ajouter les étudiants</strong>
+            <span>{selectedCohort.title} est prête. Ajoutez un nom par ligne pour constituer sa liste.</span>
+          </div>
+          <label>
+            Étudiants
+            <textarea
+              onChange={(event) => setRosterText(event.target.value)}
+              placeholder={'Alice Martin\nBob Durand'}
+              required
+              rows={4}
+              value={rosterText}
+            />
+          </label>
+          <button disabled={mutating || rosterText.trim().length === 0} type="submit">
+            {mutating ? 'Ajout…' : 'Ajouter les étudiants'}
+          </button>
+        </form>
+      ) : (
         <div className="teaching-cockpit__next">
           <strong>{action}</strong>
-          <button className="secondary" disabled={loading} onClick={() => void refresh()} type="button">
-            {loading ? 'Chargement…' : 'Rafraîchir'}
+          <button
+            className="secondary"
+            disabled={loading}
+            onClick={() => {
+              if (subjects.length === 0) {
+                const workshop = document.getElementById('teaching-advanced');
+                if (workshop instanceof HTMLDetailsElement) workshop.open = true;
+                workshop?.scrollIntoView({behavior: 'smooth'});
+                return;
+              }
+              void refresh();
+            }}
+            type="button"
+          >
+            {loading ? 'Chargement…' : subjects.length === 0 ? 'Préparer un sujet' : 'Rafraîchir'}
           </button>
         </div>
       )}
       statusDetail={status}
-      statusLabel={failedJobs.length > 0
+      statusLabel={cohorts.length === 0
+        ? 'Classe à créer'
+        : selectedCohort && !activeRoster
+          ? 'Étudiants à ajouter'
+          : subjects.length === 0
+            ? 'Sujet à préparer'
+          : failedJobs.length > 0
         ? 'Intervention requise'
         : blockedItems.length > 0
           ? 'Contexte incomplet'
           : partialItems.length > 0
             ? 'Prêt avec réserves'
             : 'Prêt'}
-      statusTone={failedJobs.length > 0
+      statusTone={cohorts.length === 0 || (selectedCohort && !activeRoster)
+        ? 'attention'
+        : failedJobs.length > 0
         ? 'blocked'
         : blockedItems.length > 0 || partialItems.length > 0
           ? 'attention'
           : 'ready'}
-      summary={`${cohorts.length} classe(s), ${subjects.length} sujet(s), ${correctionBatches.length} lot(s) de correction. Les opérations sensibles restent validées humainement.`}
+      summary={cohorts.length === 0
+        ? 'Créez une classe pour organiser ses étudiants, ses sujets et ses corrections.'
+        : `${cohorts.length} classe${cohorts.length > 1 ? 's' : ''}, ${subjects.length} sujet${subjects.length > 1 ? 's' : ''}, ${correctionBatches.length} correction${correctionBatches.length > 1 ? 's' : ''} en préparation.`}
       title={selectedCohort?.title ?? project?.name ?? 'Teaching'}
       toolbar={cohorts.length > 0 ? (
         <label className="teaching-cockpit__selector">
-          Classe / cohorte active
+          Classe active
           <select onChange={(event) => setSelectedCohortId(event.target.value)} value={selectedCohortId}>
             {cohorts.map((cohort) => (
               <option key={cohort.cohort_id} value={cohort.cohort_id}>
@@ -909,10 +996,10 @@ export function TeachingReadiness({
         token={token}
       />
 
-      <details className="teaching-advanced">
+      <details className="teaching-advanced" id="teaching-advanced">
         <summary>
           <span>Atelier Teaching avancé</span>
-          <small>Sujets, rosters, barèmes, identités et corrections</small>
+          <small>Sujets, listes d’étudiants, barèmes, identités et corrections</small>
         </summary>
         <div className="teaching-advanced__content">
         <section className="identity-review" aria-label="Identités étudiantes à confirmer">
