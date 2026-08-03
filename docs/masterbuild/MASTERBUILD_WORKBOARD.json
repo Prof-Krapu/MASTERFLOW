@@ -290,7 +290,7 @@
       "work_package_id": "UPA-002",
       "label": "Auditer et contractualiser Project depuis le runtime publié",
       "feature_ids": ["ui-shell-navigation", "project-scope"],
-      "status": "open",
+      "status": "completed",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UPA-001"],
@@ -299,6 +299,24 @@
       "expected_evidence": [
         "objectif et première action utiles",
         "données projet et états vide/chargement/erreur/interdit",
+        "permissions GodMode, professeur et étudiant",
+        "écarts desktop et 390 px",
+        "décision MALEX avant toute modification"
+      ]
+    },
+    {
+      "work_package_id": "UPA-003",
+      "label": "Auditer et contractualiser Teaching depuis le runtime publié",
+      "feature_ids": ["ui-shell-navigation", "teaching-mode"],
+      "status": "open",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["UPA-002"],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-006", "DES-007", "DES-010"],
+      "tool_route": "codex",
+      "expected_evidence": [
+        "objectif et première action utiles",
+        "données pédagogiques et états vide/chargement/erreur/interdit",
         "permissions GodMode, professeur et étudiant",
         "écarts desktop et 390 px",
         "décision MALEX avant toute modification"

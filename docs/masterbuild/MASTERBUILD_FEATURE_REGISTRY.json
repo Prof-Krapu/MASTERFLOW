@@ -141,14 +141,18 @@
       "domain": "D03",
       "product_state": "validated",
       "backend_state": "partial",
-      "ui_state": "prototype",
+      "ui_state": "connected",
       "release_state": "main",
       "owner": "malex",
       "collaborators": ["vincent"],
-      "source_refs": ["docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md"],
+      "source_refs": [
+        "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+        "docs/masterbuild/preflights/PROJECT_RUNTIME_PREFLIGHT_001.md",
+        "https://github.com/Prof-Krapu/MASTERFLOW/pull/227"
+      ],
       "dependencies": ["ui-home", "inventory-resources"],
-      "missing": ["page non rendue dans /ui-reset", "contrat de contexte dans le shell actif"],
-      "next_action": "Auditer après Home puis remonter le runtime existant sans reconstruire le backend.",
+      "missing": ["gestion métier avancée des membres et besoins hors PROJECT-001"],
+      "next_action": "Conserver Project stable et auditer Teaching avant toute modification.",
       "risk": "Project doit rester le point d'entrée principal sans devenir un back-office."
     },
     {

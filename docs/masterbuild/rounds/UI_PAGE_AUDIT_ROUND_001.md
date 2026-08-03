@@ -121,3 +121,13 @@ exposés.
 
 Les smokes GodMode, professeur et étudiant, dont étudiant à 390 px, confirment permissions, absence
 de débordement et absence d'erreur console. La prochaine page à auditer est Project (`UPA-002`).
+
+## Clôture PROJECT-001 — PR #227
+
+L'audit Project a confirmé un backend existant et un état vide sans action. Après validation MALEX,
+GodMode et professeur peuvent créer leur premier projet depuis le runtime unique, puis voir la liste
+se rafraîchir et le projet s'ouvrir. L'étudiant sans affectation ne voit toujours pas Project.
+
+La recette isolée confirme les deux créations réelles, le maintien des permissions et l'absence de
+débordement visible à 390 px. Aucun backend, endpoint, schéma, asset, migration ou déploiement n'a
+été ajouté. La prochaine page à auditer est Teaching.

@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-03 — PROJECT-001 : ÉTAT VIDE UTILISABLE
+
+- source : audit réel de Project sur `main` puis contrat validé par MALEX ;
+- publication : PR #227, prête, à merger uniquement après checks GitHub verts ;
+- première action : GodMode et professeur peuvent créer leur premier projet via l'endpoint existant ;
+- continuité : la liste est rafraîchie et le projet créé s'ouvre immédiatement ;
+- permissions : Project reste absent pour l'étudiant sans affectation ;
+- langage : statuts et messages Project rendus compréhensibles, sans libellé technique brut ;
+- responsive : formulaire vérifié à 390 px sans débordement visible ;
+- preuves locales : tests Project `10/10`, backend complet `701/701`, MASTERBUILD `12/12`, lints
+  backend/frontend, builds frontend/MASTERBUILD et smoke réel des trois rôles verts ;
+- exclusions : aucun backend, endpoint, schéma, asset, migration ou déploiement modifié ;
+- prochaine page recommandée : Teaching, en audit avant toute modification.
+
+---
+
 ## 2026-08-03 — HOME-001 : REPRISE HONNÊTE ET HOME AU REPOS
 
 - source : audit réel du `main` `265fdc3` ;
