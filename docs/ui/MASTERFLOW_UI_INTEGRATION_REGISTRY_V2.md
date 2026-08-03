@@ -95,6 +95,13 @@ contrat backend existant, rafraîchissement de la liste et ouverture immédiate 
 reste absent pour l'étudiant sans affectation. Cette consolidation ne crée ni endpoint, ni rôle, ni
 permission et ne transforme pas Project en back-office. La validation Git ne vaut pas déploiement.
 
+### Consolidation Teaching — TEACHING-001 / PR #228
+
+L'état vide Teaching propose désormais une création de classe réelle aux professeurs et au GodMode,
+puis l'ajout des étudiants et la préparation du premier sujet. L'atelier avancé reste fermé par
+défaut. Teaching demeure absent pour l'étudiant et l'isolation des classes privées reste inchangée.
+Cette consolidation ne crée ni endpoint, ni rôle, ni permission et ne vaut pas déploiement.
+
 ### Valeur visible aujourd'hui
 
 - identité de l'utilisateur ;

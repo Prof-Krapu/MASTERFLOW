@@ -165,10 +165,15 @@
       "release_state": "main",
       "owner": "malex",
       "collaborators": ["vincent"],
-      "source_refs": ["docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md", "docs/d05-d06/D05_D06_VERTICAL_MAPPING_2026-06-18.md"],
+      "source_refs": [
+        "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
+        "docs/d05-d06/D05_D06_VERTICAL_MAPPING_2026-06-18.md",
+        "docs/masterbuild/preflights/TEACHING_RUNTIME_PREFLIGHT_001.md",
+        "https://github.com/Prof-Krapu/MASTERFLOW/pull/228"
+      ],
       "dependencies": ["context-current"],
-      "missing": ["surface connectée historique non remontée dans /ui-reset", "promotion vers la nouvelle philosophie UI"],
-      "next_action": "Réintégrer via composants et Design Preflight.",
+      "missing": ["parcours métier avancés hors TEACHING-001"],
+      "next_action": "Conserver Teaching stable et auditer Learn avant toute modification.",
       "risk": "Ne pas mélanger professeur, admin et godmode."
     },
     {

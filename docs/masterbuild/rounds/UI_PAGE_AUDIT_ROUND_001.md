@@ -131,3 +131,14 @@ se rafraîchir et le projet s'ouvrir. L'étudiant sans affectation ne voit toujo
 La recette isolée confirme les deux créations réelles, le maintien des permissions et l'absence de
 débordement visible à 390 px. Aucun backend, endpoint, schéma, asset, migration ou déploiement n'a
 été ajouté. La prochaine page à auditer est Teaching.
+
+## Clôture TEACHING-001 — PR #228
+
+L'audit Teaching a confirmé des fondations pédagogiques riches mais une première action incohérente
+et une création de classe enfouie dans l'atelier avancé. Après validation MALEX, professeur et
+GodMode créent leur première classe au premier plan, l'ouvrent, ajoutent les étudiants puis accèdent
+à la préparation du premier sujet. L'étudiant ne voit toujours pas Teaching.
+
+La recette isolée confirme les créations professeur et GodMode, l'ajout d'une liste d'étudiants,
+l'isolation privée et l'absence de débordement à 390 px. Aucun backend, endpoint, schéma, permission,
+asset, migration ou déploiement n'a été ajouté. La prochaine page à auditer est Learn (`UPA-004`).
