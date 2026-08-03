@@ -111,3 +111,13 @@ page par page. Il ne transforme pas automatiquement les idées ou archives en ca
 
 Le merge GitHub ne constitue pas un déploiement. Aucun nouvel asset, fournisseur, coût, déplacement,
 suppression, migration ou déploiement ne fait partie de ce Round.
+
+## Clôture HOME-001 — PR #226
+
+La Home respecte désormais son contrat V1 : reprise métier réellement autorisée, première ouverture
+honnête sans checkpoint, attention utile, trois raccourcis maximum, Dock fermé au repos et chat sans
+autofocus. Le retour Home ne fabrique plus une fausse reprise et les libellés internes ne sont plus
+exposés.
+
+Les smokes GodMode, professeur et étudiant, dont étudiant à 390 px, confirment permissions, absence
+de débordement et absence d'erreur console. La prochaine page à auditer est Project (`UPA-002`).

@@ -166,7 +166,7 @@ export type CurrentUiRuntime = {
   inboxItems: ValidationInboxItem[];
   jobs: Job[];
   renderWorkspace: (mode: ActiveSurface) => ReactNode;
-  checkpointLabel: string;
+  resumeMode: ActiveSurface | null;
   attentionLabel: string;
   actionState: {
     status: string;
@@ -368,8 +368,8 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [shortcutsClosing, setShortcutsClosing] = useState(false);
   const [actionSearch, setActionSearch] = useState('');
-  const [dockPanel, setDockPanel] = useState<DockPanel>('keyboard');
-  const [renderedDockPanel, setRenderedDockPanel] = useState<DockPanel>('keyboard');
+  const [dockPanel, setDockPanel] = useState<DockPanel>(null);
+  const [renderedDockPanel, setRenderedDockPanel] = useState<DockPanel>(null);
   const [dockPanelClosing, setDockPanelClosing] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>('buttons');
@@ -604,7 +604,7 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
     setHistoryOpen(false);
     setRecording(false);
     setTranscribing(false);
-    setDockPanel('keyboard');
+    setDockPanel(null);
     if (characterOpen) closeCharacterPage();
   }, [characterOpen, closeCharacterPage, runtime]);
   const openCharacterPage = useCallback((): void => {
@@ -916,6 +916,14 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
       .slice(0, 3) as DemoMode[],
   );
   const homeSecondaryModes = buildPrototypeHomeModes([]);
+  const homeResumeMode = runtime?.resumeMode && visibleModeIds.has(runtime.resumeMode as DemoMode)
+    ? buildPrototypeHomeModes([runtime.resumeMode as DemoMode])[0]
+    : undefined;
+  const homeDefaultMode = homePrimaryModes[0];
+  const homePrimaryMode = homeResumeMode ?? homeDefaultMode;
+  const homeCheckpointLabel = homeResumeMode
+    ? `Dernier espace utile : ${homeResumeMode.label}.`
+    : 'Aucune reprise métier enregistrée.';
   const dockInput = runtime?.chat.input ?? input;
   const runtimeHistoryItems: PrototypeHistoryItem[] = runtime
     ? runtime.chat.turns
@@ -998,7 +1006,7 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
         profileName={activePrototypeProfile.name}
       />
 
-      <section className="proto-workspace" aria-label="Prototype shell Step 1">
+      <section className="proto-workspace" aria-label="Espace MasterFlow">
         {characterOpen ? (
           <PrototypeCharacterSurface
             canonAlt={activePrototypeProfile.canonAlt}
@@ -1246,11 +1254,13 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
           {activeMode === 'home' ? (
             <PrototypeHomeSurface
               attentionLabel={runtime?.attentionLabel}
-              checkpointLabel={runtime?.checkpointLabel}
+              checkpointLabel={runtime ? homeCheckpointLabel : undefined}
               copy={homeCopy}
-              onPrimaryAction={homePrimaryModes[0] ? () => selectMode(homePrimaryModes[0]!.id as DemoMode) : undefined}
+              onPrimaryAction={homePrimaryMode ? () => selectMode(homePrimaryMode.id as DemoMode) : undefined}
               onSelectMode={(mode) => selectMode(mode as DemoMode)}
-              primaryActionLabel={homePrimaryModes[0] ? `Reprendre ${homePrimaryModes[0]!.label}` : undefined}
+              primaryActionLabel={homePrimaryMode
+                ? `${homeResumeMode ? 'Reprendre' : 'Ouvrir'} ${homePrimaryMode.label}`
+                : undefined}
               primaryModes={homePrimaryModes}
               secondaryModes={homeSecondaryModes}
             />
@@ -1310,7 +1320,7 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
           runtimeState={runtime?.chat.state}
           recording={recording}
           renderedDockPanel={renderedDockPanel}
-          showSuggestions={Boolean(dockPanel || historyPresence.renderedValue)}
+          showSuggestions={activeMode !== 'home' && Boolean(dockPanel || historyPresence.renderedValue)}
           suggestions={commandSuggestions}
           transcribing={transcribing}
         />

@@ -591,6 +591,8 @@ function App(): ReactElement {
         },
       }, auth.token);
       setContext((current) => (current ? {...current, room_instance: nextInstance} : current));
+      const checkpoint = await getLatestRoomCheckpoint(context.room.id, auth.token);
+      setLatestCheckpoint(checkpoint);
       setRoomSync({status: 'synced', message: 'Room instance synchronisee.'});
     } catch (err) {
       setRoomSync({
@@ -1265,9 +1267,13 @@ function App(): ReactElement {
   };
 
   const handleCurrentModeSelect = (surface: Parameters<CurrentUiRuntime['onModeSelect']>[0]): void => {
+    if (surface === 'home') {
+      setSelectedMode('home');
+      return;
+    }
     const mappedMode: WorkModeId | null = surface === 'learn'
       ? 'learning'
-      : surface === 'home' || surface === 'project' || surface === 'teaching' || surface === 'inventory' || surface === 'story'
+      : surface === 'project' || surface === 'teaching' || surface === 'inventory' || surface === 'story'
         ? surface
         : null;
     if (mappedMode) handleModeSelect(mappedMode);
@@ -1407,11 +1413,22 @@ function App(): ReactElement {
     );
   };
 
+  const resumeMode: CurrentUiRuntime['resumeMode'] = latestCheckpoint?.active_mode === 'learning'
+    ? 'learn'
+    : latestCheckpoint?.active_mode === 'da' || latestCheckpoint?.active_mode === 'da_studio'
+      ? 'da'
+      : latestCheckpoint?.active_mode === 'project'
+        || latestCheckpoint?.active_mode === 'teaching'
+        || latestCheckpoint?.active_mode === 'inventory'
+        || latestCheckpoint?.active_mode === 'story'
+        ? latestCheckpoint.active_mode
+        : null;
+
   const currentUiRuntime: CurrentUiRuntime | null = auth && context ? {
     context,
     inboxItems: pendingActions,
     jobs,
-    checkpointLabel: latestCheckpoint?.summary ?? 'Aucun point de reprise enregistré.',
+    resumeMode,
     attentionLabel: pendingActions.length > 0
       ? `${pendingActions.length} validation(s) demandent une décision.`
       : jobs.some((job) => ['failed', 'needs_review'].includes(job.status))

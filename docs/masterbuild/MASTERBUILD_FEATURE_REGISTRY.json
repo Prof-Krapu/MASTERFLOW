@@ -58,15 +58,14 @@
       "release_state": "main",
       "owner": "malex",
       "collaborators": ["vincent"],
-      "source_refs": ["docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md", "https://github.com/Prof-Krapu/MASTERFLOW/pull/223"],
-      "dependencies": ["ui-shell-navigation", "context-current"],
-      "missing": [
-        "dernière reprise et prochaine action utiles",
-        "variantes GodMode, professeur et étudiant",
-        "état déconnecté avec action de reconnexion",
-        "contrat de page validé face à l'expérience publiée"
+      "source_refs": [
+        "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
+        "https://github.com/Prof-Krapu/MASTERFLOW/pull/223",
+        "https://github.com/Prof-Krapu/MASTERFLOW/pull/226"
       ],
-      "next_action": "Faire valider le contrat Home V1 documenté dans le registre d'intégration V2.",
+      "dependencies": ["ui-shell-navigation", "context-current"],
+      "missing": ["état déconnecté enrichi au-delà du formulaire de reconnexion existant"],
+      "next_action": "Conserver Home stable et auditer Project sans rouvrir son contrat.",
       "risk": "La Home ne doit pas devenir un dashboard technique."
     },
     {
