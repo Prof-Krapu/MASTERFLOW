@@ -647,8 +647,7 @@ export function PrototypeCommandDock({
           {renderedDockPanel === 'keyboard' ? (
             <div className="proto-commandbar__input">
               <textarea
-                aria-label="Champ prototype"
-                autoFocus
+                aria-label="Message à MasterFlow"
                 onChange={(event) => onInputChange(event.target.value)}
                 onKeyDown={onInputKeyDown}
                 placeholder={transcribing ? 'Transcription en cours…' : 'Écrire à MasterFlow'}
