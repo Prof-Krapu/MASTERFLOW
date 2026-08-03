@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-03T04:10:06+02:00",
+  "updated_at": "2026-08-03T21:43:38+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,35 +9,35 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "HOME-001",
-    "title": "Reprise Home honnête et interface au repos",
-    "commit_sha": "01fa019",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/226"
+    "round_id": "PROJECT-001",
+    "title": "État vide Project utilisable",
+    "commit_sha": "58e5f78",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/227"
   },
   "active_round": {
     "round_id": "UI-PAGE-AUDIT-001",
-    "title": "Auditer Project depuis le runtime unique publié",
-    "objective": "Auditer la page Project réellement publiée avant toute nouvelle modification et figer sa prochaine action, ses données, ses états et ses permissions.",
+    "title": "Auditer Teaching depuis le runtime unique publié",
+    "objective": "Auditer la page Teaching réellement publiée avant toute nouvelle modification et figer sa prochaine action, ses données, ses états et ses permissions.",
     "owner": "malex",
     "status": "active",
     "stage_index": 1,
     "stage_label": "Orienter",
-    "recommended_next_action": "Auditer Project en lecture seule dans le runtime publié, avec GodMode, professeur, étudiant et 390 px.",
-    "primary_risk": "Modifier Project avant d'avoir distingué son état vide réel, ses données, ses permissions et sa prochaine action utile.",
+    "recommended_next_action": "Auditer Teaching en lecture seule dans le runtime publié, avec GodMode, professeur, étudiant et 390 px.",
+    "primary_risk": "Modifier Teaching avant d'avoir distingué ses données pédagogiques réelles, ses permissions et sa prochaine action utile.",
     "no_auto_execute": true,
-    "work_package_ids": ["UPA-002"],
+    "work_package_ids": ["UPA-003"],
     "authorization_id": null,
     "success_criteria": [
-      "Project expose une première valeur et une prochaine action utiles dans son état réel.",
-      "Les données projet, ressources, membres et permissions consommées sont identifiées.",
+      "Teaching expose une première valeur et une prochaine action utiles dans son état réel.",
+      "Les données de classe, rendus, corrections et permissions consommées sont identifiées.",
       "Les états vide, chargement, erreur, interdit et absence d'assignation sont distingués.",
       "GodMode, professeur et étudiant ne voient que les capacités autorisées.",
-      "MALEX valide le contrat Project avant toute construction."
+      "MALEX valide le contrat Teaching avant toute construction."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant l'audit navigateur Project",
-      "Validation MALEX avant toute modification Project",
+      "GO distinct avant l'audit navigateur Teaching",
+      "Validation MALEX avant toute modification Teaching",
       "Aucun asset, migration ou déploiement pendant l'audit"
     ],
     "source_refs": [
@@ -52,21 +52,22 @@
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/223",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/224",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/225",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/226"
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/226",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/227"
     ]
   },
   "next_moves": [
     {
-      "move_id": "audit-project-page",
-      "label": "Auditer Project dans le runtime publié",
-      "reason": "Home est stabilisée ; Project est la première verticale métier et son état vide réel doit être contractualisé avant toute retouche.",
+      "move_id": "audit-teaching-page",
+      "label": "Auditer Teaching dans le runtime publié",
+      "reason": "Project est stabilisé ; Teaching est la prochaine verticale métier à contractualiser avant toute retouche.",
       "recommended": true,
       "status": "awaiting_go"
     },
     {
-      "move_id": "audit-teaching-page",
-      "label": "Auditer Teaching après Project",
-      "reason": "Teaching dépend du contexte projet et doit rester derrière Project dans la séquence d'audit.",
+      "move_id": "audit-learn-page",
+      "label": "Auditer Learn après Teaching",
+      "reason": "Learn doit rester derrière Teaching dans la séquence d'audit des verticales métier.",
       "recommended": false,
       "status": "queued"
     },
@@ -101,21 +102,21 @@
   },
   "active_goal": {
     "goal_id": "UI-PAGE-AUDIT-001",
-    "title": "Auditer Project depuis le runtime unique publié",
+    "title": "Auditer Teaching depuis le runtime unique publié",
     "owner": "malex",
     "status": "active",
     "stage_index": 1,
     "stage_label": "Orienter",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Contrat Project vérifiable avant construction",
-      "Données, états et permissions Project identifiés",
+      "Contrat Teaching vérifiable avant construction",
+      "Données, états et permissions Teaching identifiés",
       "Validation MALEX avant modification"
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant audit navigateur Project",
-      "Validation MALEX avant modification Project",
+      "GO distinct avant audit navigateur Teaching",
+      "Validation MALEX avant modification Teaching",
       "Aucun déploiement dans ce Round sans autorisation séparée"
     ],
     "source_refs": [
@@ -124,7 +125,7 @@
       "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
       "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
       "apps/frontend/src/current-ui-demo.tsx",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/223"
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/227"
     ]
   },
   "stages": [

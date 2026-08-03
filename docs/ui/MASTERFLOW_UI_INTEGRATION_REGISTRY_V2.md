@@ -88,6 +88,13 @@ la matrice sans déclarer MasterStory ou DA Studio terminés :
 
 Cette promotion ne vaut vérité publiée qu'après merge de la PR et ne prouve aucun déploiement.
 
+### Consolidation Project — PROJECT-001 / PR #227
+
+L'état vide Project est désormais une entrée utile pour GodMode et professeur : création via le
+contrat backend existant, rafraîchissement de la liste et ouverture immédiate du projet créé. Project
+reste absent pour l'étudiant sans affectation. Cette consolidation ne crée ni endpoint, ni rôle, ni
+permission et ne transforme pas Project en back-office. La validation Git ne vaut pas déploiement.
+
 ### Valeur visible aujourd'hui
 
 - identité de l'utilisateur ;
