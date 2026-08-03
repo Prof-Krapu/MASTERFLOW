@@ -186,11 +186,15 @@
       "release_state": "main",
       "owner": "malex",
       "collaborators": ["vincent"],
-      "source_refs": ["docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md"],
+      "source_refs": [
+        "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+        "docs/masterbuild/preflights/LEARN_RUNTIME_PREFLIGHT_001.md",
+        "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
+      ],
       "dependencies": ["persona-profiles"],
-      "missing": ["page non rendue dans /ui-reset", "parcours minimal distinct de Teaching"],
-      "next_action": "Définir la différence Learn/Teaching avant promotion.",
-      "risk": "Une simple duplication de Teaching n'apporte pas de valeur."
+      "missing": ["source runtime primaire de progression personnelle à arbitrer"],
+      "next_action": "Demander à Vincent d'arbitrer la source de progression ; auditer Inventory avant toute retouche.",
+      "risk": "Profil, compétences et gamification ne doivent pas devenir trois vérités concurrentes."
     },
     {
       "feature_id": "inventory-resources",

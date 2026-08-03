@@ -211,3 +211,14 @@ objectif utilisateur
 
 Le statut du registre est mis à jour seulement avec une preuve dans `main` ou un rapport d'audit
 local explicitement non publié. Une présence en Git ne vaut ni capacité utilisable ni déploiement.
+
+## 10. Consolidation LEARN-001
+
+Learn est désormais l'espace d'aide personnel de chaque rôle, distinct de Teaching. Il consomme le
+profil personnel, les ressources validées et le chat runtime existants. `Demander de l'aide` prépare
+un brouillon cadré dans le Dock sans l'envoyer automatiquement.
+
+Le blocage étudiant provenait de gates `teacher` non scopés sur plusieurs routeurs racine. Leur
+scoping restaure les routes étudiantes déclarées sans ouvrir les domaines professeur. La progression
+reste explicitement indisponible jusqu'à l'arbitrage d'une source unique entre Learning Mirror,
+compétences et gamification. Aucun asset, migration, provider ou déploiement n'est ajouté.

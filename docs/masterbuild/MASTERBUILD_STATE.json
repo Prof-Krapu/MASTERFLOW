@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-03T22:45:45+02:00",
+  "updated_at": "2026-08-04T01:08:31+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,35 +9,35 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "TEACHING-001",
-    "title": "État vide Teaching utilisable",
-    "commit_sha": "7a1a559",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/228"
+    "round_id": "LEARN-001",
+    "title": "Aide personnelle Learn utilisable",
+    "commit_sha": "9febf80",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
   },
   "active_round": {
     "round_id": "UI-PAGE-AUDIT-001",
-    "title": "Auditer Learn depuis le runtime unique publié",
-    "objective": "Auditer la page Learn réellement publiée avant toute nouvelle modification et figer sa prochaine action, ses données, ses états et ses permissions.",
+    "title": "Auditer Inventory depuis le runtime unique publié",
+    "objective": "Auditer la page Inventory réellement publiée avant toute nouvelle modification et distinguer objets, collections, candidats et Companions, avec leurs données, états et permissions.",
     "owner": "malex",
     "status": "active",
     "stage_index": 1,
     "stage_label": "Orienter",
-    "recommended_next_action": "Auditer Learn en lecture seule dans le runtime publié, avec GodMode, professeur, étudiant et 390 px.",
-    "primary_risk": "Modifier Learn avant d'avoir distingué l'apprentissage personnel de Teaching et identifié sa progression réelle.",
+    "recommended_next_action": "Auditer Inventory en lecture seule dans le runtime publié, avec GodMode, professeur, étudiant et 390 px.",
+    "primary_risk": "Présenter un catalogue technique, un candidat ou un Companion comme du canon validé sans preuve de source ni de permission.",
     "no_auto_execute": true,
-    "work_package_ids": ["UPA-004"],
+    "work_package_ids": ["UPA-005"],
     "authorization_id": null,
     "success_criteria": [
-      "Learn expose une première valeur et une prochaine action utiles dans son état réel.",
-      "Les données de parcours, progression, aide et permissions consommées sont identifiées.",
-      "Les états vide, chargement, erreur, interdit et absence d'assignation sont distingués.",
+      "Inventory expose une première valeur et une prochaine action utiles dans son état réel.",
+      "Objets, collections, candidats et Companions ne sont jamais confondus.",
+      "Les états vide, chargement, erreur, interdit et absence de données sont distingués.",
       "GodMode, professeur et étudiant ne voient que les capacités autorisées.",
-      "MALEX valide le contrat Learn avant toute construction."
+      "MALEX valide le contrat Inventory avant toute construction."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant l'audit navigateur Learn",
-      "Validation MALEX avant toute modification Learn",
+      "GO distinct avant l'audit navigateur Inventory",
+      "Validation MALEX avant toute modification Inventory",
       "Aucun asset, migration ou déploiement pendant l'audit"
     ],
     "source_refs": [
@@ -46,6 +46,7 @@
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
       "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
       "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+      "apps/frontend/src/inventory-workspace.tsx",
       "apps/frontend/src/current-ui-demo.tsx",
       "apps/frontend/src/ui-reset/prototype-profile-registry.ts",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/221",
@@ -54,21 +55,22 @@
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/225",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/226",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/227",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/228"
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/228",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
     ]
   },
   "next_moves": [
     {
-      "move_id": "audit-learn-page",
-      "label": "Auditer Learn dans le runtime publié",
-      "reason": "Teaching est stabilisé ; Learn est la prochaine verticale métier à contractualiser avant toute retouche.",
+      "move_id": "audit-inventory-page",
+      "label": "Auditer Inventory dans le runtime publié",
+      "reason": "Learn est stabilisé ; Inventory est la prochaine verticale métier à contractualiser avant toute retouche.",
       "recommended": true,
       "status": "awaiting_go"
     },
     {
-      "move_id": "audit-inventory-page",
-      "label": "Auditer Inventory après Learn",
-      "reason": "Inventory sera audité après clarification du parcours personnel Learn.",
+      "move_id": "audit-masterstory-da-pages",
+      "label": "Auditer MasterStory et DA Studio après Inventory",
+      "reason": "Ces verticales seront auditées après clarification d'Inventory et de ses candidats.",
       "recommended": false,
       "status": "queued"
     },
@@ -103,21 +105,21 @@
   },
   "active_goal": {
     "goal_id": "UI-PAGE-AUDIT-001",
-    "title": "Auditer Learn depuis le runtime unique publié",
+    "title": "Auditer Inventory depuis le runtime unique publié",
     "owner": "malex",
     "status": "active",
     "stage_index": 1,
     "stage_label": "Orienter",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Contrat Learn vérifiable avant construction",
-      "Données, progression, états et permissions Learn identifiés",
+      "Contrat Inventory vérifiable avant construction",
+      "Objets, collections, candidats, Companions, états et permissions identifiés",
       "Validation MALEX avant modification"
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant audit navigateur Learn",
-      "Validation MALEX avant modification Learn",
+      "GO distinct avant audit navigateur Inventory",
+      "Validation MALEX avant modification Inventory",
       "Aucun déploiement dans ce Round sans autorisation séparée"
     ],
     "source_refs": [
@@ -125,8 +127,9 @@
       "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
       "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
       "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
+      "apps/frontend/src/inventory-workspace.tsx",
       "apps/frontend/src/current-ui-demo.tsx",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/228"
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
     ]
   },
   "stages": [
@@ -317,10 +320,10 @@
     }
   ],
   "publication": {
-    "state": "main",
-    "branch": "main",
-    "commit_sha": "29f08287db1893b2a535c13dbf684e0185546057",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/224",
-    "runtime_proof": "GitHub main inclut les PR #215 à #219, #221 à #224 ; PR #214 et #220 sont fermées sans merge. Aucun déploiement partagé n'est prouvé."
+    "state": "pull_request_ready",
+    "branch": "codex/learn-001-personal-help",
+    "commit_sha": "9febf80",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229",
+    "runtime_proof": "La PR #229 est prête avec les preuves locales Learn ; main reste inchangé jusqu'au merge. Aucun déploiement partagé n'est inclus ni prouvé."
   }
 }

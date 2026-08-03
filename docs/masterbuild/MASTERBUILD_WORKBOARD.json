@@ -326,7 +326,7 @@
       "work_package_id": "UPA-004",
       "label": "Auditer et contractualiser Learn depuis le runtime publié",
       "feature_ids": ["ui-shell-navigation", "learn-mode"],
-      "status": "open",
+      "status": "completed",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UPA-003"],
@@ -336,6 +336,25 @@
         "objectif et première action utiles",
         "différence Learn et Teaching explicite",
         "données, progression et états vide/chargement/erreur/interdit",
+        "permissions GodMode, professeur et étudiant",
+        "écarts desktop et 390 px",
+        "décision MALEX avant toute modification"
+      ]
+    },
+    {
+      "work_package_id": "UPA-005",
+      "label": "Auditer et contractualiser Inventory depuis le runtime publié",
+      "feature_ids": ["ui-shell-navigation", "inventory-resources"],
+      "status": "open",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["UPA-004"],
+      "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-006", "DES-007", "DES-010"],
+      "tool_route": "codex",
+      "expected_evidence": [
+        "objectif et première action utiles",
+        "objets, collections, candidats et Companions distingués",
+        "Resource Truth, scopes et états vide/chargement/erreur/interdit",
         "permissions GodMode, professeur et étudiant",
         "écarts desktop et 390 px",
         "décision MALEX avant toute modification"
