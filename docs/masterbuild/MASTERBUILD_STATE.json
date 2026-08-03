@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-02T17:58:22+02:00",
+  "updated_at": "2026-08-03T04:10:06+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,39 +9,36 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "GIT-CONSOLIDATION-001",
-    "title": "Vérité Git unique et préparation du raccord UI",
-    "commit_sha": "29f08287db1893b2a535c13dbf684e0185546057",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/224"
+    "round_id": "HOME-001",
+    "title": "Reprise Home honnête et interface au repos",
+    "commit_sha": "01fa019",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/226"
   },
   "active_round": {
     "round_id": "UI-PAGE-AUDIT-001",
-    "title": "Consolider l'interface MasterFlow réellement utilisable",
-    "objective": "Publier un runtime unique dans le shell actuel, avec pages métier raccordées, états honnêtes et Companions en lecture seule dans Inventory.",
+    "title": "Auditer Project depuis le runtime unique publié",
+    "objective": "Auditer la page Project réellement publiée avant toute nouvelle modification et figer sa prochaine action, ses données, ses états et ses permissions.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
-    "recommended_next_action": "Publier la branche, ouvrir une PR prête, obtenir la revue Vincent et merger uniquement après tous les checks verts.",
-    "primary_risk": "Merger malgré un contrôle rouge, une dérive de base ou en confondant publication Git et déploiement.",
+    "stage_index": 1,
+    "stage_label": "Orienter",
+    "recommended_next_action": "Auditer Project en lecture seule dans le runtime publié, avec GodMode, professeur, étudiant et 390 px.",
+    "primary_risk": "Modifier Project avant d'avoir distingué son état vide réel, ses données, ses permissions et sa prochaine action utile.",
     "no_auto_execute": true,
-    "work_package_ids": ["UPA-001"],
-    "authorization_id": "GO-UI-RUNTIME-CONSOLIDATION-2026-08-02",
+    "work_package_ids": ["UPA-002"],
+    "authorization_id": null,
     "success_criteria": [
-      "Un seul orchestrateur alimente les routes produit et le shell visuel courant.",
-      "Home, Project, Teaching, Learn et Inventory consomment les raccords runtime existants.",
-      "Companions est une vue Inventory en lecture seule, filtrée par les permissions existantes.",
-      "Prototype, main, live, candidat, futur et indisponible restent impossibles à confondre.",
-      "Les trois rôles passent les contrôles locaux et aucun asset, migration ou déploiement n'est ajouté.",
-      "La PR est mergée uniquement après revue et checks GitHub verts."
+      "Project expose une première valeur et une prochaine action utiles dans son état réel.",
+      "Les données projet, ressources, membres et permissions consommées sont identifiées.",
+      "Les états vide, chargement, erreur, interdit et absence d'assignation sont distingués.",
+      "GodMode, professeur et étudiant ne voient que les capacités autorisées.",
+      "MALEX valide le contrat Project avant toute construction."
     ],
     "blockers": [],
     "validation_gates": [
-      "Contrat partagé et permissions Companion à relire par Vincent",
-      "Diff UI/canon à relire par MALEX",
-      "Tous les checks GitHub verts avant merge",
-      "Aucun asset candidat promu automatiquement",
-      "Aucun déploiement dans ce Round"
+      "GO distinct avant l'audit navigateur Project",
+      "Validation MALEX avant toute modification Project",
+      "Aucun asset, migration ou déploiement pendant l'audit"
     ],
     "source_refs": [
       "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
@@ -53,23 +50,25 @@
       "apps/frontend/src/ui-reset/prototype-profile-registry.ts",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/221",
       "https://github.com/Prof-Krapu/MASTERFLOW/pull/223",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/224"
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/224",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/225",
+      "https://github.com/Prof-Krapu/MASTERFLOW/pull/226"
     ]
   },
   "next_moves": [
     {
-      "move_id": "publish-ui-runtime-one-shot",
-      "label": "Publier et faire relire la PR du runtime unique",
-      "reason": "Le contrat validé est implémenté et les contrôles locaux sont verts ; la publication reste la dernière porte avant clôture.",
+      "move_id": "audit-project-page",
+      "label": "Auditer Project dans le runtime publié",
+      "reason": "Home est stabilisée ; Project est la première verticale métier et son état vide réel doit être contractualisé avant toute retouche.",
       "recommended": true,
-      "status": "in_progress"
+      "status": "awaiting_go"
     },
     {
-      "move_id": "review-vincent-companion-contract",
-      "label": "Faire relire le contrat Companion par Vincent",
-      "reason": "L'endpoint partagé et ses permissions doivent recevoir la revue backend prévue par le contrat de publication.",
+      "move_id": "audit-teaching-page",
+      "label": "Auditer Teaching après Project",
+      "reason": "Teaching dépend du contexte projet et doit rester derrière Project dans la séquence d'audit.",
       "recommended": false,
-      "status": "awaiting_review"
+      "status": "queued"
     },
     {
       "move_id": "deploy-ui-runtime",
@@ -102,21 +101,21 @@
   },
   "active_goal": {
     "goal_id": "UI-PAGE-AUDIT-001",
-    "title": "Consolider l'interface MasterFlow réellement utilisable",
+    "title": "Auditer Project depuis le runtime unique publié",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
+    "stage_index": 1,
+    "stage_label": "Orienter",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Runtime et shell uniques",
-      "Données et permissions réelles identifiées et vérifiées",
-      "PR prête puis merge après checks verts"
+      "Contrat Project vérifiable avant construction",
+      "Données, états et permissions Project identifiés",
+      "Validation MALEX avant modification"
     ],
     "blockers": [],
     "validation_gates": [
-      "Revue MALEX du diff UI/canon",
-      "Revue Vincent du contrat partagé et des permissions",
+      "GO distinct avant audit navigateur Project",
+      "Validation MALEX avant modification Project",
       "Aucun déploiement dans ce Round sans autorisation séparée"
     ],
     "source_refs": [
@@ -133,43 +132,43 @@
       "index": 1,
       "id": "orient",
       "label": "Orienter",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "active"
+      "status": "pending"
     },
     {
       "index": 8,

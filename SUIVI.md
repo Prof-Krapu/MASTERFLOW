@@ -4,6 +4,25 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-03 — HOME-001 : REPRISE HONNÊTE ET HOME AU REPOS
+
+- source : audit réel du `main` `265fdc3` ;
+- publication : PR #226, intégrée à `main` quand cette entrée devient visible dans la branche principale ;
+- reprise : le dernier checkpoint métier autorisé pilote `Reprendre X` ; sans reprise valide, la
+  Home propose honnêtement `Ouvrir X` ;
+- retour Home : ne remplace plus le checkpoint métier et le checkpoint est rafraîchi sans recharger ;
+- langage : retrait des libellés internes `Mode changed`, `Prototype shell` et `Champ prototype` ;
+- charge cognitive : Dock fermé au repos, actions Home présentes une seule fois, chat ouvert sur demande ;
+- accessibilité mobile : aucun autofocus, focus initial sur le document, aucun débordement à 390 px ;
+- permissions : smoke réel GodMode, professeur et étudiant ; MasterBuild reste GodMode-only et
+  l'étudiant ne voit que Learn ;
+- preuves : backend `701/701`, lints backend/frontend, build frontend, MASTERBUILD `12/12`, doctor
+  et `git diff --check` verts ; aucune erreur console ;
+- exclusions : aucun déploiement, asset, fournisseur, migration ou nouvelle API ;
+- prochaine page recommandée : Project, en audit avant toute modification.
+
+---
+
 ## 2026-08-02 — UI RUNTIME UNIQUE : ONE SHOT PRÊT À PUBLIER
 
 ### VAGUE ACTIVE
