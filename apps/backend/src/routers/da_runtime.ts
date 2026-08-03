@@ -11,7 +11,7 @@ const fail = (s: Response, e: unknown): void => {
 
 export function createDaRuntimeRouter(): Router {
   const r = Router();
-  r.use(requireUser, requireRole('teacher'));
+  r.use('/da', requireUser, requireRole('teacher'));
 
   r.get('/da/assets', (q, s) => {
     try {

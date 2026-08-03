@@ -1476,6 +1476,19 @@ dd {
   font-size: 0.8rem;
 }
 
+.pedagogical-assistance__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.pedagogical-assistance__status {
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+  margin: 0;
+  padding: 7px 10px;
+}
+
 .pedagogical-assistance__state {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1533,6 +1546,12 @@ dd {
   .pedagogical-assistance__decision {
     grid-template-columns: 1fr;
   }
+
+  .pedagogical-assistance__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
 }
 
 .learning-workspace {
@@ -1545,6 +1564,72 @@ dd {
   color: var(--muted);
   margin: 0;
   padding: 8px 11px;
+}
+
+.learning-workspace__start {
+  display: grid;
+  gap: 12px;
+}
+
+.learning-workspace__start h3,
+.learning-resources h3 {
+  margin: 2px 0 4px;
+}
+
+.learning-workspace__start > div > p:last-child {
+  color: var(--muted);
+  margin: 0;
+}
+
+.learning-resources {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: grid;
+  gap: 12px;
+  padding: 13px;
+}
+
+.learning-resources__heading {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.learning-resources__heading > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.learning-resources ul {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.learning-resources li {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px 11px;
+}
+
+.learning-resources li span,
+.learning-progression-pending span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.learning-progression-pending {
+  align-items: start;
+  background: color-mix(in srgb, var(--panel) 96%, var(--accent) 4%);
+  border-left: 3px solid var(--line);
+  display: grid;
+  gap: 4px;
+  padding: 9px 11px;
 }
 
 .learning-profile-card {
@@ -1594,6 +1679,10 @@ dd {
 @media (max-width: 720px) {
   .learning-profile-card dl {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .learning-resources__heading {
+    align-items: start;
   }
 
   .teaching-cockpit__next,

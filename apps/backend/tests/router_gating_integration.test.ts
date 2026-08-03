@@ -8,8 +8,20 @@ import {seedAll} from '../src/db/seed.ts';
 import {signToken} from '../src/middleware/auth.ts';
 import {createDiagnosticsRouter} from '../src/routers/diagnostics.ts';
 import {createAdminRouter} from '../src/routers/admin.ts';
+import {createCompetenciesRouter} from '../src/routers/competencies.ts';
+import {createCorrectionBatchesRouter} from '../src/routers/correction_batches.ts';
+import {createCorrectionSetupRouter} from '../src/routers/correction_setup.ts';
+import {createCorrectionSheetsRouter} from '../src/routers/correction_sheets.ts';
+import {createDaRuntimeRouter} from '../src/routers/da_runtime.ts';
 import {createPedagogicalAssistanceRouter} from '../src/routers/pedagogical_assistance.ts';
+import {createGamificationRouter} from '../src/routers/gamification.ts';
+import {createLearningMirrorRouter} from '../src/routers/learning_mirror.ts';
+import {createNarrativeRuntimeRouter} from '../src/routers/narrative_runtime.ts';
+import {createPrivateQuotesRouter} from '../src/routers/private_quotes.ts';
 import {createProjectsRouter} from '../src/routers/projects.ts';
+import {createStoryWorkbenchesRouter} from '../src/routers/story_workbenches.ts';
+import {createSubjectsRouter} from '../src/routers/subjects.ts';
+import {createVisualManifestsRouter} from '../src/routers/visual_manifests.ts';
 
 /**
  * Régression : ordre de montage des routeurs racine.
@@ -50,8 +62,20 @@ beforeAll(async () => {
   // Même ordre que index.ts : diagnostics + admin (gated admin) AVANT projects.
   app.use('/api/v1', createDiagnosticsRouter());
   app.use('/api/v1', createAdminRouter());
-  app.use('/api/v1', createPedagogicalAssistanceRouter());
   app.use('/api/v1', createProjectsRouter());
+  app.use('/api/v1', createCorrectionSetupRouter());
+  app.use('/api/v1', createCorrectionBatchesRouter());
+  app.use('/api/v1', createSubjectsRouter());
+  app.use('/api/v1', createCorrectionSheetsRouter());
+  app.use('/api/v1', createVisualManifestsRouter());
+  app.use('/api/v1', createStoryWorkbenchesRouter());
+  app.use('/api/v1', createPrivateQuotesRouter());
+  app.use('/api/v1', createCompetenciesRouter());
+  app.use('/api/v1', createGamificationRouter());
+  app.use('/api/v1', createLearningMirrorRouter());
+  app.use('/api/v1', createPedagogicalAssistanceRouter());
+  app.use('/api/v1', createDaRuntimeRouter());
+  app.use('/api/v1', createNarrativeRuntimeRouter());
 
   server = createServer(app);
   await new Promise<void>((resolve) => server.listen(0, resolve));
@@ -95,5 +119,27 @@ describe('ordre de montage : les gates admin ne bloquent pas projects', () => {
       assistance_kind: 'explain',
       permissions_unchanged: true,
     });
+  });
+
+  it('un student atteint Learning Mirror à travers tous les routeurs racine', async () => {
+    const res = await fetch(`${base}/learning-mirror/profiles/gating-student`, auth(studentToken));
+    expect(res.status).toBe(404);
+    expect(await res.json()).toEqual({error: 'profile_not_found'});
+  });
+
+  it('les gates teacher restent actifs sur leurs propres préfixes', async () => {
+    for (const path of [
+      '/correction/rubric-templates',
+      '/subjects',
+      '/visual-manifests',
+      '/story-workbenches',
+      '/private-quotes',
+      '/competencies/frameworks',
+      '/gamification/badges',
+      '/da/assets',
+      '/narrative/nodes',
+    ]) {
+      expect((await fetch(`${base}${path}`, auth(studentToken))).status, path).toBe(403);
+    }
   });
 });

@@ -26,7 +26,7 @@ function fail(res: Response, error: unknown): void {
 
 export function createCorrectionSheetsRouter(): Router {
   const router = Router();
-  router.use(requireUser, requireRole('teacher'));
+  router.use(['/subject-assignments', '/correction-sheets'], requireUser, requireRole('teacher'));
   router.get('/subject-assignments/:id/correction-sheets', (req, res) => {
     try { res.json(listCorrectionSheetDrafts(actor(req), req.params.id ?? '')); } catch (error) { fail(res, error); }
   });

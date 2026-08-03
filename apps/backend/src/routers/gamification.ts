@@ -17,7 +17,7 @@ const fail = (s: Response, e: unknown): void => {
 
 export function createGamificationRouter(): Router {
   const r = Router();
-  r.use(requireUser, requireRole('teacher'));
+  r.use('/gamification', requireUser, requireRole('teacher'));
 
   // Badge definitions
   r.get('/gamification/badges', (q, s) => {

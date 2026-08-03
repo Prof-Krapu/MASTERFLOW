@@ -321,6 +321,7 @@ function App(): ReactElement {
   const [roomSync, setRoomSync] = useState<RoomSyncState>({status: 'idle', message: 'Instance non synchronisee.'});
   const [wsState, setWsState] = useState<WsState>('idle');
   const [chatInput, setChatInput] = useState('');
+  const [chatOpenRequest, setChatOpenRequest] = useState(0);
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -560,6 +561,7 @@ function App(): ReactElement {
     setRoomSync({status: 'idle', message: 'Instance non synchronisee.'});
     setWsState('idle');
     setChatInput('');
+    setChatOpenRequest(0);
     setChatTurns([]);
     setError(null);
   }, []);
@@ -575,6 +577,11 @@ function App(): ReactElement {
     ]);
     setChatInput('');
   }, [chatInput]);
+
+  const prepareLearningHelp = useCallback((draft: string): void => {
+    setChatInput(draft);
+    setChatOpenRequest((current) => current + 1);
+  }, []);
 
   const handleChatSubmit = useCallback((event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -1365,7 +1372,12 @@ function App(): ReactElement {
       return (
         <section className="proto-runtime-workspace" aria-label="Learn">
           <Suspense fallback={<p className="panel panel--wide muted">Chargement Learn…</p>}>
-            <LearningWorkspace resources={resources} token={auth.token} userId={context.user.id} />
+            <LearningWorkspace
+              onRequestHelp={prepareLearningHelp}
+              resources={resources}
+              token={auth.token}
+              userId={context.user.id}
+            />
           </Suspense>
         </section>
       );
@@ -1515,6 +1527,7 @@ function App(): ReactElement {
     actionState: {status: actionRun.status, message: actionRun.message},
     chat: {
       input: chatInput,
+      openRequest: chatOpenRequest,
       state: wsState,
       turns: chatTurns,
       onInputChange: setChatInput,
@@ -1834,6 +1847,7 @@ function App(): ReactElement {
           {activeMode.id === 'learning' && auth && context ? (
             <Suspense fallback={<p className="panel panel--wide muted">Chargement Learning…</p>}>
               <LearningWorkspace
+                onRequestHelp={prepareLearningHelp}
                 resources={resources}
                 token={auth.token}
                 userId={context.user.id}

@@ -174,6 +174,7 @@ export type CurrentUiRuntime = {
   };
   chat: {
     input: string;
+    openRequest: number;
     state: string;
     turns: Array<{
       id: string;
@@ -408,6 +409,7 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
       }
     : runtimeBridgeState;
   const navigationDestinationRef = useRef<NavigationDestination>('home');
+  const lastChatOpenRequestRef = useRef(0);
   const [systemPrefersLight, setSystemPrefersLight] = useState(false);
   const settingsPresence = useAnimatedPresence(settingsOpen ? true : null);
   const accessPresence = useAnimatedPresence(accessOpen ? true : null, 180);
@@ -642,6 +644,14 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
     setSystemPanel(null);
     setSettingsOpen(true);
   }, []);
+
+  useEffect(() => {
+    const request = runtime?.chat.openRequest ?? 0;
+    if (request <= lastChatOpenRequestRef.current) return;
+    lastChatOpenRequestRef.current = request;
+    setDockPanel('keyboard');
+    setHistoryOpen(false);
+  }, [runtime?.chat.openRequest]);
 
   useEffect(() => {
     if (dockPanel !== 'keyboard') setTranscribing(false);
