@@ -23,6 +23,7 @@ import {
   attachProjectResource,
   clearRuntimeAuthToken,
   createAction,
+  createProject,
   decideValidationInboxItem,
   executeAction,
   getCurrentContext,
@@ -100,7 +101,7 @@ type ResourceProposalState = {
   resource?: Resource;
 };
 type ProjectSyncState = {
-  status: 'idle' | 'loading' | 'ready' | 'attaching' | 'synced' | 'error';
+  status: 'idle' | 'loading' | 'creating' | 'ready' | 'attaching' | 'synced' | 'error';
   message: string;
 };
 type RagSyncState = {
@@ -118,6 +119,16 @@ const ROLE_LABEL: Record<string, string> = {
   teacher: 'prof',
   admin: 'admin',
   godmode: 'godmode',
+};
+
+const PROJECT_STATUS_LABEL: Record<ProjectSyncState['status'], string> = {
+  idle: 'À démarrer',
+  loading: 'Chargement',
+  creating: 'Création',
+  ready: 'Prêt',
+  attaching: 'Partage',
+  synced: 'À jour',
+  error: 'Indisponible',
 };
 
 const ActionAudit = lazy(async () => {
@@ -270,13 +281,14 @@ function App(): ReactElement {
   const [resources, setResources] = useState<Resource[]>([]);
   const [resourceCandidates, setResourceCandidates] = useState<Resource[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [projectName, setProjectName] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [projectMembers, setProjectMembers] = useState<ProjectMember[]>([]);
   const [projectResources, setProjectResources] = useState<Resource[]>([]);
   const [projectResourceId, setProjectResourceId] = useState('');
   const [projectSync, setProjectSync] = useState<ProjectSyncState>({
     status: 'idle',
-    message: 'Aucun projet charge.',
+    message: 'Aucun projet chargé.',
   });
   const [ragQuestion, setRagQuestion] = useState('');
   const [ragSync, setRagSync] = useState<RagSyncState>({
@@ -316,6 +328,9 @@ function App(): ReactElement {
 
   const isConnected = auth !== null && context !== null;
   const showEntryGate = isConnected && context !== null && entryProfile?.userId !== context.user.id;
+  const canCreateProject = context?.user.role === 'teacher'
+    || context?.user.role === 'admin'
+    || context?.user.role === 'godmode';
 
   const actionSummary = useMemo(() => {
     const count = actions.length;
@@ -453,7 +468,9 @@ function App(): ReactElement {
       setProjectSync({
         status: nextProjects.length > 0 ? 'ready' : 'idle',
         message: nextProjects.length > 0
-          ? `${nextProjects.length} projet(s) accessible(s).`
+          ? nextProjects.length === 1
+            ? '1 projet accessible.'
+            : `${nextProjects.length} projets accessibles.`
           : 'Aucun projet accessible pour cet utilisateur.',
       });
       setState('ready');
@@ -539,7 +556,7 @@ function App(): ReactElement {
     setResourceUrl('');
     setResourceSubjects('');
     setResourceProposal({status: 'idle', message: 'Aucune proposition en attente.'});
-    setProjectSync({status: 'idle', message: 'Aucun projet charge.'});
+    setProjectSync({status: 'idle', message: 'Aucun projet chargé.'});
     setRoomSync({status: 'idle', message: 'Instance non synchronisee.'});
     setWsState('idle');
     setChatInput('');
@@ -674,7 +691,7 @@ function App(): ReactElement {
     if (!auth || !projectId) {
       setProjectMembers([]);
       setProjectResources([]);
-      setProjectSync({status: 'idle', message: 'Aucun projet selectionne.'});
+      setProjectSync({status: 'idle', message: 'Aucun projet sélectionné.'});
       return;
     }
 
@@ -688,7 +705,7 @@ function App(): ReactElement {
       setProjectResources(sharedResources);
       setProjectSync({
         status: 'ready',
-        message: `${sharedResources.length} ressource(s) partagee(s), ${members.length} membre(s).`,
+        message: `${sharedResources.length} ressource${sharedResources.length > 1 ? 's' : ''} partagée${sharedResources.length > 1 ? 's' : ''}, ${members.length} membre${members.length > 1 ? 's' : ''}.`,
       });
     } catch (err) {
       setProjectMembers([]);
@@ -920,7 +937,7 @@ function App(): ReactElement {
       }, auth.token);
       setProjectResourceId('');
       await refreshProjectSurface(selectedProjectId);
-      setProjectSync({status: 'synced', message: 'Ressource partagee avec le projet.'});
+      setProjectSync({status: 'synced', message: 'Ressource partagée avec le projet.'});
     } catch (err) {
       setProjectSync({
         status: 'error',
@@ -928,6 +945,29 @@ function App(): ReactElement {
       });
     }
   }, [auth, projectResourceId, refreshProjectSurface, selectedProjectId]);
+
+  const handleCreateProject = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();
+    const name = projectName.trim();
+    if (!auth || !canCreateProject || name.length === 0) return;
+
+    setProjectSync({status: 'creating', message: 'Création du projet en cours.'});
+    try {
+      const created = await createProject({name}, auth.token);
+      const nextProjects = await getProjects(auth.token);
+      setProjects(nextProjects);
+      setSelectedProjectId(created.project_id);
+      setProjectName('');
+      setProjectSync({status: 'ready', message: 'Projet créé. Son espace de travail est prêt.'});
+    } catch (err) {
+      setProjectSync({
+        status: 'error',
+        message: err instanceof Error && err.message === 'permission_denied'
+          ? 'Votre rôle ne permet pas de créer un projet.'
+          : 'La création du projet a échoué. Réessayez.',
+      });
+    }
+  }, [auth, canCreateProject, projectName]);
 
   const handleCoordinationSync = useCallback(async (): Promise<void> => {
     if (!auth) return;
@@ -1335,7 +1375,9 @@ function App(): ReactElement {
       return (
         <section className="proto-runtime-workspace" aria-label="Project">
           <AdaptiveWorkspacePage
-            alert={projects.length === 0 ? <p>Aucun projet n’est assigné à ce compte.</p> : undefined}
+            alert={projects.length === 0 && !canCreateProject
+              ? <p>Aucun projet n’est assigné à ce compte.</p>
+              : undefined}
             context={selectedProject ? (
               <dl className="adaptive-context-facts">
                 <div><dt>Rôle projet</dt><dd>{currentProjectMember ? PROJECT_ROLE_LABEL[currentProjectMember.role] : 'non déclaré'}</dd></div>
@@ -1368,11 +1410,47 @@ function App(): ReactElement {
                   Partager
                 </button>
               </div>
-            ) : <p className="muted compact">Aucun projet disponible.</p>}
+            ) : canCreateProject ? (
+              <form className="project-attach project-create" onSubmit={(event) => void handleCreateProject(event)}>
+                <div>
+                  <strong>Créer votre premier projet</strong>
+                  <span>Donnez-lui un nom clair. Il restera privé tant que vous n’ajoutez pas de membre.</span>
+                </div>
+                <label>
+                  Nom du projet
+                  <input
+                    aria-label="Nom du nouveau projet"
+                    autoComplete="off"
+                    maxLength={160}
+                    onChange={(event) => setProjectName(event.target.value)}
+                    placeholder="Ex. Campagne de fin d’année"
+                    required
+                    type="text"
+                    value={projectName}
+                  />
+                </label>
+                <button
+                  disabled={projectSync.status === 'creating' || projectName.trim().length === 0}
+                  type="submit"
+                >
+                  {projectSync.status === 'creating' ? 'Création…' : 'Créer le projet'}
+                </button>
+              </form>
+            ) : <p className="muted compact">Aucun projet accessible pour ce compte.</p>}
             statusDetail={projectSync.message}
-            statusLabel={projectSync.status}
-            statusTone={projectSync.status === 'error' ? 'blocked' : projectSync.status === 'loading' ? 'attention' : 'ready'}
-            summary={selectedProject ? 'Les personnes, les sources et la prochaine action utile du projet.' : 'Sélectionnez un projet.'}
+            statusLabel={PROJECT_STATUS_LABEL[projectSync.status]}
+            statusTone={projectSync.status === 'error'
+              ? 'blocked'
+              : projectSync.status === 'loading' || projectSync.status === 'creating'
+                ? 'attention'
+                : projectSync.status === 'idle'
+                  ? 'neutral'
+                  : 'ready'}
+            summary={selectedProject
+              ? 'Les personnes, les sources et la prochaine action utile du projet.'
+              : canCreateProject
+                ? 'Créez un projet pour organiser ses membres et ses ressources.'
+                : 'Aucun projet ne vous est encore accessible.'}
             title={selectedProject?.name ?? 'Projets'}
             toolbar={projects.length > 0 ? (
               <label className="project-selector">

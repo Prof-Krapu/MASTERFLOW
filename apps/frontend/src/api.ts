@@ -10,6 +10,7 @@ import type {
   CreateInventoryItemRequest,
   CreateInventoryProjectNeedRequest,
   CreatePreCorrectionManifestRequest,
+  CreateProjectRequest,
   CreateD12MissedTriggerFinding,
   CreateD12BackupReceipt,
   CreateD12ReleaseReceipt,
@@ -795,6 +796,16 @@ export async function validateResource(resourceId: string, token?: string | null
 
 export async function getProjects(token?: string | null): Promise<Project[]> {
   return request<Project[]>('/projects', {method: 'GET'}, token);
+}
+
+export async function createProject(
+  body: CreateProjectRequest,
+  token?: string | null,
+): Promise<Project> {
+  return request<Project>('/projects', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  }, token);
 }
 
 export async function getProjectMembers(projectId: string, token?: string | null): Promise<ProjectMember[]> {
