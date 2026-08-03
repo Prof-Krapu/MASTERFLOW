@@ -4,6 +4,23 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-03 — TEACHING-001 : ÉTAT VIDE UTILISABLE
+
+- source : audit réel de Teaching puis contrat validé par MALEX ;
+- publication : PR #228, prête, à merger uniquement après contrôle final de la base ;
+- première action : GodMode et professeur peuvent créer leur première classe via l'endpoint existant ;
+- continuité : la classe créée devient active, puis Teaching propose d'ajouter les étudiants et de
+  préparer le premier sujet ;
+- atelier avancé : fermé au repos, ouvert uniquement sur demande ;
+- permissions : Teaching reste absent pour l'étudiant et l'isolation privée reste inchangée ;
+- responsive : `clientWidth = scrollWidth = 390` ;
+- preuves locales : cohortes `4/4`, backend `701/701`, lints backend/frontend, build frontend et
+  smoke réel des trois rôles verts ;
+- exclusions : aucun backend, endpoint, schéma, permission, asset, migration ou déploiement modifié ;
+- prochaine page recommandée : Learn, en audit avant toute modification.
+
+---
+
 ## 2026-08-03 — PROJECT-001 : ÉTAT VIDE UTILISABLE
 
 - source : audit réel de Project sur `main` puis contrat validé par MALEX ;
