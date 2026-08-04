@@ -2,7 +2,7 @@
 
 Statut : `active`
 Propriétaire : MALEX
-Base : `origin/main` au SHA `ab7f5ea74debde87797720e2bb7eb71d930ecb67`
+Base Lot 2 : `origin/main` au SHA `761bb4c52821175a2fd9f5b163f4bc34607d3ea1`
 
 ## Intention produit
 
@@ -19,8 +19,8 @@ Round. Aucun fichier Inventory ne doit être déplacé, supprimé ou absorbé.
 
 | Lot | Branche | Statut | Gate suivant |
 |---|---|---|---|
-| UFR-001 · Bible UI et MASTERBUILD | `codex/ui-bible-masterbuild-gate` | en construction locale | GO commit, push et PR après vérification |
-| UFR-002 · Shell, thèmes, rail et Dock | `codex/ui-foundations-shell-theme-dock` | bloqué | revue et merge du Lot 1 |
+| UFR-001 · Bible UI et MASTERBUILD | `codex/ui-bible-masterbuild-gate` | mergé via #231 · `761bb4c` | terminé |
+| UFR-002 · Shell, thèmes, rail et Dock | `codex/ui-foundations-shell-theme-dock` | publication et merge autorisés | commit, push, PR prête, checks puis merge |
 | UFR-003 · Project V2 situation vivante | `codex/project-v2-situation-page` | bloqué | revue et merge du Lot 2 |
 
 ## Contrat de publication du Lot 1
@@ -42,6 +42,22 @@ ressources validées, équipe et trois actions contextuelles. Aucune tâche, éc
 progression n'est affichée sans source runtime.
 
 Pipeline : `Lab → Prototype assemblé → MALEX → smoke permissions Vincent → runtime`.
+
+## Preuves locales Lot 2
+
+- tokens sémantiques communs chargés sans modifier les quatre fichiers Inventory isolés ;
+- clair et sombre dans le Lab, préférence système conservée dans le runtime et persistée localement ;
+- trois actions contextuelles dans le rail, aucune suggestion dupliquée dans le Dock ;
+- état sain `connected` silencieux, dégradation en langage humain et `aria-live` ;
+- micro, transcription et raccourci `M` désactivés dans le runtime tant qu'ils ne sont pas raccordés ;
+- Lab étendu : fondations, Dock, formulaires, états, overlays, Home, navigation et identité ;
+- smoke navigateur à `390 × 844` : aucune largeur excédentaire, feuille et Dock confinés ;
+- lint frontend, build frontend, tests MASTERBUILD et doctor verts.
+
+Le smoke runtime isolé confirme ensuite le prototype assemblé, la préférence système, le loadout
+GodMode, `K`, l'absence de faux micro via `M` et le reflow à 390 px. MALEX valide la promotion par
+son GO du 2026-08-05. Sa décision rend la revue Vincent non bloquante pour ce Lot 2 ; elle n'est pas
+enregistrée comme une fausse approbation.
 
 ## Exclusions
 

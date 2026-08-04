@@ -250,7 +250,7 @@ test("tous les registres MASTERBUILD sont des JSON valides", async () => {
   }
 });
 
-test("le registre UI est structurellement valide sans prétendre que les surfaces sont conformes", async () => {
+test("le registre UI ne promeut que les fondations dont les preuves sont complètes", async () => {
   const [conformanceContent, designContent] = await Promise.all([
     readFile(new URL("../../../docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json", import.meta.url), "utf8"),
     readFile(new URL("../../../docs/masterbuild/MASTERBUILD_DESIGN_RULES.json", import.meta.url), "utf8")
@@ -260,5 +260,22 @@ test("le registre UI est structurellement valide sans prétendre que les surface
     JSON.parse(designContent).rules
   );
   assert.equal(validation.valid, true, validation.errors.join("\n"));
-  assert.equal(validation.evaluations.some((item) => item.promotion_allowed), false);
+  const promoted = new Set(
+    validation.evaluations
+      .filter((item) => item.promotion_allowed)
+      .map((item) => item.artifact_id)
+  );
+  for (const artifactId of [
+    "component.shell",
+    "component.navigation",
+    "component.action-rail",
+    "component.command-dock",
+    "component.status-message",
+    "component.forms",
+    "component.overlays"
+  ]) {
+    assert.equal(promoted.has(artifactId), true, `${artifactId} doit être promouvable`);
+  }
+  assert.equal(promoted.has("page.project"), false);
+  assert.equal(promoted.has("page.home"), false);
 });

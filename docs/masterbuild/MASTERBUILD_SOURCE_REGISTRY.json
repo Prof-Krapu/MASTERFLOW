@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-04T23:54:57+02:00",
+  "updated_at": "2026-08-05T00:02:46+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -368,9 +368,17 @@
       "source_id": "ui-bible-masterbuild-gate-pr-231",
       "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/231",
       "kind": "ready_pull_request",
+      "status": "absorbed",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Lot 1 Bible UI et gate MASTERBUILD mergé dans main le 2026-08-05 sans déploiement."
+    },
+    {
+      "source_id": "ui-bible-masterbuild-gate-merge-761bb4c",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/commit/761bb4c52821175a2fd9f5b163f4bc34607d3ea1",
+      "kind": "merge_commit",
       "status": "still_active",
       "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
-      "note": "Lot 1 Bible UI et gate MASTERBUILD publié en PR prête ; revues et GO de merge encore requis, aucun déploiement."
+      "note": "Preuve GitHub du merge du Lot 1 et base exacte du Lot 2 Shell, thèmes, rail et Dock."
     }
   ]
 }

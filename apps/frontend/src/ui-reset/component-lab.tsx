@@ -1,4 +1,4 @@
-import {Boxes, CheckCircle2, Code2, GitPullRequest, Link2, Monitor, Smartphone} from 'lucide-react';
+import {BookOpen, Boxes, CheckCircle2, Code2, FolderKanban, GitPullRequest, Link2, Monitor, PackageOpen, Smartphone} from 'lucide-react';
 import {useEffect, useMemo, useState} from 'react';
 import type {CSSProperties, ReactElement} from 'react';
 
@@ -15,13 +15,15 @@ import {
 } from './prototype-profile-registry';
 import type {AccessLevel, DemoMode, PrototypeProfileId} from './prototype-profile-registry';
 import {PrototypeHomeSurface} from './prototype-product-surfaces';
-import {PrototypeNavigationRail} from './prototype-shell-components';
+import {PrototypeActionRail, PrototypeCommandDock, PrototypeNavigationRail} from './prototype-shell-components';
+import type {PrototypeActionSuggestion} from './prototype-shell-components';
 import {componentLabWorkspaces} from './component-lab-workspaces';
 import type {ComponentLabWorkspaceId} from './component-lab-workspaces';
 import './component-lab.css';
 
-type LabSection = 'home' | 'navigation' | 'identity' | 'pipeline';
+type LabSection = 'foundations' | 'dock' | 'forms' | 'states' | 'overlays' | 'home' | 'navigation' | 'identity' | 'pipeline';
 type LabViewport = 'desktop' | 'mobile';
+type LabTheme = 'dark' | 'light';
 
 interface ComponentLabProps {
   workspaceId: ComponentLabWorkspaceId;
@@ -32,15 +34,39 @@ interface PersistedLabState {
   activeMode?: DemoMode;
   profileId?: PrototypeProfileId;
   section?: LabSection;
+  theme?: LabTheme;
   viewport?: LabViewport;
 }
 
 const sections: Array<{id: LabSection; label: string}> = [
+  {id: 'foundations', label: 'Fondations'},
+  {id: 'dock', label: 'Dock et actions'},
+  {id: 'forms', label: 'Formulaires'},
+  {id: 'states', label: 'États'},
+  {id: 'overlays', label: 'Overlays'},
   {id: 'home', label: 'Home'},
   {id: 'navigation', label: 'Navigation'},
   {id: 'identity', label: 'Identité active'},
   {id: 'pipeline', label: 'Promotion'},
 ];
+
+const labSuggestions: PrototypeActionSuggestion[] = [
+  {id: 'project', label: 'Ouvrir le projet', icon: FolderKanban},
+  {id: 'learn', label: 'Reprendre Learn', icon: BookOpen},
+  {id: 'inventory', label: 'Voir les ressources', icon: PackageOpen},
+];
+
+const mandatoryStates = [
+  ['Chargement', 'Le contenu attendu est nommé.'],
+  ['Vide', 'Une prochaine action réelle est proposée.'],
+  ['Partiel', 'La limite est visible sans bloquer le reste.'],
+  ['Prêt', 'La situation et l’action principale sont lisibles.'],
+  ['Erreur', 'Le problème est humain et récupérable.'],
+  ['Interdit', 'Le refus et la sortie sûre sont explicites.'],
+  ['Lecture seule', 'Le contenu reste consultable sans faux pouvoir.'],
+  ['Futur', 'Aucune action simulée ne ressemble au runtime.'],
+  ['Session expirée', 'La reconnexion est proposée sans perdre le contexte visible.'],
+] as const;
 
 const workspaceFocus: Record<ComponentLabWorkspaceId, {description: string; focus: string[]}> = {
   malex: {
@@ -99,9 +125,14 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
     isSection(initialState.section) ? initialState.section : 'home',
   );
   const [viewport, setViewport] = useState<LabViewport>(initialState.viewport === 'mobile' ? 'mobile' : 'desktop');
+  const [theme, setTheme] = useState<LabTheme>(initialState.theme === 'light' ? 'light' : 'dark');
   const [activeMode, setActiveMode] = useState<DemoMode>(initialState.activeMode ?? 'project');
   const [railOpen, setRailOpen] = useState(true);
   const [accessOpen, setAccessOpen] = useState(false);
+  const [dockPanel, setDockPanel] = useState<'keyboard' | null>('keyboard');
+  const [dockInput, setDockInput] = useState('');
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [overlayOpen, setOverlayOpen] = useState(true);
 
   const profile = getPrototypeProfile(profileId);
   const palette = getPrototypeThemePalette(profile.defaultThemePaletteId);
@@ -121,24 +152,34 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
       activeMode,
       profileId,
       section,
+      theme,
       viewport,
     } satisfies PersistedLabState));
-  }, [accessLevel, activeMode, profileId, section, viewport, workspaceId]);
+  }, [accessLevel, activeMode, profileId, section, theme, viewport, workspaceId]);
+
+  useEffect(() => {
+    if (section !== 'overlays' || !overlayOpen) return undefined;
+    const closeOnEscape = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setOverlayOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [overlayOpen, section]);
 
   const previewStyle = {
     '--persona-color': profile.personaColor,
     '--proto-accent': palette.color,
-    '--proto-bg': '#08090b',
-    '--proto-border': 'rgba(255, 255, 255, 0.13)',
-    '--proto-muted': '#aaa5a1',
-    '--proto-surface': '#101114',
-    '--proto-text': '#f5f1ed',
+    '--proto-bg': 'var(--mf-bg)',
+    '--proto-border': 'var(--mf-border)',
+    '--proto-muted': 'var(--mf-text-muted)',
+    '--proto-surface': 'var(--mf-surface)',
+    '--proto-text': 'var(--mf-text)',
     '--proto-user-color': profile.personaColor,
     '--proto-warm-white': '#f5f1ed',
   } as CSSProperties;
 
   return (
-    <main className="component-lab" style={previewStyle}>
+    <main className={`component-lab is-${theme}`} style={previewStyle}>
       <header className="component-lab__header">
         <a aria-label="Ouvrir le prototype assemblé" className="component-lab__brand" href="/ui-reset">
           <img alt="" src={masterflowMark} />
@@ -188,6 +229,11 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
           <button aria-pressed={viewport === 'desktop'} onClick={() => setViewport('desktop')} type="button"><Monitor size={17} /> Desktop</button>
           <button aria-pressed={viewport === 'mobile'} onClick={() => setViewport('mobile')} type="button"><Smartphone size={17} /> Mobile</button>
         </div>
+        <div className="component-lab__viewport">
+          <small>Thème</small>
+          <button aria-pressed={theme === 'dark'} onClick={() => setTheme('dark')} type="button">Sombre</button>
+          <button aria-pressed={theme === 'light'} onClick={() => setTheme('light')} type="button">Clair</button>
+        </div>
       </section>
 
       <section className={`component-lab__bench is-${viewport}`} aria-label={`Banc de test ${section}`}>
@@ -195,6 +241,117 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
           <span><Boxes size={17} /><strong>{sections.find((item) => item.id === section)?.label}</strong></span>
           <small>Fixture locale · aucun backend · assets actifs uniquement</small>
         </header>
+
+        {section === 'foundations' ? (
+          <div className="component-lab__stage component-lab__stage--foundations">
+            {[
+              ['Marque', 'var(--mf-brand)'],
+              ['Utilisateur', 'var(--mf-user)'],
+              ['Support', 'var(--mf-support)'],
+              ['Succès', 'var(--mf-success)'],
+              ['Attention', 'var(--mf-attention)'],
+              ['Danger', 'var(--mf-danger)'],
+              ['Focus', 'var(--mf-focus)'],
+            ].map(([label, color]) => (
+              <article key={label}>
+                <span aria-hidden="true" style={{background: color}} />
+                <strong>{label}</strong>
+                <small>{color}</small>
+              </article>
+            ))}
+          </div>
+        ) : null}
+
+        {section === 'dock' ? (
+          <div className={`component-lab__stage component-lab__stage--dock proto-shell proto-shell--theme-${theme} proto-shell--dock-${dockPanel ?? 'closed'}`}>
+            <div className="component-lab__dock-copy">
+              <small>Contrat actif</small>
+              <h2>Trois actions dans le rail. La conversation dans le Dock.</h2>
+              <p>Le micro et la transcription restent désactivés tant que le runtime ne les raccorde pas.</p>
+            </div>
+            <PrototypeActionRail actions={labSuggestions} libraryOpen={false} onOpenLibrary={() => undefined} />
+            <PrototypeCommandDock
+              dockPanel={dockPanel}
+              dockPanelClosing={false}
+              expandedHistoryId={null}
+              historyClosing={false}
+              historyItems={[]}
+              historyOpen={historyOpen}
+              input={dockInput}
+              microAvailable={false}
+              onCloseHistory={() => setHistoryOpen(false)}
+              onInputChange={setDockInput}
+              onInputKeyDown={(event) => {
+                if (event.key !== 'Enter' || event.shiftKey) return;
+                event.preventDefault();
+              }}
+              onSubmit={(event) => event.preventDefault()}
+              onToggleExpandedHistory={() => undefined}
+              onToggleHistory={() => setHistoryOpen((current) => !current)}
+              onToggleKeyboard={() => setDockPanel((current) => current ? null : 'keyboard')}
+              onToggleMicro={() => undefined}
+              onToggleRecording={() => undefined}
+              onToggleTranscription={() => undefined}
+              recording={false}
+              renderedDockPanel={dockPanel}
+              runtimeState="connected"
+              showHistory
+              showSuggestions={false}
+              suggestions={labSuggestions}
+              transcribing={false}
+            />
+          </div>
+        ) : null}
+
+        {section === 'states' ? (
+          <div className="component-lab__stage component-lab__stage--states">
+            {mandatoryStates.map(([label, detail]) => <article key={label}><small>État obligatoire</small><strong>{label}</strong><p>{detail}</p></article>)}
+          </div>
+        ) : null}
+
+        {section === 'forms' ? (
+          <div className="component-lab__stage component-lab__stage--forms">
+            <form onSubmit={(event) => event.preventDefault()}>
+              <div aria-labelledby="lab-error-title" className="component-lab__error-summary" role="alert">
+                <strong id="lab-error-title">Une information est à corriger</strong>
+                <a href="#lab-project-name">Le nom du projet est requis.</a>
+              </div>
+              <label htmlFor="lab-project-name">Nom du projet</label>
+              <input aria-describedby="lab-project-name-error" aria-invalid="true" id="lab-project-name" />
+              <small id="lab-project-name-error">Saisis un nom compréhensible par l’équipe.</small>
+              <label htmlFor="lab-project-context">Contexte</label>
+              <textarea defaultValue="Une phrase utile avant de demander davantage d’informations." id="lab-project-context" rows={4} />
+              <label htmlFor="lab-project-source">Source validée · lecture seule</label>
+              <input id="lab-project-source" readOnly value="Runtime MasterFlow" />
+              <div>
+                <button className="is-primary" type="submit">Continuer</button>
+                <button type="button">Annuler</button>
+                <button disabled type="button">Action indisponible</button>
+              </div>
+            </form>
+          </div>
+        ) : null}
+
+        {section === 'overlays' ? (
+          <div className="component-lab__stage component-lab__stage--overlays">
+            <button onClick={() => setOverlayOpen(true)} type="button">Ouvrir la feuille</button>
+            {overlayOpen ? (
+              <div className="component-lab__overlay-backdrop">
+                <section aria-label="Feuille de démonstration" aria-modal="true" role="dialog">
+                  <small>Overlay partagé</small>
+                  <h2>Une décision à la fois.</h2>
+                  <p>Échap ferme la couche active avant de revenir au contenu.</p>
+                  <div className="component-lab__overlay-states">
+                    <span><strong>Prêt</strong> Action disponible</span>
+                    <span><strong>Erreur</strong> Retour au contenu possible</span>
+                    <span><strong>Interdit</strong> Aucun pouvoir simulé</span>
+                  </div>
+                  <button autoFocus onClick={() => setOverlayOpen(false)} type="button">Fermer</button>
+                </section>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         {section === 'home' ? (
           <div className="component-lab__stage component-lab__stage--home">

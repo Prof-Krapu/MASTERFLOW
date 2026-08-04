@@ -519,6 +519,7 @@ export function PrototypeActionRail({
             type="button"
           >
             <Icon size={19} />
+            <span className="proto-stage-tools__label">{action.label}</span>
           </button>
         );
       })}
@@ -531,6 +532,7 @@ export function PrototypeActionRail({
         type="button"
       >
         <Plus size={24} />
+        <span className="proto-stage-tools__label">Toutes</span>
       </button>
     </aside>
   );
@@ -546,6 +548,7 @@ type CommandDockProps = {
   input: string;
   recording: boolean;
   renderedDockPanel: PrototypeDockPanel;
+  showHistory: boolean;
   showSuggestions: boolean;
   suggestions: PrototypeActionSuggestion[];
   transcribing: boolean;
@@ -561,6 +564,14 @@ type CommandDockProps = {
   onToggleMicro: () => void;
   onToggleRecording: () => void;
   onToggleTranscription: () => void;
+};
+
+const runtimeMessageForState = (state: string): string | null => {
+  if (state === 'connected') return null;
+  if (state === 'connecting') return 'Connexion au chat…';
+  if (state === 'expired' || state === 'session_expired') return 'Session expirée — reconnecte-toi';
+  if (state === 'forbidden') return 'Chat indisponible pour ce rôle';
+  return 'Chat indisponible';
 };
 
 export function PrototypeCommandDock({
@@ -585,10 +596,12 @@ export function PrototypeCommandDock({
   recording,
   renderedDockPanel,
   runtimeState,
+  showHistory,
   showSuggestions,
   suggestions,
   transcribing,
 }: CommandDockProps): ReactElement {
+  const runtimeMessage = runtimeState ? runtimeMessageForState(runtimeState) : null;
   return (
     <form className="proto-commandbar" onSubmit={onSubmit}>
       {showSuggestions ? (
@@ -704,7 +717,7 @@ export function PrototypeCommandDock({
         >
           <Keyboard size={22} />
         </button>
-        {showSuggestions ? (
+        {showHistory ? (
           <button
             aria-expanded={historyOpen}
             aria-label={historyOpen ? 'Fermer l’historique' : 'Ouvrir l’historique'}
@@ -727,8 +740,14 @@ export function PrototypeCommandDock({
         >
           {recording ? <span className="proto-rec-label">REC</span> : <Mic size={22} />}
         </button>
-        {runtimeState ? (
-          <span className={`proto-runtime-connection proto-runtime-connection--${runtimeState}`}>{runtimeState}</span>
+        {runtimeMessage ? (
+          <span
+            aria-live="polite"
+            className={`proto-runtime-connection proto-runtime-connection--${runtimeState}`}
+            role="status"
+          >
+            {runtimeMessage}
+          </span>
         ) : null}
       </div>
     </form>

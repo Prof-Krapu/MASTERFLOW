@@ -25,6 +25,7 @@ type ShortcutProps = {
   characterOpen: boolean;
   dockPanel: PrototypeDockPanel;
   historyOpen: boolean;
+  microAvailable: boolean;
   modeCycle: string[];
   navigationDestinationRef: MutableRefObject<string>;
   railOpen: boolean;
@@ -66,6 +67,7 @@ export function usePrototypeShortcuts({
   closeTunnel,
   dockPanel,
   historyOpen,
+  microAvailable,
   modeCycle,
   navigateTo,
   navigationDestinationRef,
@@ -242,6 +244,7 @@ export function usePrototypeShortcuts({
 
       if (!isTextTarget && key === 'm') {
         event.preventDefault();
+        if (!microAvailable) return;
         const nextDock = resolveMicroToggle({dockPanel});
         setRecording(nextDock.recording);
         setDockPanel(nextDock.dockPanel);
@@ -305,6 +308,7 @@ export function usePrototypeShortcuts({
     closeTunnel,
     dockPanel,
     historyOpen,
+    microAvailable,
     modeCycle,
     navigateTo,
     navigationDestinationRef,

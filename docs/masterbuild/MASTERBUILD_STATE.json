@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-04T23:54:57+02:00",
+  "updated_at": "2026-08-05T00:27:00+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,11 +22,11 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Attendre les checks GitHub et les revues MALEX/Vincent de la PR #231, puis demander un GO distinct avant tout merge.",
+    "recommended_next_action": "Committer, pousser, ouvrir une PR prête et merger le Lot 2 après revérification des contrôles GitHub.",
     "primary_risk": "Déclarer conforme une surface historique sans preuves thèmes, clavier, états, responsive et validations humaines.",
     "no_auto_execute": true,
     "work_package_ids": ["UFR-001", "UFR-002", "UFR-003"],
-    "authorization_id": "AUTH-UFR-L1-PUBLISH-2026-08-04",
+    "authorization_id": "AUTH-UFR-L2-PUBLISH-MERGE-2026-08-05",
     "success_criteria": [
       "Toute page produit et tout composant partagé public possède un identifiant de conformité.",
       "Le gate bloque une promotion sans règle, état, scénario Lab, preuve ou validation.",
@@ -38,7 +38,7 @@
     "validation_gates": [
       "Lot 1 vérifié et revu avant le Lot 2",
       "Lot 2 vérifié et revu avant le Lot 3",
-      "GO distinct avant commit, push, PR ou merge de chaque lot",
+      "GO publication et merge du Lot 2 accordé le 2026-08-05",
       "Aucun déploiement, asset, fournisseur ou migration dans ce Round"
     ],
     "source_refs": [
@@ -57,14 +57,14 @@
       "label": "Publier le Lot 1 Bible UI et gate MASTERBUILD",
       "reason": "Les fondations et Project V2 doivent être bloqués par un contrat vérifiable avant toute composition runtime.",
       "recommended": true,
-      "status": "awaiting_review"
+      "status": "completed"
     },
     {
       "move_id": "build-ui-foundations-lot-2",
       "label": "Corriger Shell, thèmes, rail et Dock",
       "reason": "Ce lot attend la revue et le merge du Lot 1 pour utiliser la Bible comme gate.",
-      "recommended": false,
-      "status": "blocked_until_lot_1_merge"
+      "recommended": true,
+      "status": "ready_for_publication"
     },
     {
       "move_id": "build-project-v2-lot-3",
@@ -106,14 +106,14 @@
     "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Bible humaine et registre machine-readable cohérents",
-      "Gate de promotion volontairement bloquant sans preuves",
-      "API et cockpit MASTERBUILD exposent la conformité et les findings candidats"
+      "Tokens sémantiques partagés et thèmes clair sombre système",
+      "Rail limité à trois actions sans duplication dans le Dock",
+      "Dock honnête, clavier accessible et smoke 390 px sans overflow"
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant commit, push et PR du Lot 1",
-      "Revue et merge du Lot 1 avant Lot 2",
+      "Validation MALEX accordée par GO publication le 2026-08-05",
+      "Commit, push, PR prête et merge du Lot 2 autorisés après contrôles verts",
       "Aucun déploiement dans les trois lots"
     ],
     "source_refs": [
@@ -310,10 +310,10 @@
     }
   ],
   "publication": {
-    "state": "ready_pr",
-    "branch": "codex/ui-bible-masterbuild-gate",
-    "commit_sha": "2c7cb3ff57161d6e5e9d180a120e06b9149a2c1c",
+    "state": "main_lot_1_lot_2_local",
+    "branch": "codex/ui-foundations-shell-theme-dock",
+    "commit_sha": "761bb4c52821175a2fd9f5b163f4bc34607d3ea1",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/231",
-    "runtime_proof": "PR #231 prête sur la base GitHub main ab7f5ea ; deux commits fonctionnels publiés, aucun merge ni déploiement."
+    "runtime_proof": "Lot 1 mergé via PR #231 dans GitHub main au SHA 761bb4c ; Lot 2 ouvert localement depuis ce SHA, aucun déploiement."
   }
 }
