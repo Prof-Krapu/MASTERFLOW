@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-04T01:13:11+02:00",
+  "updated_at": "2026-08-04T23:48:40+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -15,76 +15,70 @@
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
   },
   "active_round": {
-    "round_id": "UI-PAGE-AUDIT-001",
-    "title": "Auditer Inventory depuis le runtime unique publié",
-    "objective": "Auditer la page Inventory réellement publiée avant toute nouvelle modification et distinguer objets, collections, candidats et Companions, avec leurs données, états et permissions.",
+    "round_id": "UI-FOUNDATIONS-RECOVERY-001",
+    "title": "Restaurer les fondations UI et imposer la Bible",
+    "objective": "Publier en trois lots successifs une Bible UI obligatoire, les fondations Shell/Thèmes/Dock, puis Project V2 situation vivante sans altérer le métier déjà validé.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 1,
-    "stage_label": "Orienter",
-    "recommended_next_action": "Auditer Inventory en lecture seule dans le runtime publié, avec GodMode, professeur, étudiant et 390 px.",
-    "primary_risk": "Présenter un catalogue technique, un candidat ou un Companion comme du canon validé sans preuve de source ni de permission.",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Publier le Lot 1 par commits lisibles, push et PR prête, puis attendre les checks et revues avant tout merge.",
+    "primary_risk": "Déclarer conforme une surface historique sans preuves thèmes, clavier, états, responsive et validations humaines.",
     "no_auto_execute": true,
-    "work_package_ids": ["UPA-005"],
-    "authorization_id": null,
+    "work_package_ids": ["UFR-001", "UFR-002", "UFR-003"],
+    "authorization_id": "AUTH-UFR-L1-PUBLISH-2026-08-04",
     "success_criteria": [
-      "Inventory expose une première valeur et une prochaine action utiles dans son état réel.",
-      "Objets, collections, candidats et Companions ne sont jamais confondus.",
-      "Les états vide, chargement, erreur, interdit et absence de données sont distingués.",
-      "GodMode, professeur et étudiant ne voient que les capacités autorisées.",
-      "MALEX valide le contrat Inventory avant toute construction."
+      "Toute page produit et tout composant partagé public possède un identifiant de conformité.",
+      "Le gate bloque une promotion sans règle, état, scénario Lab, preuve ou validation.",
+      "Le cockpit distingue conforme, à auditer et bloqué et transforme les retours en findings candidats.",
+      "Le Lot 2 corrige thèmes, Shell, rail et Dock sans toucher Inventory.",
+      "Project V2 traverse Lab, Prototype, validation MALEX et smoke Vincent avant runtime."
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant l'audit navigateur Inventory",
-      "Validation MALEX avant toute modification Inventory",
-      "Aucun asset, migration ou déploiement pendant l'audit"
+      "Lot 1 vérifié et revu avant le Lot 2",
+      "Lot 2 vérifié et revu avant le Lot 3",
+      "GO distinct avant commit, push, PR ou merge de chaque lot",
+      "Aucun déploiement, asset, fournisseur ou migration dans ce Round"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
-      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
+      "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
+      "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
+      "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
       "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
-      "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
-      "apps/frontend/src/inventory-workspace.tsx",
-      "apps/frontend/src/current-ui-demo.tsx",
-      "apps/frontend/src/ui-reset/prototype-profile-registry.ts",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/221",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/223",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/224",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/225",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/226",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/227",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/228",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
+      "FRONTEND_UI_DOCTRINE.md",
+      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md"
     ]
   },
   "next_moves": [
     {
-      "move_id": "audit-inventory-page",
-      "label": "Auditer Inventory dans le runtime publié",
-      "reason": "Learn est stabilisé ; Inventory est la prochaine verticale métier à contractualiser avant toute retouche.",
+      "move_id": "publish-ui-bible-lot-1",
+      "label": "Publier le Lot 1 Bible UI et gate MASTERBUILD",
+      "reason": "Les fondations et Project V2 doivent être bloqués par un contrat vérifiable avant toute composition runtime.",
       "recommended": true,
-      "status": "awaiting_go"
+      "status": "in_progress"
     },
     {
-      "move_id": "audit-masterstory-da-pages",
-      "label": "Auditer MasterStory et DA Studio après Inventory",
-      "reason": "Ces verticales seront auditées après clarification d'Inventory et de ses candidats.",
+      "move_id": "build-ui-foundations-lot-2",
+      "label": "Corriger Shell, thèmes, rail et Dock",
+      "reason": "Ce lot attend la revue et le merge du Lot 1 pour utiliser la Bible comme gate.",
       "recommended": false,
-      "status": "queued"
+      "status": "blocked_until_lot_1_merge"
     },
     {
-      "move_id": "deploy-ui-runtime",
-      "label": "Décider séparément du déploiement",
-      "reason": "Le merge Git ne publie pas automatiquement l'application dans un environnement partagé.",
+      "move_id": "build-project-v2-lot-3",
+      "label": "Construire Project V2 situation vivante",
+      "reason": "Ce lot attend la validation des fondations et passera Lab puis Prototype avant runtime.",
       "recommended": false,
-      "status": "future_requires_separate_go"
+      "status": "blocked_until_lot_2_merge"
     }
   ],
   "registries": {
     "features": "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
     "design_rules": "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
+    "ui_bible": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
+    "ui_conformance": "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
     "workboard": "docs/masterbuild/MASTERBUILD_WORKBOARD.json",
     "sources": "docs/masterbuild/MASTERBUILD_SOURCE_REGISTRY.json"
   },
@@ -104,32 +98,28 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "UI-PAGE-AUDIT-001",
-    "title": "Auditer Inventory depuis le runtime unique publié",
+    "goal_id": "UI-FOUNDATIONS-RECOVERY-001",
+    "title": "Restaurer les fondations UI et imposer la Bible",
     "owner": "malex",
     "status": "active",
-    "stage_index": 1,
-    "stage_label": "Orienter",
+    "stage_index": 7,
+    "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Contrat Inventory vérifiable avant construction",
-      "Objets, collections, candidats, Companions, états et permissions identifiés",
-      "Validation MALEX avant modification"
+      "Bible humaine et registre machine-readable cohérents",
+      "Gate de promotion volontairement bloquant sans preuves",
+      "API et cockpit MASTERBUILD exposent la conformité et les findings candidats"
     ],
     "blockers": [],
     "validation_gates": [
-      "GO distinct avant audit navigateur Inventory",
-      "Validation MALEX avant modification Inventory",
-      "Aucun déploiement dans ce Round sans autorisation séparée"
+      "GO distinct avant commit, push et PR du Lot 1",
+      "Revue et merge du Lot 1 avant Lot 2",
+      "Aucun déploiement dans les trois lots"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_PAGE_AUDIT_ROUND_001.md",
-      "docs/masterbuild/MASTERBUILD_FEATURE_REGISTRY.json",
-      "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
-      "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
-      "apps/frontend/src/inventory-workspace.tsx",
-      "apps/frontend/src/current-ui-demo.tsx",
-      "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
+      "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
+      "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
+      "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json"
     ]
   },
   "stages": [
@@ -137,43 +127,43 @@
       "index": 1,
       "id": "orient",
       "label": "Orienter",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "pending"
+      "status": "active"
     },
     {
       "index": 8,
@@ -320,10 +310,10 @@
     }
   ],
   "publication": {
-    "state": "main",
-    "branch": "main",
-    "commit_sha": "d257aa0aef1f3120a186dac5ed823c3d3562ae9e",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229",
-    "runtime_proof": "GitHub main inclut la PR #229 au merge d257aa0 ; les preuves Learn sont vertes. Aucun déploiement partagé n'est inclus ni prouvé."
+    "state": "local_uncommitted",
+    "branch": "codex/ui-bible-masterbuild-gate",
+    "commit_sha": "ab7f5ea74debde87797720e2bb7eb71d930ecb67",
+    "pull_request": null,
+    "runtime_proof": "Worktree propre basé sur GitHub main ab7f5ea ; Lot 1 local non committé, non poussé et non déployé."
   }
 }

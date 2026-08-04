@@ -58,6 +58,18 @@ Avant toute tâche UI, générer un Design Preflight avec surface, rôle, contex
 règles applicables, décisions verrouillées, zones libres, états, responsive, accessibilité, données
 backend et validations.
 
+La Bible `docs/ui/MASTERFLOW_UI_BIBLE_V1.md` est le contrat opératoire obligatoire. Toute page
+produit et tout composant partagé public possède un identifiant dans
+`docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json`. Une promotion modifiée est interdite tant que le
+gate suivant échoue :
+
+```bash
+npm run masterbuild:ui-gate -- --surface <id>
+```
+
+Un retour UI devient un finding candidat lié à l'artefact et aux règles concernées. MASTERBUILD ne
+modifie jamais automatiquement le code ou le canon depuis ce retour.
+
 Vincent peut co-construire dans le Component Lab. La promotion vers le prototype ou le runtime exige
 une revue MALEX sur expérience/DA et une revue Vincent sur contrats/permissions.
 
