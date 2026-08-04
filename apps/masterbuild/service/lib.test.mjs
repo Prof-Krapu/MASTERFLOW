@@ -4,12 +4,16 @@ import { readFile } from "node:fs/promises";
 import {
   assessHandoffFreshness,
   assertPortableExportSafe,
+  buildDesignPreflight,
   buildFeatureSummary,
   contextGuidance,
   formatResumeBrief,
   parseGitStatus,
   prepareSensitiveAction,
+  evaluateUiArtifact,
+  runUiGate,
   selectDesignRules,
+  validateUiConformanceRegistry,
   validateRoundAuthorization
 } from "./lib.mjs";
 
@@ -161,6 +165,56 @@ test("les règles design sont filtrées par surface et audience", () => {
   );
 });
 
+test("un artefact UI complet peut être promu", () => {
+  const artifact = {
+    artifact_id: "component.test",
+    artifact_type: "shared_component",
+    surface_id: "test",
+    component_id: "test-component",
+    status: "conformant",
+    rule_ids: ["DES-TEST"],
+    required_states: ["ready"],
+    lab_scenarios: ["test.ready"],
+    required_evidence: ["component_lab", "malex_review"],
+    evidence: [
+      { kind: "component_lab", status: "passed" },
+      { kind: "malex_review", status: "passed" }
+    ],
+    reviews: { malex: { status: "approved" }, vincent: null },
+    blocking_reasons: []
+  };
+  const evaluation = evaluateUiArtifact(
+    artifact,
+    [{ rule_id: "DES-TEST" }],
+    { required_page_states: [] }
+  );
+  assert.equal(evaluation.promotion_allowed, true);
+  assert.deepEqual(evaluation.blocking_reasons, []);
+});
+
+test("le gate Project échoue tant que les preuves et validations manquent", async () => {
+  const result = await runUiGate({ surface: "project" });
+  assert.equal(result.ok, false);
+  assert.match(result.blocking_reasons.join(" "), /preuve manquante/);
+  assert.match(result.blocking_reasons.join(" "), /validation MALEX manquante/);
+});
+
+test("le Design Preflight expose Bible, preuves, blocages et promotion", async () => {
+  const preflight = await buildDesignPreflight({
+    surface: "project",
+    artifact_type: "page",
+    component_id: "adaptive-workspace-page.project",
+    audience: "teacher",
+    contributor: "malex",
+    bible_version: "1.0.0"
+  });
+  assert.equal(preflight.artifact_id, "page.project");
+  assert.equal(preflight.bible_version, "1.0.0");
+  assert.equal(preflight.promotion_allowed, false);
+  assert.ok(preflight.required_evidence.includes("component_lab"));
+  assert.ok(preflight.blocking_reasons.length > 0);
+});
+
 test("le GO de Round couvre la draft PR mais pas le merge", () => {
   const authorization = validateRoundAuthorization({
     actor: "malex",
@@ -184,6 +238,7 @@ test("tous les registres MASTERBUILD sont des JSON valides", async () => {
     "MASTERBUILD_STATE.json",
     "MASTERBUILD_FEATURE_REGISTRY.json",
     "MASTERBUILD_DESIGN_RULES.json",
+    "MASTERBUILD_UI_CONFORMANCE.json",
     "MASTERBUILD_WORKBOARD.json",
     "MASTERBUILD_SOURCE_REGISTRY.json",
     "MASTERBUILD_PROFILE_AUDITS.json"
@@ -193,4 +248,17 @@ test("tous les registres MASTERBUILD sont des JSON valides", async () => {
     const content = await readFile(target, "utf8");
     assert.doesNotThrow(() => JSON.parse(content));
   }
+});
+
+test("le registre UI est structurellement valide sans prétendre que les surfaces sont conformes", async () => {
+  const [conformanceContent, designContent] = await Promise.all([
+    readFile(new URL("../../../docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json", import.meta.url), "utf8"),
+    readFile(new URL("../../../docs/masterbuild/MASTERBUILD_DESIGN_RULES.json", import.meta.url), "utf8")
+  ]);
+  const validation = validateUiConformanceRegistry(
+    JSON.parse(conformanceContent),
+    JSON.parse(designContent).rules
+  );
+  assert.equal(validation.valid, true, validation.errors.join("\n"));
+  assert.equal(validation.evaluations.some((item) => item.promotion_allowed), false);
 });

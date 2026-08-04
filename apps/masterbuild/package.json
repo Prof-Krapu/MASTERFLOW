@@ -11,6 +11,7 @@
     "resume": "node scripts/resume.mjs",
     "export": "node scripts/export.mjs",
     "preflight": "node scripts/preflight.mjs",
+    "ui-gate": "node scripts/ui-gate.mjs",
     "handoff": "node scripts/handoff.mjs",
     "test": "node --test service/lib.test.mjs",
     "lint": "tsc --noEmit",

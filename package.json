@@ -20,6 +20,7 @@
     "masterbuild:resume": "npm run resume --workspace @masterflow/masterbuild",
     "masterbuild:export": "npm run export --workspace @masterflow/masterbuild",
     "masterbuild:preflight": "npm run preflight --workspace @masterflow/masterbuild --",
+    "masterbuild:ui-gate": "npm run ui-gate --workspace @masterflow/masterbuild --",
     "masterbuild:handoff": "npm run handoff --workspace @masterflow/masterbuild",
     "test:masterbuild": "npm run test --workspace @masterflow/masterbuild",
     "build:masterbuild": "npm run test:masterbuild && npm run lint --workspace @masterflow/masterbuild && npm run build --workspace @masterflow/masterbuild",

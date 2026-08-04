@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import {
+  addUiFeedback,
   addLearningProposal,
   addRecap,
   authorizeRound,
@@ -7,6 +8,8 @@ import {
   collectGitStatus,
   collectStatus,
   doctor,
+  getUiBible,
+  getUiConformance,
   prepareHandoff,
   prepareSensitiveAction,
   saveLocalProfile,
@@ -64,6 +67,14 @@ const server = createServer(async (request, response) => {
       send(response, 200, await doctor());
       return;
     }
+    if (request.method === "GET" && url.pathname === "/control-api/ui-bible") {
+      send(response, 200, await getUiBible());
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/control-api/ui-conformance") {
+      send(response, 200, await getUiConformance());
+      return;
+    }
     if (request.method === "POST" && url.pathname === "/control-api/goals") {
       send(response, 200, await updateGoal(await readBody(request)));
       return;
@@ -98,6 +109,10 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === "POST" && url.pathname === "/control-api/learning/proposals") {
       send(response, 200, await addLearningProposal(await readBody(request)));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/control-api/ui-feedback") {
+      send(response, 200, await addUiFeedback(await readBody(request)));
       return;
     }
     if (request.method === "POST" && url.pathname === "/control-api/actions/prepare") {

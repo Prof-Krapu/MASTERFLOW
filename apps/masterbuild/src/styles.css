@@ -338,6 +338,65 @@ code {
   background: var(--surface);
 }
 
+.mb-conformance-card,
+.mb-ui-feedback {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 20px;
+  background: var(--surface);
+}
+
+.mb-conformance-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.mb-conformance-card h3,
+.mb-ui-feedback h3 {
+  margin: 4px 0;
+}
+
+.mb-conformance-card p,
+.mb-ui-feedback p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.mb-conformance-card > small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
+.mb-ui-feedback label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.mb-ui-feedback select,
+.mb-ui-feedback textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: var(--surface-strong);
+}
+
+.mb-ui-feedback button {
+  min-height: 44px;
+  justify-self: start;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 16px;
+  color: #160d09;
+  background: var(--orange);
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .mb-preflight-output h3 {
   margin: 4px 0;
 }
