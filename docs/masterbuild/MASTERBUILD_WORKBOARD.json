@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-02T14:33:27+02:00",
-  "active_round_id": "UI-PAGE-AUDIT-001",
+  "updated_at": "2026-08-04T23:54:57+02:00",
+  "active_round_id": "UI-FOUNDATIONS-RECOVERY-001",
   "authorizations": [
     {
       "authorization_id": "AUTH-MB2-2026-07-05",
@@ -92,6 +92,26 @@
       "granted_at": "2026-08-02",
       "expires_on_scope_change": true,
       "excluded": ["code", "frontend_change", "backend", "asset", "branch", "commit", "push", "pull_request", "merge", "deploy"]
+    },
+    {
+      "authorization_id": "AUTH-UFR-L1-LOCAL-2026-08-04",
+      "round_id": "UI-FOUNDATIONS-RECOVERY-001",
+      "actor": "malex",
+      "scope": "create_clean_worktree_build_and_verify_ui_bible_masterbuild_gate_locally",
+      "status": "completed",
+      "granted_at": "2026-08-04",
+      "expires_on_scope_change": true,
+      "excluded": ["commit", "push", "pull_request", "merge", "deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api"]
+    },
+    {
+      "authorization_id": "AUTH-UFR-L1-PUBLISH-2026-08-04",
+      "round_id": "UI-FOUNDATIONS-RECOVERY-001",
+      "actor": "malex",
+      "scope": "commit_push_ready_pull_request_ui_bible_masterbuild_gate",
+      "status": "completed",
+      "granted_at": "2026-08-04T23:48:40+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "ui_foundations_lot_2", "project_v2_lot_3"]
     }
   ],
   "work_packages": [
@@ -345,12 +365,13 @@
       "work_package_id": "UPA-005",
       "label": "Auditer et contractualiser Inventory depuis le runtime publié",
       "feature_ids": ["ui-shell-navigation", "inventory-resources"],
-      "status": "open",
+      "status": "blocked",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UPA-004"],
       "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-006", "DES-007", "DES-010"],
       "tool_route": "codex",
+      "blocked_reason": "Suspendu pendant UI-FOUNDATIONS-RECOVERY-001 ; quatre modifications Inventory locales restent isolées dans la copie principale.",
       "expected_evidence": [
         "objectif et première action utiles",
         "objets, collections, candidats et Companions distingués",
@@ -503,6 +524,44 @@
       "design_rule_ids": [],
       "tool_route": "github",
       "expected_evidence": ["tests", "build", "commit", "push", "draft PR"]
+    },
+    {
+      "work_package_id": "UFR-001",
+      "label": "Publier la Bible UI V1 et le gate MASTERBUILD",
+      "feature_ids": ["masterbuild-pilot", "ui-shell-navigation", "ui-command-dock"],
+      "status": "in_progress",
+      "owner": "codex",
+      "reviewers": ["malex", "vincent"],
+      "dependencies": [],
+      "design_rule_ids": ["DES-001", "DES-005", "DES-010", "DES-015", "DES-016", "DES-017", "DES-018", "DES-019", "DES-020", "DES-021", "DES-022", "DES-023", "DES-024"],
+      "tool_route": "codex",
+      "expected_evidence": ["Bible UI humaine", "registre de conformité valide", "gate CLI volontairement bloquant sans preuve", "API locale Bible et conformité", "cockpit conforme à auditer bloqué", "tests lint build doctor verts", "GO distinct avant publication"]
+    },
+    {
+      "work_package_id": "UFR-002",
+      "label": "Unifier Shell, thèmes, rail d'actions et Dock",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "blocked",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["UFR-001"],
+      "design_rule_ids": ["DES-004", "DES-005", "DES-006", "DES-007", "DES-008", "DES-010", "DES-015", "DES-017", "DES-018", "DES-019", "DES-023"],
+      "tool_route": "component_lab",
+      "blocked_reason": "Attend la revue et le merge du Lot 1.",
+      "expected_evidence": ["tokens sémantiques", "clair sombre système", "rail trois actions", "contrat clavier Dock", "Lab tous états rôles thèmes 390 px", "aucune modification Inventory"]
+    },
+    {
+      "work_package_id": "UFR-003",
+      "label": "Construire Project V2 situation vivante",
+      "feature_ids": ["project-scope", "ui-shell-navigation", "ui-command-dock"],
+      "status": "blocked",
+      "owner": "malex",
+      "reviewers": ["vincent", "codex"],
+      "dependencies": ["UFR-002"],
+      "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-013", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
+      "tool_route": "component_lab",
+      "blocked_reason": "Attend la revue et le merge du Lot 2.",
+      "expected_evidence": ["Project Lab", "Prototype assemblé", "validation MALEX", "smoke permissions Vincent", "thèmes clair sombre", "390 px", "aucune progression inventée"]
     }
   ]
 }

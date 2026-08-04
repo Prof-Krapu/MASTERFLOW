@@ -37,6 +37,9 @@ export const masterbuildApi = {
     surface: string;
     audience: string;
     contributor: "malex" | "vincent";
+    artifact_type: "page" | "shared_component";
+    component_id?: string;
+    bible_version: string;
     feature_id?: string;
     context?: string;
   }) =>
@@ -79,6 +82,16 @@ export const masterbuildApi = {
     }),
   addLearningProposal: (payload: { signal: string; proposal: string }) =>
     request<MasterbuildStatus["learning"]>("/control-api/learning/proposals", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  addUiFeedback: (payload: {
+    artifact_id: string;
+    rule_ids: string[];
+    body: string;
+    submitted_by: "malex" | "vincent";
+  }) =>
+    request<{ finding_id: string; status: "candidate" }>("/control-api/ui-feedback", {
       method: "POST",
       body: JSON.stringify(payload)
     })

@@ -337,6 +337,32 @@ function CockpitView({
         </button>
       </section>
 
+      <section className="mb-section">
+        <div className="mb-section__heading">
+          <div>
+            <span className="mb-kicker">Bible UI V{status.ui_bible.version}</span>
+            <h3>Conformité des surfaces</h3>
+          </div>
+          <StatusPill tone={status.ui_conformance.validation.valid ? "good" : "danger"}>
+            {status.ui_conformance.validation.valid ? "registre valide" : "registre invalide"}
+          </StatusPill>
+        </div>
+        <div className="mb-proof-grid">
+          <div>
+            <strong>{status.ui_conformance.summary.audit_required} à auditer</strong>
+            <span>Le métier peut être conservé, la composition doit être reprouvée.</span>
+          </div>
+          <div>
+            <strong>{status.ui_conformance.summary.blocked} bloquées</strong>
+            <span>Aucune promotion tant que les preuves et validations manquent.</span>
+          </div>
+          <div>
+            <strong>{status.ui_conformance.summary.conformant} conformes</strong>
+            <span>Uniquement les surfaces qui ont traversé toutes les gates.</span>
+          </div>
+        </div>
+      </section>
+
       <section className="mb-section mb-section--actions">
         <div className="mb-section__heading">
           <div>
@@ -757,14 +783,35 @@ function GitView({
 function ResearchView({
   status,
   preflight,
-  onGeneratePreflight
+  onGeneratePreflight,
+  onSubmitFeedback
 }: {
   status: MasterbuildStatus;
   preflight: DesignPreflight | null;
-  onGeneratePreflight: (surface: string, audience: string) => Promise<void>;
+  onGeneratePreflight: (artifactId: string, audience: string) => Promise<void>;
+  onSubmitFeedback: (artifactId: string, ruleIds: string[], body: string) => Promise<void>;
 }) {
-  const [surface, setSurface] = useState("navigation");
+  const [artifactId, setArtifactId] = useState(
+    status.ui_conformance.artifacts[0]?.artifact_id ?? ""
+  );
   const [audience, setAudience] = useState("all");
+  const [feedbackRuleId, setFeedbackRuleId] = useState("");
+  const [feedbackBody, setFeedbackBody] = useState("");
+  const [feedbackStatus, setFeedbackStatus] = useState<string | null>(null);
+  const artifact = status.ui_conformance.artifacts.find(
+    (item) => item.artifact_id === artifactId
+  );
+  const evaluation = status.ui_conformance.evaluations.find(
+    (item) => item.artifact_id === artifactId
+  );
+  const feedbackRules = status.design_rules.filter((rule) =>
+    artifact?.rule_ids.includes(rule.rule_id)
+  );
+
+  useEffect(() => {
+    setFeedbackRuleId(feedbackRules[0]?.rule_id ?? "");
+  }, [artifactId]);
+
   return (
     <div className="mb-view">
       <section className="mb-research-rule">
@@ -772,8 +819,8 @@ function ResearchView({
         <div>
           <h3>MUI inspire l’ergonomie, pas la DA</h3>
           <p>
-            Les principes sont condensés ici. Les agents ne relisent pas tous les
-            PDF avant chaque composant.
+            La Bible UI V{status.ui_bible.version} traduit les références externes
+            en règles MasterFlow vérifiables, sans nouvelle dépendance visuelle.
           </p>
         </div>
       </section>
@@ -781,17 +828,17 @@ function ResearchView({
         className="mb-preflight-form"
         onSubmit={(event) => {
           event.preventDefault();
-          void onGeneratePreflight(surface, audience);
+          if (artifactId) void onGeneratePreflight(artifactId, audience);
         }}
       >
         <label>
-          <span>Surface</span>
-          <select onChange={(event) => setSurface(event.target.value)} value={surface}>
-            <option value="navigation">Navigation</option>
-            <option value="command_dock">Command Dock</option>
-            <option value="home">Home</option>
-            <option value="teaching">Teaching</option>
-            <option value="global">Global</option>
+          <span>Page ou composant</span>
+          <select onChange={(event) => setArtifactId(event.target.value)} value={artifactId}>
+            {status.ui_conformance.artifacts.map((item) => (
+              <option key={item.artifact_id} value={item.artifact_id}>
+                {item.label} · {item.status}
+              </option>
+            ))}
           </select>
         </label>
         <label>
@@ -809,9 +856,14 @@ function ResearchView({
       {preflight && (
         <section className="mb-preflight-output">
           <div>
-            <span className="mb-kicker">{preflight.surface} · {preflight.audience}</span>
+            <span className="mb-kicker">
+              Bible V{preflight.bible_version} · {preflight.artifact_id ?? preflight.surface}
+            </span>
             <h3>Brief avant modification</h3>
             <p>{preflight.context}</p>
+            <StatusPill tone={preflight.promotion_allowed ? "good" : "danger"}>
+              {preflight.promotion_allowed ? "promotion autorisée" : "promotion bloquée"}
+            </StatusPill>
           </div>
           <div className="mb-preflight-columns">
             <div>
@@ -823,11 +875,74 @@ function ResearchView({
               <ul>{preflight.free_zones.map((item) => <li key={item}>{item}</li>)}</ul>
             </div>
           </div>
+          <div className="mb-preflight-columns">
+            <div>
+              <strong>Preuves requises</strong>
+              <ul>{preflight.required_evidence.map((item) => <li key={item}>{item}</li>)}</ul>
+            </div>
+            <div>
+              <strong>Blocages</strong>
+              <ul>
+                {(preflight.blocking_reasons.length
+                  ? preflight.blocking_reasons
+                  : ["Aucun blocage déclaré."]
+                ).map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </div>
+          </div>
           <small>
             Revue MALEX : {preflight.validations.malex} · Revue Vincent :{" "}
             {preflight.validations.vincent}
           </small>
         </section>
+      )}
+      {artifact && (
+        <section className="mb-conformance-card">
+          <div>
+            <span className="mb-kicker">{artifact.artifact_id}</span>
+            <h3>{artifact.label}</h3>
+            <p>{artifact.notes}</p>
+          </div>
+          <StatusPill tone={evaluation?.promotion_allowed ? "good" : artifact.status === "blocked" ? "danger" : "warn"}>
+            {artifact.status}
+          </StatusPill>
+          <small>
+            {evaluation?.blocking_reasons.slice(0, 4).join(" · ") || "Promotion autorisée"}
+          </small>
+        </section>
+      )}
+      {artifact && (
+        <form
+          className="mb-ui-feedback"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!feedbackRuleId || !feedbackBody.trim()) return;
+            void onSubmitFeedback(artifact.artifact_id, [feedbackRuleId], feedbackBody).then(() => {
+              setFeedbackBody("");
+              setFeedbackStatus("Finding candidat enregistré. Aucun changement automatique.");
+            });
+          }}
+        >
+          <div>
+            <span className="mb-kicker">Retour lié aux règles</span>
+            <h3>Signaler un écart sur {artifact.label}</h3>
+            <p>Le retour entre comme finding candidat. Il ne modifie ni le code ni le canon.</p>
+          </div>
+          <label>
+            <span>Règle concernée</span>
+            <select value={feedbackRuleId} onChange={(event) => setFeedbackRuleId(event.target.value)}>
+              {feedbackRules.map((rule) => (
+                <option key={rule.rule_id} value={rule.rule_id}>{rule.rule_id} · {rule.title}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Observation</span>
+            <textarea rows={4} value={feedbackBody} onChange={(event) => setFeedbackBody(event.target.value)} />
+          </label>
+          <button type="submit">Enregistrer le finding candidat</button>
+          {feedbackStatus && <p role="status">{feedbackStatus}</p>}
+        </form>
       )}
       <section className="mb-design-rule-grid">
         {status.design_rules.map((rule) => (
@@ -1286,15 +1401,32 @@ export function App() {
     setExportResult(result.markdown_path);
   }
 
-  async function generateDesignPreflight(surface: string, audience: string) {
+  async function generateDesignPreflight(artifactId: string, audience: string) {
+    const artifact = status?.ui_conformance.artifacts.find(
+      (item) => item.artifact_id === artifactId
+    );
+    if (!artifact || !status) return;
     setDesignPreflight(
       await masterbuildApi.designPreflight({
-        surface,
+        surface: artifact.surface_id,
         audience,
+        artifact_type: artifact.artifact_type,
+        component_id: artifact.component_id,
+        bible_version: status.ui_bible.version,
         contributor:
           status?.profile?.profile_id === "vincent" ? "vincent" : "malex"
       })
     );
+  }
+
+  async function addUiFeedback(artifactId: string, ruleIds: string[], body: string) {
+    await masterbuildApi.addUiFeedback({
+      artifact_id: artifactId,
+      rule_ids: ruleIds,
+      body,
+      submitted_by: status?.profile?.profile_id === "vincent" ? "vincent" : "malex"
+    });
+    await refresh();
   }
 
   async function updateWorkPackage(workPackageId: string, nextStatus: string) {
@@ -1453,6 +1585,7 @@ export function App() {
           {view === "research" && (
             <ResearchView
               onGeneratePreflight={generateDesignPreflight}
+              onSubmitFeedback={addUiFeedback}
               preflight={designPreflight}
               status={status}
             />

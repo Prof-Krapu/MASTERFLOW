@@ -49,7 +49,16 @@ export type NextMove = {
   label: string;
   reason: string;
   recommended: boolean;
-  status: "ready_for_decision" | "queued" | "blocked";
+  status:
+    | "ready_for_decision"
+    | "awaiting_go"
+    | "awaiting_review"
+    | "in_progress"
+    | "queued"
+    | "blocked"
+    | "blocked_until_lot_1_merge"
+    | "blocked_until_lot_2_merge"
+    | "future_requires_separate_go";
 };
 
 export type FeatureRecord = {
@@ -111,6 +120,10 @@ export type DesignPreflight = {
   surface: string;
   audience: string;
   contributor: string;
+  artifact_type: string;
+  artifact_id: string | null;
+  component_id: string | null;
+  bible_version: string;
   feature_id: string | null;
   context: string;
   existing_components: string[];
@@ -124,6 +137,10 @@ export type DesignPreflight = {
   locked_decisions: string[];
   free_zones: string[];
   required_states: string[];
+  required_evidence: string[];
+  lab_scenarios: string[];
+  blocking_reasons: string[];
+  promotion_allowed: boolean;
   responsive: string;
   accessibility: string[];
   backend: {
@@ -136,6 +153,38 @@ export type DesignPreflight = {
     malex: string;
     vincent: string;
   };
+};
+
+export type UiConformanceArtifact = {
+  artifact_id: string;
+  artifact_type: "page" | "shared_component";
+  surface_id: string;
+  component_id: string;
+  label: string;
+  status: "conformant" | "audit_required" | "blocked";
+  rule_ids: string[];
+  required_states: string[];
+  lab_scenarios: string[];
+  required_evidence: string[];
+  evidence: Array<{ kind: string; status: string; ref?: string }>;
+  reviews: {
+    malex: { status: "approved"; at: string; ref?: string } | null;
+    vincent: { status: "approved"; at: string; ref?: string } | null;
+  };
+  blocking_reasons: string[];
+  notes: string;
+};
+
+export type UiConformanceEvaluation = {
+  artifact_id: string;
+  surface_id: string;
+  component_id: string;
+  status: UiConformanceArtifact["status"];
+  promotion_allowed: boolean;
+  blocking_reasons: string[];
+  missing_evidence: string[];
+  missing_states: string[];
+  unknown_rule_ids: string[];
 };
 
 export type MasterbuildStatus = {
@@ -303,6 +352,32 @@ export type MasterbuildStatus = {
     likely_missing: number;
   };
   design_rules: DesignRule[];
+  ui_bible: {
+    version: string;
+    path: string;
+  };
+  ui_conformance: {
+    schema_version: number;
+    bible_version: string;
+    artifacts: UiConformanceArtifact[];
+    candidate_findings: Array<{
+      finding_id: string;
+      artifact_id: string;
+      rule_ids: string[];
+      body: string;
+      status: "candidate";
+      auto_apply: false;
+    }>;
+    validation: { valid: boolean; errors: string[] };
+    summary: {
+      total: number;
+      conformant: number;
+      audit_required: number;
+      blocked: number;
+      promotion_allowed: number;
+    };
+    evaluations: UiConformanceEvaluation[];
+  };
   workboard: {
     active_round_id: string;
     authorizations: Array<{

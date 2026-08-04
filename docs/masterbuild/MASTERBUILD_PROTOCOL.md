@@ -112,6 +112,19 @@ Toute tâche UI charge les règles applicables depuis le registre design. MUI fo
 pas la bibliothèque visuelle. Une promotion UI exige revue MALEX sur l'expérience et revue Vincent
 sur les contrats.
 
+Le preflight déclare obligatoirement `artifact_type`, `component_id`, `bible_version`, les preuves,
+les blocages et `promotion_allowed`. Toute page produit et tout composant partagé public possède un
+identifiant dans `MASTERBUILD_UI_CONFORMANCE.json` ; un détail interne non réutilisable reste couvert
+par son parent.
+
+Le pipeline est : `Component Lab → Prototype assemblé → revue MALEX → revue Vincent si contrat ou
+permission → runtime`. `npm run masterbuild:ui-gate -- --surface <id>` échoue si une règle, un état,
+un scénario Lab, une preuve ou une validation manque. Le doctor vérifie la structure du registre ;
+il ne transforme jamais une surface incomplète en surface conforme.
+
+Un retour saisi dans le cockpit crée uniquement un `candidate_finding` lié à l'artefact et aux règles
+concernées. Aucune auto-correction, auto-promotion ou modification de permission n'est autorisée.
+
 ## Recherche
 
 Une recherche en ligne est recommandée si l'information est instable, externe, réglementaire,

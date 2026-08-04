@@ -30,6 +30,11 @@ export const DESIGN_RULES_PATH = path.join(
   REPO_ROOT,
   "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json"
 );
+export const UI_BIBLE_PATH = path.join(REPO_ROOT, "docs/ui/MASTERFLOW_UI_BIBLE_V1.md");
+export const UI_CONFORMANCE_PATH = path.join(
+  REPO_ROOT,
+  "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json"
+);
 export const WORKBOARD_PATH = path.join(
   REPO_ROOT,
   "docs/masterbuild/MASTERBUILD_WORKBOARD.json"
@@ -270,14 +275,18 @@ export async function collectHandoffStatus(state, git) {
 }
 
 export async function buildDesignPreflight(input = {}) {
-  const [design, features, profiles] = await Promise.all([
+  const [design, features, profiles, conformance] = await Promise.all([
     readJson(DESIGN_RULES_PATH, { rules: [] }),
     readJson(FEATURE_REGISTRY_PATH, { features: [] }),
-    readJson(PROFILE_AUDITS_PATH, { profiles: [] })
+    readJson(PROFILE_AUDITS_PATH, { profiles: [] }),
+    readJson(UI_CONFORMANCE_PATH, { artifacts: [] })
   ]);
   const surface = String(input.surface ?? "global").toLowerCase();
   const audience = String(input.audience ?? "all").toLowerCase();
   const contributor = input.contributor === "vincent" ? "vincent" : "malex";
+  const artifactType = String(input.artifact_type ?? "page").toLowerCase();
+  const componentId = input.component_id ? String(input.component_id).toLowerCase() : null;
+  const requestedBibleVersion = String(input.bible_version ?? design.bible_version ?? "unknown");
   const feature = features.features.find(
     (item) =>
       item.feature_id === input.feature_id ||
@@ -285,12 +294,48 @@ export async function buildDesignPreflight(input = {}) {
   );
   const rules = selectDesignRules(design.rules, { surface, audience });
   const profile = profiles.profiles.find((item) => item.profile_id === contributor);
+  const artifact = conformance.artifacts.find(
+    (item) =>
+      item.artifact_id === input.artifact_id ||
+      (componentId && item.component_id?.toLowerCase() === componentId) ||
+      (item.surface_id === surface && item.artifact_type === artifactType)
+  );
+  const applicableRules = [
+    ...rules,
+    ...design.rules.filter((rule) => artifact?.rule_ids?.includes(rule.rule_id))
+  ].filter(
+    (rule, index, collection) =>
+      collection.findIndex((candidate) => candidate.rule_id === rule.rule_id) === index
+  );
+  const evaluation = artifact
+    ? evaluateUiArtifact(artifact, design.rules, conformance)
+    : {
+        promotion_allowed: false,
+        blocking_reasons: [
+          `Aucune entrée de conformité pour ${artifactType} ${componentId ?? surface}.`
+        ],
+        missing_evidence: [],
+        unknown_rule_ids: []
+      };
+  const versionMismatch = requestedBibleVersion !== conformance.bible_version;
+  const blockingReasons = [
+    ...evaluation.blocking_reasons,
+    ...(versionMismatch
+      ? [
+          `Version Bible demandée ${requestedBibleVersion}, version active ${conformance.bible_version}.`
+        ]
+      : [])
+  ];
 
   return {
     generated_at: new Date().toISOString(),
     surface,
     audience,
     contributor,
+    artifact_type: artifactType,
+    artifact_id: artifact?.artifact_id ?? null,
+    component_id: componentId ?? artifact?.component_id ?? null,
+    bible_version: conformance.bible_version ?? design.bible_version ?? "unknown",
     feature_id: feature?.feature_id ?? null,
     context: input.context ?? "Round actif MASTERBUILD",
     existing_components: input.existing_components ?? [
@@ -298,7 +343,7 @@ export async function buildDesignPreflight(input = {}) {
       "Prototype UI",
       "Registre de composants partagé"
     ],
-    applicable_rules: rules.map((rule) => ({
+    applicable_rules: applicableRules.map((rule) => ({
       rule_id: rule.rule_id,
       title: rule.title,
       must: rule.must,
@@ -309,26 +354,20 @@ export async function buildDesignPreflight(input = {}) {
       ...(feature?.product_state === "validated"
         ? [`La fonctionnalité ${feature.label} est validée au niveau produit.`]
         : []),
-      ...rules.flatMap((rule) => rule.must).slice(0, 8)
+      ...applicableRules.flatMap((rule) => rule.must).slice(0, 8)
     ],
     free_zones: [
       "Composition locale dans les limites du composant existant",
       "Microcopy et rythme proposés puis revus",
       "Expérimentation dans le Lab avant promotion"
     ],
-    required_states: [
-      "loaded",
-      "empty",
-      "partial",
-      "locked",
-      "future",
-      "error",
-      "validation_required",
-      "read_only",
-      "mobile"
-    ],
+    required_states: artifact?.required_states ?? conformance.required_page_states ?? [],
+    required_evidence: artifact?.required_evidence ?? [],
+    lab_scenarios: artifact?.lab_scenarios ?? [],
+    blocking_reasons: blockingReasons,
+    promotion_allowed: evaluation.promotion_allowed && !versionMismatch,
     responsive: "Desktop full power ; mobile conversationnel et panneaux plein écran.",
-    accessibility: rules
+    accessibility: applicableRules
       .filter((rule) => rule.checks.some((check) => ["axe_targeted", "keyboard_smoke", "contrast"].includes(check)))
       .map((rule) => rule.title),
     backend: feature
@@ -344,6 +383,194 @@ export async function buildDesignPreflight(input = {}) {
       vincent: "Contrats, permissions, données et runtime"
     }
   };
+}
+
+export function evaluateUiArtifact(artifact, designRules = [], conformance = {}) {
+  const knownRuleIds = new Set(designRules.map((rule) => rule.rule_id));
+  const unknownRuleIds = (artifact.rule_ids ?? []).filter((ruleId) => !knownRuleIds.has(ruleId));
+  const passedEvidence = new Set(
+    (artifact.evidence ?? [])
+      .filter((item) => item.status === "passed")
+      .map((item) => item.kind)
+  );
+  const missingEvidence = (artifact.required_evidence ?? []).filter(
+    (kind) => !passedEvidence.has(kind)
+  );
+  const missingStates =
+    artifact.artifact_type === "page"
+      ? (conformance.required_page_states ?? []).filter(
+          (state) => !(artifact.required_states ?? []).includes(state)
+        )
+      : [];
+  const blockingReasons = [
+    ...(!artifact.artifact_id ? ["artifact_id manquant"] : []),
+    ...(!artifact.artifact_type ? ["artifact_type manquant"] : []),
+    ...(!artifact.surface_id ? ["surface_id manquant"] : []),
+    ...(!artifact.component_id ? ["component_id manquant"] : []),
+    ...(!(artifact.rule_ids ?? []).length ? ["aucune règle applicable"] : []),
+    ...unknownRuleIds.map((ruleId) => `règle inconnue ${ruleId}`),
+    ...missingStates.map((state) => `état requis manquant ${state}`),
+    ...(!(artifact.lab_scenarios ?? []).length ? ["aucun scénario Lab"] : []),
+    ...missingEvidence.map((kind) => `preuve manquante ${kind}`),
+    ...(artifact.blocking_reasons ?? []),
+    ...(artifact.status !== "conformant" ? [`statut ${artifact.status}`] : []),
+    ...(artifact.reviews?.malex?.status !== "approved" ? ["validation MALEX manquante"] : []),
+    ...((artifact.required_evidence ?? []).includes("vincent_review") &&
+    artifact.reviews?.vincent?.status !== "approved"
+      ? ["validation Vincent manquante"]
+      : [])
+  ];
+  return {
+    artifact_id: artifact.artifact_id ?? null,
+    surface_id: artifact.surface_id ?? null,
+    component_id: artifact.component_id ?? null,
+    status: artifact.status ?? "blocked",
+    promotion_allowed: blockingReasons.length === 0,
+    blocking_reasons: [...new Set(blockingReasons)],
+    missing_evidence: missingEvidence,
+    missing_states: missingStates,
+    unknown_rule_ids: unknownRuleIds
+  };
+}
+
+export function validateUiConformanceRegistry(conformance, designRules = []) {
+  if (!conformance || !Array.isArray(conformance.artifacts)) {
+    return { valid: false, errors: ["Registre de conformité absent ou illisible."] };
+  }
+  const ids = conformance.artifacts.map((artifact) => artifact.artifact_id).filter(Boolean);
+  const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
+  const evaluations = conformance.artifacts.map((artifact) =>
+    evaluateUiArtifact(artifact, designRules, conformance)
+  );
+  const structuralErrors = evaluations.flatMap((evaluation) =>
+    evaluation.blocking_reasons
+      .filter((reason) =>
+        [
+          "artifact_id manquant",
+          "artifact_type manquant",
+          "surface_id manquant",
+          "component_id manquant",
+          "aucune règle applicable",
+          "aucun scénario Lab"
+        ].includes(reason) ||
+        reason.startsWith("règle inconnue") ||
+        reason.startsWith("état requis manquant")
+      )
+      .map((reason) => `${evaluation.artifact_id ?? "artefact inconnu"}: ${reason}`)
+  );
+  const errors = [
+    ...duplicateIds.map((id) => `artifact_id dupliqué ${id}`),
+    ...(!conformance.bible_version ? ["bible_version manquante"] : []),
+    ...structuralErrors
+  ];
+  return { valid: errors.length === 0, errors, evaluations };
+}
+
+export async function getUiBible() {
+  const [content, design] = await Promise.all([
+    readFile(UI_BIBLE_PATH, "utf8"),
+    readJson(DESIGN_RULES_PATH, { rules: [] })
+  ]);
+  return {
+    version: design.bible_version ?? "unknown",
+    path: path.relative(REPO_ROOT, UI_BIBLE_PATH),
+    content,
+    rule_count: design.rules.length
+  };
+}
+
+export async function getUiConformance() {
+  const [conformance, design] = await Promise.all([
+    readJson(UI_CONFORMANCE_PATH, { artifacts: [] }),
+    readJson(DESIGN_RULES_PATH, { rules: [] })
+  ]);
+  const validation = validateUiConformanceRegistry(conformance, design.rules);
+  const summary = validation.evaluations.reduce(
+    (accumulator, evaluation) => {
+      accumulator.total += 1;
+      accumulator[evaluation.status] = (accumulator[evaluation.status] ?? 0) + 1;
+      if (evaluation.promotion_allowed) accumulator.promotion_allowed += 1;
+      return accumulator;
+    },
+    { total: 0, conformant: 0, audit_required: 0, blocked: 0, promotion_allowed: 0 }
+  );
+  return { ...conformance, validation: { valid: validation.valid, errors: validation.errors }, summary, evaluations: validation.evaluations };
+}
+
+export async function runUiGate(input = {}) {
+  const [conformance, design] = await Promise.all([
+    readJson(UI_CONFORMANCE_PATH, { artifacts: [] }),
+    readJson(DESIGN_RULES_PATH, { rules: [] })
+  ]);
+  const surface = input.surface ? String(input.surface).toLowerCase() : null;
+  const componentId = input.component_id ? String(input.component_id).toLowerCase() : null;
+  const artifactId = input.artifact_id ? String(input.artifact_id).toLowerCase() : null;
+  const matches = conformance.artifacts.filter(
+    (artifact) =>
+      (!surface || artifact.surface_id.toLowerCase() === surface) &&
+      (!componentId || artifact.component_id.toLowerCase() === componentId) &&
+      (!artifactId || artifact.artifact_id.toLowerCase() === artifactId)
+  );
+  if (!surface && !componentId && !artifactId) {
+    throw new Error("Le gate exige --surface, --component ou --artifact.");
+  }
+  if (!matches.length) {
+    return {
+      ok: false,
+      bible_version: conformance.bible_version,
+      target: { surface, component_id: componentId, artifact_id: artifactId },
+      evaluations: [],
+      blocking_reasons: ["Aucun artefact de conformité ne correspond à la cible."]
+    };
+  }
+  const evaluations = matches.map((artifact) =>
+    evaluateUiArtifact(artifact, design.rules, conformance)
+  );
+  return {
+    ok: evaluations.every((evaluation) => evaluation.promotion_allowed),
+    bible_version: conformance.bible_version,
+    target: { surface, component_id: componentId, artifact_id: artifactId },
+    evaluations,
+    blocking_reasons: evaluations.flatMap((evaluation) => evaluation.blocking_reasons)
+  };
+}
+
+export async function addUiFeedback(input) {
+  const [conformance, design] = await Promise.all([
+    readJson(UI_CONFORMANCE_PATH),
+    readJson(DESIGN_RULES_PATH, { rules: [] })
+  ]);
+  const artifactId = typeof input.artifact_id === "string" ? input.artifact_id.trim() : "";
+  const body = typeof input.body === "string" ? input.body.trim().slice(0, 1200) : "";
+  const submittedBy = input.submitted_by === "vincent" ? "vincent" : "malex";
+  const artifact = conformance?.artifacts?.find((item) => item.artifact_id === artifactId);
+  if (!artifact || !body) {
+    throw new Error("Un artefact connu et un retour sont requis.");
+  }
+  const knownRuleIds = new Set(design.rules.map((rule) => rule.rule_id));
+  const ruleIds = [...new Set(Array.isArray(input.rule_ids) ? input.rule_ids : [])].filter(
+    (ruleId) => knownRuleIds.has(ruleId) && artifact.rule_ids.includes(ruleId)
+  );
+  if (!ruleIds.length) {
+    throw new Error("Le retour doit viser au moins une règle applicable à l'artefact.");
+  }
+  const now = new Date().toISOString();
+  const finding = {
+    finding_id: `ui-finding-${Date.now()}`,
+    created_at: now,
+    submitted_by: submittedBy,
+    artifact_id: artifact.artifact_id,
+    surface_id: artifact.surface_id,
+    component_id: artifact.component_id,
+    rule_ids: ruleIds,
+    body,
+    status: "candidate",
+    auto_apply: false
+  };
+  conformance.candidate_findings.unshift(finding);
+  conformance.updated_at = now;
+  await writeJsonAtomic(UI_CONFORMANCE_PATH, conformance);
+  return finding;
 }
 
 export async function writePortableExport() {
@@ -900,7 +1127,7 @@ ${nextMoves
 }
 
 export async function collectStatus() {
-  const [state, profile, git, runtime, profileAudits, recaps, learning, features, design, workboard, sources] =
+  const [state, profile, git, runtime, profileAudits, recaps, learning, features, design, workboard, sources, uiConformance] =
     await Promise.all([
     readState(),
     readLocalProfile(),
@@ -912,11 +1139,22 @@ export async function collectStatus() {
     readJson(FEATURE_REGISTRY_PATH, { features: [] }),
     readJson(DESIGN_RULES_PATH, { rules: [] }),
     readJson(WORKBOARD_PATH, { work_packages: [], authorizations: [] }),
-    readJson(SOURCE_REGISTRY_PATH, { sources: [] })
+    readJson(SOURCE_REGISTRY_PATH, { sources: [] }),
+    readJson(UI_CONFORMANCE_PATH, { artifacts: [], candidate_findings: [] })
   ]);
   const findings = await collectWorkspaceFindings(git);
   const externalAgents = await collectExternalAgentStatus(state);
   const handoff = await collectHandoffStatus(state, git);
+  const uiValidation = validateUiConformanceRegistry(uiConformance, design.rules);
+  const uiSummary = uiValidation.evaluations.reduce(
+    (summary, evaluation) => {
+      summary.total += 1;
+      summary[evaluation.status] = (summary[evaluation.status] ?? 0) + 1;
+      if (evaluation.promotion_allowed) summary.promotion_allowed += 1;
+      return summary;
+    },
+    { total: 0, conformant: 0, audit_required: 0, blocked: 0, promotion_allowed: 0 }
+  );
   return {
     generated_at: new Date().toISOString(),
     state,
@@ -933,25 +1171,39 @@ export async function collectStatus() {
     feature_registry: features.features,
     feature_summary: buildFeatureSummary(features.features),
     design_rules: design.rules,
+    ui_bible: {
+      version: design.bible_version ?? uiConformance.bible_version ?? "unknown",
+      path: path.relative(REPO_ROOT, UI_BIBLE_PATH)
+    },
+    ui_conformance: {
+      ...uiConformance,
+      validation: { valid: uiValidation.valid, errors: uiValidation.errors },
+      summary: uiSummary,
+      evaluations: uiValidation.evaluations
+    },
     workboard,
     source_registry: sources.sources
   };
 }
 
 export async function doctor() {
-  const [state, profile, git, runtime, features, design, workboard] = await Promise.all([
+  const [state, profile, git, runtime, features, design, workboard, conformance, bibleExists] = await Promise.all([
     readState().catch(() => null),
     readLocalProfile(),
     collectGitStatus(),
     collectRuntimeStatus(),
     readJson(FEATURE_REGISTRY_PATH),
     readJson(DESIGN_RULES_PATH),
-    readJson(WORKBOARD_PATH)
+    readJson(WORKBOARD_PATH),
+    readJson(UI_CONFORMANCE_PATH),
+    pathExists(UI_BIBLE_PATH)
   ]);
   const handoff = state ? await collectHandoffStatus(state, git) : null;
   const round = state ? currentRound(state) : null;
+  const uiValidation = validateUiConformanceRegistry(conformance, design?.rules ?? []);
+  const baseOk = Boolean(state && git.available && bibleExists && uiValidation.valid);
   return {
-    ok: Boolean(state && git.available),
+    ok: baseOk,
     checks: [
       { id: "node", label: "Node.js", ok: Number(process.versions.node.split(".")[0]) >= 20, detail: process.versions.node },
       { id: "git", label: "Dépôt Git", ok: git.available, detail: git.branch },
@@ -969,6 +1221,20 @@ export async function doctor() {
         label: "Registres V2",
         ok: Boolean(features?.features && design?.rules && workboard?.work_packages),
         detail: `${features?.features?.length ?? 0} fonctionnalités · ${design?.rules?.length ?? 0} règles · ${workboard?.work_packages?.length ?? 0} work packages`
+      },
+      {
+        id: "ui_bible",
+        label: "Bible UI",
+        ok: bibleExists && Boolean(design?.bible_version),
+        detail: bibleExists ? `V${design?.bible_version ?? "inconnue"}` : "introuvable"
+      },
+      {
+        id: "ui_conformance",
+        label: "Registre de conformité UI",
+        ok: uiValidation.valid,
+        detail: uiValidation.valid
+          ? `${conformance?.artifacts?.length ?? 0} artefacts enregistrés`
+          : uiValidation.errors.join(" · ")
       },
       { id: "runtime", label: "Backend produit facultatif", ok: runtime.available, optional: true, detail: runtime.available ? runtime.base_url : "arrêté, sans blocage" }
     ]

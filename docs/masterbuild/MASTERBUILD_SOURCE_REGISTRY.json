@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-02T14:33:27+02:00",
+  "updated_at": "2026-08-04T23:54:57+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -323,6 +323,54 @@
       "status": "absorbed",
       "absorbed_into": ["MASTERBUILD_DESIGN_RULES.json"],
       "note": "Les principes utiles sont condensés ; les PDF restent sources externes."
+    },
+    {
+      "source_id": "ui-bible-v1",
+      "path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
+      "kind": "canon_ui_operatoire",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_DESIGN_RULES.json", "MASTERBUILD_UI_CONFORMANCE.json", "MASTERBUILD_PROTOCOL.md"],
+      "note": "Contrat humain obligatoire pour pages produit et composants partagés publics."
+    },
+    {
+      "source_id": "ui-conformance-v1",
+      "path": "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
+      "kind": "ui_promotion_registry",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "apps/masterbuild"],
+      "note": "Registre machine-readable des règles, états, scénarios, preuves, validations et blocages."
+    },
+    {
+      "source_id": "ui-foundations-recovery-round-001",
+      "path": "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
+      "kind": "active_round",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Round en trois lots : Bible, fondations, puis Project V2."
+    },
+    {
+      "source_id": "masterflow-archives-ui-legacy",
+      "path": "/Users/malex/Documents/MASTERFLOW_ARCHIVES/00_BOOT_CANON/COMMON_LEGACY/UI/",
+      "kind": "archive_candidate_reference",
+      "status": "absorbed",
+      "absorbed_into": ["docs/ui/MASTERFLOW_UI_BIBLE_V1.md", "MASTERBUILD_DESIGN_RULES.json"],
+      "note": "Principes historiques de tokens, navigation, responsive et orchestration relus comme candidats ; aucun fichier ou asset importé automatiquement."
+    },
+    {
+      "source_id": "ui-external-foundations-2026-08-04",
+      "path": "https://www.w3.org/TR/WCAG22/",
+      "kind": "reference_external",
+      "status": "absorbed",
+      "absorbed_into": ["docs/ui/MASTERFLOW_UI_BIBLE_V1.md", "MASTERBUILD_DESIGN_RULES.json"],
+      "note": "Ensemble de références MUI, Atlassian, WCAG/WAI, Growth.Design et GOV.UK traduit en règles MasterFlow ; aucune dépendance ni apparence copiée."
+    },
+    {
+      "source_id": "ui-bible-masterbuild-gate-pr-231",
+      "path": "https://github.com/Prof-Krapu/MASTERFLOW/pull/231",
+      "kind": "ready_pull_request",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Lot 1 Bible UI et gate MASTERBUILD publié en PR prête ; revues et GO de merge encore requis, aucun déploiement."
     }
   ]
 }

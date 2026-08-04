@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-02T14:33:27+02:00",
+  "updated_at": "2026-08-04T12:00:00+02:00",
   "status_taxonomy": {
     "product": ["candidate", "validated", "future", "rejected"],
     "backend": ["absent", "documented", "partial", "ready", "verified"],
@@ -276,6 +276,9 @@
       "source_refs": [
         "MASTERBUILD.md",
         "docs/masterbuild/MASTERBUILD_PROTOCOL.md",
+        "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
+        "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
+        "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
         "docs/masterbuild/audits/GIT_CONSOLIDATION_CLASSIFICATION_2026-07-31.md",
         "docs/masterbuild/PR_214_SPLIT_STRATEGY_2026-07-31.md",
         "docs/ui/MASTERFLOW_UI_INTEGRATION_REGISTRY_V2.md",
@@ -284,7 +287,7 @@
       ],
       "dependencies": [],
       "missing": ["preuve live"],
-      "next_action": "Piloter le Round UI-PAGE-AUDIT-001 conversationnellement, Home en premier.",
+      "next_action": "Vérifier puis publier séparément le Lot 1 Bible UI et gate avant toute fondation visuelle.",
       "risk": "Le pilote ne doit pas devenir une seconde vérité concurrente."
     }
   ]

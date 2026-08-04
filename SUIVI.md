@@ -4,6 +4,30 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-04 — UI-FOUNDATIONS-RECOVERY-001 : LOT 1 EN PR PRÊTE #231
+
+- base : worktree propre `codex/ui-bible-masterbuild-gate` depuis GitHub `main` `ab7f5ea` ;
+- sécurité : serveurs MasterFlow `5174`, `8000` et `8010` arrêtés ; processus étrangers
+  `18789/18792` laissés intacts ;
+- Inventory : `UPA-005` suspendu et quatre modifications locales préservées dans la copie principale,
+  hors de ce worktree ;
+- contrat : Bible UI V1 humaine, règles `DES-*` machine-readable et registre de conformité par page
+  et composant public ;
+- gate : une promotion échoue sans règle, état, scénario Lab, preuve et validation ; aucune surface
+  historique n'est déclarée conforme par héritage ;
+- cockpit : Design Preflight étendu, états conforme/à auditer/bloqué et retour transformé en finding
+  candidat sans auto-application ;
+- preuves : JSON valides, MASTERBUILD `16/16`, lint et build verts, doctor vert, routes Bible et
+  conformité vérifiées, gate Project refusé comme attendu, cockpit sans erreur console et
+  `clientWidth = scrollWidth = 390` ;
+- séquence : Lot 2 Shell/Thèmes/Dock bloqué jusqu'au merge du Lot 1, puis Lot 3 Project V2 bloqué
+  jusqu'au merge du Lot 2 ;
+- publication : commits `7fd036e` et `2c7cb3f` poussés ; PR #231 prête et revue Vincent demandée
+  via CODEOWNERS et mention explicite ; checks et revues attendus avant un GO de merge distinct ;
+  déploiement, Lot 2 et Lot 3 restent exclus.
+
+---
+
 ## 2026-08-04 — LEARN-001 : AIDE PERSONNELLE UTILISABLE
 
 - source : audit réel de Learn et contrat validé par MALEX ;
