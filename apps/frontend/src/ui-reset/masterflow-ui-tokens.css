@@ -1,0 +1,57 @@
+:root {
+  color-scheme: dark;
+
+  --mf-brand: #f15d32;
+  --mf-brand-strong: #ff7448;
+  --mf-user: #3979e8;
+  --mf-support: #8b62c9;
+  --mf-success: #36a66a;
+  --mf-attention: #d99a2b;
+  --mf-danger: #d84c5c;
+  --mf-focus: #78a8ff;
+
+  --mf-bg: #0a0908;
+  --mf-surface: #15120f;
+  --mf-surface-strong: #211b17;
+  --mf-text: #f6eee8;
+  --mf-text-muted: #b2a69e;
+  --mf-border: rgba(232, 215, 201, 0.18);
+  --mf-ghost: rgba(224, 196, 174, 0.08);
+
+  /* Compatibilite temporaire avec les surfaces produit historiques. */
+  --bg: var(--mf-bg);
+  --panel: var(--mf-surface);
+  --panel-strong: var(--mf-surface-strong);
+  --text: var(--mf-text);
+  --muted: var(--mf-text-muted);
+  --border: var(--mf-border);
+  --accent: var(--mf-brand);
+  --accent-strong: var(--mf-brand-strong);
+  --success: var(--mf-success);
+  --danger: var(--mf-danger);
+}
+:root[data-masterflow-theme='light'] {
+  color-scheme: light;
+  --mf-bg: #f5f2ee;
+  --mf-surface: #fffdfa;
+  --mf-surface-strong: #ffffff;
+  --mf-text: #211c18;
+  --mf-text-muted: #6b625c;
+  --mf-border: rgba(39, 31, 26, 0.2);
+  --mf-ghost: rgba(62, 45, 35, 0.08);
+  --mf-focus: #245fca;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-masterflow-theme='auto'] {
+    color-scheme: light;
+    --mf-bg: #f5f2ee;
+    --mf-surface: #fffdfa;
+    --mf-surface-strong: #ffffff;
+    --mf-text: #211c18;
+    --mf-text-muted: #6b625c;
+    --mf-border: rgba(39, 31, 26, 0.2);
+    --mf-ghost: rgba(62, 45, 35, 0.08);
+    --mf-focus: #245fca;
+  }
+}

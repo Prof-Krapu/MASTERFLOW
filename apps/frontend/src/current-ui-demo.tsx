@@ -153,6 +153,17 @@ const historyItems = [
   },
 ];
 
+const appearanceStorageKey = 'masterflow.appearance-theme';
+
+const readAppearanceTheme = (): AppearanceTheme => {
+  try {
+    const value = window.localStorage.getItem(appearanceStorageKey);
+    return value === 'light' || value === 'dark' || value === 'auto' ? value : 'auto';
+  } catch {
+    return 'auto';
+  }
+};
+
 type RuntimeBridgeState = {
   context: CurrentContext | null;
   inboxItems: ValidationInboxItem[];
@@ -349,7 +360,7 @@ function useAnimatedPresence<T>(value: T | null, duration = 220): {
 export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactElement {
   const [activeMode, setActiveMode] = useState<ActiveSurface>('home');
   const [activePrototypeProfileId, setActivePrototypeProfileId] = useState<PrototypeProfileId>('masterflex');
-  const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>('auto');
+  const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>(readAppearanceTheme);
   const [themePaletteId, setThemePaletteId] = useState<ThemePaletteId>('masterflow');
   const [paletteValuesInverted, setPaletteValuesInverted] = useState(false);
   const [personaColor, setPersonaColor] = useState('#3979e8');
@@ -703,6 +714,15 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
   }, []);
 
   useEffect(() => {
+    document.documentElement.dataset.masterflowTheme = appearanceTheme;
+    try {
+      window.localStorage.setItem(appearanceStorageKey, appearanceTheme);
+    } catch {
+      // Le theme reste actif pour la session si le stockage est indisponible.
+    }
+  }, [appearanceTheme]);
+
+  useEffect(() => {
     if (runtime) return undefined;
     let cancelled = false;
     const loadRuntimeBridge = async (): Promise<void> => {
@@ -830,6 +850,7 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
     closeTunnel,
     dockPanel,
     historyOpen,
+    microAvailable: !runtime,
     modeCycle,
     navigateTo: (destination) => {
       if (destination === 'home') selectHome();
@@ -1330,7 +1351,8 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
           runtimeState={runtime?.chat.state}
           recording={recording}
           renderedDockPanel={renderedDockPanel}
-          showSuggestions={activeMode !== 'home' && Boolean(dockPanel || historyPresence.renderedValue)}
+          showHistory={activeMode !== 'home'}
+          showSuggestions={false}
           suggestions={commandSuggestions}
           transcribing={transcribing}
         />

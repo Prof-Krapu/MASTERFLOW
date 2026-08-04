@@ -4,6 +4,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import {ComponentLab} from './ui-reset/component-lab.tsx';
 import './styles.css';
+import './ui-reset/masterflow-ui-tokens.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
