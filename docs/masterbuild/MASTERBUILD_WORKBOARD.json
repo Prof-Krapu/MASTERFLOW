@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-04T23:48:40+02:00",
+  "updated_at": "2026-08-04T23:54:57+02:00",
   "active_round_id": "UI-FOUNDATIONS-RECOVERY-001",
   "authorizations": [
     {
@@ -108,7 +108,7 @@
       "round_id": "UI-FOUNDATIONS-RECOVERY-001",
       "actor": "malex",
       "scope": "commit_push_ready_pull_request_ui_bible_masterbuild_gate",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-04T23:48:40+02:00",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "ui_foundations_lot_2", "project_v2_lot_3"]

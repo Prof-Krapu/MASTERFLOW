@@ -4,7 +4,7 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-08-04 — UI-FOUNDATIONS-RECOVERY-001 : LOT 1 VÉRIFIÉ, PUBLICATION AUTORISÉE
+## 2026-08-04 — UI-FOUNDATIONS-RECOVERY-001 : LOT 1 EN PR PRÊTE #231
 
 - base : worktree propre `codex/ui-bible-masterbuild-gate` depuis GitHub `main` `ab7f5ea` ;
 - sécurité : serveurs MasterFlow `5174`, `8000` et `8010` arrêtés ; processus étrangers
@@ -22,8 +22,9 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   `clientWidth = scrollWidth = 390` ;
 - séquence : Lot 2 Shell/Thèmes/Dock bloqué jusqu'au merge du Lot 1, puis Lot 3 Project V2 bloqué
   jusqu'au merge du Lot 2 ;
-- publication : étape `7/8 — Publier` ; GO MALEX reçu pour commit, push et PR prête du Lot 1
-  uniquement ; merge, déploiement, Lot 2 et Lot 3 restent exclus.
+- publication : commits `7fd036e` et `2c7cb3f` poussés ; PR #231 prête et revue Vincent demandée
+  via CODEOWNERS et mention explicite ; checks et revues attendus avant un GO de merge distinct ;
+  déploiement, Lot 2 et Lot 3 restent exclus.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-04T23:48:40+02:00",
+  "updated_at": "2026-08-04T23:54:57+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,7 +22,7 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Publier le Lot 1 par commits lisibles, push et PR prête, puis attendre les checks et revues avant tout merge.",
+    "recommended_next_action": "Attendre les checks GitHub et les revues MALEX/Vincent de la PR #231, puis demander un GO distinct avant tout merge.",
     "primary_risk": "Déclarer conforme une surface historique sans preuves thèmes, clavier, états, responsive et validations humaines.",
     "no_auto_execute": true,
     "work_package_ids": ["UFR-001", "UFR-002", "UFR-003"],
@@ -57,7 +57,7 @@
       "label": "Publier le Lot 1 Bible UI et gate MASTERBUILD",
       "reason": "Les fondations et Project V2 doivent être bloqués par un contrat vérifiable avant toute composition runtime.",
       "recommended": true,
-      "status": "in_progress"
+      "status": "awaiting_review"
     },
     {
       "move_id": "build-ui-foundations-lot-2",
@@ -310,10 +310,10 @@
     }
   ],
   "publication": {
-    "state": "local_uncommitted",
+    "state": "ready_pr",
     "branch": "codex/ui-bible-masterbuild-gate",
-    "commit_sha": "ab7f5ea74debde87797720e2bb7eb71d930ecb67",
-    "pull_request": null,
-    "runtime_proof": "Worktree propre basé sur GitHub main ab7f5ea ; Lot 1 local non committé, non poussé et non déployé."
+    "commit_sha": "2c7cb3ff57161d6e5e9d180a120e06b9149a2c1c",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/231",
+    "runtime_proof": "PR #231 prête sur la base GitHub main ab7f5ea ; deux commits fonctionnels publiés, aucun merge ni déploiement."
   }
 }
