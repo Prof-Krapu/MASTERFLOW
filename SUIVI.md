@@ -26,6 +26,42 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
   via CODEOWNERS et mention explicite ; checks et revues attendus avant un GO de merge distinct ;
   déploiement, Lot 2 et Lot 3 restent exclus.
 
+### Reprise Lot 2 — 2026-08-05
+
+- décision MALEX : revue Vincent non bloquante ; merge immédiat puis enchaînement ;
+- preuve GitHub : PR #231 mergée dans `main` au SHA `761bb4c` sans check rouge ni conflit ;
+- Lot 2 : branche locale `codex/ui-foundations-shell-theme-dock` créée depuis ce SHA ;
+- périmètre : Shell, thèmes clair/sombre/système, rail de trois actions, Dock, clavier, focus,
+  reduced motion et Lab ;
+- exclusions : Inventory, backend/API produit, asset, migration, fournisseur, dépense et déploiement.
+
+### Lot 2 local vérifié — 2026-08-05
+
+- fondations : tokens sémantiques orange MasterFlow, bleu utilisateur, violet support et couleurs
+  d'état séparées ; thèmes clair/sombre/système cohérents et choix persisté ;
+- actions : trois guidages maximum dans le rail, feuille mobile à 390 px et aucune duplication dans
+  le Dock ;
+- Dock : `connected` masqué, erreurs humaines en `aria-live`, micro/transcription et raccourci `M`
+  indisponibles dans le runtime ; `K`, `Enter`, `Shift+Enter` et pile `Esc` conservés ;
+- Lab : fondations, Dock, formulaires, huit états, overlays, Home, navigation et identité ;
+- preuve mobile : `clientWidth = scrollWidth = 390`, contrôles confinés au banc de test, focus visible
+  3 px avec offset 3 px ;
+- contrôles : lint frontend, build frontend, tests MASTERBUILD `16/16` et doctor verts ;
+- gate : preuves locales inscrites, promotion encore refusée tant que système, prototype assemblé,
+  permissions et validation visuelle MALEX manquent ;
+- Git : aucun commit, push ou PR Lot 2 ; aucune modification Inventory, backend ou asset.
+
+### GO publication et merge Lot 2 — 2026-08-05
+
+- autorisation MALEX : commit, push, PR prête et merge après contrôles verts ;
+- revue Vincent : explicitement non bloquante pour ce lot, sans enregistrer d'approbation fictive ;
+- smoke assemblé : base SQLite temporaire isolée, provider mock, MALEX GodMode, MasterBuild visible,
+  thème `auto`, trois actions plus palette, `connected` absent, micro désactivé, `K` actif et `M`
+  sans faux panneau ;
+- responsive runtime : `clientWidth = scrollWidth = 390` et quatre contrôles de feuille visibles ;
+- exclusions maintenues : Inventory, backend/API produit, asset, migration, provider réel, dépense,
+  suppression et déploiement.
+
 ---
 
 ## 2026-08-04 — LEARN-001 : AIDE PERSONNELLE UTILISABLE

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-04T23:54:57+02:00",
+  "updated_at": "2026-08-05T00:27:00+02:00",
   "active_round_id": "UI-FOUNDATIONS-RECOVERY-001",
   "authorizations": [
     {
@@ -112,6 +112,27 @@
       "granted_at": "2026-08-04T23:48:40+02:00",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "ui_foundations_lot_2", "project_v2_lot_3"]
+    },
+    {
+      "authorization_id": "AUTH-UFR-L1-MERGE-L2-LOCAL-2026-08-05",
+      "round_id": "UI-FOUNDATIONS-RECOVERY-001",
+      "actor": "malex",
+      "scope": "merge_pr_231_create_branch_build_and_verify_ui_foundations_lot_2_locally",
+      "status": "completed",
+      "granted_at": "2026-08-05T00:02:46+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "project_v2_lot_3", "lot_2_commit", "lot_2_push", "lot_2_pull_request", "lot_2_merge"]
+    },
+    {
+      "authorization_id": "AUTH-UFR-L2-PUBLISH-MERGE-2026-08-05",
+      "round_id": "UI-FOUNDATIONS-RECOVERY-001",
+      "actor": "malex",
+      "scope": "commit_push_ready_pull_request_and_merge_ui_foundations_lot_2_after_green_checks",
+      "status": "active",
+      "granted_at": "2026-08-05T00:27:00+02:00",
+      "expires_on_scope_change": true,
+      "review_policy": "vincent_review_non_blocking_by_explicit_malex_decision",
+      "excluded": ["deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "project_v2_lot_3", "delete"]
     }
   ],
   "work_packages": [
@@ -529,7 +550,7 @@
       "work_package_id": "UFR-001",
       "label": "Publier la Bible UI V1 et le gate MASTERBUILD",
       "feature_ids": ["masterbuild-pilot", "ui-shell-navigation", "ui-command-dock"],
-      "status": "in_progress",
+      "status": "completed",
       "owner": "codex",
       "reviewers": ["malex", "vincent"],
       "dependencies": [],
@@ -541,13 +562,12 @@
       "work_package_id": "UFR-002",
       "label": "Unifier Shell, thèmes, rail d'actions et Dock",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
-      "status": "blocked",
+      "status": "in_progress",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UFR-001"],
       "design_rule_ids": ["DES-004", "DES-005", "DES-006", "DES-007", "DES-008", "DES-010", "DES-015", "DES-017", "DES-018", "DES-019", "DES-023"],
       "tool_route": "component_lab",
-      "blocked_reason": "Attend la revue et le merge du Lot 1.",
       "expected_evidence": ["tokens sémantiques", "clair sombre système", "rail trois actions", "contrat clavier Dock", "Lab tous états rôles thèmes 390 px", "aucune modification Inventory"]
     },
     {

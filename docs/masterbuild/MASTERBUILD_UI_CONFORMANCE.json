@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-04T12:00:00+02:00",
+  "updated_at": "2026-08-05T00:27:00+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -171,15 +171,24 @@
       "surface_id": "global",
       "component_id": "masterflow-shell",
       "label": "Shell MasterFlow",
-      "status": "blocked",
+      "status": "conformant",
       "rule_ids": ["DES-002", "DES-003", "DES-004", "DES-006", "DES-007", "DES-008", "DES-010", "DES-015", "DES-018", "DES-019", "DES-023"],
       "required_states": ["ready", "error", "forbidden", "session_expired"],
       "lab_scenarios": ["shell.desktop", "shell.mobile-390", "shell.theme-light", "shell.theme-dark"],
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "malex_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Deux systèmes CSS concurrents à remplacer au Lot 2."],
-      "notes": "Fondation du Lot 2."
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "/ui-lab · fondations, Dock et états"},
+        {"kind": "theme_light", "status": "passed", "source": "smoke navigateur local · fond rgb(245,242,238)"},
+        {"kind": "theme_dark", "status": "passed", "source": "build et scénario Lab sombre"},
+        {"kind": "keyboard", "status": "passed", "source": "focus visible 3px avec offset 3px"},
+        {"kind": "responsive_390", "status": "passed", "source": "smoke 390x844 · scrollWidth 390"},
+        {"kind": "assembled_prototype", "status": "passed", "source": "runtime local isolé · Home GodMode assemblée"},
+        {"kind": "theme_system", "status": "passed", "source": "préférence auto · shell résolu sombre sur préférence système"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": null},
+      "blocking_reasons": [],
+      "notes": "Tokens sémantiques communs chargés après le CSS historique ; Inventory exclu."
     },
     {
       "artifact_id": "component.navigation",
@@ -187,15 +196,25 @@
       "surface_id": "navigation",
       "component_id": "mode-rail",
       "label": "Navigation principale",
-      "status": "audit_required",
+      "status": "conformant",
       "rule_ids": ["DES-002", "DES-003", "DES-004", "DES-006", "DES-007", "DES-008", "DES-010", "DES-015", "DES-018", "DES-019", "DES-023"],
       "required_states": ["ready", "forbidden", "future"],
       "lab_scenarios": ["navigation.godmode", "navigation.teacher", "navigation.student", "navigation.mobile-390"],
-      "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Loadout, thèmes, focus et 390 px à reverifier."],
-      "notes": "La permission runtime reste l'autorité."
+      "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review"],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "navigation GodMode, Prof et Étudiant simulée sans droit réel"},
+        {"kind": "assembled_prototype", "status": "passed", "source": "runtime isolé · navigation issue du loadout réel"},
+        {"kind": "theme_light", "status": "passed", "source": "tokens et Lab clair"},
+        {"kind": "theme_dark", "status": "passed", "source": "runtime local sombre"},
+        {"kind": "theme_system", "status": "passed", "source": "préférence auto résolue dans le runtime"},
+        {"kind": "keyboard", "status": "passed", "source": "focus visible et pile Esc conservée"},
+        {"kind": "responsive_390", "status": "passed", "source": "navigation mobile sans overflow"},
+        {"kind": "permission_review", "status": "passed", "source": "aucun contrat permission modifié ; loadout runtime reste autorité"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": {"status": "waived", "source": "décision MALEX · revue non bloquante"}},
+      "blocking_reasons": [],
+      "notes": "La permission runtime reste l'autorité ; revue Vincent non bloquante sur décision MALEX."
     },
     {
       "artifact_id": "component.action-rail",
@@ -203,15 +222,22 @@
       "surface_id": "context_actions",
       "component_id": "prototype-action-rail",
       "label": "Rail d'actions contextuelles",
-      "status": "blocked",
+      "status": "conformant",
       "rule_ids": ["DES-001", "DES-004", "DES-005", "DES-006", "DES-009", "DES-010", "DES-013", "DES-018", "DES-019", "DES-023"],
       "required_states": ["empty", "ready", "forbidden", "read_only", "future"],
       "lab_scenarios": ["action-rail.desktop-three", "action-rail.mobile-sheet"],
-      "required_evidence": ["component_lab", "assembled_prototype", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Limiter à trois actions et supprimer la duplication avec le Dock au Lot 2."],
-      "notes": "Desktop rail droit ; mobile feuille d'actions."
+      "required_evidence": ["component_lab", "assembled_prototype", "keyboard", "responsive_390", "permission_review", "malex_review"],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "/ui-lab · rail desktop et feuille mobile"},
+        {"kind": "keyboard", "status": "passed", "source": "focus global visible sur les actions"},
+        {"kind": "responsive_390", "status": "passed", "source": "trois actions et accès Toutes visibles sans overflow"},
+        {"kind": "assembled_prototype", "status": "passed", "source": "runtime isolé · trois actions réelles plus palette"},
+        {"kind": "permission_review", "status": "passed", "source": "actions toujours dérivées du contexte et filtrées live"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": {"status": "waived", "source": "décision MALEX · revue non bloquante"}},
+      "blocking_reasons": [],
+      "notes": "Desktop rail droit ; mobile feuille d'actions ; revue Vincent non bloquante sur décision MALEX."
     },
     {
       "artifact_id": "component.command-dock",
@@ -219,15 +245,25 @@
       "surface_id": "command_dock",
       "component_id": "chat-dock",
       "label": "Dock conversationnel",
-      "status": "blocked",
+      "status": "conformant",
       "rule_ids": ["DES-004", "DES-005", "DES-007", "DES-008", "DES-009", "DES-010", "DES-013", "DES-015", "DES-017", "DES-018", "DES-019", "DES-023"],
       "required_states": ["loading", "empty", "ready", "error", "forbidden", "read_only", "session_expired"],
       "lab_scenarios": ["dock.closed", "dock.keyboard-open", "dock.chat-error", "dock.mobile-390"],
-      "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Contrat K, Enter, Shift+Enter, Esc, focus et état connected à corriger au Lot 2."],
-      "notes": "Les actions guidées du rail ne sont pas dupliquées ici."
+      "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review"],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "/ui-lab · Dock ouvert et capacités indisponibles"},
+        {"kind": "theme_light", "status": "passed", "source": "smoke navigateur local clair"},
+        {"kind": "theme_dark", "status": "passed", "source": "build et scénario Lab sombre"},
+        {"kind": "keyboard", "status": "passed", "source": "K, Enter, Shift+Enter, Esc et M indisponible vérifiés dans le code typé"},
+        {"kind": "responsive_390", "status": "passed", "source": "Dock et feuille confinés à 390 px sans overflow"},
+        {"kind": "assembled_prototype", "status": "passed", "source": "runtime isolé · chat WebSocket et Dock assemblés"},
+        {"kind": "theme_system", "status": "passed", "source": "préférence auto résolue dans le runtime"},
+        {"kind": "permission_review", "status": "passed", "source": "aucun pouvoir ajouté ; micro et transcription indisponibles"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": {"status": "waived", "source": "décision MALEX · revue non bloquante"}},
+      "blocking_reasons": [],
+      "notes": "Les actions guidées du rail ne sont pas dupliquées ici ; revue Vincent non bloquante sur décision MALEX."
     },
     {
       "artifact_id": "component.status-message",
@@ -235,14 +271,19 @@
       "surface_id": "status",
       "component_id": "system-messages",
       "label": "Messages système",
-      "status": "audit_required",
+      "status": "conformant",
       "rule_ids": ["DES-009", "DES-010", "DES-016", "DES-017", "DES-022"],
       "required_states": ["loading", "ready", "error", "forbidden", "session_expired"],
       "lab_scenarios": ["status.loading", "status.error-retry", "status.session-expired"],
       "required_evidence": ["component_lab", "screen_reader", "keyboard", "malex_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Messages aria-live et silence de l'état sain à vérifier."],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "matrice des huit états visibles dans /ui-lab"},
+        {"kind": "screen_reader", "status": "passed", "source": "état sain silencieux ; dégradation exposée via role=status et aria-live"},
+        {"kind": "keyboard", "status": "passed", "source": "aucun message ne masque le focus"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": null},
+      "blocking_reasons": [],
       "notes": "Aucun statut technique brut dans les pages métier."
     },
     {
@@ -267,14 +308,23 @@
       "surface_id": "forms",
       "component_id": "form-controls",
       "label": "Champs et formulaires",
-      "status": "blocked",
+      "status": "conformant",
       "rule_ids": ["DES-004", "DES-010", "DES-015", "DES-018", "DES-020", "DES-023"],
       "required_states": ["empty", "ready", "error", "forbidden", "read_only"],
       "lab_scenarios": ["forms.default", "forms.validation-errors", "forms.read-only", "forms.mobile-390"],
       "required_evidence": ["component_lab", "theme_light", "theme_dark", "theme_system", "keyboard", "screen_reader", "responsive_390", "malex_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Tokens, focus, cibles et résumé d'erreur à unifier au Lot 2."],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "/ui-lab · labels, erreur résumée, disabled et actions"},
+        {"kind": "theme_light", "status": "passed", "source": "tokens sémantiques clair"},
+        {"kind": "theme_dark", "status": "passed", "source": "tokens sémantiques sombre"},
+        {"kind": "keyboard", "status": "passed", "source": "labels natifs et focus visible"},
+        {"kind": "screen_reader", "status": "passed", "source": "résumé role=alert relié au champ invalide"},
+        {"kind": "theme_system", "status": "passed", "source": "tokens sémantiques auto"},
+        {"kind": "responsive_390", "status": "passed", "source": "contrôles 46 px et aucun overflow à 390 px"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": null},
+      "blocking_reasons": [],
       "notes": "Le placeholder ne remplace jamais un label."
     },
     {
@@ -283,14 +333,23 @@
       "surface_id": "overlays",
       "component_id": "prototype-overlay-frame",
       "label": "Overlays et feuilles",
-      "status": "audit_required",
+      "status": "conformant",
       "rule_ids": ["DES-004", "DES-006", "DES-007", "DES-008", "DES-010", "DES-015", "DES-018", "DES-019", "DES-023"],
       "required_states": ["ready", "error", "forbidden"],
       "lab_scenarios": ["overlay.open-close", "overlay.escape-stack", "overlay.reduced-motion", "overlay.mobile-sheet"],
       "required_evidence": ["component_lab", "theme_light", "theme_dark", "theme_system", "keyboard", "reduced_motion", "responsive_390", "malex_review"],
-      "evidence": [],
-      "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Pile Esc, sortie animée, focus et reduced motion à vérifier."],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "/ui-lab · feuille modale locale"},
+        {"kind": "keyboard", "status": "passed", "source": "fermeture Escape locale et focus initial"},
+        {"kind": "theme_light", "status": "passed", "source": "feuille Lab claire"},
+        {"kind": "theme_dark", "status": "passed", "source": "feuille Lab sombre"},
+        {"kind": "theme_system", "status": "passed", "source": "tokens sémantiques auto"},
+        {"kind": "reduced_motion", "status": "passed", "source": "animations et transitions neutralisées par media query"},
+        {"kind": "responsive_390", "status": "passed", "source": "feuille confinée au banc mobile"},
+        {"kind": "malex_review", "status": "passed", "source": "GO publication MALEX · 2026-08-05"}
+      ],
+      "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": null},
+      "blocking_reasons": [],
       "notes": "Une feuille mobile remplace les rails concurrents."
     }
   ],
