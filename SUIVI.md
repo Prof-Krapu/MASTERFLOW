@@ -4,6 +4,34 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-05 — UI page par page : connexion intégrée au Shell
+
+- décision MALEX : la connexion est un état de l'interface MasterFlow, pas une page séparée ;
+- le Shell visuel est présent dès l'ouverture et le formulaire s'affiche dans son canvas ;
+- après authentification, Home s'ouvre directement avec le contexte et les permissions réels ;
+- le sas intermédiaire `Aujourd'hui / Densité / Présence` est retiré du parcours ;
+- la déconnexion vide le mot de passe local ; aucun changement backend, API, permission ou donnée ;
+- preuve locale : parcours `login → Home` sans écran intermédiaire, lint et build frontend verts ;
+- publication : aucune — candidat local non committé, non poussé et non déployé.
+
+---
+
+## 2026-08-05 — UI-FOUNDATIONS-RECOVERY-001 : LOT 2 MERGÉ, PROJECT V2 LOCAL
+
+- preuve GitHub : PR #232 mergée dans `main` au SHA `f3ceb81b16d8af851c41e2d92b2182188ea051a2` ;
+- Lot 2 : Shell, thèmes, rail et Dock publiés ; aucun déploiement ;
+- Lot 3 : worktree `codex/project-v2-situation-page` propre créé depuis ce SHA ;
+- contrat : Design Preflight Project V2, action principale déterministe et aucune progression
+  inventée ;
+- réalisation : composant Project V2 partagé entre le Lab et le prototype assemblé ; six scénarios
+  rôles/états, reprise même projet, matière validée et équipe agrégée ;
+- smoke isolé : création réelle d'un projet puis ajout d'une ressource validée réussis ;
+- responsive Lab : `clientWidth = scrollWidth = 390` ; thèmes clair/sombre et focus visibles ;
+- publication : aucune — aucun commit, push, PR, merge ou déploiement autorisé pour le Lot 3 ;
+- gate suivant : validation visuelle MALEX puis smoke permissions Vincent avant GO Git.
+
+---
+
 ## 2026-08-04 — UI-FOUNDATIONS-RECOVERY-001 : LOT 1 EN PR PRÊTE #231
 
 - base : worktree propre `codex/ui-bible-masterbuild-gate` depuis GitHub `main` `ab7f5ea` ;

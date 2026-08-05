@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-05T00:27:00+02:00",
+  "updated_at": "2026-08-05T00:52:01+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -20,13 +20,13 @@
     "objective": "Publier en trois lots successifs une Bible UI obligatoire, les fondations Shell/Thèmes/Dock, puis Project V2 situation vivante sans altérer le métier déjà validé.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
-    "recommended_next_action": "Committer, pousser, ouvrir une PR prête et merger le Lot 2 après revérification des contrôles GitHub.",
-    "primary_risk": "Déclarer conforme une surface historique sans preuves thèmes, clavier, états, responsive et validations humaines.",
+    "stage_index": 6,
+    "stage_label": "Vérifier",
+    "recommended_next_action": "Faire relire Project V2 localement par MALEX, puis demander à Vincent le smoke permissions avant tout GO Git.",
+    "primary_risk": "Promouvoir Project V2 sans validation visuelle MALEX ou en confondant les fixtures Lab avec des permissions runtime.",
     "no_auto_execute": true,
     "work_package_ids": ["UFR-001", "UFR-002", "UFR-003"],
-    "authorization_id": "AUTH-UFR-L2-PUBLISH-MERGE-2026-08-05",
+    "authorization_id": "AUTH-UFR-L2-CLOSE-L3-LOCAL-2026-08-05",
     "success_criteria": [
       "Toute page produit et tout composant partagé public possède un identifiant de conformité.",
       "Le gate bloque une promotion sans règle, état, scénario Lab, preuve ou validation.",
@@ -39,6 +39,8 @@
       "Lot 1 vérifié et revu avant le Lot 2",
       "Lot 2 vérifié et revu avant le Lot 3",
       "GO publication et merge du Lot 2 accordé le 2026-08-05",
+      "PR #232 mergée au SHA f3ceb81b16d8af851c41e2d92b2182188ea051a2",
+      "Project V2 local reste bloqué avant publication jusqu'aux validations MALEX et Vincent",
       "Aucun déploiement, asset, fournisseur ou migration dans ce Round"
     ],
     "source_refs": [
@@ -48,7 +50,8 @@
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
       "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
       "FRONTEND_UI_DOCTRINE.md",
-      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md"
+      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
+      "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md"
     ]
   },
   "next_moves": [
@@ -63,15 +66,15 @@
       "move_id": "build-ui-foundations-lot-2",
       "label": "Corriger Shell, thèmes, rail et Dock",
       "reason": "Ce lot attend la revue et le merge du Lot 1 pour utiliser la Bible comme gate.",
-      "recommended": true,
-      "status": "ready_for_publication"
+      "recommended": false,
+      "status": "completed"
     },
     {
       "move_id": "build-project-v2-lot-3",
-      "label": "Construire Project V2 situation vivante",
-      "reason": "Ce lot attend la validation des fondations et passera Lab puis Prototype avant runtime.",
-      "recommended": false,
-      "status": "blocked_until_lot_2_merge"
+      "label": "Valider le candidat local Project V2",
+      "reason": "Le Lab et le prototype assemblé sont prêts ; MALEX doit valider l'expérience avant le smoke permissions Vincent.",
+      "recommended": true,
+      "status": "local_candidate_pending_human_validation"
     }
   ],
   "registries": {
@@ -102,24 +105,26 @@
     "title": "Restaurer les fondations UI et imposer la Bible",
     "owner": "malex",
     "status": "active",
-    "stage_index": 7,
-    "stage_label": "Publier",
+    "stage_index": 6,
+    "stage_label": "Vérifier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Tokens sémantiques partagés et thèmes clair sombre système",
-      "Rail limité à trois actions sans duplication dans le Dock",
-      "Dock honnête, clavier accessible et smoke 390 px sans overflow"
+      "Project V2 visible dans le Lab pour six scénarios explicites",
+      "Prototype assemblé avec création et ressource validée réelles",
+      "Aucune progression, échéance ou permission inventée"
     ],
     "blockers": [],
     "validation_gates": [
-      "Validation MALEX accordée par GO publication le 2026-08-05",
-      "Commit, push, PR prête et merge du Lot 2 autorisés après contrôles verts",
+      "Lot 2 mergé via PR #232 au SHA f3ceb81",
+      "Validation visuelle MALEX encore requise pour Project V2",
+      "Smoke permissions Vincent encore requis avant publication Project V2",
       "Aucun déploiement dans les trois lots"
     ],
     "source_refs": [
       "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
-      "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json"
+      "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
+      "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md"
     ]
   },
   "stages": [
@@ -157,13 +162,13 @@
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "active"
+      "status": "pending"
     },
     {
       "index": 8,
@@ -310,10 +315,10 @@
     }
   ],
   "publication": {
-    "state": "main_lot_1_lot_2_local",
-    "branch": "codex/ui-foundations-shell-theme-dock",
-    "commit_sha": "761bb4c52821175a2fd9f5b163f4bc34607d3ea1",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/231",
-    "runtime_proof": "Lot 1 mergé via PR #231 dans GitHub main au SHA 761bb4c ; Lot 2 ouvert localement depuis ce SHA, aucun déploiement."
+    "state": "main_lot_1_lot_2_project_v2_local_candidate",
+    "branch": "codex/project-v2-situation-page",
+    "commit_sha": "f3ceb81b16d8af851c41e2d92b2182188ea051a2",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/232",
+    "runtime_proof": "Lots 1 et 2 mergés dans GitHub main au SHA f3ceb81 ; Project V2 existe uniquement dans un worktree local non committé, aucun déploiement."
   }
 }

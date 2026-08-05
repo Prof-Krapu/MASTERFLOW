@@ -201,6 +201,17 @@ export type CurrentUiRuntime = {
   onModeSelect: (mode: ActiveSurface) => void;
 };
 
+export type CurrentUiLogin = {
+  busy: boolean;
+  error: string | null;
+  password: string;
+  registerAction: ReactNode;
+  username: string;
+  onPasswordChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onUsernameChange: (value: string) => void;
+};
+
 const runtimeModeAliases: Record<string, DemoMode> = {
   course: 'teaching',
   da: 'da',
@@ -357,7 +368,7 @@ function useAnimatedPresence<T>(value: T | null, duration = 220): {
   };
 }
 
-export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactElement {
+export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime?: CurrentUiRuntime}): ReactElement {
   const [activeMode, setActiveMode] = useState<ActiveSurface>('home');
   const [activePrototypeProfileId, setActivePrototypeProfileId] = useState<PrototypeProfileId>('masterflex');
   const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>(readAppearanceTheme);
@@ -968,6 +979,86 @@ export function CurrentUiDemo({runtime}: {runtime?: CurrentUiRuntime}): ReactEle
           detail: turn.content || 'Réponse en cours…',
         }))
     : historyItems;
+
+  if (login) {
+    return (
+      <main
+        className={`proto-shell proto-shell--auth proto-shell--theme-${resolvedAppearance}`}
+        style={themeStyle}
+      >
+        <nav aria-label="MasterFlow" className="proto-nav proto-auth-nav">
+          <div className="proto-nav__toggle proto-auth-nav__brand">
+            <MasterflowMark className="proto-mf-mark" />
+            <span className="proto-auth-nav__label">MasterFlow</span>
+          </div>
+        </nav>
+
+        <section className="proto-workspace" aria-label="Connexion à MasterFlow">
+          <header className="proto-systembar proto-auth-systembar">
+            <div className="proto-systembar__center">
+              <strong>MasterFlow</strong>
+              <small>Ton espace de travail</small>
+            </div>
+            <div className="proto-systembar__actions">
+              <button
+                aria-label={resolvedAppearance === 'light' ? 'Passer en mode sombre' : 'Passer en mode clair'}
+                className={`proto-theme-switch${resolvedAppearance === 'light' ? ' is-light' : ''}`}
+                onClick={() => setAppearanceTheme(resolvedAppearance === 'light' ? 'dark' : 'light')}
+                type="button"
+              >
+                <i aria-hidden="true" />
+                {resolvedAppearance === 'light' ? <Moon size={13} /> : <Sun size={13} />}
+              </button>
+            </div>
+          </header>
+
+          <div className="proto-canvas-empty proto-auth-canvas">
+            <form className="proto-auth-panel" onSubmit={login.onSubmit}>
+              <div className="proto-auth-panel__heading">
+                <span className="proto-auth-panel__mark" aria-hidden="true">
+                  <MasterflowMark className="proto-mf-mark" />
+                </span>
+                <div>
+                  <p>Bienvenue</p>
+                  <h1>Entre dans MasterFlow.</h1>
+                  <span>Connecte-toi pour charger directement ton contexte, tes pages et tes accès.</span>
+                </div>
+              </div>
+
+              <label>
+                <span>Identifiant</span>
+                <input
+                  autoComplete="username"
+                  autoFocus
+                  onChange={(event) => login.onUsernameChange(event.target.value)}
+                  required
+                  type="text"
+                  value={login.username}
+                />
+              </label>
+              <label>
+                <span>Mot de passe</span>
+                <input
+                  autoComplete="current-password"
+                  onChange={(event) => login.onPasswordChange(event.target.value)}
+                  required
+                  type="password"
+                  value={login.password}
+                />
+              </label>
+
+              <button className="proto-auth-panel__submit" disabled={login.busy} type="submit">
+                {login.busy ? <LoaderCircle aria-hidden="true" size={18} /> : <Lock aria-hidden="true" size={17} />}
+                <span>{login.busy ? 'Chargement de ton espace…' : 'Se connecter'}</span>
+              </button>
+              {login.error ? <p className="proto-auth-panel__error" role="alert">{login.error}</p> : null}
+              <div className="proto-auth-panel__register">{login.registerAction}</div>
+            </form>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main

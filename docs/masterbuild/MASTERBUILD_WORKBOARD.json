@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-05T00:27:00+02:00",
+  "updated_at": "2026-08-05T00:52:01+02:00",
   "active_round_id": "UI-FOUNDATIONS-RECOVERY-001",
   "authorizations": [
     {
@@ -128,11 +128,21 @@
       "round_id": "UI-FOUNDATIONS-RECOVERY-001",
       "actor": "malex",
       "scope": "commit_push_ready_pull_request_and_merge_ui_foundations_lot_2_after_green_checks",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-05T00:27:00+02:00",
       "expires_on_scope_change": true,
       "review_policy": "vincent_review_non_blocking_by_explicit_malex_decision",
       "excluded": ["deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "project_v2_lot_3", "delete"]
+    },
+    {
+      "authorization_id": "AUTH-UFR-L2-CLOSE-L3-LOCAL-2026-08-05",
+      "round_id": "UI-FOUNDATIONS-RECOVERY-001",
+      "actor": "malex",
+      "scope": "record_pr_232_merge_and_build_project_v2_lab_to_assembled_prototype_locally",
+      "status": "active",
+      "granted_at": "2026-08-05T00:52:01+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["commit", "push", "pull_request", "merge", "deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "delete"]
     }
   ],
   "work_packages": [
@@ -562,7 +572,7 @@
       "work_package_id": "UFR-002",
       "label": "Unifier Shell, thèmes, rail d'actions et Dock",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
-      "status": "in_progress",
+      "status": "completed",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UFR-001"],
@@ -574,13 +584,12 @@
       "work_package_id": "UFR-003",
       "label": "Construire Project V2 situation vivante",
       "feature_ids": ["project-scope", "ui-shell-navigation", "ui-command-dock"],
-      "status": "blocked",
+      "status": "in_progress",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UFR-002"],
       "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-013", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
       "tool_route": "component_lab",
-      "blocked_reason": "Attend la revue et le merge du Lot 2.",
       "expected_evidence": ["Project Lab", "Prototype assemblé", "validation MALEX", "smoke permissions Vincent", "thèmes clair sombre", "390 px", "aucune progression inventée"]
     }
   ]

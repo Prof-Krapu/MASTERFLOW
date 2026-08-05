@@ -55,6 +55,7 @@ import {
 import type {PersonaVisualState} from './app-shell.tsx';
 import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
+import {ProjectWorkspaceV2} from './project-workspace-v2.tsx';
 import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
 import {
@@ -119,16 +120,6 @@ const ROLE_LABEL: Record<string, string> = {
   teacher: 'prof',
   admin: 'admin',
   godmode: 'godmode',
-};
-
-const PROJECT_STATUS_LABEL: Record<ProjectSyncState['status'], string> = {
-  idle: 'À démarrer',
-  loading: 'Chargement',
-  creating: 'Création',
-  ready: 'Prêt',
-  attaching: 'Partage',
-  synced: 'À jour',
-  error: 'Indisponible',
 };
 
 const ActionAudit = lazy(async () => {
@@ -328,7 +319,7 @@ function App(): ReactElement {
   const assistantTurnRef = useRef<string | null>(null);
 
   const isConnected = auth !== null && context !== null;
-  const showEntryGate = isConnected && context !== null && entryProfile?.userId !== context.user.id;
+  const showEntryGate = false;
   const canCreateProject = context?.user.role === 'teacher'
     || context?.user.role === 'admin'
     || context?.user.role === 'godmode';
@@ -453,9 +444,7 @@ function App(): ReactElement {
       setLatestCheckpoint(checkpoint);
       const storedEntry = readEntryProfile(current.user.id);
       setEntryProfile(storedEntry);
-      if (storedEntry) {
-        setSelectedMode(storedEntry.intent);
-      }
+      setSelectedMode('home');
       setPersonas(current.personas);
       setActions(current.available_actions);
       setResources(nextResources);
@@ -563,6 +552,7 @@ function App(): ReactElement {
     setChatInput('');
     setChatOpenRequest(0);
     setChatTurns([]);
+    setPassword('');
     setError(null);
   }, []);
 
@@ -1386,106 +1376,28 @@ function App(): ReactElement {
     if (surface === 'project') {
       return (
         <section className="proto-runtime-workspace" aria-label="Project">
-          <AdaptiveWorkspacePage
-            alert={projects.length === 0 && !canCreateProject
-              ? <p>Aucun projet n’est assigné à ce compte.</p>
-              : undefined}
-            context={selectedProject ? (
-              <dl className="adaptive-context-facts">
-                <div><dt>Rôle projet</dt><dd>{currentProjectMember ? PROJECT_ROLE_LABEL[currentProjectMember.role] : 'non déclaré'}</dd></div>
-                <div><dt>Membres</dt><dd>{projectMembers.length}</dd></div>
-                <div><dt>Sources partagées</dt><dd>{projectResources.length}</dd></div>
-                <div><dt>Visibilité</dt><dd>{selectedProject.visibility}</dd></div>
-              </dl>
-            ) : <p className="muted compact">Aucun contexte projet chargé.</p>}
-            eyebrow="Project / espace de travail"
-            nextAction={projects.length > 0 ? (
-              <div className="project-attach">
-                <div>
-                  <strong>Partager une ressource validée</strong>
-                  <span>{canAttachCurrentProjectResource ? 'Choisissez une source existante.' : 'Lecture seule pour ce rôle projet.'}</span>
-                </div>
-                <select
-                  aria-label="Ressource à partager"
-                  disabled={!canAttachCurrentProjectResource || attachableResources.length === 0}
-                  onChange={(event) => setProjectResourceId(event.target.value)}
-                  value={projectResourceId}
-                >
-                  <option value="">Choisir une source</option>
-                  {attachableResources.map((resource) => <option key={resource.id} value={resource.id}>{resource.title}</option>)}
-                </select>
-                <button
-                  disabled={!canAttachCurrentProjectResource || projectSync.status === 'attaching' || !projectResourceId}
-                  onClick={() => void handleAttachProjectResource()}
-                  type="button"
-                >
-                  Partager
-                </button>
-              </div>
-            ) : canCreateProject ? (
-              <form className="project-attach project-create" onSubmit={(event) => void handleCreateProject(event)}>
-                <div>
-                  <strong>Créer votre premier projet</strong>
-                  <span>Donnez-lui un nom clair. Il restera privé tant que vous n’ajoutez pas de membre.</span>
-                </div>
-                <label>
-                  Nom du projet
-                  <input
-                    aria-label="Nom du nouveau projet"
-                    autoComplete="off"
-                    maxLength={160}
-                    onChange={(event) => setProjectName(event.target.value)}
-                    placeholder="Ex. Campagne de fin d’année"
-                    required
-                    type="text"
-                    value={projectName}
-                  />
-                </label>
-                <button
-                  disabled={projectSync.status === 'creating' || projectName.trim().length === 0}
-                  type="submit"
-                >
-                  {projectSync.status === 'creating' ? 'Création…' : 'Créer le projet'}
-                </button>
-              </form>
-            ) : <p className="muted compact">Aucun projet accessible pour ce compte.</p>}
-            statusDetail={projectSync.message}
-            statusLabel={PROJECT_STATUS_LABEL[projectSync.status]}
-            statusTone={projectSync.status === 'error'
-              ? 'blocked'
-              : projectSync.status === 'loading' || projectSync.status === 'creating'
-                ? 'attention'
-                : projectSync.status === 'idle'
-                  ? 'neutral'
-                  : 'ready'}
-            summary={selectedProject
-              ? 'Les personnes, les sources et la prochaine action utile du projet.'
-              : canCreateProject
-                ? 'Créez un projet pour organiser ses membres et ses ressources.'
-                : 'Aucun projet ne vous est encore accessible.'}
-            title={selectedProject?.name ?? 'Projets'}
-            toolbar={projects.length > 0 ? (
-              <label className="project-selector">
-                Projet actif
-                <select onChange={(event) => setSelectedProjectId(event.target.value)} value={selectedProjectId}>
-                  {projects.map((project) => <option key={project.project_id} value={project.project_id}>{project.name}</option>)}
-                </select>
-              </label>
-            ) : undefined}
-          >
-            <section className="project-section">
-              <div className="panel-header"><h3>Ressources partagées</h3><span className="counter">{projectResources.length}</span></div>
-              {projectResources.length > 0 ? (
-                <div className="resource-list">
-                  {projectResources.slice(0, 6).map((resource) => (
-                    <a className="resource-item" href={resource.url ?? '#'} key={resource.id}>
-                      <strong>{resource.title}</strong><span>{resource.source}</span>
-                    </a>
-                  ))}
-                </div>
-              ) : <p className="muted compact">Aucune ressource partagée.</p>}
-            </section>
-          </AdaptiveWorkspacePage>
+          <ProjectWorkspaceV2
+            attachableResources={attachableResources}
+            canAttachResource={canAttachCurrentProjectResource}
+            canCreateProject={canCreateProject}
+            checkpoint={latestCheckpoint}
+            createName={projectName}
+            memberRole={currentProjectMember?.role ?? null}
+            members={projectMembers}
+            onAttachResource={() => void handleAttachProjectResource()}
+            onBackHome={() => handleCurrentModeSelect('home')}
+            onCreateNameChange={setProjectName}
+            onCreateProject={(event) => void handleCreateProject(event)}
+            onProjectChange={setSelectedProjectId}
+            onResourceChange={setProjectResourceId}
+            project={selectedProject}
+            projects={projects}
+            resources={projectResources}
+            selectedProjectId={selectedProjectId}
+            selectedResourceId={projectResourceId}
+            status={projectSync.status}
+            statusMessage={projectSync.message}
+          />
         </section>
       );
     }
@@ -1539,7 +1451,31 @@ function App(): ReactElement {
     renderWorkspace: renderCurrentWorkspace,
   } : null;
 
-  if (currentUiRuntime && !showEntryGate) {
+  if (!isConnected) {
+    return (
+      <CurrentUiDemo
+        login={{
+          busy: state === 'loading',
+          error,
+          password,
+          registerAction: (
+            <RegisterWithCode
+              onAuthed={(nextAuth) => {
+                setAuth(nextAuth);
+                void loadContext(nextAuth.token);
+              }}
+            />
+          ),
+          username,
+          onPasswordChange: setPassword,
+          onSubmit: handleSubmit,
+          onUsernameChange: setUsername,
+        }}
+      />
+    );
+  }
+
+  if (currentUiRuntime) {
     return <CurrentUiDemo runtime={currentUiRuntime} />;
   }
 

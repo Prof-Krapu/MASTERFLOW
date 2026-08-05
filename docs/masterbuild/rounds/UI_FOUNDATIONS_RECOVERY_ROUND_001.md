@@ -2,7 +2,7 @@
 
 Statut : `active`
 Propriétaire : MALEX
-Base Lot 2 : `origin/main` au SHA `761bb4c52821175a2fd9f5b163f4bc34607d3ea1`
+Base Lot 3 : `origin/main` au SHA `f3ceb81b16d8af851c41e2d92b2182188ea051a2`
 
 ## Intention produit
 
@@ -20,8 +20,8 @@ Round. Aucun fichier Inventory ne doit être déplacé, supprimé ou absorbé.
 | Lot | Branche | Statut | Gate suivant |
 |---|---|---|---|
 | UFR-001 · Bible UI et MASTERBUILD | `codex/ui-bible-masterbuild-gate` | mergé via #231 · `761bb4c` | terminé |
-| UFR-002 · Shell, thèmes, rail et Dock | `codex/ui-foundations-shell-theme-dock` | publication et merge autorisés | commit, push, PR prête, checks puis merge |
-| UFR-003 · Project V2 situation vivante | `codex/project-v2-situation-page` | bloqué | revue et merge du Lot 2 |
+| UFR-002 · Shell, thèmes, rail et Dock | `codex/ui-foundations-shell-theme-dock` | mergé via #232 · `f3ceb81` | terminé |
+| UFR-003 · Project V2 situation vivante | `codex/project-v2-situation-page` | candidat local Lab + prototype | vérification puis validation MALEX |
 
 ## Contrat de publication du Lot 1
 
@@ -58,6 +58,31 @@ Le smoke runtime isolé confirme ensuite le prototype assemblé, la préférence
 GodMode, `K`, l'absence de faux micro via `M` et le reflow à 390 px. MALEX valide la promotion par
 son GO du 2026-08-05. Sa décision rend la revue Vincent non bloquante pour ce Lot 2 ; elle n'est pas
 enregistrée comme une fausse approbation.
+
+## Clôture Lot 2 et ouverture Lot 3 — 2026-08-05
+
+- GitHub : PR #232 mergée dans `main` au SHA `f3ceb81b16d8af851c41e2d92b2182188ea051a2` ;
+- contrôles GitHub : branche fusionnable, base `761bb4c` inchangée, zéro check configuré et aucun
+  contrôle rouge ;
+- publication : trois commits, seize fichiers, aucun déploiement ;
+- Lot 3 : worktree propre `codex/project-v2-situation-page` créé depuis ce SHA ;
+- Inventory : les quatre modifications locales restent intactes dans la copie principale.
+
+## Project V2 candidat local
+
+- composant unique `project-workspace-v2` partagé entre Component Lab et prototype assemblé ;
+- situation `Maintenant`, action principale déterministe, reprise uniquement pour un checkpoint du
+  même projet, ressources validées et synthèse d'équipe sans identifiant technique ;
+- six scénarios Lab : GodMode vide, professeur prêt, étudiant affecté, étudiant interdit, projet
+  archivé et mobile 390 px ;
+- smoke runtime isolé : création réelle d'un projet, sélection immédiate, ajout d'une ressource
+  validée, statut `À jour` et action `Ouvrir la dernière source` ;
+- thèmes clair/sombre, focus 3 px et confinement Lab `clientWidth = scrollWidth = 390` ;
+- aucune tâche, échéance, milestone, progression ou permission inventée ;
+- Design Preflight : `docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md`.
+
+La promotion reste bloquée jusqu'à validation visuelle MALEX, smoke permissions Vincent et GO de
+publication distinct. Le présent GO n'autorise ni commit, ni push, ni PR, ni merge.
 
 ## Exclusions
 

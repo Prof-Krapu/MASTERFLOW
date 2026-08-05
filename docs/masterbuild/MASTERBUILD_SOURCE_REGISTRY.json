@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-05T00:02:46+02:00",
+  "updated_at": "2026-08-05T00:52:01+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -347,6 +347,14 @@
       "status": "still_active",
       "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
       "note": "Round en trois lots : Bible, fondations, puis Project V2."
+    },
+    {
+      "source_id": "project-v2-design-preflight-001",
+      "path": "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md",
+      "kind": "design_preflight",
+      "status": "local_candidate",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "MASTERBUILD_UI_CONFORMANCE.json", "apps/frontend/src/project-workspace-v2.tsx"],
+      "note": "Contrat local Project V2 : situation, action déterministe, ressources validées, équipe agrégée et états sans progrès inventé."
     },
     {
       "source_id": "masterflow-archives-ui-legacy",
