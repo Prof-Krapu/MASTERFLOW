@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-05T00:27:00+02:00",
+  "updated_at": "2026-08-05T00:52:01+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -57,17 +57,25 @@
       "artifact_id": "page.project",
       "artifact_type": "page",
       "surface_id": "project",
-      "component_id": "adaptive-workspace-page.project",
+      "component_id": "project-workspace-v2",
       "label": "Project",
       "status": "blocked",
       "rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-013", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
       "required_states": ["loading", "empty", "partial", "ready", "error", "forbidden", "read_only", "future", "session_expired"],
       "lab_scenarios": ["project.godmode-empty", "project.teacher-ready", "project.student-assigned", "project.student-forbidden", "project.archived-read-only", "project.mobile-390"],
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
-      "evidence": [],
+      "evidence": [
+        {"kind": "component_lab", "status": "passed", "source": "/ui-lab · six scénarios Project V2, fixtures locales sans backend"},
+        {"kind": "assembled_prototype", "status": "passed", "source": "runtime isolé · création projet puis ajout ressource validée"},
+        {"kind": "theme_light", "status": "passed", "source": "Lab et prototype · fond rgb(245,242,238), texte rgb(33,28,24)"},
+        {"kind": "theme_dark", "status": "passed", "source": "Lab Project V2 · tokens sémantiques sombres"},
+        {"kind": "theme_system", "status": "passed", "source": "hérite du Shell conforme sans redéfinir la préférence"},
+        {"kind": "keyboard", "status": "passed", "source": "focus visible 3 px, offset 3 px, labels et ordre DOM"},
+        {"kind": "responsive_390", "status": "passed", "source": "Lab mobile · stage clientWidth 370 = scrollWidth 370, page 348 = 348"}
+      ],
       "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Project V2 situation vivante doit être validé dans le Lab puis le Prototype.", "Smoke permissions Vincent requis avant runtime."],
-      "notes": "Métier existant conservé ; tâches, jalons et progression inventée interdits."
+      "blocking_reasons": ["Validation visuelle MALEX requise.", "Permission review et smoke permissions Vincent requis avant publication runtime."],
+      "notes": "Candidat local Lab + prototype assemblé ; métier existant conservé ; tâches, jalons et progression inventée interdits."
     },
     {
       "artifact_id": "page.teaching",

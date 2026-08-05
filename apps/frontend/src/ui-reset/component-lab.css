@@ -449,6 +449,75 @@
   top: 48%;
 }
 
+.component-lab__stage--project {
+  display: grid;
+  gap: 14px;
+  overflow: auto;
+  padding: 22px;
+}
+
+.component-lab__scenario-select {
+  align-items: center;
+  background: var(--mf-surface-strong);
+  border: 1px solid var(--mf-border);
+  border-radius: 14px;
+  color: var(--mf-text-muted);
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.component-lab__scenario-select select {
+  background: var(--mf-bg);
+  border: 1px solid var(--mf-border);
+  border-radius: 10px;
+  color: var(--mf-text);
+  min-height: 42px;
+  padding: 8px 10px;
+}
+
+.component-lab__bench.is-mobile .component-lab__stage--project {
+  display: block;
+  padding: 10px;
+}
+
+.component-lab__bench.is-mobile .component-lab__scenario-select {
+  align-items: stretch;
+  display: grid;
+  margin-bottom: 10px;
+}
+
+.component-lab__bench.is-mobile .project-v2,
+.component-lab__bench.is-mobile .project-v2__meta,
+.component-lab__bench.is-mobile .project-v2__create > div,
+.component-lab__bench.is-mobile .project-v2__attach > div,
+.component-lab__bench.is-mobile .project-v2__resources {
+  grid-template-columns: 1fr;
+}
+
+.component-lab__bench.is-mobile .project-v2__header,
+.component-lab__bench.is-mobile .project-v2__now,
+.component-lab__bench.is-mobile .project-v2__content {
+  grid-template-columns: 1fr;
+}
+
+.component-lab__bench.is-mobile .project-v2 {
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.component-lab__bench.is-mobile .project-v2__meta {
+  align-items: stretch;
+  display: grid;
+}
+
+.component-lab__bench.is-mobile .project-v2__meta :where(span, strong) {
+  border-radius: 10px;
+}
+
 .component-lab__stage--navigation {
   display: grid;
   grid-template-columns: auto 1fr;

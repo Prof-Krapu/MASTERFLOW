@@ -98,6 +98,193 @@
   background: var(--proto-bg);
 }
 
+.proto-shell--auth .proto-workspace {
+  background:
+    radial-gradient(circle at 72% 20%, color-mix(in srgb, var(--proto-user-color) 11%, transparent), transparent 34%),
+    var(--proto-bg);
+}
+
+.proto-auth-nav {
+  grid-template-rows: 64px 1fr;
+  pointer-events: none;
+}
+
+.proto-auth-nav__brand {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  height: 54px;
+}
+
+.proto-auth-nav__label {
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.proto-auth-systembar .proto-systembar__center {
+  gap: 1px;
+}
+
+.proto-auth-systembar .proto-systembar__center strong {
+  font-size: 14px;
+  font-weight: 820;
+}
+
+.proto-auth-systembar .proto-systembar__center small {
+  color: var(--proto-muted);
+  font-size: 10px;
+}
+
+.proto-auth-canvas {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--proto-accent) 10%, transparent), transparent 42%),
+    color-mix(in srgb, var(--proto-panel) 36%, #000);
+  display: flex;
+  justify-content: center;
+  padding: 42px 24px 64px;
+}
+
+.proto-auth-panel {
+  background: color-mix(in srgb, var(--proto-panel-strong) 94%, transparent);
+  border: 1px solid var(--proto-border);
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  display: grid;
+  gap: 17px;
+  max-width: 460px;
+  padding: 30px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.proto-auth-panel__heading {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 58px minmax(0, 1fr);
+  margin-bottom: 4px;
+}
+
+.proto-auth-panel__mark {
+  align-items: center;
+  background: color-mix(in srgb, var(--proto-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--proto-accent) 28%, transparent);
+  border-radius: 17px;
+  display: flex;
+  height: 58px;
+  justify-content: center;
+  width: 58px;
+}
+
+.proto-auth-panel__mark .proto-mf-mark {
+  height: 42px;
+  width: 42px;
+}
+
+.proto-auth-panel__heading p,
+.proto-auth-panel__heading h1,
+.proto-auth-panel__heading span {
+  margin: 0;
+}
+
+.proto-auth-panel__heading p {
+  color: var(--proto-accent);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.proto-auth-panel__heading h1 {
+  font-size: clamp(24px, 4vw, 31px);
+  line-height: 1.08;
+  margin-top: 3px;
+}
+
+.proto-auth-panel__heading div > span {
+  color: var(--proto-muted);
+  display: block;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-top: 7px;
+}
+
+.proto-auth-panel > label {
+  display: grid;
+  gap: 7px;
+}
+
+.proto-auth-panel > label > span {
+  color: var(--proto-muted);
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.proto-auth-panel input {
+  background: color-mix(in srgb, var(--proto-bg) 72%, transparent);
+  border: 1px solid var(--proto-border);
+  border-radius: 11px;
+  color: var(--proto-text);
+  min-height: 48px;
+  padding: 0 14px;
+  width: 100%;
+}
+
+.proto-auth-panel__submit {
+  align-items: center;
+  background: var(--proto-accent-gradient);
+  border: 0;
+  border-radius: 11px;
+  color: #fff;
+  display: flex;
+  font-weight: 820;
+  gap: 9px;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+.proto-auth-panel__submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.proto-auth-panel__error {
+  background: color-mix(in srgb, var(--mf-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mf-danger) 32%, transparent);
+  border-radius: 10px;
+  color: var(--mf-danger);
+  font-size: 13px;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.proto-auth-panel__register {
+  border-top: 1px solid var(--proto-border);
+  padding-top: 15px;
+}
+
+.proto-auth-panel__register > button,
+.proto-auth-panel__register button {
+  background: transparent;
+  border: 0;
+  color: var(--proto-muted);
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.proto-auth-panel__register button:hover {
+  color: var(--proto-text);
+}
+
 @media (prefers-color-scheme: light) {
   .proto-shell--theme-auto {
     --proto-bg: #f2efeb;
@@ -3557,6 +3744,52 @@
 @media (prefers-reduced-motion: reduce) {
   .proto-dock-buttons button[aria-expanded="true"] {
     animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .proto-shell--auth {
+    grid-template-columns: 0 minmax(0, 1fr);
+  }
+
+  .proto-shell--auth .proto-auth-nav {
+    display: none;
+  }
+
+  .proto-auth-systembar {
+    height: 60px;
+    padding: 0 16px;
+  }
+
+  .proto-auth-canvas {
+    border-radius: 18px;
+    height: calc(100dvh - 78px);
+    margin: 0 10px;
+    min-height: 0;
+    overflow: auto;
+    padding: 22px 12px 30px;
+  }
+
+  .proto-auth-panel {
+    border-radius: 18px;
+    gap: 15px;
+    padding: 22px 18px;
+  }
+
+  .proto-auth-panel__heading {
+    align-items: start;
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .proto-auth-panel__mark {
+    border-radius: 14px;
+    height: 48px;
+    width: 48px;
+  }
+
+  .proto-auth-panel__mark .proto-mf-mark {
+    height: 36px;
+    width: 36px;
   }
 }
 
