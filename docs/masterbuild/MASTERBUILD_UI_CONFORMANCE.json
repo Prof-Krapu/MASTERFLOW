@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-05T00:52:01+02:00",
+  "updated_at": "2026-08-08T23:44:35+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -38,6 +38,24 @@
   ],
   "artifacts": [
     {
+      "artifact_id": "page.login",
+      "artifact_type": "page",
+      "surface_id": "auth",
+      "component_id": "current-ui-login",
+      "label": "Login",
+      "status": "audit_required",
+      "rule_ids": ["DES-001", "DES-005", "DES-006", "DES-009", "DES-010", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
+      "required_states": ["loading", "empty", "partial", "ready", "error", "forbidden", "read_only", "future", "session_expired"],
+      "lab_scenarios": ["login.runtime-desktop", "login.runtime-mobile-390"],
+      "required_evidence": ["assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "malex_review"],
+      "evidence": [
+        {"kind": "assembled_prototype", "status": "passed", "source": "PR #233 · Shell visible avant authentification puis ouverture directe de Home"}
+      ],
+      "reviews": {"malex": null, "vincent": null},
+      "blocking_reasons": ["Composition, thèmes, clavier, états et format 390 px à auditer avec MALEX."],
+      "notes": "Comportement publié dans main au SHA 05af04f ; aucune conformité visuelle héritée du merge."
+    },
+    {
       "artifact_id": "page.home",
       "artifact_type": "page",
       "surface_id": "home",
@@ -74,8 +92,8 @@
         {"kind": "responsive_390", "status": "passed", "source": "Lab mobile · stage clientWidth 370 = scrollWidth 370, page 348 = 348"}
       ],
       "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Validation visuelle MALEX requise.", "Permission review et smoke permissions Vincent requis avant publication runtime."],
-      "notes": "Candidat local Lab + prototype assemblé ; métier existant conservé ; tâches, jalons et progression inventée interdits."
+      "blocking_reasons": ["Validation visuelle MALEX requise.", "Permission review Vincent encore absente ; la publication ne vaut pas conformité."],
+      "notes": "Base publiée via PR #233 au SHA 05af04f, mais non validée visuellement ; métier existant conservé ; tâches, jalons et progression inventée interdits."
     },
     {
       "artifact_id": "page.teaching",
@@ -122,8 +140,8 @@
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
       "evidence": [],
       "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["UI-PAGE-AUDIT-001 / Inventory suspendu.", "Quatre modifications locales Inventory conservées hors de ce worktree."],
-      "notes": "Exclu des Lots Bible, fondations et Project V2."
+      "blocking_reasons": ["Audit Inventory suspendu jusqu'à son Round dédié.", "Quatre modifications locales sauvegardées et isolées dans codex/inventory-ui-candidate-recovery."],
+      "notes": "Exclu du Round page par page initial ; candidat non committé et non publié."
     },
     {
       "artifact_id": "page.masterstory",

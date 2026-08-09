@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-08 — Consolidation locale post-#233 et reprise page par page
+
+- vérité GitHub : PR #233 mergée, `main` au SHA
+  `05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2`, aucune PR ouverte et aucun déploiement ;
+- copie de référence `/Users/malex/Documents/Playground/MASTERFLOW` réalignée, propre et à `0/0`
+  avec `origin/main` ;
+- Inventory : quatre modifications sauvegardées dans
+  `_QUARANTINE_MASTERFLOW_2026-08-08/INVENTORY_UI_CANDIDATE_RESCUE`, puis appliquées au candidat
+  non committé `codex/inventory-ui-candidate-recovery` ; lint et build frontend verts ;
+- anciens worktrees propres Project V2, Bible et Fondations retirés ; leurs branches sont conservées ;
+- Round `UI-FOUNDATIONS-RECOVERY-001` clos comme implémentation, sans déclarer Project conforme ;
+- nouveau Round `UI-PAGE-BY-PAGE-001`, étape `1/8 — Orienter` : Login, Home, Project, Teaching,
+  Learn ; première action recommandée : auditer Login avant toute modification ;
+- présente réconciliation documentaire locale dans `codex/post-233-masterbuild-closure` : aucun
+  commit, push, PR, merge, code produit, asset ou déploiement.
+
 ## 2026-08-05 — UI page par page : connexion intégrée au Shell
 
 - décision MALEX : la connexion est un état de l'interface MasterFlow, pas une page séparée ;

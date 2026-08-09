@@ -1,8 +1,8 @@
 # Round UI-FOUNDATIONS-RECOVERY-001
 
-Statut : `active`
+Statut : `completed`
 Propriétaire : MALEX
-Base Lot 3 : `origin/main` au SHA `f3ceb81b16d8af851c41e2d92b2182188ea051a2`
+Clôture : PR #233 mergée dans `main` au SHA `05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2`
 
 ## Intention produit
 
@@ -11,9 +11,9 @@ publié. La Bible UI devient le gate commun avant toute nouvelle composition.
 
 ## Suspension Inventory
 
-`UI-PAGE-AUDIT-001 / UPA-005` est suspendu. Les quatre modifications locales Inventory restent
-dans `/Users/malex/Documents/Playground/MASTERFLOW` et ne sont pas présentes dans le worktree de ce
-Round. Aucun fichier Inventory ne doit être déplacé, supprimé ou absorbé.
+`UI-PAGE-AUDIT-001 / UPA-005` reste suspendu. Les quatre modifications locales Inventory ont été
+sauvegardées puis isolées dans le candidat `codex/inventory-ui-candidate-recovery`, basé sur
+`origin/main`. Aucun fichier Inventory n'a été supprimé, validé ou publié.
 
 ## Lots séquentiels
 
@@ -21,7 +21,7 @@ Round. Aucun fichier Inventory ne doit être déplacé, supprimé ou absorbé.
 |---|---|---|---|
 | UFR-001 · Bible UI et MASTERBUILD | `codex/ui-bible-masterbuild-gate` | mergé via #231 · `761bb4c` | terminé |
 | UFR-002 · Shell, thèmes, rail et Dock | `codex/ui-foundations-shell-theme-dock` | mergé via #232 · `f3ceb81` | terminé |
-| UFR-003 · Project V2 situation vivante | `codex/project-v2-situation-page` | candidat local Lab + prototype | vérification puis validation MALEX |
+| UFR-003 · Project V2 situation vivante | `codex/project-v2-situation-page` | mergé via #233 · `05af04f` | implémentation terminée, conformité bloquée |
 
 ## Contrat de publication du Lot 1
 
@@ -68,7 +68,7 @@ enregistrée comme une fausse approbation.
 - Lot 3 : worktree propre `codex/project-v2-situation-page` créé depuis ce SHA ;
 - Inventory : les quatre modifications locales restent intactes dans la copie principale.
 
-## Project V2 candidat local
+## Project V2 publié comme base non validée
 
 - composant unique `project-workspace-v2` partagé entre Component Lab et prototype assemblé ;
 - situation `Maintenant`, action principale déterministe, reprise uniquement pour un checkpoint du
@@ -81,8 +81,18 @@ enregistrée comme une fausse approbation.
 - aucune tâche, échéance, milestone, progression ou permission inventée ;
 - Design Preflight : `docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md`.
 
-La promotion reste bloquée jusqu'à validation visuelle MALEX, smoke permissions Vincent et GO de
-publication distinct. Le présent GO n'autorise ni commit, ni push, ni PR, ni merge.
+La PR #233 a publié cette base dans `main` au SHA `05af04f`. Cette publication ne vaut ni validation
+visuelle MALEX ni conformité UI : `page.project` reste donc bloqué dans le registre. La reprise se
+poursuit dans `UI-PAGE-BY-PAGE-001`, en commençant par Login.
+
+## Clôture du Round — 2026-08-08
+
+- PR #233 mergée ; `main` GitHub et la copie locale de référence sont alignés sur `05af04f` ;
+- aucune PR ouverte et aucun déploiement associé ;
+- l'ancien worktree Project a été retiré après vérification de propreté, sa branche est conservée ;
+- les limites de conformité restantes sont transférées au Round page par page et non masquées par
+  le statut Git ;
+- Inventory reste un candidat séparé, restaurable et hors publication.
 
 ## Exclusions
 
