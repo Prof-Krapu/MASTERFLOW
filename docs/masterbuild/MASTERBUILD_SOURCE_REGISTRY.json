@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-05T00:52:01+02:00",
+  "updated_at": "2026-08-08T23:44:35+02:00",
   "sources": [
     {
       "source_id": "global-system-ui-audit-2026-07-31",
@@ -343,18 +343,26 @@
     {
       "source_id": "ui-foundations-recovery-round-001",
       "path": "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
+      "kind": "completed_round",
+      "status": "absorbed",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
+      "note": "Round clos par la PR #233 mergée au SHA 05af04f ; la publication de Project ne vaut pas validation de conformité UI."
+    },
+    {
+      "source_id": "ui-page-by-page-round-001",
+      "path": "docs/masterbuild/rounds/UI_PAGE_BY_PAGE_ROUND_001.md",
       "kind": "active_round",
       "status": "still_active",
-      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json"],
-      "note": "Round en trois lots : Bible, fondations, puis Project V2."
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "MASTERBUILD_UI_CONFORMANCE.json"],
+      "note": "Reprise séquentielle Login, Home, Project, Teaching puis Learn avec validation MALEX page par page."
     },
     {
       "source_id": "project-v2-design-preflight-001",
       "path": "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md",
       "kind": "design_preflight",
-      "status": "local_candidate",
+      "status": "published_candidate",
       "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "MASTERBUILD_UI_CONFORMANCE.json", "apps/frontend/src/project-workspace-v2.tsx"],
-      "note": "Contrat local Project V2 : situation, action déterministe, ressources validées, équipe agrégée et états sans progrès inventé."
+      "note": "Contrat Project V2 publié via PR #233 au SHA 05af04f ; la surface reste bloquée dans la conformité tant que MALEX ne l'a pas validée visuellement."
     },
     {
       "source_id": "masterflow-archives-ui-legacy",

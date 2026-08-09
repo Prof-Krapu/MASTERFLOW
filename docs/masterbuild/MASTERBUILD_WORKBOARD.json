@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-05T00:52:01+02:00",
-  "active_round_id": "UI-FOUNDATIONS-RECOVERY-001",
+  "updated_at": "2026-08-08T23:44:35+02:00",
+  "active_round_id": "UI-PAGE-BY-PAGE-001",
   "authorizations": [
     {
       "authorization_id": "AUTH-MB2-2026-07-05",
@@ -139,10 +139,20 @@
       "round_id": "UI-FOUNDATIONS-RECOVERY-001",
       "actor": "malex",
       "scope": "record_pr_232_merge_and_build_project_v2_lab_to_assembled_prototype_locally",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-05T00:52:01+02:00",
       "expires_on_scope_change": true,
       "excluded": ["commit", "push", "pull_request", "merge", "deploy", "asset", "migration", "provider", "spend", "inventory_change", "product_backend_api", "delete"]
+    },
+    {
+      "authorization_id": "AUTH-POST233-LOCAL-CONSOLIDATION-2026-08-08",
+      "round_id": "UI-PAGE-BY-PAGE-001",
+      "actor": "malex",
+      "scope": "backup_and_isolate_inventory_realign_main_remove_clean_historical_worktrees_reconcile_masterbuild_locally",
+      "status": "completed",
+      "granted_at": "2026-08-08T23:44:35+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["product_code", "inventory_change", "commit", "push", "pull_request", "merge", "deploy", "asset", "migration", "provider", "spend", "branch_delete"]
     }
   ],
   "work_packages": [
@@ -402,7 +412,7 @@
       "dependencies": ["UPA-004"],
       "design_rule_ids": ["DES-001", "DES-002", "DES-004", "DES-006", "DES-007", "DES-010"],
       "tool_route": "codex",
-      "blocked_reason": "Suspendu pendant UI-FOUNDATIONS-RECOVERY-001 ; quatre modifications Inventory locales restent isolées dans la copie principale.",
+      "blocked_reason": "Suspendu jusqu'à son audit dédié ; quatre modifications Inventory sont sauvegardées et isolées dans codex/inventory-ui-candidate-recovery.",
       "expected_evidence": [
         "objectif et première action utiles",
         "objets, collections, candidats et Companions distingués",
@@ -584,13 +594,38 @@
       "work_package_id": "UFR-003",
       "label": "Construire Project V2 situation vivante",
       "feature_ids": ["project-scope", "ui-shell-navigation", "ui-command-dock"],
-      "status": "in_progress",
+      "status": "completed",
       "owner": "malex",
       "reviewers": ["vincent", "codex"],
       "dependencies": ["UFR-002"],
       "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-013", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
       "tool_route": "component_lab",
-      "expected_evidence": ["Project Lab", "Prototype assemblé", "validation MALEX", "smoke permissions Vincent", "thèmes clair sombre", "390 px", "aucune progression inventée"]
+      "expected_evidence": ["Project Lab", "Prototype assemblé", "publication PR #233 au SHA 05af04f", "conformité toujours bloquée sans validation MALEX", "thèmes clair sombre", "390 px", "aucune progression inventée"]
+    },
+    {
+      "work_package_id": "UPP-001",
+      "label": "Auditer et valider Login",
+      "feature_ids": ["ui-shell-navigation"],
+      "status": "ready",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": [],
+      "design_rule_ids": ["DES-001", "DES-005", "DES-006", "DES-009", "DES-010", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
+      "tool_route": "component_lab",
+      "expected_evidence": ["contrat de page", "parcours Login vers Home", "clair sombre système", "clavier et focus", "états erreur et session", "390 px", "validation MALEX avant correction suivante"]
+    },
+    {
+      "work_package_id": "UPP-002",
+      "label": "Auditer Home après validation de Login",
+      "feature_ids": ["ui-shell-navigation"],
+      "status": "blocked",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["UPP-001"],
+      "design_rule_ids": ["DES-001", "DES-004", "DES-005", "DES-006", "DES-009", "DES-010", "DES-015", "DES-016", "DES-018", "DES-019", "DES-021", "DES-023"],
+      "tool_route": "component_lab",
+      "blocked_reason": "Login doit être validé avant toute correction de Home.",
+      "expected_evidence": ["contrat de page", "situation et action principale", "rôles", "thèmes", "clavier", "390 px", "validation MALEX"]
     }
   ]
 }

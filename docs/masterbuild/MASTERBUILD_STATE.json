@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-05T00:52:01+02:00",
+  "updated_at": "2026-08-08T23:44:35+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,42 +9,39 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "LEARN-001",
-    "title": "Aide personnelle Learn utilisable",
-    "commit_sha": "d257aa0aef1f3120a186dac5ed823c3d3562ae9e",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/229"
-  },
-  "active_round": {
     "round_id": "UI-FOUNDATIONS-RECOVERY-001",
     "title": "Restaurer les fondations UI et imposer la Bible",
-    "objective": "Publier en trois lots successifs une Bible UI obligatoire, les fondations Shell/Thèmes/Dock, puis Project V2 situation vivante sans altérer le métier déjà validé.",
+    "commit_sha": "05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/233"
+  },
+  "active_round": {
+    "round_id": "UI-PAGE-BY-PAGE-001",
+    "title": "Reprendre l'interface page par page",
+    "objective": "Auditer, corriger et faire valider chaque page dans l'ordre Login, Home, Project, Teaching puis Learn, sans relancer de lot transversal non validé.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 6,
-    "stage_label": "Vérifier",
-    "recommended_next_action": "Faire relire Project V2 localement par MALEX, puis demander à Vincent le smoke permissions avant tout GO Git.",
-    "primary_risk": "Promouvoir Project V2 sans validation visuelle MALEX ou en confondant les fixtures Lab avec des permissions runtime.",
+    "stage_index": 1,
+    "stage_label": "Orienter",
+    "recommended_next_action": "Auditer Login sur le runtime publié et faire valider son contrat visuel avant toute correction de Home.",
+    "primary_risk": "Relancer des changements transversaux avant d'avoir validé une page complète avec MALEX.",
     "no_auto_execute": true,
-    "work_package_ids": ["UFR-001", "UFR-002", "UFR-003"],
-    "authorization_id": "AUTH-UFR-L2-CLOSE-L3-LOCAL-2026-08-05",
+    "work_package_ids": ["UPP-001", "UPP-002"],
+    "authorization_id": "AUTH-POST233-LOCAL-CONSOLIDATION-2026-08-08",
     "success_criteria": [
-      "Toute page produit et tout composant partagé public possède un identifiant de conformité.",
-      "Le gate bloque une promotion sans règle, état, scénario Lab, preuve ou validation.",
-      "Le cockpit distingue conforme, à auditer et bloqué et transforme les retours en findings candidats.",
-      "Le Lot 2 corrige thèmes, Shell, rail et Dock sans toucher Inventory.",
-      "Project V2 traverse Lab, Prototype, validation MALEX et smoke Vincent avant runtime."
+      "Aucune page suivante n'est modifiée avant validation explicite de la page courante.",
+      "Chaque audit couvre rôle, thème, clavier, états, responsive 390 px et données réelles.",
+      "Une correction partagée du Shell n'est ouverte que si un finding de page prouve son besoin.",
+      "Une implémentation publiée n'est jamais confondue avec une conformité visuelle validée."
     ],
     "blockers": [],
     "validation_gates": [
-      "Lot 1 vérifié et revu avant le Lot 2",
-      "Lot 2 vérifié et revu avant le Lot 3",
-      "GO publication et merge du Lot 2 accordé le 2026-08-05",
-      "PR #232 mergée au SHA f3ceb81b16d8af851c41e2d92b2182188ea051a2",
-      "Project V2 local reste bloqué avant publication jusqu'aux validations MALEX et Vincent",
-      "Aucun déploiement, asset, fournisseur ou migration dans ce Round"
+      "Le parcours Login vers Home est publié mais sa composition visuelle reste à valider",
+      "Project V2 est publié via PR #233 mais reste bloqué dans le registre de conformité",
+      "Les quatre modifications Inventory restent un candidat séparé, non committé",
+      "Aucun déploiement, asset, backend ou migration dans ce Round"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
+      "docs/masterbuild/rounds/UI_PAGE_BY_PAGE_ROUND_001.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
       "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
@@ -59,7 +56,7 @@
       "move_id": "publish-ui-bible-lot-1",
       "label": "Publier le Lot 1 Bible UI et gate MASTERBUILD",
       "reason": "Les fondations et Project V2 doivent être bloqués par un contrat vérifiable avant toute composition runtime.",
-      "recommended": true,
+      "recommended": false,
       "status": "completed"
     },
     {
@@ -71,10 +68,24 @@
     },
     {
       "move_id": "build-project-v2-lot-3",
-      "label": "Valider le candidat local Project V2",
-      "reason": "Le Lab et le prototype assemblé sont prêts ; MALEX doit valider l'expérience avant le smoke permissions Vincent.",
+      "label": "Publier Project V2 comme base non validée",
+      "reason": "La PR #233 est mergée ; la conformité visuelle reste volontairement bloquée jusqu'à la reprise page par page.",
+      "recommended": false,
+      "status": "completed_implementation_conformance_blocked"
+    },
+    {
+      "move_id": "audit-login-page",
+      "label": "Auditer et valider Login",
+      "reason": "C'est la première page du parcours réel et le point de départ décidé par MALEX.",
       "recommended": true,
-      "status": "local_candidate_pending_human_validation"
+      "status": "ready"
+    },
+    {
+      "move_id": "audit-home-after-login",
+      "label": "Auditer Home après Login",
+      "reason": "Home ne doit être retouchée qu'après validation du parcours d'entrée.",
+      "recommended": false,
+      "status": "blocked_until_login_review"
     }
   ],
   "registries": {
@@ -101,27 +112,27 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "UI-FOUNDATIONS-RECOVERY-001",
-    "title": "Restaurer les fondations UI et imposer la Bible",
+    "goal_id": "UI-PAGE-BY-PAGE-001",
+    "title": "Reprendre l'interface page par page",
     "owner": "malex",
     "status": "active",
-    "stage_index": 6,
-    "stage_label": "Vérifier",
+    "stage_index": 1,
+    "stage_label": "Orienter",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Project V2 visible dans le Lab pour six scénarios explicites",
-      "Prototype assemblé avec création et ressource validée réelles",
-      "Aucune progression, échéance ou permission inventée"
+      "Login validé avant Home",
+      "Chaque page validée dans ses états, rôles, thèmes et format 390 px",
+      "Aucune implémentation publiée déclarée conforme sans revue MALEX"
     ],
     "blockers": [],
     "validation_gates": [
-      "Lot 2 mergé via PR #232 au SHA f3ceb81",
-      "Validation visuelle MALEX encore requise pour Project V2",
-      "Smoke permissions Vincent encore requis avant publication Project V2",
-      "Aucun déploiement dans les trois lots"
+      "PR #233 mergée au SHA 05af04f sans déploiement",
+      "Login est la première surface à auditer",
+      "Project reste bloqué dans le registre de conformité",
+      "Inventory reste isolé dans son candidat dédié"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_FOUNDATIONS_RECOVERY_ROUND_001.md",
+      "docs/masterbuild/rounds/UI_PAGE_BY_PAGE_ROUND_001.md",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
       "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
       "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md"
@@ -132,37 +143,37 @@
       "index": 1,
       "id": "orient",
       "label": "Orienter",
-      "status": "completed"
+      "status": "active"
     },
     {
       "index": 2,
       "id": "frame",
       "label": "Cadrer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 3,
       "id": "audit",
       "label": "Auditer",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 4,
       "id": "decide",
       "label": "Décider",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 5,
       "id": "build",
       "label": "Construire",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "active"
+      "status": "pending"
     },
     {
       "index": 7,
@@ -315,10 +326,10 @@
     }
   ],
   "publication": {
-    "state": "main_lot_1_lot_2_project_v2_local_candidate",
-    "branch": "codex/project-v2-situation-page",
-    "commit_sha": "f3ceb81b16d8af851c41e2d92b2182188ea051a2",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/232",
-    "runtime_proof": "Lots 1 et 2 mergés dans GitHub main au SHA f3ceb81 ; Project V2 existe uniquement dans un worktree local non committé, aucun déploiement."
+    "state": "main_ui_foundations_project_v2_merged_unvalidated",
+    "branch": "main",
+    "commit_sha": "05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/233",
+    "runtime_proof": "La PR #233 est mergée dans GitHub main au SHA 05af04f. Login intégré, Project V2 et les fondations sont publiés comme base logicielle, sans validation de conformité UI ni déploiement."
   }
 }
