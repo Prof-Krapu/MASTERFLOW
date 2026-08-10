@@ -1,10 +1,13 @@
 # MASTERBUILD et frontières d'ownership.
 # Ce fichier propose les reviewers ; leur approbation n'est obligatoire que si une protection de branche l'impose.
+# 2026-08-10 (GO Vincent) : @Prof-Krapu retiré de toutes les lignes pour ne plus recevoir de
+# demandes de revue automatiques sur GitHub. Ceci ne change ni la validation humaine requise sur
+# apps/backend/, permissions/auth, secrets, migrations et déploiement (invariant CLAUDE.md, pas un
+# mécanisme GitHub), ni les droits de MALEX.
 /apps/frontend/ @malexcoulot-dev
 /docs/ui/ @malexcoulot-dev
-/apps/backend/ @Prof-Krapu
-/packages/shared/ @malexcoulot-dev @Prof-Krapu
-/apps/masterbuild/ @malexcoulot-dev @Prof-Krapu
-/docs/masterbuild/ @malexcoulot-dev @Prof-Krapu
-/.agents/ @malexcoulot-dev @Prof-Krapu
-/.github/ @malexcoulot-dev @Prof-Krapu
+/packages/shared/ @malexcoulot-dev
+/apps/masterbuild/ @malexcoulot-dev
+/docs/masterbuild/ @malexcoulot-dev
+/.agents/ @malexcoulot-dev
+/.github/ @malexcoulot-dev

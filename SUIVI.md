@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Vincent retiré de CODEOWNERS : plus de demandes de revue GitHub
+
+- GO Vincent : arrêter de recevoir des notifications « review requested » sur l'app GitHub ;
+- `@Prof-Krapu` retiré de toutes les lignes de `.github/CODEOWNERS`, y compris `/apps/backend/`
+  (ligne supprimée, plus aucun owner suggéré dessus) ;
+- rôle admin GitHub inchangé (`Prof-Krapu` reste seul admin réel du repo) ;
+- aucun impact sur la validation humaine requise côté doctrine `CLAUDE.md` (backend, permissions,
+  secrets, migrations, déploiement) : ce n'était de toute façon pas GitHub qui l'imposait —
+  `CODEOWNERS` n'était qu'indicatif ici, aucune protection de branche ne le rendait obligatoire ;
+  la règle reste portée par la discipline Claude/Codex, pas par une notification GitHub ;
+- aucun droit de MALEX modifié par ce changement.
+
+---
+
 ## 2026-08-10 — Rituel PR levé pour MALEX ; rôle admin GitHub toujours bloqué (hors outillage)
 
 - MALEX a confirmé les deux points en PR #240 (deux commentaires, le second remplaçant le premier
