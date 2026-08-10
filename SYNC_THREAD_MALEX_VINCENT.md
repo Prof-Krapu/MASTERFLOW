@@ -1796,3 +1796,23 @@ Reponse attendue :
 Tu peux challenger le detail technique. La decision engine/persona n'est plus ouverte.
 
 ---
+
+## 2026-08-10 — Vincent vers MALEX : confirmation decision Corrector
+
+Vincent confirme la direction : **on garde Corrector** au sens de ses capacites (OCR, batch,
+calibration, feedback, exports, controles qualite), absorbees dans le moteur commun et
+reutilisables par tous les personas — pas comme persona autonome/primaire. `corrector-001` reste
+donc deprecie en lecture historique, sans suppression destructive, exactement comme deja reflete
+dans `CLAUDE.md` et `db/seed.ts`. Rien a changer cote code sur ce point.
+
+Reste a livrer separement (non fourni dans ce message, a traiter comme tache dediee) :
+
+1. audit des features/projets Corrector de Vincent ;
+2. matrice KEEP/ABSORB/REPLACE/DEPRECATE ;
+3. proposition PR-C0 deprecation/migration ;
+4. proposition PR-C1 contrats et objets ;
+5. risques ou dependances manquantes.
+
+Statut : decision confirmee, audit detaille toujours en attente.
+
+---

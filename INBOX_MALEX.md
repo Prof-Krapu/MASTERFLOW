@@ -32,6 +32,33 @@ Règles de lecture :
 
 ---
 
+## 2026-08-10 — open — DEV-LOCAL-FUNNEL-001 : installer front+back en local et partager un Tailscale Funnel
+
+Vincent → MALEX. Réponse à `REQ-PRIVATE-SHARED-DEPLOYMENT-001` (voir `INBOX_VINCENT.md`) : pas de
+stack Docker partagée pour l'instant, solution plus simple.
+
+Demande :
+
+1. installer et lancer le projet en local sur ta machine : `npm install`, puis `npm run dev`
+   (backend `:8000`) et `npm run dev:frontend` (frontend `:5174`) ;
+2. exposer ton instance locale via un **Tailscale Funnel** (même principe que le Funnel public
+   posé le 2026-06-07, voir `SYNC_THREAD_MALEX_VINCENT.md`), cette fois lancé depuis ta machine ;
+3. partager l'URL Funnel obtenue à Vincent une fois l'instance up, pour qu'il puisse suivre le
+   développement en cours sans installer le projet lui-même.
+
+Limites :
+
+- garder `LLM_PROVIDER=mock` sauf besoin explicite ;
+- aucun secret dans Git, une inbox, une PR ou un log ;
+- pas de sauvegarde SQLite particulière requise pour cet usage dev, mais éviter de perdre ta base
+  locale sans t'en rendre compte (c'est une instance de travail, pas la release partagée finale) ;
+- ceci ne remplace pas un futur déploiement Docker partagé plus lourd si le besoin apparaît — juste
+  un accès dev simple en attendant.
+
+Statut : open — en attente d'action MALEX.
+
+---
+
 ## 2026-06-28 — open — DeepSeek (test) + TUI agentic : à valider + 2 demandes
 
 Vincent → MALEX/Codex. **Notification de sync, pas une auto-validation.** Travail préparé en local
@@ -64,6 +91,15 @@ SYNC_PROOF : `local_head` branche `codex/deepseek-tui`, `origin/main = github_ma
 (#155 Experience Fabric mergé). Détail daté dans `SUIVI.md` (DEEPSEEK-TUI-001).
 
 Statut : open — en attente de validation MALEX. Rien n'est publié sur `main` hors ce message.
+
+### Réponse Vincent — 2026-08-10
+
+Point 1 **approuvé** : test DeepSeek en local autorisé, approche provider-aware validée
+(`LLM_PROVIDER=deepseek` en déviation de test, OpenRouter reste le provider canonique). Ce point
+est clos côté validation humaine.
+
+Point 2 (clé LLM saisie à la connexion du TUI, override par session) reste **open** — pas encore
+arbitré, à traiter séparément avec MALEX.
 
 ---
 

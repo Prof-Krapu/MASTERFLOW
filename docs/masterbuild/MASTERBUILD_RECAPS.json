@@ -1,5 +1,17 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-04T00:00:00.000Z",
-  "messages": []
+  "updated_at": "2026-08-10T00:00:00.000Z",
+  "messages": [
+    {
+      "message_id": "recap-20260810-dev-funnel-deepseek",
+      "created_at": "2026-08-10T00:00:00.000Z",
+      "sender": "vincent",
+      "recipient": "malex",
+      "goal_id": "UI-PAGE-BY-PAGE-001",
+      "stage_index": 1,
+      "body": "Decisions Vincent (2026-08-10). (1) Setup dev partage : MALEX installe le front (npm run dev:frontend) et le back (npm run dev) en local sur sa machine, puis partage un Tailscale Funnel pointant sur son instance pour que Vincent puisse suivre le developpement en cours, meme principe que le Funnel public du 2026-06-07 mais initie par MALEX cette fois. Detail dans INBOX_MALEX.md (entree DEV-LOCAL-FUNNEL-001) et reponse a REQ-PRIVATE-SHARED-DEPLOYMENT-001 dans INBOX_VINCENT.md. (2) DeepSeek : test local autorise, approche provider-aware validee (branche codex/deepseek-tui). Point 1 de l'entree INBOX_MALEX.md du 2026-06-28 est clos ; le point 2 (cle LLM par session TUI) reste ouvert, a arbitrer separement.",
+      "tagline": "MALEX — Round propre : le contexte est intact et personne n’a mangé le décor.",
+      "status": "shared_in_git_worktree"
+    }
+  ]
 }
