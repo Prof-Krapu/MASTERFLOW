@@ -170,6 +170,19 @@ Le cockpit prépare la séquence :
 Chaque étape affiche portée, risque et gate. Aucune commande sensible n'est exécutée depuis le
 service local V1.
 
+### Exception territoire MALEX (2026-08-10)
+
+Sur son propre territoire `CODEOWNERS` (`apps/frontend/`, `docs/ui/`, `apps/masterbuild/`,
+`docs/masterbuild/` hors `MASTERBUILD_STATE.json`/`MASTERBUILD_PROTOCOL.md`/
+`MASTERBUILD_WORKBOARD.json`, `.agents/`, `.github/`), MALEX peut publier directement sur `main`
+sans PR ni revue :
+
+`commit → push direct sur main → entrée SUIVI.md`
+
+Décision godmode Vincent, confirmée explicitement par MALEX en PR #240 (portée complète). Reste
+inchangé et hors exception, quel que soit l'auteur : `apps/backend/`, permissions/auth, secrets,
+migrations, déploiement — cycle branche + PR + revue obligatoire, invariant non négociable.
+
 ## Veille périodique
 
 L'automation Codex `MASTERBUILD coherence hebdo` est créée en mode worktree read-only et laissée

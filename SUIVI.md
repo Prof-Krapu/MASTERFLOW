@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Rituel PR levé pour MALEX ; rôle admin GitHub toujours bloqué (hors outillage)
+
+- MALEX a confirmé les deux points en PR #240 (deux commentaires, le second remplaçant le premier
+  par une portée complète) : accord total sur (1) l'exception `commit → push direct sur main →
+  entrée SUIVI.md` sur tout son périmètre codeowner (y compris les zones co-owned), et (2) le
+  passage de son rôle GitHub `malexcoulot-dev` de `write` à `admin` ;
+- exclusions non négociables confirmées par MALEX lui-même : `apps/backend/`, permissions/auth,
+  secrets, migrations, déploiement restent en cycle branche + PR + revue ;
+- doctrine activée dans `CLAUDE.md`/`MASTERBUILD_PROTOCOL.md` : le rituel PR ne s'applique plus au
+  territoire MALEX confirmé ci-dessus ;
+- rôle GitHub `admin` : **toujours non appliqué**. `list_repository_collaborators` confirme
+  `malexcoulot-dev` encore en `write` malgré une tentative de Vincent (voir PR #240, commentaires) ;
+  aucun outil GitHub disponible côté Claude ne permet de changer un rôle de collaborateur —
+  action strictement manuelle, à faire par Vincent (seul admin du repo) dans GitHub
+  Settings → Collaborators → malexcoulot-dev → Admin, puis à confirmer une fois effective ;
+- publication : PR #240 mergée pour la partie doctrine ; le point rôle GitHub reste ouvert et hors
+  du périmètre que Claude peut exécuter depuis cette session.
+
+---
+
 ## 2026-08-10 — Fallbacks avatars étudiants intégrés à Teaching
 
 - décision MALEX : deux silhouettes génériques, garçon/fille en intention visuelle, sont utilisées
