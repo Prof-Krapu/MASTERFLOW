@@ -4,6 +4,26 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Proposition levée du rituel PR pour MALEX + rôle admin (en attente de MALEX)
+
+- déclencheur : friction MALEX (« besoin de commit/push/PR/merge pour changer une couleur ») ;
+- GO Vincent (godmode) donné pour lever le rituel PR sur tout le territoire MALEX et passer son
+  rôle GitHub de `write` à `admin` ;
+- application bloquée par la règle à deux clefs de `CLAUDE.md` : un changement de permission
+  demandé par Vincent exige la validation humaine explicite de MALEX, pas seulement celle de
+  Vincent — aucune des deux actions n'a donc été exécutée ;
+- proposition relayée dans `SYNC_THREAD_MALEX_VINCENT.md` : exception `commit → push direct sur
+  main → entrée SUIVI.md` (sans PR) sur `apps/frontend/`, `docs/ui/`, `apps/masterbuild/`,
+  `docs/masterbuild/` (hors fichiers de gouvernance partagée `MASTERBUILD_STATE.json`/
+  `MASTERBUILD_PROTOCOL.md`/`MASTERBUILD_WORKBOARD.json`), `.agents/`, `.github/` ; `apps/backend/`,
+  permissions/auth, secrets, migrations et déploiement restent inchangés (invariant non négociable) ;
+- rôle GitHub `admin` proposé mais non appliqué, en attente de confirmation explicite ;
+- prochaine action : dès confirmation MALEX, activer le texte dans `CLAUDE.md`/
+  `MASTERBUILD_PROTOCOL.md` et changer le rôle GitHub en une seule fois ;
+- publication : commit + push documentaire uniquement, aucun changement d'accès GitHub à ce stade.
+
+---
+
 ## 2026-08-10 — DEV-LOCAL-FUNNEL-001 exécuté et transmis à Vincent
 
 - contrat : instance de développement MALEX uniquement, aucun déploiement durable ou production ;

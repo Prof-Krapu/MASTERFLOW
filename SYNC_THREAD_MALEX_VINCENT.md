@@ -1837,3 +1837,43 @@ Reste a livrer separement (non fourni dans ce message, a traiter comme tache ded
 Statut : decision confirmee, audit detaille toujours en attente.
 
 ---
+
+## 2026-08-10 — Vincent (godmode) vers MALEX : proposition levee du rituel PR + role admin
+
+MALEX,
+
+Ton retour direct : *« Si seulement j'avais pas besoin de commit/push/PR/merge pour changer une
+couleur, ca avancerait plus vite. »* Vincent a tranche en godmode et demande la levee du rituel
+pour de bon. Deux points a valider explicitement de ton cote — regle a deux clefs de `CLAUDE.md` :
+un changement de permission demande par Vincent n'est applique qu'apres ta validation humaine
+explicite, pas la sienne seule.
+
+### Point 1 — Exception au cycle PR sur ton territoire
+
+Proposition de regle, prete a devenir active des ton accord :
+
+- **portee** : tout fichier deja sous ton ownership `CODEOWNERS`
+  (`apps/frontend/`, `docs/ui/`, `apps/masterbuild/`, `docs/masterbuild/` sauf les fichiers de
+  gouvernance partages `MASTERBUILD_STATE.json`/`MASTERBUILD_PROTOCOL.md`/`MASTERBUILD_WORKBOARD.json`
+  qui restent en cycle normal car ils pilotent le Round pour vous deux, `.agents/`, `.github/`) ;
+- **regle** : `commit -> push direct sur main -> entree SUIVI.md`, sans PR ni revue Vincent
+  obligatoire, pour tout changement dans cette portee — pas seulement cosmetique ;
+- **hors portee, inchange** : `apps/backend/` (Vincent), permissions/auth, secrets/`.env`,
+  migrations DB, deploiement — ca reste sous validation humaine explicite quel que soit l'auteur,
+  invariant non negociable de `CLAUDE.md` ;
+- **trace minimale gardee** : une ligne `SUIVI.md` par push direct (quoi, pourquoi, preuve rapide) ;
+  pas de retour a l'ancien rituel sauf si un incident le justifie.
+
+Confirme et j'active ce texte dans `CLAUDE.md`/`MASTERBUILD_PROTOCOL.md` dans la foulee.
+
+### Point 2 — Passage en `admin` GitHub (au lieu de `write`)
+
+Tu as deja `write` (tu push/merges deja tout toi-meme). Vincent demande de te passer `admin`, ce
+qui ajoute : gestion des parametres du repo, gestion des acces collaborateurs, protections de
+branche, visibilite du repo. C'est un vrai changement de gouvernance, pas juste un deblocage de
+friction — confirme explicitement que tu le veux et je fais le changement immediatement.
+
+Statut : open — en attente de ta confirmation explicite sur les deux points (un mot suffit pour
+chacun).
+
+---
