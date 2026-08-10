@@ -1443,7 +1443,7 @@ function App(): ReactElement {
               validationItems={pendingActions}
             />
           </Suspense>
-          {renderValidationInbox()}
+          {pendingActions.length > 0 ? renderValidationInbox() : null}
         </section>
       );
     }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T15:44:13+02:00",
+  "updated_at": "2026-08-10T15:52:33+02:00",
   "active_round_id": "UI-PAGE-BY-PAGE-001",
   "authorizations": [
     {
@@ -700,7 +700,7 @@
       "dependencies": ["UPP-004"],
       "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
       "tool_route": "assembled_prototype",
-      "expected_evidence": ["même composant Lab runtime", "fixtures Lab signalées", "cohortes rosters sujets affectations runtime", "cinq niveaux", "workflows historiques préservés", "lint build doctor", "validation visuelle MALEX"]
+      "expected_evidence": ["même composant Lab runtime", "fixtures Lab signalées", "périmètre Teaching global autorisé", "cohortes rosters sujets affectations runtime", "cinq niveaux", "workflows historiques préservés", "lint build doctor", "validation visuelle MALEX"]
     }
   ]
 }

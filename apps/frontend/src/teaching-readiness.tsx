@@ -110,7 +110,7 @@ function stableTeachingIndex(value: string, length: number): number {
 }
 
 function teachingLevelId(title: string): string {
-  const match = title.trim().match(/^([1-5])(?:\s|[A-Za-zÀ-ÿ])/);
+  const match = title.trim().match(/(?:^|[\s—–-])([1-5])(?:re|e|eme|[A-Za-zÀ-ÿ])/i);
   return match ? `year-${match[1]}` : 'other';
 }
 
@@ -234,12 +234,12 @@ export function TeachingReadiness({
         getGuides(token),
         getGuidedSessions(token),
         getIdentityMatchReviews(project?.project_id, token),
-        getCohorts(project?.project_id, token),
+        getCohorts(undefined, token),
         getRubricTemplates(project?.project_id, token),
         getInstitutionalGradingProfiles(project?.project_id, token),
         getCorrectionBatches(project?.project_id, token),
-        getSubjects(project?.project_id, token),
-        getSubjectAssignments(project?.project_id, token),
+        getSubjects(undefined, token),
+        getSubjectAssignments(undefined, token),
       ]);
       const rosterEntries = await Promise.all(nextCohorts.map(async (cohort) => {
         const versions = await getRosterVersions(cohort.cohort_id, token).catch(() => [] as RosterVersion[]);

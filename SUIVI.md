@@ -26,6 +26,16 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Teaching aligné visuellement sur le Lab
+
+- correction MALEX : le runtime paraissait vide malgré le composant partagé ;
+- cause : cohortes, sujets et affectations étaient filtrés par le projet courant au lieu de la vue
+  globale demandée ;
+- correction : Teaching charge toutes les entités pédagogiques autorisées et répartit les classes
+  réelles sur les cinq niveaux ;
+- état vide Sujets remplacé par une carte d’action honnête ; Validation disparaît lorsqu’elle est vide ;
+- aucun jeu de données Lab n’est injecté dans le runtime.
+
 ## 2026-08-10 — Teaching Lab promu comme surface partagée
 
 - décision MALEX : la composition d’accueil Teaching du Lab devient la composition du Proto/runtime ;
