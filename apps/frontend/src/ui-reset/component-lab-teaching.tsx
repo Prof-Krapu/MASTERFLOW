@@ -150,7 +150,11 @@ function ClassDetail({item, onBack, onOpenSubject, subjects, onManage, dataMode}
           <small>Étudiants</small>
           {students.length > 0 ? (
             <div className="teaching-lab__students">
-              <p>Silhouettes provisoires jusqu’à la création du compte. Elles n’indiquent ni genre, ni émotion, ni niveau.</p>
+              <div className="teaching-lab__students-heading">
+                <strong>{dataMode === 'fixture' ? 'Exemples du prototype' : 'Roster actif'}</strong>
+                <span>{students.length} vignette{students.length > 1 ? 's' : ''}</span>
+              </div>
+              <p>Petites silhouettes provisoires jusqu’à la création du compte. Elles n’indiquent ni genre, ni émotion, ni niveau.</p>
               <div className="teaching-lab__student-grid">
                 {students.map((student) => (
                   <article className="teaching-lab__student-card" key={student.id}>

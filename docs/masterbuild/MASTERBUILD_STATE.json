@@ -22,7 +22,7 @@
     "status": "active",
     "stage_index": 6,
     "stage_label": "Vérifier",
-    "recommended_next_action": "Faire vérifier directement par MALEX le détail d’une classe Teaching avec les silhouettes étudiantes provisoires et les vrais noms du roster.",
+    "recommended_next_action": "Faire vérifier directement par MALEX les petites vignettes étudiantes dans le détail d’une classe Teaching, puis valider ou retoucher la composition Classe.",
     "primary_risk": "Déclarer Teaching conforme avant la validation visuelle MALEX ou présenter l’import Pronote comme raccordé.",
     "no_auto_execute": true,
     "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005", "UPP-006"],

@@ -32,13 +32,15 @@ compte et choisi son propre avatar, sans inventer son identité ni afficher une 
 ## Surfaces
 
 - Component Lab, onglet Assets : les deux fallbacks sont visibles et nommés ;
-- Teaching, détail d'une classe : toutes les identités du roster actif utilisent ces fallbacks ;
+- Teaching, détail d'une classe : toutes les identités du roster actif utilisent ces fallbacks sous
+  forme de petites vignettes compactes ;
 - absence de roster : l'état vide existant reste affiché.
 
 ## États et responsive
 
 - roster vide : aucune fausse identité ;
-- roster présent : grille de noms et silhouettes provisoires ;
+- roster présent : grille compacte de noms et silhouettes provisoires ; les fixtures sont
+  explicitement nommées `Exemples du prototype`, le runtime `Roster actif` ;
 - thème clair/sombre/système : fond et bordure viennent des tokens de la page ;
 - mobile : grille fluide sans largeur fixe ni scroll horizontal ;
 - aucune vignette n'est cliquable tant que la fiche Étudiant n'est pas raccordée.

@@ -18,6 +18,10 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 - aucun backend, API, migration, permission, donnée privée ou avatar personnel ajouté ;
 - conformité Teaching et mobile : revue visuelle directe MALEX encore attendue.
 
+Retouche de composition : dans le détail d'une classe, les étudiants sont maintenant présentés en
+petites vignettes horizontales compactes. Le Lab les nomme `Exemples du prototype` ; le runtime
+affiche `Roster actif` et ne crée toujours aucun faux étudiant.
+
 ---
 
 ## 2026-08-10 — DEV-LOCAL-FUNNEL-001 exécuté et transmis à Vincent
