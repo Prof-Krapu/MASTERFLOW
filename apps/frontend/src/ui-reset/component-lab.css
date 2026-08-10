@@ -1835,3 +1835,52 @@
 .ui-lab--mobile .teaching-lab__class-subjects {
   display: none;
 }
+
+/* La surface Teaching est partagée avec le runtime : le Shell fournit déjà son cadre et son scroll. */
+.proto-runtime-workspace .adaptive-page--bare,
+.proto-runtime-workspace .teaching-readiness {
+  max-width: none;
+  width: 100%;
+}
+
+.proto-runtime-workspace .teaching-lab,
+.proto-runtime-workspace .teaching-lab__detail,
+.proto-runtime-workspace .teaching-lab__import {
+  height: auto;
+  overflow: visible;
+  padding: 10px 0 34px;
+}
+
+@media (max-width: 720px) {
+  .proto-runtime-workspace .teaching-lab,
+  .proto-runtime-workspace .teaching-lab__detail,
+  .proto-runtime-workspace .teaching-lab__import {
+    padding: 4px 0 24px;
+  }
+
+  .proto-runtime-workspace .teaching-lab__hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .proto-runtime-workspace .teaching-lab__horizon {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .proto-runtime-workspace .teaching-lab__level,
+  .proto-runtime-workspace .teaching-lab__detail-grid,
+  .proto-runtime-workspace .teaching-lab__story-sequence,
+  .proto-runtime-workspace .teaching-lab__import ol {
+    grid-template-columns: 1fr;
+  }
+
+  .proto-runtime-workspace .teaching-lab__level > div,
+  .proto-runtime-workspace .teaching-lab__subjects > div {
+    grid-template-columns: 1fr;
+  }
+
+  .proto-runtime-workspace .teaching-lab__class-subjects {
+    display: none;
+  }
+}
