@@ -21,6 +21,8 @@ Base observable : `origin/main` au SHA `2daea8c7e59f4c7472337318884472e57532ce73
   iconographiques, sujets iconographiques et navigation progressive ;
 - le Lab emploie des fixtures signalées ; le runtime projette les cohortes, rosters, sujets et
   affectations lisibles, sans inventer de météo ni d'import Pronote ;
+- la Home Teaching runtime couvre le périmètre pédagogique global autorisé, pas seulement le projet
+  sélectionné, afin de restituer réellement les cinq niveaux ;
 - le logo du Lab reprend le tracé dynamique du Shell, sans utiliser le mark graff divergent ;
 - aucun backend, API, migration, déploiement ni réimport d'asset candidat lourd n'est inclus.
 

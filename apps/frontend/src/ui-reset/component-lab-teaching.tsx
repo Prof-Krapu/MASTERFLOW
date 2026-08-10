@@ -243,7 +243,10 @@ export function ComponentLabTeaching({
 
       <section className="teaching-lab__subjects">
         <header><BookOpen size={20} /><div><small>Bibliothèque</small><h2>Sujets</h2></div></header>
-        <div>{subjects.length > 0 ? subjects.map((subject) => <button key={subject.id} onClick={() => setView({kind: 'subject', subjectId: subject.id})} type="button"><SubjectGlyph subject={subject} /><strong>{subject.title}</strong><small>{classes.filter((item) => item.subjectIds.includes(subject.id)).length} classes</small></button>) : <p>Aucun sujet disponible dans ce périmètre.</p>}</div>
+        <div>{subjects.length > 0
+          ? subjects.map((subject) => <button key={subject.id} onClick={() => setView({kind: 'subject', subjectId: subject.id})} type="button"><SubjectGlyph subject={subject} /><strong>{subject.title}</strong><small>{classes.filter((item) => item.subjectIds.includes(subject.id)).length} classes</small></button>)
+          : <button disabled={!onManageSubject} onClick={() => onManageSubject?.()} type="button"><span className="teaching-lab__subject-glyph" style={{'--teaching-color': '#f15d32'} as React.CSSProperties}><BookOpen size={24} /></span><strong>Créer le premier sujet</strong><small>Ouvrir l’atelier Teaching</small></button>}
+        </div>
       </section>
 
       <p className="teaching-lab__truth"><Check size={16} /> {dataMode === 'runtime' ? 'Classes, sujets, affectations et rosters proviennent du runtime. Aucun climat ni score n’est inventé.' : 'Fixtures visuelles uniquement. Aucun score, élève, affectation ou import n’est présenté comme une donnée runtime.'}</p>

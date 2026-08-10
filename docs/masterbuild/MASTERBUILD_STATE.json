@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-10T15:44:13+02:00",
+  "updated_at": "2026-08-10T15:52:33+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,7 +22,7 @@
     "status": "active",
     "stage_index": 6,
     "stage_label": "Vérifier",
-    "recommended_next_action": "Faire vérifier directement par MALEX que Teaching présente la même composition dans /ui-lab et dans le runtime, avec fixtures d’un côté et données réelles de l’autre.",
+    "recommended_next_action": "Faire vérifier directement par MALEX la vue Teaching globale : cinq niveaux alimentés par les classes réelles et carte de création lorsqu’aucun sujet n’existe.",
     "primary_risk": "Déclarer Teaching conforme avant la validation visuelle MALEX ou présenter l’import Pronote comme raccordé.",
     "no_auto_execute": true,
     "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005"],
@@ -43,6 +43,7 @@
       "Component Lab historique complet restauré sans réimporter les packs candidats lourds",
       "Persona complète et logo dynamique du Shell présents dans le Lab unique",
       "Teaching Lab et runtime utilisent le même composant avec fixtures signalées dans le Lab et données réelles dans le runtime",
+      "Teaching runtime utilise le périmètre pédagogique global autorisé et non le seul projet courant",
       "Project V2 est publié via PR #233 mais reste bloqué dans le registre de conformité",
       "Les quatre modifications Inventory restent un candidat séparé, non committé",
       "Aucun déploiement, backend, API, migration ou asset canonique dans ce Round"
