@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-10T16:24:13+02:00",
+  "updated_at": "2026-08-10T20:22:53+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,11 +22,11 @@
     "status": "active",
     "stage_index": 6,
     "stage_label": "Vérifier",
-    "recommended_next_action": "Faire vérifier directement par MALEX les petites vignettes étudiantes dans le détail d’une classe Teaching, puis valider ou retoucher la composition Classe.",
-    "primary_risk": "Déclarer Teaching conforme avant la validation visuelle MALEX ou présenter l’import Pronote comme raccordé.",
+    "recommended_next_action": "Faire vérifier par MALEX l’overview Teaching compacte : cinq lignes de niveaux, classes à gauche, sujets à droite, sélection croisée, création et affectation.",
+    "primary_risk": "Confondre un score candidat de pré-correction avec une note validée ou un sujet assigné avec une notion maîtrisée.",
     "no_auto_execute": true,
-    "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005", "UPP-006"],
-    "authorization_id": "AUTH-UPP-STUDENT-AVATAR-FALLBACKS-2026-08-10",
+    "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005", "UPP-006", "UPP-007", "UPP-008"],
+    "authorization_id": "AUTH-UPP-TEACHING-SIMPLIFICATION-2026-08-10",
     "success_criteria": [
       "Aucune page suivante n'est modifiée avant validation explicite de la page courante.",
       "Chaque audit couvre rôle, thème, clavier, états, responsive 390 px et données réelles.",
@@ -37,7 +37,7 @@
     "validation_gates": [
       "Login est validé par MALEX et ne demande aucune modification",
       "Composition Home simplifiée validée explicitement par MALEX",
-      "Reprise directe Project ou ressource implémentée localement sans utiliser le dernier onglet consulté",
+      "Reprise V2 fondée sur l’activité réelle, multi-espace, filtrée et sans ouverture automatique de lien externe",
       "Home validée par MALEX avant l'ouverture de Teaching",
       "Teaching V1 runtime rejeté par MALEX et isolé hors du repo actif",
       "Component Lab historique complet restauré sans réimporter les packs candidats lourds",
@@ -45,6 +45,12 @@
       "Teaching Lab et runtime utilisent le même composant avec fixtures signalées dans le Lab et données réelles dans le runtime",
       "Teaching runtime utilise le périmètre pédagogique global autorisé et non le seul projet courant",
       "Les fallbacks étudiants A/B sont décoratifs, stables et ne constituent aucune inférence d’identité",
+      "Les portraits élèves reprennent le langage Persona et leur statut provient uniquement du roster actif",
+      "La santé pédagogique et l’étape de travail utilisent deux codes visuels distincts",
+      "Un sujet filtre la classe sans navigation ; son crayon ouvre séparément la page Sujet",
+      "Les ateliers et formulaires historiques ne sont plus rendus sous la navigation Teaching",
+      "Teaching TCH-001 à TCH-004 est un candidat local : permissions durcies, projection attribuable et workflows contextuels, sans publication",
+      "L’overview Teaching compacte classes × sujets est un candidat local partagé par le Lab et le runtime, sans validation visuelle automatique",
       "Project V2 est publié via PR #233 mais reste bloqué dans le registre de conformité",
       "Les quatre modifications Inventory restent un candidat séparé, non committé",
       "Aucun déploiement, backend, API, migration ou asset canonique dans ce Round"
@@ -58,7 +64,8 @@
       "FRONTEND_UI_DOCTRINE.md",
       "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
       "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md",
-      "docs/masterbuild/preflights/STUDENT_AVATAR_FALLBACK_PREFLIGHT_001.md"
+      "docs/masterbuild/preflights/STUDENT_AVATAR_FALLBACK_PREFLIGHT_001.md",
+      "docs/masterbuild/preflights/HOME_RESUME_HISTORY_V2_PREFLIGHT_001.md"
     ]
   },
   "next_moves": [
@@ -93,15 +100,15 @@
     {
       "move_id": "audit-home-after-login",
       "label": "Vérifier la reprise directe de la dernière activité",
-      "reason": "La composition est validée ; le marqueur orange utilise maintenant une cible métier persistée et non le dernier onglet.",
-      "recommended": false,
-      "status": "completed"
+      "reason": "Le format V1 restait bloqué sur Project ; la V2 suit désormais les activités utiles et ignore les cibles mortes.",
+      "recommended": true,
+      "status": "awaiting_malex_review"
     },
     {
       "move_id": "review-teaching-v1-progressive",
       "label": "Vérifier le Lab unique et la composition Teaching",
-      "reason": "La composition du Lab est maintenant partagée avec le runtime sans promouvoir ses fixtures ; la validation visuelle MALEX reste attendue.",
-      "recommended": true,
+      "reason": "Le parcours runtime complet et la projection attribuable sont prêts localement ; la validation visuelle et métier MALEX reste attendue avant publication.",
+      "recommended": false,
       "status": "awaiting_malex_review"
     }
   ],
@@ -149,6 +156,8 @@
       "Teaching V1 runtime rejeté et isolé hors repo actif",
       "Component Lab unique publié et Teaching partagé avec le runtime, validation MALEX attendue",
       "Fallbacks étudiants génériques intégrés au Lab et au roster Teaching, validation MALEX attendue",
+      "TCH-001 à TCH-004 vérifiés localement sans commit ni publication",
+      "Overview Teaching compacte classes × sujets vérifiée techniquement, revue visuelle MALEX attendue",
       "Project reste bloqué dans le registre de conformité",
       "Inventory reste isolé dans son candidat dédié"
     ],

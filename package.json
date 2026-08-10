@@ -13,7 +13,8 @@
   "scripts": {
     "dev": "npm run dev --workspace apps/backend",
     "dev:backend": "npm run dev --workspace apps/backend",
-    "dev:frontend": "npm run dev --workspace @masterflow/frontend",
+    "dev:frontend": "node scripts/dev-frontend-with-masterbuild.mjs",
+    "dev:frontend:standalone": "npm run dev --workspace @masterflow/frontend",
     "dev:masterbuild": "npm run dev --workspace @masterflow/masterbuild",
     "masterbuild:boot": "npm run boot --workspace @masterflow/masterbuild",
     "masterbuild:doctor": "npm run doctor --workspace @masterflow/masterbuild",

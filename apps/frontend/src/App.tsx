@@ -67,6 +67,12 @@ import {
 import type {WorkModeId} from './mode-runtime.ts';
 import {CurrentUiDemo} from './current-ui-demo.tsx';
 import type {CurrentUiRuntime} from './current-ui-demo.tsx';
+import {
+  appendResumeActivity,
+  readResumeHistory,
+  resumeActivityForMode,
+} from './resume-history.ts';
+import type {ResumeActivity, ResumeActivityInput, ResumeSurface} from './resume-history.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type WsState = 'idle' | 'connecting' | 'connected' | 'closed' | 'error';
@@ -114,35 +120,34 @@ type RoomSyncState = {
   status: 'idle' | 'syncing' | 'synced' | 'error';
   message: string;
 };
-type ResumeTarget = {
-  version: 1;
-  kind: 'project' | 'resource';
-  surface: 'project';
-  label: string;
-  projectId: string;
-  resourceId?: string;
-};
-
-function readResumeTarget(widgetState: Record<string, unknown> | null | undefined): ResumeTarget | null {
-  const candidate = widgetState?.['resume_target'];
-  if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) return null;
-  const value = candidate as Record<string, unknown>;
-  if (
-    value['version'] !== 1
-    || (value['kind'] !== 'project' && value['kind'] !== 'resource')
-    || value['surface'] !== 'project'
-    || typeof value['label'] !== 'string'
-    || typeof value['projectId'] !== 'string'
-  ) return null;
-  if (value['kind'] === 'resource' && typeof value['resourceId'] !== 'string') return null;
-  return {
-    version: 1,
-    kind: value['kind'],
-    surface: 'project',
-    label: value['label'],
-    projectId: value['projectId'],
-    ...(typeof value['resourceId'] === 'string' ? {resourceId: value['resourceId']} : {}),
-  };
+function resolveResumeActivity(
+  history: ResumeActivity[],
+  availableSurfaces: Set<ResumeSurface>,
+  projects: Project[],
+  resources: Resource[],
+): ResumeActivity | null {
+  for (const activity of history) {
+    if (!availableSurfaces.has(activity.surface)) continue;
+    if (activity.surface !== 'project') return activity;
+    const project = activity.projectId
+      ? projects.find((item) => item.project_id === activity.projectId) ?? null
+      : null;
+    if (activity.kind === 'surface') return activity;
+    if (!project) continue;
+    if (activity.kind === 'resource' && activity.resourceId) {
+      const resource = resources.find((item) => item.id === activity.resourceId) ?? null;
+      if (resource) return {...activity, label: resource.title};
+    }
+    return {
+      version: 2,
+      kind: 'project',
+      surface: 'project',
+      label: project.name,
+      projectId: project.project_id,
+      updatedAt: activity.updatedAt,
+    };
+  }
+  return null;
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -350,8 +355,8 @@ function App(): ReactElement {
 
   const isConnected = auth !== null && context !== null;
   const showEntryGate = false;
-  const resumeTarget = useMemo(
-    () => readResumeTarget(context?.room_instance.widget_state),
+  const resumeHistory = useMemo(
+    () => readResumeHistory(context?.room_instance.widget_state),
     [context?.room_instance.widget_state],
   );
   const canCreateProject = context?.user.role === 'teacher'
@@ -622,11 +627,15 @@ function App(): ReactElement {
     setRoomSync({status: 'syncing', message: 'Synchronisation room instance.'});
     try {
       const widgetState = context.room_instance.widget_state ?? {};
+      const modeActivity = resumeActivityForMode(mode);
+      const widgetStateWithHistory = modeActivity
+        ? appendResumeActivity(widgetState, modeActivity)
+        : widgetState;
       const nextInstance = await updateRoomInstance(context.room.id, {
         active_surface: mode,
         ...(density ? {cognitive_density: density} : {}),
         widget_state: {
-          ...widgetState,
+          ...widgetStateWithHistory,
           active_mode: mode,
           ...(profile ? {
             entry_profile: {
@@ -650,12 +659,12 @@ function App(): ReactElement {
     }
   }, [auth, context]);
 
-  const persistResumeTarget = useCallback(async (target: ResumeTarget): Promise<void> => {
+  const persistRecentActivity = useCallback(async (activity: ResumeActivityInput): Promise<void> => {
     if (!auth || !context) return;
     try {
       const widgetState = context.room_instance.widget_state ?? {};
       const nextInstance = await updateRoomInstance(context.room.id, {
-        widget_state: {...widgetState, resume_target: target},
+        widget_state: appendResumeActivity(widgetState, activity),
       }, auth.token);
       setContext((current) => (current ? {...current, room_instance: nextInstance} : current));
     } catch {
@@ -974,26 +983,24 @@ function App(): ReactElement {
     setSelectedProjectId(projectId);
     const project = projects.find((item) => item.project_id === projectId);
     if (!project) return;
-    void persistResumeTarget({
-      version: 1,
+    void persistRecentActivity({
       kind: 'project',
       surface: 'project',
       label: project.name,
       projectId: project.project_id,
     });
-  }, [persistResumeTarget, projects]);
+  }, [persistRecentActivity, projects]);
 
   const handleProjectResourceOpen = useCallback((resource: Resource): void => {
     if (!selectedProjectId) return;
-    void persistResumeTarget({
-      version: 1,
+    void persistRecentActivity({
       kind: 'resource',
       surface: 'project',
       label: resource.title,
       projectId: selectedProjectId,
       resourceId: resource.id,
     });
-  }, [persistResumeTarget, selectedProjectId]);
+  }, [persistRecentActivity, selectedProjectId]);
 
   const handleAttachProjectResource = useCallback(async (): Promise<void> => {
     if (!auth || !selectedProjectId || !projectResourceId) return;
@@ -1006,8 +1013,7 @@ function App(): ReactElement {
       }, auth.token);
       const attachedResource = resources.find((resource) => resource.id === projectResourceId);
       if (attachedResource) {
-        void persistResumeTarget({
-          version: 1,
+        void persistRecentActivity({
           kind: 'resource',
           surface: 'project',
           label: attachedResource.title,
@@ -1024,7 +1030,7 @@ function App(): ReactElement {
         message: err instanceof Error ? err.message : 'Rattachement impossible.',
       });
     }
-  }, [auth, persistResumeTarget, projectResourceId, refreshProjectSurface, resources, selectedProjectId]);
+  }, [auth, persistRecentActivity, projectResourceId, refreshProjectSurface, resources, selectedProjectId]);
 
   const handleCreateProject = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -1037,8 +1043,7 @@ function App(): ReactElement {
       const nextProjects = await getProjects(auth.token);
       setProjects(nextProjects);
       setSelectedProjectId(created.project_id);
-      void persistResumeTarget({
-        version: 1,
+      void persistRecentActivity({
         kind: 'project',
         surface: 'project',
         label: created.name,
@@ -1054,7 +1059,7 @@ function App(): ReactElement {
           : 'La création du projet a échoué. Réessayez.',
       });
     }
-  }, [auth, canCreateProject, persistResumeTarget, projectName]);
+  }, [auth, canCreateProject, persistRecentActivity, projectName]);
 
   const handleCoordinationSync = useCallback(async (): Promise<void> => {
     if (!auth) return;
@@ -1398,6 +1403,11 @@ function App(): ReactElement {
       setSelectedMode('home');
       return;
     }
+    if (surface === 'masterbuild') {
+      const activity = resumeActivityForMode(surface);
+      if (activity) void persistRecentActivity(activity);
+      return;
+    }
     const mappedMode: WorkModeId | null = surface === 'learn'
       ? 'learning'
       : surface === 'project' || surface === 'teaching' || surface === 'inventory' || surface === 'story'
@@ -1436,6 +1446,11 @@ function App(): ReactElement {
           <Suspense fallback={<p className="panel panel--wide muted">Chargement Teaching…</p>}>
             <TeachingReadiness
               context={context}
+              onActivity={(label) => void persistRecentActivity({
+                kind: 'surface',
+                surface: 'teaching',
+                label,
+              })}
               project={selectedProject}
               projectResources={projectResources}
               resources={resources}
@@ -1453,7 +1468,14 @@ function App(): ReactElement {
         <section className="proto-runtime-workspace" aria-label="Learn">
           <Suspense fallback={<p className="panel panel--wide muted">Chargement Learn…</p>}>
             <LearningWorkspace
-              onRequestHelp={prepareLearningHelp}
+              onRequestHelp={(draft) => {
+                prepareLearningHelp(draft);
+                void persistRecentActivity({
+                  kind: 'surface',
+                  surface: 'learn',
+                  label: 'Demande d’aide dans Learn',
+                });
+              }}
               resources={resources}
               token={auth.token}
               userId={context.user.id}
@@ -1506,23 +1528,27 @@ function App(): ReactElement {
     );
   };
 
-  const resumeProject = resumeTarget
-    ? projects.find((project) => project.project_id === resumeTarget.projectId) ?? null
-    : null;
-  const resumeResource = resumeTarget?.resourceId
-    ? resources.find((resource) => resource.id === resumeTarget.resourceId)
-      ?? projectResources.find((resource) => resource.id === resumeTarget.resourceId)
-      ?? null
-    : null;
-  const resumeMode: CurrentUiRuntime['resumeMode'] = resumeProject ? 'project' : null;
-  const resumeLabel = resumeProject ? resumeResource?.title ?? resumeProject.name : null;
+  const availableResumeSurfaces = new Set<ResumeSurface>();
+  for (const mode of availableModes) {
+    const activity = resumeActivityForMode(mode.id);
+    if (activity) availableResumeSurfaces.add(activity.surface);
+  }
+  if (isGodmode) availableResumeSurfaces.add('masterbuild');
+  const resolvedResume = resolveResumeActivity(
+    resumeHistory,
+    availableResumeSurfaces,
+    projects,
+    [...resources, ...projectResources],
+  );
+  const resumeMode: CurrentUiRuntime['resumeMode'] = resolvedResume?.surface ?? null;
+  const resumeLabel = resolvedResume?.label ?? null;
   const handleResume = (): void => {
-    if (!resumeTarget || !resumeProject) return;
-    setSelectedProjectId(resumeProject.project_id);
-    handleCurrentModeSelect('project');
-    if (resumeResource?.url) {
-      window.open(resumeResource.url, '_blank', 'noopener,noreferrer');
+    if (!resolvedResume) return;
+    if (resolvedResume.surface === 'project') {
+      if (resolvedResume.projectId) setSelectedProjectId(resolvedResume.projectId);
+      setProjectResourceId(resolvedResume.resourceId ?? '');
     }
+    handleCurrentModeSelect(resolvedResume.surface);
   };
 
   const currentUiRuntime: CurrentUiRuntime | null = auth && context ? {
@@ -1872,6 +1898,11 @@ function App(): ReactElement {
             <Suspense fallback={<p className="panel panel--wide muted">Chargement Teaching…</p>}>
               <TeachingReadiness
                 context={context}
+                onActivity={(label) => void persistRecentActivity({
+                  kind: 'surface',
+                  surface: 'teaching',
+                  label,
+                })}
                 project={selectedProject}
                 projectResources={projectResources}
                 resources={resources}
@@ -1884,7 +1915,14 @@ function App(): ReactElement {
           {activeMode.id === 'learning' && auth && context ? (
             <Suspense fallback={<p className="panel panel--wide muted">Chargement Learning…</p>}>
               <LearningWorkspace
-                onRequestHelp={prepareLearningHelp}
+                onRequestHelp={(draft) => {
+                  prepareLearningHelp(draft);
+                  void persistRecentActivity({
+                    kind: 'surface',
+                    surface: 'learn',
+                    label: 'Demande d’aide dans Learn',
+                  });
+                }}
                 resources={resources}
                 token={auth.token}
                 userId={context.user.id}

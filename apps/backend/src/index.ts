@@ -38,6 +38,7 @@ import {createStyleMirrorRouter} from './routers/style_mirror.ts';
 import {createPedagogicalSignalsRouter} from './routers/pedagogical_signals.ts';
 import {createPedagogicalAssistanceRouter} from './routers/pedagogical_assistance.ts';
 import {createWeatherRouter} from './routers/weather.ts';
+import {createTeachingRouter} from './routers/teaching.ts';
 import {createDaRuntimeRouter} from './routers/da_runtime.ts';
 import {createNarrativeRuntimeRouter} from './routers/narrative_runtime.ts';
 import {createAssetsRouter} from './routers/assets.ts';
@@ -118,6 +119,7 @@ async function main(): Promise<void> {
   app.use(api, createPedagogicalSignalsRouter());
   app.use(api, createPedagogicalAssistanceRouter());
   app.use(api, createWeatherRouter());
+  app.use(api, createTeachingRouter());
   app.use(api, createDaRuntimeRouter());
   app.use(api, createNarrativeRuntimeRouter());
   app.use(api, createAssetsRouter());

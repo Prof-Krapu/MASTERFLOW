@@ -32,7 +32,8 @@ type MasterbuildStatus = {
 
 type ChatTurn = {id: string; role: 'user' | 'masterbuild'; content: string};
 
-const MASTERBUILD_API = '/masterbuild-api';
+// Console strictement locale : ne jamais repasser par le proxy Vite partagé ou le Funnel.
+const MASTERBUILD_API = 'http://127.0.0.1:8010/control-api';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${MASTERBUILD_API}${path}`, {

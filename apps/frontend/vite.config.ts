@@ -20,11 +20,6 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      '/masterbuild-api': {
-        target: 'http://127.0.0.1:8010',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/masterbuild-api/, '/control-api'),
-      },
       '/ws': {
         target: 'ws://localhost:8000',
         ws: true,

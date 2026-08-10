@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T15:52:33+02:00",
+  "updated_at": "2026-08-10T17:01:32+02:00",
   "active_round_id": "UI-PAGE-BY-PAGE-001",
   "authorizations": [
     {
@@ -203,6 +203,26 @@
       "granted_at": "2026-08-10T16:24:13+02:00",
       "expires_on_scope_change": true,
       "excluded": ["backend", "api", "migration", "deploy", "provider", "spend", "identity_inference", "personal_avatar_claim"]
+    },
+    {
+      "authorization_id": "AUTH-UPP-HOME-RESUME-HISTORY-V2-2026-08-10",
+      "round_id": "UI-PAGE-BY-PAGE-001",
+      "actor": "malex",
+      "scope": "rebuild_home_resume_as_validated_multi_surface_recent_activity_history",
+      "status": "completed",
+      "granted_at": "2026-08-10T16:43:36+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["backend", "api", "migration", "permission_change", "asset", "deploy", "provider", "spend", "automated_visual_audit"]
+    },
+    {
+      "authorization_id": "AUTH-UPP-TEACHING-SIMPLIFICATION-2026-08-10",
+      "round_id": "UI-PAGE-BY-PAGE-001",
+      "actor": "malex",
+      "scope": "align_student_gallery_with_persona_and_hide_legacy_teaching_forms",
+      "status": "completed",
+      "granted_at": "2026-08-10T16:47:26+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["backend", "api", "migration", "permission_change", "asset", "deploy", "provider", "spend", "delete_workflow", "automated_visual_audit"]
     }
   ],
   "work_packages": [
@@ -723,6 +743,30 @@
       "design_rule_ids": ["DES-003", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
       "tool_route": "image_generation_then_component_lab",
       "expected_evidence": ["deux PNG 640x640 RGBA", "visages invisibles", "aucune inférence d'identité", "registre actif", "Lab Assets", "roster Teaching réel", "lint build doctor", "validation visuelle MALEX"]
+    },
+    {
+      "work_package_id": "UPP-007",
+      "label": "Reconstruire la reprise Home autour de l’activité réelle",
+      "feature_ids": ["ui-shell-navigation"],
+      "status": "awaiting_malex_review",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["UPP-002"],
+      "design_rule_ids": ["DES-001", "DES-004", "DES-009", "DES-010"],
+      "tool_route": "assembled_prototype",
+      "expected_evidence": ["historique multi-espace trié et dédupliqué", "cibles filtrées par permission et existence", "fallback ressource vers projet", "aucune URL externe ouverte automatiquement", "lint build doctor", "validation directe MALEX"]
+    },
+    {
+      "work_package_id": "UPP-008",
+      "label": "Simplifier Teaching et aligner les élèves sur Persona",
+      "feature_ids": ["ui-shell-navigation", "teaching-mode"],
+      "status": "awaiting_malex_review",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["UPP-005", "UPP-006"],
+      "design_rule_ids": ["DES-001", "DES-003", "DES-004", "DES-009", "DES-010", "DES-012"],
+      "tool_route": "assembled_prototype",
+      "expected_evidence": ["effectif annoncé égal aux portraits rendus", "galerie élèves principale à gauche", "dix portraits par rangée desktop", "panneau sujets compact à droite", "vue globale par défaut", "clic sujet filtre sans navigation", "crayon ouvre la page Sujet", "santé du portrait distincte de la cellule étape", "cellules à démarrer en cours terminé", "courbe par sujet sous la liste", "runtime sans signal faute de donnée attribuable", "portraits élèves ronds", "noms en texte sémantique commun", "fiche élève ouverte dans le même canvas", "anciens formulaires non rendus", "workflows conservés", "lint build doctor", "validation directe MALEX"]
     }
   ]
 }

@@ -5887,6 +5887,69 @@ export const CreateRosterVersionSchema = z.object({
 });
 export type CreateRosterVersion = z.infer<typeof CreateRosterVersionSchema>;
 
+// ───────────────────────── Projection Teaching attribuable ─────────────────────────
+
+export const TeachingStudentSubjectStageSchema = z.enum([
+  'no_signal',
+  'submission_candidate',
+  'submitted',
+  'in_review',
+  'completed',
+]);
+export type TeachingStudentSubjectStage = z.infer<typeof TeachingStudentSubjectStageSchema>;
+
+export const TeachingCandidateScoreSchema = z.object({
+  value: z.number().nonnegative(),
+  max: z.number().positive(),
+  confidence: z.number().min(0).max(1),
+  status: z.literal('needs_review'),
+  source_refs: z.array(z.string().min(1)).min(1),
+});
+export type TeachingCandidateScore = z.infer<typeof TeachingCandidateScoreSchema>;
+
+export const TeachingStudentSubjectProjectionSchema = z.object({
+  assignment_id: z.string().min(1),
+  subject_template_id: z.string().min(1),
+  source_subject_version_id: z.string().min(1),
+  stage: TeachingStudentSubjectStageSchema,
+  signal_status: z.enum(['unavailable', 'partial', 'attributed']),
+  assigned_notions: z.array(z.string().min(1).max(500)).max(50),
+  evidence_refs: z.array(z.string().min(1)),
+  candidate_score: TeachingCandidateScoreSchema.nullable(),
+  confidence: z.number().min(0).max(1).nullable(),
+  source_freshness_at: z.number().int().nonnegative().nullable(),
+});
+export type TeachingStudentSubjectProjection = z.infer<typeof TeachingStudentSubjectProjectionSchema>;
+
+export const TeachingStudentProjectionSchema = z.object({
+  student_identity_id: z.string().min(1),
+  display_name: z.string().min(1).max(160),
+  subject_states: z.array(TeachingStudentSubjectProjectionSchema),
+});
+export type TeachingStudentProjection = z.infer<typeof TeachingStudentProjectionSchema>;
+
+export const TeachingAssignmentProjectionSchema = z.object({
+  assignment: SubjectAssignmentSchema,
+  subject_template_id: z.string().min(1),
+  correction_sheet_status: z.enum(['none', 'draft', 'needs_teacher_review', 'validated']),
+});
+export type TeachingAssignmentProjection = z.infer<typeof TeachingAssignmentProjectionSchema>;
+
+export const TeachingCohortProjectionSchema = z.object({
+  cohort: CohortSchema,
+  active_roster: RosterVersionSchema.nullable(),
+  students: z.array(TeachingStudentProjectionSchema),
+});
+export type TeachingCohortProjection = z.infer<typeof TeachingCohortProjectionSchema>;
+
+export const TeachingOverviewSchema = z.object({
+  cohorts: z.array(TeachingCohortProjectionSchema),
+  subjects: z.array(SubjectTemplateSchema),
+  assignments: z.array(TeachingAssignmentProjectionSchema),
+  generated_at: z.number().int().nonnegative(),
+});
+export type TeachingOverview = z.infer<typeof TeachingOverviewSchema>;
+
 // ───────────────────────── Contexte courant ─────────────────────────
 
 export const CurrentContextSchema = z.object({
