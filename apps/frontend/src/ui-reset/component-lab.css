@@ -1714,6 +1714,57 @@
   margin: auto;
 }
 
+.teaching-lab__students {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.teaching-lab__student-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+}
+
+.teaching-lab__student-card {
+  background: var(--proto-ghost);
+  border: 1px solid var(--proto-border);
+  border-radius: 15px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.teaching-lab__student-card > span {
+  align-items: end;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--proto-blue) 8%, var(--proto-panel-strong));
+  border-radius: 11px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.teaching-lab__student-card img {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.teaching-lab__student-card strong,
+.teaching-lab__student-card small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teaching-lab__student-card small {
+  color: var(--proto-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .teaching-lab__story-sequence {
   display: grid;
   gap: 10px;

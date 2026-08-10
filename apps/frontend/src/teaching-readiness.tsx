@@ -850,6 +850,10 @@ export function TeachingReadiness({
         name: cohort.title,
         period: cohort.period_ref,
         size: activeClassRoster?.members.length ?? null,
+        students: activeClassRoster?.members.map((member) => ({
+          id: member.student_identity_id,
+          name: member.display_name,
+        })) ?? [],
         subjectIds: subjectAssignments
           .filter((assignment) => assignment.cohort_id === cohort.cohort_id)
           .map((assignment) => subjectIdByTitle.get(assignment.title.trim().toLocaleLowerCase('fr')))
