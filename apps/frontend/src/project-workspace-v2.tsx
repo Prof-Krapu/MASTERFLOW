@@ -19,6 +19,7 @@ type ProjectWorkspaceV2Props = {
   onCreateProject: (event: FormEvent<HTMLFormElement>) => void;
   onProjectChange: (projectId: string) => void;
   onResourceChange: (resourceId: string) => void;
+  onResourceOpen: (resource: Resource) => void;
   project: Project | null;
   projects: Project[];
   resources: Resource[];
@@ -79,6 +80,7 @@ export function ProjectWorkspaceV2({
   onCreateProject,
   onProjectChange,
   onResourceChange,
+  onResourceOpen,
   project,
   projects,
   resources,
@@ -170,7 +172,13 @@ export function ProjectWorkspaceV2({
 
     if (latestResource) {
       return latestResource.url ? (
-        <a className="project-v2__primary-link" href={latestResource.url} rel="noreferrer" target="_blank">
+        <a
+          className="project-v2__primary-link"
+          href={latestResource.url}
+          onClick={() => onResourceOpen(latestResource)}
+          rel="noreferrer"
+          target="_blank"
+        >
           <span>
             <small>{readOnly ? 'Consulter les ressources' : 'Ouvrir la dernière source'}</small>
             <strong>{latestResource.title}</strong>
@@ -178,7 +186,7 @@ export function ProjectWorkspaceV2({
           <ArrowUpRight aria-hidden="true" size={20} />
         </a>
       ) : (
-        <a className="project-v2__primary-link" href="#project-v2-resources">
+        <a className="project-v2__primary-link" href="#project-v2-resources" onClick={() => onResourceOpen(latestResource)}>
           <span>
             <small>Consulter les ressources</small>
             <strong>{latestResource.title}</strong>

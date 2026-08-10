@@ -114,6 +114,36 @@ type RoomSyncState = {
   status: 'idle' | 'syncing' | 'synced' | 'error';
   message: string;
 };
+type ResumeTarget = {
+  version: 1;
+  kind: 'project' | 'resource';
+  surface: 'project';
+  label: string;
+  projectId: string;
+  resourceId?: string;
+};
+
+function readResumeTarget(widgetState: Record<string, unknown> | null | undefined): ResumeTarget | null {
+  const candidate = widgetState?.['resume_target'];
+  if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) return null;
+  const value = candidate as Record<string, unknown>;
+  if (
+    value['version'] !== 1
+    || (value['kind'] !== 'project' && value['kind'] !== 'resource')
+    || value['surface'] !== 'project'
+    || typeof value['label'] !== 'string'
+    || typeof value['projectId'] !== 'string'
+  ) return null;
+  if (value['kind'] === 'resource' && typeof value['resourceId'] !== 'string') return null;
+  return {
+    version: 1,
+    kind: value['kind'],
+    surface: 'project',
+    label: value['label'],
+    projectId: value['projectId'],
+    ...(typeof value['resourceId'] === 'string' ? {resourceId: value['resourceId']} : {}),
+  };
+}
 
 const ROLE_LABEL: Record<string, string> = {
   student: 'learn',
@@ -320,6 +350,10 @@ function App(): ReactElement {
 
   const isConnected = auth !== null && context !== null;
   const showEntryGate = false;
+  const resumeTarget = useMemo(
+    () => readResumeTarget(context?.room_instance.widget_state),
+    [context?.room_instance.widget_state],
+  );
   const canCreateProject = context?.user.role === 'teacher'
     || context?.user.role === 'admin'
     || context?.user.role === 'godmode';
@@ -613,6 +647,19 @@ function App(): ReactElement {
         status: 'error',
         message: err instanceof Error ? err.message : 'Synchronisation impossible.',
       });
+    }
+  }, [auth, context]);
+
+  const persistResumeTarget = useCallback(async (target: ResumeTarget): Promise<void> => {
+    if (!auth || !context) return;
+    try {
+      const widgetState = context.room_instance.widget_state ?? {};
+      const nextInstance = await updateRoomInstance(context.room.id, {
+        widget_state: {...widgetState, resume_target: target},
+      }, auth.token);
+      setContext((current) => (current ? {...current, room_instance: nextInstance} : current));
+    } catch {
+      // La reprise précise est un confort : l'activité courante reste utilisable si sa sauvegarde échoue.
     }
   }, [auth, context]);
 
@@ -923,6 +970,31 @@ function App(): ReactElement {
     }
   }, [auth, refreshResources]);
 
+  const handleProjectChange = useCallback((projectId: string): void => {
+    setSelectedProjectId(projectId);
+    const project = projects.find((item) => item.project_id === projectId);
+    if (!project) return;
+    void persistResumeTarget({
+      version: 1,
+      kind: 'project',
+      surface: 'project',
+      label: project.name,
+      projectId: project.project_id,
+    });
+  }, [persistResumeTarget, projects]);
+
+  const handleProjectResourceOpen = useCallback((resource: Resource): void => {
+    if (!selectedProjectId) return;
+    void persistResumeTarget({
+      version: 1,
+      kind: 'resource',
+      surface: 'project',
+      label: resource.title,
+      projectId: selectedProjectId,
+      resourceId: resource.id,
+    });
+  }, [persistResumeTarget, selectedProjectId]);
+
   const handleAttachProjectResource = useCallback(async (): Promise<void> => {
     if (!auth || !selectedProjectId || !projectResourceId) return;
 
@@ -932,6 +1004,17 @@ function App(): ReactElement {
         resource_id: projectResourceId,
         access_level: 'read',
       }, auth.token);
+      const attachedResource = resources.find((resource) => resource.id === projectResourceId);
+      if (attachedResource) {
+        void persistResumeTarget({
+          version: 1,
+          kind: 'resource',
+          surface: 'project',
+          label: attachedResource.title,
+          projectId: selectedProjectId,
+          resourceId: attachedResource.id,
+        });
+      }
       setProjectResourceId('');
       await refreshProjectSurface(selectedProjectId);
       setProjectSync({status: 'synced', message: 'Ressource partagée avec le projet.'});
@@ -941,7 +1024,7 @@ function App(): ReactElement {
         message: err instanceof Error ? err.message : 'Rattachement impossible.',
       });
     }
-  }, [auth, projectResourceId, refreshProjectSurface, selectedProjectId]);
+  }, [auth, persistResumeTarget, projectResourceId, refreshProjectSurface, resources, selectedProjectId]);
 
   const handleCreateProject = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -954,6 +1037,13 @@ function App(): ReactElement {
       const nextProjects = await getProjects(auth.token);
       setProjects(nextProjects);
       setSelectedProjectId(created.project_id);
+      void persistResumeTarget({
+        version: 1,
+        kind: 'project',
+        surface: 'project',
+        label: created.name,
+        projectId: created.project_id,
+      });
       setProjectName('');
       setProjectSync({status: 'ready', message: 'Projet créé. Son espace de travail est prêt.'});
     } catch (err) {
@@ -964,7 +1054,7 @@ function App(): ReactElement {
           : 'La création du projet a échoué. Réessayez.',
       });
     }
-  }, [auth, canCreateProject, projectName]);
+  }, [auth, canCreateProject, persistResumeTarget, projectName]);
 
   const handleCoordinationSync = useCallback(async (): Promise<void> => {
     if (!auth) return;
@@ -1388,8 +1478,9 @@ function App(): ReactElement {
             onBackHome={() => handleCurrentModeSelect('home')}
             onCreateNameChange={setProjectName}
             onCreateProject={(event) => void handleCreateProject(event)}
-            onProjectChange={setSelectedProjectId}
+            onProjectChange={handleProjectChange}
             onResourceChange={setProjectResourceId}
+            onResourceOpen={handleProjectResourceOpen}
             project={selectedProject}
             projects={projects}
             resources={projectResources}
@@ -1415,22 +1506,31 @@ function App(): ReactElement {
     );
   };
 
-  const resumeMode: CurrentUiRuntime['resumeMode'] = latestCheckpoint?.active_mode === 'learning'
-    ? 'learn'
-    : latestCheckpoint?.active_mode === 'da' || latestCheckpoint?.active_mode === 'da_studio'
-      ? 'da'
-      : latestCheckpoint?.active_mode === 'project'
-        || latestCheckpoint?.active_mode === 'teaching'
-        || latestCheckpoint?.active_mode === 'inventory'
-        || latestCheckpoint?.active_mode === 'story'
-        ? latestCheckpoint.active_mode
-        : null;
+  const resumeProject = resumeTarget
+    ? projects.find((project) => project.project_id === resumeTarget.projectId) ?? null
+    : null;
+  const resumeResource = resumeTarget?.resourceId
+    ? resources.find((resource) => resource.id === resumeTarget.resourceId)
+      ?? projectResources.find((resource) => resource.id === resumeTarget.resourceId)
+      ?? null
+    : null;
+  const resumeMode: CurrentUiRuntime['resumeMode'] = resumeProject ? 'project' : null;
+  const resumeLabel = resumeProject ? resumeResource?.title ?? resumeProject.name : null;
+  const handleResume = (): void => {
+    if (!resumeTarget || !resumeProject) return;
+    setSelectedProjectId(resumeProject.project_id);
+    handleCurrentModeSelect('project');
+    if (resumeResource?.url) {
+      window.open(resumeResource.url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   const currentUiRuntime: CurrentUiRuntime | null = auth && context ? {
     context,
     inboxItems: pendingActions,
     jobs,
     resumeMode,
+    resumeLabel,
     attentionLabel: pendingActions.length > 0
       ? `${pendingActions.length} validation(s) demandent une décision.`
       : jobs.some((job) => ['failed', 'needs_review'].includes(job.status))
@@ -1448,6 +1548,7 @@ function App(): ReactElement {
     onActionSelect: (action) => void handleActionClick(action),
     onLogout: handleLogout,
     onModeSelect: handleCurrentModeSelect,
+    onResume: handleResume,
     renderWorkspace: renderCurrentWorkspace,
   } : null;
 
