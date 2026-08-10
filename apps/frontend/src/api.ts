@@ -86,6 +86,7 @@ import type {
   SubjectTemplate,
   SubjectAssignment,
   SubjectVersion,
+  TeachingOverview,
   ValidatePreCorrectionManifestRequest,
   TaskModelProfile,
   SearchResourcesResponse,
@@ -389,6 +390,9 @@ export async function validateSubjectVersion(versionId: string, token?: string |
 export async function getSubjectAssignments(projectId?: string | null, token?: string | null): Promise<SubjectAssignment[]> {
   const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
   return request<SubjectAssignment[]>(`/subject-assignments${query}`, {method:'GET'}, token);
+}
+export async function getTeachingOverview(token?: string | null): Promise<TeachingOverview> {
+  return request<TeachingOverview>('/teaching/overview', {method: 'GET'}, token);
 }
 export async function createSubjectAssignment(body: CreateSubjectAssignmentRequest, token?: string | null): Promise<SubjectAssignment> {
   return request<SubjectAssignment>('/subject-assignments', {method:'POST', body:JSON.stringify(body)}, token);

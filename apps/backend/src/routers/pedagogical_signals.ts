@@ -1,7 +1,7 @@
 import {Router, type Request, type Response} from 'express';
 import {PedagogicalSignalSchema} from '@masterflow/shared';
-import {requireUser, type AuthUser} from '../middleware/auth.ts';
-import {listSignals} from '../services/weather_engine.ts';
+import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
+import {assertPedagogicalScopeAccess, listSignals} from '../services/weather_engine.ts';
 import {recordPedagogicalSignal} from '../services/pedagogical_records.ts';
 
 const actor = (r: Request): AuthUser => { if (!r.user) throw new Error('unauthorized'); return r.user; };
@@ -14,10 +14,11 @@ export function createPedagogicalSignalsRouter(): Router {
   const r = Router();
   r.use(requireUser);
 
-  r.get('/pedagogical-signals', (q, s) => {
+  r.get('/pedagogical-signals', requireRole('teacher'), (q, s) => {
     try {
       const projectScope = typeof q.query.project_scope === 'string' ? q.query.project_scope : undefined;
       if (!projectScope) return void s.status(400).json({error: 'project_scope_required'});
+      assertPedagogicalScopeAccess(actor(q), projectScope);
       s.json(listSignals(projectScope));
     } catch (e) { fail(s, e); }
   });

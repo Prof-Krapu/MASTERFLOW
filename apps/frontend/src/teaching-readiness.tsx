@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import type {ReactElement} from 'react';
 import {BriefcaseBusiness, GraduationCap, Megaphone, Palette, PenTool, School, Shapes, Video} from 'lucide-react';
 
@@ -25,6 +25,7 @@ import type {
   SubjectTemplate,
   SubjectAssignment,
   SubjectVersion,
+  TeachingOverview,
   ValidationInboxItem,
 } from '@masterflow/shared';
 
@@ -44,7 +45,6 @@ import {
   createGuidedSession,
   getGuides,
   getGuidedLivingCompanion,
-  getCohorts,
   getCorrectionBatches,
   getGuidedSessions,
   getIdentityMatchReviews,
@@ -56,9 +56,8 @@ import {
   getRosterVersions,
   getRubricTemplates,
   getRubricVersions,
-  getSubjects,
-  getSubjectAssignments,
   getSubjectVersions,
+  getTeachingOverview,
   submitGuidedAnswer,
   decideIdentityMatchReview,
   validateInstitutionalGradingProfile,
@@ -75,10 +74,11 @@ import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ClassProjection} from './class-projection.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
 import {ComponentLabTeaching} from './ui-reset/component-lab-teaching.tsx';
-import type {TeachingSurfaceClass, TeachingSurfaceSubject} from './ui-reset/component-lab-teaching.tsx';
+import type {TeachingStudentSubjectState, TeachingSurfaceClass, TeachingSurfaceSubject} from './ui-reset/component-lab-teaching.tsx';
 
 type TeachingReadinessProps = {
   context: CurrentContext;
+  onActivity?: (label: string) => void;
   project: Project | null;
   projectResources: Resource[];
   resources: Resource[];
@@ -146,6 +146,7 @@ function parseRubricCriteria(source: string): {criteria: RubricCriterion[]; tota
 
 export function TeachingReadiness({
   context,
+  onActivity,
   project,
   projectResources,
   resources,
@@ -165,6 +166,7 @@ export function TeachingReadiness({
   const [cohortTitle, setCohortTitle] = useState('');
   const [cohortPeriod, setCohortPeriod] = useState('');
   const [rosterText, setRosterText] = useState('');
+  const [rosterSourceRef, setRosterSourceRef] = useState('manual://teaching');
   const [rubricTemplates, setRubricTemplates] = useState<RubricTemplate[]>([]);
   const [selectedRubricTemplateId, setSelectedRubricTemplateId] = useState('');
   const [rubricVersions, setRubricVersions] = useState<RubricVersion[]>([]);
@@ -225,26 +227,45 @@ export function TeachingReadiness({
   const [companion, setCompanion] = useState<LivingCompanion | null>(null);
   const [companionStatus, setCompanionStatus] = useState('Aucun compagnon projetable.');
   const [projectionOpen, setProjectionOpen] = useState(false);
+  const [teachingOverview, setTeachingOverview] = useState<TeachingOverview | null>(null);
+  const [manager, setManager] = useState<'classes' | 'subject' | 'support' | null>(null);
+  const [demoRequested, setDemoRequested] = useState(false);
+  const [advancedWorkflowVisible, setAdvancedWorkflowVisible] = useState(false);
+  const managerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!manager) return;
+    window.requestAnimationFrame(() => managerRef.current?.querySelector<HTMLElement>('button, input, select, textarea')?.focus());
+    const closeOnEscape = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      setManager(null);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [manager]);
 
   const refresh = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const [nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextCohorts, nextRubrics, nextProfiles, nextBatches, nextSubjects, nextAssignments] = await Promise.all([
+      const [overview, nextJobs, nextGuides, nextSessions, nextIdentityReviews, nextRubrics, nextProfiles, nextBatches] = await Promise.all([
+        getTeachingOverview(token),
         getJobs(token),
         getGuides(token),
         getGuidedSessions(token),
         getIdentityMatchReviews(project?.project_id, token),
-        getCohorts(undefined, token),
         getRubricTemplates(project?.project_id, token),
         getInstitutionalGradingProfiles(project?.project_id, token),
         getCorrectionBatches(project?.project_id, token),
-        getSubjects(undefined, token),
-        getSubjectAssignments(undefined, token),
       ]);
-      const rosterEntries = await Promise.all(nextCohorts.map(async (cohort) => {
-        const versions = await getRosterVersions(cohort.cohort_id, token).catch(() => [] as RosterVersion[]);
-        return [cohort.cohort_id, versions] as const;
-      }));
+      const nextCohorts = overview.cohorts.map((item) => item.cohort);
+      const nextSubjects = overview.subjects;
+      const nextAssignments = overview.assignments.map((item) => item.assignment);
+      const rosterEntries = overview.cohorts.map((item) => [
+        item.cohort.cohort_id,
+        item.active_roster ? [item.active_roster] : [],
+      ] as const);
+      setTeachingOverview(overview);
       setJobs(nextJobs);
       setGuides(nextGuides);
       setSessions(nextSessions);
@@ -256,7 +277,7 @@ export function TeachingReadiness({
       setSubjects(nextSubjects);
       setSubjectAssignments(nextAssignments);
       setRostersByCohort(Object.fromEntries(rosterEntries));
-      setCorrectionSheets((await Promise.all(nextAssignments.map((assignment) => getCorrectionSheets(assignment.assignment_id, token)))).flat());
+      setCorrectionSheets([]);
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
       setSelectedGradingProfileId((current) => current || nextProfiles.find((profile) => profile.status === 'validated')?.profile_id || '');
@@ -280,6 +301,7 @@ export function TeachingReadiness({
       setSubjectAssignments([]);
       setRostersByCohort({});
       setCorrectionSheets([]);
+      setTeachingOverview(null);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
       setLoading(false);
@@ -339,25 +361,60 @@ export function TeachingReadiness({
   }, [cohortPeriod, cohortTitle, project?.project_id, refresh, token]);
 
   const addRoster = useCallback(async (): Promise<void> => {
+    const activeExistingRoster = rostersByCohort[selectedCohortId]?.find((version) => version.status === 'active') ?? null;
+    const existingIdentityByName = new Map((activeExistingRoster?.members ?? []).map((member) => [
+      member.display_name.trim().toLocaleLowerCase('fr'),
+      member.student_identity_id,
+    ]));
     const members = rosterText.split('\n').map((line) => line.trim()).filter(Boolean).map((line) => {
       const [name = '', aliases = ''] = line.split('|');
-      return {display_name: name.trim(), aliases: aliases.split(',').map((value) => value.trim()).filter(Boolean)};
+      const displayName = name.trim();
+      return {
+        student_identity_id: existingIdentityByName.get(displayName.toLocaleLowerCase('fr')) ?? null,
+        display_name: displayName,
+        aliases: aliases.split(',').map((value) => value.trim()).filter(Boolean),
+      };
     }).filter((member) => member.display_name.length > 0);
     if (!selectedCohortId || members.length === 0) return setStatus('Choisis une cohorte et saisis au moins un élève.');
     setMutating(true);
     try {
       const created = await createRosterVersion(selectedCohortId, {
-        source_ref: `manual://teaching/${Date.now()}`,
+        source_ref: `${rosterSourceRef}/${Date.now()}`,
         members,
       }, token);
       const nextVersions = await getRosterVersions(selectedCohortId, token);
       setRosterText('');
+      setRosterSourceRef('manual://teaching');
       setRosterVersions(nextVersions);
       setRostersByCohort((current) => ({...current, [selectedCohortId]: nextVersions}));
       setStatus(`Liste des étudiants V${created.version} enregistrée. La version précédente reste archivée.`);
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Roster impossible.'); }
     finally { setMutating(false); }
-  }, [rosterText, selectedCohortId, token]);
+  }, [rosterSourceRef, rosterText, rostersByCohort, selectedCohortId, token]);
+
+  const importRosterCsv = useCallback(async (file: File): Promise<void> => {
+    const source = await file.text();
+    const lines = source.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    if (lines.length === 0) {
+      setStatus('Le CSV Pronote est vide.');
+      return;
+    }
+    const delimiter = (lines[0]?.match(/;/g)?.length ?? 0) >= (lines[0]?.match(/,/g)?.length ?? 0) ? ';' : ',';
+    const rows = lines.map((line) => line.split(delimiter).map((cell) => cell.trim().replace(/^"|"$/g, '')));
+    const headers = (rows[0] ?? []).map((header) => header.toLocaleLowerCase('fr'));
+    const firstNameIndex = headers.findIndex((header) => header.includes('prénom') || header.includes('prenom'));
+    const lastNameIndex = headers.findIndex((header) => header === 'nom' || header.includes('nom de famille'));
+    const fullNameIndex = headers.findIndex((header) => header.includes('élève') || header.includes('eleve') || header.includes('nom complet'));
+    const hasHeader = firstNameIndex >= 0 || lastNameIndex >= 0 || fullNameIndex >= 0;
+    const names = rows.slice(hasHeader ? 1 : 0).map((row) => {
+      if (fullNameIndex >= 0) return row[fullNameIndex] ?? '';
+      if (firstNameIndex >= 0 || lastNameIndex >= 0) return [row[firstNameIndex] ?? '', row[lastNameIndex] ?? ''].filter(Boolean).join(' ');
+      return row[0] ?? '';
+    }).map((name) => name.trim()).filter(Boolean);
+    setRosterText([...new Set(names)].join('\n'));
+    setRosterSourceRef(`pronote-csv://${encodeURIComponent(file.name)}`);
+    setStatus(`${names.length} ligne(s) Pronote préparée(s). Vérifie la liste avant de créer la nouvelle version.`);
+  }, []);
 
   const decideIdentity = useCallback(async (
     review: IdentityMatchReviewItem,
@@ -557,18 +614,65 @@ export function TeachingReadiness({
     resource_refs: [], correction_model_candidate_ref: null, deployment_state: 'private_draft' as const,
   }), [subjectAssistanceLevel, subjectBloomLevel, subjectCheckpoints, subjectCompetencies, subjectConstraints, subjectCriteria, subjectDeadlines, subjectDecision, subjectDeliverables, subjectEvaluationMode, subjectMission, subjectObjectives, subjectProgression, subjectProofs, subjectSituation, subjectTension]);
 
+  const hydrateSubjectForm = useCallback((version?: SubjectVersion): void => {
+    const manifest = version?.manifest;
+    setSubjectSituation(manifest?.situation ?? '');
+    setSubjectTension(manifest?.tension ?? '');
+    setSubjectMission(manifest?.mission ?? '');
+    setSubjectDecision(manifest?.decision_to_make ?? '');
+    setSubjectDeliverables(manifest?.observable_deliverables.join('\n') ?? '');
+    setSubjectProofs(manifest?.proofs_of_understanding.join('\n') ?? '');
+    setSubjectProgression(manifest?.progression_levels.join('\n') ?? '');
+    setSubjectObjectives(manifest?.objectives.join('\n') ?? '');
+    setSubjectCriteria(manifest?.criteria.join('\n') ?? '');
+    setSubjectCompetencies(manifest?.competencies.join('\n') ?? '');
+    setSubjectBloomLevel(manifest?.bloom_level ?? '');
+    setSubjectConstraints(manifest?.constraints.join('\n') ?? '');
+    setSubjectCheckpoints(manifest?.checkpoints.join('\n') ?? '');
+    setSubjectEvaluationMode(manifest?.evaluation_mode ?? '');
+    setSubjectAssistanceLevel(manifest?.assistance_level ?? '');
+    setSubjectDeadlines(manifest?.deadlines.join('\n') ?? '');
+  }, []);
+
+  const selectSubjectForEditing = useCallback(async (templateId: string): Promise<void> => {
+    setSelectedSubjectId(templateId);
+    const versions = await getSubjectVersions(templateId, token);
+    setSubjectVersions(versions);
+    const latest = versions[0];
+    hydrateSubjectForm(latest);
+    setAssignmentSubjectVersionId(versions.find((version) => version.status === 'validated')?.version_id ?? '');
+  }, [hydrateSubjectForm, token]);
+
+  const startNewSubject = useCallback((): void => {
+    setSelectedSubjectId('');
+    setSubjectVersions([]);
+    setAssignmentSubjectVersionId('');
+    setSubjectTitle('');
+    hydrateSubjectForm();
+  }, [hydrateSubjectForm]);
+
   const createSubjectDraft = useCallback(async (): Promise<void> => {
     if (!subjectTitle.trim()) { setStatus('Donne un titre au sujet.'); return; }
+    const manifest = subjectManifest();
+    if (!manifest.situation || !manifest.tension || !manifest.mission || !manifest.decision_to_make || manifest.observable_deliverables.length === 0 || manifest.proofs_of_understanding.length === 0 || manifest.progression_levels.length === 0) {
+      setStatus('Complète Situation, Tension, Mission, Décision, puis au moins un rendu, une preuve et un niveau de progression.');
+      return;
+    }
     setMutating(true);
-    try { const created = await createSubject({project_id: project?.project_id ?? null, title: subjectTitle.trim(), manifest: subjectManifest()}, token); await refresh(); setSelectedSubjectId(created.template.template_id); setStatus('Sujet V1 créé en brouillon privé.'); }
+    try { const created = await createSubject({project_id: project?.project_id ?? null, title: subjectTitle.trim(), manifest}, token); await refresh(); setSelectedSubjectId(created.template.template_id); setStatus('Sujet V1 créé en brouillon privé.'); }
     catch (error) { setStatus(error instanceof Error ? error.message : 'Création du sujet impossible.'); }
     finally { setMutating(false); }
   }, [project?.project_id, refresh, subjectManifest, subjectTitle, token]);
 
   const createNextSubjectVersion = useCallback(async (): Promise<void> => {
     if (!selectedSubjectId) return;
+    const manifest = subjectManifest();
+    if (!manifest.situation || !manifest.tension || !manifest.mission || !manifest.decision_to_make || manifest.observable_deliverables.length === 0 || manifest.proofs_of_understanding.length === 0 || manifest.progression_levels.length === 0) {
+      setStatus('Complète les quatre étapes et les preuves minimales avant de créer une version.');
+      return;
+    }
     setMutating(true);
-    try { await createSubjectVersion(selectedSubjectId, {manifest: subjectManifest()}, token); setSubjectVersions(await getSubjectVersions(selectedSubjectId, token)); setStatus('Nouvelle version privée créée sans modifier les précédentes.'); }
+    try { await createSubjectVersion(selectedSubjectId, {manifest}, token); setSubjectVersions(await getSubjectVersions(selectedSubjectId, token)); setStatus('Nouvelle version privée créée sans modifier les précédentes.'); }
     catch (error) { setStatus(error instanceof Error ? error.message : 'Version du sujet impossible.'); }
     finally { setMutating(false); }
   }, [selectedSubjectId, subjectManifest, token]);
@@ -803,11 +907,10 @@ export function TeachingReadiness({
   ]);
 
   const teachingPresentation = useMemo(() => {
-    const surfaceSubjectsByTitle = new Map<string, TeachingSurfaceSubject>();
-    const subjectIdByTitle = new Map<string, string>();
-    const registerSubject = (title: string, manifest?: SubjectAssignment['subject_snapshot']): string => {
-      const key = title.trim().toLocaleLowerCase('fr');
-      const existing = surfaceSubjectsByTitle.get(key);
+    const surfaceSubjectsById = new Map<string, TeachingSurfaceSubject>();
+    const registerSubject = (templateId: string, title: string, manifest?: SubjectAssignment['subject_snapshot']): string => {
+      const key = templateId;
+      const existing = surfaceSubjectsById.get(key);
       if (existing) {
         if (manifest && !existing.situation) {
           existing.situation = manifest.situation;
@@ -817,9 +920,9 @@ export function TeachingReadiness({
         }
         return existing.id;
       }
-      const subjectIndex = stableTeachingIndex(key, TEACHING_SUBJECT_ICONS.length);
-      const id = `subject:${key}`;
-      surfaceSubjectsByTitle.set(key, {
+      const subjectIndex = stableTeachingIndex(title, TEACHING_SUBJECT_ICONS.length);
+      const id = `subject:${templateId}`;
+      surfaceSubjectsById.set(key, {
         color: TEACHING_COLORS[stableTeachingIndex(key, TEACHING_COLORS.length)] ?? TEACHING_COLORS[0],
         icon: TEACHING_SUBJECT_ICONS[subjectIndex] ?? Palette,
         id,
@@ -831,17 +934,20 @@ export function TeachingReadiness({
           decision: manifest.decision_to_make,
         } : {}),
       });
-      subjectIdByTitle.set(key, id);
       return id;
     };
 
-    subjects.forEach((subject) => registerSubject(subject.title));
-    subjectAssignments.forEach((assignment) => registerSubject(assignment.title, assignment.subject_snapshot));
+    subjects.forEach((subject) => registerSubject(subject.template_id, subject.title));
+    teachingOverview?.assignments.forEach(({assignment, subject_template_id: templateId}) => {
+      registerSubject(templateId, subjects.find((subject) => subject.template_id === templateId)?.title ?? assignment.title, assignment.subject_snapshot);
+    });
 
     const surfaceClasses: TeachingSurfaceClass[] = cohorts.map((cohort) => {
       const levelId = teachingLevelId(cohort.title);
       const classIndex = stableTeachingIndex(cohort.cohort_id, TEACHING_CLASS_ICONS.length);
       const activeClassRoster = rostersByCohort[cohort.cohort_id]?.find((version) => version.status === 'active') ?? null;
+      const cohortProjection = teachingOverview?.cohorts.find((item) => item.cohort.cohort_id === cohort.cohort_id);
+      const projectedStudents = new Map((cohortProjection?.students ?? []).map((student) => [student.student_identity_id, student]));
       return {
         color: TEACHING_COLORS[stableTeachingIndex(cohort.cohort_id, TEACHING_COLORS.length)] ?? TEACHING_COLORS[0],
         icon: TEACHING_CLASS_ICONS[classIndex] ?? School,
@@ -850,22 +956,112 @@ export function TeachingReadiness({
         name: cohort.title,
         period: cohort.period_ref,
         size: activeClassRoster?.members.length ?? null,
-        students: activeClassRoster?.members.map((member) => ({
-          id: member.student_identity_id,
-          name: member.display_name,
-        })) ?? [],
-        subjectIds: subjectAssignments
-          .filter((assignment) => assignment.cohort_id === cohort.cohort_id)
-          .map((assignment) => subjectIdByTitle.get(assignment.title.trim().toLocaleLowerCase('fr')))
-          .filter((subjectId): subjectId is string => Boolean(subjectId)),
+        students: activeClassRoster?.members.map((member) => {
+          const projection = projectedStudents.get(member.student_identity_id);
+          const subjectProgress = Object.fromEntries((projection?.subject_states ?? []).map((state) => {
+            const normalizedScore = state.candidate_score
+              ? Math.round((state.candidate_score.value / state.candidate_score.max) * 200) / 10
+              : undefined;
+            const stage: TeachingStudentSubjectState['stage'] = state.stage === 'completed'
+              ? 'completed'
+              : state.stage === 'no_signal' ? 'unknown' : 'in_progress';
+            return [`subject:${state.subject_template_id}`, {
+              ...(normalizedScore === undefined ? {} : {average: normalizedScore}),
+              confidence: state.confidence,
+              evidenceRefs: state.evidence_refs,
+              health: 'unknown' as const,
+              notions: state.assigned_notions.map((label) => ({label, status: 'assigned' as const})),
+              progress: state.stage === 'completed' ? 100 : state.stage === 'in_review' ? 70 : state.stage === 'submitted' ? 55 : state.stage === 'submission_candidate' ? 30 : 0,
+              ...(state.candidate_score ? {scoreStatus: 'needs_review' as const} : {}),
+              sourceFreshnessAt: state.source_freshness_at,
+              sourceStatus: state.signal_status,
+              stage,
+              trend: [],
+            }];
+          }));
+          return {id: member.student_identity_id, name: member.display_name, subjectProgress};
+        }) ?? [],
+        subjectIds: (teachingOverview?.assignments ?? [])
+          .filter(({assignment}) => assignment.cohort_id === cohort.cohort_id && assignment.status === 'active')
+          .map(({subject_template_id: templateId}) => `subject:${templateId}`),
       };
     });
 
-    return {classes: surfaceClasses, subjects: [...surfaceSubjectsByTitle.values()]};
-  }, [cohorts, rostersByCohort, subjectAssignments, subjects]);
+    return {classes: surfaceClasses, subjects: [...surfaceSubjectsById.values()]};
+  }, [cohorts, rostersByCohort, subjects, teachingOverview]);
 
   const selectedCohort = cohorts.find((cohort) => cohort.cohort_id === selectedCohortId) ?? null;
   const activeRoster = rosterVersions.find((version) => version.status === 'active') ?? null;
+  const openClassManager = useCallback((cohortId?: string): void => {
+    if (cohortId) setSelectedCohortId(cohortId);
+    setManager('classes');
+  }, []);
+  const createSubjectFromOverview = useCallback((): void => {
+    startNewSubject();
+    setCorrectionSheets([]);
+    setManager('subject');
+  }, [startNewSubject]);
+  const openSubjectManager = useCallback(async (surfaceSubjectId?: string): Promise<void> => {
+    setManager('subject');
+    const templateId = surfaceSubjectId?.startsWith('subject:')
+      ? surfaceSubjectId.slice('subject:'.length)
+      : selectedSubjectId || subjects[0]?.template_id;
+    if (!templateId) {
+      startNewSubject();
+      setCorrectionSheets([]);
+      return;
+    }
+    try {
+      await selectSubjectForEditing(templateId);
+      setSubjectTitle(subjects.find((subject) => subject.template_id === templateId)?.title ?? '');
+      const assignmentIds = (teachingOverview?.assignments ?? [])
+        .filter((item) => item.subject_template_id === templateId)
+        .map((item) => item.assignment.assignment_id);
+      setCorrectionSheets((await Promise.all(assignmentIds.map((id) => getCorrectionSheets(id, token)))).flat());
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Atelier du sujet indisponible.');
+    }
+  }, [selectSubjectForEditing, selectedSubjectId, startNewSubject, subjects, teachingOverview?.assignments, token]);
+  const assignSubjectFromClass = useCallback(async (cohortId: string, surfaceSubjectId: string): Promise<boolean> => {
+    if (mutating) return false;
+    const surfaceSubject = teachingPresentation.subjects.find((subject) => subject.id === surfaceSubjectId);
+    const templateId = surfaceSubjectId.startsWith('subject:') ? surfaceSubjectId.slice('subject:'.length) : '';
+    const subject = surfaceSubject
+      ? subjects.find((candidate) => candidate.template_id === templateId)
+      : null;
+    if (!surfaceSubject || !subject) {
+      setStatus('Sujet source introuvable : aucune affectation créée.');
+      return false;
+    }
+    setMutating(true);
+    try {
+      const versions = await getSubjectVersions(subject.template_id, token);
+      const validatedVersion = versions.find((version) => version.status === 'validated');
+      if (!validatedVersion) {
+        setStatus(`« ${surfaceSubject.title} » doit posséder une version validée avant son affectation.`);
+        return false;
+      }
+      const assignment = await createSubjectAssignment({
+        cohort_id: cohortId,
+        project_id: project?.project_id ?? null,
+        source_subject_version_id: validatedVersion.version_id,
+        title: surfaceSubject.title,
+      }, token);
+      await activateSubjectAssignment(assignment.assignment_id, token);
+      await refresh();
+      setStatus(`« ${surfaceSubject.title} » est maintenant affecté à la classe.`);
+      return true;
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Affectation du sujet impossible.');
+      return false;
+    } finally {
+      setMutating(false);
+    }
+  }, [mutating, project?.project_id, refresh, subjects, teachingPresentation.subjects, token]);
+  const hasRuntimeRoster = teachingPresentation.classes.some((classItem) => (classItem.students?.length ?? 0) > 0);
+  const hasRuntimeSubject = teachingPresentation.subjects.length > 0;
+  const runtimeHasTeachingData = cohorts.length > 0 || hasRuntimeRoster || hasRuntimeSubject;
+  const localTeachingDemo = import.meta.env.DEV && demoRequested;
   const action = subjects.length === 0 ? 'Préparer le premier sujet.' : 'Actualiser le contexte pédagogique.';
   const blockedItems = items.filter((item) => item.level === 'blocked');
   const partialItems = items.filter((item) => item.level === 'partial');
@@ -875,6 +1071,7 @@ export function TeachingReadiness({
     if (tools instanceof HTMLDetailsElement) tools.open = true;
     window.requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView({behavior: 'smooth', block: 'start'}));
   };
+  const legacyToolsVisible = advancedWorkflowVisible;
 
   return (
     <AdaptiveWorkspacePage
@@ -1035,23 +1232,119 @@ export function TeachingReadiness({
       ) : undefined}
     >
       <div className="teaching-readiness">
+      {localTeachingDemo ? (
+        <aside className="teaching-local-demo-notice">
+          <strong>Jeu pédagogique fictif</strong>
+          <span>8 classes · 5 niveaux · 5 sujets · étudiants, notions, moyennes et évolutions simulés. Aucune donnée enregistrée dans le backend.</span>
+          <button className="secondary" onClick={() => setDemoRequested(false)} type="button">Revenir aux données réelles</button>
+        </aside>
+      ) : import.meta.env.DEV ? (
+        <aside className="teaching-local-demo-notice">
+          <strong>{runtimeHasTeachingData ? 'Données réelles actives' : 'Teaching réel est encore vide'}</strong>
+          <span>Le jeu fictif est maintenant un mode explicite : il ne remplace jamais silencieusement une base partiellement remplie.</span>
+          <button className="secondary" onClick={() => setDemoRequested(true)} type="button">Voir le jeu fictif</button>
+        </aside>
+      ) : null}
       <ComponentLabTeaching
-        classes={teachingPresentation.classes}
-        dataMode="runtime"
-        onManageClass={(cohortId) => {
-          if (cohortId) setSelectedCohortId(cohortId);
-          openTeachingTools('teaching-cohorts');
-        }}
-        onManageSubject={(subjectId) => {
-          const surfaceSubject = teachingPresentation.subjects.find((item) => item.id === subjectId);
-          const runtimeSubject = surfaceSubject
-            ? subjects.find((item) => item.title.trim().toLocaleLowerCase('fr') === surfaceSubject.title.trim().toLocaleLowerCase('fr'))
-            : null;
-          if (runtimeSubject) setSelectedSubjectId(runtimeSubject.template_id);
-          openTeachingTools('teaching-subjects');
-        }}
-        subjects={teachingPresentation.subjects}
+        classes={localTeachingDemo ? undefined : teachingPresentation.classes}
+        dataMode={localTeachingDemo ? 'demo' : 'runtime'}
+        onAssignSubject={localTeachingDemo ? undefined : assignSubjectFromClass}
+        onActivity={onActivity}
+        onCreateSubject={localTeachingDemo ? undefined : createSubjectFromOverview}
+        onManageClass={localTeachingDemo ? undefined : openClassManager}
+        onManageSubject={localTeachingDemo ? undefined : (subjectId) => void openSubjectManager(subjectId)}
+        onOpenSupport={localTeachingDemo ? undefined : () => setManager('support')}
+        subjects={localTeachingDemo ? undefined : teachingPresentation.subjects}
       />
+      {manager ? (
+        <aside aria-labelledby="teaching-manager-title" className="teaching-runtime-manager" ref={managerRef} role="dialog">
+          <header>
+            <div>
+              <small>Teaching · outil contextuel</small>
+              <h2 id="teaching-manager-title">{manager === 'classes' ? 'Classes et étudiants' : manager === 'subject' ? 'Sujet, correction et guidage' : 'Accompagnement pédagogique'}</h2>
+            </div>
+            <button aria-label="Fermer les outils Teaching" className="secondary" onClick={() => setManager(null)} type="button">Fermer</button>
+          </header>
+
+          {manager === 'classes' ? (
+            <div className="teaching-runtime-manager__grid">
+              <form onSubmit={(event) => { event.preventDefault(); void addCohort(); }}>
+                <strong>Créer une classe</strong>
+                <label>Nom<input onChange={(event) => setCohortTitle(event.target.value)} placeholder="4CREA A" required value={cohortTitle} /></label>
+                <label>Période<input onChange={(event) => setCohortPeriod(event.target.value)} placeholder="2026–2027" value={cohortPeriod} /></label>
+                <button disabled={mutating || !cohortTitle.trim()} type="submit">Créer la classe</button>
+              </form>
+              <form onSubmit={(event) => { event.preventDefault(); void addRoster(); }}>
+                <strong>Liste des étudiants</strong>
+                <label>Classe<select onChange={(event) => setSelectedCohortId(event.target.value)} required value={selectedCohortId}><option value="">Choisir</option>{cohorts.map((cohort) => <option key={cohort.cohort_id} value={cohort.cohort_id}>{cohort.title}</option>)}</select></label>
+                <label className="teaching-runtime-manager__file">Importer un CSV Pronote<input accept=".csv,text/csv" onChange={(event) => { const file = event.target.files?.[0]; if (file) void importRosterCsv(file); }} type="file" /></label>
+                <label>Vérifier la liste<textarea onChange={(event) => { setRosterText(event.target.value); setRosterSourceRef('manual://teaching'); }} placeholder={'Prénom Nom\nPrénom Nom | alias'} required rows={8} value={rosterText} /></label>
+                <small>Une nouvelle version est créée. Les identités dont le nom reste identique sont conservées.</small>
+                <button disabled={mutating || !selectedCohortId || !rosterText.trim()} type="submit">Enregistrer la nouvelle version</button>
+              </form>
+            </div>
+          ) : null}
+
+          {manager === 'subject' ? (
+            <div className="teaching-runtime-manager__subject">
+              <nav>
+                <button className={!selectedSubjectId ? 'is-active' : undefined} onClick={startNewSubject} type="button">Nouveau sujet</button>
+                {subjects.map((subject) => <button className={selectedSubjectId === subject.template_id ? 'is-active' : undefined} key={subject.template_id} onClick={() => { setSubjectTitle(subject.title); void selectSubjectForEditing(subject.template_id); }} type="button">{subject.title}</button>)}
+              </nav>
+              <form onSubmit={(event) => { event.preventDefault(); void (selectedSubjectId ? createNextSubjectVersion() : createSubjectDraft()); }}>
+                <label>Titre<input disabled={Boolean(selectedSubjectId)} onChange={(event) => setSubjectTitle(event.target.value)} required value={subjectTitle} /></label>
+                <div className="teaching-runtime-manager__story">
+                  <label>Situation<textarea onChange={(event) => setSubjectSituation(event.target.value)} required rows={3} value={subjectSituation} /></label>
+                  <label>Tension<textarea onChange={(event) => setSubjectTension(event.target.value)} required rows={3} value={subjectTension} /></label>
+                  <label>Mission<textarea onChange={(event) => setSubjectMission(event.target.value)} required rows={3} value={subjectMission} /></label>
+                  <label>Décision à prendre<textarea onChange={(event) => setSubjectDecision(event.target.value)} required rows={3} value={subjectDecision} /></label>
+                </div>
+                <details>
+                  <summary>Rendus, preuves et progression</summary>
+                  <label>Rendus observables<textarea onChange={(event) => setSubjectDeliverables(event.target.value)} rows={4} value={subjectDeliverables} /></label>
+                  <label>Preuves de compréhension<textarea onChange={(event) => setSubjectProofs(event.target.value)} rows={4} value={subjectProofs} /></label>
+                  <label>Niveaux de progression<textarea onChange={(event) => setSubjectProgression(event.target.value)} rows={4} value={subjectProgression} /></label>
+                </details>
+                <details>
+                  <summary>Cadre pédagogique</summary>
+                  <label>Objectifs<textarea onChange={(event) => setSubjectObjectives(event.target.value)} rows={3} value={subjectObjectives} /></label>
+                  <label>Critères<textarea onChange={(event) => setSubjectCriteria(event.target.value)} rows={3} value={subjectCriteria} /></label>
+                  <label>Compétences / notions<textarea onChange={(event) => setSubjectCompetencies(event.target.value)} rows={3} value={subjectCompetencies} /></label>
+                  <label>Checkpoints<textarea onChange={(event) => setSubjectCheckpoints(event.target.value)} rows={3} value={subjectCheckpoints} /></label>
+                  <label>Contraintes<textarea onChange={(event) => setSubjectConstraints(event.target.value)} rows={3} value={subjectConstraints} /></label>
+                  <label>Évaluation<input onChange={(event) => setSubjectEvaluationMode(event.target.value)} value={subjectEvaluationMode} /></label>
+                  <label>Assistance<input onChange={(event) => setSubjectAssistanceLevel(event.target.value)} value={subjectAssistanceLevel} /></label>
+                  <label>Bloom<input onChange={(event) => setSubjectBloomLevel(event.target.value)} value={subjectBloomLevel} /></label>
+                  <label>Échéances<textarea onChange={(event) => setSubjectDeadlines(event.target.value)} rows={2} value={subjectDeadlines} /></label>
+                </details>
+                <button disabled={mutating} type="submit">{selectedSubjectId ? 'Créer une nouvelle version' : 'Créer le sujet privé'}</button>
+              </form>
+              {subjectVersions.length > 0 ? <section><strong>Versions</strong>{subjectVersions.map((version) => <article key={version.version_id}><span>V{version.version} · {version.status}</span>{version.status === 'draft' ? <button disabled={mutating} onClick={() => void validateSubject(version.version_id)} type="button">Valider en privé</button> : null}</article>)}</section> : null}
+              {correctionSheets.length > 0 ? <section><strong>Fiches de correction</strong>{correctionSheets.map((sheet) => <article key={sheet.correction_sheet_id}><span>V{sheet.version} · {sheet.sync_status === 'needs_teacher_review' ? 'revue nécessaire' : sheet.status}</span>{sheet.status === 'draft' ? <button disabled={mutating} onClick={() => void validateSheet(sheet.correction_sheet_id)} type="button">Valider la fiche</button> : null}</article>)}</section> : <p className="muted compact">Aucune fiche : elle sera créée avec la première affectation du sujet.</p>}
+              <section>
+                <strong>Sessions guidées disponibles</strong>
+                {startableGuides.length > 0 ? startableGuides.map((guide) => <article key={guide.guide_id}><span>{guide.name}</span><button disabled={mutating} onClick={() => void startSession(guide)} type="button">Démarrer</button></article>) : <p className="muted compact">Aucun guide validé dans ce périmètre.</p>}
+              </section>
+              <section>
+                <strong>Workflow de correction complet</strong>
+                <p className="muted compact">Barème, profil institutionnel, lot, copies, rapprochement d’identité et pré-correction restent séparés de la fiche du sujet.</p>
+                <button onClick={() => { setAdvancedWorkflowVisible(true); setManager(null); }} type="button">Ouvrir le workflow avancé</button>
+              </section>
+            </div>
+          ) : null}
+
+          {manager === 'support' ? (
+            <div className="teaching-runtime-manager__support">
+              <PedagogicalAssistancePanel hasValidatedResources={effectiveResources.length > 0} mode="teaching" token={token} />
+              {identityReviews.length > 0 ? <section><strong>{identityReviews.length} identité(s) à confirmer</strong><p>Les rapprochements restent disponibles dans le workflow de correction et exigent une décision professeur.</p></section> : null}
+              <section><strong>Limite actuelle</strong><p>Les messages et programmes préparés depuis une fiche élève restent des brouillons locaux. Aucun envoi automatique.</p></section>
+            </div>
+          ) : null}
+          {status ? <p aria-live="polite" className="teaching-runtime-manager__status">{status}</p> : null}
+        </aside>
+      ) : null}
+      {legacyToolsVisible ? (<section className="teaching-runtime-advanced">
+      <header><div><small>Teaching · workflow avancé</small><h2>Correction, identités et sessions guidées</h2></div><button className="secondary" onClick={() => setAdvancedWorkflowVisible(false)} type="button">Fermer</button></header>
       {projectionOpen && companion ? (
         <ClassProjection
           companion={companion}
@@ -1436,6 +1729,7 @@ export function TeachingReadiness({
         <strong>Verrous maintenus</strong>
         <span>Configuration D06 privée et versionnée · pas de lot · pas de correction · pas de note · pas de feedback · pas d’export · pas d’envoi étudiant.</span>
       </div>
+      </section>) : null}
       </div>
     </AdaptiveWorkspacePage>
   );

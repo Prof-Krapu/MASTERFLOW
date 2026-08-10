@@ -105,10 +105,15 @@ export function createCorrectionBatch(
   }
   const cohort = db.prepare('SELECT id, owner_id, project_id, status FROM cohorts WHERE id = ?').get(request.cohort_id) as CohortRow | undefined;
   const roster = db.prepare('SELECT id, cohort_id, owner_id, status FROM roster_versions WHERE id = ?').get(request.roster_version_id) as RosterRow | undefined;
-  if (!cohort || cohort.status !== 'active' || cohort.owner_id !== actor.id || cohort.project_id !== projectId) {
+  const cohortAllowed = Boolean(cohort && cohort.status === 'active' && cohort.project_id === projectId && (
+    projectId
+      ? decideScopedPermission({actor, projectId, minimumProjectRole: 'editor'}).allowed
+      : cohort.owner_id === actor.id
+  ));
+  if (!cohortAllowed) {
     throw new Error('correction_context_cohort_not_found');
   }
-  if (!roster || roster.cohort_id !== cohort.id || roster.owner_id !== actor.id || roster.status !== 'active') {
+  if (!roster || !cohort || roster.cohort_id !== cohort.id || roster.status !== 'active') {
     throw new Error('correction_context_roster_not_found');
   }
   const now = Date.now();

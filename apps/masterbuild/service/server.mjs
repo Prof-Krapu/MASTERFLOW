@@ -20,12 +20,16 @@ import {
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.MASTERBUILD_PORT ?? 8010);
+const LOCAL_UI_ORIGINS = new Set([
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+  "http://127.0.0.1:5175"
+]);
 
 function send(response, status, body) {
   response.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
-    "Access-Control-Allow-Origin": "http://127.0.0.1:5175",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
   });
@@ -44,6 +48,11 @@ async function readBody(request) {
 }
 
 const server = createServer(async (request, response) => {
+  const origin = request.headers.origin;
+  if (origin && LOCAL_UI_ORIGINS.has(origin)) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Vary", "Origin");
+  }
   if (request.method === "OPTIONS") {
     send(response, 204, {});
     return;

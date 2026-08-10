@@ -16,7 +16,7 @@ compte et choisi son propre avatar, sans inventer son identité ni afficher une 
 
 - deux silhouettes anonymes de type personnage non révélé de jeu vidéo ;
 - sortie UI `640 × 640`, PNG RGBA, fond transparent et cadrage carré stable ;
-- visage invisible, aucune émotion, origine, difficulté ou performance représentée ;
+- visage invisible, aucune émotion, origine ou caractéristique personnelle représentée ;
 - contours orange MasterFlow et détails bleu/violet sobres ;
 - variantes nommées A et B dans le code, jamais utilisées comme donnée de genre.
 
@@ -33,17 +33,37 @@ compte et choisi son propre avatar, sans inventer son identité ni afficher une 
 
 - Component Lab, onglet Assets : les deux fallbacks sont visibles et nommés ;
 - Teaching, détail d'une classe : toutes les identités du roster actif utilisent ces fallbacks sous
-  forme de petites vignettes compactes ;
+  forme de portraits ronds inspirés du menu Persona, avec le nom placé dessous ;
 - absence de roster : l'état vide existant reste affiché.
 
 ## États et responsive
 
 - roster vide : aucune fausse identité ;
-- roster présent : grille compacte de noms et silhouettes provisoires ; les fixtures sont
+- roster présent : galerie fluide de portraits ronds et silhouettes provisoires ; les fixtures sont
   explicitement nommées `Exemples du prototype`, le runtime `Roster actif` ;
+- fond et anneau du portrait : bleu `en avance`, vert `en bonne voie`, violet `fragile`, orange
+  `attention`, rouge `en péril`, gris `sans signal` ;
+- une cellule distincte en bas à droite du portrait indique l’étape de travail : `à démarrer`, `en
+  cours`, `terminé` ou `inconnu` ; la fin d’un sujet ne remplace donc plus sa couleur de santé ;
+- la vue de classe s’ouvre en synthèse globale, puis le clic sur un sujet recalcule les couleurs et
+  cellules pour ce seul sujet sans quitter la classe ;
+- la santé agrégée ou par sujet ne devient visible que si elle est sourcée ; le runtime reste gris
+  et affiche une étape inconnue sans signal attribuable ;
+- le clic ouvre une fiche dans le même canvas : portrait agrandi selon la composition Persona,
+  classe, statut, sujets affectés et état du raccord compte ;
+- le nombre annoncé par une classe doit toujours correspondre au nombre de portraits rendus ; les
+  fixtures génèrent la totalité de leur effectif et le runtime suit le roster actif ;
+- dans la classe, la galerie élèves occupe la colonne principale à gauche ; les sujets affectés
+  restent dans un panneau compact à droite ; dix portraits tiennent sur une rangée desktop ;
+- le clic sur un sujet filtre la classe ; son crayon ouvre la page Sujet séparée ; sous la liste,
+  une courbe par sujet n’apparaît que lorsqu’un historique de progression existe ;
+- la couleur de statut ne modifie jamais le nom : tous les noms utilisent le texte sémantique commun ;
+- la même couleur de santé pilote le portrait, son anneau, le bandeau et les cartes de contexte ;
+  la cellule d’étape conserve volontairement son propre code couleur ;
 - thème clair/sombre/système : fond et bordure viennent des tokens de la page ;
 - mobile : grille fluide sans largeur fixe ni scroll horizontal ;
-- aucune vignette n'est cliquable tant que la fiche Étudiant n'est pas raccordée.
+- la vignette ouvre une projection partielle de fiche Étudiant ; les capacités non raccordées y sont
+  signalées explicitement.
 
 ## Promotion
 

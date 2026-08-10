@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T16:24:13+02:00",
+  "updated_at": "2026-08-10T19:48:00+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -66,10 +66,12 @@
       "required_states": ["loading", "empty", "partial", "ready", "error", "forbidden", "read_only", "future", "session_expired"],
       "lab_scenarios": ["home.godmode", "home.teacher", "home.student", "home.mobile-390"],
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "malex_review"],
-      "evidence": [],
+      "evidence": [
+        {"kind": "resume_history_v2", "status": "candidate", "source": "docs/masterbuild/preflights/HOME_RESUME_HISTORY_V2_PREFLIGHT_001.md"}
+      ],
       "reviews": {"malex": null, "vincent": null},
       "blocking_reasons": ["Composition, thèmes et clavier à réauditer avec la Bible V1."],
-      "notes": "Métier publié conservé ; aucune conformité visuelle héritée automatiquement."
+      "notes": "Composition validée précédemment par MALEX ; reprise multi-espace V2 candidate en attente de vérification directe."
     },
     {
       "artifact_id": "page.project",
@@ -108,13 +110,22 @@
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
       "evidence": [
         {"kind": "component_lab", "status": "candidate", "ref": "/ui-lab · composant partagé avec cinq niveaux, classes, sujets et import Pronote fixture"},
-        {"kind": "assembled_prototype", "status": "candidate", "ref": "runtime Teaching · même composant alimenté par cohortes, rosters, sujets et affectations réels"},
+        {"kind": "assembled_prototype", "status": "candidate", "ref": "runtime Teaching · projection teacher+ consolidée, parcours classe/sujet et preuves étudiant attribuables"},
+        {"kind": "student_roster_gallery", "status": "candidate", "ref": "portraits ronds Persona · nom dessous · dix par rangée desktop · santé et étape séparées"},
+        {"kind": "subject_progress_palette", "status": "candidate", "ref": "fond et anneau : aucune santé inférée dans le runtime · cellule d’étape seulement depuis une copie confirmée liée à student_identity_id"},
+        {"kind": "class_subject_progress_matrix", "status": "candidate", "ref": "vue globale par défaut · clic sujet filtre la classe · crayon ouvre la page Sujet · courbes multi-sujets seulement si historique disponible"},
+        {"kind": "local_demo_dataset", "status": "candidate", "ref": "mode DEV choisi explicitement · 8 classes, 5 niveaux, 5 sujets et effectifs fictifs stables · aucune écriture backend"},
+        {"kind": "student_detail_stage", "status": "candidate", "ref": "clic portrait · zoom Persona · classe, statut, sujets et raccord compte sourcés"},
+        {"kind": "class_roster_composition", "status": "candidate", "ref": "effectif annoncé = portraits rendus · élèves à gauche · sujets compacts à droite · noms sémantiques communs"},
+        {"kind": "overview_class_subject_layout", "status": "candidate", "ref": "cinq lignes de niveaux compactes à gauche · sujets à droite · sélection croisée · boutons ouvrir, modifier, créer et affecter"},
+        {"kind": "progressive_disclosure", "status": "candidate", "ref": "création, import, édition, correction et accompagnement ouverts uniquement depuis leur contexte"},
+        {"kind": "permission_review", "status": "passed", "ref": "tests Teaching HTTP/service : scope signaux, météo individuelle, teacher+, éditeur projet et projection attribuable"},
         {"kind": "runtime_scope", "status": "passed", "ref": "vue globale autorisée · classes réparties sur les cinq niveaux sans fixtures Lab"},
         {"kind": "rejected_candidate", "status": "passed", "ref": "TeachingWorkspaceV1 et avatars démo isolés hors repo actif après rejet MALEX"}
       ],
       "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Composition partagée Teaching à valider visuellement par MALEX avant conformité.", "Import Pronote, identité compte-roster et réglages pédagogiques restent non raccordés."],
-      "notes": "Le Lab et le runtime utilisent la même surface Teaching ; seules leurs sources de données diffèrent. Les workflows historiques restent accessibles derrière les actions de gestion."
+      "blocking_reasons": ["Composition et parcours runtime Teaching à valider visuellement par MALEX avant conformité.", "Le lien compte-roster, l’envoi de messages et la maîtrise par notion restent non raccordés."],
+      "notes": "Le Lab et le runtime utilisent la même surface Teaching. L’overview compacte les classes à gauche et les sujets à droite ; le jeu fictif est explicite et le runtime marque les scores de pré-correction comme candidats à valider."
     },
     {
       "artifact_id": "page.learn",

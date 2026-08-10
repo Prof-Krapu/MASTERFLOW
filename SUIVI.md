@@ -38,6 +38,111 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Overview Teaching compacte classes × sujets — candidat local
+
+- composition partagée Lab/runtime : classes regroupées sur cinq lignes de niveaux à gauche et
+  bibliothèque de sujets compacte à droite ;
+- sélection croisée : une classe met en évidence ses sujets, un sujet met en évidence les classes
+  concernées, sans ouvrir involontairement une page ;
+- navigation : chevron explicite pour ouvrir une classe ou un sujet, crayon séparé pour modifier le
+  sujet, `Entrée` ouvre la classe depuis sa sélection clavier ;
+- actions contextuelles : création/import de classe dans la zone Classes, création de sujet toujours
+  visible dans le runtime, affectation proposée seulement après sélection d'une classe et d'un sujet ;
+- aucun formulaire n'est rendu dans l'overview ; les ateliers existants s'ouvrent dans leur panneau
+  contextuel ;
+- responsive : le rail Sujets repasse sous les classes sur petit écran ;
+- vérifications : lint frontend, build Vite et `git diff --check` verts ; revue visuelle MALEX attendue ;
+- publication : aucune branche, commit, push, PR, merge ou déploiement dans cette passe.
+
+## 2026-08-10 — Teaching one shot TCH-001 à TCH-004 — candidat local vérifié
+
+- sécurité : les lectures de signaux pédagogiques et de météo individuelle exigent désormais un
+  scope autorisé ; le fallback qui mélangeait tous les signaux individuels a été retiré ;
+- permissions : un éditeur de projet peut affecter un sujet et préparer une correction sur la
+  cohorte du même projet ; activation d'affectation auditée et doublon actif refusé ;
+- projection : nouvel endpoint teacher+ `GET /api/v1/teaching/overview`, consolidant classes,
+  roster actif, sujets, affectations, fiches de correction et signaux étudiant réellement
+  attribuables ; aucun état de maîtrise, météo ou danger n'est inféré ;
+- étudiant : une copie confirmée peut produire une étape et un score candidat sourcé, toujours
+  marqué `à valider` avec fraîcheur et confiance ; sans preuve, le portrait reste `Sans signal` ;
+- parcours : création de classe, import CSV Pronote contrôlé, version de roster, création et
+  versionnement de sujet, validation privée et affectation sont accessibles depuis des outils
+  contextuels, sans réafficher tous les formulaires sous la page ;
+- correction et accompagnement : fiches de correction et guides validés apparaissent dans le
+  contexte du sujet ; le workflow complet reste accessible sur demande ; les messages et
+  programmes étudiants restent des brouillons locaux sans envoi automatique ;
+- démonstration : le jeu fictif devient un mode DEV choisi explicitement et ne remplace plus une
+  base réelle partiellement remplie ;
+- vérifications : tests Teaching/sécurité/correction/guidage ciblés verts, lint backend et
+  frontend verts, build frontend vert ; revue visuelle MALEX encore requise ;
+- publication : aucune branche, commit, push, PR, merge ou déploiement dans cette passe.
+
+## 2026-08-10 — Jeu Teaching fictif dans le prototype local vide
+
+- en développement local uniquement, une instance Teaching sans roster exploitable et sans sujet
+  réel affiche le même jeu cohérent que le Lab, même si des coquilles de classes vides existent :
+  8 classes sur 5 niveaux, 5 sujets et effectifs complets ;
+- étudiants, notions, moyennes, santé, étapes et courbes sont déterministes pour rester stables
+  entre les affichages ;
+- un bandeau permanent distingue ces fixtures des données runtime ;
+- affectation de sujet, message, programme pédagogique et import Pronote restent des simulations
+  sans écriture backend ;
+- dès qu’une classe réelle existe, le prototype repasse automatiquement aux données runtime ;
+- aucune API, migration, permission ou donnée privée ajoutée.
+
+## 2026-08-10 — Console MasterBuild disponible avec le frontend local
+
+- `npm run dev:frontend` démarre désormais le frontend et le service embarqué MasterBuild sur
+  `127.0.0.1:8010` ; un service déjà sain est réutilisé ;
+- l’ancien lancement frontend seul reste disponible via `npm run dev:frontend:standalone` ;
+- la console GodMode appelle directement l’adresse loopback locale, plus le proxy Vite ;
+- le proxy `/masterbuild-api` a été retiré afin que le Funnel ne puisse jamais transporter les
+  endpoints de contrôle MasterBuild ;
+- CORS limité aux interfaces locales `localhost:5174`, `127.0.0.1:5174` et au cockpit local `5175` ;
+- service lancé pour la session courante ; tests MASTERBUILD, lint frontend et contrôles de syntaxe
+  verts ; aucun déploiement.
+
+## 2026-08-10 — Teaching simplifié et avatars élèves alignés sur Persona
+
+- détail de classe : les élèves passent de petites cartes horizontales à une galerie de portraits
+  ronds plus grands, avec le nom placé dessous et un témoin de statut ;
+- deux dimensions lisibles : le fond et l’anneau du portrait portent la santé pédagogique ; une
+  cellule en bas à droite porte séparément l’étape `à démarrer`, `en cours` ou `terminé` ;
+- clic élève : ouverture dans le même canvas d’une fiche avec portrait agrandi, classe, statut,
+  sujets attribués et état honnête du raccord compte ;
+- effectifs : les fixtures rendent désormais autant de portraits que le nombre annoncé par chaque
+  classe ; le runtime continue de suivre exactement le roster actif ;
+- composition Classe : élèves en zone principale à gauche, noms harmonisés, panneau Sujets affectés
+  réduit et replacé à droite ;
+- navigation dans la classe : ouverture en vue globale, puis filtre précis au clic sur un sujet sans
+  quitter la classe ; le crayon ouvre séparément la page Sujet ;
+- santé par sujet : la galerie utilise `en avance`, `en bonne voie`, `fragile`, `attention`, `en
+  péril` et `sans signal`, sans confondre ces états avec la fin du travail ;
+- densité : dix étudiants tiennent sur une rangée desktop, sous un en-tête réduit au nom et aux
+  métadonnées utiles ;
+- évolution : une courbe par sujet est placée sous les sujets affectés ; le runtime affiche
+  explicitement `Évolution non raccordée` en l’absence d’historique attribuable ;
+- Lab : distribution démonstrative clairement signalée pour vérifier la richesse des couleurs ;
+- runtime : aucune progression n’est aujourd’hui attribuable à `student_identity_id`, donc les
+  portraits restent gris `Sans signal` au lieu de fabriquer des élèves en péril ;
+- tous les anciens formulaires et panneaux placés sous la nouvelle navigation Teaching sont masqués ;
+  les workflows restent conservés dans le code pour être rappelés plus tard par des boutons situés
+  dans la page Sujet ou le contexte concerné ;
+- aucun backend, API, migration, permission ou nouvel asset.
+
+## 2026-08-10 — Reprise Home reconstruite autour de l’activité réelle
+
+- cause du blocage `Reprendre Project` : le format V1 ne mémorisait que Project et ignorait les
+  activités Teaching, Learn, Inventory et MasterBuild ;
+- remplacement par un historique V2 de huit activités utiles, trié, dédupliqué et filtré selon les
+  permissions et l’existence réelle des cibles ;
+- une classe, un sujet, une demande d’aide Learn, un projet ou une ressource peuvent préciser la
+  reprise ; revenir sur Home ne l’écrase pas ;
+- une ressource disparue retombe sur son projet, un projet disparu est ignoré au profit de l’entrée
+  valide suivante ;
+- la Home n’ouvre plus automatiquement l’URL d’une ressource reprise ;
+- aucun changement backend, API, migration, permission ou asset.
+
 ## 2026-08-10 — Fallbacks avatars étudiants intégrés à Teaching
 
 - décision MALEX : deux silhouettes génériques, garçon/fille en intention visuelle, sont utilisées

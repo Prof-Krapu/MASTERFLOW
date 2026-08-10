@@ -1,7 +1,9 @@
-import type {PedagogicalSignal, PedagogicalWeather} from '@masterflow/shared';
+import type {PedagogicalSignal, PedagogicalWeather, ProjectMemberRole} from '@masterflow/shared';
 
 import {getDb} from '../db/schema.ts';
 import type {PedagogicalSignalRow, UserProgressionEventRow} from '../db/schema.ts';
+import type {AuthUser} from '../middleware/auth.ts';
+import {decideScopedPermission} from './projects.ts';
 
 interface ProgressRow {
   trajectory: string | null;
@@ -38,6 +40,35 @@ export function listSignals(projectScope: string, limit = 50): PedagogicalSignal
   ).all(projectScope, 'archived', limit) as PedagogicalSignalRow[]).map(toSignalDTO);
 }
 
+/** Vérifie qu'un acteur peut lire les signaux pédagogiques d'un scope explicite. */
+export function assertPedagogicalScopeAccess(
+  actor: AuthUser,
+  projectScope: string,
+  minimumProjectRole: ProjectMemberRole = 'editor',
+): void {
+  if (projectScope === actor.id) return;
+  if (!decideScopedPermission({actor, projectId: projectScope, minimumProjectRole}).allowed) {
+    throw new Error('pedagogical_scope_denied');
+  }
+}
+
+/**
+ * La météo individuelle est privée. Un professeur ne peut lire celle d'un autre compte
+ * que dans un projet qu'il édite et auquel ce compte appartient réellement.
+ */
+export function assertWeatherAccess(actor: AuthUser, userId: string, projectScope?: string): void {
+  if (actor.id === userId) {
+    if (projectScope) assertPedagogicalScopeAccess(actor, projectScope, 'viewer');
+    return;
+  }
+  if (!projectScope) throw new Error('weather_access_denied');
+  assertPedagogicalScopeAccess(actor, projectScope);
+  const member = getDb().prepare(
+    'SELECT 1 AS hit FROM project_members WHERE project_id = ? AND user_id = ? LIMIT 1',
+  ).get(projectScope, userId) as {hit: number} | undefined;
+  if (!member) throw new Error('weather_access_denied');
+}
+
 /**
  * Calcule la météo pédagogique d'un utilisateur à partir de :
  *  - ses progressions (user_competency_progress)
@@ -60,7 +91,7 @@ export function computeWeather(userId: string, projectScope?: string): Pedagogic
     ? progressRows.reduce((s, r) => s + r.confidence, 0) / progressRows.length
     : 0;
 
-  // 2. Signaux pédagogiques récents (projet ou scope général)
+  // 2. Signaux pédagogiques récents du projet explicitement autorisé.
   const signalRows: SignalCountRow[] = [];
   if (projectScope) {
     signalRows.push(...getDb().prepare(
@@ -68,14 +99,6 @@ export function computeWeather(userId: string, projectScope?: string): Pedagogic
        WHERE project_scope = ? AND created_at >= ? AND status != 'archived'
        GROUP BY signal_type`,
     ).all(projectScope, since) as SignalCountRow[]);
-  }
-  // Fallback: signaux niveau individuel (sans scope projet)
-  if (signalRows.length === 0) {
-    signalRows.push(...getDb().prepare(
-      `SELECT signal_type, COUNT(*) as cnt FROM pedagogical_signals
-       WHERE level = 'individual' AND created_at >= ? AND status != 'archived'
-       GROUP BY signal_type`,
-    ).all(since) as SignalCountRow[]);
   }
 
   const signalMap = new Map(signalRows.map((r) => [r.signal_type, r.cnt]));
