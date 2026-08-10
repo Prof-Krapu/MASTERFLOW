@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T16:10:00+02:00",
+  "updated_at": "2026-08-10T15:44:13+02:00",
   "active_round_id": "UI-PAGE-BY-PAGE-001",
   "authorizations": [
     {
@@ -183,6 +183,16 @@
       "granted_at": "2026-08-10T16:10:00+02:00",
       "expires_on_scope_change": true,
       "excluded": ["backend", "api", "migration", "deploy", "merge", "validated_asset", "canon_asset", "restore_heavy_candidate_assets"]
+    },
+    {
+      "authorization_id": "AUTH-UPP-TEACHING-PROMOTION-2026-08-10",
+      "round_id": "UI-PAGE-BY-PAGE-001",
+      "actor": "malex",
+      "scope": "promote_shared_teaching_lab_composition_to_runtime_with_real_data_and_preserved_workflows",
+      "status": "completed",
+      "granted_at": "2026-08-10T15:44:13+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["backend", "api", "migration", "deploy", "validated_asset", "canon_asset", "invented_runtime_data"]
     }
   ],
   "work_packages": [
@@ -679,6 +689,18 @@
       "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
       "tool_route": "component_lab",
       "expected_evidence": ["une seule route /ui-lab", "logo dynamique du Shell", "Persona complète", "fondations et pages historiques restaurées", "Teaching cinq niveaux classes et sujets", "import Pronote en fixture honnête", "lint et build frontend", "validation visuelle MALEX"]
+    },
+    {
+      "work_package_id": "UPP-005",
+      "label": "Partager la composition Teaching entre Lab et runtime",
+      "feature_ids": ["ui-shell-navigation", "teaching-mode"],
+      "status": "awaiting_malex_review",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["UPP-004"],
+      "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
+      "tool_route": "assembled_prototype",
+      "expected_evidence": ["même composant Lab runtime", "fixtures Lab signalées", "cohortes rosters sujets affectations runtime", "cinq niveaux", "workflows historiques préservés", "lint build doctor", "validation visuelle MALEX"]
     }
   ]
 }

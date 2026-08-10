@@ -7,6 +7,7 @@ type AdaptivePageStatusTone = 'neutral' | 'ready' | 'attention' | 'blocked';
 type AdaptiveWorkspacePageProps = {
   alert?: ReactNode;
   children: ReactNode;
+  chrome?: boolean;
   context: ReactNode;
   eyebrow: string;
   nextAction: ReactNode;
@@ -27,6 +28,7 @@ type AdaptiveWorkspacePageProps = {
 export function AdaptiveWorkspacePage({
   alert,
   children,
+  chrome = true,
   context,
   eyebrow,
   nextAction,
@@ -38,6 +40,10 @@ export function AdaptiveWorkspacePage({
   toolbar,
 }: AdaptiveWorkspacePageProps): ReactElement {
   const [contextOpen, setContextOpen] = useState(true);
+
+  if (!chrome) {
+    return <article className="adaptive-page adaptive-page--bare">{children}</article>;
+  }
 
   return (
     <article className={`panel panel--wide adaptive-page adaptive-page--${statusTone}`}>

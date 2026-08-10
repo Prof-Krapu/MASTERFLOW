@@ -26,6 +26,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Teaching Lab promu comme surface partagée
+
+- décision MALEX : la composition d’accueil Teaching du Lab devient la composition du Proto/runtime ;
+- composant unique : le Lab fournit des fixtures signalées, le runtime fournit les cohortes, rosters,
+  sujets et affectations réellement lisibles ;
+- navigation : cinq niveaux visibles, ouverture d’une classe ou d’un sujet dans le même canvas ;
+- les workflows existants restent conservés derrière `Gérer les classes` et `Ouvrir l’atelier du sujet` ;
+- aucun score, météo pédagogique, élève ou import Pronote n’est inventé ;
+- clair/sombre, 390 px et focus héritent du Shell et des règles partagées ;
+- validation technique : TypeScript frontend, build Vite et diagnostic MASTERBUILD verts ;
+- aucun backend, API, migration, asset ou déploiement.
+
 ## 2026-08-10 — Component Lab unique restauré, Teaching runtime rejeté
 
 - décision MALEX : le tableau de conformité récent n'est pas le Component Lab complet attendu ;

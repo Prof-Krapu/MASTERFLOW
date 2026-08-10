@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {ReactElement} from 'react';
+import {BriefcaseBusiness, GraduationCap, Megaphone, Palette, PenTool, School, Shapes, Video} from 'lucide-react';
 
 import type {
   ConversationGuide,
@@ -73,6 +74,8 @@ import {
 import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ClassProjection} from './class-projection.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
+import {ComponentLabTeaching} from './ui-reset/component-lab-teaching.tsx';
+import type {TeachingSurfaceClass, TeachingSurfaceSubject} from './ui-reset/component-lab-teaching.tsx';
 
 type TeachingReadinessProps = {
   context: CurrentContext;
@@ -98,35 +101,25 @@ const LEVEL_LABEL: Record<ReadinessLevel, string> = {
   blocked: 'Bloqué',
 };
 
+const TEACHING_COLORS = ['#f15d32', '#3979e8', '#8b62c9'] as const;
+const TEACHING_CLASS_ICONS = [School, Shapes, BriefcaseBusiness, GraduationCap] as const;
+const TEACHING_SUBJECT_ICONS = [Palette, Megaphone, Video, PenTool, Shapes] as const;
+
+function stableTeachingIndex(value: string, length: number): number {
+  return [...value].reduce((total, character) => total + character.charCodeAt(0), 0) % length;
+}
+
+function teachingLevelId(title: string): string {
+  const match = title.trim().match(/^([1-5])(?:\s|[A-Za-zÀ-ÿ])/);
+  return match ? `year-${match[1]}` : 'other';
+}
+
 function mostRelevantSession(sessions: GuidedSession[]): GuidedSession | null {
   return [...sessions].sort((left, right) => {
     const leftActive = left.status === 'active' ? 1 : 0;
     const rightActive = right.status === 'active' ? 1 : 0;
     return rightActive - leftActive || right.updated_at - left.updated_at;
   })[0] ?? null;
-}
-
-function nextSafeAction(
-  resources: Resource[],
-  validationItems: ValidationInboxItem[],
-  jobs: Job[],
-  hasSubject: boolean,
-): string {
-  const riskyValidation = validationItems.find((item) =>
-    item.risk_level === 'critical' || item.risk_level === 'high'
-  );
-  if (riskyValidation) return `Relire d’abord : ${riskyValidation.title}.`;
-
-  const reviewJob = jobs.find((job) => job.status === 'needs_review');
-  if (reviewJob) return `Faire la revue humaine du job ${reviewJob.type}.`;
-
-  if (resources.length === 0) {
-    return 'Ajouter puis valider une source avant de préparer un travail pédagogique.';
-  }
-
-  if (!hasSubject) return 'Créer le premier sujet de cette classe.';
-
-  return 'Le contexte est exploitable en lecture. Préparer le sujet guidé sans lancer de correction automatique.';
 }
 
 function parseRubricCriteria(source: string): {criteria: RubricCriterion[]; total_points: number} {
@@ -168,6 +161,7 @@ export function TeachingReadiness({
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
   const [selectedCohortId, setSelectedCohortId] = useState('');
   const [rosterVersions, setRosterVersions] = useState<RosterVersion[]>([]);
+  const [rostersByCohort, setRostersByCohort] = useState<Record<string, RosterVersion[]>>({});
   const [cohortTitle, setCohortTitle] = useState('');
   const [cohortPeriod, setCohortPeriod] = useState('');
   const [rosterText, setRosterText] = useState('');
@@ -247,6 +241,10 @@ export function TeachingReadiness({
         getSubjects(project?.project_id, token),
         getSubjectAssignments(project?.project_id, token),
       ]);
+      const rosterEntries = await Promise.all(nextCohorts.map(async (cohort) => {
+        const versions = await getRosterVersions(cohort.cohort_id, token).catch(() => [] as RosterVersion[]);
+        return [cohort.cohort_id, versions] as const;
+      }));
       setJobs(nextJobs);
       setGuides(nextGuides);
       setSessions(nextSessions);
@@ -257,6 +255,7 @@ export function TeachingReadiness({
       setCorrectionBatches(nextBatches);
       setSubjects(nextSubjects);
       setSubjectAssignments(nextAssignments);
+      setRostersByCohort(Object.fromEntries(rosterEntries));
       setCorrectionSheets((await Promise.all(nextAssignments.map((assignment) => getCorrectionSheets(assignment.assignment_id, token)))).flat());
       setSelectedCohortId((current) => current || nextCohorts[0]?.cohort_id || '');
       setSelectedRubricTemplateId((current) => current || nextRubrics[0]?.template_id || '');
@@ -279,6 +278,7 @@ export function TeachingReadiness({
       setCorrectionBatches([]);
       setSubjects([]);
       setSubjectAssignments([]);
+      setRostersByCohort({});
       setCorrectionSheets([]);
       setStatus(error instanceof Error ? error.message : 'État des jobs indisponible.');
     } finally {
@@ -350,7 +350,10 @@ export function TeachingReadiness({
         source_ref: `manual://teaching/${Date.now()}`,
         members,
       }, token);
-      setRosterText(''); setRosterVersions(await getRosterVersions(selectedCohortId, token));
+      const nextVersions = await getRosterVersions(selectedCohortId, token);
+      setRosterText('');
+      setRosterVersions(nextVersions);
+      setRostersByCohort((current) => ({...current, [selectedCohortId]: nextVersions}));
       setStatus(`Liste des étudiants V${created.version} enregistrée. La version précédente reste archivée.`);
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Roster impossible.'); }
     finally { setMutating(false); }
@@ -799,15 +802,79 @@ export function TeachingReadiness({
     validationItems.length,
   ]);
 
+  const teachingPresentation = useMemo(() => {
+    const surfaceSubjectsByTitle = new Map<string, TeachingSurfaceSubject>();
+    const subjectIdByTitle = new Map<string, string>();
+    const registerSubject = (title: string, manifest?: SubjectAssignment['subject_snapshot']): string => {
+      const key = title.trim().toLocaleLowerCase('fr');
+      const existing = surfaceSubjectsByTitle.get(key);
+      if (existing) {
+        if (manifest && !existing.situation) {
+          existing.situation = manifest.situation;
+          existing.tension = manifest.tension;
+          existing.mission = manifest.mission;
+          existing.decision = manifest.decision_to_make;
+        }
+        return existing.id;
+      }
+      const subjectIndex = stableTeachingIndex(key, TEACHING_SUBJECT_ICONS.length);
+      const id = `subject:${key}`;
+      surfaceSubjectsByTitle.set(key, {
+        color: TEACHING_COLORS[stableTeachingIndex(key, TEACHING_COLORS.length)] ?? TEACHING_COLORS[0],
+        icon: TEACHING_SUBJECT_ICONS[subjectIndex] ?? Palette,
+        id,
+        title,
+        ...(manifest ? {
+          situation: manifest.situation,
+          tension: manifest.tension,
+          mission: manifest.mission,
+          decision: manifest.decision_to_make,
+        } : {}),
+      });
+      subjectIdByTitle.set(key, id);
+      return id;
+    };
+
+    subjects.forEach((subject) => registerSubject(subject.title));
+    subjectAssignments.forEach((assignment) => registerSubject(assignment.title, assignment.subject_snapshot));
+
+    const surfaceClasses: TeachingSurfaceClass[] = cohorts.map((cohort) => {
+      const levelId = teachingLevelId(cohort.title);
+      const classIndex = stableTeachingIndex(cohort.cohort_id, TEACHING_CLASS_ICONS.length);
+      const activeClassRoster = rostersByCohort[cohort.cohort_id]?.find((version) => version.status === 'active') ?? null;
+      return {
+        color: TEACHING_COLORS[stableTeachingIndex(cohort.cohort_id, TEACHING_COLORS.length)] ?? TEACHING_COLORS[0],
+        icon: TEACHING_CLASS_ICONS[classIndex] ?? School,
+        id: cohort.cohort_id,
+        levelId,
+        name: cohort.title,
+        period: cohort.period_ref,
+        size: activeClassRoster?.members.length ?? null,
+        subjectIds: subjectAssignments
+          .filter((assignment) => assignment.cohort_id === cohort.cohort_id)
+          .map((assignment) => subjectIdByTitle.get(assignment.title.trim().toLocaleLowerCase('fr')))
+          .filter((subjectId): subjectId is string => Boolean(subjectId)),
+      };
+    });
+
+    return {classes: surfaceClasses, subjects: [...surfaceSubjectsByTitle.values()]};
+  }, [cohorts, rostersByCohort, subjectAssignments, subjects]);
+
   const selectedCohort = cohorts.find((cohort) => cohort.cohort_id === selectedCohortId) ?? null;
   const activeRoster = rosterVersions.find((version) => version.status === 'active') ?? null;
-  const action = nextSafeAction(effectiveResources, validationItems, jobs, subjects.length > 0);
+  const action = subjects.length === 0 ? 'Préparer le premier sujet.' : 'Actualiser le contexte pédagogique.';
   const blockedItems = items.filter((item) => item.level === 'blocked');
   const partialItems = items.filter((item) => item.level === 'partial');
   const priorityAlerts = failedJobs.length + identityReviews.length + validationItems.length;
+  const openTeachingTools = (targetId: 'teaching-cohorts' | 'teaching-subjects'): void => {
+    const tools = document.getElementById('teaching-advanced');
+    if (tools instanceof HTMLDetailsElement) tools.open = true;
+    window.requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView({behavior: 'smooth', block: 'start'}));
+  };
 
   return (
     <AdaptiveWorkspacePage
+      chrome={false}
       alert={failedJobs.length > 0
         ? <p>{failedJobs.length} échec(s) technique(s) demandent une revue avant de poursuivre.</p>
         : identityReviews.length > 0
@@ -964,6 +1031,23 @@ export function TeachingReadiness({
       ) : undefined}
     >
       <div className="teaching-readiness">
+      <ComponentLabTeaching
+        classes={teachingPresentation.classes}
+        dataMode="runtime"
+        onManageClass={(cohortId) => {
+          if (cohortId) setSelectedCohortId(cohortId);
+          openTeachingTools('teaching-cohorts');
+        }}
+        onManageSubject={(subjectId) => {
+          const surfaceSubject = teachingPresentation.subjects.find((item) => item.id === subjectId);
+          const runtimeSubject = surfaceSubject
+            ? subjects.find((item) => item.title.trim().toLocaleLowerCase('fr') === surfaceSubject.title.trim().toLocaleLowerCase('fr'))
+            : null;
+          if (runtimeSubject) setSelectedSubjectId(runtimeSubject.template_id);
+          openTeachingTools('teaching-subjects');
+        }}
+        subjects={teachingPresentation.subjects}
+      />
       {projectionOpen && companion ? (
         <ClassProjection
           companion={companion}
@@ -978,6 +1062,9 @@ export function TeachingReadiness({
         />
       ) : null}
 
+      <details className="teaching-advanced teaching-advanced--status">
+        <summary><span>État et assistance</span><small>Sources, sessions guidées et revues humaines</small></summary>
+        <div className="teaching-advanced__content">
       <div className="teaching-readiness__grid">
         {items.map((item) => (
           <section className={`teaching-readiness__item teaching-readiness__item--${item.level}`} key={item.id}>
@@ -995,6 +1082,8 @@ export function TeachingReadiness({
         mode="teaching"
         token={token}
       />
+        </div>
+      </details>
 
       <details className="teaching-advanced" id="teaching-advanced">
         <summary>
@@ -1060,7 +1149,7 @@ export function TeachingReadiness({
         )}
       </section>
 
-      <section className="roster-management" aria-label="Bibliothèque de sujets versionnés">
+      <section className="roster-management" id="teaching-subjects" aria-label="Bibliothèque de sujets versionnés">
         <div className="identity-review__heading"><div><strong>Sujets privés versionnés</strong><span>{subjects.length} sujet(s)</span></div><small>Un sujet validé reste privé : validation ≠ publication ≠ assignment.</small></div>
         <div className="roster-management__grid">
           <div className="roster-management__form">
@@ -1112,7 +1201,7 @@ export function TeachingReadiness({
         </div>
       </section>
 
-      <section className="roster-management" aria-label="Cohortes et listes d’étudiants">
+      <section className="roster-management" id="teaching-cohorts" aria-label="Cohortes et listes d’étudiants">
         <div className="identity-review__heading">
           <div><strong>Cohortes et listes d’étudiants</strong><span>{cohorts.length} cohorte(s)</span></div>
           <small>Chaque nouveau roster crée une version ; l’ancienne reste archivée.</small>

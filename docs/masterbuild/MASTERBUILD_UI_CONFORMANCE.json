@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T16:10:00+02:00",
+  "updated_at": "2026-08-10T15:44:13+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -99,7 +99,7 @@
       "artifact_id": "page.teaching",
       "artifact_type": "page",
       "surface_id": "teaching",
-      "component_id": "teaching-readiness",
+      "component_id": "component-lab-teaching",
       "label": "Teaching",
       "status": "audit_required",
       "rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
@@ -107,12 +107,13 @@
       "lab_scenarios": ["teaching.godmode", "teaching.teacher", "teaching.student-forbidden", "teaching.mobile-390"],
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
       "evidence": [
-        {"kind": "component_lab", "status": "candidate", "ref": "/ui-lab · Teaching visuel isolé avec cinq niveaux, classes, sujets et import Pronote"},
+        {"kind": "component_lab", "status": "candidate", "ref": "/ui-lab · composant partagé avec cinq niveaux, classes, sujets et import Pronote fixture"},
+        {"kind": "assembled_prototype", "status": "candidate", "ref": "runtime Teaching · même composant alimenté par cohortes, rosters, sujets et affectations réels"},
         {"kind": "rejected_candidate", "status": "passed", "ref": "TeachingWorkspaceV1 et avatars démo isolés hors repo actif après rejet MALEX"}
       ],
       "reviews": {"malex": null, "vincent": null},
-      "blocking_reasons": ["Composition Teaching du Lab à valider par MALEX avant toute promotion.", "Import Pronote, identité compte-roster et réglages pédagogiques restent non raccordés."],
-      "notes": "Le candidat runtime Teaching V1 a été rejeté. Le travail reprend dans le Component Lab unique depuis Persona, sans avatar étudiant candidat ni modification backend."
+      "blocking_reasons": ["Composition partagée Teaching à valider visuellement par MALEX avant conformité.", "Import Pronote, identité compte-roster et réglages pédagogiques restent non raccordés."],
+      "notes": "Le Lab et le runtime utilisent la même surface Teaching ; seules leurs sources de données diffèrent. Les workflows historiques restent accessibles derrière les actions de gestion."
     },
     {
       "artifact_id": "page.learn",
