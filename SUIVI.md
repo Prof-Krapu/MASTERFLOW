@@ -4,6 +4,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Décisions Vincent relayées : dev local + Funnel, DeepSeek approuvé
+
+- réponse à `REQ-PRIVATE-SHARED-DEPLOYMENT-001` (`INBOX_VINCENT.md`) : pas de stack Docker
+  partagée pour l'instant ; MALEX installe front+back en local sur sa machine et partage un
+  Tailscale Funnel pointant sur son instance, pour que Vincent suive le développement sans
+  installer le projet lui-même ; demande relayée dans `INBOX_MALEX.md`
+  (`DEV-LOCAL-FUNNEL-001`, open, en attente d'action MALEX) ;
+- DeepSeek (test local, approche provider-aware) : **approuvé** — point 1 de l'entrée
+  `2026-06-28` d'`INBOX_MALEX.md` est clos ; le point 2 (clé LLM par session TUI) reste ouvert ;
+- recap déposé dans `docs/masterbuild/MASTERBUILD_RECAPS.json` pour le Round
+  `UI-PAGE-BY-PAGE-001` (étape 1/8) ;
+- décision Corrector (item ouvert depuis `SYNC_THREAD_MALEX_VINCENT.md`, 2026-06-13) :
+  clarifiée avec Vincent — « on garde Corrector » signifie garder ses capacités absorbées dans le
+  moteur commun (déjà l'état du code), pas réactiver `corrector-001` comme persona autonome ;
+  confirmation écrite dans `SYNC_THREAD_MALEX_VINCENT.md` (2026-08-10) ; aucun changement de code
+  nécessaire ; l'audit détaillé KEEP/ABSORB/REPLACE/DEPRECATE + PR-C0/PR-C1 demandé par MALEX
+  reste une tâche séparée, non livrée ici ;
+- publication : commit + push sur `claude/masterflow-github-report-kattrm` (documentation
+  uniquement — aucun code, migration, secret, déploiement).
+
+---
+
 ## 2026-08-10 — Component Lab unique restauré, Teaching runtime rejeté
 
 - décision MALEX : le tableau de conformité récent n'est pas le Component Lab complet attendu ;

@@ -35,7 +35,7 @@ Règles de lecture :
 
 ---
 
-## 2026-08-01 — open — REQ-PRIVATE-SHARED-DEPLOYMENT-001
+## 2026-08-01 — answered (2026-08-10) — REQ-PRIVATE-SHARED-DEPLOYMENT-001
 
 MALEX/Codex → Vincent.
 
@@ -88,6 +88,20 @@ risks:
 blocker:
 next_action_requiring_malex_go:
 ```
+
+### Réponse Vincent — 2026-08-10
+
+Pas de stack Docker partagée pour l'instant. Décision plus simple : **MALEX installe le
+front et le back en local sur sa propre machine** (`npm install`, `npm run dev` +
+`npm run dev:frontend`), puis **partage un Tailscale Funnel** pointant sur son instance
+locale pour que Vincent puisse suivre le développement en cours — sur le même principe que
+le Funnel public déjà utilisé le 2026-06-07 (voir `SYNC_THREAD_MALEX_VINCENT.md`), mais cette
+fois l'instance tourne chez MALEX et c'est lui qui partage l'URL à Vincent, pas l'inverse.
+
+Reste à la charge de MALEX avant tout GO déploiement partagé plus lourd (Docker/host commun) :
+sauvegarde/rollback SQLite de son instance locale, ne jamais commiter de secret, et confirmer
+l'URL Funnel une fois l'instance up. Détail relayé à MALEX dans `INBOX_MALEX.md`
+(entrée `2026-08-10 — DEV-LOCAL-FUNNEL-001`).
 
 ---
 
