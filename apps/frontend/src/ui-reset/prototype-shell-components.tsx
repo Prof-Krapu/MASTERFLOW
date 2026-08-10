@@ -21,6 +21,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
+import {useEffect, useRef} from 'react';
 import type {CSSProperties, FormEventHandler, KeyboardEventHandler, ReactElement, ReactNode} from 'react';
 
 import type {TunnelContextSummary, TunnelMessage, TunnelParticipant, TunnelPrompt} from './prototype-tunnel-model';
@@ -602,6 +603,19 @@ export function PrototypeCommandDock({
   transcribing,
 }: CommandDockProps): ReactElement {
   const runtimeMessage = runtimeState ? runtimeMessageForState(runtimeState) : null;
+  const keyboardInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (dockPanel !== 'keyboard' || renderedDockPanel !== 'keyboard') return;
+    const frame = window.requestAnimationFrame(() => {
+      const inputElement = keyboardInputRef.current;
+      if (!inputElement) return;
+      inputElement.focus();
+      inputElement.setSelectionRange(inputElement.value.length, inputElement.value.length);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [dockPanel, renderedDockPanel]);
+
   return (
     <form className="proto-commandbar" onSubmit={onSubmit}>
       {showSuggestions ? (
@@ -664,6 +678,7 @@ export function PrototypeCommandDock({
                 onChange={(event) => onInputChange(event.target.value)}
                 onKeyDown={onInputKeyDown}
                 placeholder={transcribing ? 'Transcription en cours…' : 'Écrire à MasterFlow'}
+                ref={keyboardInputRef}
                 rows={2}
                 spellCheck={false}
                 value={input}

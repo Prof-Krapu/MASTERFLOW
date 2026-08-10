@@ -59,6 +59,7 @@ import type {
   PrototypeSearchResult,
 } from './ui-reset/prototype-shell-components';
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
+import type {PrototypeHomeMode} from './ui-reset/prototype-product-surfaces';
 import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
 import {MasterbuildConsole} from './masterbuild-console';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
@@ -178,6 +179,7 @@ export type CurrentUiRuntime = {
   jobs: Job[];
   renderWorkspace: (mode: ActiveSurface) => ReactNode;
   resumeMode: ActiveSurface | null;
+  resumeLabel: string | null;
   attentionLabel: string;
   actionState: {
     status: string;
@@ -199,6 +201,7 @@ export type CurrentUiRuntime = {
   onActionSelect: (action: ActionRegistryEntry) => void;
   onLogout: () => void;
   onModeSelect: (mode: ActiveSurface) => void;
+  onResume: () => void;
 };
 
 export type CurrentUiLogin = {
@@ -514,8 +517,16 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   const profileRank = getPrototypeProfileRank(activePrototypeProfile);
   const homeCopy = runtimeBridge.context
     ? {
-        eyebrow: runtimeBridge.context.room.name,
-        title: `Bonjour ${runtimeBridge.context.user.display_name}.`,
+        eyebrow: activePrototypeProfile.id === 'masterflex'
+          ? 'MasterFlow est prêt.'
+          : activePrototypeProfile.id === 'profkrapu'
+            ? 'Le labo est prêt.'
+            : 'Ton espace est prêt.',
+        title: activePrototypeProfile.id === 'masterflex'
+          ? `Salut ${runtimeBridge.context.user.display_name}.`
+          : activePrototypeProfile.id === 'profkrapu'
+            ? `Bonjour ${runtimeBridge.context.user.display_name}.`
+            : `Bonjour ${runtimeBridge.context.user.display_name}.`,
         body: 'Ton contexte, tes accès et tes actions sont chargés depuis cette Room.',
       }
     : runtimeBridge.status === 'degraded'
@@ -952,20 +963,32 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     : runtimeBridge.status === 'degraded'
       ? accessLevels.filter((level) => level.id === accessLevel)
       : accessLevels;
+  const homeResumeId = runtime?.resumeMode && visibleModeIds.has(runtime.resumeMode as DemoMode)
+    ? runtime.resumeMode
+    : null;
+  const markResumeMode = (mode: PrototypeHomeMode): PrototypeHomeMode => ({
+    ...mode,
+    resume: mode.id === homeResumeId,
+  });
   const homePrimaryModes = buildPrototypeHomeModes(
-    ['project', 'teaching', 'learn', 'inventory']
-      .filter((id) => visibleModeIds.has(id as DemoMode))
-      .slice(0, 3) as DemoMode[],
-  );
-  const homeSecondaryModes = buildPrototypeHomeModes([]);
+    ['project', 'teaching', 'learn'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[],
+  ).map(markResumeMode);
+  const homeSecondaryModes = buildPrototypeHomeModes(
+    ['story', 'da', 'inventory', 'masterbuild'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[],
+  ).map(markResumeMode);
   const homeResumeMode = runtime?.resumeMode && visibleModeIds.has(runtime.resumeMode as DemoMode)
     ? buildPrototypeHomeModes([runtime.resumeMode as DemoMode])[0]
     : undefined;
-  const homeDefaultMode = homePrimaryModes[0];
-  const homePrimaryMode = homeResumeMode ?? homeDefaultMode;
-  const homeCheckpointLabel = homeResumeMode
-    ? `Dernier espace utile : ${homeResumeMode.label}.`
-    : 'Aucune reprise métier enregistrée.';
+  const homeModeCount = homePrimaryModes.length + homeSecondaryModes.length;
+  const homeOverview = [
+    homeModeCount > 0
+      ? `${homeModeCount} espace${homeModeCount > 1 ? 's' : ''} disponible${homeModeCount > 1 ? 's' : ''}.`
+      : 'Aucun espace disponible pour ce compte.',
+    homeResumeMode && runtime?.resumeLabel ? `Dernière activité : ${runtime.resumeLabel}.` : null,
+    runtime?.attentionLabel && runtime.attentionLabel !== 'Aucune attention urgente.'
+      ? runtime.attentionLabel
+      : null,
+  ].filter((part): part is string => Boolean(part)).join(' ');
   const dockInput = runtime?.chat.input ?? input;
   const runtimeHistoryItems: PrototypeHistoryItem[] = runtime
     ? runtime.chat.turns
@@ -1375,14 +1398,9 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
         <div className="proto-canvas-empty">
           {activeMode === 'home' ? (
             <PrototypeHomeSurface
-              attentionLabel={runtime?.attentionLabel}
-              checkpointLabel={runtime ? homeCheckpointLabel : undefined}
-              copy={homeCopy}
-              onPrimaryAction={homePrimaryMode ? () => selectMode(homePrimaryMode.id as DemoMode) : undefined}
+              copy={runtime ? {...homeCopy, body: homeOverview} : homeCopy}
+              onResume={runtime?.onResume}
               onSelectMode={(mode) => selectMode(mode as DemoMode)}
-              primaryActionLabel={homePrimaryMode
-                ? `${homeResumeMode ? 'Reprendre' : 'Ouvrir'} ${homePrimaryMode.label}`
-                : undefined}
               primaryModes={homePrimaryModes}
               secondaryModes={homeSecondaryModes}
             />

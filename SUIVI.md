@@ -4,6 +4,68 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Component Lab unique restauré, Teaching runtime rejeté
+
+- décision MALEX : le tableau de conformité récent n'est pas le Component Lab complet attendu ;
+- audit Git : récupération de la version historique riche contenant Persona, navigation, système,
+  Dock, états, overlays et Tunnel ;
+- consolidation : ajout des fondations, assets actifs, Home, Project, Teaching et Promotion dans
+  une seule route `/ui-lab`, avec workspaces MALEX et Vincent sur le même code ;
+- identité : restauration du logo dynamique partagé par le Shell, en remplacement du mark graff
+  divergent dans le Lab ;
+- Persona : page complète et Skilltree réintégrés comme référence visuelle interactive ;
+- Teaching Lab : cinq lignes par niveau, classes et sujets iconographiques, navigation progressive
+  et parcours d'import CSV Pronote en fixture locale honnête ;
+- Teaching runtime précédent : rejeté, copié dans
+  `/Users/malex/Documents/Playground/_QUARANTINE_MASTERFLOW_2026-08-10/TEACHING_V1_REJECTED/`,
+  puis retiré du repo actif sans suppression définitive ;
+- Home validée et correctif `K → focus immédiat dans le champ` préservés ;
+- contrôles proportionnés : TypeScript frontend, build Vite et diagnostic MASTERBUILD verts ;
+- statut : candidat prêt pour vérification visuelle directe dans `/ui-lab` ;
+- aucun backend, API, migration, déploiement ni réimport des anciens packs candidats de 120 Mo.
+
+## 2026-08-10 — Teaching V1 progressif rejeté
+
+- décision MALEX : reconstruire Teaching depuis le langage de profondeur déjà validé dans Persona ;
+- runtime : navigation `Teaching → Classe ou Sujet → Étudiant`, sans route ni frontend parallèle ;
+- overview : Horizon pédagogique à deux couches, toutes les classes, tous les sujets et bandeau
+  d'affectations ouvrant la matrice complète ;
+- météo : conditions dérivées uniquement des rosters, sujets, affectations, ressources et décisions
+  réelles ; dynamique affichée `Données insuffisantes` sans signal attribuable ; aucun score composite ;
+- détails : vignettes de classe, étudiants, sujet narratif `Situation → Tension → Mission → Décision`,
+  indicateurs étudiants sourcés et cadre pédagogique classe/sujet/étudiant ;
+- anciens ateliers : conservés mais masqués au repos, accessibles uniquement depuis une action
+  contextuelle ; aucun workflow ou endpoint retiré ;
+- assets : huit avatars étudiants fictifs générés comme fixtures de démonstration, hors canon et
+  hors registre d'assets validés ; aucune donnée privée ni déduction émotionnelle ;
+- limites honnêtes : liaison compte ↔ identité roster, météo de classe dynamique et stockage des
+  adaptations classe/étudiant restent non raccordés ;
+- décision finale : candidat rejeté par MALEX car la composition ne reprenait pas réellement Persona ;
+- conservation : fichiers et avatars déplacés en quarantaine récupérable, jamais promus au canon ;
+- publication : aucune — candidat non committé, non poussé et non déployé ;
+- validation technique : TypeScript frontend vert, build Vite vert et `masterbuild:doctor` vert ;
+- gate UI : refus attendu tant que thèmes, clavier, 390 px, permissions et revues MALEX/Vincent ne
+  sont pas fournis comme preuves ;
+- validation : vérification visuelle directe MALEX attendue, sans audit navigateur automatique.
+
+## 2026-08-10 — Home simplifiée candidate locale
+
+- décision MALEX : Login clos ; reprise directe du travail sur Home sans nouvel audit visuel automatique ;
+- Home : suppression des encarts `Dernière reprise` et `Attention utile` et du CTA central ;
+- synthèse globale issue du nombre d'espaces, du dernier espace utilisé et des seules attentions réelles ;
+- navigation GodMode restaurée sur deux lignes : Project, Teaching, Learn puis MasterStory,
+  DA Studio, Inventory et MasterBuild ; permissions runtime conservées ;
+- reprise intégrée à la destination concernée avec le marqueur orange `Reprendre` ;
+- libellé technique de Room remplacé par une courte introduction et bonjour adapté au persona ;
+- validation MALEX : composition Home approuvée dans cet état ;
+- `HOME-RESUME-001` : la reprise ne suit plus le dernier onglet ; un projet choisi, créé, enrichi
+  ou une ressource ouverte devient une cible métier persistée dans la Room instance ;
+- le clic `Reprendre` restaure le projet et ouvre directement la ressource lorsqu'elle possède une URL ;
+- sans cible métier valide, aucun faux marqueur de reprise n'est affiché ;
+- mobile : mêmes destinations en deux colonnes ; rail droit inchangé ;
+- branche locale `codex/home-simplified-navigation`, sans commit, push, PR, merge ni déploiement ;
+- prochaine action : validation visuelle directe MALEX sur le local, puis retouches éventuelles.
+
 ## 2026-08-08 — Consolidation locale post-#233 et reprise page par page
 
 - vérité GitHub : PR #233 mergée, `main` au SHA

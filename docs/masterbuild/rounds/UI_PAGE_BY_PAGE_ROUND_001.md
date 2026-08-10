@@ -2,11 +2,25 @@
 
 Statut : `active`
 
-Étape : `1/8 — Orienter`
+Étape : `6/8 — Vérifier`
 
 Propriétaire : MALEX
 
-Base observable : `origin/main` au SHA `05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2`
+Base observable : `origin/main` au SHA `7f41ee32b1e13282b4fc9df0066502292470071b`
+
+## Candidat actif — Component Lab unique et Teaching isolé
+
+- Home reste validée et ses modifications locales sont préservées ;
+- le premier candidat Teaching runtime a été rejeté explicitement par MALEX ;
+- son code et ses avatars de démonstration sont isolés dans une quarantaine récupérable hors du
+  repo actif ; le runtime Teaching est revenu à la base publiée ;
+- le Component Lab complet est restauré depuis les preuves Git historiques : Persona, navigation,
+  système, Dock, états, overlays et Tunnel ;
+- les fondations, Assets actifs, Project et Promotion récents sont intégrés au même `/ui-lab` ;
+- Teaching est désormais travaillé uniquement dans le Lab : cinq niveaux, classes iconographiques,
+  sujets iconographiques, navigation progressive et parcours d'import CSV Pronote honnêtement simulé ;
+- le logo du Lab reprend le tracé dynamique du Shell, sans utiliser le mark graff divergent ;
+- aucun backend, API, migration, déploiement ni réimport d'asset candidat lourd n'est inclus.
 
 ## Intention produit
 
@@ -50,8 +64,8 @@ courante.
 
 ## Première action recommandée
 
-Auditer Login sur le runtime publié, inscrire les findings et soumettre le contrat de correction à
-MALEX. Ne modifier aucun code avant cette décision.
+Ouvrir `/ui-lab`, vérifier la page Persona puis la proposition Teaching sur les cinq niveaux. La
+composition Teaching reste dans le Lab jusqu'à validation explicite de MALEX.
 
 ## Exclusions
 
