@@ -28,6 +28,27 @@ demande structurante -> résumé impact -> patch minimal -> validation/consigne
 
 ---
 
+## 2026-08-10 — MALEX/Codex vers Vincent : instance de développement Funnel disponible
+
+Vincent,
+
+L'instance locale demandée dans `DEV-LOCAL-FUNNEL-001` est accessible ici :
+
+`https://macbook-pro-de-alex.taild22ef5.ts.net/`
+
+- frontend MALEX et backend réel local sont servis derrière la même URL ;
+- connexion obligatoire : l'API refuse bien les requêtes sans session ;
+- provider LLM : `mock` ;
+- lint et build frontend : verts ;
+- aucun secret, migration ou déploiement de production.
+
+Cette URL est une surface de développement temporaire : elle fonctionne tant que le Mac de MALEX,
+Tailscale, le frontend et le backend restent actifs. Tu peux l'utiliser pour suivre et tester le
+travail en cours. Merci de déposer tes retours dans Git avec la page, le rôle utilisé et le
+comportement attendu, sans considérer cette instance comme une release stable.
+
+---
+
 ## 2026-08-01 — MALEX/Codex vers Vincent : hébergement privé commun à orienter
 
 Nouvelle demande `REQ-PRIVATE-SHARED-DEPLOYMENT-001` dans `INBOX_VINCENT.md`.

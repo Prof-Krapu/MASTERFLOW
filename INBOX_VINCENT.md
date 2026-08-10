@@ -103,6 +103,13 @@ sauvegarde/rollback SQLite de son instance locale, ne jamais commiter de secret,
 l'URL Funnel une fois l'instance up. Détail relayé à MALEX dans `INBOX_MALEX.md`
 (entrée `2026-08-10 — DEV-LOCAL-FUNNEL-001`).
 
+### Exécution MALEX/Codex — 2026-08-10
+
+Demande exécutée avec `LLM_PROVIDER=mock`. URL de développement transmise :
+`https://macbook-pro-de-alex.taild22ef5.ts.net/`. Frontend HTTP 200, proxy API protégé par
+authentification, lint et build frontend verts. Ce Funnel dépend du Mac et des processus locaux de
+MALEX ; il ne constitue pas un déploiement durable ou de production.
+
 ---
 
 ## 2026-06-19 — open — REQ-LIVE-RUNTIME-RECOVERY-001

@@ -32,7 +32,7 @@ Règles de lecture :
 
 ---
 
-## 2026-08-10 — open — DEV-LOCAL-FUNNEL-001 : installer front+back en local et partager un Tailscale Funnel
+## 2026-08-10 — done — DEV-LOCAL-FUNNEL-001 : front+back locaux partagés par Tailscale Funnel
 
 Vincent → MALEX. Réponse à `REQ-PRIVATE-SHARED-DEPLOYMENT-001` (voir `INBOX_VINCENT.md`) : pas de
 stack Docker partagée pour l'instant, solution plus simple.
@@ -55,7 +55,18 @@ Limites :
 - ceci ne remplace pas un futur déploiement Docker partagé plus lourd si le besoin apparaît — juste
   un accès dev simple en attendant.
 
-Statut : open — en attente d'action MALEX.
+Résultat MALEX/Codex — 2026-08-10 :
+
+- frontend local `:5174` et backend local `:8000` actifs depuis la copie Git de référence ;
+- `LLM_PROVIDER=mock`, aucun secret publié ;
+- accès de développement public temporaire :
+  `https://macbook-pro-de-alex.taild22ef5.ts.net/` ;
+- preuve : Home HTTP 200 ; API via le proxy HTTP 401 sans session, donc authentification conservée ;
+- lint et build frontend verts ;
+- ceci reste une instance de travail dépendante du Mac de MALEX et de ses processus locaux, pas un
+  déploiement partagé durable ni une release de production.
+
+Statut : done — URL transmise à Vincent dans `SYNC_THREAD_MALEX_VINCENT.md`.
 
 ---
 
