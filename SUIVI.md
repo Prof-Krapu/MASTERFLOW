@@ -4,6 +4,20 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — DEV-LOCAL-FUNNEL-001 exécuté et transmis à Vincent
+
+- contrat : instance de développement MALEX uniquement, aucun déploiement durable ou production ;
+- frontend `:5174` et backend `:8000` actifs depuis la copie Git de référence ;
+- `LLM_PROVIDER=mock`, aucun secret publié ;
+- Funnel HTTPS actif : `https://macbook-pro-de-alex.taild22ef5.ts.net/` ;
+- preuve publique minimale : Home HTTP 200 ; API HTTP 401 sans session, authentification conservée ;
+- configuration Vite limitée aux deux hôtes Tailscale connus, sans désactiver la protection DNS ;
+- contrôles proportionnés : lint frontend et build Vite verts ;
+- demande `DEV-LOCAL-FUNNEL-001` passée `open → done`, réponse publiée pour Vincent dans le fil Git ;
+- durée : l'accès reste disponible tant que le Mac, Tailscale et les deux serveurs locaux tournent.
+
+---
+
 ## 2026-08-10 — Décisions Vincent relayées : dev local + Funnel, DeepSeek approuvé
 
 - réponse à `REQ-PRIVATE-SHARED-DEPLOYMENT-001` (`INBOX_VINCENT.md`) : pas de stack Docker
