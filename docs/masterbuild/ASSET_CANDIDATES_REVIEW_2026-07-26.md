@@ -33,6 +33,7 @@ Le reste reste en quarantaine jusqu'à décision.
 | MasterFlex Stage Actor normalisé | `apps/frontend/src/assets/masterflex-stage-actor/candidates/*-normalized/*.png` | 20 fichiers `960 x 1728`, RGBA alpha | candidat intégré Lab | garder |
 | MasterFlex Stage Actor alpha | `apps/frontend/src/assets/masterflex-stage-actor/candidates/*-alpha/*.png` | 20 fichiers RGBA alpha | source candidate | garder provisoirement |
 | Logo / typo | `masterflow-mark-graff.svg`, `masterflow-wordmark.svg` | SVG | actif proto/Lab | garder |
+| Fallbacks étudiants | `apps/frontend/src/assets/student-placeholders/*.png` | 2 fichiers `640 x 640`, RGBA alpha | actif runtime/Lab | garder jusqu'à avatar de compte |
 
 ## Archives Et Rejets ProfKrapu Dans V2
 

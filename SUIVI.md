@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — Fallbacks avatars étudiants intégrés à Teaching
+
+- décision MALEX : deux silhouettes génériques, garçon/fille en intention visuelle, sont utilisées
+  tant que l'étudiant n'a pas créé son compte et choisi son avatar ;
+- contrat runtime : variantes neutres A/B dans le code, assignées de façon stable depuis
+  `student_identity_id` sans inférer ni stocker de genre ;
+- format : deux PNG `640 × 640` RGBA, fond transparent, visage invisible, contour orange et détail
+  bleu/violet ;
+- Teaching : le détail de classe affiche toutes les identités du roster actif avec leur vrai nom et
+  le fallback décoratif ; aucun roster signifie toujours aucun faux étudiant ;
+- Lab : les deux assets actifs sont visibles dans l'onglet Assets et dans les classes fixtures ;
+- aucun backend, API, migration, permission, donnée privée ou avatar personnel ajouté ;
+- conformité Teaching et mobile : revue visuelle directe MALEX encore attendue.
+
+---
+
 ## 2026-08-10 — DEV-LOCAL-FUNNEL-001 exécuté et transmis à Vincent
 
 - contrat : instance de développement MALEX uniquement, aucun déploiement durable ou production ;

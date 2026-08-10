@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T15:52:33+02:00",
+  "updated_at": "2026-08-10T16:24:13+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -382,6 +382,26 @@
       "reviews": {"malex": {"status": "approved", "source": "GO publication 2026-08-05"}, "vincent": null},
       "blocking_reasons": [],
       "notes": "Une feuille mobile remplace les rails concurrents."
+    },
+    {
+      "artifact_id": "component.student-avatar-fallback",
+      "artifact_type": "shared_component",
+      "surface_id": "teaching",
+      "component_id": "student-avatar-assets",
+      "label": "Avatars étudiants génériques",
+      "status": "audit_required",
+      "rule_ids": ["DES-003", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
+      "required_states": ["empty", "ready", "read_only"],
+      "lab_scenarios": ["teaching.class-with-roster", "teaching.class-empty-roster", "teaching.mobile-390"],
+      "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "responsive_390", "malex_review"],
+      "evidence": [
+        {"kind": "component_lab", "status": "candidate", "source": "/ui-lab · onglet Assets et classes fixtures"},
+        {"kind": "assembled_prototype", "status": "candidate", "source": "Teaching · roster actif réel, fallback stable par student_identity_id"},
+        {"kind": "asset_contract", "status": "passed", "source": "deux PNG 640x640 RGBA alpha, visage invisible et aucune donnée privée"}
+      ],
+      "reviews": {"malex": null, "vincent": null},
+      "blocking_reasons": ["Revue visuelle directe MALEX encore attendue dans Teaching."],
+      "notes": "Variantes A/B décoratives uniquement ; aucune inférence de genre, d'émotion ou de performance."
     }
   ],
   "candidate_findings": []
