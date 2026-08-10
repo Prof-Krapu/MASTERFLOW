@@ -193,6 +193,16 @@
       "granted_at": "2026-08-10T15:44:13+02:00",
       "expires_on_scope_change": true,
       "excluded": ["backend", "api", "migration", "deploy", "validated_asset", "canon_asset", "invented_runtime_data"]
+    },
+    {
+      "authorization_id": "AUTH-UPP-STUDENT-AVATAR-FALLBACKS-2026-08-10",
+      "round_id": "UI-PAGE-BY-PAGE-001",
+      "actor": "malex",
+      "scope": "generate_integrate_and_publish_two_generic_student_avatar_fallbacks_in_lab_and_teaching",
+      "status": "completed",
+      "granted_at": "2026-08-10T16:24:13+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["backend", "api", "migration", "deploy", "provider", "spend", "identity_inference", "personal_avatar_claim"]
     }
   ],
   "work_packages": [
@@ -701,6 +711,18 @@
       "design_rule_ids": ["DES-001", "DES-003", "DES-005", "DES-006", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
       "tool_route": "assembled_prototype",
       "expected_evidence": ["même composant Lab runtime", "fixtures Lab signalées", "périmètre Teaching global autorisé", "cohortes rosters sujets affectations runtime", "cinq niveaux", "workflows historiques préservés", "lint build doctor", "validation visuelle MALEX"]
+    },
+    {
+      "work_package_id": "UPP-006",
+      "label": "Intégrer les avatars étudiants génériques",
+      "feature_ids": ["ui-shell-navigation", "teaching-mode", "persona-asset-pipeline"],
+      "status": "awaiting_malex_review",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["UPP-005"],
+      "design_rule_ids": ["DES-003", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
+      "tool_route": "image_generation_then_component_lab",
+      "expected_evidence": ["deux PNG 640x640 RGBA", "visages invisibles", "aucune inférence d'identité", "registre actif", "Lab Assets", "roster Teaching réel", "lint build doctor", "validation visuelle MALEX"]
     }
   ]
 }

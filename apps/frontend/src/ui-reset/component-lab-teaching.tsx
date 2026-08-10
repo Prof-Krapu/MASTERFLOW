@@ -20,6 +20,7 @@ import {useState} from 'react';
 import type {ReactElement} from 'react';
 import type {LucideIcon} from 'lucide-react';
 
+import {getStudentPlaceholderAsset} from '../student-avatar-assets.ts';
 import './component-lab.css';
 
 type TeachingLabView =
@@ -47,7 +48,13 @@ export type TeachingSurfaceClass = {
   name: string;
   period?: string | null;
   size: number | null;
+  students?: TeachingSurfaceStudent[];
   subjectIds: string[];
+};
+
+export type TeachingSurfaceStudent = {
+  id: string;
+  name: string;
 };
 
 type ComponentLabTeachingProps = {
@@ -74,15 +81,24 @@ const levels = [
   {id: 'year-5', label: '5e année', short: '05'},
 ];
 
+const demoStudentNames = ['Camille R.', 'Sacha B.', 'Noa M.', 'Lou A.', 'Charlie T.', 'Eden V.'];
+
+function buildDemoStudents(classId: string): TeachingSurfaceStudent[] {
+  return demoStudentNames.map((name, index) => ({
+    id: `${classId}-student-${index + 1}`,
+    name,
+  }));
+}
+
 const demoClasses: TeachingSurfaceClass[] = [
-  {color: '#f15d32', icon: School, id: 'class-1a', levelId: 'year-1', name: '1A Création', size: 28, subjectIds: ['branding', 'copy']},
-  {color: '#3979e8', icon: Shapes, id: 'class-1b', levelId: 'year-1', name: '1B Design', size: 26, subjectIds: ['da', 'branding']},
-  {color: '#8b62c9', icon: Video, id: 'class-2a', levelId: 'year-2', name: '2A Digital', size: 24, subjectIds: ['motion', 'strategy']},
-  {color: '#f15d32', icon: PenTool, id: 'class-2b', levelId: 'year-2', name: '2B Création', size: 27, subjectIds: ['copy', 'da']},
-  {color: '#3979e8', icon: Megaphone, id: 'class-3a', levelId: 'year-3', name: '3A Concept', size: 22, subjectIds: ['strategy', 'branding']},
-  {color: '#3979e8', icon: BriefcaseBusiness, id: 'class-3b', levelId: 'year-3', name: '3B Projet', size: 25, subjectIds: ['strategy', 'motion']},
-  {color: '#f15d32', icon: Sparkles, id: 'class-4a', levelId: 'year-4', name: '4CREA A', size: 21, subjectIds: ['da', 'copy', 'motion']},
-  {color: '#8b62c9', icon: GraduationCap, id: 'class-5a', levelId: 'year-5', name: '5A Direction', size: 18, subjectIds: ['strategy', 'da']},
+  {color: '#f15d32', icon: School, id: 'class-1a', levelId: 'year-1', name: '1A Création', size: 28, students: buildDemoStudents('class-1a'), subjectIds: ['branding', 'copy']},
+  {color: '#3979e8', icon: Shapes, id: 'class-1b', levelId: 'year-1', name: '1B Design', size: 26, students: buildDemoStudents('class-1b'), subjectIds: ['da', 'branding']},
+  {color: '#8b62c9', icon: Video, id: 'class-2a', levelId: 'year-2', name: '2A Digital', size: 24, students: buildDemoStudents('class-2a'), subjectIds: ['motion', 'strategy']},
+  {color: '#f15d32', icon: PenTool, id: 'class-2b', levelId: 'year-2', name: '2B Création', size: 27, students: buildDemoStudents('class-2b'), subjectIds: ['copy', 'da']},
+  {color: '#3979e8', icon: Megaphone, id: 'class-3a', levelId: 'year-3', name: '3A Concept', size: 22, students: buildDemoStudents('class-3a'), subjectIds: ['strategy', 'branding']},
+  {color: '#3979e8', icon: BriefcaseBusiness, id: 'class-3b', levelId: 'year-3', name: '3B Projet', size: 25, students: buildDemoStudents('class-3b'), subjectIds: ['strategy', 'motion']},
+  {color: '#f15d32', icon: Sparkles, id: 'class-4a', levelId: 'year-4', name: '4CREA A', size: 21, students: buildDemoStudents('class-4a'), subjectIds: ['da', 'copy', 'motion']},
+  {color: '#8b62c9', icon: GraduationCap, id: 'class-5a', levelId: 'year-5', name: '5A Direction', size: 18, students: buildDemoStudents('class-5a'), subjectIds: ['strategy', 'da']},
 ];
 
 function SubjectGlyph({subject, small = false}: {small?: boolean; subject: TeachingSurfaceSubject}): ReactElement {
@@ -108,6 +124,7 @@ function ClassDetail({item, onBack, onOpenSubject, subjects, onManage, dataMode}
   dataMode: 'fixture' | 'runtime';
 }): ReactElement {
   const Icon = item.icon;
+  const students = item.students ?? [];
   const linkedSubjects = item.subjectIds.map((id) => subjects.find((subject) => subject.id === id)).filter((subject): subject is TeachingSurfaceSubject => Boolean(subject));
   return (
     <section className="teaching-lab__detail">
@@ -131,12 +148,32 @@ function ClassDetail({item, onBack, onOpenSubject, subjects, onManage, dataMode}
         </article>
         <article>
           <small>Étudiants</small>
-          <div className="teaching-lab__student-placeholder">
-            <UsersRound size={34} />
-            <strong>{item.size === null ? 'Roster à compléter' : `${item.size} identités roster`}</strong>
-            <p>{dataMode === 'runtime' ? 'Les identités disponibles restent privées et liées à cette classe.' : 'Les vignettes Persona seront travaillées ici après validation de la composition Classe.'}</p>
-            {onManage ? <button className="secondary" onClick={onManage} type="button">Gérer cette classe</button> : null}
-          </div>
+          {students.length > 0 ? (
+            <div className="teaching-lab__students">
+              <div className="teaching-lab__students-heading">
+                <strong>{dataMode === 'fixture' ? 'Exemples du prototype' : 'Roster actif'}</strong>
+                <span>{students.length} vignette{students.length > 1 ? 's' : ''}</span>
+              </div>
+              <p>Petites silhouettes provisoires jusqu’à la création du compte. Elles n’indiquent ni genre, ni émotion, ni niveau.</p>
+              <div className="teaching-lab__student-grid">
+                {students.map((student) => (
+                  <article className="teaching-lab__student-card" key={student.id}>
+                    <span><img alt="" aria-hidden="true" src={getStudentPlaceholderAsset(student.id)} /></span>
+                    <strong>{student.name}</strong>
+                    <small>Avatar provisoire</small>
+                  </article>
+                ))}
+              </div>
+              {onManage ? <button className="secondary" onClick={onManage} type="button">Gérer cette classe</button> : null}
+            </div>
+          ) : (
+            <div className="teaching-lab__student-placeholder">
+              <UsersRound size={34} />
+              <strong>{item.size === null ? 'Roster à compléter' : `${item.size} identités roster`}</strong>
+              <p>{dataMode === 'runtime' ? 'Les identités disponibles restent privées et liées à cette classe.' : 'Ajoutez un roster pour afficher les silhouettes provisoires.'}</p>
+              {onManage ? <button className="secondary" onClick={onManage} type="button">Gérer cette classe</button> : null}
+            </div>
+          )}
         </article>
       </div>
     </section>

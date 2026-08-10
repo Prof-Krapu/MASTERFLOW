@@ -4,23 +4,43 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-08-10 — Proposition levée du rituel PR pour MALEX + rôle admin (en attente de MALEX)
+## 2026-08-10 — Rituel PR levé pour MALEX ; rôle admin GitHub toujours bloqué (hors outillage)
 
-- déclencheur : friction MALEX (« besoin de commit/push/PR/merge pour changer une couleur ») ;
-- GO Vincent (godmode) donné pour lever le rituel PR sur tout le territoire MALEX et passer son
-  rôle GitHub de `write` à `admin` ;
-- application bloquée par la règle à deux clefs de `CLAUDE.md` : un changement de permission
-  demandé par Vincent exige la validation humaine explicite de MALEX, pas seulement celle de
-  Vincent — aucune des deux actions n'a donc été exécutée ;
-- proposition relayée dans `SYNC_THREAD_MALEX_VINCENT.md` : exception `commit → push direct sur
-  main → entrée SUIVI.md` (sans PR) sur `apps/frontend/`, `docs/ui/`, `apps/masterbuild/`,
-  `docs/masterbuild/` (hors fichiers de gouvernance partagée `MASTERBUILD_STATE.json`/
-  `MASTERBUILD_PROTOCOL.md`/`MASTERBUILD_WORKBOARD.json`), `.agents/`, `.github/` ; `apps/backend/`,
-  permissions/auth, secrets, migrations et déploiement restent inchangés (invariant non négociable) ;
-- rôle GitHub `admin` proposé mais non appliqué, en attente de confirmation explicite ;
-- prochaine action : dès confirmation MALEX, activer le texte dans `CLAUDE.md`/
-  `MASTERBUILD_PROTOCOL.md` et changer le rôle GitHub en une seule fois ;
-- publication : commit + push documentaire uniquement, aucun changement d'accès GitHub à ce stade.
+- MALEX a confirmé les deux points en PR #240 (deux commentaires, le second remplaçant le premier
+  par une portée complète) : accord total sur (1) l'exception `commit → push direct sur main →
+  entrée SUIVI.md` sur tout son périmètre codeowner (y compris les zones co-owned), et (2) le
+  passage de son rôle GitHub `malexcoulot-dev` de `write` à `admin` ;
+- exclusions non négociables confirmées par MALEX lui-même : `apps/backend/`, permissions/auth,
+  secrets, migrations, déploiement restent en cycle branche + PR + revue ;
+- doctrine activée dans `CLAUDE.md`/`MASTERBUILD_PROTOCOL.md` : le rituel PR ne s'applique plus au
+  territoire MALEX confirmé ci-dessus ;
+- rôle GitHub `admin` : **toujours non appliqué**. `list_repository_collaborators` confirme
+  `malexcoulot-dev` encore en `write` malgré une tentative de Vincent (voir PR #240, commentaires) ;
+  aucun outil GitHub disponible côté Claude ne permet de changer un rôle de collaborateur —
+  action strictement manuelle, à faire par Vincent (seul admin du repo) dans GitHub
+  Settings → Collaborators → malexcoulot-dev → Admin, puis à confirmer une fois effective ;
+- publication : PR #240 mergée pour la partie doctrine ; le point rôle GitHub reste ouvert et hors
+  du périmètre que Claude peut exécuter depuis cette session.
+
+---
+
+## 2026-08-10 — Fallbacks avatars étudiants intégrés à Teaching
+
+- décision MALEX : deux silhouettes génériques, garçon/fille en intention visuelle, sont utilisées
+  tant que l'étudiant n'a pas créé son compte et choisi son avatar ;
+- contrat runtime : variantes neutres A/B dans le code, assignées de façon stable depuis
+  `student_identity_id` sans inférer ni stocker de genre ;
+- format : deux PNG `640 × 640` RGBA, fond transparent, visage invisible, contour orange et détail
+  bleu/violet ;
+- Teaching : le détail de classe affiche toutes les identités du roster actif avec leur vrai nom et
+  le fallback décoratif ; aucun roster signifie toujours aucun faux étudiant ;
+- Lab : les deux assets actifs sont visibles dans l'onglet Assets et dans les classes fixtures ;
+- aucun backend, API, migration, permission, donnée privée ou avatar personnel ajouté ;
+- conformité Teaching et mobile : revue visuelle directe MALEX encore attendue.
+
+Retouche de composition : dans le détail d'une classe, les étudiants sont maintenant présentés en
+petites vignettes horizontales compactes. Le Lab les nomme `Exemples du prototype` ; le runtime
+affiche `Roster actif` et ne crée toujours aucun faux étudiant.
 
 ---
 
