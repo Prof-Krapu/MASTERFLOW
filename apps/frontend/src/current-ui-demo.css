@@ -3152,44 +3152,23 @@
   line-height: 1.1;
 }
 
-.proto-home-runtime {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 12px auto 0;
-  width: min(560px, 100%);
+.proto-home-access button.is-resume,
+.proto-shell--theme-light .proto-home-access button.is-resume {
+  color: var(--mf-brand);
 }
 
-.proto-home-runtime p {
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  display: grid;
-  gap: 4px;
-  margin: 0;
-  padding: 10px 12px;
-  text-align: left;
+.proto-home-access button.is-resume:hover,
+.proto-shell--theme-light .proto-home-access button.is-resume:hover {
+  color: var(--mf-brand-strong);
 }
 
-.proto-home-runtime p small {
-  color: var(--proto-muted);
-  justify-self: start;
-}
-
-.proto-home-runtime p strong {
-  font-size: 13px;
-  justify-self: start;
-}
-
-.proto-home-runtime__primary {
-  background: var(--proto-accent-gradient);
-  border: 0;
-  border-radius: 999px;
-  color: white;
-  font-weight: 800;
-  grid-column: 1 / -1;
-  min-height: 42px;
-  padding: 10px 18px;
+.proto-home-access small.proto-home-access__resume {
+  color: inherit;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .proto-runtime-workspace {
@@ -3235,14 +3214,6 @@
 }
 
 @media (max-width: 760px) {
-  .proto-home-runtime {
-    grid-template-columns: 1fr;
-  }
-
-  .proto-home-runtime__primary {
-    grid-column: auto;
-  }
-
   .proto-runtime-workspace {
     padding: 18px 14px 150px;
   }
@@ -5746,6 +5717,7 @@
 
   .proto-home-access__row {
     gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .proto-home-access button {

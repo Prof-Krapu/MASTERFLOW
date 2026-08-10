@@ -7,6 +7,7 @@ export type PrototypeHomeMode = {
   label: string;
   icon: LucideIcon;
   primary?: boolean;
+  resume?: boolean;
 };
 
 export type PrototypeHomeCopy = {
@@ -20,19 +21,13 @@ type HomeSurfaceProps = {
   primaryModes: PrototypeHomeMode[];
   secondaryModes: PrototypeHomeMode[];
   onSelectMode: (mode: string) => void;
-  checkpointLabel?: string;
-  attentionLabel?: string;
-  primaryActionLabel?: string;
-  onPrimaryAction?: () => void;
+  onResume?: () => void;
 };
 
 export function PrototypeHomeSurface({
   copy,
-  attentionLabel,
-  checkpointLabel,
+  onResume,
   onSelectMode,
-  onPrimaryAction,
-  primaryActionLabel,
   primaryModes,
   secondaryModes,
 }: HomeSurfaceProps): ReactElement {
@@ -42,25 +37,21 @@ export function PrototypeHomeSurface({
       <small>{copy.eyebrow}</small>
       <strong>{copy.title}</strong>
       <span>{copy.body}</span>
-      {checkpointLabel || attentionLabel || primaryActionLabel ? (
-        <section className="proto-home-runtime" aria-label="Reprise du contexte">
-          {checkpointLabel ? <p><small>Dernière reprise</small><strong>{checkpointLabel}</strong></p> : null}
-          {attentionLabel ? <p><small>Attention utile</small><strong>{attentionLabel}</strong></p> : null}
-          {primaryActionLabel && onPrimaryAction ? (
-            <button className="proto-home-runtime__primary" onClick={onPrimaryAction} type="button">
-              {primaryActionLabel}
-            </button>
-          ) : null}
-        </section>
-      ) : null}
       <nav className="proto-home-access" aria-label="Accès principaux">
         <div className="proto-home-access__row proto-home-access__row--primary">
           {primaryModes.map((mode) => {
             const Icon = mode.icon;
             return (
-              <button className={mode.primary ? 'is-primary' : undefined} key={mode.id} onClick={() => onSelectMode(mode.id)} type="button">
+              <button
+                aria-label={mode.resume ? `Reprendre ${mode.label}` : mode.label}
+                className={`${mode.primary ? 'is-primary' : ''}${mode.resume ? ' is-resume' : ''}`.trim() || undefined}
+                key={mode.id}
+                onClick={() => mode.resume && onResume ? onResume() : onSelectMode(mode.id)}
+                type="button"
+              >
                 <Icon size={22} />
                 <span>{mode.label}</span>
+                {mode.resume ? <small className="proto-home-access__resume">Reprendre</small> : null}
               </button>
             );
           })}
@@ -69,9 +60,16 @@ export function PrototypeHomeSurface({
           {secondaryModes.map((mode) => {
             const Icon = mode.icon;
             return (
-              <button key={mode.id} onClick={() => onSelectMode(mode.id)} type="button">
+              <button
+                aria-label={mode.resume ? `Reprendre ${mode.label}` : mode.label}
+                className={mode.resume ? 'is-resume' : undefined}
+                key={mode.id}
+                onClick={() => mode.resume && onResume ? onResume() : onSelectMode(mode.id)}
+                type="button"
+              >
                 <Icon size={22} />
                 <span>{mode.label}</span>
+                {mode.resume ? <small className="proto-home-access__resume">Reprendre</small> : null}
               </button>
             );
           })}
