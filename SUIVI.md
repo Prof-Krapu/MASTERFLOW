@@ -4,6 +4,18 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-10 — PR #244 mergée : Home, MasterBuild et Teaching consolidés sur `main`
+
+- PR : `https://github.com/Prof-Krapu/MASTERFLOW/pull/244` ;
+- SHA de merge : `352dbcb4ecf7d76cc1be86a011b071693adb0b73` ;
+- périmètre : reprise Home V2, console MasterBuild locale, sécurité et projection Teaching,
+  parcours classe/sujet/étudiant, overview compacte classes × sujets ;
+- recette avant publication : lint backend/frontend, build frontend, tests MASTERBUILD `16/16`,
+  tests Teaching HTTP/service `8/8`, `git diff --check` ;
+- GitHub ne déclarait aucun check obligatoire sur la branche ; PR propre et mergeable avant merge ;
+- copie locale synchronisée sur le SHA de merge ;
+- aucun déploiement, provider, migration ou asset canonique.
+
 ## 2026-08-10 — Vincent retiré de CODEOWNERS : plus de demandes de revue GitHub
 
 - GO Vincent : arrêter de recevoir des notifications « review requested » sur l'app GitHub ;

@@ -110,7 +110,7 @@
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "keyboard", "responsive_390", "permission_review", "malex_review", "vincent_review"],
       "evidence": [
         {"kind": "component_lab", "status": "candidate", "ref": "/ui-lab · composant partagé avec cinq niveaux, classes, sujets et import Pronote fixture"},
-        {"kind": "assembled_prototype", "status": "candidate", "ref": "runtime Teaching · projection teacher+ consolidée, parcours classe/sujet et preuves étudiant attribuables"},
+        {"kind": "assembled_prototype", "status": "candidate", "ref": "runtime Teaching publié via PR #244 · projection teacher+ consolidée, parcours classe/sujet et preuves étudiant attribuables"},
         {"kind": "student_roster_gallery", "status": "candidate", "ref": "portraits ronds Persona · nom dessous · dix par rangée desktop · santé et étape séparées"},
         {"kind": "subject_progress_palette", "status": "candidate", "ref": "fond et anneau : aucune santé inférée dans le runtime · cellule d’étape seulement depuis une copie confirmée liée à student_identity_id"},
         {"kind": "class_subject_progress_matrix", "status": "candidate", "ref": "vue globale par défaut · clic sujet filtre la classe · crayon ouvre la page Sujet · courbes multi-sujets seulement si historique disponible"},
@@ -125,7 +125,7 @@
       ],
       "reviews": {"malex": null, "vincent": null},
       "blocking_reasons": ["Composition et parcours runtime Teaching à valider visuellement par MALEX avant conformité.", "Le lien compte-roster, l’envoi de messages et la maîtrise par notion restent non raccordés."],
-      "notes": "Le Lab et le runtime utilisent la même surface Teaching. L’overview compacte les classes à gauche et les sujets à droite ; le jeu fictif est explicite et le runtime marque les scores de pré-correction comme candidats à valider."
+      "notes": "Implémentation publiée via PR #244 au SHA 352dbcb. Le Lab et le runtime utilisent la même surface Teaching ; la conformité visuelle reste en attente de validation MALEX."
     },
     {
       "artifact_id": "page.learn",

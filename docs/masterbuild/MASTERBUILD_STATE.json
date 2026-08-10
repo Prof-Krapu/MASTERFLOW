@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-10T20:22:53+02:00",
+  "updated_at": "2026-08-10T20:29:00+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,7 +22,7 @@
     "status": "active",
     "stage_index": 6,
     "stage_label": "Vérifier",
-    "recommended_next_action": "Faire vérifier par MALEX l’overview Teaching compacte : cinq lignes de niveaux, classes à gauche, sujets à droite, sélection croisée, création et affectation.",
+    "recommended_next_action": "Faire vérifier par MALEX sur le local le Teaching publié par la PR #244, puis consigner les corrections visuelles avant de passer à la page suivante.",
     "primary_risk": "Confondre un score candidat de pré-correction avec une note validée ou un sujet assigné avec une notion maîtrisée.",
     "no_auto_execute": true,
     "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005", "UPP-006", "UPP-007", "UPP-008"],
@@ -49,8 +49,8 @@
       "La santé pédagogique et l’étape de travail utilisent deux codes visuels distincts",
       "Un sujet filtre la classe sans navigation ; son crayon ouvre séparément la page Sujet",
       "Les ateliers et formulaires historiques ne sont plus rendus sous la navigation Teaching",
-      "Teaching TCH-001 à TCH-004 est un candidat local : permissions durcies, projection attribuable et workflows contextuels, sans publication",
-      "L’overview Teaching compacte classes × sujets est un candidat local partagé par le Lab et le runtime, sans validation visuelle automatique",
+      "Teaching TCH-001 à TCH-004 est publié par la PR #244 : permissions durcies, projection attribuable et workflows contextuels",
+      "L’overview Teaching compacte classes × sujets est publiée par la PR #244 et reste en attente de validation visuelle MALEX",
       "Project V2 est publié via PR #233 mais reste bloqué dans le registre de conformité",
       "Les quatre modifications Inventory restent un candidat séparé, non committé",
       "Aucun déploiement, backend, API, migration ou asset canonique dans ce Round"
@@ -156,8 +156,8 @@
       "Teaching V1 runtime rejeté et isolé hors repo actif",
       "Component Lab unique publié et Teaching partagé avec le runtime, validation MALEX attendue",
       "Fallbacks étudiants génériques intégrés au Lab et au roster Teaching, validation MALEX attendue",
-      "TCH-001 à TCH-004 vérifiés localement sans commit ni publication",
-      "Overview Teaching compacte classes × sujets vérifiée techniquement, revue visuelle MALEX attendue",
+      "TCH-001 à TCH-004 mergés via PR #244 au SHA 352dbcb",
+      "Overview Teaching compacte classes × sujets publiée, revue visuelle MALEX attendue",
       "Project reste bloqué dans le registre de conformité",
       "Inventory reste isolé dans son candidat dédié"
     ],
