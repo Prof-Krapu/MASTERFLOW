@@ -5853,10 +5853,14 @@ export const CreateCohortSchema = z.object({
 });
 export type CreateCohort = z.infer<typeof CreateCohortSchema>;
 
+export const RosterAvatarFallbackSchema = z.enum(['neutral', 'a', 'b']);
+export type RosterAvatarFallback = z.infer<typeof RosterAvatarFallbackSchema>;
+
 export const RosterMemberSchema = z.object({
   student_identity_id: z.string().min(1),
   display_name: z.string().min(1).max(160),
   aliases: z.array(z.string().min(1).max(160)).max(20),
+  avatar_fallback: RosterAvatarFallbackSchema.default('neutral'),
 });
 export type RosterMember = z.infer<typeof RosterMemberSchema>;
 
@@ -5864,8 +5868,9 @@ export const CreateRosterMemberSchema = z.object({
   student_identity_id: z.string().min(1).nullable().optional(),
   display_name: z.string().min(1).max(160),
   aliases: z.array(z.string().min(1).max(160)).max(20).default([]),
+  avatar_fallback: RosterAvatarFallbackSchema.default('neutral'),
 });
-export type CreateRosterMember = z.infer<typeof CreateRosterMemberSchema>;
+export type CreateRosterMember = z.input<typeof CreateRosterMemberSchema>;
 
 export const RosterVersionSchema = z.object({
   roster_version_id: z.string().min(1),
@@ -5885,7 +5890,7 @@ export const CreateRosterVersionSchema = z.object({
   source_ref: z.string().min(1).max(500),
   members: z.array(CreateRosterMemberSchema).min(1).max(300),
 });
-export type CreateRosterVersion = z.infer<typeof CreateRosterVersionSchema>;
+export type CreateRosterVersion = z.input<typeof CreateRosterVersionSchema>;
 
 // ───────────────────────── Projection Teaching attribuable ─────────────────────────
 

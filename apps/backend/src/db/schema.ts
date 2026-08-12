@@ -163,6 +163,8 @@ function migrate(d: Database.Database): void {
       student_identity_id TEXT NOT NULL REFERENCES student_identities(id),
       display_name        TEXT NOT NULL,
       aliases_json        TEXT NOT NULL DEFAULT '[]',
+      avatar_fallback     TEXT NOT NULL DEFAULT 'neutral'
+                            CHECK (avatar_fallback IN ('neutral','a','b')),
       created_at          INTEGER NOT NULL,
       PRIMARY KEY (roster_version_id, student_identity_id)
     );
@@ -2057,6 +2059,12 @@ function migrate(d: Database.Database): void {
   ensureColumn(d, 'evidence_events', 'project_id', 'TEXT');
   ensureColumn(d, 'pedagogical_signals', 'project_id', 'TEXT');
   ensureColumn(d, 'teacher_decision_deltas', 'project_id', 'TEXT');
+  ensureColumn(
+    d,
+    'roster_members',
+    'avatar_fallback',
+    "TEXT NOT NULL DEFAULT 'neutral' CHECK (avatar_fallback IN ('neutral','a','b'))",
+  );
   ensureColumn(d, 'rubric_templates', 'project_id', 'TEXT');
   ensureColumn(d, 'rubric_versions', 'project_id', 'TEXT');
   ensureColumn(d, 'institutional_grading_profiles', 'project_id', 'TEXT');
@@ -3333,6 +3341,7 @@ export interface RosterMemberRow {
   student_identity_id: string;
   display_name: string;
   aliases_json: string;
+  avatar_fallback: 'neutral' | 'a' | 'b';
   created_at: number;
 }
 

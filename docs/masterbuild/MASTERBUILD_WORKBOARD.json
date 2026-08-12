@@ -205,6 +205,16 @@
       "excluded": ["backend", "api", "migration", "deploy", "provider", "spend", "identity_inference", "personal_avatar_claim"]
     },
     {
+      "authorization_id": "AUTH-UPP-STUDENT-AVATAR-NEUTRAL-PUBLISH-2026-08-13",
+      "round_id": "UI-PAGE-BY-PAGE-001",
+      "actor": "malex",
+      "scope": "add_neutral_student_fallback_persist_explicit_csv_choice_and_publish_via_pull_request",
+      "status": "in_progress",
+      "granted_at": "2026-08-13T00:26:27+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["first_name_inference", "raw_civility_storage", "personal_avatar_claim", "delete_existing_member", "deploy", "provider", "spend"]
+    },
+    {
       "authorization_id": "AUTH-UPP-HOME-RESUME-HISTORY-V2-2026-08-10",
       "round_id": "UI-PAGE-BY-PAGE-001",
       "actor": "malex",
@@ -736,13 +746,13 @@
       "work_package_id": "UPP-006",
       "label": "Intégrer les avatars étudiants génériques",
       "feature_ids": ["ui-shell-navigation", "teaching-mode", "persona-asset-pipeline"],
-      "status": "awaiting_malex_review",
+      "status": "approved_for_publication",
       "owner": "malex",
       "reviewers": ["codex"],
       "dependencies": ["UPP-005"],
       "design_rule_ids": ["DES-003", "DES-009", "DES-010", "DES-012", "DES-015", "DES-016", "DES-018", "DES-019", "DES-023"],
       "tool_route": "image_generation_then_component_lab",
-      "expected_evidence": ["deux PNG 640x640 RGBA", "visages invisibles", "aucune inférence d'identité", "registre actif", "Lab Assets", "roster Teaching réel", "lint build doctor", "validation visuelle MALEX"]
+      "expected_evidence": ["trois PNG 640x640 RGBA", "neutral par défaut", "A/B depuis donnée explicite ou correction manuelle", "aucune inférence depuis le prénom", "migration additive sans perte", "Lab Assets", "roster Teaching réel", "lint build doctor", "validation MALEX"]
     },
     {
       "work_package_id": "UPP-007",

@@ -14,24 +14,30 @@ compte et choisi son propre avatar, sans inventer son identité ni afficher une 
 
 ## Contrat visuel
 
-- deux silhouettes anonymes de type personnage non révélé de jeu vidéo ;
+- trois silhouettes anonymes de type personnage non révélé de jeu vidéo : neutre, A et B ;
 - sortie UI `640 × 640`, PNG RGBA, fond transparent et cadrage carré stable ;
 - visage invisible, aucune émotion, origine ou caractéristique personnelle représentée ;
 - contours orange MasterFlow et détails bleu/violet sobres ;
-- variantes nommées A et B dans le code, jamais utilisées comme donnée de genre.
+- variante neutre utilisée par défaut ; A et B restent des présentations provisoires.
 
 ## Source et comportement
 
-- source runtime : `RosterMember.student_identity_id` et `display_name` ;
-- le choix A/B est déterministe depuis `student_identity_id`, uniquement pour éviter les sautes
-  visuelles entre deux affichages ;
+- source runtime : `RosterMember.student_identity_id`, `display_name` et `avatar_fallback` ;
+- l’import CSV n’examine jamais le prénom : une colonne explicite `Civilité`, `Sexe` ou `Genre`
+  peut proposer A/B ; toute valeur absente, inconnue ou ambiguë reste neutre ;
+- seule la valeur `neutral | a | b` est conservée sur le membre du roster ; la civilité brute n’est
+  pas enregistrée ;
+- le professeur peut corriger cette valeur dans la prévisualisation avant enregistrement ;
+- une migration additive idempotente ajoute `roster_members.avatar_fallback` avec `neutral` par
+  défaut, sans supprimer ni réécrire les membres existants ;
 - l'image est décorative (`alt=""`) : le nom du roster reste l'identité accessible ;
-- aucun endpoint, champ, permission ou inférence de genre ajouté ;
+- aucun endpoint ou pouvoir supplémentaire ; le seul champ ajouté est l’enum de présentation
+  provisoire `avatar_fallback` ;
 - l'avatar de compte remplacera ce fallback lorsque le contrat compte ↔ roster sera disponible.
 
 ## Surfaces
 
-- Component Lab, onglet Assets : les deux fallbacks sont visibles et nommés ;
+- Component Lab, onglet Assets : les trois fallbacks sont visibles et nommés ;
 - Teaching, détail d'une classe : toutes les identités du roster actif utilisent ces fallbacks sous
   forme de portraits ronds inspirés du menu Persona, avec le nom placé dessous ;
 - absence de roster : l'état vide existant reste affiché.

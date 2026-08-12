@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-10T20:29:00+02:00",
+  "updated_at": "2026-08-13T00:26:27+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -22,11 +22,11 @@
     "status": "active",
     "stage_index": 6,
     "stage_label": "Vérifier",
-    "recommended_next_action": "Faire vérifier par MALEX sur le local le Teaching publié par la PR #244, puis consigner les corrections visuelles avant de passer à la page suivante.",
+    "recommended_next_action": "Publier le fallback étudiant neutre et son contrat CSV explicite via une PR, puis reprendre l’audit page par page de Teaching.",
     "primary_risk": "Confondre un score candidat de pré-correction avec une note validée ou un sujet assigné avec une notion maîtrisée.",
     "no_auto_execute": true,
     "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005", "UPP-006", "UPP-007", "UPP-008"],
-    "authorization_id": "AUTH-UPP-TEACHING-SIMPLIFICATION-2026-08-10",
+    "authorization_id": "AUTH-UPP-STUDENT-AVATAR-NEUTRAL-PUBLISH-2026-08-13",
     "success_criteria": [
       "Aucune page suivante n'est modifiée avant validation explicite de la page courante.",
       "Chaque audit couvre rôle, thème, clavier, états, responsive 390 px et données réelles.",
@@ -45,6 +45,7 @@
       "Teaching Lab et runtime utilisent le même composant avec fixtures signalées dans le Lab et données réelles dans le runtime",
       "Teaching runtime utilise le périmètre pédagogique global autorisé et non le seul projet courant",
       "Les fallbacks étudiants A/B sont décoratifs, stables et ne constituent aucune inférence d’identité",
+      "Le fallback neutre est candidat local par défaut ; A/B ne viennent que d’une civilité CSV explicite ou d’une correction professeur",
       "Les portraits élèves reprennent le langage Persona et leur statut provient uniquement du roster actif",
       "La santé pédagogique et l’étape de travail utilisent deux codes visuels distincts",
       "Un sujet filtre la classe sans navigation ; son crayon ouvre séparément la page Sujet",

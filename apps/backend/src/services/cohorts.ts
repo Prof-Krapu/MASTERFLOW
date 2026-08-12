@@ -73,6 +73,7 @@ function membersFor(rosterVersionId: string): RosterMember[] {
     student_identity_id: row.student_identity_id,
     display_name: row.display_name,
     aliases: JSON.parse(row.aliases_json) as string[],
+    avatar_fallback: row.avatar_fallback ?? 'neutral',
   }));
 }
 
@@ -231,8 +232,8 @@ export function createRosterVersion(
     const usedIdentityIds = new Set<string>();
     const insertMember = getDb().prepare(
       `INSERT INTO roster_members
-         (roster_version_id, student_identity_id, display_name, aliases_json, created_at)
-       VALUES (?, ?, ?, ?, ?)`,
+         (roster_version_id, student_identity_id, display_name, aliases_json, avatar_fallback, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
     );
     for (const member of request.members) {
       const identity = resolveIdentity(cohort, member, now);
@@ -243,6 +244,7 @@ export function createRosterVersion(
         identity.id,
         member.display_name,
         JSON.stringify(member.aliases),
+        member.avatar_fallback,
         now,
       );
     }
