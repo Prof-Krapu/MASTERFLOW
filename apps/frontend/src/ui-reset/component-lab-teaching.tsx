@@ -23,6 +23,7 @@ import {
 import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import type {LucideIcon} from 'lucide-react';
+import type {RosterAvatarFallback} from '@masterflow/shared';
 
 import {getStudentPlaceholderAsset} from '../student-avatar-assets.ts';
 import './component-lab.css';
@@ -58,6 +59,7 @@ export type TeachingSurfaceClass = {
 };
 
 export type TeachingSurfaceStudent = {
+  avatarFallback?: RosterAvatarFallback;
   id: string;
   name: string;
   subjectProgress?: Record<string, TeachingStudentSubjectState>;
@@ -130,6 +132,7 @@ const DEMO_SUBJECT_NOTIONS: Record<string, string[]> = {
 function buildDemoStudents(classId: string, count: number, subjectIds: string[]): TeachingSurfaceStudent[] {
   const healthCycle: TeachingStudentHealth[] = ['ahead', 'on_track', 'on_track', 'fragile', 'attention', 'at_risk', 'on_track'];
   return Array.from({length: count}, (_, index) => ({
+    avatarFallback: (['neutral', 'a', 'b'] as const)[index % 3] ?? 'neutral',
     id: `${classId}-student-${index + 1}`,
     name: demoStudentNames[index] ?? `Élève ${String(index + 1).padStart(2, '0')}`,
     subjectProgress: Object.fromEntries(subjectIds.map((subjectId, subjectIndex) => {
@@ -374,7 +377,7 @@ function ClassDetail({activeSubjectId: initialActiveSubjectId, item, onActiveSub
                   return (
                   <button className="teaching-lab__student-card" key={student.id} onClick={() => onOpenStudent(student.id, activeSubjectId === 'global' ? undefined : activeSubjectId)} type="button">
                     <span className="teaching-lab__student-avatar" style={{'--student-status-color': STUDENT_HEALTH_COLOR[studentState.health]} as React.CSSProperties}>
-                      <img alt="" aria-hidden="true" src={getStudentPlaceholderAsset(student.id)} />
+                      <img alt="" aria-hidden="true" src={getStudentPlaceholderAsset(student.avatarFallback)} />
                       <StudentStageBadge stage={studentState.stage} />
                     </span>
                     <strong>{student.name}</strong>
@@ -453,7 +456,7 @@ function StudentDetail({classItem, dataMode, onBack, student, subjectId, subject
       <button className="teaching-lab__back" onClick={onBack} type="button"><ArrowLeft size={18} /> {classItem.name}</button>
       <header className="teaching-lab__student-hero">
         <span className="teaching-lab__student-portrait">
-          <img alt="" aria-hidden="true" src={getStudentPlaceholderAsset(student.id)} />
+          <img alt="" aria-hidden="true" src={getStudentPlaceholderAsset(student.avatarFallback)} />
           <StudentStageBadge stage={studentState.stage} />
         </span>
         <div>

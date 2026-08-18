@@ -4,6 +4,25 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-13 — Fallback étudiant neutre et civilité explicite — publication autorisée
+
+- nouvel asset `variant-neutral.png` : silhouette anonyme `640 × 640`, PNG RGBA transparent,
+  produite à partir du contrat visuel des variantes A/B ;
+- le fallback neutre devient la valeur par défaut de tout membre de roster existant ou nouveau ;
+- l’import CSV lit uniquement une colonne explicite `Civilité`, `Sexe` ou `Genre` : les valeurs
+  reconnues proposent A/B, toute valeur absente ou ambiguë reste neutre ;
+- aucune déduction depuis le prénom et aucune civilité brute conservée ; seul l’enum de présentation
+  `neutral | a | b` est stocké ;
+- le professeur peut corriger la vignette dans la prévisualisation avant d’enregistrer le roster ;
+- migration additive idempotente `roster_members.avatar_fallback`, valeur par défaut `neutral`,
+  autorisée explicitement par MALEX ; aucune ligne existante supprimée ou réécrite ;
+- Lab : les trois fallbacks sont visibles ; Teaching consomme désormais la valeur portée par le
+  roster au lieu d’une alternance calculée depuis l’identifiant ;
+- vérifications : lint backend/frontend, tests cohortes `4/4`, Teaching overview `4/4`, build
+  frontend et `git diff --check` verts ; revue visuelle MALEX attendue ;
+- validation MALEX obtenue pour l’asset et GO publication reçu le 2026-08-13 ; branche, PR et merge
+  restent à confirmer dans la clôture ; aucun déploiement.
+
 ## 2026-08-10 — PR #244 mergée : Home, MasterBuild et Teaching consolidés sur `main`
 
 - PR : `https://github.com/Prof-Krapu/MASTERFLOW/pull/244` ;

@@ -46,7 +46,7 @@ describe('cohortes et rosters versionnés V1', () => {
     const v1 = createRosterVersion(teacher, cohort.cohort_id, {
       source_ref: 'manual://teacher/roster-v1',
       members: [
-        {display_name: 'Alice Martin', aliases: ['Alice']},
+        {display_name: 'Alice Martin', aliases: ['Alice'], avatar_fallback: 'b'},
         {display_name: 'Bob Durand', aliases: []},
       ],
     });
@@ -60,12 +60,15 @@ describe('cohortes et rosters versionnés V1', () => {
           student_identity_id: alice?.student_identity_id,
           display_name: 'Alice Martin',
           aliases: ['Alice', 'A. Martin'],
+          avatar_fallback: 'b',
         },
         {display_name: 'Chloé Bernard', aliases: []},
       ],
     });
 
     expect(v2).toMatchObject({version: 2, status: 'active'});
+    expect(v2.members.find((member) => member.display_name === 'Alice Martin')?.avatar_fallback).toBe('b');
+    expect(v2.members.find((member) => member.display_name === 'Chloé Bernard')?.avatar_fallback).toBe('neutral');
     const history = listRosterVersions(teacher, cohort.cohort_id);
     expect(history.map((version) => [version.version, version.status])).toEqual([
       [2, 'active'],

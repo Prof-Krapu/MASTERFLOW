@@ -21,6 +21,7 @@ import type {
   RubricTemplate,
   RubricVersion,
   RosterVersion,
+  RosterAvatarFallback,
   SubmissionRecord,
   SubjectTemplate,
   SubjectAssignment,
@@ -73,6 +74,7 @@ import {
 import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ClassProjection} from './class-projection.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
+import {getStudentPlaceholderAsset} from './student-avatar-assets.ts';
 import {ComponentLabTeaching} from './ui-reset/component-lab-teaching.tsx';
 import type {TeachingStudentSubjectState, TeachingSurfaceClass, TeachingSurfaceSubject} from './ui-reset/component-lab-teaching.tsx';
 
@@ -104,6 +106,22 @@ const LEVEL_LABEL: Record<ReadinessLevel, string> = {
 const TEACHING_COLORS = ['#f15d32', '#3979e8', '#8b62c9'] as const;
 const TEACHING_CLASS_ICONS = [School, Shapes, BriefcaseBusiness, GraduationCap] as const;
 const TEACHING_SUBJECT_ICONS = [Palette, Megaphone, Video, PenTool, Shapes] as const;
+
+function normalizedRosterKey(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('fr')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function avatarFallbackFromCivility(value: string): RosterAvatarFallback {
+  const normalized = normalizedRosterKey(value).replace(/[.\s_-]+/g, '');
+  if (['m', 'mr', 'monsieur', 'masculin', 'garcon', 'homme', 'h'].includes(normalized)) return 'a';
+  if (['mme', 'mlle', 'madame', 'mademoiselle', 'feminin', 'fille', 'femme', 'f'].includes(normalized)) return 'b';
+  return 'neutral';
+}
 
 function stableTeachingIndex(value: string, length: number): number {
   return [...value].reduce((total, character) => total + character.charCodeAt(0), 0) % length;
@@ -167,6 +185,7 @@ export function TeachingReadiness({
   const [cohortPeriod, setCohortPeriod] = useState('');
   const [rosterText, setRosterText] = useState('');
   const [rosterSourceRef, setRosterSourceRef] = useState('manual://teaching');
+  const [rosterAvatarHints, setRosterAvatarHints] = useState<Record<string, RosterAvatarFallback>>({});
   const [rubricTemplates, setRubricTemplates] = useState<RubricTemplate[]>([]);
   const [selectedRubricTemplateId, setSelectedRubricTemplateId] = useState('');
   const [rubricVersions, setRubricVersions] = useState<RubricVersion[]>([]);
@@ -363,16 +382,22 @@ export function TeachingReadiness({
   const addRoster = useCallback(async (): Promise<void> => {
     const activeExistingRoster = rostersByCohort[selectedCohortId]?.find((version) => version.status === 'active') ?? null;
     const existingIdentityByName = new Map((activeExistingRoster?.members ?? []).map((member) => [
-      member.display_name.trim().toLocaleLowerCase('fr'),
+      normalizedRosterKey(member.display_name),
       member.student_identity_id,
+    ]));
+    const existingAvatarByName = new Map((activeExistingRoster?.members ?? []).map((member) => [
+      normalizedRosterKey(member.display_name),
+      member.avatar_fallback,
     ]));
     const members = rosterText.split('\n').map((line) => line.trim()).filter(Boolean).map((line) => {
       const [name = '', aliases = ''] = line.split('|');
       const displayName = name.trim();
+      const normalizedName = normalizedRosterKey(displayName);
       return {
-        student_identity_id: existingIdentityByName.get(displayName.toLocaleLowerCase('fr')) ?? null,
+        student_identity_id: existingIdentityByName.get(normalizedName) ?? null,
         display_name: displayName,
         aliases: aliases.split(',').map((value) => value.trim()).filter(Boolean),
+        avatar_fallback: rosterAvatarHints[normalizedName] ?? existingAvatarByName.get(normalizedName) ?? 'neutral',
       };
     }).filter((member) => member.display_name.length > 0);
     if (!selectedCohortId || members.length === 0) return setStatus('Choisis une cohorte et saisis au moins un élève.');
@@ -385,12 +410,13 @@ export function TeachingReadiness({
       const nextVersions = await getRosterVersions(selectedCohortId, token);
       setRosterText('');
       setRosterSourceRef('manual://teaching');
+      setRosterAvatarHints({});
       setRosterVersions(nextVersions);
       setRostersByCohort((current) => ({...current, [selectedCohortId]: nextVersions}));
       setStatus(`Liste des étudiants V${created.version} enregistrée. La version précédente reste archivée.`);
     } catch (error) { setStatus(error instanceof Error ? error.message : 'Roster impossible.'); }
     finally { setMutating(false); }
-  }, [rosterSourceRef, rosterText, rostersByCohort, selectedCohortId, token]);
+  }, [rosterAvatarHints, rosterSourceRef, rosterText, rostersByCohort, selectedCohortId, token]);
 
   const importRosterCsv = useCallback(async (file: File): Promise<void> => {
     const source = await file.text();
@@ -405,15 +431,29 @@ export function TeachingReadiness({
     const firstNameIndex = headers.findIndex((header) => header.includes('prénom') || header.includes('prenom'));
     const lastNameIndex = headers.findIndex((header) => header === 'nom' || header.includes('nom de famille'));
     const fullNameIndex = headers.findIndex((header) => header.includes('élève') || header.includes('eleve') || header.includes('nom complet'));
+    const civilityIndex = headers.findIndex((header) => header.includes('civilité') || header.includes('civilite') || header === 'sexe' || header === 'genre');
     const hasHeader = firstNameIndex >= 0 || lastNameIndex >= 0 || fullNameIndex >= 0;
-    const names = rows.slice(hasHeader ? 1 : 0).map((row) => {
-      if (fullNameIndex >= 0) return row[fullNameIndex] ?? '';
-      if (firstNameIndex >= 0 || lastNameIndex >= 0) return [row[firstNameIndex] ?? '', row[lastNameIndex] ?? ''].filter(Boolean).join(' ');
-      return row[0] ?? '';
-    }).map((name) => name.trim()).filter(Boolean);
+    const importedMembers = rows.slice(hasHeader ? 1 : 0).map((row) => {
+      const name = fullNameIndex >= 0
+        ? row[fullNameIndex] ?? ''
+        : firstNameIndex >= 0 || lastNameIndex >= 0
+          ? [row[firstNameIndex] ?? '', row[lastNameIndex] ?? ''].filter(Boolean).join(' ')
+          : row[0] ?? '';
+      return {
+        name: name.trim(),
+        avatarFallback: civilityIndex >= 0 ? avatarFallbackFromCivility(row[civilityIndex] ?? '') : 'neutral' as const,
+      };
+    }).filter((member) => member.name.length > 0);
+    const names = [...new Set(importedMembers.map((member) => member.name))];
+    const avatarHints = Object.fromEntries(importedMembers.map((member) => [
+      normalizedRosterKey(member.name),
+      member.avatarFallback,
+    ])) as Record<string, RosterAvatarFallback>;
+    const recognizedCivilities = Object.values(avatarHints).filter((fallback) => fallback !== 'neutral').length;
     setRosterText([...new Set(names)].join('\n'));
+    setRosterAvatarHints(avatarHints);
     setRosterSourceRef(`pronote-csv://${encodeURIComponent(file.name)}`);
-    setStatus(`${names.length} ligne(s) Pronote préparée(s). Vérifie la liste avant de créer la nouvelle version.`);
+    setStatus(`${names.length} ligne(s) Pronote préparée(s) · ${recognizedCivilities} civilité(s) reconnue(s), ${names.length - recognizedCivilities} vignette(s) neutre(s). Vérifie avant d’enregistrer.`);
   }, []);
 
   const decideIdentity = useCallback(async (
@@ -979,7 +1019,7 @@ export function TeachingReadiness({
               trend: [],
             }];
           }));
-          return {id: member.student_identity_id, name: member.display_name, subjectProgress};
+          return {avatarFallback: member.avatar_fallback, id: member.student_identity_id, name: member.display_name, subjectProgress};
         }) ?? [],
         subjectIds: (teachingOverview?.assignments ?? [])
           .filter(({assignment}) => assignment.cohort_id === cohort.cohort_id && assignment.status === 'active')
@@ -992,6 +1032,21 @@ export function TeachingReadiness({
 
   const selectedCohort = cohorts.find((cohort) => cohort.cohort_id === selectedCohortId) ?? null;
   const activeRoster = rosterVersions.find((version) => version.status === 'active') ?? null;
+  const rosterPreviewMembers = useMemo(() => {
+    const existingAvatarByName = new Map((activeRoster?.members ?? []).map((member) => [
+      normalizedRosterKey(member.display_name),
+      member.avatar_fallback,
+    ]));
+    return rosterText.split('\n').map((line) => line.trim()).filter(Boolean).map((line) => {
+      const displayName = (line.split('|')[0] ?? '').trim();
+      const key = normalizedRosterKey(displayName);
+      return {
+        displayName,
+        key,
+        avatarFallback: rosterAvatarHints[key] ?? existingAvatarByName.get(key) ?? 'neutral' as RosterAvatarFallback,
+      };
+    }).filter((member) => member.displayName.length > 0);
+  }, [activeRoster, rosterAvatarHints, rosterText]);
   const openClassManager = useCallback((cohortId?: string): void => {
     if (cohortId) setSelectedCohortId(cohortId);
     setManager('classes');
@@ -1279,6 +1334,25 @@ export function TeachingReadiness({
                 <label>Classe<select onChange={(event) => setSelectedCohortId(event.target.value)} required value={selectedCohortId}><option value="">Choisir</option>{cohorts.map((cohort) => <option key={cohort.cohort_id} value={cohort.cohort_id}>{cohort.title}</option>)}</select></label>
                 <label className="teaching-runtime-manager__file">Importer un CSV Pronote<input accept=".csv,text/csv" onChange={(event) => { const file = event.target.files?.[0]; if (file) void importRosterCsv(file); }} type="file" /></label>
                 <label>Vérifier la liste<textarea onChange={(event) => { setRosterText(event.target.value); setRosterSourceRef('manual://teaching'); }} placeholder={'Prénom Nom\nPrénom Nom | alias'} required rows={8} value={rosterText} /></label>
+                {rosterPreviewMembers.length > 0 ? (
+                  <details className="teaching-runtime-manager__avatar-fallbacks">
+                    <summary>Vignettes provisoires · {rosterPreviewMembers.length}</summary>
+                    <small>Neutre par défaut. Une civilité explicite du CSV peut proposer A ou B ; tu peux toujours corriger avant l’enregistrement.</small>
+                    <div>
+                      {rosterPreviewMembers.map((member) => (
+                        <label key={member.key}>
+                          <img alt="" aria-hidden="true" src={getStudentPlaceholderAsset(member.avatarFallback)} />
+                          <span>{member.displayName}</span>
+                          <select aria-label={`Vignette provisoire de ${member.displayName}`} onChange={(event) => setRosterAvatarHints((current) => ({...current, [member.key]: event.target.value as RosterAvatarFallback}))} value={member.avatarFallback}>
+                            <option value="neutral">Neutre</option>
+                            <option value="a">Variante A</option>
+                            <option value="b">Variante B</option>
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
                 <small>Une nouvelle version est créée. Les identités dont le nom reste identique sont conservées.</small>
                 <button disabled={mutating || !selectedCohortId || !rosterText.trim()} type="submit">Enregistrer la nouvelle version</button>
               </form>

@@ -6,7 +6,7 @@ import masterflexNeutral from '../assets/masterflex-portraits/neutral.png';
 import masterflowWordmark from '../assets/masterflow-wordmark.svg';
 import profkrapuCanon from '../assets/profkrapu-canon/profkrapu-canon-v4.png';
 import profkrapuNeutral from '../assets/profkrapu-portraits/neutral.png';
-import {studentPlaceholderA, studentPlaceholderB} from '../student-avatar-assets.ts';
+import {studentPlaceholderA, studentPlaceholderB, studentPlaceholderNeutral} from '../student-avatar-assets.ts';
 
 const semanticTokens = [
   ['Marque', 'var(--mf-brand)'],
@@ -48,6 +48,7 @@ export function ComponentLabAssets({brandMark}: {brandMark: ReactElement}): Reac
         <article><span>Canon actif</span><img alt="ProfKrapu en pied" src={profkrapuCanon} /><strong>ProfKrapu canon V4</strong></article>
         <article><span>Fallback étudiant actif</span><img alt="Silhouette étudiante provisoire, variante A" src={studentPlaceholderA} /><strong>Étudiant · variante A</strong><small>Décoratif, sans déduction d’identité</small></article>
         <article><span>Fallback étudiant actif</span><img alt="Silhouette étudiante provisoire, variante B" src={studentPlaceholderB} /><strong>Étudiant · variante B</strong><small>Décoratif, sans déduction d’identité</small></article>
+        <article><span>Fallback par défaut</span><img alt="Silhouette étudiante provisoire neutre" src={studentPlaceholderNeutral} /><strong>Étudiant · neutre</strong><small>Utilisé sans civilité explicite</small></article>
       </div>
     </section>
   );
