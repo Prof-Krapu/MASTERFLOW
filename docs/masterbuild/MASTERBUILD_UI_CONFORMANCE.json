@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-13T00:26:27+02:00",
+  "updated_at": "2026-08-18T21:51:36+02:00",
   "bible_version": "1.0.0",
   "bible_path": "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
   "promotion_pipeline": [
@@ -407,13 +407,13 @@
       "required_evidence": ["component_lab", "assembled_prototype", "theme_light", "theme_dark", "theme_system", "responsive_390", "malex_review"],
       "evidence": [
         {"kind": "component_lab", "status": "candidate", "source": "/ui-lab · onglet Assets et classes fixtures"},
-        {"kind": "assembled_prototype", "status": "candidate", "source": "Teaching · roster actif réel · neutral par défaut · A/B seulement depuis donnée explicite ou correction professeur"},
+        {"kind": "assembled_prototype", "status": "passed", "source": "Teaching publié par PR #245 · roster actif réel · neutral par défaut · A/B seulement depuis donnée explicite ou correction professeur"},
         {"kind": "asset_contract", "status": "passed", "source": "trois PNG 640x640 RGBA alpha, visage invisible et aucune donnée privée"},
         {"kind": "csv_import_contract", "status": "candidate", "source": "Civilité/Sexe/Genre explicite → proposition A/B · absence ou ambiguïté → neutral · valeur brute non stockée"}
       ],
       "reviews": {"malex": {"status": "approved", "source": "validation directe puis GO publication 2026-08-13"}, "vincent": null},
       "blocking_reasons": ["La conformité globale de Teaching reste à traiter page par page."],
-      "notes": "Variante neutre validée comme fallback par défaut. A/B restent des présentations provisoires issues d’une civilité explicite ou d’une correction manuelle ; aucune inférence depuis le prénom."
+      "notes": "Variante neutre validée et publiée par PR #245 au SHA f89f575. A/B restent des présentations provisoires issues d’une civilité explicite ou d’une correction manuelle ; aucune inférence depuis le prénom."
     }
   ],
   "candidate_findings": []

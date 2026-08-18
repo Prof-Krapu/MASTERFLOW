@@ -209,7 +209,7 @@
       "round_id": "UI-PAGE-BY-PAGE-001",
       "actor": "malex",
       "scope": "add_neutral_student_fallback_persist_explicit_csv_choice_and_publish_via_pull_request",
-      "status": "in_progress",
+      "status": "completed",
       "granted_at": "2026-08-13T00:26:27+02:00",
       "expires_on_scope_change": true,
       "excluded": ["first_name_inference", "raw_civility_storage", "personal_avatar_claim", "delete_existing_member", "deploy", "provider", "spend"]
@@ -746,7 +746,7 @@
       "work_package_id": "UPP-006",
       "label": "Intégrer les avatars étudiants génériques",
       "feature_ids": ["ui-shell-navigation", "teaching-mode", "persona-asset-pipeline"],
-      "status": "approved_for_publication",
+      "status": "completed",
       "owner": "malex",
       "reviewers": ["codex"],
       "dependencies": ["UPP-005"],
