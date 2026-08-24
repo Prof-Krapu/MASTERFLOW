@@ -1,7 +1,15 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-08T23:44:35+02:00",
+  "updated_at": "2026-08-24T04:19:39+02:00",
   "sources": [
+    {
+      "source_id": "masterplan-subject-assignment-bridge-2026-08-24",
+      "path": "docs/masterbuild/handoffs/MASTERPLAN_SUBJECT_ASSIGNMENT_BRIDGE_HANDOFF_2026-08-24.md",
+      "kind": "external_pedagogical_bridge_finding",
+      "status": "candidate",
+      "absorbed_into": [],
+      "note": "Audit MasterPlan des sujets et affectations 2026-2027 ; aucune modification backend ou canon, cadrage futur requis apres le Round UI actif."
+    },
     {
       "source_id": "global-system-ui-audit-2026-07-31",
       "path": "docs/masterbuild/audits/MASTERFLOW_GLOBAL_SYSTEM_UI_AUDIT_2026-07-31.md",

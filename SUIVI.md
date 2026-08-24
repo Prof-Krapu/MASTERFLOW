@@ -4,6 +4,22 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-24 — Handoff candidat MasterPlan sujets et affectations
+
+- aucun bug urgent MasterFlow identifié : les contrats sujets, versions, affectations, preuves,
+  signaux et décisions professeur restent la base correcte ;
+- finding externe documenté pour distinguer sujet principal, choix, parcours, évaluation,
+  ressource, événement, outil et matrice historique dans le futur bridge pédagogique ;
+- corrections terrain consignées : `Amener l'art à l'école` était le Design Sprint B4,
+  `Affiche-toi !` est un projet annuel B2, et le cours B4 PAO 4IC de 14 heures reste sans sujet
+  validé ;
+- source enregistrée comme candidate et recap ajouté pour MASTERBUILD ; aucun changement de
+  backend, schéma, migration, runtime, Round actif ou workboard ;
+- handoff :
+  `docs/masterbuild/handoffs/MASTERPLAN_SUBJECT_ASSIGNMENT_BRIDGE_HANDOFF_2026-08-24.md`.
+
+---
+
 ## 2026-08-18 — PR #245 mergée : fallback étudiant neutre et civilité explicite
 
 - nouvel asset `variant-neutral.png` : silhouette anonyme `640 × 640`, PNG RGBA transparent,

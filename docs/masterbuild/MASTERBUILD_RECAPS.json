@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-10T14:04:40.000Z",
+  "updated_at": "2026-08-24T02:19:39.000Z",
   "messages": [
     {
       "message_id": "recap-20260810-dev-funnel-deepseek",
@@ -23,6 +23,17 @@
       "body": "DEV-LOCAL-FUNNEL-001 execute. Frontend local 5174 et backend local 8000 accessibles via https://macbook-pro-de-alex.taild22ef5.ts.net/. Provider mock, authentification conservee, aucun secret ni deploiement de production. Cette URL de developpement depend du Mac MALEX, de Tailscale et des deux processus locaux.",
       "tagline": "MALEX — Vincent peut suivre la meme instance de developpement, sans la confondre avec une release.",
       "status": "shared_in_git_worktree"
+    },
+    {
+      "message_id": "recap-20260824-masterplan-subject-assignment-bridge",
+      "created_at": "2026-08-24T02:19:39.000Z",
+      "sender": "malex_codex",
+      "recipient": "masterbuild",
+      "goal_id": "UI-PAGE-BY-PAGE-001",
+      "stage_index": 6,
+      "body": "Finding externe candidat MASTERPLAN-SUBJECT-ASSIGNMENT-BRIDGE-001. L'audit MasterPlan ne revele pas un bug urgent de MasterFlow : SubjectManifest, SubjectVersion, SubjectAssignment, EvidenceEvent, PedagogicalSignal et TeacherDecisionDelta fournissent deja une base saine. Le bridge pedagogique doit toutefois distinguer sujet principal, choix, parcours, evaluation, ressource, evenement, outil et matrice historique, ainsi que cours, semestre et proposition non active. Corrections terrain integrees : Amener l'art a l'ecole etait le Design Sprint B4, Affiche-toi est un projet annuel B2, et le cours B4 PAO 4IC de 14 heures reste sans sujet valide. Auditer d'abord un adaptateur file-first ; ne modifier aucun schema, runtime, Round actif ou affectation sans nouveau GO. Voir docs/masterbuild/handoffs/MASTERPLAN_SUBJECT_ASSIGNMENT_BRIDGE_HANDOFF_2026-08-24.md.",
+      "tagline": "MasterPlan apporte du contexte ; MasterBuild decide ou il entre sans transformer un classeur en migration.",
+      "status": "candidate_external_finding"
     }
   ]
 }
