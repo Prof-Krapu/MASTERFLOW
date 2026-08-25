@@ -1,0 +1,221 @@
+@import url("https://fonts.googleapis.com/css2?family=Marianne:wght@400;500;700;800&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: 'Marianne', 'Inter', sans-serif;
+    --font-sans: 'Marianne', 'Inter', 'Geist Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    /* === Couleurs DSFR (système-de-design.gouv.fr) === */
+    --bf500: #000091;          /* Bleu France — primaire */
+    --bf500-hover: #1212ff;
+    --bf500-active: #2323ff;
+    --rm500: #E1000F;          /* Rouge Marianne — alerte/erreur */
+    --rm-light: #FCBFBF;
+    --grey-50: #F6F6F6;
+    --grey-100: #EEEEEE;
+    --grey-200: #DDDDDD;
+    --grey-500: #666666;
+    --grey-900: #161616;
+    --green-emeraude: #00A95F;
+    --orange-tlf: #C3992A;
+
+    /* === Couleurs par matière (pour les cartes de la landing) === */
+    --pc-color: #3939E0;       /* Indigo Physique-Chimie (proche du Bleu France mais distinct) */
+    --pc-color-light: #E5E5FB;
+    --fr-color: #000091;       /* Bleu France pour Français */
+    --fr-color-light: #E3E3FD;
+    --nl-color: #FF6B35;       /* Orange Pays-Bas pour Néerlandais */
+    --nl-color-light: #FFE4D6;
+    --es-color: #C60B1E;       /* Rouge Espagne pour Espagnol */
+    --es-color-light: #FBD9DC;
+    --svt-color: #18753C;      /* Vert DSFR pour SVT (sciences de la vie et de la Terre) */
+    --svt-color-light: #C9FCD5;
+    --maths-color: #6A2C91;    /* Violet glycine pour Mathématiques */
+    --maths-color-light: #F2E5FB;
+    --ses-color: #009099;      /* Teal DSFR pour SES (sciences économiques et sociales) */
+    --ses-color-light: #CDE9E9;
+    --tech-color: #5E6E84;     /* Bleu acier pour Technologie (collège) */
+    --tech-color-light: #E3E7EE;
+    --en-color: #00247D;       /* Bleu Union Jack pour Anglais */
+    --en-color-light: #D6DEEF;
+    --philo-color: #6E4C1E;    /* Bronze antique pour Philosophie (chouette d'Athéna) */
+    --philo-color-light: #E9E1D6;
+    --hg-color: #5A6E3A;       /* Vert olive/kaki pour Histoire-Geographie (carte, terrain) */
+    --hg-color-light: #E4E8D8;
+
+    /* === Mapping shadcn → DSFR === */
+    --background: #FFFFFF;
+    --foreground: var(--grey-900);
+    --card: #FFFFFF;
+    --card-foreground: var(--grey-900);
+    --popover: #FFFFFF;
+    --popover-foreground: var(--grey-900);
+
+    --primary: var(--bf500);
+    --primary-foreground: #FFFFFF;
+
+    --secondary: var(--grey-50);
+    --secondary-foreground: var(--grey-900);
+
+    --muted: var(--grey-50);
+    --muted-foreground: var(--grey-500);
+
+    --accent: #E3E3FD;
+    --accent-foreground: var(--bf500);
+
+    --destructive: var(--rm500);
+    --destructive-foreground: #FFFFFF;
+
+    --border: var(--grey-100);
+    --input: #929292;
+    --ring: var(--bf500);
+
+    --chart-1: #000091;
+    --chart-2: #00A95F;
+    --chart-3: #C3992A;
+    --chart-4: #E1000F;
+    --chart-5: #6A6AF4;
+
+    --radius: 0.25rem;
+
+    --sidebar: #F6F6F6;
+    --sidebar-foreground: var(--grey-900);
+    --sidebar-primary: var(--bf500);
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #E3E3FD;
+    --sidebar-accent-foreground: var(--bf500);
+    --sidebar-border: var(--grey-100);
+    --sidebar-ring: var(--bf500);
+}
+
+.dark {
+    --background: #1B1B35;
+    --foreground: #F6F6F6;
+    --card: #242444;
+    --card-foreground: #F6F6F6;
+    --popover: #242444;
+    --popover-foreground: #F6F6F6;
+    --primary: #6A6AF4;
+    --primary-foreground: #FFFFFF;
+    --secondary: #2D2D5A;
+    --secondary-foreground: #F6F6F6;
+    --muted: #2D2D5A;
+    --muted-foreground: #9696B4;
+    --accent: #3A3A6E;
+    --accent-foreground: #C5C5FF;
+    --destructive: #F88080;
+    --destructive-foreground: #FFFFFF;
+    --border: #3A3A5E;
+    --input: #3A3A5E;
+    --ring: #6A6AF4;
+    --chart-1: #6A6AF4;
+    --chart-2: #00A95F;
+    --chart-3: #C3992A;
+    --chart-4: #F88080;
+    --chart-5: #C5C5FF;
+    --sidebar: #242444;
+    --sidebar-foreground: #F6F6F6;
+    --sidebar-primary: #6A6AF4;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #3A3A6E;
+    --sidebar-accent-foreground: #C5C5FF;
+    --sidebar-border: #3A3A5E;
+    --sidebar-ring: #6A6AF4;
+
+    --pc-color: #8B8BFA;
+    --pc-color-light: #3A3A6E;
+    --fr-color: #6A6AF4;
+    --fr-color-light: #3A3A6E;
+    --nl-color: #FF9670;
+    --nl-color-light: #4A3030;
+    --es-color: #F26674;
+    --es-color-light: #4A2A2E;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+}
+
+/* === Animations (alignées sur les sous-apps) === */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.wizard-step-enter {
+  animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.progress-active {
+  animation: progressPulse 1.5s ease-in-out infinite;
+}
+
+/* === États interactifs garantis === */
+button, [role="button"] {
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+button:hover, [role="button"]:hover {
+  filter: brightness(0.95);
+}
+button:active, [role="button"]:active {
+  transform: scale(0.97);
+  filter: brightness(0.9);
+}

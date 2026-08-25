@@ -1,0 +1,22 @@
+# Source de vérité du câblage des 11 correcteurs web.
+# Colonnes (séparateur TABULATION) : slug  dossier  branche  port  label
+#
+# - slug    : préfixe de route /app/<slug>/ ET nom d'unité corrector-<slug>.
+# - dossier : répertoire du checkout, frère de API_manage (sous CORRECTORS_PARENT).
+# - branche : branche du dépôt corrector.git à cloner (--single-branch).
+# - port    : port loopback servi par le fork (PORT=<port> npm run serve:web).
+# - label   : libellé humain (Description systemd, ASCII sans accent pour les units).
+#
+# DOIT rester aligné sur loadRoutes() dans server/routes/proxy.ts (slug↔port).
+# Le fork FR a un double remote (voir bootstrap.sh) car il dérive de API_corrector.
+pc	API_corrector	Pc	3001	Physique-Chimie
+fr	API_corrector_francais	Fr	3005	Francais
+nl	API_corrector_neerlandais	Nl	3009	Neerlandais
+es	API_corrector_espagnol	Es	3013	Espagnol
+svt	API_corrector_svt	Svt	3021	SVT
+maths	API_corrector_mathematiques	Math	3025	Mathematiques
+ses	API_corrector_ses	Ses	3029	SES
+tech	API_corrector_technologie	Tech	3033	Technologie
+en	API_corrector_anglais	Anglais	3037	Anglais
+philo	API_corrector_philosophie	Philo	3041	Philosophie
+hg	API_corrector_histoire_geographie	Hgeo	3045	Histoire-Geographie
