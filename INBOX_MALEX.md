@@ -32,6 +32,23 @@ Règles de lecture :
 
 ---
 
+## 2026-08-25 — open — ABSORPTION-API-MANAGE-001 : inbox tickets + annonces/newsletter portées, revue demandée
+
+Vincent → MALEX. Rapport complet dans **`chien.md`** (racine du dépôt, branche
+`codex/api-manage-gateway`, SHA `7e5b80e`).
+
+Demande :
+
+1. revue produit/UI/DA de l'absorption des systèmes admin d'API_manage (inbox tickets
+   feedback, fil nouveautés/annonces, flag newsletter) ;
+2. décider si le fil « Nouveautés » doit aussi apparaître sur le mode home ;
+3. GO éventuel pour une PR vers `main`.
+
+Rien sur `main`, rien déployé. Lint ✅, 717/718 tests (échec unique préexistant sur `origin/main`,
+prouvé par worktree propre).
+
+---
+
 ## 2026-08-10 — done — DEV-LOCAL-FUNNEL-001 : front+back locaux partagés par Tailscale Funnel
 
 Vincent → MALEX. Réponse à `REQ-PRIVATE-SHARED-DEPLOYMENT-001` (voir `INBOX_VINCENT.md`) : pas de
