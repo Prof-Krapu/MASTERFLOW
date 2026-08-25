@@ -114,6 +114,12 @@ import type {
   SetStoryReaderStateRequest,
   PrivateQuoteDraft,
   CreatePrivateQuoteDraftRequest,
+  FeedbackTicket,
+  CreateFeedbackTicketRequest,
+  ResolveFeedbackTicketRequest,
+  NewsPost,
+  CreateNewsPostRequest,
+  UpdateNewsPostRequest,
 } from '@masterflow/shared';
 
 const API_BASE = '/api/v1';
@@ -1074,4 +1080,69 @@ export async function playTts(
   };
 
   await audio.play();
+}
+
+// ───────────────────────── Tickets feedback (portage API_manage) ─────────────────────────
+
+export async function createFeedbackTicket(body: CreateFeedbackTicketRequest, token?: string | null): Promise<FeedbackTicket> {
+  return request<FeedbackTicket>('/feedback-tickets', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+
+export async function listMyFeedbackTickets(token?: string | null): Promise<FeedbackTicket[]> {
+  return request<FeedbackTicket[]>('/feedback-tickets', {method: 'GET'}, token);
+}
+
+export async function deleteMyFeedbackTicket(id: string, token?: string | null): Promise<{ok: boolean}> {
+  return request<{ok: boolean}>(`/feedback-tickets/${encodeURIComponent(id)}`, {method: 'DELETE'}, token);
+}
+
+export async function listAllFeedbackTickets(token?: string | null): Promise<FeedbackTicket[]> {
+  return request<FeedbackTicket[]>('/admin/feedback-tickets', {method: 'GET'}, token);
+}
+
+export async function resolveFeedbackTicket(
+  id: string,
+  body: ResolveFeedbackTicketRequest,
+  token?: string | null,
+): Promise<FeedbackTicket> {
+  return request<FeedbackTicket>(
+    `/admin/feedback-tickets/${encodeURIComponent(id)}/resolve`,
+    {method: 'POST', body: JSON.stringify(body)},
+    token,
+  );
+}
+
+export async function adminDeleteFeedbackTicket(id: string, token?: string | null): Promise<{ok: boolean}> {
+  return request<{ok: boolean}>(`/admin/feedback-tickets/${encodeURIComponent(id)}`, {method: 'DELETE'}, token);
+}
+
+// ───────────────────────── Annonces / newsletter (portage API_manage) ─────────────────────────
+
+export async function listNewsPosts(token?: string | null): Promise<NewsPost[]> {
+  return request<NewsPost[]>('/news', {method: 'GET'}, token);
+}
+
+export async function getUnreadNewsCount(token?: string | null): Promise<number> {
+  const r = await request<{count: number}>('/news/unread-count', {method: 'GET'}, token);
+  return r.count;
+}
+
+export async function markNewsPostRead(id: string, token?: string | null): Promise<NewsPost> {
+  return request<NewsPost>(`/news/${encodeURIComponent(id)}/read`, {method: 'POST'}, token);
+}
+
+export async function createNewsPost(body: CreateNewsPostRequest, token?: string | null): Promise<NewsPost> {
+  return request<NewsPost>('/admin/news', {method: 'POST', body: JSON.stringify(body)}, token);
+}
+
+export async function updateNewsPost(id: string, body: UpdateNewsPostRequest, token?: string | null): Promise<NewsPost> {
+  return request<NewsPost>(`/admin/news/${encodeURIComponent(id)}`, {method: 'PUT', body: JSON.stringify(body)}, token);
+}
+
+export async function markNewsPostEmailed(id: string, token?: string | null): Promise<NewsPost> {
+  return request<NewsPost>(`/admin/news/${encodeURIComponent(id)}/emailed`, {method: 'POST'}, token);
+}
+
+export async function deleteNewsPost(id: string, token?: string | null): Promise<{ok: boolean}> {
+  return request<{ok: boolean}>(`/admin/news/${encodeURIComponent(id)}`, {method: 'DELETE'}, token);
 }

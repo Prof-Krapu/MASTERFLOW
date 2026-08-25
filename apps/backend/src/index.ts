@@ -30,6 +30,8 @@ import {createStoryWorkbenchesRouter} from './routers/story_workbenches.ts';
 import {createPrivateQuotesRouter} from './routers/private_quotes.ts';
 import {createInventoryRouter} from './routers/inventory.ts';
 import {createValidationInboxRouter} from './routers/validation_inbox.ts';
+import {createFeedbackTicketsRouter} from './routers/feedback_tickets.ts';
+import {createNewsRouter} from './routers/news.ts';
 import {createFactoryBackflowRouter} from './routers/factory_backflow.ts';
 import {createCompetenciesRouter} from './routers/competencies.ts';
 import {createGamificationRouter} from './routers/gamification.ts';
@@ -111,6 +113,8 @@ async function main(): Promise<void> {
   app.use(api, createPrivateQuotesRouter());
   app.use(api, createInventoryRouter());
   app.use(api, createValidationInboxRouter());
+  app.use(api, createFeedbackTicketsRouter());
+  app.use(api, createNewsRouter());
   app.use(api, createFactoryBackflowRouter());
   app.use(api, createCompetenciesRouter());
   app.use(api, createGamificationRouter());

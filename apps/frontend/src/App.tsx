@@ -55,6 +55,8 @@ import {
 import type {PersonaVisualState} from './app-shell.tsx';
 import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
+import {NewsFeed} from './news-feed.tsx';
+import {FeedbackForm} from './feedback-form.tsx';
 import {ProjectWorkspaceV2} from './project-workspace-v2.tsx';
 import {SystemMessages} from './system-messages.tsx';
 import {RegisterWithCode} from './register-form.tsx';
@@ -1717,6 +1719,12 @@ function App(): ReactElement {
         </form>
       ) : (
         <section className="workspace" aria-label="Contexte courant">
+          {selectedMode !== 'home' && auth ? (
+            <>
+              <NewsFeed token={auth.token} />
+              <FeedbackForm token={auth.token} />
+            </>
+          ) : null}
           {selectedMode === 'home' && !pilotageOpen ? (
             <>
               <div className="home-workspace">

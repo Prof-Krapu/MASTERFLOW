@@ -3,7 +3,9 @@ import type {FormEvent, ReactElement} from 'react';
 
 import type {
   AdminUser,
+  FeedbackTicket,
   Invitation,
+  NewsPost,
   Role,
   TaskModelProfile,
   TokenUsageGroupBy,
@@ -24,15 +26,23 @@ import {
 } from 'recharts';
 
 import {
+  adminDeleteFeedbackTicket,
   createAction,
   createInvitation,
+  createNewsPost,
+  deleteNewsPost,
   executeAction,
   getAdminUsers,
   getInvitations,
   getTaskModelProfiles,
   getTokenUsage,
+  listAllFeedbackTickets,
+  listNewsPosts,
+  markNewsPostEmailed,
   preflightAction,
+  resolveFeedbackTicket,
   revokeInvitation,
+  updateNewsPost,
   validateAction,
 } from './api.ts';
 
@@ -94,6 +104,15 @@ function profilePrivacyLabel(mode: TaskModelProfile['privacy_mode']): string {
   return 'hybride';
 }
 
+/** Chargement tolérant du fil d'annonces (backend < cette feature → tableau vide). */
+async function listNewsPostsSafe(token: string): Promise<NewsPost[]> {
+  try {
+    return await listNewsPosts(token);
+  } catch {
+    return [];
+  }
+}
+
 export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): ReactElement {
   const isGodmode = role === 'godmode';
 
@@ -119,11 +138,24 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
   // État du flux de changement de rôle par utilisateur.
   const [roleFlows, setRoleFlows] = useState<Record<string, RoleFlow>>({});
 
+  // ── Tickets feedback (portage API_manage) ─────────────────────
+  const [tickets, setTickets] = useState<FeedbackTicket[]>([]);
+  const [ticketNote, setTicketNote] = useState<Record<string, string>>({});
+
+  // ── Annonces / newsletter (portage API_manage) ────────────────
+  const [posts, setPosts] = useState<NewsPost[]>([]);
+  const [postTitle, setPostTitle] = useState('');
+  const [postBody, setPostBody] = useState('');
+  const [postEmailed, setPostEmailed] = useState(false);
+  const [editPostId, setEditPostId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editBody, setEditBody] = useState('');
+
   const loadAll = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
-      const [u, inv, profiles, day, model, task, user] = await Promise.all([
+      const [u, inv, profiles, day, model, task, user, tks, ps] = await Promise.all([
         getAdminUsers(token),
         getInvitations(token),
         getTaskModelProfiles(token),
@@ -131,11 +163,15 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
         getTokenUsage('model', token),
         getTokenUsage('task', token),
         getTokenUsage('user', token),
+        listAllFeedbackTickets(token).catch((): FeedbackTicket[] => []),
+        listNewsPostsSafe(token),
       ]);
       setUsers(u);
       setInvitations(inv);
       setTaskModelProfiles(profiles);
       setReports({day, model, task, user});
+      setTickets(tks);
+      setPosts(ps);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur de chargement.');
     } finally {
@@ -146,6 +182,92 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
   useEffect(() => {
     void loadAll();
   }, [loadAll]);
+
+  // ── Tickets feedback ───────────────────────────────────────────
+  const handleResolveTicket = useCallback(
+    async (id: string): Promise<void> => {
+      setError(null);
+      try {
+        await resolveFeedbackTicket(id, {note: ticketNote[id] || undefined}, token);
+        setTickets(await listAllFeedbackTickets(token));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Résolution échouée.');
+      }
+    },
+    [ticketNote, token],
+  );
+
+  const handleDeleteTicket = useCallback(
+    async (id: string): Promise<void> => {
+      setError(null);
+      try {
+        await adminDeleteFeedbackTicket(id, token);
+        setTickets(await listAllFeedbackTickets(token));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Suppression échouée.');
+      }
+    },
+    [token],
+  );
+
+  // ── Annonces / newsletter ──────────────────────────────────────
+  const handleCreatePost = useCallback(
+    async (e: FormEvent): Promise<void> => {
+      e.preventDefault();
+      if (!postTitle.trim() || !postBody.trim()) return;
+      setError(null);
+      try {
+        await createNewsPost({title: postTitle, body: postBody, emailed: postEmailed}, token);
+        setPostTitle('');
+        setPostBody('');
+        setPostEmailed(false);
+        setPosts(await listNewsPostsSafe(token));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Publication échouée.');
+      }
+    },
+    [postBody, postEmailed, postTitle, token],
+  );
+
+  const handleUpdatePost = useCallback(
+    async (id: string): Promise<void> => {
+      setError(null);
+      try {
+        await updateNewsPost(id, {title: editTitle, body: editBody}, token);
+        setEditPostId(null);
+        setPosts(await listNewsPostsSafe(token));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Mise à jour échouée.');
+      }
+    },
+    [editBody, editTitle, token],
+  );
+
+  const handleFlagEmailed = useCallback(
+    async (id: string): Promise<void> => {
+      setError(null);
+      try {
+        await markNewsPostEmailed(id, token);
+        setPosts(await listNewsPostsSafe(token));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Marquage newsletter échoué.');
+      }
+    },
+    [token],
+  );
+
+  const handleDeletePost = useCallback(
+    async (id: string): Promise<void> => {
+      setError(null);
+      try {
+        await deleteNewsPost(id, token);
+        setPosts(await listNewsPostsSafe(token));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Suppression échouée.');
+      }
+    },
+    [token],
+  );
 
   // ── Invitations ────────────────────────────────────────────────
   const handleCreateInvite = useCallback(
@@ -466,6 +588,162 @@ export function AdminConsole({token, role, currentUserId}: AdminConsoleProps): R
                   </tr>
                 );
               })}
+             </tbody>
+           </table>
+         </section>
+
+      </article>
+
+      {/* ── Inbox tickets & annonces (portage API_manage) ───────── */}
+      <article className="panel panel--wide admin-inbox-news">
+        <div className="panel-header">
+          <h2>Inbox &amp; annonces</h2>
+          <span className="admin-muted">tickets feedback · fil de nouveautés / newsletter</span>
+        </div>
+
+        {/* ── Tickets feedback ────────────────────────────────── */}
+        <section className="admin-section">
+          <h3>Tickets feedback ({tickets.filter((t) => t.status === 'open').length} ouvert(s))</h3>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Message</th>
+                <th>Auteur</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tickets.length === 0 ? (
+                <tr>
+                  <td colSpan={6}>Aucun ticket.</td>
+                </tr>
+              ) : (
+                tickets.map((ticket) => (
+                  <tr key={ticket.id}>
+                    <td>{ticket.kind}</td>
+                    <td>{ticket.message}</td>
+                    <td>
+                      {ticket.display_name} <span className="admin-muted">@{ticket.username}</span>
+                    </td>
+                    <td>{fmtDate(ticket.created_at)}</td>
+                    <td>
+                      {ticket.status === 'open' ? 'ouvert' : `résolu${ticket.resolution_note ? ` — ${ticket.resolution_note}` : ''}`}
+                    </td>
+                    <td>
+                      {ticket.status === 'open' ? (
+                        <>
+                          <input
+                            placeholder="Note de résolution"
+                            type="text"
+                            value={ticketNote[ticket.id] ?? ''}
+                            onChange={(e) => setTicketNote((n) => ({...n, [ticket.id]: e.target.value}))}
+                          />
+                          <button className="secondary" type="button" onClick={() => void handleResolveTicket(ticket.id)}>
+                            Résoudre
+                          </button>
+                        </>
+                      ) : null}
+                      <button className="secondary" type="button" onClick={() => void handleDeleteTicket(ticket.id)}>
+                        Supprimer
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </section>
+
+        {/* ── Annonces / newsletter ───────────────────────────── */}
+        <section className="admin-section">
+          <h3>Annonces &amp; newsletter</h3>
+          <form className="admin-invite-form" onSubmit={handleCreatePost}>
+            <label>
+              Titre
+              <input maxLength={200} type="text" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
+            </label>
+            <label>
+              Contenu
+              <textarea maxLength={20000} rows={3} value={postBody} onChange={(e) => setPostBody(e.target.value)} />
+            </label>
+            <label className="admin-muted">
+              Newsletter
+              <input checked={postEmailed} type="checkbox" onChange={(e) => setPostEmailed(e.target.checked)} />
+            </label>
+            <button disabled={!postTitle.trim() || !postBody.trim()} type="submit">
+              Publier
+            </button>
+          </form>
+
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Titre</th>
+                <th>Contenu</th>
+                <th>Date</th>
+                <th>Newsletter</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {posts.length === 0 ? (
+                <tr>
+                  <td colSpan={5}>Aucune annonce publiée.</td>
+                </tr>
+              ) : (
+                posts.map((post) =>
+                  editPostId === post.id ? (
+                    <tr key={post.id}>
+                      <td colSpan={5}>
+                        <input
+                          maxLength={200}
+                          type="text"
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                        />
+                        <textarea rows={3} value={editBody} onChange={(e) => setEditBody(e.target.value)} />
+                        <button type="button" onClick={() => void handleUpdatePost(post.id)}>
+                          Enregistrer
+                        </button>
+                        <button className="secondary" type="button" onClick={() => setEditPostId(null)}>
+                          Annuler
+                        </button>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr key={post.id}>
+                      <td>{post.title}</td>
+                      <td>{post.body.length > 120 ? `${post.body.slice(0, 120)}…` : post.body}</td>
+                      <td>{fmtDate(post.created_at)}</td>
+                      <td>{post.emailed ? 'oui' : 'non'}</td>
+                      <td>
+                        {!post.emailed ? (
+                          <button className="secondary" type="button" onClick={() => void handleFlagEmailed(post.id)}>
+                            Marquer newsletter
+                          </button>
+                        ) : null}
+                        <button
+                          className="secondary"
+                          type="button"
+                          onClick={() => {
+                            setEditPostId(post.id);
+                            setEditTitle(post.title);
+                            setEditBody(post.body);
+                          }}
+                        >
+                          Éditer
+                        </button>
+                        <button className="secondary" type="button" onClick={() => void handleDeletePost(post.id)}>
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ),
+                )
+              )}
             </tbody>
           </table>
         </section>

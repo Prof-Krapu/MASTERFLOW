@@ -6655,3 +6655,77 @@ export const GAMIFICATION_API = {
     events: '/api/v1/gamification/progression/events',
   },
 } as const;
+
+// ───────────────────────── Tickets feedback (portage API_manage) ─────────────────────────
+//
+// Système d'inbox de tickets erreur/retour utilisateur, porté depuis la gateway
+// API_manage (server/routes/feedback.ts + admin-feedback.ts). Différence clé avec la
+// validation_inbox existante : ici pas de cycle d'action — un utilisateur ouvre un
+// ticket libre, l'admin le résout ou le supprime. Gating : création = tout user,
+// gestion = ≥ admin.
+
+export const FeedbackTicketKindSchema = z.enum(['bug', 'retour', 'autre']);
+export type FeedbackTicketKind = z.infer<typeof FeedbackTicketKindSchema>;
+
+export const FeedbackTicketStatusSchema = z.enum(['open', 'resolved']);
+export type FeedbackTicketStatus = z.infer<typeof FeedbackTicketStatusSchema>;
+
+export const CreateFeedbackTicketRequestSchema = z.object({
+  kind: FeedbackTicketKindSchema,
+  message: z.string().min(1).max(8000),
+});
+export type CreateFeedbackTicketRequest = z.infer<typeof CreateFeedbackTicketRequestSchema>;
+
+export const ResolveFeedbackTicketRequestSchema = z.object({
+  note: z.string().max(4000).optional(),
+});
+export type ResolveFeedbackTicketRequest = z.infer<typeof ResolveFeedbackTicketRequestSchema>;
+
+export const FeedbackTicketSchema = z.object({
+  id: z.string().min(1),
+  kind: FeedbackTicketKindSchema,
+  message: z.string(),
+  status: FeedbackTicketStatusSchema,
+  resolution_note: z.string().nullable(),
+  created_at: z.number(),
+  resolved_at: z.number().nullable(),
+  // Auteur (dénormalisé pour l'affichage admin sans jointure côté front).
+  user_id: z.string(),
+  username: z.string(),
+  display_name: z.string(),
+});
+export type FeedbackTicket = z.infer<typeof FeedbackTicketSchema>;
+
+// ───────────────────────── Annonces / newsletter (portage API_manage) ─────────────────────────
+//
+// Fil de nouveautés admin → utilisateurs, porté depuis API_manage (server/routes/news.ts +
+// composant NewsTimeline.tsx). Le flag `emailed` reprend la sémantine « newsletter » de
+// API_manage : marque qu'une annonce a été diffusée par email hors-bande.
+
+export const NewsPostSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1).max(200),
+  body: z.string().min(1).max(20000),
+  author_id: z.string(),
+  author_username: z.string(),
+  emailed: z.boolean(),
+  created_at: z.number(),
+  updated_at: z.number(),
+  // État de lecture pour l'utilisateur courant (null = non lu).
+  read_at: z.number().nullable(),
+});
+export type NewsPost = z.infer<typeof NewsPostSchema>;
+
+export const CreateNewsPostRequestSchema = z.object({
+  title: z.string().min(1).max(200),
+  body: z.string().min(1).max(20000),
+  emailed: z.boolean().default(false),
+});
+export type CreateNewsPostRequest = z.infer<typeof CreateNewsPostRequestSchema>;
+
+export const UpdateNewsPostRequestSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  body: z.string().min(1).max(20000).optional(),
+  emailed: z.boolean().optional(),
+});
+export type UpdateNewsPostRequest = z.infer<typeof UpdateNewsPostRequestSchema>;

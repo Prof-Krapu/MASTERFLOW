@@ -2089,6 +2089,38 @@ function migrate(d: Database.Database): void {
   // Canon lock on workbenches
   ensureColumn(d, 'story_workbenches', 'canon_locked', 'INTEGER NOT NULL DEFAULT 0');
 
+  // ───────────────────────── Tickets feedback & annonces (portage API_manage) ─────────
+  d.exec(`
+    CREATE TABLE IF NOT EXISTS feedback_tickets (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind            TEXT NOT NULL CHECK (kind IN ('bug','retour','autre')),
+      message         TEXT NOT NULL,
+      status          TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','resolved')),
+      resolution_note TEXT,
+      created_at      INTEGER NOT NULL,
+      resolved_at     INTEGER,
+      CHECK ((status = 'open') OR (status = 'resolved' AND resolved_at IS NOT NULL))
+    );
+
+    CREATE TABLE IF NOT EXISTS news_posts (
+      id              TEXT PRIMARY KEY,
+      title           TEXT NOT NULL,
+      body            TEXT NOT NULL,
+      author_id       TEXT NOT NULL REFERENCES users(id),
+      emailed         INTEGER NOT NULL DEFAULT 0 CHECK (emailed IN (0,1)),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS news_post_reads (
+      post_id         TEXT NOT NULL REFERENCES news_posts(id) ON DELETE CASCADE,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      read_at         INTEGER NOT NULL,
+      PRIMARY KEY (post_id, user_id)
+    );
+  `);
+
   // SQLite ne sait pas ALTER un CHECK : la colonne `task` a gagné `image_generation`.
   // On reconstruit la table (lignes préservées) sur les colonnes déjà étendues ci-dessus.
   migrateTaskModelProfilesTaskCheck(d);
