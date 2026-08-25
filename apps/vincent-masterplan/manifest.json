@@ -1,0 +1,22 @@
+{
+  "name": "ProfKrapu 2026-2027",
+  "short_name": "ProfKrapu",
+  "description": "Emploi du temps et calendrier pour ProfKrapu",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#101828",
+  "theme_color": "#e84f8a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
