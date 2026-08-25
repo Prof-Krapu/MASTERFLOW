@@ -1,11 +1,11 @@
 {
-  "name": "ProfKrapu 2026-2027",
-  "short_name": "ProfKrapu",
-  "description": "Emploi du temps et calendrier pour ProfKrapu",
+  "name": "MASTERPLAN · VINCENT · 2026-2027",
+  "short_name": "MASTERPLAN",
+  "description": "Emploi du temps MasterPlan de Vincent",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#101828",
-  "theme_color": "#e84f8a",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "any",
   "icons": [
     {

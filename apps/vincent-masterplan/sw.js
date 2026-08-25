@@ -1,8 +1,16 @@
-const CACHE_NAME = 'profkrapu-v1';
+const CACHE_NAME = 'masterplan-vincent-v5';
 const ASSETS = [
   './',
   './index.html',
-  './manifest.json'
+  './builder.js',
+  './manifest.json',
+  './assets/icon-180.png',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/lycee-des-flandres.svg',
+  './assets/masterflow-wordmark.svg',
+  './assets/profkrapu-avatar.png',
+  './assets/student-placeholder-neutral.png'
 ];
 
 self.addEventListener('install', (event) => {

@@ -1,4 +1,4 @@
-# INSTALL — ProfKrapu MasterPlan
+# INSTALL — MASTERPLAN · VINCENT
 
 ## Pré-requis
 
@@ -13,7 +13,30 @@ cd MASTERFLOW
 git checkout vincent/masterplan
 ```
 
-## 2. Configuration
+## 2. Démarrage rapide sur Mac
+
+Double-cliquez sur `START_MASTERPLAN.command`. Le lanceur choisit un port local disponible puis ouvre MASTERPLAN dans le navigateur.
+
+Au premier lancement, macOS peut demander une confirmation : clic droit sur le fichier, puis **Ouvrir**.
+
+Pour arrêter le serveur, fermez sa fenêtre Terminal ou utilisez `Ctrl+C`.
+
+## 3. Premier démarrage
+
+Ouvrez `apps/vincent-masterplan/index.html` depuis un serveur local ou l'hébergement choisi.
+MASTERPLAN démarre sans planning et demande uniquement le lien de mise à jour Pronote du Lycée des Flandres :
+
+1. copiez le lien iCal sécurisé depuis Pronote ;
+2. collez-le dans MASTERPLAN ;
+3. validez pour ouvrir le planning.
+
+Le lien et son dernier contenu valide sont conservés localement dans le navigateur de Vincent. Le lien iCal est vérifié à chaque nouveau chargement. Le serveur local relaie la lecture lorsque Pronote bloque l'accès direct depuis le navigateur.
+
+Le bouton `+` de la barre latérale permet ensuite de remplacer ou retirer le lien Pronote.
+
+Claude Code peut assurer le clonage et le démarrage, mais le lien Pronote ne doit pas être écrit dans le dépôt : il contient une clé personnelle et reste saisi dans l'interface locale.
+
+## 4. Configuration avancée
 
 ### URL de l'application Google Apps Script
 
@@ -29,7 +52,7 @@ par votre URL de déploiement Google Apps Script.
 
 Si vous avez accès à une API Pronote ou Hyperplanning, configurez les flux iCal dans l'application via le bouton **+** dans le menu mobile.
 
-## 3. Déploiement
+## 5. Déploiement
 
 ### Option A : Google Apps Script (recommandé)
 
@@ -60,7 +83,7 @@ cargo install tauri-cli
 cargo tauri init
 
 # Configuration :
-# - Window title: ProfKrapu 2026-2027
+# - Window title: MASTERPLAN · VINCENT
 # - Dev URL: http://localhost:8080 (si vous serviz localement)
 # - Frontend dist: ../apps/vincent-masterplan
 
@@ -86,7 +109,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    title: 'ProfKrapu 2026-2027',
+    title: 'MASTERPLAN · VINCENT',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -103,7 +126,7 @@ EOF
 electron .
 ```
 
-## 4. Personnalisation
+## 6. Personnalisation
 
 ### Couleurs
 
@@ -119,7 +142,7 @@ Les couleurs sont définies dans les variables CSS en haut de `index.html` :
 
 Remplacez le SVG du logo dans `apps/vincent-masterplan/assets/` par votre propre logo.
 
-## 5. Menu bar (Mac)
+## 7. Menu bar (Mac)
 
 Pour un accès rapide depuis la barre des menus macOS, utilisez l'une des options C ou D ci-dessus.
 
