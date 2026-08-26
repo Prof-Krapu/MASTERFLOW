@@ -1,4 +1,4 @@
-const CACHE_NAME = 'masterplan-vincent-v5';
+const CACHE_NAME = 'masterplan-vincent-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -31,6 +31,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  // Ne jamais servir ni mettre en cache /api/ : l'URL contient la clé
+  // personnelle Pronote et le planning complet. Passthrough réseau brut.
+  if (new URL(event.request.url).pathname.startsWith('/api/')) return;
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetched = fetch(event.request).then((response) => {
