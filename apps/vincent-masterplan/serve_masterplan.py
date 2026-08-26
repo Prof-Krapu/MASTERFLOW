@@ -26,12 +26,11 @@ def host_header_only(host_header: str) -> str:
 def resolves_public_only(hostname: str) -> bool:
     """Vrai si le nom d'hôte ne résout QUE vers des IP publiques.
 
-    Anti-SSRF : accepte explicitement 127.0.0.1, localhost et ::1,
-    puis refuse les réseaux privés, le link-local
-    (notamment 169.254.169.254) et tout adressage réservé.
+    Anti-SSRF : refuse localhost, les réseaux privés, le link-local
+    (notamment 169.254.169.254) et tout adressage réservé — y compris
+    pour les URL explicites en 127.0.0.1/localhost (cibles = services
+    locaux de la machine, hors périmètre d'un flux iCal Pronote).
     """
-    if hostname in ALLOWED_ORIGIN_HOSTS:
-        return True
     try:
         infos = socket.getaddrinfo(hostname, None)
     except (socket.gaierror, UnicodeError):
