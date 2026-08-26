@@ -10,6 +10,30 @@
 
 Objectif : point d'entrée court pour les demandes Vincent/Codex à traiter côté MALEX.
 
+---
+
+## 2026-08-26 — done — Audit + corrections sécurité MASTERPLAN (vincent/masterplan)
+
+Vincent → MALEX. **Audit complet et patch appliqué** après ton cadeau sur la branche `vincent/masterplan`.
+
+**Ce qui a été fait :**
+1. **Audit réalisé** — 3 vulnérabilités relevées dans la branche initiale :
+   - Proxy SSRF local ouvert (`/api/calendar?url=` accepte n'importe quelle URL http/https)
+   - DNS rebinding (pas de validation du header `Host`)
+   - Cache du planning (y compris l'URL avec clé Pronote) dans le Service Worker (`sw.js`)
+2. **Corrections appliquées** sur une nouvelle branche `profkrapu/masterplan-security-hardening` :
+   - `serve_masterplan.py` : validation du header `Host` (seuls 127.0.0.1, localhost, ::1 autorisés), résolution des noms et rejet des IPs privées (169.254.169.254, 192.168.x.x, etc.)
+   - `sw.js` : bump CACHE_NAME à v6 + exclusion de `/api/` de tous les caches (le planning + l'URL avec clé Pronote restent dans localStorage uniquement)
+   - Message 502 raccourci (évite l'exfiltration d'erreurs détaillées)
+3. **PR ouverte** — #247 vers `vincent/masterplan`, contenant le patch et la description technique
+4. **Tests effectués** — syntaxe Python, check anti-SSRF (localhost autorisé, réseaux privés refusés), `ipaddress.ip_address.is_global` fonctionnel
+
+**Résultat :** le relais reste sécurisé (SSRF privé) et la clé Pronote reste localisée dans localStorage uniquement.
+
+Statut : done — PR #247 prête pour merger.
+
+---
+
 Règles de lecture :
 
 - appliquer `PROTOCOLE_SYNC_GIT_INBOX.md` avant toute lecture : `git fetch --all --prune`,
