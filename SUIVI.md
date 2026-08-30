@@ -11,16 +11,15 @@ VAGUE ACTIVE :
 - id : `SERVER-FULLSTACK-PREVIEW-001` ;
 - objectif : préparer une preview privée MasterFlow sur Malex Graphics, puis le parcours pilote
   Ours d'Or, sans absorber prématurément les verticales différées ;
-- statut : lot 2 local terminé, lot 3 arrêté au gate d'installation serveur ; non committé, non
-  poussé, non déployé ;
-- dernière action terminée : images Docker construites, preview locale restaurable et recette verte
-  pour les comptes godmode Vincent et MALEX ;
-- prochaine action : obtenir le GO explicite pour commit/push et installation
-  Homebrew/Docker/Colima sur Malex Graphics ;
+- statut : lots 0 à 4 terminés ; preview privée déployée, branche non mergée et stable absente ;
+- dernière action terminée : recette HTTPS Tailscale verte, sauvegarde exportée et démarrage
+  utilisateur automatisé sur Malex Graphics ;
+- prochaine action : gate produit avant le lot 5 IA réelle + Link Engine déterministe ;
 - fichiers/domaines concernés : déploiement, seed, correction context, shared, smoke et pilotage ;
-- tests à relancer après le futur commit : backend complet, frontend lint/build, MASTERBUILD,
-  manifeste de release et smoke Docker ;
-- publication : aucune ;
+- tests à relancer au prochain changement runtime : backend complet, frontend lint/build,
+  MASTERBUILD, manifeste de release et smoke Docker ;
+- publication : branche `codex/masterflow-fullstack-preview` au SHA `e01fa0546a4e`, preview
+  tailnet-only ; aucune fusion `main`, stable ou ouverture publique ;
 - blocage : l'état MASTERBUILD reste orienté vers le Round UI historique ; sa réorientation et toute
   publication exigent une décision séparée.
 
@@ -37,10 +36,19 @@ Résultats locaux :
   ressources et WebSocket ;
 - persistance confirmée après redémarrage ; backup `masterflow.backup.v1` restauré vers une cible
   séparée avec `SQLite integrity_check=ok` ;
+- runtime serveur : Docker Desktop Intel `4.88.1`, Docker Engine `29.7.2` et Compose `5.4.0` en
+  mode utilisateur ; Homebrew/Colima non installés faute d'élévation non interactive ;
+- runtime annoncé par le cockpit au SHA exact `e01fa0546a4eb566b789cbde5a071de156451ee9` ;
+- smoke HTTPS externe vert pour Vincent et MALEX : health, frontend, auth, contexte, personas,
+  ressources et WebSocket ;
+- Tailscale Serve actif en mode `tailnet only`, proxy vers `127.0.0.1:8080`; aucun Funnel public ;
+- démarrage `com.masterflow.preview` après ouverture de session et sauvegarde quotidienne
+  `com.masterflow.preview.backup` à 03:15 ; aucun effacement automatique ;
+- backup serveur restauré puis exporté hors volume Docker avec hash vérifié et permissions `600` ;
 - alerte dépendances : audit production avec 1 vulnérabilité faible `body-parser`; audit complet
   ajoute 2 alertes hautes dans la chaîne de build, à corriger dans une tranche dédiée ;
-- preflight Malex Graphics relu : Intel, 12 CPU, 32 Go, 364 Gio libres, Tailscale sain, FileVault
-  actif ; Homebrew, Node, Docker et Colima absents ; aucune destination Time Machine configurée ;
+- preflight Malex Graphics relu : Intel, 12 CPU, 32 Go, 364 Gio libres, Tailscale sain et FileVault
+  actif ; aucune destination Time Machine ni copie chiffrée hors serveur configurée ;
 - réconciliation waves terminée : Fast Index non importé faute de générateur ; registre IA ancien
   conservé comme preuve ; contrats Link/LLM différés vers le lot 5 ;
 - plan : `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.

@@ -18,16 +18,16 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 Le chantier serveur full-stack est piloté par
 `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
 
-1. **À faire maintenant** : terminer le socle preview local et préparer le preflight Docker/backup.
+1. **À faire maintenant** : observer la preview privée et préparer le contrat du lot 5.
 2. **À mettre en queue** : IA réelle, Link Engine déterministe et parcours étudiant Ours d'Or.
-3. **À faire quand les gates sont validés** : installation Malex Graphics, preview, recette et stable.
+3. **À faire quand les gates sont validés** : provider réel, pilote Ours d'Or puis stable.
 4. **À demander à Vincent** : rien de bloquant actuellement ; toute contribution future doit citer
    le SHA lu et rester distincte du travail local non publié.
 5. **À décider plus tard** : absorption Talents Créatifs, MasterPlan, Corrector avancé, API Manage et
    Asset Engine. Ces capacités sont différées, pas supprimées ni rejetées.
 
-Validation requise avant commit, push, installation serveur, provider réel, stable ou ouverture
-publique.
+Preview déployée au SHA `e01fa0546a4e`. Validation encore requise avant provider réel, fusion,
+stable, ouverture publique, rétention destructive ou absorption d'une verticale.
 
 ## 1. À faire maintenant
 

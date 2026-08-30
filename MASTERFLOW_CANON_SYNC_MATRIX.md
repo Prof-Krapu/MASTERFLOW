@@ -2,7 +2,8 @@
 
 Dernière vérification : 2026-08-30
 Branche de travail : `codex/masterflow-fullstack-preview`
-Base GitHub vérifiée : `2ea7167` (`HEAD = origin/main`, avant changements locaux)
+Release preview vérifiée : `e01fa0546a4eb566b789cbde5a071de156451ee9`
+Base `origin/main` initiale : `2ea7167`
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -12,10 +13,10 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
-| Déploiement full-stack privé | partiel local | Compose existe mais aucune preview Malex Graphics n'est encore déployée. | élevé | Valider le lot serveur après recette locale et sauvegarde restaurable. |
-| Profils de seed preview/production | implémenté local | Séparation ajoutée et vérifiée sur trois bases temporaires ; non publiée. | faible à moyen | Publier après revue ; ne jamais charger le roster historique en production. |
-| Persistance fichiers Docker | implémenté local | `MASTERFLOW_STORAGE_ROOT=/data/storage` rejoint le volume `/data`; recette Docker encore absente. | moyen | Prouver la persistance par redéploiement et restauration en preview. |
-| Smoke de release | implémenté local | Les anciens hôtes implicites sont supprimés ; cible explicite requise. | faible | Tester sur Compose local puis Tailscale preview. |
+| Déploiement full-stack privé | preview déployée | Branche publiée, non mergée ; stable absente. | faible à moyen | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
+| Profils de seed preview/production | implémenté preview | Preview sans roster historique ; production sans démo ; comptes Vincent et MALEX préservés. | faible | Ne jamais charger le roster historique en production. |
+| Persistance fichiers Docker | implémenté preview | Volume persistant, backup et restauration prouvés ; copie hors serveur encore absente. | moyen | Ajouter une copie chiffrée vers le Mac principal avant toute rétention. |
+| Smoke de release | implémenté preview | Cible explicite, REST et WebSocket verts via HTTPS Tailscale pour les deux comptes. | faible | Rejouer après chaque release. |
 | Ours d'Or première verticale | partiel | Seed narratif preview disponible, parcours étudiant full-stack encore incomplet. | moyen | Construire après le gate preview mock. |
 | Capacités différées | futur | Talents, MasterPlan, Corrector avancé, API Manage et Asset Engine restent hors chemin critique. | faible | Conserver les contrats et absorber chaque verticale après stable. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
@@ -50,7 +51,7 @@ récoltées après audit.
 | D11 factories/backflow | implémenté V1 borné | V6C intake JSON/quarantaine, V6D candidate updates, V6E recommandations lecture seule et V6F routage manuel whitelisté sont sur `main`. Toute route reste `candidate_only`. | faible | D11 V1 est clos ; ne rouvrir que sur une nouvelle décision produit explicitant une frontière encore exclue. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
 | Pont de déploiement Drive | synchronisé | Le pont est rafraîchi après la dernière PR de preuve ; le SHA exact reste porté par le snapshot Drive. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
-| Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
+| Déploiement live vérifiable | preview vérifiée | SHA cockpit, manifeste, HTTPS tailnet-only et smoke externe concordent ; aucune stable. | faible à moyen | Conserver l'IA mock et demander un gate séparé pour le lot 5. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | implémenté | Garde, preview, sélection et état persistant owner+Room sont sur `main`. | faible | Conserver activation et reprise explicites, sans déclenchement automatique depuis le texte. |
 | Context hash / re-preflight | partiel implémenté | Snapshot privé et comparateur read-only sont sur `main` ; seules les refs avec révision fiable sont comparées. | faible | Décider les familles qui imposeraient réellement stale ou re-preflight. |
