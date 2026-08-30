@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
-Dernière vérification : 2026-06-29
-Branche de travail : `codex/theme-studio-grammar-ui`
-Base GitHub vérifiée : `9a336a7` (`origin/main` après merge PR #171)
+Dernière vérification : 2026-08-30
+Branche de travail : `codex/masterflow-fullstack-preview`
+Base GitHub vérifiée : `2ea7167` (`HEAD = origin/main`, avant changements locaux)
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -12,6 +12,12 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
+| Déploiement full-stack privé | partiel local | Compose existe mais aucune preview Malex Graphics n'est encore déployée. | élevé | Valider le lot serveur après recette locale et sauvegarde restaurable. |
+| Profils de seed preview/production | implémenté local | Séparation ajoutée et vérifiée sur trois bases temporaires ; non publiée. | faible à moyen | Publier après revue ; ne jamais charger le roster historique en production. |
+| Persistance fichiers Docker | implémenté local | `MASTERFLOW_STORAGE_ROOT=/data/storage` rejoint le volume `/data`; recette Docker encore absente. | moyen | Prouver la persistance par redéploiement et restauration en preview. |
+| Smoke de release | implémenté local | Les anciens hôtes implicites sont supprimés ; cible explicite requise. | faible | Tester sur Compose local puis Tailscale preview. |
+| Ours d'Or première verticale | partiel | Seed narratif preview disponible, parcours étudiant full-stack encore incomplet. | moyen | Construire après le gate preview mock. |
+| Capacités différées | futur | Talents, MasterPlan, Corrector avancé, API Manage et Asset Engine restent hors chemin critique. | faible | Conserver les contrats et absorber chaque verticale après stable. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
 | Experience Fabric / Narrative Canon Graph | implémenté | Projection publiée via PR #158 ; surface MasterStory lecteur/atelier/spoilers vérifiée localement avec setup/payoff, diagnostics et storylets. | faible | Publier la surface sans ouvrir delta canon, export ou publication. |

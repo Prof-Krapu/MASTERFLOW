@@ -13,6 +13,22 @@ Ce fichier est une queue historique, pas une queue d'exécution active.
 
 Les contenus ci-dessous restent intacts comme preuves et matière de réconciliation.
 
+## Queue active candidate — 2026-08-30
+
+Le chantier serveur full-stack est piloté par
+`docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
+
+1. **À faire maintenant** : terminer le socle preview local et préparer le preflight Docker/backup.
+2. **À mettre en queue** : IA réelle, Link Engine déterministe et parcours étudiant Ours d'Or.
+3. **À faire quand les gates sont validés** : installation Malex Graphics, preview, recette et stable.
+4. **À demander à Vincent** : rien de bloquant actuellement ; toute contribution future doit citer
+   le SHA lu et rester distincte du travail local non publié.
+5. **À décider plus tard** : absorption Talents Créatifs, MasterPlan, Corrector avancé, API Manage et
+   Asset Engine. Ces capacités sont différées, pas supprimées ni rejetées.
+
+Validation requise avant commit, push, installation serveur, provider réel, stable ou ouverture
+publique.
+
 ## 1. À faire maintenant
 
 ### AUDIT-BP-PLAN-001 — Valider l'arbitrage des 8 rapports Big Pickle

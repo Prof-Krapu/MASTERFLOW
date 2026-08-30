@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 
-const backendBase = process.env.MASTERFLOW_BACKEND_BASE ?? 'https://profkrapu-ms-7971.tail8d8b1f.ts.net:8443';
-const stackBase = process.env.MASTERFLOW_STACK_BASE ?? 'https://profkrapu-ms-7971.tail8d8b1f.ts.net:10000';
+const stackBase = process.env.MASTERFLOW_STACK_BASE;
+const backendBase = process.env.MASTERFLOW_BACKEND_BASE ?? stackBase;
 const username = process.env.MASTERFLOW_USERNAME;
 const password = process.env.MASTERFLOW_PASSWORD;
+
+if (!stackBase || !backendBase) {
+  console.error(
+    'MASTERFLOW_STACK_BASE requis. MASTERFLOW_BACKEND_BASE est optionnel si /health passe par le meme proxy.',
+  );
+  process.exit(2);
+}
 
 const results = [];
 

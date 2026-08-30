@@ -22,6 +22,8 @@ cp deploy/.env.example deploy/.env
 
 Dans `deploy/.env`, définir un `JWT_SECRET` aléatoire, un mot de passe owner
 fort et le SHA exact de `<sha-a-deployer>` dans `MASTERFLOW_RELEASE_SHA`.
+Conserver `MASTERFLOW_SEED_PROFILE=preview` pour la recette. La production doit
+utiliser `production`, qui n'injecte ni roster historique ni projet de démonstration.
 
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
@@ -37,16 +39,35 @@ TLS et l'accès autorisé.
 Depuis une machine qui peut joindre l'instance :
 
 ```bash
-MASTERFLOW_BACKEND_BASE=https://<backend-ou-proxy> \
 MASTERFLOW_STACK_BASE=https://<stack> \
+MASTERFLOW_BACKEND_BASE=https://<backend-optionnel> \
 MASTERFLOW_USERNAME=<owner> \
 MASTERFLOW_PASSWORD=<mot-de-passe> \
 npm run smoke:public
 ```
 
+`MASTERFLOW_BACKEND_BASE` peut être omis lorsque `/health` traverse le même proxy.
 La recette vérifie santé backend, frontend, connexion, contexte, personas,
 ressources et WebSocket. Le cockpit owner doit ensuite afficher le même
 `MASTERFLOW_RELEASE_SHA` que le commit déployé.
+
+## Sauvegarde et restauration de contrôle
+
+La sauvegarde est créée dans le volume privé, sans arrêter le runtime :
+
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml \
+  exec -T backend npm run backup:runtime --workspace @masterflow/backend
+```
+
+La restauration exige toujours une cible séparée et vide. Elle ne remplace jamais
+la base active :
+
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.yml \
+  exec -T backend npm run restore:runtime --workspace @masterflow/backend -- \
+  --backup /data/backups/<backup-id> --target /tmp/masterflow-restore-check
+```
 
 ## Limites assumées
 

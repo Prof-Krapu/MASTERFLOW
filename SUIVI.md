@@ -4,6 +4,49 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-30 — Vague candidate full-stack preview serveur
+
+VAGUE ACTIVE :
+
+- id : `SERVER-FULLSTACK-PREVIEW-001` ;
+- objectif : préparer une preview privée MasterFlow sur Malex Graphics, puis le parcours pilote
+  Ours d'Or, sans absorber prématurément les verticales différées ;
+- statut : lot 2 local terminé, lot 3 arrêté au gate d'installation serveur ; non committé, non
+  poussé, non déployé ;
+- dernière action terminée : images Docker construites, preview locale restaurable et recette verte
+  pour les comptes godmode Vincent et MALEX ;
+- prochaine action : obtenir le GO explicite pour commit/push et installation
+  Homebrew/Docker/Colima sur Malex Graphics ;
+- fichiers/domaines concernés : déploiement, seed, correction context, shared, smoke et pilotage ;
+- tests à relancer après le futur commit : backend complet, frontend lint/build, MASTERBUILD,
+  manifeste de release et smoke Docker ;
+- publication : aucune ;
+- blocage : l'état MASTERBUILD reste orienté vers le Round UI historique ; sa réorientation et toute
+  publication exigent une décision séparée.
+
+Résultats locaux :
+
+- branche propre `codex/masterflow-fullstack-preview` créée depuis `origin/main` `2ea7167` ;
+- backend `715/715`, lint backend/frontend, build frontend, MASTERBUILD `16/16` et diff-check verts ;
+- `preview` : 0 cohorte, 0 étudiant historique, 1 workbench Ours d'Or, 0 Batrasia ;
+- `production` : 0 cohorte, 0 étudiant, 0 workbench et 0 donnée de démonstration ;
+- comptes godmode préservés dans tous les profils : Vincent et MALEX ;
+- images frontend/backend construites ; correction du packaging `tsconfig.base.json` et du routage
+  Caddy `/api`, `/ws` et `/health` ;
+- smoke local vert pour les deux comptes : health, frontend, authentification, contexte, personas,
+  ressources et WebSocket ;
+- persistance confirmée après redémarrage ; backup `masterflow.backup.v1` restauré vers une cible
+  séparée avec `SQLite integrity_check=ok` ;
+- alerte dépendances : audit production avec 1 vulnérabilité faible `body-parser`; audit complet
+  ajoute 2 alertes hautes dans la chaîne de build, à corriger dans une tranche dédiée ;
+- preflight Malex Graphics relu : Intel, 12 CPU, 32 Go, 364 Gio libres, Tailscale sain, FileVault
+  actif ; Homebrew, Node, Docker et Colima absents ; aucune destination Time Machine configurée ;
+- réconciliation waves terminée : Fast Index non importé faute de générateur ; registre IA ancien
+  conservé comme preuve ; contrats Link/LLM différés vers le lot 5 ;
+- plan : `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
+
+---
+
 ## 2026-08-24 — Handoff candidat MasterPlan sujets et affectations
 
 - aucun bug urgent MasterFlow identifié : les contrats sujets, versions, affectations, preuves,

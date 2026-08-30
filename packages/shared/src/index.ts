@@ -3227,6 +3227,7 @@ export const CorrectionContextPayloadSchema = z.object({
           student_identity_id: z.string().min(1),
           display_name: z.string().min(1).max(160),
           aliases: z.array(z.string().min(1).max(160)).max(20),
+          avatar_fallback: z.enum(['neutral', 'a', 'b']).default('neutral'),
         }),
       )
       .max(300),

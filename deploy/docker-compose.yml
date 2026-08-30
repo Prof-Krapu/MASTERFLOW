@@ -1,4 +1,4 @@
-name: masterflow
+name: masterflow-${MASTERFLOW_RELEASE_CHANNEL:-preview}
 
 services:
   backend:
@@ -12,6 +12,9 @@ services:
       NODE_ENV: production
       PORT: 8000
       MASTERFLOW_DB_PATH: /data/masterflow.db
+      MASTERFLOW_STORAGE_ROOT: /data/storage
+      MASTERFLOW_SEED_PROFILE: ${MASTERFLOW_SEED_PROFILE:-production}
+      MASTERFLOW_RELEASE_CHANNEL: ${MASTERFLOW_RELEASE_CHANNEL:-preview}
     volumes:
       - masterflow_data:/data
     healthcheck:
