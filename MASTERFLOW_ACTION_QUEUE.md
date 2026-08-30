@@ -18,16 +18,16 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 Le chantier serveur full-stack est piloté par
 `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
 
-1. **À faire maintenant** : observer la preview mise à jour et préparer le gate du lot 5 sans activer l'IA réelle.
+1. **À faire maintenant** : observer la preview et arbitrer les 20 exemples dont le classement reste candidat.
 2. **À mettre en queue** : IA réelle et parcours étudiant Ours d'Or. Le Link Engine déterministe est
-   implémenté localement et attend sa recette preview.
+   actif en preview, sans provider externe.
 3. **À faire quand les gates sont validés** : provider réel, pilote Ours d'Or puis stable.
 4. **À demander à Vincent** : rien de bloquant actuellement ; toute contribution future doit citer
    le SHA lu et rester distincte du travail local non publié.
 5. **À décider plus tard** : absorption Talents Créatifs, MasterPlan, API Manage et Asset Engine.
    Corrector n'est pas une verticale : seules ses capacités utiles rejoignent les moteurs communs.
 
-Preview déployée au SHA `961f58e45483`. Validation encore requise avant provider réel, fusion,
+Preview déployée au SHA `23a81a715ac8312375d5c09efd6ccfebadd3235c`. Validation encore requise avant provider réel, fusion,
 stable, ouverture publique, rétention destructive ou absorption d'une verticale.
 
 ### PEDAGOGICAL-LINK-ENGINE-001 — Registre et routage pédagogique
@@ -36,7 +36,8 @@ stable, ouverture publique, rétention destructive ou absorption d'une verticale
 - Impact : rend les ressources MasterFlow réellement utilisables sans IA externe ni lecture des JSON legacy.
 - Risque : moyen sur les classements historiques ; les exemples restent candidats et les overrides sont journalisés.
 - Source de vérité concernée : Resource Truth + registre canonique de routage pédagogique.
-- Statut : implémenté localement, 728 tests verts, déploiement preview à effectuer.
+- Statut : implémenté et déployé en preview privée ; 728 tests verts, smoke sourcé/confidentiel vert
+  et sauvegarde restaurable.
 - Validation requise : oui avant `main`, stable, provider IA ou activation massive des exemples.
 
 ### CORRECTOR-CAPABILITIES-001 — Fermer les deux écarts fonctionnels prouvés

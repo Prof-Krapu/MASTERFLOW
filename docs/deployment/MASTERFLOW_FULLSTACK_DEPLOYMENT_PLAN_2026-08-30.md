@@ -128,7 +128,8 @@ Objectif : rendre l'assistance utile sans perdre le controle des sources.
 
 État au 2026-08-30 :
 
-- `5A Link Engine déterministe` : implémenté et vérifié sur la branche preview ; ressources,
+- `5A Link Engine déterministe` : implémenté et déployé en preview privée au SHA
+  `23a81a715ac8312375d5c09efd6ccfebadd3235c` ; ressources,
   notions, exemples, niveaux dynamiques, FTS5/BM25, provenance, timecodes et overrides professeur ;
 - `5B IA réelle` : différé, aucune clé ni provider activé ;
 - le gate IA reste fermé même si le registre de ressources est opérationnel.

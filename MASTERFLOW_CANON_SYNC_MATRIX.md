@@ -2,7 +2,7 @@
 
 Dernière vérification : 2026-08-30
 Branche de travail : `codex/corrector-capability-absorption`
-Release preview vérifiée : `961f58e45483a6cfafc7cd084866a487bcf43f08`
+Release preview vérifiée : `23a81a715ac8312375d5c09efd6ccfebadd3235c`
 Base `origin/main` initiale : `2ea7167`
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
@@ -13,7 +13,7 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
-| Link Engine pédagogique | implémenté localement sur branche preview | 49 vidéos validées, 20 exemples candidats, 542 notions, 800 liens, niveaux dynamiques et override professeur ; pas encore déployé ni mergé. | faible à moyen | Déployer seulement en preview privée, observer les classements puis valider les exemples utiles. |
+| Link Engine pédagogique | implémenté et déployé en preview privée | 49 vidéos validées, 20 exemples candidats, 542 notions, 800 liens, niveaux dynamiques et override professeur ; branche non mergée dans `main`. | faible à moyen | Observer les classements, ajuster les alias et overrides depuis Teaching, puis décider séparément d'une fusion. |
 | Déploiement full-stack privé | preview déployée | Branche publiée, non mergée ; stable absente. | faible à moyen | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
 | Profils de seed preview/production | implémenté preview | Preview sans roster historique ; production sans démo ; comptes Vincent et MALEX préservés. | faible | Ne jamais charger le roster historique en production. |
 | Persistance fichiers Docker | implémenté preview | Volume persistant, backup et restauration prouvés ; copie hors serveur encore absente. | moyen | Ajouter une copie chiffrée vers le Mac principal avant toute rétention. |

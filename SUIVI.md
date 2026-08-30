@@ -11,10 +11,10 @@ VAGUE ACTIVE :
 - id : `PEDAGOGICAL-LINK-ENGINE-001` ;
 - objectif : absorber les routings pédagogiques dans la BDD sans importer les fichiers legacy comme
   vérité runtime ;
-- statut : implémenté et vérifié localement sur la branche preview, déploiement privé à effectuer ;
-- dernière action terminée : registre SQLite, niveaux dynamiques, FTS5/BM25, inférence explicable,
-  override professeur et panneau Teaching ;
-- prochaine action : backup serveur, release du SHA exact, smoke privé puis observation ;
+- statut : implémenté, publié sur la branche dédiée et déployé en preview privée ;
+- dernière action terminée : release serveur au SHA exact, migration SQLite, smoke privé et
+  restauration séparée ;
+- prochaine action : observer les classements et arbitrer les 20 exemples candidats ;
 - fichiers/domaines concernés : Resource Truth, pédagogie, shared, API et Teaching ;
 - tests : backend `728/728`, lint backend/frontend et build frontend verts ;
 - blocage : IA réelle, Ours d'Or, `main`, stable et public restent exclus.
@@ -26,6 +26,11 @@ Résultats :
 - les recherches runtime ne lisent aucun fichier `ROUTING_*` ;
 - les niveaux académiques sont éditables en BDD et distincts de la maîtrise ou de la difficulté ;
 - un changement de source produit une alerte sans écraser le classement verrouillé par le professeur ;
+- release privée : `23a81a715ac8312375d5c09efd6ccfebadd3235c` ;
+- smoke final : comptes Vincent et MALEX godmode, recherche avec raison/source/timecode, candidat
+  absent des résultats par défaut et accès anonyme refusé ;
+- sauvegarde finale `masterflow-20260830T190143Z` restaurée dans une cible séparée avec
+  `integrity_check=ok` ;
 - contrat : `docs/resources/PEDAGOGICAL_LINK_ENGINE_V1_2026-08-30.md`.
 
 ---
@@ -75,13 +80,13 @@ VAGUE ACTIVE :
 - statut : lots 0 à 4 terminés ; preview privée déployée, branche non mergée et stable absente ;
 - dernière action terminée : recette HTTPS Tailscale verte, sauvegarde exportée et démarrage
   utilisateur automatisé sur Malex Graphics ;
-- prochaine action : gate produit avant le lot 5 IA réelle + Link Engine déterministe ;
+- prochaine action : observation du Link Engine puis gate produit séparé avant toute IA réelle ;
 - fichiers/domaines concernés : déploiement, seed, correction context, shared, smoke et pilotage ;
 - tests à relancer au prochain changement runtime : backend complet, frontend lint/build,
   MASTERBUILD, manifeste de release et smoke Docker ;
 - publication initiale : branche `codex/masterflow-fullstack-preview` au SHA `e01fa0546a4e`, preview
   tailnet-only ; aucune fusion `main`, stable ou ouverture publique ;
-- mise à jour runtime : branche `codex/corrector-capability-absorption` au SHA `961f58e45483`,
+- mise à jour runtime : branche `codex/corrector-capability-absorption` au SHA `23a81a715ac8`,
   sans changement de canal, de seed, d'IA ou d'exposition réseau ;
 - blocage : l'état MASTERBUILD reste orienté vers le Round UI historique ; sa réorientation et toute
   publication exigent une décision séparée.

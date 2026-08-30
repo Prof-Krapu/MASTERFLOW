@@ -1,7 +1,7 @@
 # MasterFlow — Pedagogical Link Engine V1
 
 Date : 2026-08-30  
-Statut : implémentation preview, non mergée dans `main`  
+Statut : déployé en preview privée, non mergé dans `main`
 Owner : `RESOURCE_ENGINE` avec `PEDAGOGY_ENGINE` et `SUBJECT_ENGINE`
 
 ## Décision produit
@@ -118,4 +118,6 @@ Le détail technique, les hashes et le graphe complet restent invisibles par dé
 - lint backend/frontend vert ;
 - build frontend vert ;
 - tests dédiés : import, FTS, permissions, inférence, override et changement de source ;
-- déploiement preview soumis au protocole backup, SHA et smoke existant.
+- release preview `23a81a715ac8312375d5c09efd6ccfebadd3235c` ;
+- smoke privé vert : deux comptes godmode, source/raison/timecode, candidats masqués et anonyme 401 ;
+- sauvegarde `masterflow-20260830T190143Z` restaurée séparément avec intégrité SQLite `ok`.
