@@ -19,7 +19,8 @@ Le chantier serveur full-stack est piloté par
 `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
 
 1. **À faire maintenant** : observer la preview mise à jour et préparer le gate du lot 5 sans activer l'IA réelle.
-2. **À mettre en queue** : IA réelle, Link Engine déterministe et parcours étudiant Ours d'Or.
+2. **À mettre en queue** : IA réelle et parcours étudiant Ours d'Or. Le Link Engine déterministe est
+   implémenté localement et attend sa recette preview.
 3. **À faire quand les gates sont validés** : provider réel, pilote Ours d'Or puis stable.
 4. **À demander à Vincent** : rien de bloquant actuellement ; toute contribution future doit citer
    le SHA lu et rester distincte du travail local non publié.
@@ -28,6 +29,15 @@ Le chantier serveur full-stack est piloté par
 
 Preview déployée au SHA `961f58e45483`. Validation encore requise avant provider réel, fusion,
 stable, ouverture publique, rétention destructive ou absorption d'une verticale.
+
+### PEDAGOGICAL-LINK-ENGINE-001 — Registre et routage pédagogique
+
+- Tâche : importer les ressources en BDD, rechercher par notion/niveau et préserver les corrections prof.
+- Impact : rend les ressources MasterFlow réellement utilisables sans IA externe ni lecture des JSON legacy.
+- Risque : moyen sur les classements historiques ; les exemples restent candidats et les overrides sont journalisés.
+- Source de vérité concernée : Resource Truth + registre canonique de routage pédagogique.
+- Statut : implémenté localement, 728 tests verts, déploiement preview à effectuer.
+- Validation requise : oui avant `main`, stable, provider IA ou activation massive des exemples.
 
 ### CORRECTOR-CAPABILITIES-001 — Fermer les deux écarts fonctionnels prouvés
 

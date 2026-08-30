@@ -37,6 +37,7 @@ import {createLearningMirrorRouter} from './routers/learning_mirror.ts';
 import {createStyleMirrorRouter} from './routers/style_mirror.ts';
 import {createPedagogicalSignalsRouter} from './routers/pedagogical_signals.ts';
 import {createPedagogicalAssistanceRouter} from './routers/pedagogical_assistance.ts';
+import {createPedagogicalResourcesRouter} from './routers/pedagogical_resources.ts';
 import {createWeatherRouter} from './routers/weather.ts';
 import {createTeachingRouter} from './routers/teaching.ts';
 import {createDaRuntimeRouter} from './routers/da_runtime.ts';
@@ -78,6 +79,11 @@ async function main(): Promise<void> {
       personas: (db.prepare('SELECT COUNT(*) AS n FROM personas').get() as {n: number}).n,
       rooms: (db.prepare('SELECT COUNT(*) AS n FROM rooms').get() as {n: number}).n,
       resources: (db.prepare('SELECT COUNT(*) AS n FROM resources').get() as {n: number}).n,
+      pedagogicalResources: (db.prepare('SELECT COUNT(*) AS n FROM pedagogical_resource_profiles').get() as {n: number}).n,
+      pedagogicalClassificationsToReview: (db.prepare(`
+        SELECT COUNT(*) AS n FROM pedagogical_resource_classifications
+        WHERE status IN ('candidate','needs_review')
+      `).get() as {n: number}).n,
       schemaTemplates: (db.prepare('SELECT COUNT(*) AS n FROM schema_templates').get() as {n: number}).n,
     };
     res.json({ok: true, service: 'masterflow-backend', ts: Date.now(), counts});
@@ -118,6 +124,7 @@ async function main(): Promise<void> {
   app.use(api, createStyleMirrorRouter());
   app.use(api, createPedagogicalSignalsRouter());
   app.use(api, createPedagogicalAssistanceRouter());
+  app.use(api, createPedagogicalResourcesRouter());
   app.use(api, createWeatherRouter());
   app.use(api, createTeachingRouter());
   app.use(api, createDaRuntimeRouter());

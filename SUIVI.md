@@ -4,6 +4,32 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-30 — Link Engine pédagogique déterministe
+
+VAGUE ACTIVE :
+
+- id : `PEDAGOGICAL-LINK-ENGINE-001` ;
+- objectif : absorber les routings pédagogiques dans la BDD sans importer les fichiers legacy comme
+  vérité runtime ;
+- statut : implémenté et vérifié localement sur la branche preview, déploiement privé à effectuer ;
+- dernière action terminée : registre SQLite, niveaux dynamiques, FTS5/BM25, inférence explicable,
+  override professeur et panneau Teaching ;
+- prochaine action : backup serveur, release du SHA exact, smoke privé puis observation ;
+- fichiers/domaines concernés : Resource Truth, pédagogie, shared, API et Teaching ;
+- tests : backend `728/728`, lint backend/frontend et build frontend verts ;
+- blocage : IA réelle, Ours d'Or, `main`, stable et public restent exclus.
+
+Résultats :
+
+- 49 vidéos validées et 20 exemples candidats importés dans la BDD ;
+- 542 notions et 800 liens pédagogiques normalisés ;
+- les recherches runtime ne lisent aucun fichier `ROUTING_*` ;
+- les niveaux académiques sont éditables en BDD et distincts de la maîtrise ou de la difficulté ;
+- un changement de source produit une alerte sans écraser le classement verrouillé par le professeur ;
+- contrat : `docs/resources/PEDAGOGICAL_LINK_ENGINE_V1_2026-08-30.md`.
+
+---
+
 ## 2026-08-30 — Absorption sélective Corrector déployée en preview
 
 VAGUE ACTIVE :

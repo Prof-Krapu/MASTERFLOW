@@ -1591,6 +1591,118 @@ dd {
   gap: 14px;
 }
 
+.pedagogical-resource-registry {
+  border: 1px solid color-mix(in srgb, var(--line) 82%, var(--accent) 18%);
+  border-radius: 1rem;
+  background: var(--panel);
+  overflow: clip;
+}
+
+.pedagogical-resource-registry > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0.9rem 1rem;
+}
+
+.pedagogical-resource-registry > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pedagogical-resource-registry > summary span,
+.pedagogical-resource-registry__review header {
+  align-items: center;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.pedagogical-resource-registry > summary small {
+  color: var(--muted);
+}
+
+.pedagogical-resource-registry__content {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.pedagogical-resource-registry__search {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, auto) auto;
+}
+
+.pedagogical-resource-registry__search label {
+  align-items: center;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.pedagogical-resource-registry__search label input {
+  border: 0;
+  min-width: 0;
+  padding-inline: 0;
+  width: 100%;
+}
+
+.pedagogical-resource-registry__results {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.pedagogical-resource-registry__results article,
+.pedagogical-resource-registry__review article {
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem;
+}
+
+.pedagogical-resource-registry__results article div,
+.pedagogical-resource-registry__review article div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.pedagogical-resource-registry__results p {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.pedagogical-resource-registry__results span {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pedagogical-resource-registry__review {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pedagogical-resource-registry__review article {
+  align-items: center;
+  grid-template-columns: minmax(12rem, 1fr) minmax(8rem, auto) auto;
+}
+
+@media (max-width: 760px) {
+  .pedagogical-resource-registry__search,
+  .pedagogical-resource-registry__review article {
+    grid-template-columns: 1fr;
+  }
+}
+
 .teaching-readiness__next {
   background: linear-gradient(135deg, rgba(104, 170, 255, 0.12), rgba(240, 195, 107, 0.08));
   border: 1px solid rgba(104, 170, 255, 0.35);

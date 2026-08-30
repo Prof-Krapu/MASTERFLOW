@@ -126,6 +126,13 @@ Objectif : rendre l'assistance utile sans perdre le controle des sources.
 
 **Gate 5 :** reponses sourcees, aucune fuite entre roles, aucune invention de deadline ou decision et retour au mock possible.
 
+État au 2026-08-30 :
+
+- `5A Link Engine déterministe` : implémenté et vérifié sur la branche preview ; ressources,
+  notions, exemples, niveaux dynamiques, FTS5/BM25, provenance, timecodes et overrides professeur ;
+- `5B IA réelle` : différé, aucune clé ni provider activé ;
+- le gate IA reste fermé même si le registre de ressources est opérationnel.
+
 ### Lot 6 - Construire le parcours Ours d'Or
 
 Objectif : couvrir le premier usage reel de bout en bout.

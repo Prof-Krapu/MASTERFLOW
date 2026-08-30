@@ -6,6 +6,7 @@ import type {LLMTask, Role} from '@masterflow/shared';
 import {env} from '../lib/env.ts';
 import {uuid} from '../lib/uuid.ts';
 import {costFor} from '../services/llm_pricing.ts';
+import {syncPedagogicalResourceRegistry} from '../services/pedagogical_resource_registry.ts';
 import {getDb, type PersonaRow, type RoomRow, type UserRow} from './schema.ts';
 
 /**
@@ -876,6 +877,12 @@ export async function seedAll(): Promise<{
     }
   });
   registryTx();
+  const pedagogicalRegistry = syncPedagogicalResourceRegistry();
+  if (!pedagogicalRegistry.unchanged) {
+    console.log(
+      `[seed] registre pedagogique -> videos:${pedagogicalRegistry.videos} exemples:${pedagogicalRegistry.examples} avertissements:${pedagogicalRegistry.warnings}`,
+    );
+  }
 
   if (seedProfile === 'development') {
   // ── Batrasia seed (Build 1B+) ──────────────────────────────────
