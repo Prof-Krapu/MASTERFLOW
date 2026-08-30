@@ -18,16 +18,25 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 Le chantier serveur full-stack est piloté par
 `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
 
-1. **À faire maintenant** : observer la preview privée et préparer le contrat du lot 5.
+1. **À faire maintenant** : terminer la recette locale des deux compléments Corrector, puis présenter le patch avant publication.
 2. **À mettre en queue** : IA réelle, Link Engine déterministe et parcours étudiant Ours d'Or.
 3. **À faire quand les gates sont validés** : provider réel, pilote Ours d'Or puis stable.
 4. **À demander à Vincent** : rien de bloquant actuellement ; toute contribution future doit citer
    le SHA lu et rester distincte du travail local non publié.
-5. **À décider plus tard** : absorption Talents Créatifs, MasterPlan, Corrector avancé, API Manage et
-   Asset Engine. Ces capacités sont différées, pas supprimées ni rejetées.
+5. **À décider plus tard** : absorption Talents Créatifs, MasterPlan, API Manage et Asset Engine.
+   Corrector n'est pas une verticale : seules ses capacités utiles rejoignent les moteurs communs.
 
 Preview déployée au SHA `e01fa0546a4e`. Validation encore requise avant provider réel, fusion,
 stable, ouverture publique, rétention destructive ou absorption d'une verticale.
+
+### CORRECTOR-CAPABILITIES-001 — Fermer les deux écarts fonctionnels prouvés
+
+- Tâche : finaliser le runner d'export privé CSV/XLSX et le contrôle de répétition des feedbacks.
+- Impact : ferme les deux dernières lacunes prouvées sans importer le runtime Python Corrector.
+- Risque : faible à moyen ; données privées et décisions pédagogiques restent sous validation professeur.
+- Source de vérité concernée : moteur de correction MasterFlow et décision d'absorption Corrector.
+- Statut : implémentation candidate locale, non publiée et non déployée.
+- Validation requise : oui avant commit, push ou déploiement.
 
 ## 1. À faire maintenant
 

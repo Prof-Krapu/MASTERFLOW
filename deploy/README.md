@@ -4,6 +4,10 @@ Ce dossier déploie une instance privée et persistante : frontend React, proxy
 same-origin, backend Node et base SQLite sur volume Docker. Il n'active aucun
 provider LLM ou image ; `LLM_PROVIDER=mock` reste le défaut de l'alpha.
 
+Le Compose lance aussi `export-runner`, un processus borné qui copie uniquement
+les previews CSV/XLSX déjà validées vers le stockage privé. Il ne recalcule
+aucune note et ne publie ni n'envoie aucun fichier.
+
 ## Prérequis serveur
 
 - Docker Engine et Docker Compose v2 ;

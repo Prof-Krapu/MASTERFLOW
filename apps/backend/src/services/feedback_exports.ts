@@ -2,6 +2,7 @@ import {
   CorrectionExportPreviewSchema,
   FeedbackDraftSchema,
   ROLE_RANK,
+  type CorrectionExportFormat,
   type CorrectionExportPreview,
   type FeedbackDraft,
 } from '@masterflow/shared';
@@ -12,6 +13,7 @@ import {
   type FeedbackDraftRow,
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
+import {resolveStorageFile} from '../lib/storage.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
 
@@ -30,6 +32,91 @@ interface BatchRow {
   owner_id: string;
   project_id: string | null;
   project_scope: string;
+}
+
+export interface ApprovedCorrectionExportSource {
+  export_id: string;
+  batch_id: string;
+  owner_id: string;
+  project_id: string | null;
+  project_scope: string;
+  format: Extract<CorrectionExportFormat, 'csv' | 'xlsx'>;
+  target: 'teacher_download' | 'manual_injection';
+  preview_ref: string;
+  schema_version: string;
+  validation_ref: string;
+}
+
+type FeedbackWordingCollision = 'exact' | 'opening' | null;
+
+const FEEDBACK_REF_KEYS = [
+  'observed_strength_ref',
+  'observed_issue_ref',
+  'impact_on_work_ref',
+  'pedagogical_axis_ref',
+  'next_action_ref',
+  'validation_criterion_ref',
+] as const;
+
+type FeedbackRefs = Pick<FeedbackDraft, (typeof FEEDBACK_REF_KEYS)[number]>;
+
+function normalizeWording(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('fr')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+/** Compare le texte complet puis son attaque, sans jamais réécrire un feedback. */
+export function compareFeedbackWordings(
+  currentSegments: string[],
+  previousSegments: string[],
+): FeedbackWordingCollision {
+  const current = normalizeWording(currentSegments.join(' '));
+  const previous = normalizeWording(previousSegments.join(' '));
+  if (!current || !previous) return null;
+  if (current === previous) return 'exact';
+
+  const openingLength = Math.min(80, current.length, previous.length);
+  if (openingLength >= 32 && current.slice(0, openingLength) === previous.slice(0, openingLength)) {
+    return 'opening';
+  }
+  return null;
+}
+
+function readFeedbackSegments(refs: FeedbackRefs): string[] | null {
+  try {
+    return FEEDBACK_REF_KEYS.map((key) =>
+      resolveStorageFile(refs[key]).data.toString('utf8').slice(0, 32_000),
+    );
+  } catch {
+    // Les références historiques peuvent ne plus être montées : absence de preuve = aucun verdict.
+    return null;
+  }
+}
+
+function findFeedbackWordingCollision(feedback: FeedbackDraft): FeedbackWordingCollision {
+  const current = readFeedbackSegments(feedback);
+  if (!current) return null;
+  const rows = getDb()
+    .prepare(
+      `SELECT observed_strength_ref, observed_issue_ref, impact_on_work_ref,
+              pedagogical_axis_ref, next_action_ref, validation_criterion_ref
+       FROM feedback_drafts
+       WHERE owner_id = ? AND project_scope = ? AND status != 'rejected'
+       ORDER BY created_at ASC`,
+    )
+    .all(feedback.owner_id, feedback.project_scope) as FeedbackRefs[];
+
+  for (const row of rows) {
+    const previous = readFeedbackSegments(row);
+    if (!previous) continue;
+    const collision = compareFeedbackWordings(current, previous);
+    if (collision) return collision;
+  }
+  return null;
 }
 
 function requireTeacher(actor: AuthUser): void {
@@ -161,6 +248,10 @@ export function recordFeedbackDraft(actor: AuthUser, input: FeedbackDraft): Feed
   }
   assertEvidenceRefs(actor, feedback.project_scope, feedback.evidence_refs, feedback.project_id);
   assertFeedbackModelProfile(feedback.model_profile_ref);
+  const wordingCollision = findFeedbackWordingCollision(feedback);
+  const evaluationAlignment = wordingCollision
+    ? 'review_required'
+    : feedback.evaluation_alignment;
 
   getDb()
     .prepare(
@@ -191,7 +282,7 @@ export function recordFeedbackDraft(actor: AuthUser, input: FeedbackDraft): Feed
       feedback.next_action_ref,
       feedback.validation_criterion_ref,
       feedback.tone_level,
-      feedback.evaluation_alignment,
+      evaluationAlignment,
       feedback.created_at,
       feedback.updated_at,
     );
@@ -203,6 +294,7 @@ export function recordFeedbackDraft(actor: AuthUser, input: FeedbackDraft): Feed
       feedback_id: feedback.feedback_id,
       run_id: feedback.run_id,
       status: 'needs_teacher_validation',
+      wording_collision: wordingCollision,
     },
   });
   return getFeedbackDraft(actor, feedback.feedback_id);
@@ -392,6 +484,71 @@ export function getCorrectionExportPreview(
   if (!row) throw new Error('export_preview_not_found');
   assertSensitiveRead(actor, row.owner_id, row.project_id);
   return toExportDTO(row);
+}
+
+/**
+ * Lecture interne runner-only d'une preview déjà validée par son propriétaire.
+ * Le runner reçoit les mêmes références que le job et refuse toute dérive de contexte.
+ */
+export function getApprovedCorrectionExportSource(
+  exportId: string,
+  expected: {
+    owner_id: string;
+    project_id?: string | null;
+    project_scope: string;
+    batch_id: string;
+    validation_ref: string;
+  },
+): ApprovedCorrectionExportSource {
+  const row = getDb()
+    .prepare(
+      `SELECT id, batch_id, owner_id, project_id, project_scope, format, target,
+              preview_ref, schema_version, status, validation_ref
+       FROM correction_export_previews WHERE id = ?`,
+    )
+    .get(exportId) as
+    | {
+        id: string;
+        batch_id: string;
+        owner_id: string;
+        project_id: string | null;
+        project_scope: string;
+        format: CorrectionExportFormat;
+        target: 'teacher_download' | 'manual_injection';
+        preview_ref: string;
+        schema_version: string;
+        status: string;
+        validation_ref: string | null;
+      }
+    | undefined;
+  if (!row) throw new Error('export_preview_not_found');
+  if (row.status !== 'approved_for_export' || !row.validation_ref) {
+    throw new Error('export_preview_not_approved');
+  }
+  if (
+    row.owner_id !== expected.owner_id ||
+    row.project_id !== (expected.project_id ?? null) ||
+    row.project_scope !== expected.project_scope ||
+    row.batch_id !== expected.batch_id ||
+    row.validation_ref !== expected.validation_ref
+  ) {
+    throw new Error('export_prepare_context_mismatch');
+  }
+  if (row.format !== 'csv' && row.format !== 'xlsx') {
+    throw new Error('export_format_not_supported_by_runner');
+  }
+  return {
+    export_id: row.id,
+    batch_id: row.batch_id,
+    owner_id: row.owner_id,
+    project_id: row.project_id,
+    project_scope: row.project_scope,
+    format: row.format,
+    target: row.target,
+    preview_ref: row.preview_ref,
+    schema_version: row.schema_version,
+    validation_ref: row.validation_ref,
+  };
 }
 
 function assertEvidenceRefs(

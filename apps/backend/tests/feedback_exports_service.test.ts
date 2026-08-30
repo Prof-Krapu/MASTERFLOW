@@ -1,9 +1,14 @@
-import {beforeAll, describe, expect, it} from 'vitest';
+import {mkdtempSync, rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+
+import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 
 import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
 import {
+  compareFeedbackWordings,
   getCorrectionExportPreview,
   getFeedbackDraft,
   recordCorrectionExportPreview,
@@ -11,6 +16,7 @@ import {
   reviewCorrectionExportPreview,
   reviewFeedbackDraft,
 } from '../src/services/feedback_exports.ts';
+import {storeFile} from '../src/lib/storage.ts';
 import {addProjectMember, createProject} from '../src/services/projects.ts';
 
 const teacher: AuthUser = {
@@ -35,6 +41,7 @@ const student: AuthUser = {
 };
 const now = Date.now();
 let feedbackProjectId = '';
+const storageRoot = mkdtempSync(join(tmpdir(), 'masterflow-feedback-wording-'));
 
 const feedbackInput = {
   feedback_id: 'feedback-export-valid',
@@ -83,6 +90,16 @@ const exportInput = {
 };
 
 beforeAll(async () => {
+  process.env.MASTERFLOW_STORAGE_ROOT = storageRoot;
+  const wordingSegments: Array<[string, string]> = [
+    ['private/feedback/strength', 'Une intention graphique claire et bien défendue.'],
+    ['private/feedback/issue', 'La hiérarchie visuelle reste encore hésitante.'],
+    ['private/feedback/impact', 'La lecture du projet perd en immédiateté.'],
+    ['private/feedback/axis', 'Renforcer la composition et les contrastes.'],
+    ['private/feedback/action', 'Tester deux variantes avant la prochaine séance.'],
+    ['private/feedback/criterion', 'La proposition doit rester lisible sans commentaire oral.'],
+  ];
+  for (const [key, value] of wordingSegments) storeFile(key, Buffer.from(value, 'utf8'));
   await seedAll();
   const db = getDb();
   const insertUser = db.prepare(
@@ -237,6 +254,10 @@ beforeAll(async () => {
              '["score-feedback-project"]', '["teacher_validation_required"]',
              'needs_review', ?, ?)`,
   ).run(teacher.id, feedbackProjectId, feedbackProjectId, now, now);
+});
+
+afterAll(() => {
+  rmSync(storageRoot, {recursive: true, force: true});
 });
 
 describe('PR-C5 — service feedback et exports supervisés', () => {
@@ -404,5 +425,23 @@ describe('PR-C5 — service feedback et exports supervisés', () => {
       expect(row.detail_json).not.toContain('evidence-feedback-export');
       expect(row.detail_json).not.toContain('submission-feedback-export');
     }
+  });
+
+  it('signale une formulation répétée sans la réécrire ni la valider automatiquement', () => {
+    expect(
+      compareFeedbackWordings(
+        ['Une force claire.', 'Une action utile.'],
+        ['Une force claire.', 'Une action utile.'],
+      ),
+    ).toBe('exact');
+
+    const duplicate = recordFeedbackDraft(teacher, {
+      ...feedbackInput,
+      feedback_id: 'feedback-export-wording-duplicate',
+      updated_at: now + 1,
+      created_at: now + 1,
+    });
+    expect(duplicate.evaluation_alignment).toBe('review_required');
+    expect(duplicate.status).toBe('needs_teacher_validation');
   });
 });

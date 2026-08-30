@@ -17,7 +17,7 @@ une branche sale ou un index statique en nouvelle source de vérité.
 | Préparation Link Engine | candidat lot 5 | Contrat déterministe utile ; l'implémentation peut commencer lexicalement sans figer l'architecture. |
 | Préparation sécurité provider IA | candidat lot 5 | À reprendre avant toute clé ou dépense réelle. |
 | API Manage | différé du premier déploiement | Non supprimé, non déprécié, non rejeté. |
-| Corrector avancé et export runner | différé du premier déploiement | Le socle correction reste actif ; le câblage complet attend la preview. |
+| Capacités Corrector et export runner | différé du premier déploiement | Corrector n'est pas migré comme produit ; le socle correction reste actif et seuls les écarts fonctionnels prouvés sont absorbés. |
 | Moteur de concours complet | différé | Le pilote Ours d'Or commence par projet, jalons, dépôt et accompagnement. |
 | MasterPlan absorption | différé | Le planning reste une verticale future du backend commun. |
 | Talents Créatifs | différé | Future verticale du backend commun, sans runtime autonome dans cette vague. |

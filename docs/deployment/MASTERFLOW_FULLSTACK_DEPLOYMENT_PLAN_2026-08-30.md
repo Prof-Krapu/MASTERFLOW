@@ -2,7 +2,7 @@
 
 ## Decision directrice
 
-MasterFlow devient le backend et le produit central. Ours d'Or est la premiere verticale complete mise en production. Talents Creatifs, MasterPlan, Corrector, API Manage et Asset Engine restent dans l'architecture cible, mais ne bloquent pas la premiere preuve serveur.
+MasterFlow devient le backend et le produit central. Ours d'Or est la premiere verticale complete mise en production. Talents Creatifs, MasterPlan, API Manage et Asset Engine restent dans l'architecture cible, mais ne bloquent pas la premiere preuve serveur. Corrector n'est pas une verticale a migrer : seules ses capacites utiles sont absorbees dans les moteurs communs MasterFlow.
 
 Le chemin critique est unique :
 
@@ -148,7 +148,7 @@ Objectif : promouvoir exactement ce qui a ete recette, puis etendre sans refaire
 
 - Promouvoir le meme commit et les memes images vers `stable` avec volumes distincts.
 - Conserver preview comme environnement de validation.
-- Absorber ensuite, par verticales : Talents Creatifs, MasterPlan, Corrector avance, exports, API Manage et Asset Engine.
+- Absorber ensuite Talents Creatifs et MasterPlan par verticales ; finaliser les capacites de correction, les exports, API Manage et Asset Engine comme briques transversales.
 - Pour chaque absorption : audit canon, contrat, bridge, tests, preview, puis validation.
 
 **Gate 7 :** stable restaurable, versionnee et sans donnees de demonstration ; aucune verticale absorbee sans contrat propre.
@@ -176,7 +176,8 @@ Objectif : promouvoir exactement ce qui a ete recette, puis etendre sans refaire
 | Ours d'Or full-stack | Partiel | Pas encore de parcours serveur complet | Moyen | Lot 6 apres preuve preview |
 | Talents Creatifs | Futur | Hors premier deploiement | Faible | Absorption apres stable |
 | MasterPlan | Futur | Bridge seulement | Faible | Absorption progressive |
-| Corrector/API Manage/Asset Engine | Differe | Non bloquant pour preview | Faible | Conserver dans la queue, sans rejet |
+| Capacites Corrector | Absorbees pour l'essentiel | Corrector reste une source historique, jamais un produit ni persona runtime | Faible | Finaliser seulement les ecarts prouves dans le moteur commun |
+| API Manage/Asset Engine | Differe | Non bloquant pour preview | Faible | Conserver dans la queue, sans rejet |
 
 ## Validations obligatoires
 

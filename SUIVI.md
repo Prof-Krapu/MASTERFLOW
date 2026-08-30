@@ -4,6 +4,37 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-30 — Vague candidate absorption sélective Corrector
+
+VAGUE ACTIVE :
+
+- id : `CORRECTOR-CAPABILITIES-001` ;
+- objectif : récupérer les deux dernières capacités utiles de Corrector sans migrer son produit,
+  son runtime Python ni son ancien persona ;
+- statut : implémentation locale terminée et vérifiée, publication et déploiement absents ;
+- dernière action terminée : runner d'export privé CSV/XLSX et contrôle de répétition des feedbacks ;
+- prochaine action : validation MALEX avant commit/push, puis nouvelle release preview séparée ;
+- fichiers/domaines concernés : stockage privé, feedbacks, jobs, runner export, Compose et pilotage ;
+- tests à relancer au prochain changement : backend complet, lint et config Compose ;
+- publication : aucune sur cette branche `codex/corrector-capability-absorption` ; runtime serveur
+  toujours au SHA validé `e01fa0546a4e` ;
+- blocage : commit, push et déploiement exigent un nouveau GO explicite.
+
+Résultats locaux :
+
+- Corrector est désormais défini sans ambiguïté comme source historique de capacités, pas comme
+  verticale MasterFlow ni persona actif ;
+- le runner copie octet pour octet une preview CSV/XLSX déjà approuvée, produit une référence
+  privée et un SHA-256, sans recalcul, envoi ni publication ;
+- une répétition exacte ou une attaque de feedback déjà utilisée dans le même scope force
+  `evaluation_alignment=review_required`, sans réécriture automatique ;
+- les références de texte absentes ne produisent aucun verdict artificiel ;
+- backend `719/719`, lint TypeScript, config Compose et `git diff --check` verts ;
+- matrice dédiée :
+  `docs/corrector/CORRECTOR_CAPABILITY_ABSORPTION_MATRIX_2026-08-30.md`.
+
+---
+
 ## 2026-08-30 — Vague candidate full-stack preview serveur
 
 VAGUE ACTIVE :
