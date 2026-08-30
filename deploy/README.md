@@ -25,6 +25,19 @@ fort et le SHA exact de `<sha-a-deployer>` dans `MASTERFLOW_RELEASE_SHA`.
 Conserver `MASTERFLOW_SEED_PROFILE=preview` pour la recette. La production doit
 utiliser `production`, qui n'injecte ni roster historique ni projet de démonstration.
 
+Sur un nouvel hôte, le bootstrap peut générer ces secrets sans les afficher :
+
+```bash
+npm run release:bootstrap-env -- \
+  --channel preview \
+  --release-sha <sha-complet> \
+  --output deploy/.env \
+  --credentials-out <dossier-prive>/preview-bootstrap-credentials.txt
+```
+
+La commande refuse d'écraser un fichier existant. Les deux comptes godmode Vincent
+et MALEX sont conservés ; leurs mots de passe sont générés indépendamment.
+
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
 curl http://127.0.0.1:8080/health
