@@ -2,8 +2,8 @@
 
 ## Identité de release
 
-- branche : `codex/masterflow-fullstack-preview` ;
-- SHA actif : `e01fa0546a4eb566b789cbde5a071de156451ee9` ;
+- branche : `codex/corrector-capability-absorption` ;
+- SHA actif : `961f58e45483a6cfafc7cd084866a487bcf43f08` ;
 - canal : `preview` ;
 - seed : `preview` ;
 - IA : `mock` ;
@@ -16,7 +16,7 @@
 - Docker Desktop : `4.88.1` ;
 - Docker Engine : `29.7.2` ;
 - Docker Compose : `5.4.0` ;
-- checkout : `releases/preview/e01fa0546a4e` ;
+- checkout : `releases/preview/961f58e45483` ;
 - pointeur actif : `releases/preview/current`.
 
 Docker Desktop a été retenu en mode utilisateur car Homebrew et Colima étaient absents et le
@@ -27,6 +27,7 @@ privée n'a été ajouté.
 
 - backend health : OK ;
 - frontend : OK ;
+- runner d'export privé : actif, limité aux previews CSV/XLSX déjà approuvées ;
 - compte godmode Vincent : auth, contexte, personas, ressources et WebSocket OK ;
 - compte godmode MALEX : auth, contexte, personas, ressources et WebSocket OK ;
 - SHA annoncé par le cockpit : conforme ;
@@ -34,6 +35,8 @@ privée n'a été ajouté.
 - backup SQLite : créé ;
 - restauration vers une cible séparée : `integrity_check=ok` ;
 - export hors volume Docker : hash conforme, fichiers privés `600`.
+- sauvegarde préalable : `masterflow-20260830T112729Z` ;
+- sauvegarde post-déploiement : `masterflow-20260830T135918Z`.
 
 ## Continuité
 
@@ -49,3 +52,10 @@ privée n'a été ajouté.
 - pas de rétention 7 quotidiennes / 4 hebdomadaires avant cette copie externe ;
 - alertes npm : une faible en production et deux hautes dans la chaîne de build à traiter séparément ;
 - aucune IA réelle, stable, fusion `main`, ouverture publique ou absorption de verticale.
+
+## Mise à jour Corrector
+
+Cette release absorbe uniquement deux capacités utiles : matérialisation privée d'un export déjà
+approuvé et détection de répétitions de formulation. Elle n'installe ni l'application Corrector, ni
+son runtime Python, ni un persona ou une verticale Corrector. Aucun envoi, recalcul de note,
+publication ou validation pédagogique automatique n'est ouvert.

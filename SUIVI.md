@@ -4,21 +4,21 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
-## 2026-08-30 — Vague candidate absorption sélective Corrector
+## 2026-08-30 — Absorption sélective Corrector déployée en preview
 
 VAGUE ACTIVE :
 
 - id : `CORRECTOR-CAPABILITIES-001` ;
 - objectif : récupérer les deux dernières capacités utiles de Corrector sans migrer son produit,
   son runtime Python ni son ancien persona ;
-- statut : implémentation locale terminée et vérifiée, publication et déploiement absents ;
+- statut : implémentation publiée sur une branche dédiée et déployée en preview privée ;
 - dernière action terminée : runner d'export privé CSV/XLSX et contrôle de répétition des feedbacks ;
-- prochaine action : validation MALEX avant commit/push, puis nouvelle release preview séparée ;
+- prochaine action : observation de la preview, puis gate séparé avant toute fusion `main` ou stable ;
 - fichiers/domaines concernés : stockage privé, feedbacks, jobs, runner export, Compose et pilotage ;
 - tests à relancer au prochain changement : backend complet, lint et config Compose ;
-- publication : aucune sur cette branche `codex/corrector-capability-absorption` ; runtime serveur
-  toujours au SHA validé `e01fa0546a4e` ;
-- blocage : commit, push et déploiement exigent un nouveau GO explicite.
+- publication : branche `codex/corrector-capability-absorption` au SHA
+  `961f58e45483a6cfafc7cd084866a487bcf43f08` ; runtime preview privé aligné sur ce SHA ;
+- blocage : fusion `main`, stable, IA réelle, publication et envoi d'exports restent exclus.
 
 Résultats locaux :
 
@@ -30,6 +30,10 @@ Résultats locaux :
   `evaluation_alignment=review_required`, sans réécriture automatique ;
 - les références de texte absentes ne produisent aucun verdict artificiel ;
 - backend `719/719`, lint TypeScript, config Compose et `git diff --check` verts ;
+- recette HTTPS externe verte pour MALEX et Vincent : health, frontend, authentification, contexte,
+  personas, ressources et WebSocket ;
+- backend, frontend et runner d'export actifs sur Malex Graphics ; sauvegarde post-déploiement
+  `masterflow-20260830T135918Z` créée ;
 - matrice dédiée :
   `docs/corrector/CORRECTOR_CAPABILITY_ABSORPTION_MATRIX_2026-08-30.md`.
 
@@ -49,8 +53,10 @@ VAGUE ACTIVE :
 - fichiers/domaines concernés : déploiement, seed, correction context, shared, smoke et pilotage ;
 - tests à relancer au prochain changement runtime : backend complet, frontend lint/build,
   MASTERBUILD, manifeste de release et smoke Docker ;
-- publication : branche `codex/masterflow-fullstack-preview` au SHA `e01fa0546a4e`, preview
+- publication initiale : branche `codex/masterflow-fullstack-preview` au SHA `e01fa0546a4e`, preview
   tailnet-only ; aucune fusion `main`, stable ou ouverture publique ;
+- mise à jour runtime : branche `codex/corrector-capability-absorption` au SHA `961f58e45483`,
+  sans changement de canal, de seed, d'IA ou d'exposition réseau ;
 - blocage : l'état MASTERBUILD reste orienté vers le Round UI historique ; sa réorientation et toute
   publication exigent une décision séparée.
 

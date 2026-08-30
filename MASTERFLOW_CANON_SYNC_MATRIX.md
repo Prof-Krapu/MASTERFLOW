@@ -1,8 +1,8 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-08-30
-Branche de travail : `codex/masterflow-fullstack-preview`
-Release preview vérifiée : `e01fa0546a4eb566b789cbde5a071de156451ee9`
+Branche de travail : `codex/corrector-capability-absorption`
+Release preview vérifiée : `961f58e45483a6cfafc7cd084866a487bcf43f08`
 Base `origin/main` initiale : `2ea7167`
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
@@ -19,7 +19,7 @@ récoltées après audit.
 | Smoke de release | implémenté preview | Cible explicite, REST et WebSocket verts via HTTPS Tailscale pour les deux comptes. | faible | Rejouer après chaque release. |
 | Ours d'Or première verticale | partiel | Seed narratif preview disponible, parcours étudiant full-stack encore incomplet. | moyen | Construire après le gate preview mock. |
 | Capacités différées | futur | Talents, MasterPlan, API Manage et Asset Engine restent hors chemin critique. | faible | Conserver les contrats et absorber les verticales après stable. |
-| Capacités Corrector | implémenté, deux compléments candidats locaux | OCR, lots, rubriques, pré-correction, calibration, validation et suivi existent ; export final et anti-répétition viennent d'être complétés localement. | faible à moyen | Tester la suite complète puis soumettre le patch avant publication. Corrector ne devient ni produit, ni verticale, ni persona actif. |
+| Capacités Corrector | implémenté et déployé en preview | OCR, lots, rubriques, pré-correction, calibration, validation et suivi existent ; export privé approuvé et anti-répétition sont actifs en preview. | faible à moyen | Observer avant toute fusion `main` ; conserver export, envoi et validation finale sous contrôle humain. Corrector ne devient ni produit, ni verticale, ni persona actif. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
 | Experience Fabric / Narrative Canon Graph | implémenté | Projection publiée via PR #158 ; surface MasterStory lecteur/atelier/spoilers vérifiée localement avec setup/payoff, diagnostics et storylets. | faible | Publier la surface sans ouvrir delta canon, export ou publication. |

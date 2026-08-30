@@ -18,7 +18,7 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 Le chantier serveur full-stack est piloté par
 `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
 
-1. **À faire maintenant** : terminer la recette locale des deux compléments Corrector, puis présenter le patch avant publication.
+1. **À faire maintenant** : observer la preview mise à jour et préparer le gate du lot 5 sans activer l'IA réelle.
 2. **À mettre en queue** : IA réelle, Link Engine déterministe et parcours étudiant Ours d'Or.
 3. **À faire quand les gates sont validés** : provider réel, pilote Ours d'Or puis stable.
 4. **À demander à Vincent** : rien de bloquant actuellement ; toute contribution future doit citer
@@ -26,7 +26,7 @@ Le chantier serveur full-stack est piloté par
 5. **À décider plus tard** : absorption Talents Créatifs, MasterPlan, API Manage et Asset Engine.
    Corrector n'est pas une verticale : seules ses capacités utiles rejoignent les moteurs communs.
 
-Preview déployée au SHA `e01fa0546a4e`. Validation encore requise avant provider réel, fusion,
+Preview déployée au SHA `961f58e45483`. Validation encore requise avant provider réel, fusion,
 stable, ouverture publique, rétention destructive ou absorption d'une verticale.
 
 ### CORRECTOR-CAPABILITIES-001 — Fermer les deux écarts fonctionnels prouvés
@@ -35,8 +35,8 @@ stable, ouverture publique, rétention destructive ou absorption d'une verticale
 - Impact : ferme les deux dernières lacunes prouvées sans importer le runtime Python Corrector.
 - Risque : faible à moyen ; données privées et décisions pédagogiques restent sous validation professeur.
 - Source de vérité concernée : moteur de correction MasterFlow et décision d'absorption Corrector.
-- Statut : implémentation candidate locale, non publiée et non déployée.
-- Validation requise : oui avant commit, push ou déploiement.
+- Statut : implémenté sur la branche dédiée et déployé en preview privée ; non mergé dans `main`.
+- Validation requise : oui avant fusion `main`, stable, publication ou envoi d'export.
 
 ## 1. À faire maintenant
 
