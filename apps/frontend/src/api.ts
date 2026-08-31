@@ -70,6 +70,7 @@ import type {
   AcademicFramework,
   AdjustPedagogicalClassification,
   PersonalLearningProfile,
+  PilotJourneyState,
   PrecedentSearchResult,
   Persona,
   Project,
@@ -219,6 +220,19 @@ export async function getSourceIntake(
 ): Promise<SourceIntakeRecord[]> {
   const query = new URLSearchParams({runtime_pack_id: runtimePackId, project_id: projectId});
   return request<SourceIntakeRecord[]>(`/source-intake?${query.toString()}`, {method: 'GET'}, token);
+}
+
+export async function getPilotJourneyState(
+  runtimePackId: string,
+  roomInstanceId: string,
+  token?: string | null,
+): Promise<PilotJourneyState> {
+  const query = new URLSearchParams({room_instance_id: roomInstanceId});
+  return request<PilotJourneyState>(
+    `/pilots/${encodeURIComponent(runtimePackId)}/state?${query.toString()}`,
+    {method: 'GET'},
+    token,
+  );
 }
 
 export async function classifyPedagogicalAssistance(

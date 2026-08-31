@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-31T20:56:21+02:00",
+  "updated_at": "2026-08-31T22:02:53+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -9,10 +9,10 @@
     "rule": "Le programme reste actif après la clôture d'un Round. MASTERBUILD doit alors orienter vers le Round suivant, jamais improviser une micro-tâche."
   },
   "last_completed_round": {
-    "round_id": "UI-FOUNDATIONS-RECOVERY-001",
-    "title": "Restaurer les fondations UI et imposer la Bible",
-    "commit_sha": "05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/233"
+    "round_id": "FULLSTACK-CONSOLIDATION-001",
+    "title": "Consolider MasterFlow full-stack par vagues",
+    "commit_sha": "33f553fb8bbd633770294777fbbd1d06e104f42d",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/249"
   },
   "last_superseded_round": {
     "round_id": "UI-PAGE-BY-PAGE-001",
@@ -23,41 +23,40 @@
     "reason": "Le plan full-stack validé absorbe la vérification UI restante sans déclarer conforme ce qui attend encore une revue MALEX."
   },
   "active_round": {
-    "round_id": "FULLSTACK-CONSOLIDATION-001",
-    "title": "Consolider MasterFlow full-stack par vagues",
-    "objective": "Livrer une PR reproductible couvrant les fondations, les deux pilotes conversationnels, Teaching, MasterPlan, Corrector, API_manage, UI, MASTERBUILD et Asset Engine, sans merge ni déploiement automatique.",
+    "round_id": "UI-PILOTS-NO-PROVIDER-001",
+    "title": "Rendre les deux pilotes utilisables sans provider réel",
+    "objective": "Raccorder Ours d'Or et Talents Créatifs au shell actif avec un workspace conversationnel commun, responsive et honnête sur le mode mock.",
     "owner": "malex",
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Revoir la PR #249 puis demander un GO explicite avant merge ; le déploiement reste un gate séparé.",
-    "primary_risk": "Confondre une implémentation locale ou une preview avec une capacité stable, un apprentissage canonisé ou une migration réelle.",
+    "recommended_next_action": "Publier la branche et ouvrir la PR, puis s'arrêter avant le merge.",
+    "primary_risk": "Présenter le mode mock comme une IA réelle ou masquer qu'une validation humaine reste nécessaire.",
     "no_auto_execute": true,
-    "work_package_ids": ["FSC-001", "FSC-002", "FSC-003", "FSC-004", "FSC-005", "FSC-006", "FSC-007", "FSC-008", "FSC-009"],
-    "authorization_id": "AUTH-FULLSTACK-WAVES-0-9-PR-2026-08-31",
+    "work_package_ids": ["UI-PILOTS-001"],
+    "authorization_id": "AUTH-UI-PILOTS-PUBLISH-2026-08-31",
     "success_criteria": [
-      "Ours d'Or et Talents Créatifs disposent d'une V1 conversationnelle commune avec deux RuntimePacks isolés.",
-      "Les sources pilotes restent simulées ou lues sans mutation, avec provenance et gouvernance explicites.",
-      "Teaching, MasterPlan, Corrector et les intakes API_manage conservent leurs responsabilités et gates humaines.",
-      "Les mappings d'assets restent candidats jusqu'à double review et aucun provider réel n'est appelé.",
-      "Tests, lint, build, migration à blanc et smoke local sont verts avant la PR.",
-      "Aucun merge, déploiement, promotion stable, suppression physique ni migration réelle sans validation explicite."
+      "La Home active expose les deux pilotes sans route cachée ni shell parallèle.",
+      "Le même workspace affiche projet, étape, prochaine action, sources, validations et chat.",
+      "MasterFlex accompagne Ours d'Or et ProfKrapu accompagne Talents Créatifs.",
+      "Le mode mock est explicite et aucun provider réel n'est appelé.",
+      "Desktop et 390 px sont recettés avec la conversation prioritaire sur mobile.",
+      "Lint, build, tour mock et console navigateur sont verts avant publication."
     ],
     "blockers": [
-      "merge de la PR à valider explicitement",
-      "provider et budget réels non validés",
-      "déploiement preview puis stable à valider séparément"
+      "provider et budget réels reportés aux tests IRL",
+      "merge et déploiement preview à valider séparément"
     ],
     "validation_gates": [
-      "preflight vague 0 revalidé sur le SHA main de départ",
-      "implémentations locales non sensibles autorisées sur les vagues 1 à 9",
-      "commits logiques, push et ouverture de PR autorisés en fin de train",
-      "merge, migrations réelles, déploiements, suppressions et activation provider exclus",
-      "revue MALEX toujours requise avant conformité visuelle Teaching",
+      "implémentation locale validée telle quelle par MALEX",
+      "commit, push et PR autorisés par AUTH-UI-PILOTS-PUBLISH-2026-08-31",
+      "merge et déploiement exclus sans nouveau GO",
+      "aucune donnée pilote réelle ni source privée ajoutée",
+      "aucune validation professeur ou production finale automatisée",
       "aucun retour pilote canonisé automatiquement"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/FULLSTACK_CONSOLIDATION_ROUND_001.md",
+      "docs/masterbuild/rounds/UI_PILOTS_NO_PROVIDER_001.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
       "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
@@ -120,9 +119,16 @@
     {
       "move_id": "review-fullstack-consolidation-pr-249",
       "label": "Revoir la PR #249 avant merge",
-      "reason": "La branche et son manifeste exact sont publiés ; le merge reste le prochain gate humain et ne vaut pas déploiement.",
+      "reason": "La PR a été mergée puis le même SHA a été déployé en preview privée.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "review-publish-ui-pilots-no-provider",
+      "label": "Revoir puis publier l'interface locale des deux pilotes",
+      "reason": "La Home et le workspace conversationnel sont validés sans provider ; la publication Git est autorisée et doit s'arrêter avant le merge.",
       "recommended": true,
-      "status": "awaiting_review"
+      "status": "publishing"
     }
   ],
   "registries": {
@@ -149,27 +155,26 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "FULLSTACK-CONSOLIDATION-001",
-    "title": "Consolider MasterFlow full-stack par vagues",
+    "goal_id": "UI-PILOTS-NO-PROVIDER-001",
+    "title": "Rendre Ours d'Or et Talents Créatifs utilisables sans provider réel",
     "owner": "malex",
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Deux pilotes conversationnels isolés sur un backend commun",
-      "Fondations full-stack et assets traçables sans activation sensible",
-      "Gates locaux verts et PR ouverte sans merge"
+      "Deux pilotes accessibles depuis la Home active",
+      "Même shell conversationnel avec RuntimePacks et personas distincts",
+      "Mode mock explicite et recette desktop mobile verte"
     ],
-    "blockers": ["merge, provider et déploiement soumis à validation explicite"],
+    "blockers": ["merge et déploiement soumis à validation explicite séparée", "provider réel reporté aux tests IRL"],
     "validation_gates": [
-      "vagues 0 à 9 autorisées localement",
-      "commit, push et PR autorisés en fin de train",
-      "aucun merge ni déploiement automatique",
+      "interface locale validée telle quelle par MALEX",
+      "commit, push et PR autorisés ; aucun merge ou déploiement automatique",
       "aucune promotion canonique automatique depuis un pilote ou un asset"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/FULLSTACK_CONSOLIDATION_ROUND_001.md",
+      "docs/masterbuild/rounds/UI_PILOTS_NO_PROVIDER_001.md",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
       "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
       "docs/pilots/CONVERSATION_PILOTS_V1_IMPLEMENTATION.md"
@@ -363,10 +368,10 @@
     }
   ],
   "publication": {
-    "state": "main_ui_foundations_project_v2_merged_unvalidated",
+    "state": "main_fullstack_preview_aligned_ui_pilots_local_candidate",
     "branch": "main",
-    "commit_sha": "05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/233",
-    "runtime_proof": "La PR #233 est mergée dans GitHub main au SHA 05af04f. Login intégré, Project V2 et les fondations sont publiés comme base logicielle, sans validation de conformité UI ni déploiement."
+    "commit_sha": "33f553fb8bbd633770294777fbbd1d06e104f42d",
+    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/249",
+    "runtime_proof": "GitHub main et la preview privée sont alignés sur 33f553fb8bbd. L'interface enrichie des deux pilotes est un candidat local non commité, non poussé et non déployé ; le provider réel reste différé."
   }
 }

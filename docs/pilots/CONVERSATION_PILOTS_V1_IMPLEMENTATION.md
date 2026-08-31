@@ -1,6 +1,9 @@
 # Pilotes conversationnels MasterFlow V1
 
-Statut : implémentation locale candidate, provider `mock`, aucun déploiement.
+Statut backend : implémenté sur `main` et déployé en preview privée au SHA
+`33f553fb8bbd633770294777fbbd1d06e104f42d`, provider `mock`.
+
+Statut interface : enrichissement local vérifié, non commité et non déployé.
 
 ## Contrat produit
 
@@ -34,6 +37,17 @@ automatique.
 - `POST /api/v1/pilots/{pack}/harvest/preview` : extraction finale hashable et backflow candidat ;
 - interface minimale : sélection de Room, projet, étape, sources, prochaine action, validations et chat.
 
+## Interface sans provider
+
+- la Home active expose Ours d'Or et Talents Créatifs comme deux entrées prioritaires ;
+- les deux pilotes utilisent le même composant conversationnel et gardent leur identité visuelle ;
+- l'état affiché vient de la projection backend du pilote, pas d'un résumé frontend inventé ;
+- MasterFlex accompagne Ours d'Or et ProfKrapu accompagne Talents Créatifs ;
+- les amorces de conversation préparent le message sans déclencher d'action automatique ;
+- le mode de préparation sans IA réelle est visible ;
+- sur mobile, la conversation passe avant le contexte détaillé ;
+- le retour Home change réellement de Room.
+
 ## Invariants prouvés
 
 - le rôle vient de l'authentification ;
@@ -46,10 +60,9 @@ automatique.
 - une action sensible reste suspendue ;
 - le harvest reste candidat et exige une revue humaine.
 
-## Limites avant preview
+## Limites avant tests IRL
 
 - aucune source réelle n'est enregistrée ;
 - le provider réel, son budget et ses secrets ne sont pas configurés ;
-- aucune migration n'est appliquée hors des bases de test en mémoire ;
 - aucune ouverture à un groupe réel ;
-- aucun déploiement preview ou stable.
+- aucune promotion stable.

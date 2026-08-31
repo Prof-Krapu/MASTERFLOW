@@ -7,6 +7,7 @@ import type {
   AuthResponse,
   CurrentContext,
   Job,
+  PilotJourneyState,
   Persona,
   Project,
   ProjectMember,
@@ -37,7 +38,7 @@ import {
   getProjects,
   getResources,
   getRooms,
-  getSourceIntake,
+  getPilotJourneyState,
   login,
   preflightAction,
   proposeResource,
@@ -61,6 +62,7 @@ import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ControlWorkspace} from './control-workspace.tsx';
 import {ProjectWorkspaceV2} from './project-workspace-v2.tsx';
 import {SystemMessages} from './system-messages.tsx';
+import {PilotConversationWorkspace} from './pilot-conversation-workspace.tsx';
 import {RegisterWithCode} from './register-form.tsx';
 import {
   buildModeView,
@@ -312,6 +314,8 @@ function App(): ReactElement {
   const [resourceCandidates, setResourceCandidates] = useState<Resource[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [pilotSources, setPilotSources] = useState<SourceIntakeRecord[]>([]);
+  const [pilotJourney, setPilotJourney] = useState<PilotJourneyState | null>(null);
+  const [pilotJourneyState, setPilotJourneyState] = useState<LoadState>('idle');
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectName, setProjectName] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
@@ -415,7 +419,9 @@ function App(): ReactElement {
     if (first) setEntryIntent(first.id);
   }, [entryIntent, entryModes]);
 
-  const activePersonaId = context?.active_blend?.speaker_persona_id ?? null;
+  const configuredRoomPersonaId = context?.room.context?.['active_persona'];
+  const activePersonaId = context?.active_blend?.speaker_persona_id
+    ?? (typeof configuredRoomPersonaId === 'string' ? configuredRoomPersonaId : null);
 
   const activePersona = useMemo(() => {
     if (!activePersonaId) return null;
@@ -528,22 +534,31 @@ function App(): ReactElement {
   }, []);
 
   useEffect(() => {
-    if (!auth || !context?.room.project_id || !isPilotRoom) {
+    if (!auth || !context?.room_instance.id || !isPilotRoom) {
       setPilotSources([]);
+      setPilotJourney(null);
+      setPilotJourneyState('idle');
       return undefined;
     }
     let cancelled = false;
-    void getSourceIntake(activeRuntimePackId, context.room.project_id, auth.token)
-      .then((sources) => {
-        if (!cancelled) setPilotSources(sources);
+    setPilotJourneyState('loading');
+    void getPilotJourneyState(activeRuntimePackId, context.room_instance.id, auth.token)
+      .then((journey) => {
+        if (cancelled) return;
+        setPilotJourney(journey);
+        setPilotSources(journey.visible_sources);
+        setPilotJourneyState('ready');
       })
       .catch(() => {
-        if (!cancelled) setPilotSources([]);
+        if (cancelled) return;
+        setPilotJourney(null);
+        setPilotSources([]);
+        setPilotJourneyState('error');
       });
     return () => {
       cancelled = true;
     };
-  }, [activeRuntimePackId, auth, context?.room.project_id, isPilotRoom]);
+  }, [activeRuntimePackId, auth, context?.room_instance.id, isPilotRoom]);
 
   const switchRoom = useCallback((roomId: string): void => {
     if (!auth || roomId === context?.room.id) return;
@@ -604,6 +619,8 @@ function App(): ReactElement {
     setResourceCandidates([]);
     setRooms([]);
     setPilotSources([]);
+    setPilotJourney(null);
+    setPilotJourneyState('idle');
     setProjects([]);
     setSelectedProjectId('');
     setProjectMembers([]);
@@ -1455,6 +1472,10 @@ function App(): ReactElement {
   const handleCurrentModeSelect = (surface: Parameters<CurrentUiRuntime['onModeSelect']>[0]): void => {
     if (surface === 'home') {
       setSelectedMode('home');
+      if (isPilotRoom) {
+        const homeRoom = rooms.find((room) => room.type === 'home');
+        if (homeRoom) switchRoom(homeRoom.id);
+      }
       return;
     }
     if (surface === 'masterbuild') {
@@ -1605,10 +1626,66 @@ function App(): ReactElement {
     handleCurrentModeSelect(resolvedResume.surface);
   };
 
+  const pilotEntries = rooms.flatMap<CurrentUiRuntime['pilotEntries'][number]>((room) => {
+    const configured = room.context?.['runtime_pack_ids'];
+    const runtimePackIds = Array.isArray(configured)
+      ? configured.filter((value): value is string => typeof value === 'string')
+      : [];
+    if (runtimePackIds.includes('ours-dor-pilot-v1')) {
+      return [{
+        id: room.id,
+        label: "Ours d'Or",
+        summary: 'Projet, étape et prochaines actions.',
+        theme: 'gold' as const,
+      }];
+    }
+    if (runtimePackIds.includes('talents-creatifs-pilot-v1')) {
+      return [{
+        id: room.id,
+        label: 'Talents Créatifs',
+        summary: 'Brief, groupe et prochain jalon.',
+        theme: 'coral' as const,
+      }];
+    }
+    return [];
+  });
+
+  const pilotWorkspace = isPilotRoom && context ? (
+    <PilotConversationWorkspace
+      activePersonaId={activePersona?.id}
+      activePersonaName={activePersona?.name}
+      activeRoomId={context.room.id}
+      chatInput={chatInput}
+      conversationTurns={conversationTurns}
+      fallbackCheckpoint={latestCheckpoint?.summary ?? 'Cadrage initial'}
+      fallbackProjectName={projects.find((project) => project.project_id === context.room.project_id)?.name ?? 'Projet pilote'}
+      fallbackValidations={pendingActions.length}
+      inputRef={chatInputRef}
+      journey={pilotJourney}
+      journeyState={pilotJourneyState}
+      onChatInputChange={setChatInput}
+      onChatSubmit={handleChatSubmit}
+      onPreparePrompt={(prompt) => {
+        setChatInput(prompt);
+        window.requestAnimationFrame(() => chatInputRef.current?.focus());
+      }}
+      onRoomChange={switchRoom}
+      personaState={personaVisualState}
+      roomInstanceId={context.room_instance.id}
+      rooms={rooms}
+      runtimePackId={activeRuntimePackId}
+      sources={pilotSources}
+      wsState={wsState}
+    />
+  ) : null;
+
   const currentUiRuntime: CurrentUiRuntime | null = auth && context ? {
+    activeProfileId: activePersona?.id === 'profkrapu-001' ? 'profkrapu' : 'masterflex',
     context,
     inboxItems: pendingActions,
     jobs,
+    pilotEntries,
+    pilotWorkspace,
     resumeMode,
     resumeLabel,
     attentionLabel: pendingActions.length > 0
@@ -1628,6 +1705,7 @@ function App(): ReactElement {
     onActionSelect: (action) => void handleActionClick(action),
     onLogout: handleLogout,
     onModeSelect: handleCurrentModeSelect,
+    onPilotSelect: switchRoom,
     onResume: handleResume,
     renderWorkspace: renderCurrentWorkspace,
   } : null;
@@ -1772,6 +1850,12 @@ function App(): ReactElement {
       ) : (
         <section className="workspace" aria-label="Contexte courant">
           {selectedMode === 'home' && !pilotageOpen ? (
+            pilotWorkspace ? (
+              <>
+                {pilotWorkspace}
+                <SystemMessages messages={systemMessages} />
+              </>
+            ) : (
             <>
               <div className="home-workspace">
                 <ModeRail
@@ -1816,6 +1900,7 @@ function App(): ReactElement {
                 />
               </div>
             </>
+            )
           ) : (
             <>
           <SituationPanel

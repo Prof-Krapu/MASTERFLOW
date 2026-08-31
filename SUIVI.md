@@ -4,25 +4,45 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-31 — Interface pilotes sans provider
+
+TRANCHE ACTIVE :
+
+- id : `UI-PILOTS-NO-PROVIDER-001` ;
+- objectif : avancer l'interface d'Ours d'Or et Talents Créatifs avant la clé API, sans toucher au
+  provider ni au serveur ;
+- statut : interface validée telle quelle par MALEX ; commit, push et ouverture de PR autorisés,
+  merge et déploiement exclus ;
+- résultat : les deux pilotes sont accessibles depuis la Home active et partagent un workspace
+  conversationnel responsive avec projet, étape, prochaine action, sources, validations et persona ;
+- runtime : état pilote lu depuis `/api/v1/pilots/{pack}/state`, chat WebSocket en `mock`, aucune
+  action sensible ni livrable final automatisé ;
+- recette : Home desktop/mobile, Ours d'Or + MasterFlex, Talents Créatifs + ProfKrapu, prompt guidé,
+  réponse mock, retour Home et console navigateur sans erreur ;
+- tests : lint frontend et build frontend verts ;
+- prochaine action : publier la branche et ouvrir la PR, puis s'arrêter avant le merge ; déploiement
+  preview dans un gate séparé ;
+- blocage volontaire : provider réel reporté aux tests IRL.
+
+---
+
 ## 2026-08-31 — Train full-stack vagues 0 à 9
 
 VAGUE ACTIVE :
 
 - id : `FULLSTACK-CONSOLIDATION-001` ;
 - objectif : construire le socle conversationnel commun, sortir les pilotes Ours d'Or et Talents
-  Créatifs, puis préparer les consolidations suivantes sans migration appliquée ni déploiement ;
-- statut : vagues locales terminées et gate de release verte ; publication finale autorisée ;
-- dernière action terminée : migration/seed sur base temporaire, sauvegarde puis restauration
-  isolée avec intégrité et SHA-256 identiques ;
-- prochaine action : revoir la PR #249 et demander un GO explicite avant merge ; le déploiement
-  reste un gate séparé ;
+  Créatifs, puis déployer la même vérité Git sur la preview privée ;
+- statut : round terminé, PR #249 mergée et preview privée alignée sur `main` ;
+- dernière action terminée : déploiement immuable, smokes privés et restauration isolée ;
+- prochaine action : recette humaine en `mock`, puis gate provider lorsque MALEX disposera d'une clé ;
 - fichiers/domaines concernés : orchestrateur conversationnel, deux pilotes, Teaching, MasterPlan,
   Corrector, API_manage, UI/MASTERBUILD, Asset Engine, tests et pilotage ;
 - tests : backend `763/763`, audit npm `0`, lint backend/frontend, builds frontend/MASTERBUILD,
   MASTERBUILD `16/16`, QA Lab desktop/390 px et smoke HTTP local verts ;
-- publication : branche `codex/masterflow-waves-2-9` poussée et PR #249 ouverte, non mergée ; aucun
-  déploiement inclus ;
-- blocage : merge, provider réel, migration réelle, données originales, suppression, preview et
+- publication : PR #249 mergée dans `main` au SHA
+  `33f553fb8bbd633770294777fbbd1d06e104f42d` ; preview privée active sur le même SHA ;
+- blocage : provider réel différé aux tests IRL ; données originales, groupes réels, suppression et
   stable restent soumis à une validation explicite.
 
 Résultats du train :
