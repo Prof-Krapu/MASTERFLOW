@@ -68,7 +68,7 @@ const viewTitles: Record<ViewId, string> = {
   goals: "Travail partagé",
   domains: "Fonctionnalités MasterFlow",
   lab: "Lab, prototype et runtime",
-  git: "Publication et preuves",
+  git: "Serveur et preuves",
   research: "Règles produit et UI",
   team: "MALEX, Vincent et agents",
   housekeeping: "Provenance et cohérence",
@@ -699,7 +699,7 @@ function GitView({
           <strong>{status.git.files.length}</strong>
         </div>
         <div>
-          <small>Publication</small>
+          <small>Vérité opérable</small>
           <strong>{status.state.publication.state}</strong>
         </div>
       </section>

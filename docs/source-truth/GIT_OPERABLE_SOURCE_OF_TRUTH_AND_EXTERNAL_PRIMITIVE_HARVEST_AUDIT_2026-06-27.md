@@ -1,5 +1,10 @@
 # MasterFlow — Git comme source de vérité opérable + récolte de primitives externes
 
+> **Doctrine historique, remplacée le 2026-08-31.** La source de vérité opérable est désormais la
+> release active sur le serveur privé. Le clone Git reste l'atelier local ; GitHub est en pause. Voir
+> `SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`. Les règles de provenance et de récolte des
+> primitives ci-dessous restent valides.
+
 Date : 2026-06-27  
 Statut : doctrine opérationnelle Git + audit documentaire initial  
 Périmètre : repo Git publiable `/Users/malex/Documents/Playground/MASTERFLOW`

@@ -1,0 +1,5 @@
+{
+  "serverAlias": "configured-ssh-alias",
+  "serverRoot": "/absolute/path/to/MASTERFLOW_SERVER",
+  "dockerCli": "/absolute/path/to/docker"
+}

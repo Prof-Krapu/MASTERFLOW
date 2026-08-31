@@ -1,7 +1,7 @@
-# PROTOCOLE — Sync Git + inbox
+# PROTOCOLE — Sync serveur + clone local + inbox
 
-Objectif : eviter qu'un agent lise une vieille branche, un clone non fetch, ou une inbox locale
-obsolète et conclue a tort qu'aucun message n'existe.
+Objectif : éviter qu'un agent confonde le clone local, un ancien état GitHub et la release qui
+tourne réellement sur le serveur privé.
 
 Ce protocole s'applique a MALEX/Codex, Vincent/Claude et tout assistant appele sur le repo.
 
@@ -11,31 +11,17 @@ Avant toute reponse de coordination, reprise backend/frontend, run local, modifi
 permission, endpoint, action, UI ou perimetre :
 
 ```bash
-git fetch --all --prune
+npm run server:preflight
 git status --short --branch
-git rev-list --left-right --count HEAD...origin/main
-git log --oneline --decorate -5 origin/main
+git rev-parse HEAD
 ```
 
-Si `gh` est disponible et authentifie, verifier aussi l'etat GitHub distant. Ce check ne remplace
-pas Git, il sert a prouver que l'agent regarde le depot public attendu et pas seulement un clone
-local :
+Le preflight serveur est prioritaire. Il doit confirmer le pointeur `current`, le health et les
+trois conteneurs preview. Le clone local peut être en avance ou différent : cet écart est un
+candidat, pas une dérive du serveur.
 
-```bash
-gh auth status
-gh repo view Prof-Krapu/MASTERFLOW --json nameWithOwner,defaultBranchRef,pushedAt,url
-gh api repos/Prof-Krapu/MASTERFLOW/commits/main --jq '{sha: .sha, date: .commit.committer.date}'
-```
-
-Ensuite lire les fichiers depuis la ref la plus a jour. Si `HEAD` differe de `origin/main`, ne
-pas conclure depuis les fichiers locaux sans lire aussi la version distante :
-
-```bash
-git show origin/main:SUIVI.md
-git show origin/main:SYNC_THREAD_MALEX_VINCENT.md
-git show origin/main:INBOX_MALEX.md
-git show origin/main:INBOX_VINCENT.md
-```
+GitHub est en pause depuis le 2026-08-31. Ne pas lancer `git fetch`, `git push`, `gh pr` ou un merge
+distant par défaut. Un contrôle GitHub n'est permis que si MALEX réactive explicitement le miroir.
 
 ## Ordre de lecture obligatoire
 
@@ -45,9 +31,8 @@ git show origin/main:INBOX_VINCENT.md
 4. `INBOX_MALEX.md`
 5. `INBOX_VINCENT.md`
 
-Une inbox lue sans `git fetch` prealable vaut contexte incomplet.
-Une inbox modifiee localement mais non commit/push vaut message non transmis : Vincent/Claude ne
-peut pas la voir, meme si Codex local la lit.
+Une inbox lue sans preflight serveur vaut contexte runtime incomplet. Une inbox modifiée dans le
+clone reste un message local tant qu'aucun canal externe n'a été explicitement validé.
 
 ## Communication proportionnee
 
@@ -55,13 +40,14 @@ Le protocole ne doit pas transformer chaque message en ceremonie lourde.
 
 | Situation | Exigence |
 |---|---|
-| simple diagnostic / lecture | `fetch`, lecture des fichiers, `SYNC_PROOF` court |
+| simple diagnostic / lecture | preflight serveur, lecture des fichiers, `SERVER_SYNC_PROOF` court |
 | proposition sans modification | `SYNC_PROOF` court + pas de validation humaine requise |
-| modification locale non publiee | annoncer les fichiers touches + pas de commit/push sans GO |
-| commit/push/merge/rebase | validation humaine MALEX explicite |
+| modification locale non déployée | annoncer les fichiers touchés + ne pas la présenter comme live |
+| commit local / merge local | validation humaine selon le Round actif |
+| push/PR/merge GitHub | interdit par défaut tant que le miroir est en pause |
 | run backend, URL partagee, secret, permission, endpoint sensible | validation humaine explicite avant execution |
-| divergence Git | lire `origin/main:<fichier>` avant toute conclusion |
-| message introuvable par l'autre agent | citer la branche distante lue + dernier SHA GitHub/`origin/main` + statut commit/push |
+| delta clone → serveur | le nommer candidat et citer la release active |
+| message introuvable par l'autre agent | citer le canal réellement utilisé ; ne pas supposer GitHub actif |
 
 But : moins de blocage sur les etapes de lecture, plus de preuve sur l'etat reel du repo.
 
@@ -70,12 +56,14 @@ But : moins de blocage sur les etapes de lecture, plus de preuve sur l'etat reel
 Toute reponse de sync doit citer :
 
 ```text
-SYNC_PROOF
+SERVER_SYNC_PROOF
+- server_release_path:
+- server_release_id:
+- server_health:
+- server_containers:
 - local_branch:
 - local_head:
-- origin_main:
-- github_main:
-- head_vs_origin_main:
+- local_vs_server:
 - fichiers_lus:
 - conclusion:
 ```
@@ -83,42 +71,43 @@ SYNC_PROOF
 Exemple :
 
 ```text
-SYNC_PROOF
-- local_branch: codex/frontend-masterflow
-- local_head: 90aa65c
-- origin_main: 90aa65c
-- github_main: 90aa65c
-- head_vs_origin_main: 0/0
-- fichiers_lus: CLAUDE.md, SUIVI.md, SYNC_THREAD_MALEX_VINCENT.md, INBOX_MALEX.md, INBOX_VINCENT.md
-- conclusion: branche alignee, inbox a jour
+SERVER_SYNC_PROOF
+- server_release_path: <serverRoot>/releases/preview/33f553fb8bbd
+- server_release_id: 33f553fb8bbd
+- server_health: ok
+- server_containers: backend, frontend, export-runner actifs
+- local_branch: codex/example
+- local_head: abc1234
+- local_vs_server: candidat local non déployé
+- fichiers_lus: CLAUDE.md, SUIVI.md, inbox
+- conclusion: serveur sain, clone candidat
 ```
 
-## Si divergence
+## Si le clone diffère du serveur
 
-Si `HEAD...origin/main` n'est pas `0 0` :
+Si le HEAD local ou les fichiers diffèrent de la release active :
 
-- annoncer la divergence avant toute analyse ;
-- lire les fichiers distants avec `git show origin/main:<fichier>` ;
-- ne jamais dire "pas de nouveau message" depuis une copie locale en retard ;
-- demander validation humaine avant merge, rebase, commit ou push si le contexte l'exige ;
-- ne pas ecraser une branche de travail sans accord explicite.
-- si le message est seulement dans le worktree local, demander un commit/push explicite MALEX
-  avant de le considerer transmis a Vincent.
+- annoncer `candidat local non déployé` ;
+- ne jamais prétendre que la fonction est live ;
+- ne jamais modifier la release active à la main ;
+- préparer un snapshot immuable, un manifeste et les preuves locales ;
+- demander un GO séparé avant déploiement ou migration ;
+- conserver le rollback vers la release serveur précédente.
 
 ## Message court attendu
 
 Quand tout est aligne, une reponse peut rester courte :
 
 ```text
-SYNC_PROOF: HEAD=abc123, origin/main=abc123, delta=0/0, fichiers lus=sync+inbox.
-Conclusion: a jour.
+SERVER_SYNC_PROOF: release=33f553fb8bbd, health=ok, containers=3/3, local=abc1234.
+Conclusion: serveur sain ; clone local candidat.
 ```
 
-Quand ce n'est pas aligne, la reponse doit commencer par la divergence :
+Quand le serveur n'est pas joignable, la réponse doit commencer par la limite :
 
 ```text
-SYNC_PROOF: HEAD=abc123, origin/main=def456, delta=0/3.
-Conclusion: copie locale en retard, lecture distante obligatoire avant decision.
+SERVER_SYNC_PROOF: serveur injoignable, dernière release vérifiée=33f553fb8bbd, local=abc1234.
+Conclusion: vérité runtime courante inconnue ; aucune promotion implicite du clone.
 ```
 
 ## Statuts de messages

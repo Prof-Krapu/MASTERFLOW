@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T22:13:32+02:00",
-  "active_round_id": "UI-PILOTS-NO-PROVIDER-001",
+  "updated_at": "2026-08-31T22:24:00+02:00",
+  "active_round_id": "SERVER-FIRST-OPERATIONS-001",
   "authorizations": [
     {
       "authorization_id": "AUTH-MB2-2026-07-05",
@@ -269,10 +269,20 @@
       "round_id": "UI-PILOTS-NO-PROVIDER-001",
       "actor": "malex",
       "scope": "merge_pull_request_250_then_stop_before_deployment",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-31T22:13:32+02:00",
       "expires_on_scope_change": true,
       "excluded": ["deploy", "migration", "provider_call", "spend", "delete", "canon_scope_change", "real_pilot_data", "backend_change", "stable_promotion"]
+    },
+    {
+      "authorization_id": "AUTH-SERVER-FIRST-TRANSITION-2026-08-31",
+      "round_id": "SERVER-FIRST-OPERATIONS-001",
+      "actor": "malex",
+      "scope": "document_commit_push_pull_request_and_merge_final_server_first_transition_then_pause_github",
+      "status": "completed",
+      "granted_at": "2026-08-31T22:24:00+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["deploy", "migration", "provider_call", "spend", "delete", "real_pilot_data", "server_write", "stable_promotion"]
     }
   ],
   "work_packages": [
@@ -930,13 +940,25 @@
       "work_package_id": "UI-PILOTS-001",
       "label": "Raccorder les deux pilotes au shell actif sans provider réel",
       "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
-      "status": "awaiting_malex_review",
+      "status": "completed_mirror_candidate_not_deployed",
       "owner": "malex",
       "reviewers": ["codex"],
       "dependencies": ["FSC-003", "FSC-007"],
       "design_rule_ids": ["DES-001", "DES-004", "DES-005", "DES-009", "DES-010", "DES-015", "DES-018", "DES-023"],
       "tool_route": "assembled_prototype",
-      "expected_evidence": ["deux entrées pilotes dans la Home active", "état pilote backend réel", "même shell conversationnel", "personas distinctes", "mode mock explicite", "desktop et 390 px", "tour conversationnel simulé", "lint et build frontend", "aucun commit push ou déploiement sans GO"]
+      "expected_evidence": ["deux entrées pilotes dans la Home active", "état pilote backend réel", "même shell conversationnel", "personas distinctes", "mode mock explicite", "desktop et 390 px", "tour conversationnel simulé", "lint et build frontend", "miroir mergé", "déploiement serveur séparé"]
+    },
+    {
+      "work_package_id": "SFO-001",
+      "label": "Basculer le pilotage vers la vérité serveur",
+      "feature_ids": ["masterbuild-pilot"],
+      "status": "active",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["UI-PILOTS-001"],
+      "design_rule_ids": [],
+      "tool_route": "local_and_server",
+      "expected_evidence": ["release current vérifiée", "health vert", "trois conteneurs actifs", "clone local déclaré candidat", "GitHub en pause", "preflight reproductible", "manifeste obligatoire à la prochaine release", "aucune mutation serveur"]
     }
   ]
 }

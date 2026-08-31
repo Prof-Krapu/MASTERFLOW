@@ -4,6 +4,28 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-31 — Bascule de gouvernance server-first
+
+MODE OPÉRATOIRE ACTIF :
+
+- décision MALEX : GitHub est mis en pause ; le serveur privé devient la source de vérité opérable ;
+- vérité runtime : `<serverRoot>/releases/preview/current` pointe
+  vers la release `33f553fb8bbd` ; backend, frontend et export runner actifs, health vert ;
+- clone local : atelier de code, tests, contrats, commits et snapshots candidats ;
+- GitHub : miroir historique au dernier merge `3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a`, non utilisé
+  dans le cycle courant après la fusion de cette transition ;
+- règle : une fonction locale ou présente seulement dans le miroir n'existe pas en runtime tant
+  qu'elle n'est pas dans la release serveur active ;
+- déploiement : snapshot local immuable, manifeste, backup, `incoming`, bascule atomique, smoke et
+  rollback ; aucune édition manuelle de `current` ;
+- prochaine action : préparer le snapshot local de l'interface pilotes ; demander un GO séparé
+  avant toute copie, migration ou bascule serveur ;
+- provider : `mock`, inchangé.
+
+Contrat : `docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`.
+
+---
+
 ## 2026-08-31 — Interface pilotes sans provider
 
 TRANCHE ACTIVE :
@@ -11,8 +33,9 @@ TRANCHE ACTIVE :
 - id : `UI-PILOTS-NO-PROVIDER-001` ;
 - objectif : avancer l'interface d'Ours d'Or et Talents Créatifs avant la clé API, sans toucher au
   provider ni au serveur ;
-- statut : interface validée telle quelle par MALEX, publiée dans la PR #250 et autorisée au merge ;
-  déploiement exclu ;
+- statut : interface validée telle quelle par MALEX et mergée dans l'ancien miroir GitHub via la PR
+  #250 au SHA `3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a` ; candidate locale, absente de la release serveur
+  active ;
 - résultat : les deux pilotes sont accessibles depuis la Home active et partagent un workspace
   conversationnel responsive avec projet, étape, prochaine action, sources, validations et persona ;
 - runtime : état pilote lu depuis `/api/v1/pilots/{pack}/state`, chat WebSocket en `mock`, aucune
@@ -20,7 +43,7 @@ TRANCHE ACTIVE :
 - recette : Home desktop/mobile, Ours d'Or + MasterFlex, Talents Créatifs + ProfKrapu, prompt guidé,
   réponse mock, retour Home et console navigateur sans erreur ;
 - tests : lint frontend et build frontend verts ;
-- prochaine action : merger la PR #250 puis s'arrêter avant tout déploiement preview ;
+- prochaine action : préparer une release server-first puis demander un GO avant déploiement ;
 - blocage volontaire : provider réel reporté aux tests IRL.
 
 ---

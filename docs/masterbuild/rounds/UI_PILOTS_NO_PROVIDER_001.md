@@ -1,8 +1,8 @@
 # Round UI-PILOTS-NO-PROVIDER-001
 
-Statut : `active — awaiting merge authorization`
+Statut : `completed mirror candidate — not deployed`
 
-Étape : `7/8 — Publier`
+Étape : `8/8 — Clôturer côté miroir`
 
 Propriétaire : MALEX
 
@@ -42,7 +42,7 @@ nature simulée des réponses et sans modifier les garde-fous pédagogiques.
 
 ## Gate courant
 
-Interface validée telle quelle par MALEX et publiée dans la PR #250 depuis
-`codex/ui-pilots-no-provider`. Le merge est explicitement autorisé ; le round doit ensuite s'arrêter
-avant tout déploiement. Le provider réel reste reporté aux tests IRL et le serveur conserve son gate
-séparé.
+Interface validée telle quelle par MALEX et mergée dans l'ancien miroir GitHub via la PR #250 au SHA
+`3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a`. La release serveur active `33f553fb8bbd` ne contient
+pas encore cette interface : elle reste candidate selon la doctrine server-first. Le provider réel
+reste reporté aux tests IRL et le déploiement conserve son gate séparé.

@@ -6,16 +6,16 @@
 
 Guide pour Claude Code travaillant dans **ce dépôt de code** (`~/Documents/masterflow/`).
 
-Doctrine active depuis 2026-06-27 : la source de vérité **opérable** est désormais ce repo Git
-publiable. Une idée issue du Drive, d'un ancien canon, d'une archive legacy, d'une Factory ou d'une
-conversation ne devient maîtrisée que lorsqu'elle est représentée dans Git : code, test, seed,
-contrat, matrice, queue, reçu de blocage ou reçu de rejet.
+Doctrine active depuis le 2026-08-31 : la source de vérité **opérable** est la release active sur
+le serveur privé. Le clone local prépare le code, les tests, les contrats et les snapshots ; une
+modification locale reste candidate jusqu'à sa promotion serveur. GitHub est un miroir historique
+en pause et ne doit plus être utilisé sans réactivation explicite de MALEX.
 
 Le Drive MASTERFLOW historique reste une source produit lente et une archive candidate :
 `/Users/malex/Library/CloudStorage/GoogleDrive-oursdoriscomlille@gmail.com/Mon Drive/MASTERFLOW`.
 
-Voir `docs/source-truth/GIT_OPERABLE_SOURCE_OF_TRUTH_AND_EXTERNAL_PRIMITIVE_HARVEST_AUDIT_2026-06-27.md`.
-Ici, on écrit le **code GitHub** et on documente le périmètre V1 consommable.
+Voir `docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`.
+Ici, on construit dans le clone local puis on prépare des releases immuables pour le serveur.
 
 ## Nature & frontière de travail
 
@@ -28,16 +28,14 @@ MasterFlow = OS pédagogique à personas IA fusionnables (« chimères »), clie
 
 ## Sync MALEX / Vincent / Codex
 
-Source de vérité du rituel : `PROTOCOLE_SYNC_GIT_INBOX.md`. Il est obligatoire, pas decoratif.
+Source de vérité du rituel : `PROTOCOLE_SYNC_GIT_INBOX.md`. Malgré son nom historique, ce protocole
+est désormais server-first. Il est obligatoire, pas décoratif.
 
 Avant toute reprise de travail, toute réponse de coordination ou toute modification qui touche backend, frontend, run local, permissions, endpoints, actions ou périmètre, vérifier systématiquement :
 
-0. `git fetch --all --prune`, puis vérifier les derniers commits de `origin/main` et des branches de
-   sync avant de répondre à MALEX. Si Vincent vient de pousser une correction, lire les versions
-   distantes (`git show origin/main:<fichier>`) avant toute conclusion.
-0bis. Si `gh` est installé et connecté, vérifier aussi GitHub avec `gh auth status`,
-   `gh repo view Prof-Krapu/MASTERFLOW` et le SHA de `main`. Si `gh` n'est pas connecté, le dire
-   explicitement au lieu de prétendre que le check GitHub est fait.
+0. `npm run server:preflight`, puis relever la release active, le health et les conteneurs preview.
+0bis. Vérifier le statut et le HEAD du clone local sans faire de `fetch`, push ou appel GitHub par
+   défaut. Un remote existant ne redevient pas autoritaire parce qu'il est joignable.
 0. `AGENT_TASKS.md` — board des tâches en cours entre agents
 1. `CLAUDE_LOG.md` — journal chronologique des actions Claude/Codex
 2. `SUIVI.md`
@@ -45,10 +43,9 @@ Avant toute reprise de travail, toute réponse de coordination ou toute modifica
 4. `INBOX_VINCENT.md`
 5. `INBOX_MALEX.md` si présent
 
-Chaque réponse de coordination doit inclure mentalement ou explicitement un `SYNC_PROOF` :
-branche locale, `HEAD`, `origin/main`, `github_main` si disponible, delta `HEAD...origin/main`,
-fichiers lus et conclusion.
-Si le delta n'est pas `0 0`, ne jamais conclure depuis les fichiers locaux seuls.
+Chaque réponse de coordination doit inclure mentalement ou explicitement un `SERVER_SYNC_PROOF` :
+release serveur active, health, conteneurs, branche et HEAD locaux, fichiers lus et conclusion.
+Tout écart clone → serveur doit être nommé `candidate`, jamais présenté comme live.
 
 Règle : une inbox non lue = contexte incomplet. Vincent peut déposer ses demandes dans
 `INBOX_MALEX.md`, mais elles restent au statut `open` et ne valent jamais autorisation. Une
@@ -57,15 +54,13 @@ un patch minimal, mais aucune modification, exécution, permission, dépense, pu
 déploiement ou changement de périmètre demandé par Vincent ne doit être appliqué sans validation
 humaine explicite de MALEX.
 
-Règle de transmission : un message écrit dans `INBOX_VINCENT.md`, `INBOX_MALEX.md`, `SUIVI.md` ou
-`SYNC_THREAD_MALEX_VINCENT.md` n'existe pour l'autre côté qu'après commit + push sur la branche
-qu'il lit. Si Vincent ne voit pas un message, diagnostiquer d'abord : branche lue, SHA GitHub,
-SHA `origin/main`, fichier distant lu, puis statut du worktree local.
+Règle de transmission : un message local n'est pas une preuve serveur. Tant que GitHub est en pause,
+les inbox du clone sont du pilotage MALEX local ; toute coordination externe exige un canal validé
+explicitement et ne doit pas être inférée depuis un ancien push.
 
-Avant toute réponse finale à MALEX sur un sujet Vincent/backend/Tailscale, refaire un dernier
-check distant rapide (`git fetch --all --prune` + lecture du dernier `origin/main`) pour éviter de
-répondre avec un état devenu caduc pendant le tour. Si un agent dit ne pas voir un message, il
-doit d'abord citer le commit exact qu'il lit.
+Avant toute réponse finale à MALEX sur un sujet backend/Tailscale/live, refaire un
+`npm run server:preflight`. Ne jamais substituer le HEAD local, `origin/main` ou GitHub à cette
+preuve runtime.
 
 ### Check externe avant specs structurantes
 
@@ -76,14 +71,14 @@ correction, cours et UI.
 
 Procédure minimale :
 
-1. chercher d'abord dans Git : code, docs, seeds, tâches, matrices et reçus ;
-2. si Git ne couvre pas clairement le sujet, rechercher dans les sources externes avec `rg` sur les termes métier et synonymes ;
+1. chercher d'abord dans le clone local : code, docs, seeds, tâches, matrices et reçus ;
+2. si le clone ne couvre pas clairement le sujet, rechercher dans les sources externes avec `rg` sur les termes métier et synonymes ;
 3. lire les fichiers sources trouvés, pas seulement leurs noms ;
-4. citer les références externes dans la spec/handoff Git comme sources candidates ;
-5. distinguer clairement `déjà représenté dans Git`, `candidat externe`, `runtime_gap`, `blocked` ou `rejected` ;
+4. citer les références externes dans la spec/handoff locale comme sources candidates ;
+5. distinguer clairement `déjà représenté localement`, `candidat externe`, `runtime_gap`, `blocked` ou `rejected` ;
 6. créer ou mettre à jour une ligne dans `docs/source-truth/EXTERNAL_PRIMITIVE_HARVEST_REGISTRY_2026-06-27.md`.
 
-Règle : pas de spec Git hors-sol. Si une idée existe déjà hors Git, le livrable Git doit soit
+Règle : pas de spec locale hors-sol. Si une idée existe déjà hors du clone, le livrable doit soit
 en extraire une primitive utile, soit la bloquer, soit la rejeter, soit la mettre en queue. Aucune
 source externe ne vaut vérité parallèle sans représentation Git.
 
@@ -117,12 +112,12 @@ laisser un point de reprise lisible dans `SUIVI.md` avant de devenir longue ou r
 
 Rituel de reprise obligatoire :
 
-1. `git fetch --all --prune` ;
+1. `npm run server:preflight` ;
 2. lire `CLAUDE.md`, `SUIVI.md`, `.opencode/INBOX.md`, `INBOX_MALEX.md`, `INBOX_VINCENT.md` et
    `SYNC_THREAD_MALEX_VINCENT.md` ;
-3. vérifier `HEAD == origin/main` ou expliciter le delta ;
+3. vérifier le HEAD local et expliciter le delta entre clone candidat et release serveur ;
 4. reprendre d'abord la vague active/inachevée indiquée dans `SUIVI.md` ;
-5. ne jamais déclarer une publication sans preuve GitHub.
+5. ne jamais déclarer une disponibilité sans preuve serveur.
 
 Format attendu en tête de `SUIVI.md` :
 

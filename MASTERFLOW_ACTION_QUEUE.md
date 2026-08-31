@@ -15,29 +15,31 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 
 ## Queue active d'exécution — 2026-08-31
 
-Le train des vagues 0 à 9, la PR #249, son merge et le déploiement preview sont terminés. Le
-provider réel est explicitement reporté aux tests IRL. La tranche active est l'interface locale des
-deux pilotes, sans clé ni appel réseau.
+Le serveur privé MasterFlow est désormais la source de vérité opérable. Sa release active est
+`33f553fb8bbd`. Le clone local contient la nouvelle interface pilotes au-delà du serveur ; GitHub est
+un miroir historique en pause après le dernier merge de transition. Le provider réel reste reporté
+aux tests IRL.
 
 ### 1. À faire maintenant
 
-- Tâche : revoir puis publier la nouvelle interface commune Ours d'Or / Talents Créatifs.
+- Tâche : préparer un snapshot local immuable de la nouvelle interface commune Ours d'Or / Talents
+  Créatifs pour une future promotion serveur.
 - Impact : rend les deux pilotes accessibles depuis la Home active, lisibles sur desktop/mobile et
   utilisables en mode `mock` avant l'arrivée d'une clé provider.
 - Risque : faible à moyen ; la promesse reste du guidage, aucune validation professeur ni production
   de livrable final ne doit être introduite.
-- Source de vérité concernée : canon des pilotes, shell frontend actif et état pilote backend.
-- Statut : validé tel quel par MALEX et publié dans la PR #250 ; merge autorisé et en cours, non
-  déployé.
-- Validation requise : obtenue pour commit, push, PR et merge ; oui séparément avant déploiement.
+- Source de vérité concernée : release serveur active, canon des pilotes et clone local.
+- Statut : interface validée et mergée dans le dernier miroir GitHub ; candidate locale, absente du
+  serveur actif.
+- Validation requise : non pour préparer et tester le snapshot ; oui séparément avant déploiement.
 
 ### 2. À mettre en queue
 
-- Tâche : après publication et merge éventuel de la tranche UI, redéployer le même SHA en preview.
+- Tâche : rendre le manifeste non secret obligatoire et promouvoir le snapshot UI en preview.
 - Impact : met l'interface recettée à disposition sur Malex Graphics.
-- Risque : moyen ; le serveur est aujourd'hui sain et ne doit pas recevoir un build non mergé.
-- Source de vérité concernée : GitHub `main`, manifeste de release et preview privée.
-- Statut : futur, aucun geste serveur effectué dans cette tranche.
+- Risque : moyen ; le serveur est sain et la release active ne doit jamais être modifiée en place.
+- Source de vérité concernée : clone local vérifié, manifeste, backup et preview privée.
+- Statut : futur ; aucun geste serveur effectué dans cette transition de gouvernance.
 - Validation requise : oui avant déploiement.
 
 ### 3. À faire quand j'ai des tokens
@@ -52,10 +54,10 @@ deux pilotes, sans clé ni appel réseau.
 
 ### 4. À demander à Vincent
 
-- Tâche : aucune dans ce chantier ; la PR #247 reste indépendante.
+- Tâche : aucune dans ce chantier ; les anciennes PR Vincent restent des références historiques.
 - Impact : évite tout mélange avec la ligne `vincent/masterplan`.
 - Risque : faible.
-- Source de vérité concernée : GitHub et décision de séparation.
+- Source de vérité concernée : décision MALEX et clone local.
 - Statut : hors chantier.
 - Validation requise : non.
 
@@ -69,9 +71,9 @@ deux pilotes, sans clé ni appel réseau.
 - Statut : à décider après recette preview ; aucune activation implicite.
 - Validation requise : oui aux gates correspondants.
 
-La preview serveur reste active au SHA `33f553fb8bbd633770294777fbbd1d06e104f42d`. La nouvelle
-interface est uniquement locale. Aucun provider réel, stable, groupe réel ou import de corpus n'est
-autorisé par cette queue.
+La preview serveur reste active sur la release `33f553fb8bbd`. Aucun provider réel, stable, groupe
+réel ou import de corpus n'est autorisé par cette queue. GitHub ne doit plus être utilisé sans
+réactivation explicite de MALEX.
 
 ### PEDAGOGICAL-LINK-ENGINE-001 — Registre et routage pédagogique
 

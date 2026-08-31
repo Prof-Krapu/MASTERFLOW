@@ -1,5 +1,10 @@
 # MasterFlow Full-Stack - Plan global de mise sous tension
 
+> **Plan historique exécuté.** Depuis le 2026-08-31, le serveur actif est la source de vérité
+> opérable, le clone local prépare les snapshots et GitHub est en pause. Les prochaines promotions
+> partent de commits locaux vérifiés vers une release immuable serveur, sans PR obligatoire. Voir
+> `../source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`.
+
 ## Decision directrice
 
 MasterFlow devient le backend et le produit central. Ours d'Or est la premiere verticale complete mise en production. Talents Creatifs, MasterPlan, API Manage et Asset Engine restent dans l'architecture cible, mais ne bloquent pas la premiere preuve serveur. Corrector n'est pas une verticale a migrer : seules ses capacites utiles sont absorbees dans les moteurs communs MasterFlow.
