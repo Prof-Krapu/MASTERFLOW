@@ -22,14 +22,14 @@ Les vagues 0 à 9 sont exécutées localement ; le round portable actif est
 
 ### 1. À faire maintenant
 
-- Tâche : créer les commits logiques, pousser `codex/masterflow-waves-2-9` et ouvrir la PR vers
-  `main`, puis arrêter le train avant merge.
-- Impact : rend la consolidation full-stack entièrement révisable sans toucher au serveur.
+- Tâche : revoir la PR #249 puis décider explicitement du merge, sans l'assimiler à un déploiement.
+- Impact : permet de faire converger `main` sur une consolidation full-stack entièrement révisable
+  sans toucher au serveur.
 - Risque : moyen ; la PR est large mais les gates locales, le manifeste exact et le rollback sont
   vérifiés avant toute fusion.
 - Source de vérité concernée : GitHub `main`, round full-stack et plan final.
-- Statut : implémentation locale vérifiée ; commit, push et PR explicitement autorisés.
-- Validation requise : non pour commit/push/PR ; oui avant merge.
+- Statut : branche poussée, PR ouverte et train arrêté avant merge.
+- Validation requise : oui avant merge.
 
 ### 2. À mettre en queue
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T20:38:15+02:00",
+  "updated_at": "2026-08-31T20:56:21+02:00",
   "active_round_id": "FULLSTACK-CONSOLIDATION-001",
   "authorizations": [
     {
@@ -239,7 +239,7 @@
       "round_id": "FULLSTACK-CONSOLIDATION-001",
       "actor": "malex",
       "scope": "execute_local_waves_0_to_9_commit_push_and_open_pull_request_then_stop_before_merge",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-31",
       "expires_on_scope_change": true,
       "excluded": ["merge", "real_migration", "deploy", "stable_promotion", "provider_call", "spend", "delete", "canon_scope_change"]
@@ -888,7 +888,7 @@
       "work_package_id": "FSC-009",
       "label": "Exécuter la gate de release locale et ouvrir la PR",
       "feature_ids": ["masterbuild-pilot"],
-      "status": "in_progress",
+      "status": "completed",
       "owner": "codex",
       "reviewers": ["malex", "vincent"],
       "dependencies": ["FSC-002", "FSC-003", "FSC-004", "FSC-005", "FSC-006", "FSC-007", "FSC-008"],

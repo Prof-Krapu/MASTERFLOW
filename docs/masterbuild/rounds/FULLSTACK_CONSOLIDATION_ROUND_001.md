@@ -2,7 +2,7 @@
 
 Statut : `active`
 
-Étape : `6/8 — Vérifier`
+Étape : `7/8 — Publier`
 
 Propriétaire : MALEX
 
@@ -13,6 +13,9 @@ Autorisation : `AUTH-FULLSTACK-WAVES-0-9-PR-2026-08-31`
 Le round `UI-PAGE-BY-PAGE-001` est clos comme `superseded`, sans transformer ses revues visuelles
 encore ouvertes en validations. Le plan full-stack absorbe leur vérification dans un train plus
 large : vagues 0 à 9, commits logiques, push et ouverture de PR, puis arrêt obligatoire avant merge.
+
+La PR [#249](https://github.com/Prof-Krapu/MASTERFLOW/pull/249) est ouverte. Le round reste actif en
+attente de review et de décision de merge ; aucun déploiement n'est engagé.
 
 ## Contrat de déploiement
 

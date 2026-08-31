@@ -14,13 +14,14 @@ VAGUE ACTIVE :
 - statut : vagues locales terminées et gate de release verte ; publication finale autorisée ;
 - dernière action terminée : migration/seed sur base temporaire, sauvegarde puis restauration
   isolée avec intégrité et SHA-256 identiques ;
-- prochaine action : créer les commits logiques, pousser `codex/masterflow-waves-2-9`, ouvrir la PR
-  et s'arrêter avant merge ;
+- prochaine action : revoir la PR #249 et demander un GO explicite avant merge ; le déploiement
+  reste un gate séparé ;
 - fichiers/domaines concernés : orchestrateur conversationnel, deux pilotes, Teaching, MasterPlan,
   Corrector, API_manage, UI/MASTERBUILD, Asset Engine, tests et pilotage ;
 - tests : backend `763/763`, audit npm `0`, lint backend/frontend, builds frontend/MASTERBUILD,
   MASTERBUILD `16/16`, QA Lab desktop/390 px et smoke HTTP local verts ;
-- publication : branche locale `codex/masterflow-waves-2-9`, aucun déploiement inclus ;
+- publication : branche `codex/masterflow-waves-2-9` poussée et PR #249 ouverte, non mergée ; aucun
+  déploiement inclus ;
 - blocage : merge, provider réel, migration réelle, données originales, suppression, preview et
   stable restent soumis à une validation explicite.
 

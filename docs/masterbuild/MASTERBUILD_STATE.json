@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-31T20:38:15+02:00",
+  "updated_at": "2026-08-31T20:56:21+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -28,9 +28,9 @@
     "objective": "Livrer une PR reproductible couvrant les fondations, les deux pilotes conversationnels, Teaching, MasterPlan, Corrector, API_manage, UI, MASTERBUILD et Asset Engine, sans merge ni déploiement automatique.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 6,
-    "stage_label": "Vérifier",
-    "recommended_next_action": "Terminer les gates locaux de la vague 9, publier la PR autorisée, puis attendre une validation explicite avant merge.",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Revoir la PR #249 puis demander un GO explicite avant merge ; le déploiement reste un gate séparé.",
     "primary_risk": "Confondre une implémentation locale ou une preview avec une capacité stable, un apprentissage canonisé ou une migration réelle.",
     "no_auto_execute": true,
     "work_package_ids": ["FSC-001", "FSC-002", "FSC-003", "FSC-004", "FSC-005", "FSC-006", "FSC-007", "FSC-008", "FSC-009"],
@@ -114,8 +114,15 @@
       "move_id": "publish-fullstack-consolidation-pr",
       "label": "Publier la consolidation full-stack en PR",
       "reason": "Les vagues locales sont regroupées dans un train reproductible ; le merge reste un gate humain séparé.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "review-fullstack-consolidation-pr-249",
+      "label": "Revoir la PR #249 avant merge",
+      "reason": "La branche et son manifeste exact sont publiés ; le merge reste le prochain gate humain et ne vaut pas déploiement.",
       "recommended": true,
-      "status": "in_progress"
+      "status": "awaiting_review"
     }
   ],
   "registries": {
@@ -146,8 +153,8 @@
     "title": "Consolider MasterFlow full-stack par vagues",
     "owner": "malex",
     "status": "active",
-    "stage_index": 6,
-    "stage_label": "Vérifier",
+    "stage_index": 7,
+    "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
       "Deux pilotes conversationnels isolés sur un backend commun",
@@ -203,13 +210,13 @@
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "pending"
+      "status": "active"
     },
     {
       "index": 8,
