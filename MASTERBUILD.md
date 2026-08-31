@@ -13,10 +13,14 @@ Construire une première version utilisable de MasterFlow sans confondre :
 - fichier local, branche, PR, `main` et live ;
 - référence, asset candidat et canon.
 
+Depuis le 2026-08-31, la release active sur Malex Graphics est la source de vérité opérable. Le
+clone local prépare des candidats et des snapshots ; GitHub est un miroir en pause. Voir
+`docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`.
+
 ## Reprise
 
 1. Lire l'état partagé, le registre fonctionnel, le workboard et le profil local éventuel.
-2. Vérifier Git et ignorer tout handoff dont le Round ou le commit est périmé.
+2. Exécuter `npm run server:preflight`, puis vérifier le clone local et ignorer tout handoff périmé.
 3. Présenter la situation, le Round, les preuves et la prochaine action recommandée.
 4. Proposer deux alternatives maximum.
 5. Attendre le GO avant toute exécution.
@@ -37,9 +41,10 @@ chantier borné en huit étapes :
 
 `Orienter → Cadrer → Auditer → Décider → Construire → Vérifier → Publier → Clôturer`
 
-Le GO d'un Round peut couvrir implémentation, tests, commit, push et draft PR si l'autorisation
-partagée le précise. Merge, déploiement, migration, provider, dépense, suppression et changement de
-canon exigent toujours un nouveau GO.
+Le GO d'un Round peut couvrir implémentation, tests et commits locaux si l'autorisation partagée le
+précise. Déploiement serveur, migration, provider, dépense, suppression et changement de canon
+exigent toujours un nouveau GO. Push, PR et merge GitHub sont désactivés par défaut tant que le
+miroir distant est en pause.
 
 ## Guidance par domaine
 
@@ -77,9 +82,10 @@ une revue MALEX sur expérience/DA et une revue Vincent sur contrats/permissions
 
 - décision produit ou visuelle : MALEX ;
 - backend, runtime et sécurité : Vincent ;
-- code, contrats, tests et Git : Codex ;
+- code, contrats, tests, commits locaux et snapshots : Codex ;
 - audit répétitif : OpenCode / Big Pickle, résultat `done_unverified` ;
 - information externe instable : recherche web ;
+- vérité runtime : preflight read-only de Malex Graphics ;
 - composant isolé : Component Lab ;
 - contrôle visuel évident : humain ;
 - interaction ou accessibilité de promotion : smoke ciblé.

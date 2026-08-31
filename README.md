@@ -5,6 +5,20 @@
 Monorepo **backend-first**. Le backend est l'autorité d'action ; le LLM propose, ne décide jamais.
 Stack : TypeScript/Node + Express + better-sqlite3 + Zod (backend) ; React 19 + Vite (frontend MALEX).
 
+## Source de vérité opérable
+
+La preview active sur Malex Graphics est la vérité de ce qui fonctionne réellement. Le clone local
+est l'atelier de construction et de préparation des snapshots. GitHub est un miroir historique en
+pause depuis le 2026-08-31 et ne fait plus partie du cycle courant.
+
+Contrat : [`docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`](docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md).
+
+Preflight read-only :
+
+```bash
+npm run server:preflight
+```
+
 ## Répartition
 
 - `apps/backend` — **livrable principal** : API REST + WebSocket, schéma, auth JWT, action router + validation inbox, persona engine + blend, registre de ressources anti-hallucination, audit.

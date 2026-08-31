@@ -1,16 +1,29 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-08-31
-GitHub `main` vérifié : `33f553fb8bbd633770294777fbbd1d06e104f42d`
-Release preview vérifiée : `33f553fb8bbd633770294777fbbd1d06e104f42d`
-Tranche UI locale : candidate non publiée
+Source de vérité opérable : serveur Malex Graphics
+Release preview active vérifiée : `33f553fb8bbd`
+Clone local / dernier miroir GitHub : `3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a`
+Tranche UI : mergée dans le miroir, candidate tant qu'elle n'est pas déployée sur le serveur
 Stable : absente
 
-Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
-Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
-représentées dans Git par code, test, seed, contrat, matrice, queue, reçu de blocage ou rejet.
-Les Factories ne sont jamais absorbées telles quelles : seules leurs primitives utiles peuvent être
-récoltées après audit.
+Doctrine active 2026-08-31 : la release serveur active prouve ce qui existe réellement. Le clone
+local prépare les candidats et les snapshots ; GitHub est un miroir historique en pause. Drive,
+legacy, ex-canon et Factories restent des sources candidates. Les Factories ne sont jamais absorbées
+telles quelles.
+
+## Matrice active serveur → clone
+
+| Élément | Statut serveur | Écart clone / serveur | Risque | Action recommandée |
+|---|---|---|---|---|
+| Release preview | active `33f553fb8bbd` | le clone contient la nouvelle UI pilotes au-delà de la release | moyen | Préparer un snapshot immuable et demander un GO de déploiement. |
+| Ours d'Or et Talents Créatifs | backend, orchestrateur et RuntimePacks actifs en `mock` | workspace conversationnel enrichi uniquement dans le clone | faible à moyen | Recetter le snapshot local puis promouvoir sans provider réel. |
+| MasterPlan | adaptateur data-first read-only actif | import réel, parité signée et bridge d'affectations restent futurs | moyen | Conserver Drive autoritaire jusqu'à une recette dédiée. |
+| Données persistantes | `shared/preview` fait foi | aucune donnée serveur ne doit être remplacée par une fixture locale | élevé | Backup obligatoire avant migration ; jamais copier une base locale par défaut. |
+| GitHub | miroir historique au SHA `3d91c0a` | hors boucle quotidienne | faible | Aucun fetch, push, PR ou merge sans réactivation explicite MALEX. |
+| Manifeste de release | absent de la baseline active | contrat incomplet pour une gouvernance server-first durable | moyen | Rendre le manifeste non secret obligatoire dès la prochaine release. |
+
+## Historique canon → GitHub — preuve non autoritaire
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
@@ -37,7 +50,7 @@ récoltées après audit.
 | EXPRESSIVE_CANON / Style Mirror | implémenté P1 | Extension de Style Mirror publiée via PR #167 : consentement sujet, validation, config expressive bornée, sélection projet réelle, prompt limité et metadata WS. | faible à moyen | Garder collecte automatique, psychologie, avatar runtime et contrôle provider en P2/P3. |
 | Vision Product Absorption | partiel | Le préflight visible dispose d’un contrat backend publié et d’un panneau UI vérifié localement ; notes/backlinks, design tokens, output registry et LMS restent séparés. | faible à moyen | Publier `VISIBLE-PREFLIGHT-002`, puis arbitrer la prochaine primitive sans ouvrir de chantier global. |
 | Factories confrontation | partiel externe | 22 factories auditées hors runtime ; corrections de packs restent dans l'atelier Desktop, Git ne reçoit que primitives/guardrails utiles. | moyen | Ne pas absorber les factories telles quelles ; préparer seulement un validateur de pack et un routeur de primitives. |
-| Source truth opérable Git | partiel local | Doctrine `Git opérable` créée localement, non publiée ; l'ancien vocabulaire Drive-canon peut encore induire une vérité parallèle. | moyen | Publier `docs/source-truth/` et garder Drive/legacy/factories en sources candidates, avec récolte de primitives uniquement pour les Factories. |
+| Source truth opérable Git | historique remplacé | Doctrine remplacée par `SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md` ; GitHub est en pause et le clone reste un atelier. | faible | Conserver uniquement les règles de provenance et de récolte des primitives. |
 | D01 identité, accès, ownership | implémenté fondation | Auth, invitations, projets, membres/scopes et cohorte/roster privés sont sur `main`; organisation absente. | faible | Garder l'organisation future, sans multi-tenant prématuré. |
 | D02 contexte, mémoire, RAG | partiel | Context compiler, loadout, Resource Truth, memory et RAG lexical existent ; fichier/vectoriel réel absent. | moyen | Ne pas promettre BGE/Qdrant ou file storage. |
 | D07 Inventory / scan photo | partiel implémenté | Le scan écrit un fichier privé vérifié sous `storage://` et crée un candidat unique sur `main`. OCR provider et UI finale restent absents. | moyen | Rafraîchir le snapshot canon sans déclarer l'OCR réel. |

@@ -832,7 +832,7 @@ export async function updateGoal(input) {
       stage.index < nextStage ? "completed" : stage.index === nextStage ? "active" : "pending"
   }));
   state.updated_at = now;
-  state.publication.state = "local_uncommitted";
+  state.publication.state = "local_candidate_not_deployed";
   await writeJsonAtomic(STATE_PATH, state);
   await writePortableExport();
   return state;
@@ -865,7 +865,7 @@ function classifyFinding(file) {
     return {
       level: "review",
       action: "Décider si le document entre dans le prochain snapshot",
-      reason: "Document local non suivi par Git."
+      reason: "Document local absent du prochain snapshot immuable."
     };
   }
   return {
@@ -878,7 +878,7 @@ function classifyFinding(file) {
 export async function collectWorkspaceFindings(gitStatus) {
   return gitStatus.files.map((file, index) => ({
     finding_id: `workspace-${index + 1}`,
-    source: "git_worktree",
+    source: "local_worktree",
     path: file.path,
     status: file.status,
     ...classifyFinding(file)
@@ -956,29 +956,29 @@ export function prepareSensitiveAction(action, gitStatus) {
       risk: "Le snapshot local devient une preuve Git."
     },
     push: {
-      label: "Préparer un push",
-      command: `git push origin ${gitStatus.branch}`,
-      risk: "La branche devient visible aux collaborateurs."
+      label: "GitHub en pause",
+      command: "Action indisponible sans réactivation explicite de MALEX",
+      risk: "Un push réintroduirait le miroir distant dans le cycle courant."
     },
     pr: {
-      label: "Préparer une pull request",
-      command: "gh pr create --draft --fill",
-      risk: "La vague entre dans le circuit de revue GitHub."
+      label: "Pull request désactivée",
+      command: "Action indisponible sans réactivation explicite de MALEX",
+      risk: "Une PR contredirait la gouvernance server-first active."
     },
     deploy: {
       label: "Préparer un déploiement",
       command: "Action volontairement indisponible depuis MASTERBUILD V1",
-      risk: "Le runtime public pourrait être modifié."
+      risk: "La preview privée autoritaire pourrait être modifiée."
     },
     merge: {
-      label: "Préparer le merge",
-      command: "gh pr merge <PR> --merge --delete-branch",
-      risk: "La vague rejoindrait la branche protégée après revue."
+      label: "Merge GitHub désactivé",
+      command: "Action indisponible sans réactivation explicite de MALEX",
+      risk: "Un merge distant ne prouve pas un changement du serveur."
     },
     release: {
       label: "Préparer le round de publication complet",
       command:
-        "stage ciblé → tests → commit → push → PR draft → revue → merge → preuve runtime",
+        "stage ciblé → tests → commit local → snapshot + manifeste → backup → incoming → bascule current → smoke",
       risk: "Chaque gate reste indépendante et demande son GO au moment opportun."
     }
   };
@@ -1105,12 +1105,12 @@ ${nextMoves
   )
   .join("\n")}
 
-## État Git
+## État du clone local
 
 - Branche : ${git.branch}
 - Commit : ${git.sha ?? "inconnu"}
 - Fichiers locaux : ${git.files.length}
-- Publication : ${state.publication.state}
+- Vérité opérable : ${state.publication.state}
 
 ## Reprise
 

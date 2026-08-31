@@ -34,14 +34,15 @@ test("contextGuidance applique les seuils MASTERBUILD", () => {
   assert.equal(contextGuidance(70).level, "handoff");
 });
 
-test("les actions sensibles sont toujours prepare-only", () => {
+test("les actions sensibles restent prepare-only et GitHub est désactivé", () => {
   const action = prepareSensitiveAction("push", {
     branch: "codex/test",
     files: []
   });
   assert.equal(action.executable, false);
   assert.equal(action.validation_required, true);
-  assert.match(action.command, /git push/);
+  assert.match(action.command, /indisponible/);
+  assert.match(action.risk, /miroir distant/);
 });
 
 test("un handoff d'un ancien Round est ignoré", () => {

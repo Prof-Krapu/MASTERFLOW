@@ -1,7 +1,15 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-24T04:19:39+02:00",
+  "updated_at": "2026-08-31T22:24:00+02:00",
   "sources": [
+    {
+      "source_id": "server-operable-source-truth-2026-08-31",
+      "path": "docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md",
+      "kind": "active_source_truth_contract",
+      "status": "still_active",
+      "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "PROTOCOLE_SYNC_GIT_INBOX.md"],
+      "note": "Malex Graphics est la vérité opérable ; clone local candidat ; GitHub en pause après la transition."
+    },
     {
       "source_id": "masterplan-subject-assignment-bridge-2026-08-24",
       "path": "docs/masterbuild/handoffs/MASTERPLAN_SUBJECT_ASSIGNMENT_BRIDGE_HANDOFF_2026-08-24.md",

@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-31T22:13:32+02:00",
+  "updated_at": "2026-08-31T22:24:00+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -14,6 +14,12 @@
     "commit_sha": "33f553fb8bbd633770294777fbbd1d06e104f42d",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/249"
   },
+  "last_merged_candidate": {
+    "round_id": "UI-PILOTS-NO-PROVIDER-001",
+    "title": "Rendre les deux pilotes utilisables sans provider réel",
+    "mirror_commit_sha": "3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a",
+    "runtime_status": "candidate_not_deployed"
+  },
   "last_superseded_round": {
     "round_id": "UI-PAGE-BY-PAGE-001",
     "title": "Reprendre l'interface page par page",
@@ -23,48 +29,43 @@
     "reason": "Le plan full-stack validé absorbe la vérification UI restante sans déclarer conforme ce qui attend encore une revue MALEX."
   },
   "active_round": {
-    "round_id": "UI-PILOTS-NO-PROVIDER-001",
-    "title": "Rendre les deux pilotes utilisables sans provider réel",
-    "objective": "Raccorder Ours d'Or et Talents Créatifs au shell actif avec un workspace conversationnel commun, responsive et honnête sur le mode mock.",
+    "round_id": "SERVER-FIRST-OPERATIONS-001",
+    "title": "Piloter MasterFlow depuis la vérité serveur",
+    "objective": "Faire de la release active sur Malex Graphics la preuve opérable, garder le clone local comme atelier et mettre GitHub en pause.",
     "owner": "malex",
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Merger la PR #250 puis s'arrêter avant tout déploiement.",
-    "primary_risk": "Présenter le mode mock comme une IA réelle ou masquer qu'une validation humaine reste nécessaire.",
+    "recommended_next_action": "Préparer localement un snapshot manifesté de l'interface pilotes puis demander un GO séparé avant déploiement serveur.",
+    "primary_risk": "Présenter le clone local ou le miroir GitHub comme live alors que seule la release serveur active fait foi.",
     "no_auto_execute": true,
-    "work_package_ids": ["UI-PILOTS-001"],
-    "authorization_id": "AUTH-UI-PILOTS-MERGE-2026-08-31",
+    "work_package_ids": ["SFO-001"],
+    "authorization_id": "AUTH-SERVER-FIRST-TRANSITION-2026-08-31",
     "success_criteria": [
-      "La Home active expose les deux pilotes sans route cachée ni shell parallèle.",
-      "Le même workspace affiche projet, étape, prochaine action, sources, validations et chat.",
-      "MasterFlex accompagne Ours d'Or et ProfKrapu accompagne Talents Créatifs.",
-      "Le mode mock est explicite et aucun provider réel n'est appelé.",
-      "Desktop et 390 px sont recettés avec la conversation prioritaire sur mobile.",
-      "Lint, build, tour mock et console navigateur sont verts avant publication."
+      "Le preflight serveur prouve release, health et trois conteneurs sans lire de secret.",
+      "Le clone local est explicitement candidat tant qu'il n'est pas déployé.",
+      "GitHub est désactivé par défaut après la dernière fusion de transition.",
+      "Toute prochaine release possède un manifeste non secret, un backup et un rollback.",
+      "Déploiement, migration, provider et suppression conservent des gates séparés."
     ],
     "blockers": [
-      "provider et budget réels reportés aux tests IRL",
-      "déploiement preview à valider séparément"
+      "interface pilotes du clone absente de la release serveur active",
+      "manifeste embarqué absent de la baseline 33f553fb8bbd",
+      "provider et budget réels reportés aux tests IRL"
     ],
     "validation_gates": [
-      "implémentation locale validée telle quelle par MALEX",
-      "commit, push et PR autorisés par AUTH-UI-PILOTS-PUBLISH-2026-08-31",
-      "merge autorisé par AUTH-UI-PILOTS-MERGE-2026-08-31",
-      "déploiement exclu sans nouveau GO",
-      "aucune donnée pilote réelle ni source privée ajoutée",
-      "aucune validation professeur ou production finale automatisée",
-      "aucun retour pilote canonisé automatiquement"
+      "mise à jour, commit, push, PR et dernier merge de transition autorisés",
+      "GitHub en pause après ce merge ; aucune réactivation implicite",
+      "aucun déploiement, migration, provider, suppression ou stable dans cette transition",
+      "aucune édition manuelle de la release active",
+      "aucune donnée serveur remplacée depuis le clone local"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_PILOTS_NO_PROVIDER_001.md",
-      "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
-      "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
-      "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
-      "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
-      "FRONTEND_UI_DOCTRINE.md",
-      "docs/pilots/CONVERSATION_PILOTS_V1_IMPLEMENTATION.md",
-      "docs/pilots/PILOT_SOURCE_INTAKE_SIMULATION_2026-08-31.md"
+      "docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md",
+      "docs/masterbuild/rounds/SERVER_FIRST_OPERATIONS_001.md",
+      "PROTOCOLE_SYNC_GIT_INBOX.md",
+      "MASTERFLOW_DEPLOYMENT_LEDGER.md",
+      "MASTERFLOW_CANON_SYNC_MATRIX.md"
     ]
   },
   "next_moves": [
@@ -127,9 +128,16 @@
     {
       "move_id": "review-publish-ui-pilots-no-provider",
       "label": "Revoir puis publier l'interface locale des deux pilotes",
-      "reason": "La Home et le workspace conversationnel sont publiés sans provider ; le merge de la PR #250 est autorisé et le déploiement reste séparé.",
+      "reason": "La PR #250 est mergée dans le dernier miroir ; la fonctionnalité reste candidate tant qu'elle n'est pas sur le serveur.",
+      "recommended": false,
+      "status": "completed_mirror_candidate_not_deployed"
+    },
+    {
+      "move_id": "prepare-server-first-ui-snapshot",
+      "label": "Préparer le snapshot serveur de l'interface pilotes",
+      "reason": "Le serveur 33f553fb8bbd fait foi et ne contient pas encore l'interface validée du clone.",
       "recommended": true,
-      "status": "merging"
+      "status": "ready_local"
     }
   ],
   "registries": {
@@ -156,29 +164,30 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "UI-PILOTS-NO-PROVIDER-001",
-    "title": "Rendre Ours d'Or et Talents Créatifs utilisables sans provider réel",
+    "goal_id": "SERVER-FIRST-OPERATIONS-001",
+    "title": "Piloter MasterFlow depuis la vérité serveur",
     "owner": "malex",
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "source_truth_layer": "git_operable",
+    "source_truth_layer": "server_operable",
     "success_criteria": [
-      "Deux pilotes accessibles depuis la Home active",
-      "Même shell conversationnel avec RuntimePacks et personas distincts",
-      "Mode mock explicite et recette desktop mobile verte"
+      "Release serveur active prouvée avant toute conclusion",
+      "Clone local clairement séparé du live",
+      "GitHub en pause par défaut",
+      "Snapshots immuables avec manifeste et rollback"
     ],
-    "blockers": ["déploiement soumis à validation explicite séparée", "provider réel reporté aux tests IRL"],
+    "blockers": ["UI locale non déployée", "manifeste absent de la baseline", "provider réel reporté aux tests IRL"],
     "validation_gates": [
-      "interface locale validée telle quelle par MALEX",
-      "commit, push, PR et merge autorisés ; aucun déploiement automatique",
-      "aucune promotion canonique automatique depuis un pilote ou un asset"
+      "dernière fusion GitHub de transition autorisée",
+      "aucun déploiement automatique",
+      "aucune mutation de la release active",
+      "aucune promotion canonique automatique depuis le runtime"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_PILOTS_NO_PROVIDER_001.md",
-      "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
-      "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
-      "docs/pilots/CONVERSATION_PILOTS_V1_IMPLEMENTATION.md"
+      "docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md",
+      "docs/masterbuild/rounds/SERVER_FIRST_OPERATIONS_001.md",
+      "PROTOCOLE_SYNC_GIT_INBOX.md"
     ]
   },
   "stages": [
@@ -369,10 +378,10 @@
     }
   ],
   "publication": {
-    "state": "main_fullstack_preview_aligned_ui_pilots_local_candidate",
-    "branch": "main",
+    "state": "server_preview_authoritative_local_candidate_ahead_github_paused",
+    "branch": "codex/server-operable-source-truth",
     "commit_sha": "33f553fb8bbd633770294777fbbd1d06e104f42d",
-    "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/249",
-    "runtime_proof": "GitHub main et la preview privée sont alignés sur 33f553fb8bbd. L'interface enrichie des deux pilotes est un candidat local non commité, non poussé et non déployé ; le provider réel reste différé."
+    "pull_request": "final_transition_only_then_github_paused",
+    "runtime_proof": "Malex Graphics preview current pointe vers 33f553fb8bbd ; health vert et trois conteneurs actifs. Le clone local contient l'interface pilotes au-delà du serveur ; elle reste candidate."
   }
 }
