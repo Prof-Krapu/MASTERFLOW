@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T20:56:21+02:00",
-  "active_round_id": "FULLSTACK-CONSOLIDATION-001",
+  "updated_at": "2026-08-31T22:13:32+02:00",
+  "active_round_id": "UI-PILOTS-NO-PROVIDER-001",
   "authorizations": [
     {
       "authorization_id": "AUTH-MB2-2026-07-05",
@@ -243,6 +243,36 @@
       "granted_at": "2026-08-31",
       "expires_on_scope_change": true,
       "excluded": ["merge", "real_migration", "deploy", "stable_promotion", "provider_call", "spend", "delete", "canon_scope_change"]
+    },
+    {
+      "authorization_id": "AUTH-UI-PILOTS-NO-PROVIDER-LOCAL-2026-08-31",
+      "round_id": "UI-PILOTS-NO-PROVIDER-001",
+      "actor": "malex",
+      "scope": "implement_and_verify_pilot_interfaces_locally_without_provider",
+      "status": "completed",
+      "granted_at": "2026-08-31T21:00:00+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["commit", "push", "pull_request", "merge", "deploy", "migration", "provider_call", "spend", "delete", "canon_scope_change", "real_pilot_data"]
+    },
+    {
+      "authorization_id": "AUTH-UI-PILOTS-PUBLISH-2026-08-31",
+      "round_id": "UI-PILOTS-NO-PROVIDER-001",
+      "actor": "malex",
+      "scope": "create_branch_commit_push_and_open_pull_request_then_stop_before_merge",
+      "status": "completed",
+      "granted_at": "2026-08-31T22:02:53+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["merge", "deploy", "migration", "provider_call", "spend", "delete", "canon_scope_change", "real_pilot_data", "backend_change"]
+    },
+    {
+      "authorization_id": "AUTH-UI-PILOTS-MERGE-2026-08-31",
+      "round_id": "UI-PILOTS-NO-PROVIDER-001",
+      "actor": "malex",
+      "scope": "merge_pull_request_250_then_stop_before_deployment",
+      "status": "active",
+      "granted_at": "2026-08-31T22:13:32+02:00",
+      "expires_on_scope_change": true,
+      "excluded": ["deploy", "migration", "provider_call", "spend", "delete", "canon_scope_change", "real_pilot_data", "backend_change", "stable_promotion"]
     }
   ],
   "work_packages": [
@@ -732,7 +762,7 @@
       "work_package_id": "UPP-004",
       "label": "Consolider un Component Lab unique et reconstruire Teaching dans le Lab",
       "feature_ids": ["ui-shell-navigation", "teaching-mode"],
-      "status": "awaiting_malex_review",
+      "status": "merging",
       "owner": "malex",
       "reviewers": ["codex"],
       "dependencies": ["UPP-002"],
@@ -895,6 +925,18 @@
       "design_rule_ids": [],
       "tool_route": "github",
       "expected_evidence": ["audit vulnérabilités", "tests", "lint", "build", "migration à blanc", "smoke", "commits", "push", "PR", "pas de merge"]
+    },
+    {
+      "work_package_id": "UI-PILOTS-001",
+      "label": "Raccorder les deux pilotes au shell actif sans provider réel",
+      "feature_ids": ["ui-shell-navigation", "ui-command-dock"],
+      "status": "awaiting_malex_review",
+      "owner": "malex",
+      "reviewers": ["codex"],
+      "dependencies": ["FSC-003", "FSC-007"],
+      "design_rule_ids": ["DES-001", "DES-004", "DES-005", "DES-009", "DES-010", "DES-015", "DES-018", "DES-023"],
+      "tool_route": "assembled_prototype",
+      "expected_evidence": ["deux entrées pilotes dans la Home active", "état pilote backend réel", "même shell conversationnel", "personas distinctes", "mode mock explicite", "desktop et 390 px", "tour conversationnel simulé", "lint et build frontend", "aucun commit push ou déploiement sans GO"]
     }
   ]
 }

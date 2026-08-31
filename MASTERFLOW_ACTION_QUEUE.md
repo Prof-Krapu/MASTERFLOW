@@ -15,39 +15,39 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 
 ## Queue active d'exécution — 2026-08-31
 
-Le seul plan actif est
-`docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md` dans le checkout principal.
-Les vagues 0 à 9 sont exécutées localement ; le round portable actif est
-`docs/masterbuild/rounds/FULLSTACK_CONSOLIDATION_ROUND_001.md`.
+Le train des vagues 0 à 9, la PR #249, son merge et le déploiement preview sont terminés. Le
+provider réel est explicitement reporté aux tests IRL. La tranche active est l'interface locale des
+deux pilotes, sans clé ni appel réseau.
 
 ### 1. À faire maintenant
 
-- Tâche : revoir la PR #249 puis décider explicitement du merge, sans l'assimiler à un déploiement.
-- Impact : permet de faire converger `main` sur une consolidation full-stack entièrement révisable
-  sans toucher au serveur.
-- Risque : moyen ; la PR est large mais les gates locales, le manifeste exact et le rollback sont
-  vérifiés avant toute fusion.
-- Source de vérité concernée : GitHub `main`, round full-stack et plan final.
-- Statut : branche poussée, PR ouverte et train arrêté avant merge.
-- Validation requise : oui avant merge.
+- Tâche : revoir puis publier la nouvelle interface commune Ours d'Or / Talents Créatifs.
+- Impact : rend les deux pilotes accessibles depuis la Home active, lisibles sur desktop/mobile et
+  utilisables en mode `mock` avant l'arrivée d'une clé provider.
+- Risque : faible à moyen ; la promesse reste du guidage, aucune validation professeur ni production
+  de livrable final ne doit être introduite.
+- Source de vérité concernée : canon des pilotes, shell frontend actif et état pilote backend.
+- Statut : validé tel quel par MALEX et publié dans la PR #250 ; merge autorisé et en cours, non
+  déployé.
+- Validation requise : obtenue pour commit, push, PR et merge ; oui séparément avant déploiement.
 
 ### 2. À mettre en queue
 
-- Tâche : après revue de la PR, décider du merge sans le confondre avec un déploiement.
-- Impact : fait converger GitHub vers le socle full-stack testé.
-- Risque : moyen ; revue nécessaire sur les contrats, migrations additives et surfaces UI.
-- Source de vérité concernée : PR full-stack, canon MasterFlow et preuves de gate.
-- Statut : prochain gate humain.
-- Validation requise : oui.
+- Tâche : après publication et merge éventuel de la tranche UI, redéployer le même SHA en preview.
+- Impact : met l'interface recettée à disposition sur Malex Graphics.
+- Risque : moyen ; le serveur est aujourd'hui sain et ne doit pas recevoir un build non mergé.
+- Source de vérité concernée : GitHub `main`, manifeste de release et preview privée.
+- Statut : futur, aucun geste serveur effectué dans cette tranche.
+- Validation requise : oui avant déploiement.
 
 ### 3. À faire quand j'ai des tokens
 
-- Tâche : activer un provider IA réel en preview privée avec budget et limites, seulement après le
-  merge et un contrat de déploiement séparé.
+- Tâche : fournir puis activer un provider IA réel en preview privée avec budget, limites, allowlist,
+  timeout, traces d'usage et retour immédiat au mode `mock`.
 - Impact : rend les parcours réellement conversationnels.
 - Risque : élevé ; secret serveur, coût, egress et données privées.
 - Source de vérité concernée : `llm_routing`, environnement serveur et traces d'usage.
-- Statut : futur, provider mock maintenu.
+- Statut : différé explicitement par MALEX jusqu'aux tests IRL ; provider `mock` maintenu.
 - Validation requise : oui.
 
 ### 4. À demander à Vincent
@@ -61,17 +61,17 @@ Les vagues 0 à 9 sont exécutées localement ; le round portable actif est
 
 ### 5. À décider plus tard
 
-- Tâche : groupes pilotes réels, console professeur/Dungeon Master complète, retrait Apps Script,
-  déploiement preview et promotion stable.
+- Tâche : groupes pilotes réels, console professeur/Dungeon Master complète, retrait Apps Script et
+  promotion stable.
 - Impact : activation des capacités préparées après revue des pilotes.
 - Risque : élevé sur données, produit, serveur et coût.
 - Source de vérité concernée : plan final, résultats pilotes et contrats de déploiement.
-- Statut : à décider après merge ; aucune activation implicite.
+- Statut : à décider après recette preview ; aucune activation implicite.
 - Validation requise : oui aux gates correspondants.
 
-La preview serveur reste inchangée au SHA `2d89197259060aea9dda6d31552859524f07c084`. Ours d'Or et
-Talents Créatifs sont préparés sur la branche locale ; aucun provider réel, stable ou import de
-corpus n'est autorisé par cette queue.
+La preview serveur reste active au SHA `33f553fb8bbd633770294777fbbd1d06e104f42d`. La nouvelle
+interface est uniquement locale. Aucun provider réel, stable, groupe réel ou import de corpus n'est
+autorisé par cette queue.
 
 ### PEDAGOGICAL-LINK-ENGINE-001 — Registre et routage pédagogique
 

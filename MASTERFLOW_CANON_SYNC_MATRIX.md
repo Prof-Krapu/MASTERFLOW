@@ -1,9 +1,10 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-08-31
-Branche de travail : `codex/masterflow-waves-2-9`
-Release preview inchangée vérifiée : `2d89197259060aea9dda6d31552859524f07c084`
-Base `origin/main` initiale : `2d89197259060aea9dda6d31552859524f07c084`
+GitHub `main` vérifié : `33f553fb8bbd633770294777fbbd1d06e104f42d`
+Release preview vérifiée : `33f553fb8bbd633770294777fbbd1d06e104f42d`
+Tranche UI locale : candidate non publiée
+Stable : absente
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -13,14 +14,14 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
-| Conversation Turn Orchestrator natif | implémenté sur la branche, absent de `main` | Plan de tour unique avec contexte, RuntimePack, permissions, budget, trace et fallback sûr ; provider réel fermé. | moyen avant revue | Revoir puis merger séparément ; conserver l'activation provider derrière son gate. |
+| Conversation Turn Orchestrator natif | implémenté sur `main` et déployé en preview | Plan de tour unique avec contexte, RuntimePack, permissions, budget, trace et fallback sûr ; provider réel fermé. | faible à moyen | Recetter en `mock` ; conserver l'activation provider derrière son gate IRL. |
 | Link Engine pédagogique | implémenté et déployé en preview privée | 49 vidéos validées, 20 exemples candidats, 542 notions, 800 liens, niveaux dynamiques et override professeur ; branche non mergée dans `main`. | faible à moyen | Observer les classements, ajuster les alias et overrides depuis Teaching, puis décider séparément d'une fusion. |
-| Déploiement full-stack privé | preview déployée | Branche publiée, non mergée ; stable absente. | faible à moyen | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
+| Déploiement full-stack privé | preview alignée sur `main` | Release immuable, manifeste, HTTPS privé, backups et restauration concordent ; stable absente. | faible | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
 | Profils de seed preview/production | implémenté preview | Preview sans roster historique ; production sans démo ; comptes Vincent et MALEX préservés. | faible | Ne jamais charger le roster historique en production. |
 | Persistance fichiers Docker | implémenté preview | Volume persistant, backup et restauration prouvés ; copie hors serveur encore absente. | moyen | Ajouter une copie chiffrée vers le Mac principal avant toute rétention. |
 | Smoke de release | implémenté preview | Cible explicite, REST et WebSocket verts via HTTPS Tailscale pour les deux comptes. | faible | Rejouer après chaque release. |
-| Ours d'Or pilote 3A conversation-first | implémenté sur la branche, non déployé | RuntimePack dédié, seed preview/dev, UI conversationnelle sommaire et source intake simulé/read-only ; aucun groupe réel. | moyen avant revue | Revoir le pack et les sources simulées ; décider séparément du groupe et du déploiement. |
-| Talents Créatifs pilote 3B conversation-first | implémenté sur la branche, non déployé | RuntimePack dédié sur le backend commun, isolation de contexte et source intake simulé/read-only ; aucun corpus importé. | moyen avant revue | Revoir l'isolation équipe/étudiant ; décider séparément du groupe et du déploiement. |
+| Ours d'Or pilote 3A conversation-first | backend sur `main` et preview ; interface enrichie locale | RuntimePack dédié, état pilote gouverné et nouvelle Home conversationnelle responsive ; aucun groupe réel. | faible à moyen | Revoir puis publier la tranche UI ; décider séparément du provider et du groupe réel. |
+| Talents Créatifs pilote 3B conversation-first | backend sur `main` et preview ; interface enrichie locale | RuntimePack dédié, isolation de contexte, persona ProfKrapu et même shell responsive ; aucun corpus importé. | faible à moyen | Revoir puis publier la tranche UI ; recetter séparément l'isolation équipe/étudiant. |
 | Capacités après pilotes | partiel sur la branche | Teaching multi-espace, MasterPlan data-first, Corrector/intakes opérationnels, UI/MASTERBUILD et Asset Engine ont une fondation additive ; Dungeon Master complet reste futur. | moyen | Merger seulement après revue ; activer providers, migrations réelles et console riche dans des gates séparés. |
 | Capacités Corrector | implémenté et déployé en preview | OCR, lots, rubriques, pré-correction, calibration, validation et suivi existent ; export privé approuvé et anti-répétition sont actifs en preview. | faible à moyen | Observer avant toute fusion `main` ; conserver export, envoi et validation finale sous contrôle humain. Corrector ne devient ni produit, ni verticale, ni persona actif. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |

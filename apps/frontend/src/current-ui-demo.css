@@ -2989,6 +2989,13 @@
   z-index: 1;
 }
 
+.proto-entry-greeting:has(.proto-home-pilots) {
+  max-height: calc(100% - 28px);
+  overflow-y: auto;
+  padding: 12px 8px;
+  top: 44%;
+}
+
 .proto-home-wordmark {
   animation: proto-home-reveal 430ms both var(--proto-menu-ease);
   background: var(--proto-user-color, var(--persona-color));
@@ -3169,6 +3176,132 @@
   letter-spacing: 0.08em;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.proto-home-pilots {
+  border-top: 1px solid var(--proto-border);
+  display: grid;
+  gap: 10px;
+  justify-self: center;
+  margin-top: 10px;
+  padding-top: 16px;
+  width: min(540px, 100%);
+}
+
+.proto-home-pilots > div:first-child {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.proto-home-pilots > div:first-child small {
+  color: var(--proto-text);
+  font-size: 10px;
+}
+
+.proto-home-pilots > div:first-child span {
+  color: var(--proto-muted);
+  font-size: 10px;
+}
+
+.proto-home-pilots__grid {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.proto-home-pilot {
+  --pilot-entry-accent: #d5aa51;
+  align-items: center;
+  background: color-mix(in srgb, var(--pilot-entry-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pilot-entry-accent) 34%, transparent);
+  border-radius: 14px;
+  color: var(--proto-text);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 72px;
+  padding: 11px 13px;
+  text-align: left;
+}
+
+.proto-home-pilot--coral {
+  --pilot-entry-accent: #ef8067;
+}
+
+.proto-home-pilot:hover,
+.proto-home-pilot:focus-visible {
+  background: color-mix(in srgb, var(--pilot-entry-accent) 16%, transparent);
+  border-color: color-mix(in srgb, var(--pilot-entry-accent) 58%, transparent);
+  transform: translateY(-1px);
+}
+
+.proto-home-pilot > svg {
+  color: var(--pilot-entry-accent);
+}
+
+.proto-home-pilot > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.proto-home-pilot strong {
+  color: var(--proto-text);
+  font-size: 12px;
+  justify-self: start;
+}
+
+.proto-home-pilot small {
+  color: var(--proto-muted);
+  font-size: 10px;
+  font-weight: 600;
+  justify-self: start;
+  line-height: 1.3;
+  text-transform: none;
+}
+
+.proto-canvas-empty > .pilot-workspace {
+  border: 0;
+  border-radius: 23px;
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 132px;
+  padding-left: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.proto-canvas-empty > .pilot-workspace .pilot-workspace__header {
+  padding: 17px 22px 15px;
+}
+
+.proto-canvas-empty > .pilot-workspace .pilot-workspace__identity h2 {
+  font-size: clamp(24px, 2.5vw, 32px);
+}
+
+.proto-canvas-empty > .pilot-workspace .chat-dock {
+  min-height: 174px;
+}
+
+.proto-canvas-empty > .pilot-workspace .chat-dock__log {
+  min-height: 44px;
+}
+
+.proto-canvas-empty > .pilot-workspace .pilot-workspace__conversation {
+  padding-right: 78px;
+}
+
+.proto-canvas-empty > .pilot-workspace .chat-dock__turn--assistant p {
+  color: var(--pilot-accent);
+}
+
+.proto-canvas-empty > .pilot-workspace .chat-dock__form button {
+  background: var(--pilot-accent);
+  color: #160f07;
 }
 
 .proto-runtime-workspace {
@@ -5720,6 +5853,30 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .proto-entry-greeting:has(.proto-home-pilots) {
+    max-height: calc(100% - 18px);
+    padding: 8px 4px 88px;
+    top: 50%;
+  }
+
+  .proto-home-pilots__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .proto-home-pilot {
+    min-height: 62px;
+  }
+
+  .proto-canvas-empty > .pilot-workspace {
+    border-radius: 18px;
+    padding-bottom: 148px;
+    padding-left: 0;
+  }
+
+  .proto-canvas-empty > .pilot-workspace .pilot-workspace__conversation {
+    padding-right: 16px;
+  }
+
   .proto-home-access button {
     align-content: center;
     min-height: 88px;
@@ -6185,6 +6342,39 @@
 
 .proto-shell--theme-light .proto-home-access button.is-primary:hover {
   color: var(--proto-accent);
+}
+
+.proto-shell--theme-light .proto-home-pilot {
+  background: color-mix(in srgb, var(--pilot-entry-accent) 10%, #fff);
+}
+
+.proto-shell--theme-light .pilot-workspace {
+  background:
+    radial-gradient(circle at 8% 0%, var(--pilot-accent-soft), transparent 34%),
+    linear-gradient(145deg, #fbfaf8 0%, #f2efeb 100%);
+  color: #211c18;
+}
+
+.proto-shell--theme-light .pilot-workspace__context,
+.proto-shell--theme-light .pilot-workspace__guardrail {
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.proto-shell--theme-light .pilot-facts > div,
+.proto-shell--theme-light .pilot-starter,
+.proto-shell--theme-light .pilot-questions,
+.proto-shell--theme-light .pilot-workspace .chat-dock {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.proto-shell--theme-light .pilot-workspace input,
+.proto-shell--theme-light .pilot-workspace select {
+  background: #fff;
+  color: #211c18;
+}
+
+.proto-shell--theme-light .pilot-workspace .chat-dock__turn--user p {
+  color: #2f67c7;
 }
 
 .proto-shell--theme-light .proto-commandbar__input {

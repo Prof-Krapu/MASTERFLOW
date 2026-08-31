@@ -59,7 +59,7 @@ import type {
   PrototypeSearchResult,
 } from './ui-reset/prototype-shell-components';
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
-import type {PrototypeHomeMode} from './ui-reset/prototype-product-surfaces';
+import type {PrototypeHomeMode, PrototypePilotEntry} from './ui-reset/prototype-product-surfaces';
 import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
 import {MasterbuildConsole} from './masterbuild-console';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
@@ -174,9 +174,12 @@ type RuntimeBridgeState = {
 };
 
 export type CurrentUiRuntime = {
+  activeProfileId: PrototypeProfileId;
   context: CurrentContext;
   inboxItems: ValidationInboxItem[];
   jobs: Job[];
+  pilotEntries: PrototypePilotEntry[];
+  pilotWorkspace: ReactNode | null;
   renderWorkspace: (mode: ActiveSurface) => ReactNode;
   resumeMode: ActiveSurface | null;
   resumeLabel: string | null;
@@ -201,6 +204,7 @@ export type CurrentUiRuntime = {
   onActionSelect: (action: ActionRegistryEntry) => void;
   onLogout: () => void;
   onModeSelect: (mode: ActiveSurface) => void;
+  onPilotSelect: (roomId: string) => void;
   onResume: () => void;
 };
 
@@ -604,6 +608,10 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
       previous: null,
     });
   }, []);
+  useEffect(() => {
+    if (!runtime || runtime.activeProfileId === activePrototypeProfileId) return;
+    applyPrototypeProfile(runtime.activeProfileId);
+  }, [activePrototypeProfileId, applyPrototypeProfile, runtime]);
   const selectMode = useCallback((mode: DemoMode): void => {
     navigationDestinationRef.current = mode;
     setActiveMode(mode);
@@ -979,7 +987,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   const homeResumeMode = runtime?.resumeMode && visibleModeIds.has(runtime.resumeMode as DemoMode)
     ? buildPrototypeHomeModes([runtime.resumeMode as DemoMode])[0]
     : undefined;
-  const homeModeCount = homePrimaryModes.length + homeSecondaryModes.length;
+  const homeModeCount = homePrimaryModes.length + homeSecondaryModes.length + (runtime?.pilotEntries.length ?? 0);
   const homeOverview = [
     homeModeCount > 0
       ? `${homeModeCount} espace${homeModeCount > 1 ? 's' : ''} disponible${homeModeCount > 1 ? 's' : ''}.`
@@ -1397,13 +1405,17 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
 
         <div className="proto-canvas-empty">
           {activeMode === 'home' ? (
-            <PrototypeHomeSurface
-              copy={runtime ? {...homeCopy, body: homeOverview} : homeCopy}
-              onResume={runtime?.onResume}
-              onSelectMode={(mode) => selectMode(mode as DemoMode)}
-              primaryModes={homePrimaryModes}
-              secondaryModes={homeSecondaryModes}
-            />
+            runtime?.pilotWorkspace ?? (
+              <PrototypeHomeSurface
+                copy={runtime ? {...homeCopy, body: homeOverview} : homeCopy}
+                onResume={runtime?.onResume}
+                onSelectMode={(mode) => selectMode(mode as DemoMode)}
+                onSelectPilot={runtime?.onPilotSelect}
+                pilotEntries={runtime?.pilotEntries}
+                primaryModes={homePrimaryModes}
+                secondaryModes={homeSecondaryModes}
+              />
+            )
           ) : null}
           {activeMode === 'masterbuild' && runtimeBridge.context?.user.role === 'godmode' ? (
             <MasterbuildConsole operator={runtimeBridge.context.user.display_name} />

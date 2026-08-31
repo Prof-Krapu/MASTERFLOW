@@ -1,4 +1,4 @@
-import {Gem, X} from 'lucide-react';
+import {Gem, MessageCircle, X} from 'lucide-react';
 import type {AnimationEvent as ReactAnimationEvent, CSSProperties, ReactElement, ReactNode} from 'react';
 import type {LucideIcon} from 'lucide-react';
 
@@ -16,11 +16,20 @@ export type PrototypeHomeCopy = {
   body: string;
 };
 
+export type PrototypePilotEntry = {
+  id: string;
+  label: string;
+  summary: string;
+  theme: 'gold' | 'coral';
+};
+
 type HomeSurfaceProps = {
   copy: PrototypeHomeCopy;
+  pilotEntries?: PrototypePilotEntry[];
   primaryModes: PrototypeHomeMode[];
   secondaryModes: PrototypeHomeMode[];
   onSelectMode: (mode: string) => void;
+  onSelectPilot?: (roomId: string) => void;
   onResume?: () => void;
 };
 
@@ -28,6 +37,8 @@ export function PrototypeHomeSurface({
   copy,
   onResume,
   onSelectMode,
+  onSelectPilot,
+  pilotEntries = [],
   primaryModes,
   secondaryModes,
 }: HomeSurfaceProps): ReactElement {
@@ -37,6 +48,30 @@ export function PrototypeHomeSurface({
       <small>{copy.eyebrow}</small>
       <strong>{copy.title}</strong>
       <span>{copy.body}</span>
+      {pilotEntries.length > 0 ? (
+        <section className="proto-home-pilots" aria-labelledby="proto-home-pilots-title">
+          <div>
+            <small id="proto-home-pilots-title">Pilotes à tester</small>
+            <span>Sans clé API pour l’instant</span>
+          </div>
+          <div className="proto-home-pilots__grid">
+            {pilotEntries.map((pilot) => (
+              <button
+                className={`proto-home-pilot proto-home-pilot--${pilot.theme}`}
+                key={pilot.id}
+                onClick={() => onSelectPilot?.(pilot.id)}
+                type="button"
+              >
+                <MessageCircle aria-hidden="true" size={20} />
+                <span>
+                  <strong>{pilot.label}</strong>
+                  <small>{pilot.summary}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : null}
       <nav className="proto-home-access" aria-label="Accès principaux">
         <div className="proto-home-access__row proto-home-access__row--primary">
           {primaryModes.map((mode) => {
