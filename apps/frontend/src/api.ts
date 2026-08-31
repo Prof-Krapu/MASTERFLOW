@@ -84,7 +84,9 @@ import type {
   RubricVersion,
   RosterVersion,
   RoomCheckpoint,
+  Room,
   RoomInstance,
+  SourceIntakeRecord,
   SetCollectionCompletionRequest,
   SubmissionRecord,
   SubjectTemplate,
@@ -198,8 +200,25 @@ export async function login(username: string, password: string): Promise<AuthRes
   return auth;
 }
 
-export async function getCurrentContext(token?: string | null): Promise<CurrentContext> {
-  return request<CurrentContext>('/context/current', {method: 'GET'}, token);
+export async function getCurrentContext(
+  token?: string | null,
+  roomId?: string,
+): Promise<CurrentContext> {
+  const query = roomId ? `?room_id=${encodeURIComponent(roomId)}` : '';
+  return request<CurrentContext>(`/context/current${query}`, {method: 'GET'}, token);
+}
+
+export async function getRooms(token?: string | null): Promise<Room[]> {
+  return request<Room[]>('/rooms', {method: 'GET'}, token);
+}
+
+export async function getSourceIntake(
+  runtimePackId: string,
+  projectId: string,
+  token?: string | null,
+): Promise<SourceIntakeRecord[]> {
+  const query = new URLSearchParams({runtime_pack_id: runtimePackId, project_id: projectId});
+  return request<SourceIntakeRecord[]>(`/source-intake?${query.toString()}`, {method: 'GET'}, token);
 }
 
 export async function classifyPedagogicalAssistance(

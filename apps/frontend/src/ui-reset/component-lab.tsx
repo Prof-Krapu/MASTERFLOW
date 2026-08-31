@@ -49,7 +49,7 @@ import {prototypeShortcutGroups, prototypeShortcutRules} from './prototype-short
 import {buildPrototypeTunnelFixture} from './prototype-tunnel-model';
 import {ComponentLabAssets, ComponentLabFoundations, ComponentLabPipeline} from './component-lab-foundations';
 import {ComponentLabProject} from './component-lab-project';
-import {ComponentLabTeaching} from './component-lab-teaching';
+import {TeachingWorkspaceSurface} from './component-lab-teaching';
 import {
   getActivePrototypeUiStates,
   getTopBlockingPrototypeUiState,
@@ -871,7 +871,7 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
 
         {tab === 'project' ? <ComponentLabProject /> : null}
 
-        {tab === 'teaching' ? <ComponentLabTeaching /> : null}
+        {tab === 'teaching' ? <TeachingWorkspaceSurface dataMode="fixture" /> : null}
 
         {tab === 'system' ? (
           <PrototypeSystemChrome

@@ -5,7 +5,7 @@ import type {
   ValidationInboxItem,
 } from '@masterflow/shared';
 
-export type WorkModeId = 'home' | 'teaching' | 'story' | 'project' | 'learning' | 'inventory' | 'admin';
+export type WorkModeId = 'home' | 'teaching' | 'planning' | 'story' | 'project' | 'learning' | 'inventory' | 'admin';
 
 export type WorkMode = {
   id: WorkModeId;
@@ -41,6 +41,7 @@ type ModeRuntimeInput = {
 export const WORK_MODES: WorkMode[] = [
   {id: 'home', label: 'Home', signal: 'situation'},
   {id: 'teaching', label: 'Teaching', signal: 'pedagogie', requiredRole: 'teacher'},
+  {id: 'planning', label: 'Planning', signal: 'agenda', requiredRole: 'teacher'},
   {id: 'story', label: 'Story', signal: 'narration'},
   {id: 'project', label: 'Project', signal: 'pilotage'},
   {id: 'learning', label: 'Learning', signal: 'parcours'},
@@ -140,6 +141,24 @@ export function buildModeView(input: ModeRuntimeInput): ModeView {
         ? `${pendingActions.length} validation(s) runtime a traiter.`
         : 'Aucune classe n est exposee par le backend ; la room et les sources restent disponibles.',
       deck: [roomItem(context), ...validatedResources, ...operationalItems].slice(0, 6),
+    };
+  }
+
+  if (mode.id === 'planning') {
+    const planningAction = liveActions.find((action) => action.action_id === 'get_masterplan_adapter_status');
+    return {
+      signal: planningAction
+        ? 'Adaptateur MasterPlan Data-First disponible en lecture seule ; le Drive reste autoritaire.'
+        : 'Planning attend un contexte MasterPlan autorisé.',
+      deck: [
+        roomItem(context),
+        ...(planningAction ? [{
+          id: planningAction.action_id,
+          label: planningAction.label,
+          meta: 'Data-First 1.1.3 · UI inchangée',
+          status: 'lecture seule',
+        }] : []),
+      ],
     };
   }
 

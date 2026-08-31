@@ -3192,6 +3192,11 @@
 }
 
 @media (max-width: 720px) {
+  .teaching-lab__student-learning-grid,
+  .teaching-lab__student-notions > div {
+    grid-template-columns: 1fr;
+  }
+
   .proto-runtime-workspace .teaching-lab,
   .proto-runtime-workspace .teaching-lab__detail,
   .proto-runtime-workspace .teaching-lab__import {

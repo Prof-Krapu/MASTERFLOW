@@ -14,7 +14,9 @@ import type {
   RagContextPack,
   RegistryStatus,
   Resource,
+  Room,
   RoomCheckpoint,
+  SourceIntakeRecord,
   ValidationInboxItem,
   WsServerMessage,
 } from '@masterflow/shared';
@@ -34,6 +36,8 @@ import {
   getProjectResources,
   getProjects,
   getResources,
+  getRooms,
+  getSourceIntake,
   login,
   preflightAction,
   proposeResource,
@@ -306,6 +310,8 @@ function App(): ReactElement {
   const [actions, setActions] = useState<ActionRegistryEntry[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [resourceCandidates, setResourceCandidates] = useState<Resource[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [pilotSources, setPilotSources] = useState<SourceIntakeRecord[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectName, setProjectName] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
@@ -379,6 +385,14 @@ function App(): ReactElement {
   const canAdmin = context?.user.role === 'admin' || context?.user.role === 'godmode';
   const canValidate = canValidateActions(context?.user.role);
   const canReviewResourceTruth = canReviewResources(context?.user.role);
+  const activeRuntimePackId = useMemo(() => {
+    const configured = context?.room.context?.['runtime_pack_ids'];
+    if (!Array.isArray(configured)) return 'masterflow-core-runtime';
+    return configured.find((value): value is string => typeof value === 'string')
+      ?? 'masterflow-core-runtime';
+  }, [context?.room.context]);
+  const isPilotRoom = activeRuntimePackId === 'ours-dor-pilot-v1'
+    || activeRuntimePackId === 'talents-creatifs-pilot-v1';
   const roomMode = context?.user.role ? (ROLE_LABEL[context.user.role] ?? context.user.role) : 'session';
   const availableModes = useMemo(
     () => {
@@ -468,14 +482,15 @@ function App(): ReactElement {
     wsState,
   ]);
 
-  const loadContext = useCallback(async (token: string): Promise<void> => {
+  const loadContext = useCallback(async (token: string, roomId?: string): Promise<void> => {
     setState('loading');
     setError(null);
     try {
-      const [current, nextResources, nextJobs] = await Promise.all([
-        getCurrentContext(token),
+      const [current, nextResources, nextJobs, nextRooms] = await Promise.all([
+        getCurrentContext(token, roomId),
         getResources(token),
         getJobs(token),
+        getRooms(token),
       ]);
       const checkpoint = await getLatestRoomCheckpoint(current.room.id, token);
       const nextProjects = await getProjects(token);
@@ -487,10 +502,13 @@ function App(): ReactElement {
       setPersonas(current.personas);
       setActions(current.available_actions);
       setResources(nextResources);
+      setRooms(nextRooms);
       setJobs(nextJobs);
       setProjects(nextProjects);
       setSelectedProjectId((currentProjectId) => (
-        currentProjectId && nextProjects.some((project) => project.project_id === currentProjectId)
+        current.room.project_id && nextProjects.some((project) => project.project_id === current.room.project_id)
+          ? current.room.project_id
+          : currentProjectId && nextProjects.some((project) => project.project_id === currentProjectId)
           ? currentProjectId
           : nextProjects[0]?.project_id ?? ''
       ));
@@ -508,6 +526,29 @@ function App(): ReactElement {
       setError(err instanceof Error ? err.message : 'Contexte indisponible.');
     }
   }, []);
+
+  useEffect(() => {
+    if (!auth || !context?.room.project_id || !isPilotRoom) {
+      setPilotSources([]);
+      return undefined;
+    }
+    let cancelled = false;
+    void getSourceIntake(activeRuntimePackId, context.room.project_id, auth.token)
+      .then((sources) => {
+        if (!cancelled) setPilotSources(sources);
+      })
+      .catch(() => {
+        if (!cancelled) setPilotSources([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeRuntimePackId, auth, context?.room.project_id, isPilotRoom]);
+
+  const switchRoom = useCallback((roomId: string): void => {
+    if (!auth || roomId === context?.room.id) return;
+    void loadContext(auth.token, roomId);
+  }, [auth, context?.room.id, loadContext]);
 
   useEffect(() => {
     const token = restoreRuntimeAuthToken();
@@ -561,6 +602,8 @@ function App(): ReactElement {
     setActions([]);
     setResources([]);
     setResourceCandidates([]);
+    setRooms([]);
+    setPilotSources([]);
     setProjects([]);
     setSelectedProjectId('');
     setProjectMembers([]);
@@ -599,13 +642,24 @@ function App(): ReactElement {
     const content = chatInput.trim();
     if (!content || wsRef.current?.readyState !== WebSocket.OPEN) return;
 
-    wsRef.current.send(JSON.stringify({type: 'chat', content}));
+    const active_mode = selectedMode === 'learning'
+      ? 'learn'
+      : selectedMode === 'teaching' || selectedMode === 'project' || selectedMode === 'story'
+        ? selectedMode
+        : 'project';
+    wsRef.current.send(JSON.stringify({
+      type: 'chat',
+      content,
+      runtime_pack_id: activeRuntimePackId,
+      active_mode,
+      source_refs: pilotSources.map((source) => source.source_ref).slice(0, 20),
+    }));
     setChatTurns((current) => [
       ...current,
       {id: nextId('user'), role: 'user', content},
     ]);
     setChatInput('');
-  }, [chatInput]);
+  }, [activeRuntimePackId, chatInput, pilotSources, selectedMode]);
 
   const prepareLearningHelp = useCallback((draft: string): void => {
     setChatInput(draft);
@@ -2162,6 +2216,42 @@ function App(): ReactElement {
           ) : null}
 
           {activeMode.id === 'teaching' && !canAdmin ? renderValidationInbox() : null}
+
+          {rooms.length > 1 ? (
+            <article className="panel panel--wide pilot-conversation-shell">
+              <div className="panel-header">
+                <div>
+                  <h2>{isPilotRoom ? 'Pilote conversationnel' : 'Espace de travail'}</h2>
+                  <p className="muted compact">
+                    {isPilotRoom
+                      ? `${context?.room.name ?? 'Pilote'} · ${activeRuntimePackId}`
+                      : 'Choisis un pilote pour ouvrir son contexte, ses sources et son chat.'}
+                  </p>
+                </div>
+                <label>
+                  Espace
+                  <select
+                    aria-label="Espace conversationnel"
+                    onChange={(event) => switchRoom(event.target.value)}
+                    value={context?.room.id ?? ''}
+                  >
+                    {rooms.map((room) => (
+                      <option key={room.id} value={room.id}>{room.name}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              {isPilotRoom ? (
+                <div className="situation-panel__stats">
+                  <div><span>Projet</span><strong>{projects.find((project) => project.project_id === context?.room.project_id)?.name ?? 'Projet pilote'}</strong></div>
+                  <div><span>Étape</span><strong>{latestCheckpoint?.summary ?? 'Cadrage initial'}</strong></div>
+                  <div><span>Sources</span><strong>{pilotSources.length}</strong></div>
+                  <div><span>Prochaine action</span><strong>Continuer par le chat</strong></div>
+                  <div><span>Validations</span><strong>{pendingActions.length}</strong></div>
+                </div>
+              ) : null}
+            </article>
+          ) : null}
 
           <article className="panel panel--wide chat-panel">
             <div className="panel-header">
