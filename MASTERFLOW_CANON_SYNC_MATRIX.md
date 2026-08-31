@@ -1,6 +1,6 @@
 # MasterFlow — Canon Sync Matrix
 
-Dernière vérification : 2026-08-30
+Dernière vérification : 2026-08-31
 Branche de travail : `codex/corrector-capability-absorption`
 Release preview vérifiée : `23a81a715ac8312375d5c09efd6ccfebadd3235c`
 Base `origin/main` initiale : `2ea7167`
@@ -13,13 +13,15 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
+| Conversation Turn Orchestrator natif | absent de `main` et de la branche candidate | Les services existent, mais contexte, pack, routage doux, intégrité, permissions, approvals et trace ne sont pas composés dans un contrat de tour unique. | critique pour les pilotes | Implémenter la vague 2 après convergence Git, sans framework multi-agent supplémentaire. |
 | Link Engine pédagogique | implémenté et déployé en preview privée | 49 vidéos validées, 20 exemples candidats, 542 notions, 800 liens, niveaux dynamiques et override professeur ; branche non mergée dans `main`. | faible à moyen | Observer les classements, ajuster les alias et overrides depuis Teaching, puis décider séparément d'une fusion. |
 | Déploiement full-stack privé | preview déployée | Branche publiée, non mergée ; stable absente. | faible à moyen | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
 | Profils de seed preview/production | implémenté preview | Preview sans roster historique ; production sans démo ; comptes Vincent et MALEX préservés. | faible | Ne jamais charger le roster historique en production. |
 | Persistance fichiers Docker | implémenté preview | Volume persistant, backup et restauration prouvés ; copie hors serveur encore absente. | moyen | Ajouter une copie chiffrée vers le Mac principal avant toute rétention. |
 | Smoke de release | implémenté preview | Cible explicite, REST et WebSocket verts via HTTPS Tailscale pour les deux comptes. | faible | Rejouer après chaque release. |
-| Ours d'Or première verticale | partiel | Seed narratif preview disponible, parcours étudiant full-stack encore incomplet. | moyen | Construire après le gate preview mock. |
-| Capacités différées | futur | Talents, MasterPlan, API Manage et Asset Engine restent hors chemin critique. | faible | Conserver les contrats et absorber les verticales après stable. |
+| Ours d'Or pilote 3A conversation-first | partiel | Seed narratif et briques guidées disponibles, mais aucun RuntimePack pilote ni parcours de tour complet. | critique produit | Construire juste après le socle conversationnel minimal, sans attendre l'Asset Engine avancé. |
+| Talents Créatifs pilote 3B conversation-first | partiel | Corpus Drive et squelette local existent, mais aucun RuntimePack Core ni isolation équipe/étudiant prouvée dans le runtime commun. | critique produit | Construire comme pilote frère d'Ours d'Or sur le même backend, sans auth ni base parallèles. |
+| Capacités après pilotes | futur | MasterPlan, API Manage, UI riche, Dungeon Master et Asset Engine restent hors chemin critique immédiat. | faible à moyen | Les traiter après les gates propres aux deux pilotes. |
 | Capacités Corrector | implémenté et déployé en preview | OCR, lots, rubriques, pré-correction, calibration, validation et suivi existent ; export privé approuvé et anti-répétition sont actifs en preview. | faible à moyen | Observer avant toute fusion `main` ; conserver export, envoi et validation finale sous contrôle humain. Corrector ne devient ni produit, ni verticale, ni persona actif. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |

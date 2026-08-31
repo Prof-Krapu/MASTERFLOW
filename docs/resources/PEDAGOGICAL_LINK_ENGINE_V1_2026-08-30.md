@@ -1,6 +1,6 @@
 # MasterFlow — Pedagogical Link Engine V1
 
-Date : 2026-08-30  
+Date : 2026-08-30
 Statut : déployé en preview privée, non mergé dans `main`
 Owner : `RESOURCE_ENGINE` avec `PEDAGOGY_ENGINE` et `SUBJECT_ENGINE`
 
