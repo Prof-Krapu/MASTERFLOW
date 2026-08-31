@@ -1,8 +1,9 @@
 # MasterFlow — Canon Sync Matrix
 
-Dernière vérification : 2026-06-29
-Branche de travail : `codex/theme-studio-grammar-ui`
-Base GitHub vérifiée : `9a336a7` (`origin/main` après merge PR #171)
+Dernière vérification : 2026-08-31
+Branche de travail : `codex/corrector-capability-absorption`
+Release preview vérifiée : `23a81a715ac8312375d5c09efd6ccfebadd3235c`
+Base `origin/main` initiale : `2ea7167`
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -12,6 +13,16 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
+| Conversation Turn Orchestrator natif | absent de `main` et de la branche candidate | Les services existent, mais contexte, pack, routage doux, intégrité, permissions, approvals et trace ne sont pas composés dans un contrat de tour unique. | critique pour les pilotes | Implémenter la vague 2 après convergence Git, sans framework multi-agent supplémentaire. |
+| Link Engine pédagogique | implémenté et déployé en preview privée | 49 vidéos validées, 20 exemples candidats, 542 notions, 800 liens, niveaux dynamiques et override professeur ; branche non mergée dans `main`. | faible à moyen | Observer les classements, ajuster les alias et overrides depuis Teaching, puis décider séparément d'une fusion. |
+| Déploiement full-stack privé | preview déployée | Branche publiée, non mergée ; stable absente. | faible à moyen | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
+| Profils de seed preview/production | implémenté preview | Preview sans roster historique ; production sans démo ; comptes Vincent et MALEX préservés. | faible | Ne jamais charger le roster historique en production. |
+| Persistance fichiers Docker | implémenté preview | Volume persistant, backup et restauration prouvés ; copie hors serveur encore absente. | moyen | Ajouter une copie chiffrée vers le Mac principal avant toute rétention. |
+| Smoke de release | implémenté preview | Cible explicite, REST et WebSocket verts via HTTPS Tailscale pour les deux comptes. | faible | Rejouer après chaque release. |
+| Ours d'Or pilote 3A conversation-first | partiel | Seed narratif et briques guidées disponibles, mais aucun RuntimePack pilote ni parcours de tour complet. | critique produit | Construire juste après le socle conversationnel minimal, sans attendre l'Asset Engine avancé. |
+| Talents Créatifs pilote 3B conversation-first | partiel | Corpus Drive et squelette local existent, mais aucun RuntimePack Core ni isolation équipe/étudiant prouvée dans le runtime commun. | critique produit | Construire comme pilote frère d'Ours d'Or sur le même backend, sans auth ni base parallèles. |
+| Capacités après pilotes | futur | MasterPlan, API Manage, UI riche, Dungeon Master et Asset Engine restent hors chemin critique immédiat. | faible à moyen | Les traiter après les gates propres aux deux pilotes. |
+| Capacités Corrector | implémenté et déployé en preview | OCR, lots, rubriques, pré-correction, calibration, validation et suivi existent ; export privé approuvé et anti-répétition sont actifs en preview. | faible à moyen | Observer avant toute fusion `main` ; conserver export, envoi et validation finale sous contrôle humain. Corrector ne devient ni produit, ni verticale, ni persona actif. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
 | Experience Fabric / Narrative Canon Graph | implémenté | Projection publiée via PR #158 ; surface MasterStory lecteur/atelier/spoilers vérifiée localement avec setup/payoff, diagnostics et storylets. | faible | Publier la surface sans ouvrir delta canon, export ou publication. |
@@ -44,7 +55,7 @@ récoltées après audit.
 | D11 factories/backflow | implémenté V1 borné | V6C intake JSON/quarantaine, V6D candidate updates, V6E recommandations lecture seule et V6F routage manuel whitelisté sont sur `main`. Toute route reste `candidate_only`. | faible | D11 V1 est clos ; ne rouvrir que sur une nouvelle décision produit explicitant une frontière encore exclue. |
 | Specs de contrôle low-risk PR #6 | implémenté docs | Read-models/specs mergés ; aucune enforcement runtime nouvelle. | faible | Choisir ensuite une première tranche read-only à implémenter ou continuer la queue safe. |
 | Pont de déploiement Drive | synchronisé | Le pont est rafraîchi après la dernière PR de preuve ; le SHA exact reste porté par le snapshot Drive. | faible | Rafraîchir après chaque merge de preuve ou changement runtime. |
-| Déploiement live vérifiable | inconnu | Aucun workflow GitHub Actions ni environnement GitHub ; le Funnel historique n'a pas été revérifié dans cette tranche. | élevé | Injecter `MASTERFLOW_RELEASE_SHA` au déploiement et faire un smoke live séparé. |
+| Déploiement live vérifiable | preview vérifiée et validée par MALEX | SHA cockpit, manifeste, HTTPS tailnet-only et smoke externe concordent ; aucune stable. | faible à moyen | Conserver l'IA mock jusqu'au gate séparé du lot 5. |
 | D12 Owner Cockpit status | implémenté | Agrégat runtime privé sur `main`; aucune lecture automatique GitHub/Drive. | faible | Conserver le statut live non vérifié sans SHA injecté. |
 | Hard stop / action expiry | implémenté | Garde, preview, sélection et état persistant owner+Room sont sur `main`. | faible | Conserver activation et reprise explicites, sans déclenchement automatique depuis le texte. |
 | Context hash / re-preflight | partiel implémenté | Snapshot privé et comparateur read-only sont sur `main` ; seules les refs avec révision fiable sont comparées. | faible | Décider les familles qui imposeraient réellement stale ou re-preflight. |

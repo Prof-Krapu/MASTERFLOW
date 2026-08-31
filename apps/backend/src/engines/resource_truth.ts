@@ -91,7 +91,23 @@ export function deprecateResource(id: string): Resource {
 /** Change le status d'une ressource et renvoie le DTO à jour. */
 function setStatus(id: string, status: ResourceRow['status']): Resource {
   const db = getDb();
-  db.prepare('UPDATE resources SET status = ? WHERE id = ?').run(status, id);
+  const tx = db.transaction(() => {
+    db.prepare('UPDATE resources SET status = ? WHERE id = ?').run(status, id);
+    if (status === 'validated') {
+      db.prepare(`
+        UPDATE pedagogical_resource_profiles
+        SET validation_state = 'validated', updated_at = ?
+        WHERE resource_id = ?
+      `).run(Date.now(), id);
+    } else if (status === 'deprecated') {
+      db.prepare(`
+        UPDATE pedagogical_resource_profiles
+        SET validation_state = 'outdated', updated_at = ?
+        WHERE resource_id = ?
+      `).run(Date.now(), id);
+    }
+  });
+  tx();
   return getResourceOrThrow(id);
 }
 

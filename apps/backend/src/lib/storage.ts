@@ -1,4 +1,4 @@
-import {mkdirSync, readFileSync, statSync, writeFileSync, unlinkSync} from 'node:fs';
+import {chmodSync, mkdirSync, readFileSync, statSync, writeFileSync, unlinkSync} from 'node:fs';
 import {dirname, resolve, sep} from 'node:path';
 
 /**
@@ -32,6 +32,15 @@ export interface ResolvedStorageImage {
   bytes: number;
   /** Contenu encodé base64 (sans préfixe data:). */
   base64: string;
+}
+
+export interface ResolvedStorageFile {
+  /** Chemin absolu réel, toujours contenu sous la racine privée. */
+  path: string;
+  /** Taille contrôlée avant lecture. */
+  bytes: number;
+  /** Octets bruts du fichier privé. */
+  data: Buffer;
 }
 
 function storageRoot(): string {
@@ -71,6 +80,23 @@ function sniffMime(buf: Buffer): StorageMime | null {
  * référence est invalide, hors périmètre, trop lourde ou d'un type non supporté.
  */
 export function resolveStorageImage(ref: string): ResolvedStorageImage {
+  const file = resolveStorageFile(ref);
+  const mime = sniffMime(file.data);
+  if (!mime) throw new Error('storage_ref_unsupported_image');
+
+  return {
+    path: file.path,
+    mime,
+    bytes: file.bytes,
+    base64: file.data.toString('base64'),
+  };
+}
+
+/**
+ * Résout une référence privée vers ses octets, sans supposer un type d'image.
+ * Sert notamment à matérialiser un export déjà prévisualisé et validé.
+ */
+export function resolveStorageFile(ref: string): ResolvedStorageFile {
   if (typeof ref !== 'string' || !ref.startsWith(PREFIX)) {
     throw new Error('storage_ref_invalid_scheme');
   }
@@ -94,10 +120,7 @@ export function resolveStorageImage(ref: string): ResolvedStorageImage {
   if (stat.size > maxBytes()) throw new Error('storage_ref_too_large');
 
   const buf = readFileSync(target);
-  const mime = sniffMime(buf);
-  if (!mime) throw new Error('storage_ref_unsupported_image');
-
-  return {path: target, mime, bytes: stat.size, base64: buf.toString('base64')};
+  return {path: target, bytes: stat.size, data: buf};
 }
 
 /** Construit une data URL base64 prête pour un champ `image_url` OpenAI‑compatible. */
@@ -118,7 +141,8 @@ export function storeFile(key: string, data: Buffer): string {
   const target = resolve(root, key);
   if (target !== root && !target.startsWith(root + sep)) throw new Error('storage_ref_path_escape');
   mkdirSync(dirname(target), {recursive: true});
-  writeFileSync(target, data);
+  writeFileSync(target, data, {mode: 0o600});
+  chmodSync(target, 0o600);
   return `${PREFIX}${key}`;
 }
 

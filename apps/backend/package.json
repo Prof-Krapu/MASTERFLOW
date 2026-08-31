@@ -7,8 +7,11 @@
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "seed": "tsx src/db/seed.ts",
+    "backup:runtime": "tsx src/cli/backup_runtime.ts",
+    "restore:runtime": "tsx src/cli/restore_runtime.ts",
     "runner:ocr": "tsx src/runners/ocr_runner.ts",
     "runner:image": "tsx src/runners/image_runner.ts",
+    "runner:export": "tsx src/runners/export_runner.ts",
     "test": "vitest run",
     "lint": "tsc --noEmit"
   },

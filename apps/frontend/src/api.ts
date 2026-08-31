@@ -65,6 +65,10 @@ import type {
   PreCorrectionManifest,
   PedagogicalAssistanceDecision,
   PedagogicalAssistanceRequest,
+  PedagogicalClassification,
+  PedagogicalResourceSearchResponse,
+  AcademicFramework,
+  AdjustPedagogicalClassification,
   PersonalLearningProfile,
   PrecedentSearchResult,
   Persona,
@@ -794,6 +798,57 @@ export async function proposeResource(body: ProposeResource, token?: string | nu
 
 export async function validateResource(resourceId: string, token?: string | null): Promise<Resource> {
   return request<Resource>(`/resources/${encodeURIComponent(resourceId)}/validate`, {method: 'POST'}, token);
+}
+
+export async function getAcademicFrameworks(token?: string | null): Promise<AcademicFramework[]> {
+  return request<AcademicFramework[]>('/academic-frameworks', {method: 'GET'}, token);
+}
+
+export async function searchPedagogicalResources(
+  input: {
+    q?: string;
+    framework?: string;
+    level?: string;
+    software?: string;
+    includeCandidates?: boolean;
+    limit?: number;
+  },
+  token?: string | null,
+): Promise<PedagogicalResourceSearchResponse> {
+  const params = new URLSearchParams();
+  if (input.q) params.set('q', input.q);
+  if (input.framework) params.set('framework', input.framework);
+  if (input.level) params.set('level', input.level);
+  if (input.software) params.set('software', input.software);
+  if (input.includeCandidates) params.set('include_candidates', '1');
+  if (input.limit) params.set('limit', String(input.limit));
+  const query = params.toString();
+  return request<PedagogicalResourceSearchResponse>(
+    `/pedagogical-resources/search${query ? `?${query}` : ''}`,
+    {method: 'GET'},
+    token,
+  );
+}
+
+export async function getPedagogicalClassificationReview(
+  token?: string | null,
+): Promise<Array<{resource_id: string; title: string; classification: PedagogicalClassification}>> {
+  const response = await request<{
+    results: Array<{resource_id: string; title: string; classification: PedagogicalClassification}>;
+  }>('/pedagogical-resources/classification-review', {method: 'GET'}, token);
+  return response.results;
+}
+
+export async function adjustPedagogicalResourceClassification(
+  resourceId: string,
+  body: AdjustPedagogicalClassification,
+  token?: string | null,
+): Promise<PedagogicalClassification> {
+  return request<PedagogicalClassification>(
+    `/pedagogical-resources/${encodeURIComponent(resourceId)}/classification`,
+    {method: 'PATCH', body: JSON.stringify(body)},
+    token,
+  );
 }
 
 // ───────────────────────── Projets / scopes ─────────────────────────

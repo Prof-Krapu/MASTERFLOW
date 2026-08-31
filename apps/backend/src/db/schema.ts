@@ -2218,6 +2218,200 @@ function migrate(d: Database.Database): void {
       created_at    INTEGER NOT NULL
     );
 
+    -- ───────────────────────── Link Engine pedagogique ───────────────────
+    -- Les fichiers de routing sont des sources d'import. Le runtime consomme
+    -- exclusivement ce registre normalise et conserve chaque arbitrage humain.
+    CREATE TABLE IF NOT EXISTS academic_frameworks (
+      id              TEXT PRIMARY KEY,
+      code            TEXT UNIQUE NOT NULL,
+      label           TEXT NOT NULL,
+      description     TEXT,
+      status          TEXT NOT NULL DEFAULT 'active'
+                        CHECK (status IN ('active','archived')),
+      source_ref      TEXT,
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS academic_levels (
+      id              TEXT PRIMARY KEY,
+      framework_id    TEXT NOT NULL REFERENCES academic_frameworks(id) ON DELETE CASCADE,
+      code            TEXT NOT NULL,
+      label           TEXT NOT NULL,
+      short_label     TEXT NOT NULL,
+      sort_order      INTEGER NOT NULL DEFAULT 0,
+      status          TEXT NOT NULL DEFAULT 'active'
+                        CHECK (status IN ('active','archived')),
+      metadata_json   TEXT NOT NULL DEFAULT '{}',
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(framework_id, code)
+    );
+
+    CREATE TABLE IF NOT EXISTS academic_level_aliases (
+      id              TEXT PRIMARY KEY,
+      level_id        TEXT NOT NULL REFERENCES academic_levels(id) ON DELETE CASCADE,
+      alias           TEXT NOT NULL,
+      normalized_alias TEXT NOT NULL,
+      source          TEXT NOT NULL DEFAULT 'teacher',
+      confidence      REAL NOT NULL DEFAULT 1 CHECK (confidence >= 0 AND confidence <= 1),
+      active          INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(level_id, normalized_alias)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_academic_level_aliases_normalized
+      ON academic_level_aliases(normalized_alias, active);
+
+    CREATE TABLE IF NOT EXISTS pedagogical_resource_profiles (
+      resource_id       TEXT PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
+      legacy_id         TEXT,
+      resource_kind     TEXT NOT NULL,
+      format            TEXT NOT NULL,
+      source_platform   TEXT,
+      duration_seconds  INTEGER,
+      language          TEXT NOT NULL DEFAULT 'fr',
+      description       TEXT,
+      pedagogical_reading TEXT,
+      technical_level   TEXT,
+      learning_stage    TEXT,
+      software_json     TEXT NOT NULL DEFAULT '[]',
+      tags_json         TEXT NOT NULL DEFAULT '[]',
+      usable_for_json   TEXT NOT NULL DEFAULT '[]',
+      source_ref        TEXT NOT NULL,
+      source_hash       TEXT NOT NULL,
+      owner_key         TEXT NOT NULL DEFAULT 'RESOURCE_ENGINE',
+      visibility_scope  TEXT NOT NULL DEFAULT 'authenticated',
+      consultable       INTEGER NOT NULL DEFAULT 1 CHECK (consultable IN (0,1)),
+      reuse_allowed     INTEGER NOT NULL DEFAULT 0 CHECK (reuse_allowed IN (0,1)),
+      export_allowed    INTEGER NOT NULL DEFAULT 0 CHECK (export_allowed IN (0,1)),
+      validation_state  TEXT NOT NULL DEFAULT 'review_needed'
+                          CHECK (validation_state IN ('candidate','review_needed','validated','rejected','outdated')),
+      metadata_json     TEXT NOT NULL DEFAULT '{}',
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_pedagogical_profiles_validation
+      ON pedagogical_resource_profiles(validation_state, resource_kind);
+
+    CREATE TABLE IF NOT EXISTS pedagogical_notions (
+      id                TEXT PRIMARY KEY,
+      notion_id         TEXT UNIQUE NOT NULL,
+      label             TEXT NOT NULL,
+      normalized_label  TEXT NOT NULL,
+      notion_type       TEXT NOT NULL,
+      software_scope    TEXT,
+      aliases_json      TEXT NOT NULL DEFAULT '[]',
+      validation_state  TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (validation_state IN ('candidate','review_needed','validated','rejected','outdated')),
+      metadata_json     TEXT NOT NULL DEFAULT '{}',
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS pedagogical_resource_notion_links (
+      id                TEXT PRIMARY KEY,
+      resource_id       TEXT NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
+      notion_id         TEXT NOT NULL REFERENCES pedagogical_notions(id) ON DELETE CASCADE,
+      relation_type     TEXT NOT NULL CHECK (relation_type IN ('teaches','illustrates','remediates','extends')),
+      timestamp_seconds INTEGER,
+      importance        INTEGER,
+      difficulty_weight INTEGER,
+      learning_stage    TEXT,
+      source_ref        TEXT NOT NULL,
+      metadata_json     TEXT NOT NULL DEFAULT '{}',
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL,
+      UNIQUE(resource_id, notion_id, relation_type)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_pedagogical_notion_links_resource
+      ON pedagogical_resource_notion_links(resource_id);
+    CREATE INDEX IF NOT EXISTS idx_pedagogical_notion_links_notion
+      ON pedagogical_resource_notion_links(notion_id);
+
+    CREATE TABLE IF NOT EXISTS pedagogical_routing_edges (
+      id                TEXT PRIMARY KEY,
+      from_type         TEXT NOT NULL,
+      from_ref          TEXT NOT NULL,
+      to_type           TEXT NOT NULL,
+      to_ref            TEXT NOT NULL,
+      relation          TEXT NOT NULL CHECK (relation IN (
+                            'teaches','illustrates','remediates','prerequisites','extends',
+                            'applies_to','contrasts_with','supports_project','related_to'
+                          )),
+      confidence        REAL NOT NULL DEFAULT 1 CHECK (confidence >= 0 AND confidence <= 1),
+      source_ref        TEXT NOT NULL,
+      validation_state  TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (validation_state IN ('candidate','review_needed','validated','rejected','outdated')),
+      metadata_json     TEXT NOT NULL DEFAULT '{}',
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL,
+      UNIQUE(from_type, from_ref, to_type, to_ref, relation, source_ref)
+    );
+
+    CREATE TABLE IF NOT EXISTS pedagogical_resource_classifications (
+      id                TEXT PRIMARY KEY,
+      resource_id       TEXT NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
+      framework_id      TEXT NOT NULL REFERENCES academic_frameworks(id) ON DELETE CASCADE,
+      inferred_level_id TEXT REFERENCES academic_levels(id) ON DELETE SET NULL,
+      teacher_level_id  TEXT REFERENCES academic_levels(id) ON DELETE SET NULL,
+      teacher_locked    INTEGER NOT NULL DEFAULT 0 CHECK (teacher_locked IN (0,1)),
+      source_value      TEXT,
+      source_hash       TEXT NOT NULL,
+      confidence        REAL NOT NULL DEFAULT 0 CHECK (confidence >= 0 AND confidence <= 1),
+      inference_method  TEXT NOT NULL,
+      evidence_json     TEXT NOT NULL DEFAULT '[]',
+      status            TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (status IN ('candidate','validated','needs_review','outdated')),
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL,
+      UNIQUE(resource_id, framework_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_pedagogical_classifications_review
+      ON pedagogical_resource_classifications(status, teacher_locked);
+
+    CREATE TABLE IF NOT EXISTS pedagogical_classification_events (
+      id                TEXT PRIMARY KEY,
+      classification_id TEXT NOT NULL REFERENCES pedagogical_resource_classifications(id) ON DELETE CASCADE,
+      actor_id          TEXT REFERENCES users(id) ON DELETE SET NULL,
+      event_type        TEXT NOT NULL CHECK (event_type IN (
+                            'inferred','source_changed','teacher_override','teacher_override_cleared','validated'
+                          )),
+      previous_json     TEXT,
+      next_json         TEXT NOT NULL,
+      reason            TEXT,
+      created_at        INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS pedagogical_resource_imports (
+      id                TEXT PRIMARY KEY,
+      source_ref        TEXT NOT NULL,
+      source_hash       TEXT NOT NULL,
+      source_kind       TEXT NOT NULL,
+      status            TEXT NOT NULL CHECK (status IN ('applied','unchanged','partial','rejected')),
+      resources_seen    INTEGER NOT NULL DEFAULT 0,
+      resources_written INTEGER NOT NULL DEFAULT 0,
+      warnings_count    INTEGER NOT NULL DEFAULT 0,
+      report_json       TEXT NOT NULL DEFAULT '{}',
+      created_at        INTEGER NOT NULL,
+      UNIQUE(source_ref, source_hash)
+    );
+
+    CREATE VIRTUAL TABLE IF NOT EXISTS pedagogical_resource_fts USING fts5(
+      resource_id UNINDEXED,
+      title,
+      description,
+      notions,
+      keywords,
+      software,
+      student_phrases,
+      tokenize = 'unicode61 remove_diacritics 2'
+    );
+
     CREATE TABLE IF NOT EXISTS capability_inventory (
       id              TEXT PRIMARY KEY,
       feature_id      TEXT UNIQUE NOT NULL,

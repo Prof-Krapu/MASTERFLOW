@@ -9,3 +9,5 @@ coverage/
 apps/desktop/src-tauri/target/
 .masterbuild/local/
 .masterbuild/exports/
+deploy/manifests/*.json
+*-bootstrap-credentials.txt

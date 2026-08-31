@@ -4,6 +4,125 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-30 — Link Engine pédagogique déterministe
+
+VAGUE ACTIVE :
+
+- id : `PEDAGOGICAL-LINK-ENGINE-001` ;
+- objectif : absorber les routings pédagogiques dans la BDD sans importer les fichiers legacy comme
+  vérité runtime ;
+- statut : implémenté, publié sur la branche dédiée et déployé en preview privée ;
+- dernière action terminée : release serveur au SHA exact, migration SQLite, smoke privé et
+  restauration séparée ;
+- prochaine action : observer les classements et arbitrer les 20 exemples candidats ;
+- fichiers/domaines concernés : Resource Truth, pédagogie, shared, API et Teaching ;
+- tests : backend `728/728`, lint backend/frontend et build frontend verts ;
+- blocage : IA réelle, Ours d'Or, `main`, stable et public restent exclus.
+
+Résultats :
+
+- 49 vidéos validées et 20 exemples candidats importés dans la BDD ;
+- 542 notions et 800 liens pédagogiques normalisés ;
+- les recherches runtime ne lisent aucun fichier `ROUTING_*` ;
+- les niveaux académiques sont éditables en BDD et distincts de la maîtrise ou de la difficulté ;
+- un changement de source produit une alerte sans écraser le classement verrouillé par le professeur ;
+- release privée : `23a81a715ac8312375d5c09efd6ccfebadd3235c` ;
+- smoke final : comptes Vincent et MALEX godmode, recherche avec raison/source/timecode, candidat
+  absent des résultats par défaut et accès anonyme refusé ;
+- sauvegarde finale `masterflow-20260830T190143Z` restaurée dans une cible séparée avec
+  `integrity_check=ok` ;
+- contrat : `docs/resources/PEDAGOGICAL_LINK_ENGINE_V1_2026-08-30.md`.
+
+---
+
+## 2026-08-30 — Absorption sélective Corrector déployée en preview
+
+VAGUE ACTIVE :
+
+- id : `CORRECTOR-CAPABILITIES-001` ;
+- objectif : récupérer les deux dernières capacités utiles de Corrector sans migrer son produit,
+  son runtime Python ni son ancien persona ;
+- statut : implémentation publiée sur une branche dédiée et déployée en preview privée ;
+- dernière action terminée : runner d'export privé CSV/XLSX et contrôle de répétition des feedbacks ;
+- prochaine action : observation de la preview, puis gate séparé avant toute fusion `main` ou stable ;
+- fichiers/domaines concernés : stockage privé, feedbacks, jobs, runner export, Compose et pilotage ;
+- tests à relancer au prochain changement : backend complet, lint et config Compose ;
+- publication : branche `codex/corrector-capability-absorption` au SHA
+  `961f58e45483a6cfafc7cd084866a487bcf43f08` ; runtime preview privé aligné sur ce SHA ;
+- blocage : fusion `main`, stable, IA réelle, publication et envoi d'exports restent exclus.
+
+Résultats locaux :
+
+- Corrector est désormais défini sans ambiguïté comme source historique de capacités, pas comme
+  verticale MasterFlow ni persona actif ;
+- le runner copie octet pour octet une preview CSV/XLSX déjà approuvée, produit une référence
+  privée et un SHA-256, sans recalcul, envoi ni publication ;
+- une répétition exacte ou une attaque de feedback déjà utilisée dans le même scope force
+  `evaluation_alignment=review_required`, sans réécriture automatique ;
+- les références de texte absentes ne produisent aucun verdict artificiel ;
+- backend `719/719`, lint TypeScript, config Compose et `git diff --check` verts ;
+- recette HTTPS externe verte pour MALEX et Vincent : health, frontend, authentification, contexte,
+  personas, ressources et WebSocket ;
+- backend, frontend et runner d'export actifs sur Malex Graphics ; sauvegarde post-déploiement
+  `masterflow-20260830T135918Z` créée ;
+- matrice dédiée :
+  `docs/corrector/CORRECTOR_CAPABILITY_ABSORPTION_MATRIX_2026-08-30.md`.
+
+---
+
+## 2026-08-30 — Vague candidate full-stack preview serveur
+
+VAGUE ACTIVE :
+
+- id : `SERVER-FULLSTACK-PREVIEW-001` ;
+- objectif : préparer une preview privée MasterFlow sur Malex Graphics, puis le parcours pilote
+  Ours d'Or, sans absorber prématurément les verticales différées ;
+- statut : lots 0 à 4 terminés ; preview privée déployée, branche non mergée et stable absente ;
+- dernière action terminée : recette HTTPS Tailscale verte, sauvegarde exportée et démarrage
+  utilisateur automatisé sur Malex Graphics ;
+- prochaine action : observation du Link Engine puis gate produit séparé avant toute IA réelle ;
+- fichiers/domaines concernés : déploiement, seed, correction context, shared, smoke et pilotage ;
+- tests à relancer au prochain changement runtime : backend complet, frontend lint/build,
+  MASTERBUILD, manifeste de release et smoke Docker ;
+- publication initiale : branche `codex/masterflow-fullstack-preview` au SHA `e01fa0546a4e`, preview
+  tailnet-only ; aucune fusion `main`, stable ou ouverture publique ;
+- mise à jour runtime : branche `codex/corrector-capability-absorption` au SHA `23a81a715ac8`,
+  sans changement de canal, de seed, d'IA ou d'exposition réseau ;
+- blocage : l'état MASTERBUILD reste orienté vers le Round UI historique ; sa réorientation et toute
+  publication exigent une décision séparée.
+
+Résultats locaux :
+
+- branche propre `codex/masterflow-fullstack-preview` créée depuis `origin/main` `2ea7167` ;
+- backend `715/715`, lint backend/frontend, build frontend, MASTERBUILD `16/16` et diff-check verts ;
+- `preview` : 0 cohorte, 0 étudiant historique, 1 workbench Ours d'Or, 0 Batrasia ;
+- `production` : 0 cohorte, 0 étudiant, 0 workbench et 0 donnée de démonstration ;
+- comptes godmode préservés dans tous les profils : Vincent et MALEX ;
+- images frontend/backend construites ; correction du packaging `tsconfig.base.json` et du routage
+  Caddy `/api`, `/ws` et `/health` ;
+- smoke local vert pour les deux comptes : health, frontend, authentification, contexte, personas,
+  ressources et WebSocket ;
+- persistance confirmée après redémarrage ; backup `masterflow.backup.v1` restauré vers une cible
+  séparée avec `SQLite integrity_check=ok` ;
+- runtime serveur : Docker Desktop Intel `4.88.1`, Docker Engine `29.7.2` et Compose `5.4.0` en
+  mode utilisateur ; Homebrew/Colima non installés faute d'élévation non interactive ;
+- runtime annoncé par le cockpit au SHA exact `e01fa0546a4eb566b789cbde5a071de156451ee9` ;
+- smoke HTTPS externe vert pour Vincent et MALEX : health, frontend, auth, contexte, personas,
+  ressources et WebSocket ;
+- Tailscale Serve actif en mode `tailnet only`, proxy vers `127.0.0.1:8080`; aucun Funnel public ;
+- démarrage `com.masterflow.preview` après ouverture de session et sauvegarde quotidienne
+  `com.masterflow.preview.backup` à 03:15 ; aucun effacement automatique ;
+- backup serveur restauré puis exporté hors volume Docker avec hash vérifié et permissions `600` ;
+- alerte dépendances : audit production avec 1 vulnérabilité faible `body-parser`; audit complet
+  ajoute 2 alertes hautes dans la chaîne de build, à corriger dans une tranche dédiée ;
+- preflight Malex Graphics relu : Intel, 12 CPU, 32 Go, 364 Gio libres, Tailscale sain et FileVault
+  actif ; aucune destination Time Machine ni copie chiffrée hors serveur configurée ;
+- réconciliation waves terminée : Fast Index non importé faute de générateur ; registre IA ancien
+  conservé comme preuve ; contrats Link/LLM différés vers le lot 5 ;
+- plan : `docs/deployment/MASTERFLOW_FULLSTACK_DEPLOYMENT_PLAN_2026-08-30.md`.
+
+---
+
 ## 2026-08-24 — Handoff candidat MasterPlan sujets et affectations
 
 - aucun bug urgent MasterFlow identifié : les contrats sujets, versions, affectations, preuves,

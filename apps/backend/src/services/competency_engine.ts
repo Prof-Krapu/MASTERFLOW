@@ -332,9 +332,17 @@ function recalculateProgress(userId: string, competencyId: string, projectId: st
     masteryScores[s.mastery_level]!.count++;
     masteryScores[s.mastery_level]!.totalConfidence += s.confidence;
   }
-  const bestMastery = Object.entries(masteryScores).reduce((a, b) =>
-    (MASTERY_ORDER[a[0]] ?? 0) > (MASTERY_ORDER[b[0]] ?? 0) ? a : b,
-  )[0];
+  const bestMastery = Object.entries(masteryScores).reduce((best, candidate) => {
+    if (candidate[1].totalConfidence !== best[1].totalConfidence) {
+      return candidate[1].totalConfidence > best[1].totalConfidence ? candidate : best;
+    }
+    if (candidate[1].count !== best[1].count) {
+      return candidate[1].count > best[1].count ? candidate : best;
+    }
+    return (MASTERY_ORDER[candidate[0]] ?? 0) > (MASTERY_ORDER[best[0]] ?? 0)
+      ? candidate
+      : best;
+  })[0];
 
   // Confiance agrégée
   const avgConfidence = signals.reduce((sum, s) => sum + s.confidence, 0) / signalCount;

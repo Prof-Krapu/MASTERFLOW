@@ -74,6 +74,7 @@ import {
 import {AdaptiveWorkspacePage} from './adaptive-workspace-page.tsx';
 import {ClassProjection} from './class-projection.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
+import {PedagogicalResourceRegistry} from './pedagogical-resource-registry.tsx';
 import {getStudentPlaceholderAsset} from './student-avatar-assets.ts';
 import {ComponentLabTeaching} from './ui-reset/component-lab-teaching.tsx';
 import type {TeachingStudentSubjectState, TeachingSurfaceClass, TeachingSurfaceSubject} from './ui-reset/component-lab-teaching.tsx';
@@ -1311,6 +1312,7 @@ export function TeachingReadiness({
         onOpenSupport={localTeachingDemo ? undefined : () => setManager('support')}
         subjects={localTeachingDemo ? undefined : teachingPresentation.subjects}
       />
+      {!localTeachingDemo ? <PedagogicalResourceRegistry role={context.user.role} token={token} /> : null}
       {manager ? (
         <aside aria-labelledby="teaching-manager-title" className="teaching-runtime-manager" ref={managerRef} role="dialog">
           <header>

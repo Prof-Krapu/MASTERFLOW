@@ -6,6 +6,7 @@ import type {LLMTask, Role} from '@masterflow/shared';
 import {env} from '../lib/env.ts';
 import {uuid} from '../lib/uuid.ts';
 import {costFor} from '../services/llm_pricing.ts';
+import {syncPedagogicalResourceRegistry} from '../services/pedagogical_resource_registry.ts';
 import {getDb, type PersonaRow, type RoomRow, type UserRow} from './schema.ts';
 
 /**
@@ -13,13 +14,29 @@ import {getDb, type PersonaRow, type RoomRow, type UserRow} from './schema.ts';
  *
  * Crée (si absents) : les comptes godmode Vincent + MALEX, les personas actifs
  * MasterFlow System / MasterFlex / ProfKrapu, l'enregistrement historique déprécié
- * Corrector (FK), une room Home par compte, et des données de démonstration.
+ * Corrector (FK), une room Home par compte et les données autorisées par le profil de seed.
  *
  * Appelé au boot d'Express (cheap : ne hashe le mot de passe que s'il crée le user)
  * et exécutable seul via `npm run seed`.
  */
 
 const BCRYPT_COST = 12;
+
+export type MasterFlowSeedProfile = 'development' | 'preview' | 'production';
+
+/**
+ * Sépare explicitement les données de développement, la preview Ours d'Or et
+ * le socle de production. Une valeur inconnue échoue au lieu de charger un jeu
+ * de données implicite.
+ */
+export function resolveSeedProfile(): MasterFlowSeedProfile {
+  const configured = process.env.MASTERFLOW_SEED_PROFILE?.trim().toLowerCase();
+  if (!configured) return process.env.NODE_ENV === 'production' ? 'production' : 'development';
+  if (configured === 'development' || configured === 'preview' || configured === 'production') {
+    return configured;
+  }
+  throw new Error(`[seed] MASTERFLOW_SEED_PROFILE invalide : ${configured}`);
+}
 
 // Personas du MVP. visual_config porte la palette Zerg (consommée par le PoC métaballs).
 const PERSONA_SEEDS = [
@@ -384,6 +401,7 @@ export async function seedAll(): Promise<{
 }> {
   const db = getDb();
   const now = Date.now();
+  const seedProfile = resolveSeedProfile();
   let createdUsers = 0;
   let createdPersonas = 0;
   let createdRooms = 0;
@@ -569,7 +587,7 @@ export async function seedAll(): Promise<{
   }
 
   // ── Démo usage tokens (PoC dataviz) — idempotent, désactivable ───
-  seedDemoUsage(db, god.id);
+  if (seedProfile === 'development') seedDemoUsage(db, god.id);
 
   // ── Schema templates PR-5 (candidats, non canoniques) ───────────
   const insertSchemaTemplate = db.prepare(
@@ -598,6 +616,7 @@ export async function seedAll(): Promise<{
   // ── Profils de routage LLM par tâche/rôle (validés, inertes sans clé) ────
   seedTaskModelProfiles(db, now);
 
+  if (seedProfile === 'development') {
   // ── Compétences & Badges (Phase 1 — idempotent, attaché au compte godmode) ──
   const fwDesign = 'seed-fw-design-thinking';
   const fwComVis = 'seed-fw-com-visuelle';
@@ -662,8 +681,10 @@ export async function seedAll(): Promise<{
   // ── MALEX — Profils & données personnelles ──────────────────────
   insertProfile.run('seed-profile-malex', malex.id, malex.id, 'guided', 'bullet', 'concise', now, now);
   insertStyleProfile.run('seed-style-malex', malex.id, malex.id, 'casual', 'high', 'simple', 0.6, now, now);
+  }
 
   // ── Données étudiantes MALEX (2025-2026 archivé, 2026-2027 actif) ──
+  if (seedProfile === 'development') {
   try {
     const {readFileSync} = await import('node:fs');
     const studentsSeed = JSON.parse(
@@ -714,6 +735,7 @@ export async function seedAll(): Promise<{
     } else {
       console.error('[seed] avertissement : échec import données étudiantes :', e.message);
     }
+  }
   }
 
   // ── P6 Registres legacy ──
@@ -855,7 +877,14 @@ export async function seedAll(): Promise<{
     }
   });
   registryTx();
+  const pedagogicalRegistry = syncPedagogicalResourceRegistry();
+  if (!pedagogicalRegistry.unchanged) {
+    console.log(
+      `[seed] registre pedagogique -> videos:${pedagogicalRegistry.videos} exemples:${pedagogicalRegistry.examples} avertissements:${pedagogicalRegistry.warnings}`,
+    );
+  }
 
+  if (seedProfile === 'development') {
   // ── Batrasia seed (Build 1B+) ──────────────────────────────────
   const batrasiaTx = db.transaction(() => {
     const now = Date.now();
@@ -954,7 +983,9 @@ export async function seedAll(): Promise<{
     }
   });
   batrasiaTx();
+  }
 
+  if (seedProfile !== 'production') {
   // ── Ours d'Or seed (Phase 3) ───────────────────────────────────
   const oursdorTx = db.transaction(() => {
     const now = Date.now();
@@ -1039,6 +1070,7 @@ export async function seedAll(): Promise<{
     }
   });
   oursdorTx();
+  }
 
   return {
     users: createdUsers,

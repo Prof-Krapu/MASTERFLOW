@@ -1,0 +1,686 @@
+{
+  "schema_version": "masterflow.pedagogical_examples_seed.v1",
+  "source_dataset": "MASTERFLOW_ROUTING_EXEMPLES",
+  "source_version": "2.0",
+  "source_ref": "legacy:MASTERFLOW_ROUTING_EXEMPLES:2.0",
+  "projects": [
+    {
+      "id": "example_a8c63f357604",
+      "legacy_id": null,
+      "title": "Brainrot",
+      "url": "https://www.youtube.com/watch?v=Cld2AuOZLzo",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Animation vectorielle rythmée construite comme un tunnel visuel dense et narratif.",
+      "pedagogical_reading": "Exemple avancé de narration graphique basée sur le rythme et la répétition de motifs.",
+      "motion_notions": [
+        "rythme",
+        "timing",
+        "enchaînement de séquences",
+        "variations d’échelle"
+      ],
+      "technical_notions": [
+        "keyframes",
+        "scale animation",
+        "composition rythme"
+      ],
+      "course_notions": [
+        "loopout",
+        "wiggle",
+        "3D plate"
+      ],
+      "useful_course_video_refs": [
+        "N2_V01",
+        "N2_V05"
+      ],
+      "tags": [
+        "vectoriel",
+        "rythme",
+        "narration",
+        "animation-rapide",
+        "niveau-expert"
+      ],
+      "usable_for": [
+        "expliquer le rythme en motion design",
+        "montrer une narration par montage graphique",
+        "inspirer un projet de motion vectoriel"
+      ]
+    },
+    {
+      "id": "example_34f140e474f4",
+      "legacy_id": null,
+      "title": "Louis Armstrong",
+      "url": "https://www.youtube.com/watch?v=Drt8lrhqwho",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Motion design vectoriel rythmé synchronisé avec une bande-son jazz.",
+      "pedagogical_reading": "Exemple très clair de synchronisation entre animation et musique.",
+      "motion_notions": [
+        "rythme musical",
+        "timing",
+        "animation vectorielle"
+      ],
+      "technical_notions": [
+        "3D plate",
+        "zoom camera",
+        "parallaxe"
+      ],
+      "course_notions": [
+        "3D layers",
+        "camera movement",
+        "null controller"
+      ],
+      "useful_course_video_refs": [
+        "N2_V06",
+        "N2_V07",
+        "N2_V08"
+      ],
+      "tags": [
+        "vectoriel",
+        "musique",
+        "parallaxe",
+        "rythme"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_002",
+      "legacy_id": "EX_002",
+      "title": "Aurore Pourpre",
+      "url": "https://www.youtube.com/watch?v=Izd3LcxaGRE",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Création d’une marque fictive dans l’univers Ankama déclinée en identité visuelle, motion design et supports print.",
+      "pedagogical_reading": "Exemple de projet global mêlant branding, direction artistique et motion design. Montre comment une identité visuelle cohérente peut être déclinée sur plusieurs supports.",
+      "motion_notions": [
+        "direction artistique",
+        "branding",
+        "rythme visuel",
+        "cohérence graphique"
+      ],
+      "technical_notions": [
+        "animation vectorielle",
+        "motion branding",
+        "animation logo"
+      ],
+      "course_notions": [
+        "keyframes",
+        "graph editor",
+        "animation presets"
+      ],
+      "useful_course_video_refs": [
+        "N2_V12"
+      ],
+      "tags": [
+        "branding",
+        "motion",
+        "direction-artistique",
+        "identite-visuelle",
+        "niveau-avance"
+      ],
+      "usable_for": [
+        "expliquer la déclinaison d'une identité visuelle en motion",
+        "montrer un projet branding complet",
+        "illustrer la cohérence graphique dans un projet"
+      ]
+    },
+    {
+      "id": "ex_003",
+      "legacy_id": "EX_003",
+      "title": "Japon",
+      "url": "https://www.youtube.com/watch?v=Wl_1vYBgET4",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Carnet de voyage hybride mêlant photo, vidéo, animation et motion typographique.",
+      "pedagogical_reading": "Exemple de narration personnelle reposant sur le montage, le rythme musical et l’intégration fluide de différents médias.",
+      "motion_notions": [
+        "montage narratif",
+        "motion typographique",
+        "rythme musical",
+        "mix média"
+      ],
+      "technical_notions": [
+        "animation texte",
+        "montage vidéo",
+        "composition multicouches"
+      ],
+      "course_notions": [
+        "text animation",
+        "animation presets",
+        "motion typography"
+      ],
+      "useful_course_video_refs": [
+        "N2_V12"
+      ],
+      "tags": [
+        "mix-media",
+        "video",
+        "typo",
+        "narration",
+        "rythme"
+      ],
+      "usable_for": [
+        "montrer un projet mix média",
+        "illustrer la narration personnelle",
+        "expliquer l’intégration vidéo et animation"
+      ]
+    },
+    {
+      "id": "ex_005",
+      "legacy_id": "EX_005",
+      "title": "Into My Space",
+      "url": "https://www.youtube.com/watch?v=VPy_B8wTNZU",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Animation vectorielle construite autour de l’interface d’After Effects.",
+      "pedagogical_reading": "Projet méta utilisant les outils du logiciel comme éléments narratifs.",
+      "motion_notions": [
+        "animation vectorielle",
+        "motion typographique",
+        "rythme visuel"
+      ],
+      "technical_notions": [
+        "calques 3D",
+        "camera movement",
+        "parallaxe"
+      ],
+      "course_notions": [
+        "3D layers",
+        "camera movement",
+        "composition nesting"
+      ],
+      "useful_course_video_refs": [
+        "N2_V06",
+        "N2_V07",
+        "N2_V08"
+      ],
+      "tags": [
+        "vectoriel",
+        "3D",
+        "interface",
+        "motion",
+        "meta-design"
+      ],
+      "usable_for": [
+        "illustrer l'utilisation créative de l'interface",
+        "montrer une animation vectorielle avancée",
+        "expliquer le parallaxe"
+      ]
+    },
+    {
+      "id": "ex_006",
+      "legacy_id": "EX_006",
+      "title": "L’idée",
+      "url": "https://www.youtube.com/watch?v=23PBmz4J-lQ",
+      "academic_level_source": "4e",
+      "technical_level": "intermediaire",
+      "description": "Projet narratif à l’esthétique volontairement low-tech, construit autour d’une histoire simple et lisible.",
+      "pedagogical_reading": "Exemple montrant que la force d’un projet repose avant tout sur l’idée et la narration plutôt que sur la complexité technique.",
+      "motion_notions": [
+        "storytelling",
+        "mise en scène",
+        "cohérence graphique"
+      ],
+      "technical_notions": [
+        "animation simple",
+        "montage narratif"
+      ],
+      "course_notions": [
+        "keyframes",
+        "timing",
+        "composition"
+      ],
+      "useful_course_video_refs": [
+        "N2_V01"
+      ],
+      "tags": [
+        "storytelling",
+        "concept",
+        "narration",
+        "low-tech"
+      ],
+      "usable_for": [
+        "illustrer l’importance du concept",
+        "montrer un projet narratif simple",
+        "expliquer la lisibilité en animation"
+      ]
+    },
+    {
+      "id": "ex_007",
+      "legacy_id": "EX_007",
+      "title": "LA CRÉA’TITUDE",
+      "url": "https://www.youtube.com/watch?v=jahK6F0wPbA",
+      "academic_level_source": "3e",
+      "technical_level": "intermediaire",
+      "description": "Projet mêlant vidéo live et animation dessinée en post-production.",
+      "pedagogical_reading": "Exemple d’hybridation entre vidéo et animation permettant d’explorer différentes techniques graphiques.",
+      "motion_notions": [
+        "mix média",
+        "expérimentation",
+        "expression graphique"
+      ],
+      "technical_notions": [
+        "dessin sur vidéo",
+        "rotoscopie",
+        "animation image par image"
+      ],
+      "course_notions": [
+        "mask animation",
+        "opacity animation"
+      ],
+      "useful_course_video_refs": [
+        "N2_V01"
+      ],
+      "tags": [
+        "mix-media",
+        "dessin",
+        "video",
+        "experiment"
+      ],
+      "usable_for": [
+        "montrer un projet hybride vidéo / animation",
+        "illustrer le dessin en post-production"
+      ]
+    },
+    {
+      "id": "ex_008",
+      "legacy_id": "EX_008",
+      "title": "Late Again",
+      "url": "https://www.youtube.com/watch?v=atxnmLs6s4k",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Motion typographique synchronisée avec une bande-son.",
+      "pedagogical_reading": "Exemple très clair de motion typography où le texte devient l’élément principal de narration.",
+      "motion_notions": [
+        "motion typographique",
+        "rythme musical",
+        "timing"
+      ],
+      "technical_notions": [
+        "text animation",
+        "animation par caractères"
+      ],
+      "course_notions": [
+        "text animator",
+        "range selector",
+        "animation presets"
+      ],
+      "useful_course_video_refs": [
+        "N2_V12"
+      ],
+      "tags": [
+        "typo",
+        "rythme",
+        "motion-typography"
+      ],
+      "usable_for": [
+        "illustrer la motion typography",
+        "montrer un projet basé uniquement sur du texte"
+      ]
+    },
+    {
+      "id": "ex_009",
+      "legacy_id": "EX_009",
+      "title": "Le Bazar",
+      "url": "https://www.youtube.com/watch?v=KhUrQpE49-A",
+      "academic_level_source": "3e",
+      "technical_level": "intermediaire",
+      "description": "Projet narratif mix média guidé par une voix off.",
+      "pedagogical_reading": "Exemple de projet où la narration et la direction artistique structurent l’ensemble du film.",
+      "motion_notions": [
+        "storytelling",
+        "direction artistique",
+        "cohérence narrative"
+      ],
+      "technical_notions": [
+        "montage vidéo",
+        "animation graphique simple"
+      ],
+      "course_notions": [
+        "composition",
+        "timing"
+      ],
+      "useful_course_video_refs": [
+        "N2_V01"
+      ],
+      "tags": [
+        "storytelling",
+        "mix-media",
+        "voix-off"
+      ],
+      "usable_for": [
+        "expliquer la narration en motion design",
+        "montrer un projet guidé par une voix off"
+      ]
+    },
+    {
+      "id": "ex_010",
+      "legacy_id": "EX_010",
+      "title": "Le Bleu de mon feu",
+      "url": "https://www.youtube.com/watch?v=dCKxvpIHFYU",
+      "academic_level_source": "3e",
+      "technical_level": "intermediaire",
+      "description": "Film illustratif animé image par image, réalisé à partir de dessins faits sur tablette.",
+      "pedagogical_reading": "Projet montrant comment l’animation traditionnelle peut être utilisée pour exprimer une atmosphère émotionnelle.",
+      "motion_notions": [
+        "animation illustrée",
+        "ambiance sonore",
+        "narration symbolique"
+      ],
+      "technical_notions": [
+        "animation image par image",
+        "illustration animée"
+      ],
+      "course_notions": [
+        "keyframes",
+        "timing"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "illustration",
+        "frame-by-frame",
+        "emotion"
+      ],
+      "usable_for": [
+        "montrer un projet illustratif sensible",
+        "expliquer l’animation image par image"
+      ]
+    },
+    {
+      "id": "ex_011",
+      "legacy_id": "EX_011",
+      "title": "L’Éveil",
+      "url": "https://www.youtube.com/watch?v=rUP8SsNIF-g",
+      "academic_level_source": "3e",
+      "technical_level": "intermediaire",
+      "description": "Projet expérimental explorant les effets de post-production et les incrustations.",
+      "pedagogical_reading": "Exemple de laboratoire visuel où la recherche graphique prime sur la finition.",
+      "motion_notions": [
+        "expérimentation visuelle",
+        "recherche graphique"
+      ],
+      "technical_notions": [
+        "incrustation",
+        "effets vidéo",
+        "montage"
+      ],
+      "course_notions": [
+        "blend modes",
+        "opacity animation"
+      ],
+      "useful_course_video_refs": [
+        "N2_V05"
+      ],
+      "tags": [
+        "experiment",
+        "post-production",
+        "laboratoire"
+      ],
+      "usable_for": [
+        "montrer un projet expérimental",
+        "illustrer la recherche visuelle"
+      ]
+    },
+    {
+      "id": "ex_012",
+      "legacy_id": "EX_012",
+      "title": "What a Perfect Day",
+      "url": "https://www.youtube.com/watch?v=a8ZlTkYTBkU",
+      "academic_level_source": "5e",
+      "technical_level": "expert",
+      "description": "Clip d’animation vectorielle extrêmement précis synchronisé avec une musique.",
+      "pedagogical_reading": "Exemple très abouti de synchronisation entre animation et bande-son. Chaque plan est construit pour répondre aux accents musicaux.",
+      "motion_notions": [
+        "rythme musical",
+        "timing avancé",
+        "animation vectorielle"
+      ],
+      "technical_notions": [
+        "keyframe animation",
+        "scale animation",
+        "timing musical"
+      ],
+      "course_notions": [
+        "keyframes",
+        "graph editor"
+      ],
+      "useful_course_video_refs": [
+        "N2_V01"
+      ],
+      "tags": [
+        "vectoriel",
+        "musique",
+        "timing",
+        "precision"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_013",
+      "legacy_id": "EX_013",
+      "title": "Motion Fucking Cool",
+      "url": "https://www.youtube.com/watch?v=UdLhShyH-VY",
+      "academic_level_source": "5e",
+      "technical_level": "expert",
+      "description": "Projet conceptuel mêlant animation vectorielle, interfaces et références pop culture.",
+      "pedagogical_reading": "Projet méta explorant les codes du motion design et de la culture web.",
+      "motion_notions": [
+        "concept visuel",
+        "rythme",
+        "culture web"
+      ],
+      "technical_notions": [
+        "animation vectorielle",
+        "composition complexe"
+      ],
+      "course_notions": [
+        "composition",
+        "keyframes"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "concept",
+        "experiment",
+        "culture-web"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_014",
+      "legacy_id": "EX_014",
+      "title": "Infinite",
+      "url": "https://www.youtube.com/watch?v=wGXXFPV15L4",
+      "academic_level_source": "5e",
+      "technical_level": "expert",
+      "description": "Projet expérimental centré sur la recherche visuelle et les transformations graphiques.",
+      "pedagogical_reading": "Exemple de projet orienté recherche où le motion design devient un terrain d’expérimentation.",
+      "motion_notions": [
+        "recherche visuelle",
+        "expérimentation"
+      ],
+      "technical_notions": [
+        "animation abstraite",
+        "transformation graphique"
+      ],
+      "course_notions": [
+        "effects",
+        "composition"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "experiment",
+        "generatif",
+        "recherche"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_015",
+      "legacy_id": "EX_015",
+      "title": "Mysterium",
+      "url": "https://www.youtube.com/watch?v=XhFFUZZVOjc",
+      "academic_level_source": "4e",
+      "technical_level": "intermediaire",
+      "description": "Opening inspiré du jeu de société Mysterium.",
+      "pedagogical_reading": "Exemple d’adaptation d’un univers existant en générique animé.",
+      "motion_notions": [
+        "opening",
+        "ambiance visuelle",
+        "adaptation"
+      ],
+      "technical_notions": [
+        "animation graphique",
+        "composition"
+      ],
+      "course_notions": [
+        "composition"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "opening",
+        "adaptation",
+        "univers"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_016",
+      "legacy_id": "EX_016",
+      "title": "Loup-Garou",
+      "url": "https://www.youtube.com/watch?v=wOfVtynlwxc",
+      "academic_level_source": "3e",
+      "technical_level": "intermediaire",
+      "description": "Opening de série inspiré du jeu Loup-Garou.",
+      "pedagogical_reading": "Projet illustrant comment un concept clair peut produire un générique efficace.",
+      "motion_notions": [
+        "opening",
+        "rythme",
+        "narration"
+      ],
+      "technical_notions": [
+        "animation graphique",
+        "montage"
+      ],
+      "course_notions": [
+        "keyframes"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "opening",
+        "adaptation",
+        "fondamentaux"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_017",
+      "legacy_id": "EX_017",
+      "title": "93TIL",
+      "url": "https://www.youtube.com/watch?v=mSG6COiZ-k8",
+      "academic_level_source": "3e",
+      "technical_level": "intermediaire",
+      "description": "Opening documentaire mêlant vidéo, stop motion et animation.",
+      "pedagogical_reading": "Exemple d’hybridation des techniques pour installer rapidement une ambiance.",
+      "motion_notions": [
+        "mix média",
+        "rythme musical"
+      ],
+      "technical_notions": [
+        "stop motion",
+        "montage vidéo"
+      ],
+      "course_notions": [
+        "composition"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "mix-media",
+        "documentaire"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_018",
+      "legacy_id": "EX_018",
+      "title": "Vie de Graphiste",
+      "url": "https://www.youtube.com/watch?v=dMvSVcq-B1A",
+      "academic_level_source": "4e",
+      "technical_level": "intermediaire",
+      "description": "Projet illustratif racontant le quotidien d’un graphiste.",
+      "pedagogical_reading": "Exemple de storytelling illustré basé sur une narration claire.",
+      "motion_notions": [
+        "storytelling",
+        "illustration animée"
+      ],
+      "technical_notions": [
+        "animation illustration",
+        "montage narratif"
+      ],
+      "course_notions": [
+        "keyframes"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "illustration",
+        "storytelling"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_019",
+      "legacy_id": "EX_019",
+      "title": "What’s on Your Mind",
+      "url": "https://www.youtube.com/watch?v=ARTosW01kB8",
+      "academic_level_source": "2e-3e",
+      "technical_level": "intermediaire",
+      "description": "Projet collectif expérimental explorant les codes de l’interface et du glitch.",
+      "pedagogical_reading": "Exemple de projet collaboratif orienté recherche visuelle.",
+      "motion_notions": [
+        "expérimentation visuelle",
+        "interface"
+      ],
+      "technical_notions": [
+        "glitch",
+        "post-production"
+      ],
+      "course_notions": [
+        "effects"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "experiment",
+        "interface"
+      ],
+      "usable_for": []
+    },
+    {
+      "id": "ex_020",
+      "legacy_id": "EX_020",
+      "title": "Road to Fishman Island",
+      "url": "https://www.youtube.com/watch?v=q5mEFdBRg4o",
+      "academic_level_source": "5e",
+      "technical_level": "avance",
+      "description": "Projet hybride mêlant vidéo et motion design dans une logique humoristique.",
+      "pedagogical_reading": "Exemple de projet jouant avec les codes des réseaux sociaux et du mème.",
+      "motion_notions": [
+        "humour visuel",
+        "détournement",
+        "culture web"
+      ],
+      "technical_notions": [
+        "post-production",
+        "animation graphique"
+      ],
+      "course_notions": [
+        "composition"
+      ],
+      "useful_course_video_refs": [],
+      "tags": [
+        "humour",
+        "culture-web",
+        "detournement"
+      ],
+      "usable_for": []
+    }
+  ]
+}

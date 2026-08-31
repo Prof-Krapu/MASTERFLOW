@@ -214,7 +214,7 @@ export function compileCorrectionContextPayload(
 
   const members = getDb()
     .prepare(
-      `SELECT student_identity_id, display_name, aliases_json
+      `SELECT student_identity_id, display_name, aliases_json, avatar_fallback
        FROM roster_members
        WHERE roster_version_id = ?
        ORDER BY display_name COLLATE NOCASE, student_identity_id`,
@@ -223,6 +223,7 @@ export function compileCorrectionContextPayload(
     student_identity_id: string;
     display_name: string;
     aliases_json: string;
+    avatar_fallback: 'neutral' | 'a' | 'b' | null;
   }>;
 
   return CorrectionContextPayloadSchema.parse({
@@ -241,6 +242,7 @@ export function compileCorrectionContextPayload(
         student_identity_id: member.student_identity_id,
         display_name: member.display_name,
         aliases: JSON.parse(member.aliases_json) as unknown,
+        avatar_fallback: member.avatar_fallback ?? 'neutral',
       })),
     },
     rubric_version_id: snapshot.rubric_version_id,

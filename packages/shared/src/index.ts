@@ -3227,6 +3227,7 @@ export const CorrectionContextPayloadSchema = z.object({
           student_identity_id: z.string().min(1),
           display_name: z.string().min(1).max(160),
           aliases: z.array(z.string().min(1).max(160)).max(20),
+          avatar_fallback: z.enum(['neutral', 'a', 'b']).default('neutral'),
         }),
       )
       .max(300),
@@ -4150,6 +4151,88 @@ export const SearchResourcesResponseSchema = z.object({
   total: z.number(),
 });
 export type SearchResourcesResponse = z.infer<typeof SearchResourcesResponseSchema>;
+
+// ───────────────────────── Link Engine pedagogique ─────────────────────────
+
+export const AcademicLevelSchema = z.object({
+  id: z.string(),
+  framework_id: z.string(),
+  code: z.string(),
+  label: z.string(),
+  short_label: z.string(),
+  sort_order: z.number().int(),
+  aliases: z.array(z.string()),
+  status: z.enum(['active', 'archived']),
+});
+export type AcademicLevel = z.infer<typeof AcademicLevelSchema>;
+
+export const AcademicFrameworkSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  label: z.string(),
+  description: z.string().nullable(),
+  status: z.enum(['active', 'archived']),
+  levels: z.array(AcademicLevelSchema),
+});
+export type AcademicFramework = z.infer<typeof AcademicFrameworkSchema>;
+
+export const PedagogicalClassificationSchema = z.object({
+  framework_code: z.string(),
+  inferred_level_code: z.string().nullable(),
+  teacher_level_code: z.string().nullable(),
+  effective_level_code: z.string().nullable(),
+  teacher_locked: z.boolean(),
+  source_value: z.string().nullable(),
+  confidence: z.number().min(0).max(1),
+  status: z.enum(['candidate', 'validated', 'needs_review', 'outdated']),
+  explanation: z.array(z.string()),
+});
+export type PedagogicalClassification = z.infer<typeof PedagogicalClassificationSchema>;
+
+export const PedagogicalResourceResultSchema = z.object({
+  resource_id: z.string(),
+  title: z.string(),
+  url: z.string().nullable(),
+  resource_kind: z.string(),
+  format: z.string(),
+  status: ResourceStatusSchema,
+  validation_state: z.enum(['candidate', 'review_needed', 'validated', 'rejected', 'outdated']),
+  duration_seconds: z.number().int().nonnegative().nullable(),
+  software: z.array(z.string()),
+  matched_notions: z.array(z.object({
+    notion_id: z.string(),
+    label: z.string(),
+    timestamp_seconds: z.number().int().nonnegative().nullable(),
+  })),
+  classification: PedagogicalClassificationSchema.nullable(),
+  score: z.number(),
+  why: z.array(z.string()),
+  source_ref: z.string(),
+});
+export type PedagogicalResourceResult = z.infer<typeof PedagogicalResourceResultSchema>;
+
+export const PedagogicalResourceSearchResponseSchema = z.object({
+  results: z.array(PedagogicalResourceResultSchema),
+  total: z.number().int().nonnegative(),
+  query: z.string(),
+  framework_code: z.string().nullable(),
+  level_code: z.string().nullable(),
+});
+export type PedagogicalResourceSearchResponse = z.infer<typeof PedagogicalResourceSearchResponseSchema>;
+
+export const AdjustPedagogicalClassificationSchema = z.object({
+  framework_code: z.string().min(1).default('higher_education_fr'),
+  level_code: z.string().min(1).nullable(),
+  reason: z.string().min(2).max(500),
+  lock: z.boolean().default(true),
+});
+export type AdjustPedagogicalClassification = z.input<typeof AdjustPedagogicalClassificationSchema>;
+
+export const AddAcademicLevelAliasSchema = z.object({
+  alias: z.string().min(1).max(120),
+  reason: z.string().min(2).max(500),
+});
+export type AddAcademicLevelAlias = z.infer<typeof AddAcademicLevelAliasSchema>;
 
 // ───────────────────────── Context tiers ─────────────────────────
 

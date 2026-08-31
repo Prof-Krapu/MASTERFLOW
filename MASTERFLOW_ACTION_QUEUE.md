@@ -1,6 +1,6 @@
 # MasterFlow — Action Queue
 
-Dernière mise à jour : 2026-06-29
+Dernière mise à jour : 2026-08-31
 
 ## Statut de gouvernance depuis MASTERBUILD
 
@@ -12,6 +12,88 @@ Ce fichier est une queue historique, pas une queue d'exécution active.
 - toute reprise exige une absorption explicite dans le workboard avec source, risque et validation.
 
 Les contenus ci-dessous restent intacts comme preuves et matière de réconciliation.
+
+## Queue active d'exécution — 2026-08-31
+
+Le seul plan actif est
+`docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md` dans le checkout principal.
+La vague 0 est verte et la vague 1 est préparée localement.
+
+### 1. À faire maintenant
+
+- Tâche : commit borné du hardening pré-PR, push de la branche candidate, puis création de la PR
+  `codex/corrector-capability-absorption` vers `main`.
+- Impact : fait converger GitHub vers la ligne preview testée sans toucher au runtime.
+- Risque : moyen ; la PR touche Core, Corrector absorbé, Link Engine et packaging preview.
+- Source de vérité concernée : GitHub `main`, branche candidate et plan full-stack final.
+- Statut : implémentation locale vérifiée, en attente du gate sensible.
+- Validation requise : oui, explicitement avant commit, push et création de PR.
+
+### 2. À mettre en queue
+
+- Tâche : vague 2, socle minimal Workspace/Source/Intake et Conversation Turn Orchestrator natif.
+- Impact : fournit le moteur commun nécessaire aux deux pilotes.
+- Risque : élevé sur scopes, sources, permissions et reprise des actions sensibles.
+- Source de vérité concernée : canon MasterFlow, services TypeScript existants et plan final.
+- Statut : canon verrouillé, implémentation future après convergence Git.
+- Validation requise : oui aux gates migration, commit/push, PR et déploiement ; non pour la préparation locale bornée.
+
+- Tâche : vagues 3A Ours d'Or et 3B Talents Créatifs, deux RuntimePacks sur le même backend.
+- Impact : livre les deux premiers pilotes conversation-first avec interface sommaire.
+- Risque : élevé sur isolation des sources et autorité pédagogique.
+- Source de vérité concernée : canon des pilotes et corpus importés avec provenance.
+- Statut : canon produit verrouillé, futur après vague 2.
+- Validation requise : oui avant imports réels, groupes pilotes et déploiement.
+
+### 3. À faire quand j'ai des tokens
+
+- Tâche : vague 4, activation d'un provider IA réel en preview privée avec budget et limites.
+- Impact : rend les parcours réellement conversationnels.
+- Risque : élevé ; secret serveur, coût, egress et données privées.
+- Source de vérité concernée : `llm_routing`, environnement serveur et traces d'usage.
+- Statut : futur, provider mock maintenu.
+- Validation requise : oui.
+
+### 4. À demander à Vincent
+
+- Tâche : aucune dans ce chantier ; la PR #247 reste indépendante.
+- Impact : évite tout mélange avec la ligne `vincent/masterplan`.
+- Risque : faible.
+- Source de vérité concernée : GitHub et décision de séparation.
+- Statut : hors chantier.
+- Validation requise : non.
+
+### 5. À décider plus tard
+
+- Tâche : MasterPlan, Corrector complet, API_manage, UI riche, Dungeon Master, Asset Engine et stable.
+- Impact : extensions après preuve des deux pilotes.
+- Risque : moyen à élevé selon la vague.
+- Source de vérité concernée : plan final et résultats des pilotes.
+- Statut : futur.
+- Validation requise : oui aux gates correspondants.
+
+Preview vérifiée au SHA `23a81a715ac8312375d5c09efd6ccfebadd3235c`. Ours d'Or et Talents
+Créatifs sont désormais les deux premiers pilotes ; aucun provider réel, stable ou import de corpus
+n'est autorisé par cette queue.
+
+### PEDAGOGICAL-LINK-ENGINE-001 — Registre et routage pédagogique
+
+- Tâche : importer les ressources en BDD, rechercher par notion/niveau et préserver les corrections prof.
+- Impact : rend les ressources MasterFlow réellement utilisables sans IA externe ni lecture des JSON legacy.
+- Risque : moyen sur les classements historiques ; les exemples restent candidats et les overrides sont journalisés.
+- Source de vérité concernée : Resource Truth + registre canonique de routage pédagogique.
+- Statut : implémenté et déployé en preview privée ; 728 tests verts, smoke sourcé/confidentiel vert
+  et sauvegarde restaurable.
+- Validation requise : oui avant `main`, stable, provider IA ou activation massive des exemples.
+
+### CORRECTOR-CAPABILITIES-001 — Fermer les deux écarts fonctionnels prouvés
+
+- Tâche : finaliser le runner d'export privé CSV/XLSX et le contrôle de répétition des feedbacks.
+- Impact : ferme les deux dernières lacunes prouvées sans importer le runtime Python Corrector.
+- Risque : faible à moyen ; données privées et décisions pédagogiques restent sous validation professeur.
+- Source de vérité concernée : moteur de correction MasterFlow et décision d'absorption Corrector.
+- Statut : implémenté sur la branche dédiée et déployé en preview privée ; non mergé dans `main`.
+- Validation requise : oui avant fusion `main`, stable, publication ou envoi d'export.
 
 ## 1. À faire maintenant
 

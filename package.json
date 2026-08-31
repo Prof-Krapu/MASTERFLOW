@@ -30,6 +30,8 @@
     "lint": "npm run lint --workspace apps/backend",
     "lint:frontend": "npm run lint --workspace @masterflow/frontend",
     "build:frontend": "npm run build --workspace @masterflow/frontend",
+    "release:bootstrap-env": "node scripts/bootstrap-release-env.mjs",
+    "release:manifest": "node scripts/create-release-manifest.mjs",
     "smoke:public": "node scripts/smoke-public-runtime.mjs"
   },
   "devDependencies": {
