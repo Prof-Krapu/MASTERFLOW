@@ -2,9 +2,11 @@ import {WebSocketServer, type WebSocket} from 'ws';
 import type {IncomingMessage, Server} from 'node:http';
 
 import type {
+  ConversationTurnPlan,
   Persona,
   RagCitation,
   RuntimeContextEnvelope,
+  WsClientMessage,
   WsServerMessage,
 } from '@masterflow/shared';
 import {WsClientMessageSchema} from '@masterflow/shared';
@@ -20,6 +22,7 @@ import {getRagContextPack} from '../../services/rag.ts';
 import {getStyleInstructions} from '../../services/style_mirror_engine.ts';
 import type {AuthUser} from '../../middleware/auth.ts';
 import {resolvePersonaSpeaker} from '../../services/persona_speaker.ts';
+import {orchestrateConversationTurn} from '../../services/conversation_turn_orchestrator.ts';
 
 /**
  * WebSocket de chat — streaming token-par-token (Phase 2).
@@ -133,7 +136,12 @@ export function buildSystemPrompt(
 }
 
 /** Traite un message `chat` : résout le persona, streame la réponse du LLM. */
-async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promise<void> {
+async function handleChat(
+  ws: WebSocket,
+  ctx: WsContext,
+  message: Extract<WsClientMessage, {type: 'chat'}>,
+): Promise<void> {
+  const content = message.content;
   let speaker: Persona;
   let methodAttr: string | null;
   try {
@@ -143,8 +151,23 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
     return;
   }
 
+  let turnPlan: ConversationTurnPlan;
+  try {
+    turnPlan = orchestrateConversationTurn(ctx.actor, {
+      content,
+      room_instance_id: ctx.roomInstanceId,
+      runtime_pack_id: message.runtime_pack_id ?? 'masterflow-core-runtime',
+      active_mode: message.active_mode ?? 'project',
+      source_refs: message.source_refs ?? [],
+      requested_action_id: message.requested_action_id ?? null,
+    });
+  } catch (err) {
+    send(ws, {type: 'error', message: (err as Error).message});
+    return;
+  }
+
   const runtime = compileRuntimeContext(ctx.actor, {
-    purpose: 'ws_chat',
+    purpose: `ws_chat:${turnPlan.runtime_pack_id}`,
     requested_tier: 'T2',
     room_instance_id: ctx.roomInstanceId,
     rag_query: content,
@@ -157,10 +180,29 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
     type: 'chat_start',
     persona_id: speaker.id,
     speaker: speaker.name,
+    conversation: {
+      turn_id: turnPlan.turn_id,
+      runtime_pack_id: turnPlan.runtime_pack_id,
+      route: turnPlan.route,
+      confidence: turnPlan.confidence,
+    },
     ...(styleInstructions ? {expressive_voice: {profile_used: true, label: 'Voix stylisée' as const}} : {}),
   });
+  if (turnPlan.response_policy !== 'stream_llm') {
+    const staticResponse = turnPlan.clarification_question ?? turnPlan.response_guidance;
+    send(ws, {type: 'chat_chunk', content: staticResponse});
+    send(ws, {type: 'chat_end', persona_id: speaker.id, method_attribution: methodAttr});
+    return;
+  }
   const messages: ChatMessage[] = [
-    {role: 'system', content: buildSystemPrompt(speaker, methodAttr, runtime, citations, ctx.actor.id, styleInstructions)},
+    {
+      role: 'system',
+      content: [
+        buildSystemPrompt(speaker, methodAttr, runtime, citations, ctx.actor.id, styleInstructions),
+        `Politique du tour (${turnPlan.route}) : ${turnPlan.response_guidance}`,
+        `RuntimePack actif : ${turnPlan.runtime_pack_id}. N'utilise aucune source hors namespace ${turnPlan.source_namespace ?? 'partage autorise'}.`,
+      ].join('\n'),
+    },
     {role: 'user', content},
   ];
 
@@ -172,11 +214,22 @@ async function handleChat(ws: WebSocket, ctx: WsContext, content: string): Promi
       roomInstanceId: ctx.roomInstanceId,
       task: 'chat',
       userRole: ctx.actor.role,
+      maxOutputTokens: turnPlan.execution_budget.max_output_tokens,
+      timeoutMs: turnPlan.execution_budget.timeout_ms,
+      maxCostEur: turnPlan.execution_budget.max_cost_eur,
     })) {
       send(ws, {type: 'chat_chunk', content: chunk});
     }
     send(ws, {type: 'chat_end', persona_id: speaker.id, method_attribution: methodAttr});
   } catch (err) {
+    if (turnPlan.execution_budget.fallback === 'static_guidance') {
+      send(ws, {
+        type: 'chat_chunk',
+        content: 'Le modèle est momentanément indisponible. Je conserve ton contexte sans lancer d’action : reformule la prochaine étape ou réessaie plus tard.',
+      });
+      send(ws, {type: 'chat_end', persona_id: speaker.id, method_attribution: methodAttr});
+      return;
+    }
     send(ws, {type: 'error', message: `llm_failed: ${(err as Error).message}`});
   }
 }
@@ -236,7 +289,7 @@ export function attachChatWs(server: Server): WebSocketServer {
         }
 
         // type === 'chat' — fire & forget : le streaming pousse les chunks au fil de l'eau.
-        void handleChat(ws, ctx, parsed.data.content);
+        void handleChat(ws, ctx, parsed.data);
       });
 
       ws.on('close', () => {

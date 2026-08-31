@@ -2512,11 +2512,81 @@ export const ReviewGeneratedAssetRequestSchema = z.object({
 });
 export type ReviewGeneratedAssetRequest = z.infer<typeof ReviewGeneratedAssetRequestSchema>;
 
+export const AssetConsumerKindSchema = z.enum([
+  'animated_entity',
+  'persona',
+  'runtime_pack',
+  'project',
+  'ui_surface',
+]);
+export type AssetConsumerKind = z.infer<typeof AssetConsumerKindSchema>;
+
+export const AssetConsumerBindingStatusSchema = z.enum(['candidate', 'approved', 'rejected', 'archived']);
+export type AssetConsumerBindingStatus = z.infer<typeof AssetConsumerBindingStatusSchema>;
+
+export const AssetConsumerBindingSchema = z.object({
+  id: z.string().min(1),
+  asset_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  consumer_kind: AssetConsumerKindSchema,
+  consumer_ref: z.string().min(1).max(240),
+  state_key: z.string().min(1).max(160),
+  status: AssetConsumerBindingStatusSchema,
+  storage_ref: z.string().min(1).nullable(),
+  parent_binding_id: z.string().min(1).nullable(),
+  lineage_refs: z.array(z.string().min(1)).max(50),
+  provenance_refs: z.array(z.string().min(1)).min(1).max(40),
+  review_note: z.string().max(2000).nullable(),
+  reviewed_by: z.string().min(1).nullable(),
+  reviewed_at: z.number().int().nonnegative().nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type AssetConsumerBinding = z.infer<typeof AssetConsumerBindingSchema>;
+
+export const CreateAssetConsumerBindingRequestSchema = z.object({
+  asset_id: z.string().min(1),
+  consumer_kind: AssetConsumerKindSchema,
+  consumer_ref: z.string().min(1).max(240),
+  state_key: z.string().min(1).max(160),
+  parent_binding_id: z.string().min(1).nullable().optional(),
+  provenance_refs: z.array(z.string().min(1)).min(1).max(40),
+});
+export type CreateAssetConsumerBindingRequest = z.infer<typeof CreateAssetConsumerBindingRequestSchema>;
+
+export const ReviewAssetConsumerBindingRequestSchema = z.object({
+  status: z.enum(['approved', 'rejected']),
+  review_note: z.string().max(2000).optional(),
+});
+export type ReviewAssetConsumerBindingRequest = z.infer<typeof ReviewAssetConsumerBindingRequestSchema>;
+
+export const AssetProviderBoundaryRequestSchema = z.object({
+  provider: z.enum(['comfyui', 'external_tool']),
+  tool_ref: z.string().min(1).max(240),
+  credential_secret_ref: z.string().regex(/^secret:[a-zA-Z0-9._/-]+$/).max(240).nullable().optional(),
+  output_recipe_ref: z.string().min(1).max(240),
+  consumer_binding_refs: z.array(z.string().min(1)).max(50),
+});
+export type AssetProviderBoundaryRequest = z.infer<typeof AssetProviderBoundaryRequestSchema>;
+
+export const AssetProviderBoundaryPlanSchema = AssetProviderBoundaryRequestSchema.extend({
+  credential_secret_ref: z.string().regex(/^secret:[a-zA-Z0-9._/-]+$/).max(240).nullable(),
+  execution_policy: z.literal('compile_only'),
+  provider_call_allowed: z.literal(false),
+  canon_promotion_allowed: z.literal(false),
+  required_gates: z.array(z.string().min(1)).min(1),
+});
+export type AssetProviderBoundaryPlan = z.infer<typeof AssetProviderBoundaryPlanSchema>;
+
 export const ASSETS_API = {
   list: '/api/v1/assets',
   get: '/api/v1/assets/:id',
   upload: '/api/v1/assets/upload',
   uploadBase64: '/api/v1/assets/upload-base64',
+  consumerBindings: '/api/v1/assets/consumer-bindings',
+  reviewConsumerBinding: '/api/v1/assets/consumer-bindings/:id/review',
+  compileProviderBoundary: '/api/v1/assets/provider-boundary/compile',
 } as const;
 
 export const DA_RUNTIME_API = {
@@ -4753,6 +4823,20 @@ export const RuntimePackManifestSchema = z
     optional_action_ids: z.array(z.string().min(1)).default([]),
     stages: z.array(RuntimePackStageSchema).min(1),
     guidance: RuntimePackGuidanceSchema.nullable().default(null),
+    pilot_scope: z.object({
+      pilot_id: z.string().min(1).max(120),
+      source_namespace: z.string().min(1).max(120),
+      allowed_source_roles: z.array(z.enum(['student', 'teacher', 'team', 'shared'])).min(1),
+      final_deliverable_policy: z.enum(['guide_only', 'candidate_with_validation']),
+      execution_limits: z.object({
+        max_turns_per_hour: z.number().int().min(1).max(120),
+        max_tool_calls_per_turn: z.number().int().min(0).max(8),
+        max_output_tokens: z.number().int().min(64).max(4_096),
+        timeout_ms: z.number().int().min(1_000).max(120_000),
+        max_cost_eur_per_turn: z.number().min(0).max(10),
+        fallback: z.enum(['static_guidance', 'stop']),
+      }),
+    }).nullable().optional(),
     source_refs: z.array(z.string().min(1)).default([]),
   })
   .superRefine((pack, ctx) => {
@@ -6038,6 +6122,294 @@ export const TeachingOverviewSchema = z.object({
 });
 export type TeachingOverview = z.infer<typeof TeachingOverviewSchema>;
 
+// ───────────────────────── Teaching Workspace foundation ─────────────────────────
+
+export const InstitutionSchema = z.object({
+  institution_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  name: z.string().min(1).max(200),
+  status: z.enum(['candidate', 'active', 'archived']),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type Institution = z.infer<typeof InstitutionSchema>;
+
+export const SchoolSchema = z.object({
+  school_id: z.string().min(1),
+  institution_id: z.string().min(1),
+  name: z.string().min(1).max(200),
+  code: z.string().min(1).max(80),
+  status: z.enum(['candidate', 'active', 'archived']),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type School = z.infer<typeof SchoolSchema>;
+
+export const SpaceMembershipSchema = z.object({
+  membership_id: z.string().min(1),
+  institution_id: z.string().min(1),
+  school_id: z.string().min(1).nullable(),
+  user_id: z.string().min(1),
+  role: z.enum(['student', 'teacher', 'school_admin', 'institution_admin']),
+  status: z.enum(['invited', 'active', 'suspended', 'archived']),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type SpaceMembership = z.infer<typeof SpaceMembershipSchema>;
+
+export const TeachingModuleSchema = z.object({
+  module_id: z.string().min(1),
+  school_id: z.string().min(1),
+  project_id: z.string().min(1).nullable(),
+  academic_framework_id: z.string().min(1).nullable(),
+  academic_level_id: z.string().min(1).nullable(),
+  code: z.string().min(1).max(80),
+  title: z.string().min(1).max(240),
+  status: z.enum(['candidate', 'active', 'archived']),
+});
+export type TeachingModule = z.infer<typeof TeachingModuleSchema>;
+
+export const CourseOfferingSchema = z.object({
+  offering_id: z.string().min(1),
+  module_id: z.string().min(1),
+  cohort_id: z.string().min(1).nullable(),
+  period_ref: z.string().min(1).max(160),
+  status: z.enum(['candidate', 'active', 'completed', 'archived']),
+});
+export type CourseOffering = z.infer<typeof CourseOfferingSchema>;
+
+export const CourseSessionSchema = z.object({
+  session_id: z.string().min(1),
+  offering_id: z.string().min(1),
+  title: z.string().min(1).max(240),
+  starts_at: z.number().int().nonnegative(),
+  ends_at: z.number().int().nonnegative(),
+  status: z.enum(['planned', 'completed', 'cancelled', 'archived']),
+}).refine((session) => session.ends_at >= session.starts_at, {
+  message: 'Une session doit se terminer après son début.',
+  path: ['ends_at'],
+});
+export type CourseSession = z.infer<typeof CourseSessionSchema>;
+
+export const EnrollmentSchema = z.object({
+  enrollment_id: z.string().min(1),
+  offering_id: z.string().min(1),
+  user_id: z.string().min(1).nullable(),
+  student_identity_id: z.string().min(1).nullable(),
+  status: z.enum(['candidate', 'active', 'completed', 'withdrawn', 'archived']),
+}).refine((enrollment) => enrollment.user_id !== null || enrollment.student_identity_id !== null, {
+  message: 'Une inscription doit référencer un utilisateur ou une identité étudiante.',
+});
+export type Enrollment = z.infer<typeof EnrollmentSchema>;
+
+export const LearningObjectiveSchema = z.object({
+  objective_id: z.string().min(1),
+  module_id: z.string().min(1),
+  label: z.string().min(1).max(500),
+  competency_refs: z.array(z.string().min(1)).max(30),
+  status: z.enum(['candidate', 'validated', 'archived']),
+});
+export type LearningObjective = z.infer<typeof LearningObjectiveSchema>;
+
+export const AssignmentDeadlineSchema = z.object({
+  deadline_id: z.string().min(1),
+  assignment_id: z.string().min(1),
+  offering_id: z.string().min(1),
+  due_at: z.number().int().nonnegative(),
+  timezone: z.string().min(1).max(80),
+  status: z.enum(['candidate', 'active', 'superseded', 'archived']),
+});
+export type AssignmentDeadline = z.infer<typeof AssignmentDeadlineSchema>;
+
+export const TeachingResourceLinkSchema = z.object({
+  resource_link_id: z.string().min(1),
+  module_id: z.string().min(1),
+  resource_id: z.string().min(1),
+  objective_id: z.string().min(1).nullable(),
+  source_ref: z.string().min(1).max(500),
+  status: z.enum(['candidate', 'validated', 'archived']),
+});
+export type TeachingResourceLink = z.infer<typeof TeachingResourceLinkSchema>;
+
+export const TeachingWorkspaceFoundationSchema = z.object({
+  institutions: z.array(InstitutionSchema),
+  schools: z.array(SchoolSchema),
+  memberships: z.array(SpaceMembershipSchema),
+  modules: z.array(TeachingModuleSchema),
+  offerings: z.array(CourseOfferingSchema),
+  sessions: z.array(CourseSessionSchema),
+  enrollments: z.array(EnrollmentSchema),
+  objectives: z.array(LearningObjectiveSchema),
+  deadlines: z.array(AssignmentDeadlineSchema),
+  resource_links: z.array(TeachingResourceLinkSchema),
+  evidence_semantics: z.object({
+    evidence_events_are_sources: z.literal(true),
+    pedagogical_signals_are_interpretations: z.literal(true),
+    teacher_decision_deltas_are_human_decisions: z.literal(true),
+    categories_are_not_interchangeable: z.literal(true),
+  }),
+  generated_at: z.number().int().nonnegative(),
+});
+export type TeachingWorkspaceFoundation = z.infer<typeof TeachingWorkspaceFoundationSchema>;
+
+// ───────────────────────── MasterPlan Data-First adapter ─────────────────────────
+
+export const MasterPlanEventSchema = z.object({
+  id: z.string().min(1),
+  session_id: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  start: z.string().regex(/^\d{2}:\d{2}$/),
+  end: z.string().regex(/^\d{2}:\d{2}$/),
+}).passthrough();
+export type MasterPlanEvent = z.infer<typeof MasterPlanEventSchema>;
+
+export const MasterPlanUiBundleSchema = z.object({
+  schema: z.literal('masterplan.ui_bundle.v1'),
+  engine_version: z.string().min(1),
+  generated_at: z.string().min(1),
+  school_year: z.string().min(1),
+  calendars: z.record(z.object({
+    events: z.array(MasterPlanEventSchema),
+  }).passthrough()),
+  classes: z.unknown(),
+  groups: z.unknown(),
+  students: z.unknown(),
+  course_context: z.unknown(),
+  notifications: z.unknown(),
+}).passthrough();
+export type MasterPlanUiBundle = z.infer<typeof MasterPlanUiBundleSchema>;
+
+export const MasterPlanPublicAvailabilitySchema = z.object({
+  schema: z.literal('masterplan.public_availability.v1'),
+  generated_at: z.string().min(1),
+  school_year: z.string().min(1),
+  timezone: z.string().min(1),
+  privacy: z.object({
+    anonymous: z.literal(true),
+    contains_course_titles: z.literal(false),
+    contains_schools: z.literal(false),
+    contains_classes: z.literal(false),
+    contains_rooms: z.literal(false),
+    contains_students: z.literal(false),
+  }).strict(),
+  busy: z.array(z.object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    start: z.string().regex(/^\d{2}:\d{2}$/),
+    end: z.string().regex(/^\d{2}:\d{2}$/),
+    status: z.literal('busy'),
+  }).strict()),
+}).strict();
+export type MasterPlanPublicAvailability = z.infer<typeof MasterPlanPublicAvailabilitySchema>;
+
+export const MasterPlanSourceInspectionSchema = z.object({
+  source_schema: z.literal('masterplan.ui_bundle.v1'),
+  engine_version: z.string().min(1),
+  supported_engine_version: z.literal('1.1.3'),
+  compatible: z.boolean(),
+  sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  school_year: z.string().min(1),
+  school_event_counts: z.record(z.number().int().nonnegative()),
+  event_count: z.number().int().nonnegative(),
+  source_mode: z.literal('read_only'),
+  persisted: z.literal(false),
+  original_unchanged: z.literal(true),
+});
+export type MasterPlanSourceInspection = z.infer<typeof MasterPlanSourceInspectionSchema>;
+
+export const MasterPlanParityReportSchema = z.object({
+  server_local_mobile_hash_equal: z.literal(true),
+  private_event_count: z.number().int().nonnegative(),
+  public_busy_count: z.number().int().nonnegative(),
+  public_subset_valid: z.boolean(),
+  public_intervals_missing_from_private: z.array(z.string()),
+  privacy_contract_valid: z.boolean(),
+  ui_contract_unchanged: z.literal(true),
+});
+export type MasterPlanParityReport = z.infer<typeof MasterPlanParityReportSchema>;
+
+export const MasterPlanAdapterStatusSchema = z.object({
+  adapter_version: z.literal('1.1.3'),
+  accepted_schema: z.literal('masterplan.ui_bundle.v1'),
+  source_mode: z.literal('read_only'),
+  drive_remains_authoritative: z.literal(true),
+  ui_contract_unchanged: z.literal(true),
+  calendar_secret_ref_required: z.literal(true),
+  calendar_url_storage_allowed: z.literal(false),
+  legacy_retirement_allowed: z.literal(false),
+  imported_bundle_ref: z.null(),
+  execution_policy: z.literal('inspect_and_adapt_only'),
+});
+export type MasterPlanAdapterStatus = z.infer<typeof MasterPlanAdapterStatusSchema>;
+
+export const MasterPlanCalendarSourceSchema = z.object({
+  source_id: z.string().min(1),
+  label: z.string().min(1),
+  secret_ref: z.string().regex(/^secret:[a-zA-Z0-9._/-]+$/),
+  status: z.enum(['candidate', 'validated', 'disabled']),
+}).strict();
+export type MasterPlanCalendarSource = z.infer<typeof MasterPlanCalendarSourceSchema>;
+
+// ───────────────────────── API_manage operational intake ─────────────────────────
+
+export const OperationalIntakeKindSchema = z.enum([
+  'feedback',
+  'ticket',
+  'announcement',
+  'news',
+  'moderation',
+]);
+export type OperationalIntakeKind = z.infer<typeof OperationalIntakeKindSchema>;
+
+export const CreateOperationalIntakeRequestSchema = z.object({
+  kind: OperationalIntakeKindSchema,
+  project_id: z.string().min(1).nullable().default(null),
+  scope_type: z.enum(['personal', 'project', 'system']),
+  scope_id: z.string().min(1),
+  title: z.string().min(1).max(240),
+  detail_ref: z.string().startsWith('storage://'),
+  provenance: z.string().min(1).max(500),
+  evidence_refs: z.array(z.string().min(1).max(500)).min(1).max(30),
+  moderation_target_ref: z.string().min(1).max(500).nullable().default(null),
+  idempotency_key: z.string().min(8).max(160),
+}).superRefine((request, ctx) => {
+  if (request.scope_type === 'project' && request.project_id === null) {
+    ctx.addIssue({code: z.ZodIssueCode.custom, message: 'Le scope project exige project_id.', path: ['project_id']});
+  }
+  if (request.kind === 'moderation' && request.moderation_target_ref === null) {
+    ctx.addIssue({code: z.ZodIssueCode.custom, message: 'La modération exige une cible.', path: ['moderation_target_ref']});
+  }
+});
+export type CreateOperationalIntakeRequest = z.input<typeof CreateOperationalIntakeRequestSchema>;
+
+export const OperationalIntakeItemSchema = z.object({
+  intake_id: z.string().min(1),
+  kind: OperationalIntakeKindSchema,
+  project_id: z.string().min(1).nullable(),
+  scope_type: z.enum(['personal', 'project', 'system']),
+  scope_id: z.string().min(1),
+  title: z.string().min(1).max(240),
+  detail_ref: z.string().startsWith('storage://'),
+  provenance: z.string().min(1).max(500),
+  evidence_refs: z.array(z.string().min(1).max(500)).min(1),
+  moderation_target_ref: z.string().min(1).max(500).nullable(),
+  requested_by: z.string().min(1),
+  owner_id: z.string().min(1),
+  status: z.enum(['candidate', 'triaged', 'approved', 'rejected', 'soft_archived']),
+  idempotency_key: z.string().min(8),
+  archived_at: z.number().int().nonnegative().nullable(),
+  archived_by: z.string().min(1).nullable(),
+  archive_reason: z.string().min(1).max(500).nullable(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type OperationalIntakeItem = z.infer<typeof OperationalIntakeItemSchema>;
+
+export const SoftArchiveOperationalIntakeSchema = z.object({
+  intake_id: z.string().min(1),
+  reason: z.string().min(1).max(500),
+});
+export type SoftArchiveOperationalIntake = z.infer<typeof SoftArchiveOperationalIntakeSchema>;
+
 // ───────────────────────── Contexte courant ─────────────────────────
 
 export const CurrentContextSchema = z.object({
@@ -6052,11 +6424,223 @@ export const CurrentContextSchema = z.object({
 });
 export type CurrentContext = z.infer<typeof CurrentContextSchema>;
 
+// ───────────────────────── Conversation Turn Orchestrator ─────────────────────────
+
+export const SourceIntakeRoleSchema = z.enum(['student', 'teacher', 'team', 'shared']);
+export type SourceIntakeRole = z.infer<typeof SourceIntakeRoleSchema>;
+
+export const SourceIntakeRequestSchema = z.object({
+  runtime_pack_id: z.string().min(1),
+  project_id: z.string().min(1),
+  source_ref: z.string().min(1).max(500),
+  label: z.string().min(1).max(240),
+  source_role: SourceIntakeRoleSchema,
+  content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  provenance: z.string().min(1).max(500),
+  rights: z.enum(['owned', 'authorized', 'restricted', 'unknown']),
+  freshness_at: z.number().int().nonnegative().nullable().default(null),
+  retention_until: z.number().int().nonnegative().nullable().default(null),
+  consent_status: z.enum(['not_required', 'pending', 'granted', 'withdrawn', 'unknown']).default('unknown'),
+  legal_hold: z.boolean().default(false),
+  export_allowed: z.boolean().default(false),
+  evidence_refs: z.array(z.string().min(1).max(500)).max(30).default([]),
+  mode: z.enum(['simulate', 'register_candidate']).default('simulate'),
+});
+export type SourceIntakeRequest = z.input<typeof SourceIntakeRequestSchema>;
+
+export const SourceIntakeRecordSchema = z.object({
+  intake_id: z.string().min(1),
+  runtime_pack_id: z.string().min(1),
+  pilot_id: z.string().min(1),
+  project_id: z.string().min(1),
+  owner_id: z.string().min(1),
+  source_ref: z.string().min(1).max(500),
+  label: z.string().min(1).max(240),
+  source_role: SourceIntakeRoleSchema,
+  content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  provenance: z.string().min(1).max(500),
+  rights: z.enum(['owned', 'authorized', 'restricted', 'unknown']),
+  freshness_at: z.number().int().nonnegative().nullable(),
+  retention_until: z.number().int().nonnegative().nullable(),
+  consent_status: z.enum(['not_required', 'pending', 'granted', 'withdrawn', 'unknown']),
+  legal_hold: z.boolean(),
+  export_allowed: z.boolean(),
+  purge_state: z.enum(['active', 'requested', 'blocked', 'soft_purged']),
+  rollback_ref: z.string().min(1).max(500).nullable(),
+  evidence_refs: z.array(z.string().min(1).max(500)),
+  original_immutable: z.literal(true),
+  status: z.enum(['simulated', 'candidate', 'validated', 'soft_archived']),
+  persisted: z.boolean(),
+  created_at: z.number().int().nonnegative(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type SourceIntakeRecord = z.infer<typeof SourceIntakeRecordSchema>;
+
+export const SourceGovernanceOperationSchema = z.enum([
+  'export_preview',
+  'request_purge',
+  'soft_archive',
+  'restore',
+  'set_legal_hold',
+  'release_legal_hold',
+]);
+export type SourceGovernanceOperation = z.infer<typeof SourceGovernanceOperationSchema>;
+
+export const SourceGovernancePreviewSchema = z.object({
+  intake_id: z.string().min(1),
+  operation: SourceGovernanceOperationSchema,
+  allowed_to_request: z.boolean(),
+  validation_required: z.literal(true),
+  execution_allowed_by_preview: z.literal(false),
+  source_unchanged: z.literal(true),
+  blocked_reasons: z.array(z.string().min(1)),
+  planned_patch: z.record(z.unknown()),
+  rollback_available: z.boolean(),
+  generated_at: z.number().int().nonnegative(),
+});
+export type SourceGovernancePreview = z.infer<typeof SourceGovernancePreviewSchema>;
+
+export const ConversationTurnRouteSchema = z.enum([
+  'answer',
+  'guide',
+  'observe',
+  'propose',
+  'clarify',
+  'prepare_action',
+  'await_approval',
+  'execute_approved',
+  'handoff',
+  'escalate',
+  'debrief',
+]);
+export type ConversationTurnRoute = z.infer<typeof ConversationTurnRouteSchema>;
+
+export const ConversationTurnRequestSchema = z.object({
+  content: z.string().min(1).max(4_000),
+  room_instance_id: z.string().min(1),
+  runtime_pack_id: z.string().min(1),
+  active_mode: PedagogicalAssistanceModeSchema.default('project'),
+  source_refs: z.array(z.string().min(1).max(500)).max(20).default([]),
+  requested_action_id: z.string().min(1).max(160).nullable().default(null),
+  circumvention_count: z.number().int().min(0).max(100).default(0),
+});
+export type ConversationTurnRequest = z.input<typeof ConversationTurnRequestSchema>;
+
+export const ConversationTurnTraceStepSchema = z.object({
+  stage: z.enum([
+    'authentication_scope',
+    'context_compiler',
+    'runtime_pack',
+    'process_activation',
+    'soft_routing',
+    'pedagogical_integrity',
+    'permissions',
+    'action_registry',
+    'bounded_capability',
+    'validation',
+    'workflow_observability',
+  ]),
+  status: z.enum(['passed', 'limited', 'blocked', 'pending']),
+  evidence: z.array(z.string().min(1).max(240)).max(12),
+});
+export type ConversationTurnTraceStep = z.infer<typeof ConversationTurnTraceStepSchema>;
+
+export const ConversationTurnPlanSchema = z.object({
+  turn_id: z.string().min(1),
+  workflow_id: z.string().min(1),
+  runtime_pack_id: z.string().min(1),
+  pilot_id: z.string().min(1).nullable(),
+  source_namespace: z.string().min(1).nullable(),
+  route: ConversationTurnRouteSchema,
+  confidence: z.number().min(0).max(1),
+  clarification_question: z.string().min(1).max(500).nullable(),
+  response_policy: z.enum([
+    'stream_llm',
+    'static_guidance',
+    'hold_for_approval',
+    'no_response',
+  ]),
+  response_guidance: z.string().min(1).max(1_000),
+  action_candidate: z.object({
+    action_id: z.string().min(1),
+    risk_level: z.string().min(1),
+    validation_required: z.boolean(),
+  }).nullable(),
+  execution_budget: z.object({
+    max_turns_per_hour: z.number().int().positive(),
+    turns_used_in_window: z.number().int().positive(),
+    max_tool_calls: z.number().int().nonnegative(),
+    max_output_tokens: z.number().int().positive(),
+    timeout_ms: z.number().int().positive(),
+    max_cost_eur: z.number().nonnegative(),
+    fallback: z.enum(['static_guidance', 'stop']),
+  }),
+  assistance: PedagogicalAssistanceDecisionSchema,
+  scope: z.object({
+    user_id: z.string().min(1),
+    project_id: z.string().min(1).nullable(),
+    room_id: z.string().min(1),
+    room_instance_id: z.string().min(1),
+  }),
+  accepted_source_refs: z.array(z.string().min(1).max(500)),
+  rejected_source_refs: z.array(z.object({
+    source_ref: z.string().min(1).max(500),
+    reason: z.string().min(1).max(240),
+  })),
+  trace: z.array(ConversationTurnTraceStepSchema).min(1),
+  created_at: z.number().int().nonnegative(),
+});
+export type ConversationTurnPlan = z.infer<typeof ConversationTurnPlanSchema>;
+
+export const PilotJourneyStateSchema = z.object({
+  runtime_pack_id: z.string().min(1),
+  pilot_id: z.string().min(1),
+  project: z.object({project_id: z.string().min(1), name: z.string().min(1)}),
+  room: z.object({room_id: z.string().min(1), name: z.string().min(1)}),
+  participant_count: z.number().int().nonnegative(),
+  current_stage: z.object({stage_id: z.string().min(1), label: z.string().min(1)}),
+  checkpoint: z.object({checkpoint_id: z.string().min(1), summary: z.string().min(1)}).nullable(),
+  visible_sources: z.array(SourceIntakeRecordSchema),
+  evidence_refs: z.array(z.string().min(1)),
+  validations_pending: z.number().int().nonnegative().nullable(),
+  open_questions: z.array(z.string().min(1).max(500)),
+  next_action: z.string().min(1).max(500),
+  generated_at: z.number().int().nonnegative(),
+});
+export type PilotJourneyState = z.infer<typeof PilotJourneyStateSchema>;
+
+export const PilotHarvestSchema = z.object({
+  harvest_id: z.string().min(1),
+  runtime_pack_id: z.string().min(1),
+  pilot_id: z.string().min(1),
+  project_id: z.string().min(1),
+  snapshot_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  checkpoint_ref: z.string().min(1).nullable(),
+  source_refs: z.array(z.string().min(1)),
+  evidence_refs: z.array(z.string().min(1)),
+  open_questions: z.array(z.string().min(1).max(500)),
+  backflow_candidate: z.object({
+    status: z.literal('candidate'),
+    summary: z.string().min(1).max(1_000),
+    source_refs: z.array(z.string().min(1)),
+    requires_human_review: z.literal(true),
+  }),
+  created_at: z.number().int().nonnegative(),
+});
+export type PilotHarvest = z.infer<typeof PilotHarvestSchema>;
+
 // ───────────────────────── Messages WebSocket ─────────────────────────
 
 /** Client → serveur. */
 export const WsClientMessageSchema = z.discriminatedUnion('type', [
-  z.object({type: z.literal('chat'), content: z.string().min(1)}),
+  z.object({
+    type: z.literal('chat'),
+    content: z.string().min(1),
+    runtime_pack_id: z.string().min(1).optional(),
+    active_mode: PedagogicalAssistanceModeSchema.optional(),
+    source_refs: z.array(z.string().min(1).max(500)).max(20).optional(),
+    requested_action_id: z.string().min(1).max(160).nullable().optional(),
+  }),
   z.object({type: z.literal('ping')}),
 ]);
 export type WsClientMessage = z.infer<typeof WsClientMessageSchema>;
@@ -6070,6 +6654,12 @@ export const WsServerMessageSchema = z.discriminatedUnion('type', [
     expressive_voice: z.object({
       profile_used: z.boolean(),
       label: z.literal('Voix stylisée'),
+    }).optional(),
+    conversation: z.object({
+      turn_id: z.string().min(1),
+      runtime_pack_id: z.string().min(1),
+      route: ConversationTurnRouteSchema,
+      confidence: z.number().min(0).max(1),
     }).optional(),
   }),
   z.object({type: z.literal('chat_chunk'), content: z.string()}),

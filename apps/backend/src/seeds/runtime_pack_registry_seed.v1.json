@@ -155,6 +155,172 @@
       ]
     },
     {
+      "pack_id": "ours-dor-pilot-v1",
+      "version": "1.0.0",
+      "label": "Ours d'Or — pilote conversationnel",
+      "description": "Guider le parcours Ours d'Or par projet, étape, checkpoint, sources et validations sans produire le rendu final de l'étudiant.",
+      "minimum_role": "student",
+      "status": "partial",
+      "active_modes": ["project", "learning", "story"],
+      "required_action_ids": ["get_current_context", "plan_conversation_turn"],
+      "optional_action_ids": ["list_available_actions", "manage_story_workbenches"],
+      "stages": [
+        {
+          "stage_id": "frame_ours_project",
+          "label": "Cadrer le projet",
+          "purpose": "Relier le brief, le participant ou binôme, l'étape et les questions ouvertes.",
+          "activation": "always",
+          "required_action_ids": ["get_current_context"],
+          "input_object_types": ["project", "brief", "participant"],
+          "output_object_types": ["pilot_project_state"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "compact"
+        },
+        {
+          "stage_id": "guide_ours_checkpoint",
+          "label": "Guider le checkpoint",
+          "purpose": "Proposer une prochaine action bornée et suspendre toute validation professeur.",
+          "activation": "context_signal",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["pilot_project_state", "evidence"],
+          "output_object_types": ["guided_next_step", "approval_candidate"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        }
+      ],
+      "guidance": {
+        "guidance_id": "ours-dor-conversation-first",
+        "trigger": "pack_available",
+        "title": "Continuer Ours d'Or",
+        "summary": "Le chat reprend le projet, les preuves et la prochaine action sans fabriquer le livrable final.",
+        "recommended_mode": "project",
+        "tutorial_resource_id": null,
+        "skippable": true
+      },
+      "pilot_scope": {
+        "pilot_id": "ours-dor",
+        "source_namespace": "ours-dor",
+        "allowed_source_roles": ["student", "teacher", "shared"],
+        "final_deliverable_policy": "guide_only",
+        "execution_limits": {
+          "max_turns_per_hour": 30,
+          "max_tool_calls_per_turn": 0,
+          "max_output_tokens": 800,
+          "timeout_ms": 30000,
+          "max_cost_eur_per_turn": 0.2,
+          "fallback": "static_guidance"
+        }
+      },
+      "source_refs": [
+        "git:docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md#wave-3a",
+        "git:apps/backend/src/db/seed.ts#oursdor"
+      ]
+    },
+    {
+      "pack_id": "masterflow-planning-adapter",
+      "version": "1.1.3",
+      "label": "Planning MasterPlan",
+      "description": "Expose l’état de l’adaptateur Data-First en lecture seule sans remplacer le Drive ni refaire l’interface MasterPlan.",
+      "minimum_role": "teacher",
+      "status": "partial",
+      "active_modes": ["planning", "teaching"],
+      "required_action_ids": ["get_current_context", "get_masterplan_adapter_status"],
+      "optional_action_ids": [],
+      "stages": [
+        {
+          "stage_id": "inspect_masterplan_source",
+          "label": "Inspecter la source Data-First",
+          "purpose": "Vérifier version, hash, parité et confidentialité sans écrire dans le Drive.",
+          "activation": "manual",
+          "required_action_ids": ["get_masterplan_adapter_status"],
+          "input_object_types": ["masterplan_ui_bundle"],
+          "output_object_types": ["masterplan_adapter_status", "parity_report"],
+          "target_mode": "planning",
+          "context_tier": "T1",
+          "checkpoint_policy": "review"
+        }
+      ],
+      "guidance": {
+        "guidance_id": "masterplan-planning-entry",
+        "trigger": "pack_available",
+        "title": "Ouvrir Planning",
+        "summary": "Planning conserve l’interface MasterPlan actuelle et vérifie la source Data-First avant toute bascule.",
+        "recommended_mode": "planning",
+        "tutorial_resource_id": null,
+        "skippable": true
+      },
+      "source_refs": [
+        "external:/Users/malex/Documents/Playground/masterplan_data_controller.py#1.1.3",
+        "git:apps/backend/src/services/masterplan_adapter.ts"
+      ]
+    },
+    {
+      "pack_id": "talents-creatifs-pilot-v1",
+      "version": "1.0.0",
+      "label": "Talents Créatifs — pilote conversationnel",
+      "description": "Fournir une façade conversationnelle du Core avec séparation stricte des sources équipe, professeur et étudiant.",
+      "minimum_role": "student",
+      "status": "partial",
+      "active_modes": ["project", "learning", "teaching"],
+      "required_action_ids": ["get_current_context", "plan_conversation_turn"],
+      "optional_action_ids": ["list_available_actions", "approve_validation_item"],
+      "stages": [
+        {
+          "stage_id": "frame_talents_project",
+          "label": "Cadrer le projet Talents",
+          "purpose": "Relier le brief, le groupe, les participants, le jalon et les dépôts autorisés.",
+          "activation": "always",
+          "required_action_ids": ["get_current_context"],
+          "input_object_types": ["project", "brief", "group"],
+          "output_object_types": ["pilot_project_state"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "compact"
+        },
+        {
+          "stage_id": "guide_talents_checkpoint",
+          "label": "Guider le jalon",
+          "purpose": "Préparer une prochaine action et une décision candidate sans exposer les sources équipe.",
+          "activation": "context_signal",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["pilot_project_state", "evidence"],
+          "output_object_types": ["guided_next_step", "decision_candidate"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        }
+      ],
+      "guidance": {
+        "guidance_id": "talents-creatifs-conversation-first",
+        "trigger": "pack_available",
+        "title": "Continuer Talents Créatifs",
+        "summary": "Le chat reprend le brief, le jalon et le dépôt en respectant le rôle authentifié et les sources autorisées.",
+        "recommended_mode": "project",
+        "tutorial_resource_id": null,
+        "skippable": true
+      },
+      "pilot_scope": {
+        "pilot_id": "talents-creatifs",
+        "source_namespace": "talents-creatifs",
+        "allowed_source_roles": ["student", "teacher", "team", "shared"],
+        "final_deliverable_policy": "guide_only",
+        "execution_limits": {
+          "max_turns_per_hour": 30,
+          "max_tool_calls_per_turn": 0,
+          "max_output_tokens": 800,
+          "timeout_ms": 30000,
+          "max_cost_eur_per_turn": 0.2,
+          "fallback": "static_guidance"
+        }
+      },
+      "source_refs": [
+        "git:docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md#wave-3b",
+        "external:FACTORIES/TALENTS_CREATIFS/_MINI_APP"
+      ]
+    },
+    {
       "pack_id": "masterflow-theme-studio",
       "version": "0.1.0",
       "label": "Theme Studio",

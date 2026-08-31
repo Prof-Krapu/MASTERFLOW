@@ -107,6 +107,44 @@ function migrate(d: Database.Database): void {
       PRIMARY KEY (project_id, user_id)
     );
 
+    -- ───────────────────────── Teaching multi-espace ─────────────────────
+    -- Fondation additive : aucun rattachement automatique d'un projet ou d'un utilisateur.
+    CREATE TABLE IF NOT EXISTS institutions (
+      id          TEXT PRIMARY KEY,
+      owner_id    TEXT NOT NULL REFERENCES users(id),
+      name        TEXT NOT NULL,
+      status      TEXT NOT NULL DEFAULT 'candidate'
+                    CHECK (status IN ('candidate','active','archived')),
+      created_at  INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS schools (
+      id              TEXT PRIMARY KEY,
+      institution_id  TEXT NOT NULL REFERENCES institutions(id),
+      name            TEXT NOT NULL,
+      code            TEXT NOT NULL,
+      status          TEXT NOT NULL DEFAULT 'candidate'
+                        CHECK (status IN ('candidate','active','archived')),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(institution_id, code)
+    );
+
+    CREATE TABLE IF NOT EXISTS space_memberships (
+      id              TEXT PRIMARY KEY,
+      institution_id  TEXT NOT NULL REFERENCES institutions(id),
+      school_id       TEXT REFERENCES schools(id),
+      user_id         TEXT NOT NULL REFERENCES users(id),
+      role            TEXT NOT NULL
+                        CHECK (role IN ('student','teacher','school_admin','institution_admin')),
+      status          TEXT NOT NULL DEFAULT 'invited'
+                        CHECK (status IN ('invited','active','suspended','archived')),
+      created_at      INTEGER NOT NULL,
+      updated_at      INTEGER NOT NULL,
+      UNIQUE(institution_id, school_id, user_id)
+    );
+
     CREATE TABLE IF NOT EXISTS ownership_edges (
       id          TEXT PRIMARY KEY,
       owner_type  TEXT NOT NULL CHECK (owner_type IN ('user','project')),
@@ -167,6 +205,94 @@ function migrate(d: Database.Database): void {
                             CHECK (avatar_fallback IN ('neutral','a','b')),
       created_at          INTEGER NOT NULL,
       PRIMARY KEY (roster_version_id, student_identity_id)
+    );
+
+    -- Objets académiques communs. Subject/Assignment et AcademicFramework/Level
+    -- existants restent les sources de vérité de leur propre domaine.
+    CREATE TABLE IF NOT EXISTS teaching_modules (
+      id                    TEXT PRIMARY KEY,
+      school_id             TEXT NOT NULL REFERENCES schools(id),
+      project_id            TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      academic_framework_id TEXT REFERENCES academic_frameworks(id),
+      academic_level_id     TEXT REFERENCES academic_levels(id),
+      code                  TEXT NOT NULL,
+      title                 TEXT NOT NULL,
+      status                TEXT NOT NULL DEFAULT 'candidate'
+                              CHECK (status IN ('candidate','active','archived')),
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL,
+      UNIQUE(school_id, code)
+    );
+
+    CREATE TABLE IF NOT EXISTS course_offerings (
+      id          TEXT PRIMARY KEY,
+      module_id   TEXT NOT NULL REFERENCES teaching_modules(id),
+      cohort_id   TEXT REFERENCES cohorts(id),
+      period_ref  TEXT NOT NULL,
+      status      TEXT NOT NULL DEFAULT 'candidate'
+                    CHECK (status IN ('candidate','active','completed','archived')),
+      created_at  INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS course_sessions (
+      id          TEXT PRIMARY KEY,
+      offering_id TEXT NOT NULL REFERENCES course_offerings(id),
+      title       TEXT NOT NULL,
+      starts_at   INTEGER NOT NULL,
+      ends_at     INTEGER NOT NULL CHECK (ends_at >= starts_at),
+      status      TEXT NOT NULL DEFAULT 'planned'
+                    CHECK (status IN ('planned','completed','cancelled','archived')),
+      created_at  INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS enrollments (
+      id                  TEXT PRIMARY KEY,
+      offering_id         TEXT NOT NULL REFERENCES course_offerings(id),
+      user_id             TEXT REFERENCES users(id),
+      student_identity_id TEXT REFERENCES student_identities(id),
+      status              TEXT NOT NULL DEFAULT 'candidate'
+                            CHECK (status IN ('candidate','active','completed','withdrawn','archived')),
+      created_at          INTEGER NOT NULL,
+      updated_at          INTEGER NOT NULL,
+      CHECK (user_id IS NOT NULL OR student_identity_id IS NOT NULL)
+    );
+
+    CREATE TABLE IF NOT EXISTS learning_objectives (
+      id                   TEXT PRIMARY KEY,
+      module_id            TEXT NOT NULL REFERENCES teaching_modules(id),
+      label                TEXT NOT NULL,
+      competency_refs_json TEXT NOT NULL DEFAULT '[]',
+      status               TEXT NOT NULL DEFAULT 'candidate'
+                             CHECK (status IN ('candidate','validated','archived')),
+      created_at           INTEGER NOT NULL,
+      updated_at           INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS assignment_deadlines (
+      id            TEXT PRIMARY KEY,
+      assignment_id TEXT NOT NULL REFERENCES subject_assignments(id),
+      offering_id   TEXT NOT NULL REFERENCES course_offerings(id),
+      due_at        INTEGER NOT NULL,
+      timezone      TEXT NOT NULL,
+      status        TEXT NOT NULL DEFAULT 'candidate'
+                      CHECK (status IN ('candidate','active','superseded','archived')),
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS teaching_resource_links (
+      id            TEXT PRIMARY KEY,
+      module_id     TEXT NOT NULL REFERENCES teaching_modules(id),
+      resource_id   TEXT NOT NULL REFERENCES resources(id),
+      objective_id  TEXT REFERENCES learning_objectives(id),
+      source_ref    TEXT NOT NULL,
+      status        TEXT NOT NULL DEFAULT 'candidate'
+                      CHECK (status IN ('candidate','validated','archived')),
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL,
+      UNIQUE(module_id, resource_id, objective_id)
     );
 
     -- ───────────────────────── Inventory Core ─────────────────────────────
@@ -702,6 +828,38 @@ function migrate(d: Database.Database): void {
       PRIMARY KEY (app, key)
     );
 
+    -- ───────────────────────── API_manage intake cible ───────────────────
+    -- Le contenu reste derrière un storage ref ; aucune suppression physique.
+    CREATE TABLE IF NOT EXISTS operational_intake_items (
+      id                    TEXT PRIMARY KEY,
+      kind                  TEXT NOT NULL
+                              CHECK (kind IN ('feedback','ticket','announcement','news','moderation')),
+      project_id            TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      scope_type            TEXT NOT NULL CHECK (scope_type IN ('personal','project','system')),
+      scope_id              TEXT NOT NULL,
+      title                 TEXT NOT NULL,
+      detail_ref            TEXT NOT NULL,
+      provenance            TEXT NOT NULL,
+      evidence_refs_json    TEXT NOT NULL,
+      moderation_target_ref TEXT,
+      requested_by          TEXT NOT NULL REFERENCES users(id),
+      owner_id              TEXT NOT NULL REFERENCES users(id),
+      status                TEXT NOT NULL DEFAULT 'candidate'
+                              CHECK (status IN ('candidate','triaged','approved','rejected','soft_archived')),
+      idempotency_key       TEXT NOT NULL,
+      archived_at           INTEGER,
+      archived_by           TEXT REFERENCES users(id),
+      archive_reason        TEXT,
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL,
+      UNIQUE(owner_id, kind, idempotency_key),
+      CHECK (
+        (status = 'soft_archived' AND archived_at IS NOT NULL AND archived_by IS NOT NULL AND archive_reason IS NOT NULL)
+        OR
+        (status != 'soft_archived' AND archived_at IS NULL AND archived_by IS NULL AND archive_reason IS NULL)
+      )
+    );
+
     CREATE TABLE IF NOT EXISTS token_events (
       id                INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id           TEXT REFERENCES users(id) ON DELETE CASCADE,
@@ -966,6 +1124,37 @@ function migrate(d: Database.Database): void {
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
+
+    -- Asset Engine : association explicite et révisable entre un état consommateur
+    -- (dont entité animée) et une version d'asset stockée. Aucune promotion canonique
+    -- ni exécution provider n'est implicite dans cette table.
+    CREATE TABLE IF NOT EXISTS asset_consumer_bindings (
+      id TEXT PRIMARY KEY,
+      asset_id TEXT NOT NULL REFERENCES generated_assets(id) ON DELETE RESTRICT,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+      consumer_kind TEXT NOT NULL CHECK (consumer_kind IN (
+        'animated_entity','persona','runtime_pack','project','ui_surface'
+      )),
+      consumer_ref TEXT NOT NULL,
+      state_key TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'candidate' CHECK (status IN (
+        'candidate','approved','rejected','archived'
+      )),
+      storage_ref TEXT,
+      parent_binding_id TEXT REFERENCES asset_consumer_bindings(id) ON DELETE SET NULL,
+      provenance_refs_json TEXT NOT NULL,
+      review_note TEXT,
+      reviewed_by TEXT REFERENCES users(id),
+      reviewed_at INTEGER,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      UNIQUE (consumer_kind, consumer_ref, state_key, asset_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_asset_consumer_bindings_consumer
+      ON asset_consumer_bindings (consumer_kind, consumer_ref, state_key, created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_asset_consumer_bindings_owner
+      ON asset_consumer_bindings (owner_id, created_at DESC);
 
     CREATE TABLE IF NOT EXISTS story_workbenches (
       id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -1577,6 +1766,10 @@ function migrate(d: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_token_events_ts      ON token_events(ts);
     CREATE INDEX IF NOT EXISTS idx_token_events_user    ON token_events(user_id);
     CREATE INDEX IF NOT EXISTS idx_token_events_user_ts ON token_events(user_id, ts);
+    CREATE INDEX IF NOT EXISTS idx_operational_intake_scope
+      ON operational_intake_items(scope_type, scope_id, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_operational_intake_project
+      ON operational_intake_items(project_id, kind, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_revoked_expires     ON revoked_tokens(expires_at);
     CREATE INDEX IF NOT EXISTS idx_projects_owner_status
       ON projects(owner_id, status, updated_at);
@@ -2435,6 +2628,39 @@ function migrate(d: Database.Database): void {
       created_at        INTEGER NOT NULL
     );
 
+    -- Source/Intake V1 : registre de provenance, jamais copie ni remplacement de l'original.
+    CREATE TABLE IF NOT EXISTS source_intake_records (
+      id                TEXT PRIMARY KEY,
+      runtime_pack_id   TEXT NOT NULL,
+      pilot_id          TEXT NOT NULL,
+      project_id        TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      owner_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      source_ref        TEXT NOT NULL,
+      label             TEXT NOT NULL,
+      source_role       TEXT NOT NULL
+                          CHECK (source_role IN ('student','teacher','team','shared')),
+      content_sha256    TEXT NOT NULL,
+      provenance        TEXT NOT NULL,
+      rights            TEXT NOT NULL
+                          CHECK (rights IN ('owned','authorized','restricted','unknown')),
+      freshness_at      INTEGER,
+      retention_until   INTEGER,
+      consent_status    TEXT NOT NULL DEFAULT 'unknown'
+                          CHECK (consent_status IN ('not_required','pending','granted','withdrawn','unknown')),
+      legal_hold        INTEGER NOT NULL DEFAULT 0 CHECK (legal_hold IN (0,1)),
+      export_allowed    INTEGER NOT NULL DEFAULT 0 CHECK (export_allowed IN (0,1)),
+      purge_state       TEXT NOT NULL DEFAULT 'active'
+                          CHECK (purge_state IN ('active','requested','blocked','soft_purged')),
+      rollback_ref      TEXT,
+      evidence_refs_json TEXT NOT NULL DEFAULT '[]',
+      original_immutable INTEGER NOT NULL DEFAULT 1 CHECK (original_immutable = 1),
+      status            TEXT NOT NULL DEFAULT 'candidate'
+                          CHECK (status IN ('candidate','validated','soft_archived')),
+      created_at        INTEGER NOT NULL,
+      updated_at        INTEGER NOT NULL,
+      UNIQUE(runtime_pack_id, project_id, source_ref, content_sha256)
+    );
+
     -- Story characters (MasterStory → DA bridge)
     CREATE TABLE IF NOT EXISTS story_characters (
       id            TEXT PRIMARY KEY,
@@ -2455,6 +2681,15 @@ function migrate(d: Database.Database): void {
       updated_at    INTEGER NOT NULL
     );
   `);
+
+  // Colonnes additives Source/Intake V2. Elles sont appliquées après la création
+  // du registre externe afin de préserver les bases existantes.
+  ensureColumn(d, 'source_intake_records', 'retention_until', 'INTEGER');
+  ensureColumn(d, 'source_intake_records', 'consent_status', "TEXT NOT NULL DEFAULT 'unknown'");
+  ensureColumn(d, 'source_intake_records', 'legal_hold', 'INTEGER NOT NULL DEFAULT 0');
+  ensureColumn(d, 'source_intake_records', 'export_allowed', 'INTEGER NOT NULL DEFAULT 0');
+  ensureColumn(d, 'source_intake_records', 'purge_state', "TEXT NOT NULL DEFAULT 'active'");
+  ensureColumn(d, 'source_intake_records', 'rollback_ref', 'TEXT');
 }
 
 function ensureColumn(
@@ -3892,6 +4127,54 @@ export interface RoomRecipeRow {
   default_widgets_json: string;
   default_actions_json: string;
   created_at: number;
+}
+
+export interface SourceIntakeRow {
+  id: string;
+  runtime_pack_id: string;
+  pilot_id: string;
+  project_id: string;
+  owner_id: string;
+  source_ref: string;
+  label: string;
+  source_role: 'student' | 'teacher' | 'team' | 'shared';
+  content_sha256: string;
+  provenance: string;
+  rights: 'owned' | 'authorized' | 'restricted' | 'unknown';
+  freshness_at: number | null;
+  retention_until: number | null;
+  consent_status: 'not_required' | 'pending' | 'granted' | 'withdrawn' | 'unknown';
+  legal_hold: 0 | 1;
+  export_allowed: 0 | 1;
+  purge_state: 'active' | 'requested' | 'blocked' | 'soft_purged';
+  rollback_ref: string | null;
+  evidence_refs_json: string;
+  original_immutable: 1;
+  status: 'candidate' | 'validated' | 'soft_archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface OperationalIntakeRow {
+  id: string;
+  kind: 'feedback' | 'ticket' | 'announcement' | 'news' | 'moderation';
+  project_id: string | null;
+  scope_type: 'personal' | 'project' | 'system';
+  scope_id: string;
+  title: string;
+  detail_ref: string;
+  provenance: string;
+  evidence_refs_json: string;
+  moderation_target_ref: string | null;
+  requested_by: string;
+  owner_id: string;
+  status: 'candidate' | 'triaged' | 'approved' | 'rejected' | 'soft_archived';
+  idempotency_key: string;
+  archived_at: number | null;
+  archived_by: string | null;
+  archive_reason: string | null;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface StoryCharacterRow {
