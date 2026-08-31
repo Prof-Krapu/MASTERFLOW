@@ -4,6 +4,42 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 ---
 
+## 2026-08-31 — Train full-stack vagues 0 à 9
+
+VAGUE ACTIVE :
+
+- id : `FULLSTACK-CONSOLIDATION-001` ;
+- objectif : construire le socle conversationnel commun, sortir les pilotes Ours d'Or et Talents
+  Créatifs, puis préparer les consolidations suivantes sans migration appliquée ni déploiement ;
+- statut : vagues locales terminées et gate de release verte ; publication finale autorisée ;
+- dernière action terminée : migration/seed sur base temporaire, sauvegarde puis restauration
+  isolée avec intégrité et SHA-256 identiques ;
+- prochaine action : créer les commits logiques, pousser `codex/masterflow-waves-2-9`, ouvrir la PR
+  et s'arrêter avant merge ;
+- fichiers/domaines concernés : orchestrateur conversationnel, deux pilotes, Teaching, MasterPlan,
+  Corrector, API_manage, UI/MASTERBUILD, Asset Engine, tests et pilotage ;
+- tests : backend `763/763`, audit npm `0`, lint backend/frontend, builds frontend/MASTERBUILD,
+  MASTERBUILD `16/16`, QA Lab desktop/390 px et smoke HTTP local verts ;
+- publication : branche locale `codex/masterflow-waves-2-9`, aucun déploiement inclus ;
+- blocage : merge, provider réel, migration réelle, données originales, suppression, preview et
+  stable restent soumis à une validation explicite.
+
+Résultats du train :
+
+- Ours d'Or et Talents Créatifs disposent de deux RuntimePacks isolés sur un backend et un
+  Conversation Turn Orchestrator communs ;
+- les simulations de sources sont read-only et tracées ; aucun fichier source n'a été importé ou
+  modifié ;
+- Teaching multi-espace, l'adaptateur MasterPlan data-first, les intakes opérationnels et l'Asset
+  Engine restent additifs, privés et sous gates humaines ;
+- la frontière ComfyUI est `compile_only` : aucun appel provider ni promotion canonique ;
+- le défaut de chevauchement Teaching à 390 px détecté par le test navigateur est corrigé ; la
+  conformité esthétique reste une validation MALEX séparée ;
+- preuve restauration locale : backup `masterflow-20260831T184927Z`, `integrity_check=ok`, hash
+  restauré identique `659293e98e85e50b7e09de84fbdd9d60000cb63a58d2ebfd1574017f86bfc5f3`.
+
+---
+
 ## 2026-08-30 — Link Engine pédagogique déterministe
 
 VAGUE ACTIVE :

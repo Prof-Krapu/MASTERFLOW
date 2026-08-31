@@ -17,37 +17,33 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 
 Le seul plan actif est
 `docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md` dans le checkout principal.
-La vague 0 est verte et la vague 1 est préparée localement.
+Les vagues 0 à 9 sont exécutées localement ; le round portable actif est
+`docs/masterbuild/rounds/FULLSTACK_CONSOLIDATION_ROUND_001.md`.
 
 ### 1. À faire maintenant
 
-- Tâche : commit borné du hardening pré-PR, push de la branche candidate, puis création de la PR
-  `codex/corrector-capability-absorption` vers `main`.
-- Impact : fait converger GitHub vers la ligne preview testée sans toucher au runtime.
-- Risque : moyen ; la PR touche Core, Corrector absorbé, Link Engine et packaging preview.
-- Source de vérité concernée : GitHub `main`, branche candidate et plan full-stack final.
-- Statut : implémentation locale vérifiée, en attente du gate sensible.
-- Validation requise : oui, explicitement avant commit, push et création de PR.
+- Tâche : créer les commits logiques, pousser `codex/masterflow-waves-2-9` et ouvrir la PR vers
+  `main`, puis arrêter le train avant merge.
+- Impact : rend la consolidation full-stack entièrement révisable sans toucher au serveur.
+- Risque : moyen ; la PR est large mais les gates locales, le manifeste exact et le rollback sont
+  vérifiés avant toute fusion.
+- Source de vérité concernée : GitHub `main`, round full-stack et plan final.
+- Statut : implémentation locale vérifiée ; commit, push et PR explicitement autorisés.
+- Validation requise : non pour commit/push/PR ; oui avant merge.
 
 ### 2. À mettre en queue
 
-- Tâche : vague 2, socle minimal Workspace/Source/Intake et Conversation Turn Orchestrator natif.
-- Impact : fournit le moteur commun nécessaire aux deux pilotes.
-- Risque : élevé sur scopes, sources, permissions et reprise des actions sensibles.
-- Source de vérité concernée : canon MasterFlow, services TypeScript existants et plan final.
-- Statut : canon verrouillé, implémentation future après convergence Git.
-- Validation requise : oui aux gates migration, commit/push, PR et déploiement ; non pour la préparation locale bornée.
-
-- Tâche : vagues 3A Ours d'Or et 3B Talents Créatifs, deux RuntimePacks sur le même backend.
-- Impact : livre les deux premiers pilotes conversation-first avec interface sommaire.
-- Risque : élevé sur isolation des sources et autorité pédagogique.
-- Source de vérité concernée : canon des pilotes et corpus importés avec provenance.
-- Statut : canon produit verrouillé, futur après vague 2.
-- Validation requise : oui avant imports réels, groupes pilotes et déploiement.
+- Tâche : après revue de la PR, décider du merge sans le confondre avec un déploiement.
+- Impact : fait converger GitHub vers le socle full-stack testé.
+- Risque : moyen ; revue nécessaire sur les contrats, migrations additives et surfaces UI.
+- Source de vérité concernée : PR full-stack, canon MasterFlow et preuves de gate.
+- Statut : prochain gate humain.
+- Validation requise : oui.
 
 ### 3. À faire quand j'ai des tokens
 
-- Tâche : vague 4, activation d'un provider IA réel en preview privée avec budget et limites.
+- Tâche : activer un provider IA réel en preview privée avec budget et limites, seulement après le
+  merge et un contrat de déploiement séparé.
 - Impact : rend les parcours réellement conversationnels.
 - Risque : élevé ; secret serveur, coût, egress et données privées.
 - Source de vérité concernée : `llm_routing`, environnement serveur et traces d'usage.
@@ -65,16 +61,17 @@ La vague 0 est verte et la vague 1 est préparée localement.
 
 ### 5. À décider plus tard
 
-- Tâche : MasterPlan, Corrector complet, API_manage, UI riche, Dungeon Master, Asset Engine et stable.
-- Impact : extensions après preuve des deux pilotes.
-- Risque : moyen à élevé selon la vague.
-- Source de vérité concernée : plan final et résultats des pilotes.
-- Statut : futur.
+- Tâche : groupes pilotes réels, console professeur/Dungeon Master complète, retrait Apps Script,
+  déploiement preview et promotion stable.
+- Impact : activation des capacités préparées après revue des pilotes.
+- Risque : élevé sur données, produit, serveur et coût.
+- Source de vérité concernée : plan final, résultats pilotes et contrats de déploiement.
+- Statut : à décider après merge ; aucune activation implicite.
 - Validation requise : oui aux gates correspondants.
 
-Preview vérifiée au SHA `23a81a715ac8312375d5c09efd6ccfebadd3235c`. Ours d'Or et Talents
-Créatifs sont désormais les deux premiers pilotes ; aucun provider réel, stable ou import de corpus
-n'est autorisé par cette queue.
+La preview serveur reste inchangée au SHA `2d89197259060aea9dda6d31552859524f07c084`. Ours d'Or et
+Talents Créatifs sont préparés sur la branche locale ; aucun provider réel, stable ou import de
+corpus n'est autorisé par cette queue.
 
 ### PEDAGOGICAL-LINK-ENGINE-001 — Registre et routage pédagogique
 
