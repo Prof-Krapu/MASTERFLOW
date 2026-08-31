@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-31T22:02:53+02:00",
+  "updated_at": "2026-08-31T22:05:00+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -30,7 +30,7 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Publier la branche et ouvrir la PR, puis s'arrêter avant le merge.",
+    "recommended_next_action": "Revoir la PR #250 puis demander un GO explicite avant merge.",
     "primary_risk": "Présenter le mode mock comme une IA réelle ou masquer qu'une validation humaine reste nécessaire.",
     "no_auto_execute": true,
     "work_package_ids": ["UI-PILOTS-001"],
@@ -45,7 +45,8 @@
     ],
     "blockers": [
       "provider et budget réels reportés aux tests IRL",
-      "merge et déploiement preview à valider séparément"
+      "merge de la PR #250 à valider explicitement",
+      "déploiement preview à valider séparément"
     ],
     "validation_gates": [
       "implémentation locale validée telle quelle par MALEX",
@@ -126,9 +127,9 @@
     {
       "move_id": "review-publish-ui-pilots-no-provider",
       "label": "Revoir puis publier l'interface locale des deux pilotes",
-      "reason": "La Home et le workspace conversationnel sont validés sans provider ; la publication Git est autorisée et doit s'arrêter avant le merge.",
+      "reason": "La Home et le workspace conversationnel sont publiés dans la PR #250 sans provider ; le merge exige maintenant un GO distinct.",
       "recommended": true,
-      "status": "publishing"
+      "status": "awaiting_merge_authorization"
     }
   ],
   "registries": {

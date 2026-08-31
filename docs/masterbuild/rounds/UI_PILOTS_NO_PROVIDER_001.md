@@ -1,6 +1,6 @@
 # Round UI-PILOTS-NO-PROVIDER-001
 
-Statut : `active`
+Statut : `active — awaiting merge authorization`
 
 Étape : `7/8 — Publier`
 
@@ -40,6 +40,7 @@ nature simulée des réponses et sans modifier les garde-fous pédagogiques.
 
 ## Gate courant
 
-Interface validée telle quelle par MALEX. La publication de la branche et l'ouverture de la PR sont
-autorisées ; le round doit ensuite s'arrêter avant le merge. Le provider réel reste reporté aux tests
-IRL et tout déploiement conserve son gate séparé.
+Interface validée telle quelle par MALEX et publiée dans la PR #250 depuis
+`codex/ui-pilots-no-provider` au commit `429fa473bf017e2014d8a838cf02d744d637f35f`. Le round est
+arrêté avant le merge, qui exige une validation explicite séparée. Le provider réel reste reporté aux
+tests IRL et tout déploiement conserve son gate séparé.

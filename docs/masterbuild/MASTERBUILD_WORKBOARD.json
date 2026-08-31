@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T22:02:53+02:00",
+  "updated_at": "2026-08-31T22:05:00+02:00",
   "active_round_id": "UI-PILOTS-NO-PROVIDER-001",
   "authorizations": [
     {
@@ -259,7 +259,7 @@
       "round_id": "UI-PILOTS-NO-PROVIDER-001",
       "actor": "malex",
       "scope": "create_branch_commit_push_and_open_pull_request_then_stop_before_merge",
-      "status": "active",
+      "status": "completed",
       "granted_at": "2026-08-31T22:02:53+02:00",
       "expires_on_scope_change": true,
       "excluded": ["merge", "deploy", "migration", "provider_call", "spend", "delete", "canon_scope_change", "real_pilot_data", "backend_change"]
@@ -752,7 +752,7 @@
       "work_package_id": "UPP-004",
       "label": "Consolider un Component Lab unique et reconstruire Teaching dans le Lab",
       "feature_ids": ["ui-shell-navigation", "teaching-mode"],
-      "status": "publishing",
+      "status": "awaiting_merge_authorization",
       "owner": "malex",
       "reviewers": ["codex"],
       "dependencies": ["UPP-002"],
