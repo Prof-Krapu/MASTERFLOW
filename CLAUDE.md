@@ -7,7 +7,7 @@
 Guide pour Claude Code travaillant dans **ce dépôt de code** (`~/Documents/masterflow/`).
 
 Doctrine active depuis le 2026-08-31 : la source de vérité **opérable** est la release active sur
-Malex Graphics. Le clone local prépare le code, les tests, les contrats et les snapshots ; une
+le serveur privé. Le clone local prépare le code, les tests, les contrats et les snapshots ; une
 modification locale reste candidate jusqu'à sa promotion serveur. GitHub est un miroir historique
 en pause et ne doit plus être utilisé sans réactivation explicite de MALEX.
 

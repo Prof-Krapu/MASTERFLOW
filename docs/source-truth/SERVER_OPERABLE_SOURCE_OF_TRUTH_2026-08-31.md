@@ -4,15 +4,15 @@ Date de décision : 2026-08-31
 
 Statut : actif après la dernière fusion de transition
 
-Décision MALEX : GitHub est mis en pause. La preview privée active sur Malex Graphics devient la
+Décision MALEX : GitHub est mis en pause. La preview privée active sur le serveur MasterFlow devient la
 vérité opérationnelle de ce qui existe réellement dans MasterFlow. Le clone local reste l'atelier de
 construction. GitHub peut conserver un miroir historique, mais ne pilote plus le travail courant.
 
 ## Hiérarchie active
 
-1. **Serveur actif** : release pointée par
-   `/Users/alexcoulot/Playground/MASTERFLOW_SERVER/releases/preview/current`, services réellement
-   démarrés et données persistantes dans `shared/preview`.
+1. **Serveur actif** : release pointée par `<serverRoot>/releases/preview/current`, services
+   réellement démarrés et données persistantes dans `shared/preview`. La racine exacte reste dans
+   la configuration locale ignorée par Git.
 2. **Clone local MALEX** : code, tests, contrats, queue et prochains snapshots. Une modification
    locale reste candidate tant qu'elle n'est pas promue sur le serveur.
 3. **Canon produit et décisions MALEX** : ils cadrent ce qui doit être construit, mais une promesse
@@ -28,8 +28,8 @@ validation MALEX.
 
 ## Baseline vérifiée au moment de la décision
 
-- hôte : `malex-graphics` / `Malex-Graphics.local` ;
-- racine : `/Users/alexcoulot/Playground/MASTERFLOW_SERVER` ;
+- hôte : alias SSH configuré localement ;
+- racine : `serverRoot` configuré localement ;
 - canal : `preview` privé, Tailscale uniquement ;
 - pointeur actif : `releases/preview/current` ;
 - release active : `releases/preview/33f553fb8bbd` ;
@@ -48,6 +48,9 @@ Avant tout diagnostic ou reprise importante :
 ```bash
 npm run server:preflight
 ```
+
+La cible est lue depuis `.masterflow-server.local.json`, créé localement à partir du modèle
+`.masterflow-server.example.json`. Le fichier réel est ignoré par Git.
 
 La preuve doit contenir :
 

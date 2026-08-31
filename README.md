@@ -7,7 +7,7 @@ Stack : TypeScript/Node + Express + better-sqlite3 + Zod (backend) ; React 19 + 
 
 ## Source de vérité opérable
 
-La preview active sur Malex Graphics est la vérité de ce qui fonctionne réellement. Le clone local
+La preview active sur le serveur privé est la vérité de ce qui fonctionne réellement. Le clone local
 est l'atelier de construction et de préparation des snapshots. GitHub est un miroir historique en
 pause depuis le 2026-08-31 et ne fait plus partie du cycle courant.
 
@@ -16,8 +16,12 @@ Contrat : [`docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`](do
 Preflight read-only :
 
 ```bash
+cp .masterflow-server.example.json .masterflow-server.local.json
+# Renseigner localement la cible SSH, la racine runtime et le binaire Docker distant.
 npm run server:preflight
 ```
+
+Le fichier `.masterflow-server.local.json` est privé et ignoré par Git.
 
 ## Répartition
 

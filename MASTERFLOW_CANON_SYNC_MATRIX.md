@@ -1,7 +1,7 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-08-31
-Source de vérité opérable : serveur Malex Graphics
+Source de vérité opérable : serveur privé MasterFlow
 Release preview active vérifiée : `33f553fb8bbd`
 Clone local / dernier miroir GitHub : `3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a`
 Tranche UI : mergée dans le miroir, candidate tant qu'elle n'est pas déployée sur le serveur

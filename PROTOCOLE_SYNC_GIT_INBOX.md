@@ -1,7 +1,7 @@
 # PROTOCOLE — Sync serveur + clone local + inbox
 
 Objectif : éviter qu'un agent confonde le clone local, un ancien état GitHub et la release qui
-tourne réellement sur Malex Graphics.
+tourne réellement sur le serveur privé.
 
 Ce protocole s'applique a MALEX/Codex, Vincent/Claude et tout assistant appele sur le repo.
 
@@ -72,7 +72,7 @@ Exemple :
 
 ```text
 SERVER_SYNC_PROOF
-- server_release_path: /Users/alexcoulot/Playground/MASTERFLOW_SERVER/releases/preview/33f553fb8bbd
+- server_release_path: <serverRoot>/releases/preview/33f553fb8bbd
 - server_release_id: 33f553fb8bbd
 - server_health: ok
 - server_containers: backend, frontend, export-runner actifs

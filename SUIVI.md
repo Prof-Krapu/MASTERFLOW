@@ -8,8 +8,8 @@ Journal de construction. Le quoi/pourquoi, daté et concis.
 
 MODE OPÉRATOIRE ACTIF :
 
-- décision MALEX : GitHub est mis en pause ; Malex Graphics devient la source de vérité opérable ;
-- vérité runtime : `/Users/alexcoulot/Playground/MASTERFLOW_SERVER/releases/preview/current` pointe
+- décision MALEX : GitHub est mis en pause ; le serveur privé devient la source de vérité opérable ;
+- vérité runtime : `<serverRoot>/releases/preview/current` pointe
   vers la release `33f553fb8bbd` ; backend, frontend et export runner actifs, health vert ;
 - clone local : atelier de code, tests, contrats, commits et snapshots candidats ;
 - GitHub : miroir historique au dernier merge `3d91c0a1ba0a89a11be1c7ad8343fab957b31f0a`, non utilisé

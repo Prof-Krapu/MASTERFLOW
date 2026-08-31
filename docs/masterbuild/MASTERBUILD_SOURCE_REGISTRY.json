@@ -8,7 +8,7 @@
       "kind": "active_source_truth_contract",
       "status": "still_active",
       "absorbed_into": ["MASTERBUILD_STATE.json", "MASTERBUILD_WORKBOARD.json", "PROTOCOLE_SYNC_GIT_INBOX.md"],
-      "note": "Malex Graphics est la vérité opérable ; clone local candidat ; GitHub en pause après la transition."
+      "note": "Le serveur privé est la vérité opérable ; clone local candidat ; GitHub en pause après la transition."
     },
     {
       "source_id": "masterplan-subject-assignment-bridge-2026-08-24",

@@ -1,11 +1,27 @@
 import {spawnSync} from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 
-const serverAlias = process.env.MASTERFLOW_SERVER_ALIAS ?? 'malex-graphics';
-const serverRoot = process.env.MASTERFLOW_SERVER_ROOT
-  ?? '/Users/alexcoulot/Playground/MASTERFLOW_SERVER';
+const configPath = process.env.MASTERFLOW_SERVER_CONFIG
+  ?? path.resolve('.masterflow-server.local.json');
+let localConfig = {};
+try {
+  localConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+} catch (error) {
+  if (error?.code !== 'ENOENT') {
+    throw new Error(`server_preflight_failed: invalid_local_config ${configPath}`);
+  }
+}
+
+const serverAlias = process.env.MASTERFLOW_SERVER_ALIAS ?? localConfig.serverAlias;
+const serverRoot = process.env.MASTERFLOW_SERVER_ROOT ?? localConfig.serverRoot;
+const dockerCli = process.env.MASTERFLOW_SERVER_DOCKER_CLI ?? localConfig.dockerCli;
+if (!serverAlias || !serverRoot || !dockerCli) {
+  throw new Error(
+    'server_preflight_failed: configure .masterflow-server.local.json from .masterflow-server.example.json',
+  );
+}
 const currentRelease = `${serverRoot}/releases/preview/current`;
-const dockerCli = '/Applications/Docker.app/Contents/Resources/bin/docker';
 const sshOptions = [
   '-o', 'BatchMode=yes',
   '-o', 'StrictHostKeyChecking=yes',
@@ -17,6 +33,9 @@ if (!/^[A-Za-z0-9._-]+$/.test(serverAlias)) {
 }
 if (!/^\/[A-Za-z0-9._/-]+$/.test(serverRoot)) {
   throw new Error('server_preflight_failed: invalid_server_root');
+}
+if (!/^\/[A-Za-z0-9 ._/-]+$/.test(dockerCli)) {
+  throw new Error('server_preflight_failed: invalid_docker_cli');
 }
 
 function remote(command) {

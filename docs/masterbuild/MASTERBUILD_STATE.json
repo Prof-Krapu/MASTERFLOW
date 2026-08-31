@@ -31,7 +31,7 @@
   "active_round": {
     "round_id": "SERVER-FIRST-OPERATIONS-001",
     "title": "Piloter MasterFlow depuis la vérité serveur",
-    "objective": "Faire de la release active sur Malex Graphics la preuve opérable, garder le clone local comme atelier et mettre GitHub en pause.",
+    "objective": "Faire de la release active sur le serveur privé la preuve opérable, garder le clone local comme atelier et mettre GitHub en pause.",
     "owner": "malex",
     "status": "active",
     "stage_index": 7,
@@ -382,6 +382,6 @@
     "branch": "codex/server-operable-source-truth",
     "commit_sha": "33f553fb8bbd633770294777fbbd1d06e104f42d",
     "pull_request": "final_transition_only_then_github_paused",
-    "runtime_proof": "Malex Graphics preview current pointe vers 33f553fb8bbd ; health vert et trois conteneurs actifs. Le clone local contient l'interface pilotes au-delà du serveur ; elle reste candidate."
+    "runtime_proof": "La preview privée current pointe vers 33f553fb8bbd ; health vert et trois conteneurs actifs. Le clone local contient l'interface pilotes au-delà du serveur ; elle reste candidate."
   }
 }

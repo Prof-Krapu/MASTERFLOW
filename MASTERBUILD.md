@@ -13,7 +13,7 @@ Construire une première version utilisable de MasterFlow sans confondre :
 - fichier local, branche, PR, `main` et live ;
 - référence, asset candidat et canon.
 
-Depuis le 2026-08-31, la release active sur Malex Graphics est la source de vérité opérable. Le
+Depuis le 2026-08-31, la release active sur le serveur privé est la source de vérité opérable. Le
 clone local prépare des candidats et des snapshots ; GitHub est un miroir en pause. Voir
 `docs/source-truth/SERVER_OPERABLE_SOURCE_OF_TRUTH_2026-08-31.md`.
 
@@ -85,7 +85,7 @@ une revue MALEX sur expérience/DA et une revue Vincent sur contrats/permissions
 - code, contrats, tests, commits locaux et snapshots : Codex ;
 - audit répétitif : OpenCode / Big Pickle, résultat `done_unverified` ;
 - information externe instable : recherche web ;
-- vérité runtime : preflight read-only de Malex Graphics ;
+- vérité runtime : preflight read-only du serveur privé ;
 - composant isolé : Component Lab ;
 - contrôle visuel évident : humain ;
 - interaction ou accessibilité de promotion : smoke ciblé.

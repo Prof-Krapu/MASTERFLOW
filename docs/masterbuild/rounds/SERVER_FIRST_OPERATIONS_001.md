@@ -28,7 +28,7 @@ conservant un atelier local rapide et une chaîne de release sûre sans dépendr
 
 ## Baseline
 
-- serveur : Malex Graphics ;
+- serveur : preview privée configurée localement ;
 - release active : `33f553fb8bbd` ;
 - services : backend, frontend, export runner actifs ;
 - health : vert ;
@@ -41,4 +41,4 @@ conservant un atelier local rapide et une chaîne de release sûre sans dépendr
 
 Fusionner une dernière fois cette doctrine de transition, puis mettre GitHub en pause. La suite
 autorisée sans nouveau GO est locale et read-only : preflight serveur, développement, tests, build,
-recette et préparation d'un snapshot. Toute mutation de Malex Graphics reste bloquée.
+recette et préparation d'un snapshot. Toute mutation du serveur privé reste bloquée.

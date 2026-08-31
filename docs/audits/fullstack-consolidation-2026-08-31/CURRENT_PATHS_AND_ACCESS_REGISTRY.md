@@ -10,18 +10,20 @@ courantes. La doctrine active est
 
 | Fonction | Valeur | Règle |
 |---|---|---|
-| Hôte | `ssh malex-graphics` | Vérifier host key ; ne jamais exposer la clé SSH. |
-| Racine serveur | `/Users/alexcoulot/Playground/MASTERFLOW_SERVER` | Autorité runtime. |
+| Hôte | alias SSH dans `.masterflow-server.local.json` | Vérifier host key ; ne jamais exposer la clé SSH. |
+| Racine serveur | `serverRoot` dans `.masterflow-server.local.json` | Autorité runtime. |
 | Preview active | `releases/preview/current` | Pointeur atomique, jamais édité en place. |
 | Release vérifiée | `releases/preview/33f553fb8bbd` | Baseline server-first. |
 | Données preview | `shared/preview` | Persistance autoritaire ; backup avant migration. |
 | Logs preview | `shared/preview/logs` | Lecture bornée, aucun secret. |
 | Backups preview | `shared/preview/backups` | Restauration isolée avant promotion risquée. |
 | Stable | `shared/stable`, aucun `current` actif | Aucune stable déclarée. |
-| URL privée | `https://malex-graphics.taild22ef5.ts.net` | Tailscale uniquement. |
-| Docker CLI | `/Applications/Docker.app/Contents/Resources/bin/docker` | Mode utilisateur. |
+| URL privée | configuration locale, jamais versionnée | Tailscale uniquement. |
+| Docker CLI | `dockerCli` dans `.masterflow-server.local.json` | Mode utilisateur. |
 
 Preflight : `npm run server:preflight`.
+
+Le fichier local est créé depuis `.masterflow-server.example.json` et reste ignoré par Git.
 
 Interdiction absolue : ne pas lire, afficher, copier ou versionner `.env`, credentials bootstrap,
 tokens, clés, mots de passe ou URL ICS sécurisées.

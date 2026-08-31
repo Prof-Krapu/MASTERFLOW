@@ -9,5 +9,6 @@ coverage/
 apps/desktop/src-tauri/target/
 .masterbuild/local/
 .masterbuild/exports/
+.masterflow-server.local.json
 deploy/manifests/*.json
 *-bootstrap-credentials.txt

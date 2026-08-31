@@ -15,7 +15,7 @@ Les contenus ci-dessous restent intacts comme preuves et matière de réconcilia
 
 ## Queue active d'exécution — 2026-08-31
 
-Le serveur Malex Graphics est désormais la source de vérité opérable. Sa release active est
+Le serveur privé MasterFlow est désormais la source de vérité opérable. Sa release active est
 `33f553fb8bbd`. Le clone local contient la nouvelle interface pilotes au-delà du serveur ; GitHub est
 un miroir historique en pause après le dernier merge de transition. Le provider réel reste reporté
 aux tests IRL.
