@@ -15,6 +15,7 @@ import {
   ContextCompilationError,
 } from '../services/context_compiler.ts';
 import {deriveUserRuntimeLoadout} from '../services/runtime_loadout.ts';
+import {getAccessibleRoom} from '../services/room_access.ts';
 
 /**
  * Router de contexte — résolution du « où je suis » courant.
@@ -173,9 +174,12 @@ export function createContextRouter(): Router {
       return;
     }
 
-    const roomRow = resolveRoom(authUser.id);
+    const requestedRoomId = typeof req.query.room_id === 'string' ? req.query.room_id : null;
+    const roomRow = requestedRoomId
+      ? getAccessibleRoom(authUser, requestedRoomId)
+      : resolveRoom(authUser.id);
     if (!roomRow) {
-      res.status(404).json({error: 'no_accessible_room'});
+      res.status(404).json({error: requestedRoomId ? 'room_not_found' : 'no_accessible_room'});
       return;
     }
 

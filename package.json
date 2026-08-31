@@ -32,7 +32,9 @@
     "build:frontend": "npm run build --workspace @masterflow/frontend",
     "release:bootstrap-env": "node scripts/bootstrap-release-env.mjs",
     "release:manifest": "node scripts/create-release-manifest.mjs",
-    "smoke:public": "node scripts/smoke-public-runtime.mjs"
+    "smoke:public": "node scripts/smoke-public-runtime.mjs",
+    "pilot:intake:simulate": "node scripts/simulate-pilot-source-intake.mjs",
+    "masterplan:inspect": "node scripts/inspect-masterplan-data-first.mjs"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.9"

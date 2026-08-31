@@ -40,6 +40,12 @@ export interface LLMStreamParams {
   task?: string;
   /** Rôle de l'appelant — sert au routage par tâche × rôle (économie de tokens). */
   userRole?: Role | null;
+  /** Plafond de sortie transmis au provider ; ne peut pas être relevé côté client. */
+  maxOutputTokens?: number;
+  /** Timeout dur de l'appel provider, flux compris. */
+  timeoutMs?: number;
+  /** Budget maximal estimé pour ce tour. */
+  maxCostEur?: number;
 }
 
 /** Tâche par défaut si l'appelant n'en déclare pas une. */
@@ -175,6 +181,13 @@ async function* streamOpenAICompat(
   const {baseUrl, apiKey, model} = route;
   if (!baseUrl || !apiKey) throw new Error('llm_route_incomplete_provider_config');
   const url = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
+  const maxOutputTokens = Math.max(64, Math.min(p.maxOutputTokens ?? 800, 4_096));
+  const timeoutMs = Math.max(1_000, Math.min(p.timeoutMs ?? route.profile?.max_latency_ms ?? 30_000, 120_000));
+  const maxCostEur = p.maxCostEur ?? route.profile?.max_cost_eur;
+  if (maxCostEur === null || maxCostEur === undefined) throw new Error('llm_budget_missing');
+  const estimatedMaximumCost = costFor(model, estimatePromptTokens(p.messages), maxOutputTokens);
+  if (estimatedMaximumCost <= 0) throw new Error('llm_budget_pricing_unknown');
+  if (estimatedMaximumCost > maxCostEur) throw new Error('llm_budget_exceeded_before_call');
 
   const res = await fetch(url, {
     method: 'POST',
@@ -186,9 +199,11 @@ async function* streamOpenAICompat(
       model,
       messages: p.messages,
       stream: true,
+      max_tokens: maxOutputTokens,
       // Demande au provider le décompte réel des tokens dans le chunk SSE final.
       stream_options: {include_usage: true},
     }),
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
   if (!res.ok || !res.body) {

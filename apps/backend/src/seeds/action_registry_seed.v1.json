@@ -535,6 +535,39 @@
       "minimum_role": "teacher",
       "ui_surface": "manifest_review",
       "status": "live"
+    },
+    {
+      "action_id": "plan_conversation_turn",
+      "label": "Préparer un tour de conversation gouverné",
+      "endpoint": "POST /conversation/turns/plan",
+      "risk_level": "low",
+      "preflight_required": false,
+      "validation_required": false,
+      "minimum_role": "student",
+      "ui_surface": "conversation_shell",
+      "status": "live"
+    },
+    {
+      "action_id": "get_masterplan_adapter_status",
+      "label": "Vérifier l’adaptateur MasterPlan",
+      "endpoint": "GET /planning/masterplan/status",
+      "risk_level": "low",
+      "preflight_required": false,
+      "validation_required": false,
+      "minimum_role": "teacher",
+      "ui_surface": "planning",
+      "status": "live"
+    },
+    {
+      "action_id": "soft_archive_operational_intake",
+      "label": "Archiver un intake opérationnel",
+      "endpoint": "ACTION operational_intake.soft_archive",
+      "risk_level": "medium",
+      "preflight_required": true,
+      "validation_required": true,
+      "minimum_role": "teacher",
+      "ui_surface": "operations_inbox",
+      "status": "live"
     }
   ]
 }

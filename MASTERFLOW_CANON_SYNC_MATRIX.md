@@ -1,9 +1,9 @@
 # MasterFlow — Canon Sync Matrix
 
 Dernière vérification : 2026-08-31
-Branche de travail : `codex/corrector-capability-absorption`
-Release preview vérifiée : `23a81a715ac8312375d5c09efd6ccfebadd3235c`
-Base `origin/main` initiale : `2ea7167`
+Branche de travail : `codex/masterflow-waves-2-9`
+Release preview inchangée vérifiée : `2d89197259060aea9dda6d31552859524f07c084`
+Base `origin/main` initiale : `2d89197259060aea9dda6d31552859524f07c084`
 
 Doctrine active 2026-06-27 : le repo Git publiable devient la source de vérité opérable.
 Drive, legacy, ex-canon et Factories sont des sources candidates tant que leurs idées ne sont pas
@@ -13,15 +13,15 @@ récoltées après audit.
 
 | Élément canon | Statut GitHub | Écart | Risque | Action recommandée |
 |---|---|---|---|---|
-| Conversation Turn Orchestrator natif | absent de `main` et de la branche candidate | Les services existent, mais contexte, pack, routage doux, intégrité, permissions, approvals et trace ne sont pas composés dans un contrat de tour unique. | critique pour les pilotes | Implémenter la vague 2 après convergence Git, sans framework multi-agent supplémentaire. |
+| Conversation Turn Orchestrator natif | implémenté sur la branche, absent de `main` | Plan de tour unique avec contexte, RuntimePack, permissions, budget, trace et fallback sûr ; provider réel fermé. | moyen avant revue | Revoir puis merger séparément ; conserver l'activation provider derrière son gate. |
 | Link Engine pédagogique | implémenté et déployé en preview privée | 49 vidéos validées, 20 exemples candidats, 542 notions, 800 liens, niveaux dynamiques et override professeur ; branche non mergée dans `main`. | faible à moyen | Observer les classements, ajuster les alias et overrides depuis Teaching, puis décider séparément d'une fusion. |
 | Déploiement full-stack privé | preview déployée | Branche publiée, non mergée ; stable absente. | faible à moyen | Observer la preview puis garder le même protocole SHA/manifeste pour toute promotion. |
 | Profils de seed preview/production | implémenté preview | Preview sans roster historique ; production sans démo ; comptes Vincent et MALEX préservés. | faible | Ne jamais charger le roster historique en production. |
 | Persistance fichiers Docker | implémenté preview | Volume persistant, backup et restauration prouvés ; copie hors serveur encore absente. | moyen | Ajouter une copie chiffrée vers le Mac principal avant toute rétention. |
 | Smoke de release | implémenté preview | Cible explicite, REST et WebSocket verts via HTTPS Tailscale pour les deux comptes. | faible | Rejouer après chaque release. |
-| Ours d'Or pilote 3A conversation-first | partiel | Seed narratif et briques guidées disponibles, mais aucun RuntimePack pilote ni parcours de tour complet. | critique produit | Construire juste après le socle conversationnel minimal, sans attendre l'Asset Engine avancé. |
-| Talents Créatifs pilote 3B conversation-first | partiel | Corpus Drive et squelette local existent, mais aucun RuntimePack Core ni isolation équipe/étudiant prouvée dans le runtime commun. | critique produit | Construire comme pilote frère d'Ours d'Or sur le même backend, sans auth ni base parallèles. |
-| Capacités après pilotes | futur | MasterPlan, API Manage, UI riche, Dungeon Master et Asset Engine restent hors chemin critique immédiat. | faible à moyen | Les traiter après les gates propres aux deux pilotes. |
+| Ours d'Or pilote 3A conversation-first | implémenté sur la branche, non déployé | RuntimePack dédié, seed preview/dev, UI conversationnelle sommaire et source intake simulé/read-only ; aucun groupe réel. | moyen avant revue | Revoir le pack et les sources simulées ; décider séparément du groupe et du déploiement. |
+| Talents Créatifs pilote 3B conversation-first | implémenté sur la branche, non déployé | RuntimePack dédié sur le backend commun, isolation de contexte et source intake simulé/read-only ; aucun corpus importé. | moyen avant revue | Revoir l'isolation équipe/étudiant ; décider séparément du groupe et du déploiement. |
+| Capacités après pilotes | partiel sur la branche | Teaching multi-espace, MasterPlan data-first, Corrector/intakes opérationnels, UI/MASTERBUILD et Asset Engine ont une fondation additive ; Dungeon Master complet reste futur. | moyen | Merger seulement après revue ; activer providers, migrations réelles et console riche dans des gates séparés. |
 | Capacités Corrector | implémenté et déployé en preview | OCR, lots, rubriques, pré-correction, calibration, validation et suivi existent ; export privé approuvé et anti-répétition sont actifs en preview. | faible à moyen | Observer avant toute fusion `main` ; conserver export, envoi et validation finale sous contrôle humain. Corrector ne devient ni produit, ni verticale, ni persona actif. |
 | Experience Fabric / Event Spine | implémenté | Timeline et snapshot read-only publiés via PR #155. | faible | Utiliser comme spine commun pour précédents, storylets et narration. |
 | Experience Fabric / Precedent Engine | implémenté | Recherche de cas depuis mémoire, checkpoints, décisions et événements publiée via PR #156. | faible | Brancher les surfaces GodMode/UX plus tard, sans réutilisation automatique. |
@@ -47,7 +47,7 @@ récoltées après audit.
 | D06 correction / feedback | partiel | R1.1-R1.4 et R2.1-R2.6 sont sur `main` : prérequis, lot, intake, manifest professeur, sujet, assignment, fiche, paramètres, diff et édition privée. R1.5 reste fermée : aucun runner/provider ni traitement de copies. | faible à moyen | Garder R1.5 fermée tant qu'un contrat provider/consentement/runtime n'est pas validé explicitement. |
 | D05-D06 Teaching readiness | implémenté | Panneau mergé ; Teaching ouvert dans Home uniquement pour professeur et godmode ; backend complet 341/341 après recette isolée. | faible | Conserver stockage, export publié et envoi hors scope. |
 | D12 owner observability et continuité | partiel | Cockpit, findings, décisions owner, Usage Harvester V1, rails privés release/backup et registre d'incidents sont sur `main`. Live, backup réel, recovery et smoke restent non prouvés. | moyen | Rails de preuves clos ; toute action hôte reste derrière un contrat, un preflight et une validation séparés. |
-| D08 génération visuelle | partiel implémenté | R3.1-R3.4, le lifecycle asset candidat et le stockage fichier privé sont sur `main`. Provider, export, téléchargement public et canonisation restent absents. | moyen | Conserver toute génération derrière les gates provider/review/export. |
+| D08 génération visuelle | partiel étendu sur la branche | Lifecycle candidat et stockage privé complétés par mapping consumer/état, lignée et double review ; frontière ComfyUI `compile_only`. Provider, export public et canonisation restent absents. | moyen | Revoir les contrats puis conserver toute génération derrière les gates provider/review/export. |
 | Dataviz / Graph / Widget transversal | partiel documentaire | Legacy contient un système riche ; canon absorbe Source Truth, Output Readiness et Room maps ; Git expose seulement des fragments runtime. DATAVIZ-001 local pose audit, contrat portable et plan Factory→Mode, non encore publié. | moyen | Relire/publier DATAVIZ-001 avant toute refonte UI ou composant Dataviz runtime. |
 | MasterHelp / Situation Companion | futur candidat | Roadtrip révèle une primitive transversale de situation réelle, mais aucun mode Git n'existe. Spec candidate locale créée ; Factory Roadtrip V1.4 patchée hors Git comme pilote. | moyen | Tester le pilote, extraire les sorties `EXTRACTION MASTERHELP`, puis décider si cela devient mode MasterFlow. |
 | D09 MasterStory | partiel | R4.1-R4.6 sur `main` : workbench privé, reader state, patches candidats et validation auteur. Canon delta, import, export et publication absents. | moyen | Considérer le lot privé clos ; ne rouvrir delta/import/export qu'après décision produit et gates dédiés. |

@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-18T21:51:36+02:00",
+  "updated_at": "2026-08-31T20:56:21+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -14,59 +14,57 @@
     "commit_sha": "05af04f40d3fb91b1b0a326e5a5adf3cd4bf40b2",
     "pull_request": "https://github.com/Prof-Krapu/MASTERFLOW/pull/233"
   },
-  "active_round": {
+  "last_superseded_round": {
     "round_id": "UI-PAGE-BY-PAGE-001",
     "title": "Reprendre l'interface page par page",
-    "objective": "Auditer, corriger et faire valider chaque page dans l'ordre Login, Home, Project, Teaching puis Learn, sans relancer de lot transversal non validé.",
+    "status": "superseded",
+    "superseded_at": "2026-08-31T20:38:15+02:00",
+    "superseded_by": "FULLSTACK-CONSOLIDATION-001",
+    "reason": "Le plan full-stack validé absorbe la vérification UI restante sans déclarer conforme ce qui attend encore une revue MALEX."
+  },
+  "active_round": {
+    "round_id": "FULLSTACK-CONSOLIDATION-001",
+    "title": "Consolider MasterFlow full-stack par vagues",
+    "objective": "Livrer une PR reproductible couvrant les fondations, les deux pilotes conversationnels, Teaching, MasterPlan, Corrector, API_manage, UI, MASTERBUILD et Asset Engine, sans merge ni déploiement automatique.",
     "owner": "malex",
     "status": "active",
-    "stage_index": 6,
-    "stage_label": "Vérifier",
-    "recommended_next_action": "Reprendre l’audit page par page de Teaching à partir du runtime publié, sans rouvrir le fallback étudiant validé.",
-    "primary_risk": "Confondre un score candidat de pré-correction avec une note validée ou un sujet assigné avec une notion maîtrisée.",
+    "stage_index": 7,
+    "stage_label": "Publier",
+    "recommended_next_action": "Revoir la PR #249 puis demander un GO explicite avant merge ; le déploiement reste un gate séparé.",
+    "primary_risk": "Confondre une implémentation locale ou une preview avec une capacité stable, un apprentissage canonisé ou une migration réelle.",
     "no_auto_execute": true,
-    "work_package_ids": ["UPP-001", "UPP-002", "UPP-003", "UPP-004", "UPP-005", "UPP-006", "UPP-007", "UPP-008"],
-    "authorization_id": "AUTH-UPP-STUDENT-AVATAR-NEUTRAL-PUBLISH-2026-08-13",
+    "work_package_ids": ["FSC-001", "FSC-002", "FSC-003", "FSC-004", "FSC-005", "FSC-006", "FSC-007", "FSC-008", "FSC-009"],
+    "authorization_id": "AUTH-FULLSTACK-WAVES-0-9-PR-2026-08-31",
     "success_criteria": [
-      "Aucune page suivante n'est modifiée avant validation explicite de la page courante.",
-      "Chaque audit couvre rôle, thème, clavier, états, responsive 390 px et données réelles.",
-      "Une correction partagée du Shell n'est ouverte que si un finding de page prouve son besoin.",
-      "Une implémentation publiée n'est jamais confondue avec une conformité visuelle validée."
+      "Ours d'Or et Talents Créatifs disposent d'une V1 conversationnelle commune avec deux RuntimePacks isolés.",
+      "Les sources pilotes restent simulées ou lues sans mutation, avec provenance et gouvernance explicites.",
+      "Teaching, MasterPlan, Corrector et les intakes API_manage conservent leurs responsabilités et gates humaines.",
+      "Les mappings d'assets restent candidats jusqu'à double review et aucun provider réel n'est appelé.",
+      "Tests, lint, build, migration à blanc et smoke local sont verts avant la PR.",
+      "Aucun merge, déploiement, promotion stable, suppression physique ni migration réelle sans validation explicite."
     ],
-    "blockers": [],
+    "blockers": [
+      "merge de la PR à valider explicitement",
+      "provider et budget réels non validés",
+      "déploiement preview puis stable à valider séparément"
+    ],
     "validation_gates": [
-      "Login est validé par MALEX et ne demande aucune modification",
-      "Composition Home simplifiée validée explicitement par MALEX",
-      "Reprise V2 fondée sur l’activité réelle, multi-espace, filtrée et sans ouverture automatique de lien externe",
-      "Home validée par MALEX avant l'ouverture de Teaching",
-      "Teaching V1 runtime rejeté par MALEX et isolé hors du repo actif",
-      "Component Lab historique complet restauré sans réimporter les packs candidats lourds",
-      "Persona complète et logo dynamique du Shell présents dans le Lab unique",
-      "Teaching Lab et runtime utilisent le même composant avec fixtures signalées dans le Lab et données réelles dans le runtime",
-      "Teaching runtime utilise le périmètre pédagogique global autorisé et non le seul projet courant",
-      "Les fallbacks étudiants A/B sont décoratifs, stables et ne constituent aucune inférence d’identité",
-      "Le fallback neutre est publié via la PR #245 ; A/B ne viennent que d’une civilité CSV explicite ou d’une correction professeur",
-      "Les portraits élèves reprennent le langage Persona et leur statut provient uniquement du roster actif",
-      "La santé pédagogique et l’étape de travail utilisent deux codes visuels distincts",
-      "Un sujet filtre la classe sans navigation ; son crayon ouvre séparément la page Sujet",
-      "Les ateliers et formulaires historiques ne sont plus rendus sous la navigation Teaching",
-      "Teaching TCH-001 à TCH-004 est publié par la PR #244 : permissions durcies, projection attribuable et workflows contextuels",
-      "L’overview Teaching compacte classes × sujets est publiée par la PR #244 et reste en attente de validation visuelle MALEX",
-      "Project V2 est publié via PR #233 mais reste bloqué dans le registre de conformité",
-      "Les quatre modifications Inventory restent un candidat séparé, non committé",
-      "Aucun déploiement, backend, API, migration ou asset canonique dans ce Round"
+      "preflight vague 0 revalidé sur le SHA main de départ",
+      "implémentations locales non sensibles autorisées sur les vagues 1 à 9",
+      "commits logiques, push et ouverture de PR autorisés en fin de train",
+      "merge, migrations réelles, déploiements, suppressions et activation provider exclus",
+      "revue MALEX toujours requise avant conformité visuelle Teaching",
+      "aucun retour pilote canonisé automatiquement"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_PAGE_BY_PAGE_ROUND_001.md",
+      "docs/masterbuild/rounds/FULLSTACK_CONSOLIDATION_ROUND_001.md",
       "docs/masterbuild/MASTERBUILD_DESIGN_RULES.json",
       "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
       "docs/ui/MASTERFLOW_UI_CDC_CANON_V2.md",
       "FRONTEND_UI_DOCTRINE.md",
-      "docs/masterbuild/contracts/SHELL_DOCK_RUNTIME_MAPPING_001.md",
-      "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md",
-      "docs/masterbuild/preflights/STUDENT_AVATAR_FALLBACK_PREFLIGHT_001.md",
-      "docs/masterbuild/preflights/HOME_RESUME_HISTORY_V2_PREFLIGHT_001.md"
+      "docs/pilots/CONVERSATION_PILOTS_V1_IMPLEMENTATION.md",
+      "docs/pilots/PILOT_SOURCE_INTAKE_SIMULATION_2026-08-31.md"
     ]
   },
   "next_moves": [
@@ -102,7 +100,7 @@
       "move_id": "audit-home-after-login",
       "label": "Vérifier la reprise directe de la dernière activité",
       "reason": "Le format V1 restait bloqué sur Project ; la V2 suit désormais les activités utiles et ignore les cibles mortes.",
-      "recommended": true,
+      "recommended": false,
       "status": "awaiting_malex_review"
     },
     {
@@ -111,6 +109,20 @@
       "reason": "Le parcours runtime complet et la projection attribuable sont prêts localement ; la validation visuelle et métier MALEX reste attendue avant publication.",
       "recommended": false,
       "status": "awaiting_malex_review"
+    },
+    {
+      "move_id": "publish-fullstack-consolidation-pr",
+      "label": "Publier la consolidation full-stack en PR",
+      "reason": "Les vagues locales sont regroupées dans un train reproductible ; le merge reste un gate humain séparé.",
+      "recommended": false,
+      "status": "completed"
+    },
+    {
+      "move_id": "review-fullstack-consolidation-pr-249",
+      "label": "Revoir la PR #249 avant merge",
+      "reason": "La branche et son manifeste exact sont publiés ; le merge reste le prochain gate humain et ne vaut pas déploiement.",
+      "recommended": true,
+      "status": "awaiting_review"
     }
   ],
   "registries": {
@@ -137,37 +149,30 @@
     "mandatory_close": "Toute réponse de travail se termine par la prochaine étape recommandée."
   },
   "active_goal": {
-    "goal_id": "UI-PAGE-BY-PAGE-001",
-    "title": "Reprendre l'interface page par page",
+    "goal_id": "FULLSTACK-CONSOLIDATION-001",
+    "title": "Consolider MasterFlow full-stack par vagues",
     "owner": "malex",
     "status": "active",
-    "stage_index": 6,
-    "stage_label": "Vérifier",
+    "stage_index": 7,
+    "stage_label": "Publier",
     "source_truth_layer": "git_operable",
     "success_criteria": [
-      "Login validé avant Home",
-      "Chaque page validée dans ses états, rôles, thèmes et format 390 px",
-      "Aucune implémentation publiée déclarée conforme sans revue MALEX"
+      "Deux pilotes conversationnels isolés sur un backend commun",
+      "Fondations full-stack et assets traçables sans activation sensible",
+      "Gates locaux verts et PR ouverte sans merge"
     ],
-    "blockers": [],
+    "blockers": ["merge, provider et déploiement soumis à validation explicite"],
     "validation_gates": [
-      "PR #233 mergée au SHA 05af04f sans déploiement",
-      "Login validé par MALEX",
-      "Home simplifiée validée par MALEX",
-      "Teaching V1 runtime rejeté et isolé hors repo actif",
-      "Component Lab unique publié et Teaching partagé avec le runtime, validation MALEX attendue",
-      "Fallbacks étudiants génériques intégrés au Lab et au roster Teaching, validation MALEX attendue",
-      "TCH-001 à TCH-004 mergés via PR #244 au SHA 352dbcb",
-      "Overview Teaching compacte classes × sujets publiée, revue visuelle MALEX attendue",
-      "Project reste bloqué dans le registre de conformité",
-      "Inventory reste isolé dans son candidat dédié"
+      "vagues 0 à 9 autorisées localement",
+      "commit, push et PR autorisés en fin de train",
+      "aucun merge ni déploiement automatique",
+      "aucune promotion canonique automatique depuis un pilote ou un asset"
     ],
     "source_refs": [
-      "docs/masterbuild/rounds/UI_PAGE_BY_PAGE_ROUND_001.md",
+      "docs/masterbuild/rounds/FULLSTACK_CONSOLIDATION_ROUND_001.md",
       "docs/ui/MASTERFLOW_UI_BIBLE_V1.md",
       "docs/masterbuild/MASTERBUILD_UI_CONFORMANCE.json",
-      "docs/masterbuild/contracts/PROJECT_V2_DESIGN_PREFLIGHT_001.md",
-      "docs/masterbuild/preflights/STUDENT_AVATAR_FALLBACK_PREFLIGHT_001.md"
+      "docs/pilots/CONVERSATION_PILOTS_V1_IMPLEMENTATION.md"
     ]
   },
   "stages": [
@@ -205,13 +210,13 @@
       "index": 6,
       "id": "verify",
       "label": "Vérifier",
-      "status": "active"
+      "status": "completed"
     },
     {
       "index": 7,
       "id": "publish",
       "label": "Publier",
-      "status": "pending"
+      "status": "active"
     },
     {
       "index": 8,

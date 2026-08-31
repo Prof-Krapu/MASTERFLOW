@@ -1,9 +1,22 @@
 import {Router, type Request, type Response} from 'express';
 import multer from 'multer';
-import {GeneratedAssetTypeSchema, UploadBase64AssetRequestSchema} from '@masterflow/shared';
+import {
+  AssetConsumerKindSchema,
+  AssetProviderBoundaryRequestSchema,
+  CreateAssetConsumerBindingRequestSchema,
+  GeneratedAssetTypeSchema,
+  ReviewAssetConsumerBindingRequestSchema,
+  UploadBase64AssetRequestSchema,
+} from '@masterflow/shared';
 
 import {requireRole, requireUser, type AuthUser} from '../middleware/auth.ts';
 import {getAsset, listAssets, storeGeneratedAssetFile} from '../services/da_runtime.ts';
+import {
+  compileAssetProviderBoundary,
+  createAssetConsumerBinding,
+  listAssetConsumerBindings,
+  reviewAssetConsumerBinding,
+} from '../services/asset_engine.ts';
 
 const actor = (r: Request): AuthUser => { if (!r.user) throw new Error('unauthorized'); return r.user; };
 const fail = (s: Response, e: unknown): void => {
@@ -69,6 +82,38 @@ export function createAssetsRouter(): Router {
       const projectId = typeof q.query.project_id === 'string' ? q.query.project_id : undefined;
       s.json(listAssets(actor(q), manifestId, projectId));
     } catch (e) { fail(s, e); }
+  });
+
+  r.post('/assets/consumer-bindings', (q: Request, s: Response): void => {
+    const parsed = CreateAssetConsumerBindingRequestSchema.safeParse(q.body);
+    if (!parsed.success) { s.status(400).json({error: 'asset_binding_payload_invalid'}); return; }
+    try { s.status(201).json(createAssetConsumerBinding(actor(q), parsed.data)); } catch (e) { fail(s, e); }
+  });
+
+  r.get('/assets/consumer-bindings', (q: Request, s: Response): void => {
+    const consumerKind = typeof q.query.consumer_kind === 'string'
+      ? AssetConsumerKindSchema.safeParse(q.query.consumer_kind)
+      : undefined;
+    if (consumerKind && !consumerKind.success) { s.status(400).json({error: 'asset_binding_filter_invalid'}); return; }
+    try {
+      s.json(listAssetConsumerBindings(actor(q), {
+        consumerKind: consumerKind?.data,
+        consumerRef: typeof q.query.consumer_ref === 'string' ? q.query.consumer_ref : undefined,
+        stateKey: typeof q.query.state_key === 'string' ? q.query.state_key : undefined,
+      }));
+    } catch (e) { fail(s, e); }
+  });
+
+  r.post('/assets/consumer-bindings/:id/review', (q: Request, s: Response): void => {
+    const parsed = ReviewAssetConsumerBindingRequestSchema.safeParse(q.body);
+    if (!parsed.success) { s.status(400).json({error: 'asset_binding_review_invalid'}); return; }
+    try { s.json(reviewAssetConsumerBinding(actor(q), q.params.id ?? '', parsed.data)); } catch (e) { fail(s, e); }
+  });
+
+  r.post('/assets/provider-boundary/compile', (q: Request, s: Response): void => {
+    const parsed = AssetProviderBoundaryRequestSchema.safeParse(q.body);
+    if (!parsed.success) { s.status(400).json({error: 'asset_provider_boundary_invalid'}); return; }
+    s.json(compileAssetProviderBoundary(parsed.data));
   });
 
   r.get('/assets/:id', (q: Request, s: Response): void => {

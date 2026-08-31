@@ -46,7 +46,7 @@ export interface ComponentLabReviewState {
 }
 
 export const componentLabReviewState: ComponentLabReviewState = {
-  decisionExpected: 'Retrouver un seul Lab complet, garder Persona comme référence visuelle et construire Teaching ici avant toute promotion vers le runtime.',
+  decisionExpected: 'Vérifier le composant Teaching partagé, ses fixtures isolées et ses états desktop/390 px sans confondre preuve technique et validation esthétique MALEX.',
   links: [
     {href: '/', label: 'Runtime local', role: 'prototype'},
     {href: '/ui-reset', label: 'Prototype assemblé', role: 'prototype'},
@@ -55,11 +55,12 @@ export const componentLabReviewState: ComponentLabReviewState = {
     {href: 'https://github.com/Prof-Krapu/MASTERFLOW/blob/main/docs/ui/MASTERFLOW_UI_BIBLE_V1.md', label: 'Bible UI', role: 'doc'},
   ],
   outOfScope: [
+    'Merge de la PR',
     'Déploiement',
-    'Backend ou contrat API',
-    'Promotion automatique de Teaching vers le runtime',
+    'Migration réelle',
+    'Appel provider ou dépense',
+    'Promotion canonique automatique',
     'Réimport des anciens packs Stage Actor de 120 Mo',
-    'Validation des avatars étudiants candidats',
   ],
   pullRequest: {
     href: '/ui-lab',
@@ -67,14 +68,14 @@ export const componentLabReviewState: ComponentLabReviewState = {
     status: 'local',
   },
   round: {
-    id: 'UI-LAB-CONSOLIDATION-001',
-    status: 'En construction',
-    title: 'Component Lab unique et complet',
+    id: 'FULLSTACK-CONSOLIDATION-001',
+    status: 'Vérification locale',
+    title: 'MasterFlow full-stack · UI et Component Lab',
   },
   statusCards: [
     {color: '#ff6a3d', count: 14, id: 'surfaces', label: 'Surfaces', summary: 'Fondations, pages, Shell, états et promotion.'},
     {color: '#3979e8', count: 1, id: 'persona', label: 'Référence Persona', summary: 'Le composant complet du prototype est restauré dans le Lab.'},
-    {color: '#8b62c9', count: 1, id: 'teaching', label: 'Teaching Lab', summary: 'Candidat visuel isolé, non raccordé au runtime.'},
+    {color: '#8b62c9', count: 1, id: 'teaching', label: 'Teaching partagé', summary: 'Même surface côté Lab et runtime ; fixtures séparées et signalées.'},
     {color: '#6fcf97', count: 1, id: 'home', label: 'Home validée', summary: 'Les modifications Home restent préservées.'},
     {color: '#d83e34', count: 1, id: 'rejected', label: 'Rejeté', summary: 'L’ancien candidat Teaching runtime ne doit pas être publié.'},
   ],
@@ -93,10 +94,19 @@ export const componentLabReviewState: ComponentLabReviewState = {
       owner: 'Vincent',
       title: 'Validation technique légère',
       items: [
-        {detail: 'Le serveur frontend démarre et affiche les deux workspaces.', done: false, id: 'vincent-local', label: 'Lancement local'},
+        {detail: 'Le serveur frontend démarre et affiche les deux workspaces.', done: true, id: 'vincent-local', label: 'Lancement local'},
         {detail: '/ui-lab et /ui-lab/vincent utilisent exactement le même code.', done: true, id: 'vincent-routes', label: 'Route unique'},
         {detail: 'Le profil ProfKrapu reste distinct du profil MALEX.', done: true, id: 'vincent-profile', label: 'Profil séparé'},
-        {detail: 'Aucun backend ni contrat API n’est modifié dans cette vague.', done: true, id: 'vincent-backend', label: 'Backend intact'},
+        {detail: 'Les ajouts backend full-stack restent additifs, testés et sans provider réel.', done: true, id: 'vincent-backend', label: 'Contrats bornés'},
+      ],
+    },
+    {
+      owner: 'Codex',
+      title: 'QA locale reproductible',
+      items: [
+        {detail: 'Les palettes claire et sombre conservent les rôles sémantiques.', done: true, id: 'codex-themes', label: 'Couleurs'},
+        {detail: 'Classes, sujets, profils et progression sont navigables dans les fixtures signalées.', done: true, id: 'codex-teaching', label: 'Parcours Teaching'},
+        {detail: 'Le détail étudiant ne déborde plus et empile Apprentissage puis Accompagnement à 390 px.', done: true, id: 'codex-mobile', label: 'Responsive 390 px'},
       ],
     },
   ],

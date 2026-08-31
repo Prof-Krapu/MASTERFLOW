@@ -6,6 +6,7 @@ import {executeSetUserRole} from './users_admin.ts';
 import {executeTransferProjectOwnership} from './project_ownership.ts';
 import {createImageGenerationJob} from '../services/jobs.ts';
 import {getDb} from '../db/schema.ts';
+import {executeSoftArchiveOperationalIntake} from '../services/operational_intake.ts';
 
 /**
  * Registre des exécuteurs réels d'actions, indexés par `registry_id`.
@@ -26,6 +27,7 @@ export const ACTION_EXECUTORS: Record<
   transfer_project_ownership: executeTransferProjectOwnership,
   generate_scene_visual: executeGenerateSceneVisual,
   create_render_manifest: executeGenerateSceneVisual,
+  soft_archive_operational_intake: executeSoftArchiveOperationalIntake,
 };
 
 function executeGenerateSceneVisual(actor: AuthUser, action: Action): Record<string, unknown> {

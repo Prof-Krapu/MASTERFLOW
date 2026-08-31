@@ -19,6 +19,11 @@ export function listRuntimePacks(): RuntimePackManifest[] {
   return cache;
 }
 
+/** Résout un manifeste exact ; aucun fallback silencieux entre deux pilotes. */
+export function getRuntimePack(packId: string): RuntimePackManifest | null {
+  return listRuntimePacks().find((pack) => pack.pack_id === packId) ?? null;
+}
+
 export interface RuntimePackResolution {
   available_pack_ids: string[];
   pack_availability: RuntimePackAvailability[];

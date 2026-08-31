@@ -76,7 +76,7 @@ import {ClassProjection} from './class-projection.tsx';
 import {PedagogicalAssistancePanel} from './pedagogical-assistance-panel.tsx';
 import {PedagogicalResourceRegistry} from './pedagogical-resource-registry.tsx';
 import {getStudentPlaceholderAsset} from './student-avatar-assets.ts';
-import {ComponentLabTeaching} from './ui-reset/component-lab-teaching.tsx';
+import {TeachingWorkspaceSurface} from './ui-reset/component-lab-teaching.tsx';
 import type {TeachingStudentSubjectState, TeachingSurfaceClass, TeachingSurfaceSubject} from './ui-reset/component-lab-teaching.tsx';
 
 type TeachingReadinessProps = {
@@ -1301,7 +1301,7 @@ export function TeachingReadiness({
           <button className="secondary" onClick={() => setDemoRequested(true)} type="button">Voir le jeu fictif</button>
         </aside>
       ) : null}
-      <ComponentLabTeaching
+      <TeachingWorkspaceSurface
         classes={localTeachingDemo ? undefined : teachingPresentation.classes}
         dataMode={localTeachingDemo ? 'demo' : 'runtime'}
         onAssignSubject={localTeachingDemo ? undefined : assignSubjectFromClass}

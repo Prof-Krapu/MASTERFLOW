@@ -45,6 +45,12 @@ import {createNarrativeRuntimeRouter} from './routers/narrative_runtime.ts';
 import {createAssetsRouter} from './routers/assets.ts';
 import {createTtsRouter} from './routers/tts.ts';
 import {createExperienceFabricRouter} from './routers/experience_fabric.ts';
+import {createConversationRouter} from './routers/conversation.ts';
+import {createSourceIntakeRouter} from './routers/source_intake.ts';
+import {createPilotsRouter} from './routers/pilots.ts';
+import {createTeachingFoundationRouter} from './routers/teaching_foundation.ts';
+import {createMasterPlanAdapterRouter} from './routers/masterplan_adapter.ts';
+import {createOperationalIntakeRouter} from './routers/operational_intake.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -132,6 +138,12 @@ async function main(): Promise<void> {
   app.use(api, createAssetsRouter());
   app.use(`${api}/tts`, createTtsRouter());
   app.use(api, createExperienceFabricRouter());
+  app.use(api, createConversationRouter());
+  app.use(api, createSourceIntakeRouter());
+  app.use(api, createPilotsRouter());
+  app.use(api, createTeachingFoundationRouter());
+  app.use(api, createMasterPlanAdapterRouter());
+  app.use(api, createOperationalIntakeRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

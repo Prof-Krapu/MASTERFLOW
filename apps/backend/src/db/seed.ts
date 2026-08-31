@@ -494,7 +494,7 @@ export async function seedAll(): Promise<{
       purpose: 'Point de départ : reprendre le contexte et lancer une action utile.',
       default_widgets: ['room_context_card', 'contextual_action_bar', 'validation_inbox_mini'],
       active_persona: 'profkrapu-001',
-      active_mode_cycle: ['home', 'teaching', 'learning', 'inventory'],
+      active_mode_cycle: ['home', 'teaching', 'planning', 'learning', 'inventory'],
     };
     db.prepare(
       `INSERT INTO rooms (id, name, type, owner_id, context_json, is_public, created_at, updated_at)
@@ -515,8 +515,8 @@ export async function seedAll(): Promise<{
     const configuredModes = Array.isArray(context['active_mode_cycle'])
       ? context['active_mode_cycle'].filter((mode): mode is string => typeof mode === 'string')
       : ['home'];
-    const activeModeCycle = [...new Set([...configuredModes, 'teaching', 'learning'])];
-    if (!configuredModes.includes('teaching') || !configuredModes.includes('learning')) {
+    const activeModeCycle = [...new Set([...configuredModes, 'teaching', 'planning', 'learning'])];
+    if (!configuredModes.includes('teaching') || !configuredModes.includes('planning') || !configuredModes.includes('learning')) {
       db.prepare('UPDATE rooms SET context_json = ?, updated_at = ? WHERE id = ?').run(
         JSON.stringify({...context, active_mode_cycle: activeModeCycle}),
         now,
@@ -535,7 +535,7 @@ export async function seedAll(): Promise<{
       purpose: 'Espace MALEX — pilotage et suivi pédagogique.',
       default_widgets: ['room_context_card', 'contextual_action_bar', 'validation_inbox_mini'],
       active_persona: 'masterflex-001',
-      active_mode_cycle: ['home', 'teaching', 'learning', 'inventory'],
+      active_mode_cycle: ['home', 'teaching', 'planning', 'learning', 'inventory'],
     };
     db.prepare(
       `INSERT INTO rooms (id, name, type, owner_id, context_json, is_public, created_at, updated_at)
@@ -555,13 +555,95 @@ export async function seedAll(): Promise<{
     const configuredModes = Array.isArray(context['active_mode_cycle'])
       ? context['active_mode_cycle'].filter((mode): mode is string => typeof mode === 'string')
       : ['home'];
-    const activeModeCycle = [...new Set([...configuredModes, 'teaching', 'learning'])];
-    if (!configuredModes.includes('teaching') || !configuredModes.includes('learning')) {
+    const activeModeCycle = [...new Set([...configuredModes, 'teaching', 'planning', 'learning'])];
+    if (!configuredModes.includes('teaching') || !configuredModes.includes('planning') || !configuredModes.includes('learning')) {
       db.prepare('UPDATE rooms SET context_json = ?, updated_at = ? WHERE id = ?').run(
         JSON.stringify({...context, active_mode_cycle: activeModeCycle}),
         now,
         existingMalexHome.id,
       );
+    }
+  }
+
+  // ── Pilotes conversationnels V1 — preview/development uniquement ─────────
+  // Aucun étudiant ni corpus externe n'est seedé. Les Rooms n'exposent que leur RuntimePack.
+  if (seedProfile !== 'production') {
+    const insertPilotProject = db.prepare(
+      `INSERT OR IGNORE INTO projects
+         (id, owner_id, name, status, visibility, created_at, updated_at)
+       VALUES (?, ?, ?, 'active', 'private', ?, ?)`,
+    );
+    const insertPilotMember = db.prepare(
+      `INSERT OR IGNORE INTO project_members (project_id, user_id, role, created_at)
+       VALUES (?, ?, ?, ?)`,
+    );
+    const insertPilotRoom = db.prepare(
+      `INSERT OR IGNORE INTO rooms
+         (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
+       VALUES (?, ?, 'workspace', ?, ?, ?, 0, ?, ?)`,
+    );
+    const insertPilotInstance = db.prepare(
+      `INSERT OR IGNORE INTO room_instances
+         (id, room_id, user_id, zoom_level, active_surface, cognitive_density,
+          widget_state_json, created_at, updated_at)
+       VALUES (?, ?, ?, 'workspace', 'workspace', 'medium', NULL, ?, ?)`,
+    );
+    const pilotActions = [
+      'get_current_context',
+      'list_available_actions',
+      'plan_conversation_turn',
+      'preflight_action',
+      'execute_action',
+      'approve_validation_item',
+    ];
+    const pilots = [
+      {
+        projectId: 'ours-dor-pilot-project-v1',
+        projectName: "Ours d'Or — pilote V1",
+        roomId: 'ours-dor-pilot-room-v1',
+        roomName: "Ours d'Or — atelier conversationnel",
+        packId: 'ours-dor-pilot-v1',
+        personaId: 'masterflex-001',
+        modes: ['project', 'learning', 'story'],
+      },
+      {
+        projectId: 'talents-creatifs-pilot-project-v1',
+        projectName: 'Talents Créatifs — pilote V1',
+        roomId: 'talents-creatifs-pilot-room-v1',
+        roomName: 'Talents Créatifs — atelier conversationnel',
+        packId: 'talents-creatifs-pilot-v1',
+        personaId: 'profkrapu-001',
+        modes: ['project', 'learning', 'teaching'],
+      },
+    ];
+    for (const pilot of pilots) {
+      insertPilotProject.run(pilot.projectId, malex.id, pilot.projectName, now, now);
+      insertPilotMember.run(pilot.projectId, malex.id, 'owner', now);
+      insertPilotMember.run(pilot.projectId, god.id, 'admin', now);
+      insertPilotRoom.run(
+        pilot.roomId,
+        pilot.roomName,
+        malex.id,
+        pilot.projectId,
+        JSON.stringify({
+          purpose: 'Pilote conversation-first avec sources et validations bornées.',
+          runtime_pack_ids: [pilot.packId],
+          allowed_action_ids: pilotActions,
+          default_action_ids: ['plan_conversation_turn'],
+          active_persona: pilot.personaId,
+          active_mode_cycle: pilot.modes,
+          default_widgets: [
+            'conversation_shell',
+            'project_context',
+            'source_intake',
+            'validation_inbox_mini',
+          ],
+        }),
+        now,
+        now,
+      );
+      insertPilotInstance.run(`${pilot.roomId}-malex`, pilot.roomId, malex.id, now, now);
+      insertPilotInstance.run(`${pilot.roomId}-vincent`, pilot.roomId, god.id, now, now);
     }
   }
 
