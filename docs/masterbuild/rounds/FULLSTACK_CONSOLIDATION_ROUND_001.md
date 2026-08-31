@@ -42,8 +42,8 @@ provider réel, groupes pilotes et sources réelles restent hors de cette clôtu
 
 ## Suivi post-round
 
-La tranche `UI-PILOTS-NO-PROVIDER-001` enrichit localement l'accès Home et le workspace des deux
-pilotes. Elle n'est ni commitée ni déployée et exige son propre gate de publication.
+La tranche `UI-PILOTS-NO-PROVIDER-001` enrichit l'accès Home et le workspace des deux pilotes dans
+la PR #250. Son merge est autorisé ; son déploiement reste soumis à un gate séparé.
 
 ## Source opératoire
 

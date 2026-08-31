@@ -27,9 +27,9 @@ deux pilotes, sans clé ni appel réseau.
 - Risque : faible à moyen ; la promesse reste du guidage, aucune validation professeur ni production
   de livrable final ne doit être introduite.
 - Source de vérité concernée : canon des pilotes, shell frontend actif et état pilote backend.
-- Statut : validé tel quel par MALEX et publié dans la PR #250 au commit `429fa473bf01` ; non mergé
-  et non déployé.
-- Validation requise : obtenue pour commit, push et PR ; oui séparément avant merge.
+- Statut : validé tel quel par MALEX et publié dans la PR #250 ; merge autorisé et en cours, non
+  déployé.
+- Validation requise : obtenue pour commit, push, PR et merge ; oui séparément avant déploiement.
 
 ### 2. À mettre en queue
 

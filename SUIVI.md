@@ -11,9 +11,8 @@ TRANCHE ACTIVE :
 - id : `UI-PILOTS-NO-PROVIDER-001` ;
 - objectif : avancer l'interface d'Ours d'Or et Talents Créatifs avant la clé API, sans toucher au
   provider ni au serveur ;
-- statut : interface validée telle quelle par MALEX et publiée dans la PR #250 depuis la branche
-  `codex/ui-pilots-no-provider` au commit `429fa473bf017e2014d8a838cf02d744d637f35f` ; merge et
-  déploiement exclus ;
+- statut : interface validée telle quelle par MALEX, publiée dans la PR #250 et autorisée au merge ;
+  déploiement exclu ;
 - résultat : les deux pilotes sont accessibles depuis la Home active et partagent un workspace
   conversationnel responsive avec projet, étape, prochaine action, sources, validations et persona ;
 - runtime : état pilote lu depuis `/api/v1/pilots/{pack}/state`, chat WebSocket en `mock`, aucune
@@ -21,8 +20,7 @@ TRANCHE ACTIVE :
 - recette : Home desktop/mobile, Ours d'Or + MasterFlex, Talents Créatifs + ProfKrapu, prompt guidé,
   réponse mock, retour Home et console navigateur sans erreur ;
 - tests : lint frontend et build frontend verts ;
-- prochaine action : revue de la PR #250 puis validation explicite avant merge ; déploiement preview
-  dans un gate séparé ;
+- prochaine action : merger la PR #250 puis s'arrêter avant tout déploiement preview ;
 - blocage volontaire : provider réel reporté aux tests IRL.
 
 ---

@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "updated_at": "2026-08-31T22:05:00+02:00",
+  "updated_at": "2026-08-31T22:13:32+02:00",
   "program": {
     "program_id": "MASTERFLOW-BUILD",
     "title": "Construire et livrer une première version utilisable de MasterFlow",
@@ -30,11 +30,11 @@
     "status": "active",
     "stage_index": 7,
     "stage_label": "Publier",
-    "recommended_next_action": "Revoir la PR #250 puis demander un GO explicite avant merge.",
+    "recommended_next_action": "Merger la PR #250 puis s'arrêter avant tout déploiement.",
     "primary_risk": "Présenter le mode mock comme une IA réelle ou masquer qu'une validation humaine reste nécessaire.",
     "no_auto_execute": true,
     "work_package_ids": ["UI-PILOTS-001"],
-    "authorization_id": "AUTH-UI-PILOTS-PUBLISH-2026-08-31",
+    "authorization_id": "AUTH-UI-PILOTS-MERGE-2026-08-31",
     "success_criteria": [
       "La Home active expose les deux pilotes sans route cachée ni shell parallèle.",
       "Le même workspace affiche projet, étape, prochaine action, sources, validations et chat.",
@@ -45,13 +45,13 @@
     ],
     "blockers": [
       "provider et budget réels reportés aux tests IRL",
-      "merge de la PR #250 à valider explicitement",
       "déploiement preview à valider séparément"
     ],
     "validation_gates": [
       "implémentation locale validée telle quelle par MALEX",
       "commit, push et PR autorisés par AUTH-UI-PILOTS-PUBLISH-2026-08-31",
-      "merge et déploiement exclus sans nouveau GO",
+      "merge autorisé par AUTH-UI-PILOTS-MERGE-2026-08-31",
+      "déploiement exclu sans nouveau GO",
       "aucune donnée pilote réelle ni source privée ajoutée",
       "aucune validation professeur ou production finale automatisée",
       "aucun retour pilote canonisé automatiquement"
@@ -127,9 +127,9 @@
     {
       "move_id": "review-publish-ui-pilots-no-provider",
       "label": "Revoir puis publier l'interface locale des deux pilotes",
-      "reason": "La Home et le workspace conversationnel sont publiés dans la PR #250 sans provider ; le merge exige maintenant un GO distinct.",
+      "reason": "La Home et le workspace conversationnel sont publiés sans provider ; le merge de la PR #250 est autorisé et le déploiement reste séparé.",
       "recommended": true,
-      "status": "awaiting_merge_authorization"
+      "status": "merging"
     }
   ],
   "registries": {
@@ -168,10 +168,10 @@
       "Même shell conversationnel avec RuntimePacks et personas distincts",
       "Mode mock explicite et recette desktop mobile verte"
     ],
-    "blockers": ["merge et déploiement soumis à validation explicite séparée", "provider réel reporté aux tests IRL"],
+    "blockers": ["déploiement soumis à validation explicite séparée", "provider réel reporté aux tests IRL"],
     "validation_gates": [
       "interface locale validée telle quelle par MALEX",
-      "commit, push et PR autorisés ; aucun merge ou déploiement automatique",
+      "commit, push, PR et merge autorisés ; aucun déploiement automatique",
       "aucune promotion canonique automatique depuis un pilote ou un asset"
     ],
     "source_refs": [

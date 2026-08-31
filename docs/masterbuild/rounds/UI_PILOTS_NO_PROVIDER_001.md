@@ -10,6 +10,8 @@ Autorisation locale : `AUTH-UI-PILOTS-NO-PROVIDER-LOCAL-2026-08-31`
 
 Autorisation de publication : `AUTH-UI-PILOTS-PUBLISH-2026-08-31`
 
+Autorisation de merge : `AUTH-UI-PILOTS-MERGE-2026-08-31`
+
 ## Intention produit
 
 Faire avancer l'interface des deux premiers pilotes avant l'arrivée d'une clé API, sans masquer la
@@ -25,7 +27,7 @@ nature simulée des réponses et sans modifier les garde-fous pédagogiques.
 - Critère de succès : les deux pilotes sont trouvables et utilisables en `mock` sur desktop/mobile,
   avec le même shell et deux identités distinctes.
 - Risque principal : faire croire qu'une IA réelle ou une validation automatique est active.
-- Validation nécessaire : obtenue pour commit, push et PR ; oui séparément avant merge ou
+- Validation nécessaire : obtenue pour commit, push, PR et merge ; oui séparément avant
   déploiement.
 
 ## Preuves locales
@@ -41,6 +43,6 @@ nature simulée des réponses et sans modifier les garde-fous pédagogiques.
 ## Gate courant
 
 Interface validée telle quelle par MALEX et publiée dans la PR #250 depuis
-`codex/ui-pilots-no-provider` au commit `429fa473bf017e2014d8a838cf02d744d637f35f`. Le round est
-arrêté avant le merge, qui exige une validation explicite séparée. Le provider réel reste reporté aux
-tests IRL et tout déploiement conserve son gate séparé.
+`codex/ui-pilots-no-provider`. Le merge est explicitement autorisé ; le round doit ensuite s'arrêter
+avant tout déploiement. Le provider réel reste reporté aux tests IRL et le serveur conserve son gate
+séparé.
