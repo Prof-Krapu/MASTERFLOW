@@ -56,6 +56,7 @@ import type {
   GuidedContribution,
   Job,
   MatchInventoryProjectNeedRequest,
+  MasterPlanPlanningView,
   OwnerCockpitStatus,
   NarrativeCanonGraph,
   NarrativePresentationMode,
@@ -87,6 +88,7 @@ import type {
   RoomCheckpoint,
   Room,
   RoomInstance,
+  RuntimeUserProfile,
   SourceIntakeRecord,
   SetCollectionCompletionRequest,
   SubmissionRecord,
@@ -116,6 +118,8 @@ import type {
   StoryletEvaluation,
   StoryPatchCandidate,
   StoryReaderState,
+  StyleLearningSnapshot,
+  UpdateStyleLearningPreferencesRequest,
   CreateStoryWorkbenchRequest,
   CreateStoryPatchCandidateRequest,
   SetStoryReaderStateRequest,
@@ -123,8 +127,14 @@ import type {
   CreatePrivateQuoteDraftRequest,
 } from '@masterflow/shared';
 
+import {
+  clearStoredRuntimeAuthToken,
+  readRuntimeAuthToken,
+  storeRuntimeAuthToken,
+} from './runtime-auth-storage.ts';
+import type {RuntimeAuthPersistence} from './runtime-auth-storage.ts';
+
 const API_BASE = '/api/v1';
-const RUNTIME_AUTH_STORAGE_KEY = 'masterflow.runtime-auth-token';
 
 let authToken: string | null = null;
 
@@ -132,19 +142,22 @@ export function setToken(token: string | null): void {
   authToken = token;
 }
 
-export function persistRuntimeAuthToken(token: string): void {
-  window.sessionStorage.setItem(RUNTIME_AUTH_STORAGE_KEY, token);
+export function persistRuntimeAuthToken(
+  token: string,
+  persistence: RuntimeAuthPersistence = 'session',
+): void {
+  storeRuntimeAuthToken(token, persistence);
   setToken(token);
 }
 
 export function restoreRuntimeAuthToken(): string | null {
-  const token = window.sessionStorage.getItem(RUNTIME_AUTH_STORAGE_KEY);
+  const token = readRuntimeAuthToken();
   setToken(token);
   return token;
 }
 
 export function clearRuntimeAuthToken(): void {
-  window.sessionStorage.removeItem(RUNTIME_AUTH_STORAGE_KEY);
+  clearStoredRuntimeAuthToken();
   setToken(null);
 }
 
@@ -192,12 +205,16 @@ async function request<T>(path: string, init: RequestInit, token?: string | null
   return (await response.json()) as T;
 }
 
-export async function login(username: string, password: string): Promise<AuthResponse> {
+export async function login(
+  username: string,
+  password: string,
+  persistence: RuntimeAuthPersistence = 'session',
+): Promise<AuthResponse> {
   const auth = await request<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({username, password}),
   });
-  persistRuntimeAuthToken(auth.token);
+  persistRuntimeAuthToken(auth.token, persistence);
   return auth;
 }
 
@@ -207,6 +224,12 @@ export async function getCurrentContext(
 ): Promise<CurrentContext> {
   const query = roomId ? `?room_id=${encodeURIComponent(roomId)}` : '';
   return request<CurrentContext>(`/context/current${query}`, {method: 'GET'}, token);
+}
+
+export async function getMasterPlanPlanning(
+  token?: string | null,
+): Promise<MasterPlanPlanningView> {
+  return request<MasterPlanPlanningView>('/planning/masterplan', {method: 'GET'}, token);
 }
 
 export async function getRooms(token?: string | null): Promise<Room[]> {
@@ -256,6 +279,12 @@ export async function getLearningProfile(
   );
 }
 
+export async function getRuntimeUserProfile(
+  token?: string | null,
+): Promise<RuntimeUserProfile> {
+  return request<RuntimeUserProfile>('/profile/runtime', {method: 'GET'}, token);
+}
+
 export async function getPersonas(token?: string | null): Promise<Persona[]> {
   return request<Persona[]>('/personas', {method: 'GET'}, token);
 }
@@ -270,6 +299,28 @@ export async function getPendingActions(token?: string | null): Promise<Action[]
 
 export async function getJobs(token?: string | null): Promise<Job[]> {
   return request<Job[]>('/jobs', {method: 'GET'}, token);
+}
+
+export async function getStyleLearningSnapshot(
+  token?: string | null,
+): Promise<StyleLearningSnapshot> {
+  return request<StyleLearningSnapshot>('/style-mirror/learning/me', {method: 'GET'}, token);
+}
+
+export async function updateStyleLearningPreferences(
+  body: UpdateStyleLearningPreferencesRequest,
+  token?: string | null,
+): Promise<StyleLearningSnapshot> {
+  return request<StyleLearningSnapshot>('/style-mirror/learning/me', {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  }, token);
+}
+
+export async function resetStyleLearning(
+  token?: string | null,
+): Promise<StyleLearningSnapshot> {
+  return request<StyleLearningSnapshot>('/style-mirror/learning/me/reset', {method: 'POST'}, token);
 }
 
 export async function getCohorts(projectId?: string | null, token?: string | null): Promise<Cohort[]> {
@@ -940,6 +991,23 @@ export async function createInventoryItem(
   return request<InventoryItem>('/inventory/items', {
     method: 'POST',
     body: JSON.stringify(body),
+  }, token);
+}
+
+export async function importPersonalResourceProposals(
+  token?: string | null,
+): Promise<{imported: number; already_present: number; unavailable: number; items: InventoryItem[]}> {
+  return request('/inventory/import-resource-proposals', {method: 'POST'}, token);
+}
+
+export async function shareInventoryItemToProject(
+  itemId: string,
+  projectId: string,
+  token?: string | null,
+): Promise<{created: boolean; item: InventoryItem}> {
+  return request(`/inventory/items/${encodeURIComponent(itemId)}/share-to-project`, {
+    method: 'POST',
+    body: JSON.stringify({project_id: projectId}),
   }, token);
 }
 

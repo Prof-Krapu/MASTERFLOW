@@ -33,6 +33,7 @@ import {
   type IngestInventoryOcrCandidatesRequest,
   type ListInventoryItemsRequest,
   type ProjectMemberRole,
+  type Resource,
   type ResolveCollectionMatchRequest,
   type MatchInventoryProjectNeedRequest,
   type ScanInventoryPhotoRequest,
@@ -45,6 +46,8 @@ import {
   type InventoryCollectionRow,
   type InventoryItemRow,
   type InventoryProjectNeedRow,
+  type AuditLogRow,
+  type ResourceRow,
 } from '../db/schema.ts';
 import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
@@ -644,6 +647,164 @@ export function createInventoryItem(actor: AuthUser, input: CreateInventoryItemR
     detail: {item_id: id, project_id: projectId, validation_status: 'candidate'},
   });
   return toItem(getItemRow(id)!);
+}
+
+function resourceInventoryType(resource: Pick<Resource, 'type' | 'url'>): CreateInventoryItemRequest['type'] {
+  const value = `${resource.type} ${resource.url ?? ''}`.toLocaleLowerCase('fr');
+  if (/youtube|youtu\.be|vimeo|dailymotion|\.mp4(?:$|\?)/.test(value) || resource.type === 'video') return 'video';
+  if (resource.type === 'note' || !resource.url) return 'note';
+  return 'link';
+}
+
+function findInventoryItemByResourceRef(actor: AuthUser, resourceId: string): InventoryItem | null {
+  const rows = getDb()
+    .prepare("SELECT * FROM inventory_items WHERE owner_id = ? AND project_id IS NULL AND validation_status != 'archived'")
+    .all(actor.id) as InventoryItemRow[];
+  const expected = `resource:${resourceId}`;
+  const row = rows.find((candidate) => {
+    try {
+      return (JSON.parse(candidate.source_refs_json) as unknown[]).includes(expected);
+    } catch {
+      return false;
+    }
+  });
+  return row ? toItem(row) : null;
+}
+
+/**
+ * Enregistre la possession personnelle d'une proposition Resource Truth sans confondre
+ * le canon système avec l'Inventory de son auteur. Idempotent via `resource:<id>`.
+ */
+export function mirrorResourceProposalIntoInventory(
+  actor: AuthUser,
+  resource: Resource,
+): {created: boolean; item: InventoryItem} {
+  const existing = findInventoryItemByResourceRef(actor, resource.id);
+  if (existing) return {created: false, item: existing};
+  const sourceRefs = [`resource:${resource.id}`];
+  if (resource.url) sourceRefs.push(resource.url.slice(0, 240));
+  const item = createInventoryItem(actor, {
+    project_id: null,
+    type: resourceInventoryType(resource),
+    label: resource.title,
+    creator_or_brand: null,
+    item_status: 'owned_declared',
+    intent: 'Ressource personnelle proposée à MasterFlow',
+    quantity: 1,
+    usage_tags: [...new Set([...(resource.subjects ?? []), 'ressource'])].slice(0, 30),
+    source_refs: sourceRefs,
+    visibility_scope: 'private',
+  });
+  return {created: true, item};
+}
+
+/** Rattrape les anciennes propositions de l'utilisateur depuis l'audit immuable. */
+export function importPersonalResourceProposals(actor: AuthUser): {
+  imported: number;
+  already_present: number;
+  unavailable: number;
+  items: InventoryItem[];
+} {
+  const logs = getDb()
+    .prepare("SELECT * FROM audit_logs WHERE user_id = ? AND event_type = 'resource.proposed' ORDER BY created_at")
+    .all(actor.id) as AuditLogRow[];
+  const resourceIds = [...new Set(logs.flatMap((log) => {
+    try {
+      const detail = JSON.parse(log.detail_json ?? '{}') as {resource_id?: unknown};
+      return typeof detail.resource_id === 'string' ? [detail.resource_id] : [];
+    } catch {
+      return [];
+    }
+  }))];
+  const items: InventoryItem[] = [];
+  let imported = 0;
+  let alreadyPresent = 0;
+  let unavailable = 0;
+  for (const resourceId of resourceIds) {
+    const row = getDb().prepare('SELECT * FROM resources WHERE id = ?').get(resourceId) as ResourceRow | undefined;
+    if (!row) {
+      unavailable += 1;
+      continue;
+    }
+    const resource: Resource = {
+      id: row.id,
+      type: row.type,
+      title: row.title,
+      url: row.url,
+      source: row.source,
+      status: row.status,
+      subjects: JSON.parse(row.subjects_json ?? 'null') as string[] | null,
+    };
+    const result = mirrorResourceProposalIntoInventory(actor, resource);
+    items.push(result.item);
+    if (result.created) imported += 1;
+    else alreadyPresent += 1;
+  }
+  audit({
+    event_type: 'inventory.resource_proposals_imported',
+    user_id: actor.id,
+    scope: actor.id,
+    detail: {imported, already_present: alreadyPresent, unavailable},
+  });
+  return {imported, already_present: alreadyPresent, unavailable, items};
+}
+
+/**
+ * Partage explicite d'un item personnel validé vers un projet. Le snapshot projet reste
+ * traçable vers l'original et reçoit son propre index RAG permissionné pour le Link Engine.
+ */
+export function shareInventoryItemToProject(
+  actor: AuthUser,
+  itemId: string,
+  projectId: string,
+): {created: boolean; item: InventoryItem} {
+  const source = getItemRow(itemId);
+  if (!source || source.owner_id !== actor.id || source.project_id !== null) {
+    throw new Error('inventory_item_not_found');
+  }
+  if (source.validation_status !== 'validated') throw new Error('inventory_item_not_validated');
+  assertCanWriteScope(actor, projectId);
+  const expectedRef = `inventory-item:${source.id}`;
+  const projectRows = getDb()
+    .prepare("SELECT * FROM inventory_items WHERE project_id = ? AND validation_status != 'archived'")
+    .all(projectId) as InventoryItemRow[];
+  const existing = projectRows.find((row) => {
+    try {
+      return (JSON.parse(row.source_refs_json) as unknown[]).includes(expectedRef);
+    } catch {
+      return false;
+    }
+  });
+  if (existing) return {created: false, item: toItem(existing)};
+
+  const created = createInventoryItem(actor, {
+    project_id: projectId,
+    collection_id: null,
+    type: source.type as CreateInventoryItemRequest['type'],
+    label: source.label,
+    creator_or_brand: source.creator_or_brand,
+    item_status: source.item_status,
+    intent: source.intent,
+    quantity: source.quantity,
+    condition: source.condition,
+    estimated_value: source.estimated_value,
+    replacement_cost: source.replacement_cost,
+    usage_tags: JSON.parse(source.usage_tags_json) as string[],
+    source_refs: [...new Set([...(JSON.parse(source.source_refs_json) as string[]), expectedRef])].slice(0, 30),
+    visibility_scope: 'project',
+  });
+  const now = Date.now();
+  getDb().prepare("UPDATE inventory_items SET validation_status = 'validated', updated_at = ? WHERE id = ?")
+    .run(now, created.item_id);
+  indexInventoryItemRagResource(actor, created.item_id);
+  const shared = toItem(getItemRow(created.item_id)!);
+  audit({
+    event_type: 'inventory.item_shared_to_project',
+    user_id: actor.id,
+    scope: projectId,
+    detail: {source_item_id: source.id, project_item_id: shared.item_id, project_id: projectId},
+  });
+  return {created: true, item: shared};
 }
 
 export function listInventoryItems(

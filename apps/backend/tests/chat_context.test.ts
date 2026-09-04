@@ -4,6 +4,7 @@ import {getDb} from '../src/db/schema.ts';
 import {seedAll} from '../src/db/seed.ts';
 import type {AuthUser} from '../src/middleware/auth.ts';
 import {buildSystemPrompt, resolveSpeaker} from '../src/routers/ws/chat.ts';
+import {getPersona} from '../src/engines/persona_engine.ts';
 import {compileRuntimeContext} from '../src/services/context_compiler.ts';
 
 const actor: AuthUser = {id: 'chat-context-user', username: 'chat_context_user', role: 'student'};
@@ -53,5 +54,45 @@ describe('WS bounded context', () => {
     expect(prompt).toContain('Aucune source citee disponible');
     expect(prompt).toContain('ne t accorde aucun pouvoir supplementaire');
     expect(prompt).not.toContain('view_users');
+  });
+
+  it('injecte la couche expressive sans changer identité, scope ni permissions du tour', () => {
+    const runtime = compileRuntimeContext(actor, {
+      purpose: 'ws_chat',
+      requested_tier: 'T1',
+      room_instance_id: instanceId,
+    });
+    const speaker = resolveSpeaker(actor, instanceId).speaker;
+    const style = [
+      'Voix stylisée consentie : Intensité secondaire 0.40.',
+      'Le persona parle toujours en son propre nom.',
+      'Cette couche ne modifie jamais les permissions, les faits, les sources ou la méthode.',
+    ].join(' ');
+    const prompt = buildSystemPrompt(speaker, null, runtime, [], actor.id, style);
+    expect(prompt).toContain(`Tu es ${speaker.name}`);
+    expect(prompt).toContain('Intensité secondaire 0.40');
+    expect(prompt).toContain('Le persona parle toujours en son propre nom');
+    expect(prompt).toContain('Actions UI autorisees: get_current_context');
+    expect(prompt).not.toContain('view_users');
+    expect(prompt).toContain(`Scope: room=${runtime.scope.room_id}`);
+  });
+
+  it('injecte la méthode sourcée de MasterFlex sans singer ses tics oraux', () => {
+    const runtime = compileRuntimeContext(actor, {
+      purpose: 'ws_chat',
+      requested_tier: 'T1',
+      room_instance_id: instanceId,
+    });
+    const masterflex = getPersona('masterflex-001');
+    expect(masterflex).not.toBeNull();
+    const prompt = buildSystemPrompt(masterflex!, null, runtime, []);
+
+    expect(prompt).toContain('comprendre le vrai blocage');
+    expect(prompt).toContain('anticipation > réparation');
+    expect(prompt).toContain('non-destruction > perte de source');
+    expect(prompt).toContain("jamais d'URL, timecode ou titre de vidéo inventé");
+    expect(prompt).toContain('Pipeline conseillé');
+    expect(prompt).not.toContain('hop hop');
+    expect(prompt.length).toBeLessThanOrEqual(8_000);
   });
 });

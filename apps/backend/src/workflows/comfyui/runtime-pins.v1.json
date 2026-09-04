@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "local_test_only_disabled",
+  "verified_at": "2026-09-02",
+  "execution_gate": "IMAGE_PROVIDER=mock",
+  "comfyui": {
+    "version": "0.17.0",
+    "commit": "3814bf4454ef3302fd7f91750d7a194dcf979630",
+    "python": "3.11.15",
+    "pytorch": "2.10.0",
+    "device": "mps"
+  },
+  "custom_nodes": [
+    {
+      "name": "ComfyUI_IPAdapter_plus",
+      "commit": "a0f451a5113cf9becb0847b92884cb10cbdec0ef",
+      "license": "GPL-3.0",
+      "policy": "required_pinned_maintenance_only"
+    },
+    {
+      "name": "ComfyUI-PhotoMaker-Plus",
+      "commit": "459f5c009e8bc3fe76bd63a7f302ddf3406c7062",
+      "license": "GPL-3.0",
+      "policy": "required_pinned_local_test_only_pending_insightface_license_review"
+    }
+  ],
+  "models": [
+    {
+      "filename": "sd_xl_base_1.0.safetensors",
+      "sha256": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+      "used_by": ["masterflex_ipadapter_sdxl_v1", "masterflow_photomaker_v2_v1"]
+    },
+    {
+      "filename": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "sha256": "6ca9667da1ca9e0b0f75e46bb030f7e011f44f86cbfb8d5a36590fcd7507b030",
+      "used_by": ["masterflex_ipadapter_sdxl_v1"]
+    },
+    {
+      "filename": "ip-adapter-plus_sdxl_vit-h.safetensors",
+      "sha256": "3f5062b8400c94b7159665b21ba5c62acdcd7682262743d7f2aefedef00e6581",
+      "used_by": ["masterflex_ipadapter_sdxl_v1"]
+    },
+    {
+      "filename": "photomaker-v2.bin",
+      "sha256": "0eeac57d7e09b95cee670a18e0d939ff303dd6f76d317c950bf584c6c9bdb8f5",
+      "used_by": ["masterflow_photomaker_v2_v1"]
+    }
+  ],
+  "workflows": [
+    {
+      "workflow_id": "masterflex_ipadapter_sdxl_v1",
+      "template_file": "masterflex-ipadapter-sdxl.v1.api.json",
+      "template_file_sha256": "b9d7961fa96679594c407f19f50c6e23701ab338b32c826d9ef096c7318824d5",
+      "source_ui_sha256": "cc998493e0e2e06e735ff172795cb48e7961e18cddf115c6813be510d31b83f4",
+      "policy": "first_local_smoke_candidate"
+    },
+    {
+      "workflow_id": "masterflow_photomaker_v2_v1",
+      "template_file": "masterflow-photomaker-v2.v1.api.json",
+      "template_file_sha256": "c84f6d64295a29a2ad34a63926925e9c7255ef3045627c8a627fb5ec916aa911",
+      "source_ui_sha256": "dece9eea2a6f9d4369f36186b404dc96b8a26c9c1534a76f3eb810c5ac09b155",
+      "policy": "local_test_only_pending_references_and_license_review"
+    }
+  ],
+  "excluded_from_product": [
+    {
+      "family": "InfiniteYou",
+      "reason": "model_cc_by_nc_4_0"
+    },
+    {
+      "family": "PuLID_InsightFace_AntelopeV2",
+      "reason": "non_commercial_license_not_cleared"
+    }
+  ],
+  "operations": {
+    "auto_update": false,
+    "manager_install_at_runtime": false,
+    "public_bind": false,
+    "max_parallel_gpu_jobs": 1,
+    "patch_recovery_contract": "ComfyUI/recovery/manage_patches.sh"
+  }
+}

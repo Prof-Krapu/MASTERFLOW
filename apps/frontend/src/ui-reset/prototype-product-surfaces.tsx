@@ -118,13 +118,13 @@ export type PrototypeCharacterInventoryItem = {
   id: string;
   label: string;
   color: string;
-  count: number;
+  count: number | string;
   icon: LucideIcon;
 };
 
 type CharacterSurfaceProps = {
-  canonAlt: string;
-  canonAsset: string;
+  canonAlt?: string;
+  canonAsset?: string | null;
   children: ReactNode;
   closing: boolean;
   galaxyOpen: boolean;
@@ -136,6 +136,7 @@ type CharacterSurfaceProps = {
   skillsOverviewOpen: boolean;
   onAnimationEnd: (event: ReactAnimationEvent<HTMLElement>) => void;
   onClose: () => void;
+  onInventoryItemSelect?: (itemId: string) => void;
 };
 
 export function PrototypeCharacterSurface({
@@ -148,6 +149,7 @@ export function PrototypeCharacterSurface({
   name,
   onAnimationEnd,
   onClose,
+  onInventoryItemSelect,
   profileId,
   punchline,
   rankTitle,
@@ -182,7 +184,14 @@ export function PrototypeCharacterSurface({
             {inventoryItems.map((item) => {
               const Icon = item.icon;
               return (
-                <button key={item.id} style={{'--inventory-color': item.color} as CSSProperties} type="button">
+                <button
+                  aria-label={`${item.label} : ${item.count}`}
+                  data-empty={item.count === 0 || item.count === '—' ? 'true' : 'false'}
+                  key={item.id}
+                  onClick={() => onInventoryItemSelect?.(item.id)}
+                  style={{'--inventory-color': item.color} as CSSProperties}
+                  type="button"
+                >
                   <Icon size={27} />
                   <span>{item.label}</span>
                   <strong>{item.count}</strong>
@@ -193,9 +202,11 @@ export function PrototypeCharacterSurface({
         </div>
       </div>
       {children}
-      <figure className="proto-character-canon">
-        <img alt={canonAlt} src={canonAsset} />
-      </figure>
+      {canonAsset ? (
+        <figure className="proto-character-canon">
+          <img alt={canonAlt ?? ''} src={canonAsset} />
+        </figure>
+      ) : null}
     </section>
   );
 }

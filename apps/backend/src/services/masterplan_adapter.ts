@@ -1,12 +1,16 @@
 import {createHash} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
+import {isAbsolute, resolve} from 'node:path';
 
 import {
   MasterPlanAdapterStatusSchema,
+  MasterPlanPlanningViewSchema,
   MasterPlanParityReportSchema,
   MasterPlanPublicAvailabilitySchema,
   MasterPlanSourceInspectionSchema,
   MasterPlanUiBundleSchema,
   type MasterPlanAdapterStatus,
+  type MasterPlanPlanningView,
   type MasterPlanParityReport,
   type MasterPlanPublicAvailability,
   type MasterPlanSourceInspection,
@@ -14,6 +18,12 @@ import {
 } from '@masterflow/shared';
 
 const SUPPORTED_ENGINE_VERSION = '1.1.3' as const;
+
+export class MasterPlanPlanningSourceError extends Error {
+  constructor(public readonly code: 'source_unconfigured' | 'source_unavailable' | 'source_invalid') {
+    super(`masterplan_${code}`);
+  }
+}
 
 function canonicalSha(value: unknown): string {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -112,6 +122,122 @@ export function getMasterPlanAdapterStatus(): MasterPlanAdapterStatus {
     imported_bundle_ref: null,
     execution_policy: 'inspect_and_adapt_only',
   });
+}
+
+function optionalText(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function calendarLabel(calendarId: string, events: Array<Record<string, unknown>>): string {
+  return optionalText(events.find((event) => optionalText(event.school_name))?.school_name)
+    ?? calendarId.charAt(0).toLocaleUpperCase('fr') + calendarId.slice(1);
+}
+
+/**
+ * Projection privée de travail pour l'UI : assez riche pour retrouver la lecture MasterPlan
+ * (charge, niveaux, matières et séquences), sans étudiant, chemin source ni secret calendrier.
+ */
+export function projectMasterPlanPlanningView(input: unknown): MasterPlanPlanningView {
+  const bundle = adaptMasterPlanPrivateBundle(input);
+  const calendars = Object.entries(bundle.calendars).map(([calendarId, calendar]) => {
+    const events = calendar.events as Array<Record<string, unknown>>;
+    return {
+      id: calendarId,
+      label: calendarLabel(calendarId, events),
+      event_count: events.length,
+    };
+  });
+  const events = Object.entries(bundle.calendars)
+    .flatMap(([calendarId, calendar]) => calendar.events.map((event) => ({
+      id: event.id,
+      session_id: event.session_id,
+      calendar_id: calendarId,
+      date: event.date,
+      start: event.start,
+      end: event.end,
+      module: optionalText(event.module) ?? 'Cours',
+      school_name: optionalText(event.school_name),
+      class_label: optionalText(event.class_label),
+      room: optionalText(event.room),
+      status: optionalText(event.status),
+      domain: optionalText(event.domain),
+      level: optionalText(event.level),
+      level_label: optionalText(event.level_label),
+      level_scope: optionalText(event.level_scope),
+      subject_ref: optionalText(event.subject_ref),
+      objective_refs: Array.isArray(event.objective_refs)
+        ? event.objective_refs.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+        : [],
+      sequence: typeof event.sequence === 'number' && Number.isInteger(event.sequence) && event.sequence >= 0
+        ? event.sequence
+        : null,
+    })))
+    .sort((left, right) => (
+      left.date.localeCompare(right.date)
+      || left.start.localeCompare(right.start)
+      || left.end.localeCompare(right.end)
+      || left.id.localeCompare(right.id)
+    ));
+  return MasterPlanPlanningViewSchema.parse({
+    schema: 'masterplan.planning_view.v1',
+    engine_version: bundle.engine_version,
+    generated_at: bundle.generated_at,
+    school_year: bundle.school_year,
+    source: {
+      mode: 'read_only',
+      authority: 'drive_projection',
+      original_unchanged: true,
+      contains_students: false,
+      contains_source_paths: false,
+    },
+    calendars,
+    events,
+  });
+}
+
+async function configuredBundlePath(): Promise<string> {
+  const fromEnvironment = process.env.MASTERPLAN_UI_BUNDLE_PATH?.trim();
+  if (fromEnvironment) return fromEnvironment;
+
+  const explicitConfig = process.env.MASTERPLAN_SOURCE_CONFIG?.trim();
+  const configPaths = explicitConfig
+    ? [explicitConfig]
+    : [
+        resolve(process.cwd(), '.masterplan-source.local.json'),
+        resolve(process.cwd(), '../../.masterplan-source.local.json'),
+      ];
+  for (const configPath of configPaths) {
+    try {
+      const config = JSON.parse(await readFile(configPath, 'utf8')) as {bundlePath?: unknown};
+      if (typeof config.bundlePath === 'string' && config.bundlePath.trim()) return config.bundlePath.trim();
+      throw new MasterPlanPlanningSourceError('source_invalid');
+    } catch (error) {
+      if (error instanceof MasterPlanPlanningSourceError) throw error;
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw new MasterPlanPlanningSourceError('source_invalid');
+      }
+    }
+  }
+  throw new MasterPlanPlanningSourceError('source_unconfigured');
+}
+
+export async function loadMasterPlanPlanningView(bundlePath?: string): Promise<MasterPlanPlanningView> {
+  const sourcePath = bundlePath ?? await configuredBundlePath();
+  if (!isAbsolute(sourcePath)) throw new MasterPlanPlanningSourceError('source_invalid');
+  let raw: string;
+  try {
+    raw = await readFile(sourcePath, 'utf8');
+  } catch {
+    throw new MasterPlanPlanningSourceError('source_unavailable');
+  }
+  try {
+    return projectMasterPlanPlanningView(JSON.parse(raw));
+  } catch (error) {
+    if (error instanceof MasterPlanPlanningSourceError) throw error;
+    throw new MasterPlanPlanningSourceError('source_invalid');
+  }
 }
 
 export function validateMasterPlanPublicProjection(input: unknown): MasterPlanPublicAvailability {

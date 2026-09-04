@@ -1,4 +1,4 @@
-export type ResumeSurface = 'project' | 'teaching' | 'learn' | 'inventory' | 'masterbuild';
+export type ResumeSurface = 'project' | 'teaching' | 'learn' | 'planning' | 'inventory' | 'masterbuild';
 
 export type ResumeActivity = {
   version: 2;
@@ -18,6 +18,7 @@ function isResumeSurface(value: unknown): value is ResumeSurface {
   return value === 'project'
     || value === 'teaching'
     || value === 'learn'
+    || value === 'planning'
     || value === 'inventory'
     || value === 'masterbuild';
 }
@@ -117,6 +118,7 @@ export function resumeActivityForMode(mode: string): ResumeActivityInput | null 
   if (mode === 'project') return {kind: 'surface', surface: 'project', label: 'Project'};
   if (mode === 'teaching') return {kind: 'surface', surface: 'teaching', label: 'Teaching'};
   if (mode === 'learning' || mode === 'learn') return {kind: 'surface', surface: 'learn', label: 'Learn'};
+  if (mode === 'planning') return {kind: 'surface', surface: 'planning', label: 'Planning'};
   if (mode === 'inventory') return {kind: 'surface', surface: 'inventory', label: 'Inventory'};
   if (mode === 'masterbuild') return {kind: 'surface', surface: 'masterbuild', label: 'MasterBuild'};
   return null;

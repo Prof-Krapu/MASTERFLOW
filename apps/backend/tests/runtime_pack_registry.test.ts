@@ -17,6 +17,56 @@ describe('runtime pack registry', () => {
     expect(packs.map((pack) => pack.pack_id)).toContain('masterflow-theme-studio');
   });
 
+  it('déclare deux parcours pilotes distincts sans effet de permission ni capacité publique', () => {
+    const packs = listRuntimePacks();
+    const ours = packs.find((pack) => pack.pack_id === 'ours-dor-pilot-v1');
+    const talents = packs.find((pack) => pack.pack_id === 'talents-creatifs-pilot-v1');
+    expect(ours?.version).toBe('1.2.0');
+    expect(ours?.subject_context).toEqual({
+      subject_kind: 'contest',
+      default_binding: 'standalone',
+      module_binding: 'optional',
+      participation_model: 'individual_or_team_project',
+      decomposition_policy: 'decompose_when_module_bound',
+      assignment_requires_human_validation: true,
+    });
+    expect(ours?.stages.map((stage) => stage.stage_id)).toEqual([
+      'registration_and_zone',
+      'articulate_monster_idea',
+      'test_readability_impact',
+      'technical_feasibility',
+      'submission_readiness',
+      'projection_readiness',
+      'verdict_debrief',
+    ]);
+    expect(ours?.pilot_scope?.journey_config?.excluded_capabilities).toContain('vote_public_live');
+    expect(talents?.version).toBe('1.2.0');
+    expect(talents?.subject_context).toEqual({
+      subject_kind: 'challenge',
+      default_binding: 'standalone',
+      module_binding: 'optional',
+      participation_model: 'team_project',
+      decomposition_policy: 'decompose_when_module_bound',
+      assignment_requires_human_validation: true,
+    });
+    expect(talents?.stages.map((stage) => stage.stage_id)).toEqual([
+      'brief_radar',
+      'team_build',
+      'brief_lock',
+      'idea_lock',
+      'production_run',
+      'proof_drop',
+    ]);
+    expect(talents?.pilot_scope?.journey_config?.group_policy).toEqual({
+      default_min: 3,
+      default_max: 5,
+      exceptions: 'brief_defined',
+    });
+    expect(talents?.pilot_scope?.journey_config?.responsibilities.every(
+      (role) => role.permission_effect === 'none',
+    )).toBe(true);
+  });
+
   it('refuse les étapes dupliquées et les actions requises/optionnelles en conflit', () => {
     const invalid: RuntimePackManifest = {
       pack_id: 'invalid',

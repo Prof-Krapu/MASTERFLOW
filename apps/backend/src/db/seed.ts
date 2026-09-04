@@ -582,6 +582,10 @@ export async function seedAll(): Promise<{
          (id, name, type, owner_id, project_id, context_json, is_public, created_at, updated_at)
        VALUES (?, ?, 'workspace', ?, ?, ?, 0, ?, ?)`,
     );
+    const selectPilotRoom = db.prepare<[string], RoomRow>('SELECT * FROM rooms WHERE id = ?');
+    const updatePilotRoomContext = db.prepare(
+      'UPDATE rooms SET context_json = ?, updated_at = ? WHERE id = ?',
+    );
     const insertPilotInstance = db.prepare(
       `INSERT OR IGNORE INTO room_instances
          (id, room_id, user_id, zoom_level, active_surface, cognitive_density,
@@ -612,7 +616,7 @@ export async function seedAll(): Promise<{
         roomId: 'talents-creatifs-pilot-room-v1',
         roomName: 'Talents Créatifs — atelier conversationnel',
         packId: 'talents-creatifs-pilot-v1',
-        personaId: 'profkrapu-001',
+        personaId: 'masterflow-system-001',
         modes: ['project', 'learning', 'teaching'],
       },
     ];
@@ -642,6 +646,25 @@ export async function seedAll(): Promise<{
         now,
         now,
       );
+      const storedPilotRoom = selectPilotRoom.get(pilot.roomId);
+      if (storedPilotRoom) {
+        let storedContext: Record<string, unknown> = {};
+        try {
+          const parsed = JSON.parse(storedPilotRoom.context_json ?? '{}') as unknown;
+          if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            storedContext = parsed as Record<string, unknown>;
+          }
+        } catch {
+          storedContext = {};
+        }
+        if (storedContext['active_persona'] !== pilot.personaId) {
+          updatePilotRoomContext.run(
+            JSON.stringify({...storedContext, active_persona: pilot.personaId}),
+            now,
+            pilot.roomId,
+          );
+        }
+      }
       insertPilotInstance.run(`${pilot.roomId}-malex`, pilot.roomId, malex.id, now, now);
       insertPilotInstance.run(`${pilot.roomId}-vincent`, pilot.roomId, god.id, now, now);
     }

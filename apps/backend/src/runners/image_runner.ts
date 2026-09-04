@@ -1,6 +1,7 @@
 import {pathToFileURL} from 'node:url';
 
 import {
+  ComfyUIWorkflowIdSchema,
   GeneratedImageSchema,
   ImageGenerationRequestSchema,
   type GeneratedImage,
@@ -10,6 +11,12 @@ import {
 } from '@masterflow/shared';
 
 import {env} from '../lib/env.ts';
+import {getDb} from '../db/schema.ts';
+import {evaluatePostGenerationGates} from '../engines/story_da_bridge.ts';
+import {runComfyUIWorkflow, type ComfyUIBinaryImage} from '../services/comfyui_client.ts';
+import {createComfyUIJobStaging, purgeComfyUIJobStaging} from '../services/comfyui_staging.ts';
+import {acquireComfyUIGpuLock, releaseComfyUIGpuLock} from '../services/comfyui_staging.ts';
+import {storeImageJobCandidates} from '../services/da_runtime.ts';
 import {
   claimNextJob,
   extendJobLease,
@@ -29,24 +36,25 @@ import {startRunnerLoop} from './runner_loop.ts';
  * `completed` : un humain valide et ingère l'asset. Le runner n'invente jamais
  * d'image (mock → aucune image).
  *
- * Dispatch des backends (économie d'abord) :
- *  1. ComfyUI local si `COMFYUI_BASE_URL` est posé (loopback only, 1 job GPU à la
- *     fois assuré par la boucle runner + le lease) — gratuit, local ;
- *  2. sinon le provider LLM validé (ex. OpenRouter) via `resolveLLMRoute`
- *     (fail-closed : profil `image_generation` validé + allowlist egress) ;
- *  3. sinon mock → aucune image (needs_review avec note, rien d'inventé).
+ * Dispatch explicite et fermé par défaut via `IMAGE_PROVIDER` :
+ *  1. `mock` (défaut) → aucun réseau, même si une URL ComfyUI est renseignée ;
+ *  2. `comfyui` → loopback + workflow allowlisté, 1 job GPU à la fois ;
+ *  3. `openrouter` → route LLM validée et allowlist egress.
  */
 
 export const IMAGE_RUNNER_FAMILY = 'asset';
-export const IMAGE_RUNNER_VERSION = '0.1.0';
+export const IMAGE_RUNNER_VERSION = '0.2.0';
 const IMAGE_JOB_TYPES: JobType[] = ['asset_prepare'];
 const DEFAULT_LEASE_MS = 5 * 60 * 1000;
 const MAX_IMAGES = 4;
 
 export interface GenerateImagesResult {
   images: GeneratedImage[];
+  binaryImages?: ComfyUIBinaryImage[];
   model: string;
   provider: string;
+  workflowId?: import('@masterflow/shared').ComfyUIWorkflowId;
+  templateSha256?: string;
 }
 
 const ERROR_REDACT =
@@ -137,30 +145,98 @@ async function generateViaOpenRouter(
   return {images, model, provider: route.provider};
 }
 
-/**
- * Scaffold ComfyUI local (local-only, 1 job GPU à la fois via le lease).
- * La soumission de workflow ComfyUI (`/prompt`) + récupération de l'image est la
- * dernière étape, à câbler contre un ComfyUI lancé localement. Ici on valide le
- * garde-fou local-only et on remonte un résultat vide (jamais d'image inventée).
- */
-async function generateViaComfyUI(
+/** ComfyUI local : workflow fermé, récupération binaire et stockage différé par le runner. */
+export async function generateViaComfyUI(
   baseUrl: string,
-  _request: ImageGenerationRequest,
+  workflowId: import('@masterflow/shared').ComfyUIWorkflowId,
+  request: ImageGenerationRequest,
+  jobId: string,
+  deps: {runWorkflow?: typeof runComfyUIWorkflow} = {},
+  signal?: AbortSignal,
 ): Promise<GenerateImagesResult> {
   if (!isLoopbackUrl(baseUrl)) throw new Error('comfyui_requires_loopback');
-  // TODO(local) : POST {baseUrl}/prompt avec un workflow, poll /history, lire l'image.
-  return {images: [], model: 'comfyui-local', provider: 'comfyui'};
+  if (process.env.COMFYUI_EXECUTION_GATE !== 'GO_IMAGE_LOCAL') {
+    throw new Error('comfyui_local_execution_gate_required');
+  }
+  if (process.env.COMFYUI_REFERENCE_OWNER_ID?.trim() !== request.owner_id) {
+    throw new Error('comfyui_reference_owner_mismatch');
+  }
+  if (!/^consent:[a-zA-Z0-9._/-]{1,200}$/.test(process.env.COMFYUI_REFERENCE_CONSENT_REF?.trim() ?? '')) {
+    throw new Error('comfyui_reference_consent_required');
+  }
+  if (
+    workflowId === 'masterflow_photomaker_v2_v1' &&
+    process.env.COMFYUI_PHOTOMAKER_POLICY !== 'LICENSE_CLEARED'
+  ) {
+    throw new Error('comfyui_photomaker_license_gate_required');
+  }
+  const inputRoot = process.env.COMFYUI_INPUT_ROOT?.trim();
+  if (!inputRoot) throw new Error('comfyui_input_root_required');
+  const outputRoot = process.env.COMFYUI_OUTPUT_ROOT?.trim();
+  if (!outputRoot) throw new Error('comfyui_output_root_required');
+  acquireComfyUIGpuLock({inputRoot, jobId});
+  let staging: ReturnType<typeof createComfyUIJobStaging> | null = null;
+  try {
+    staging = createComfyUIJobStaging({
+      inputRoot,
+      jobId,
+      workflowId,
+      ipAdapterReferenceFile: process.env.COMFYUI_IPADAPTER_REFERENCE_FILE,
+      photoMakerReferenceDir: process.env.COMFYUI_PHOTOMAKER_REFERENCE_DIR,
+    });
+    const output = await (deps.runWorkflow ?? runComfyUIWorkflow)({
+      baseUrl,
+      workflowId,
+      request,
+      jobId,
+      photoMakerReferenceDir: workflowId === 'masterflow_photomaker_v2_v1' ? staging.directory : undefined,
+      ipAdapterReferenceImage: workflowId === 'masterflex_ipadapter_sdxl_v1' ? staging.relativeFiles[0] : undefined,
+      timeoutMs: Number(process.env.COMFYUI_TIMEOUT_MS) || undefined,
+      pollMs: Number(process.env.COMFYUI_POLL_MS) || undefined,
+      maxImageBytes: Number(process.env.COMFYUI_MAX_IMAGE_BYTES) || undefined,
+      outputRoot,
+      signal,
+    });
+    return {
+      images: [],
+      binaryImages: output.images,
+      model: workflowId,
+      provider: 'comfyui',
+      workflowId,
+      templateSha256: output.templateSha256,
+    };
+  } finally {
+    // Succès, erreur provider et timeout suivent le même chemin de purge local.
+    try {
+      if (staging) purgeComfyUIJobStaging({inputRoot, jobId});
+    } finally {
+      releaseComfyUIGpuLock({inputRoot, jobId});
+    }
+  }
 }
 
-/** Dispatch des backends image (ComfyUI local → provider LLM validé → mock). */
-async function generateImages(request: ImageGenerationRequest): Promise<GenerateImagesResult> {
-  const comfy = (process.env.COMFYUI_BASE_URL ?? '').trim();
-  if (comfy) return generateViaComfyUI(comfy, request);
-
-  const route = resolveLLMRoute('image_generation', env.llm);
-  if (route.provider === 'mock') {
-    return {images: [], model: 'mock', provider: 'mock'};
+/** Dispatch explicite et fermé par défaut : mock | comfyui | openrouter. */
+export async function generateImages(
+  request: ImageGenerationRequest,
+  job: Job,
+  signal?: AbortSignal,
+): Promise<GenerateImagesResult> {
+  const provider = (process.env.IMAGE_PROVIDER ?? 'mock').trim().toLowerCase();
+  if (provider === 'mock') return {images: [], model: 'mock', provider: 'mock'};
+  if (provider === 'comfyui') {
+    if (process.env.COMFYUI_EXECUTION_GATE !== 'GO_IMAGE_LOCAL') {
+      throw new Error('comfyui_local_execution_gate_required');
+    }
+    const comfy = (process.env.COMFYUI_BASE_URL ?? '').trim();
+    if (!comfy) throw new Error('comfyui_base_url_required');
+    const workflowId = ComfyUIWorkflowIdSchema.parse(
+      request.workflow_id ?? process.env.COMFYUI_WORKFLOW_ID,
+    );
+    return generateViaComfyUI(comfy, workflowId, request, job.job_id, {}, signal);
   }
+  if (provider !== 'openrouter') throw new Error('image_provider_not_supported');
+  const route = resolveLLMRoute('image_generation', env.llm);
+  if (route.provider === 'mock') throw new Error('image_provider_route_is_mock');
   return generateViaOpenRouter(route, request);
 }
 
@@ -169,13 +245,48 @@ export interface ProcessImageDeps {
   leaseMs?: number;
   /** Injectables pour tests (réseau/disque). */
   claim?: (runnerId: string, types: JobType[], leaseMs?: number) => Job | null;
-  generate?: (request: ImageGenerationRequest) => Promise<GenerateImagesResult>;
+  generate?: (
+    request: ImageGenerationRequest,
+    job: Job,
+    signal?: AbortSignal,
+  ) => Promise<GenerateImagesResult>;
 }
 
 export type ProcessImageResult =
   | {status: 'idle'}
   | {status: 'processed'; jobId: string; imageCount: number; provider: string}
   | {status: 'failed'; jobId: string; error: string};
+
+interface PostGenerationGateState {
+  reports: ReturnType<typeof evaluatePostGenerationGates>;
+  blockedGateIds: string[];
+  evaluationError: string | null;
+}
+
+function postGenerationGateState(request: ImageGenerationRequest): PostGenerationGateState {
+  try {
+    let activeLayers: string[] = [];
+    if (request.manifest_id) {
+      const row = getDb().prepare(
+        'SELECT active_layers_json FROM visual_manifests WHERE id = ?',
+      ).get(request.manifest_id) as {active_layers_json: string} | undefined;
+      if (row) {
+        const parsed = JSON.parse(row.active_layers_json) as unknown;
+        if (Array.isArray(parsed)) activeLayers = parsed.filter((item): item is string => typeof item === 'string');
+      }
+    }
+    const reports = evaluatePostGenerationGates(request.prompt, activeLayers);
+    return {
+      reports,
+      blockedGateIds: reports.filter((report) => report.status === 'blocked').map((report) => report.gate_id),
+      evaluationError: null,
+    };
+  } catch {
+    // L'asset reste candidat et passe en revue : une panne de gate ne doit jamais
+    // effacer une génération privée ni la faire passer pour validée.
+    return {reports: [], blockedGateIds: [], evaluationError: 'post_generation_gate_evaluation_failed'};
+  }
+}
 
 /**
  * Traite AU PLUS un job image. Toujours terminé en `needs_review` (succès, même
@@ -189,6 +300,22 @@ export async function processNextImageJob(deps: ProcessImageDeps): Promise<Proce
   const job = claim(deps.runnerId, IMAGE_JOB_TYPES, leaseMs);
   if (!job) return {status: 'idle'};
 
+  const generationController = new AbortController();
+  const cancellationPoll = setInterval(() => {
+    const current = getDb().prepare('SELECT status FROM jobs WHERE id = ?')
+      .get(job.job_id) as {status: string} | undefined;
+    if (!current || current.status === 'cancelled') generationController.abort();
+  }, 250);
+  cancellationPoll.unref();
+  const leaseHeartbeat = setInterval(() => {
+    try {
+      extendJobLease(job.job_id, deps.runnerId, leaseMs);
+    } catch {
+      generationController.abort();
+    }
+  }, Math.max(1_000, Math.floor(leaseMs / 3)));
+  leaseHeartbeat.unref();
+
   try {
     updateJobProgress(job.job_id, 5, deps.runnerId);
     const request = readImageRequest(job);
@@ -196,28 +323,54 @@ export async function processNextImageJob(deps: ProcessImageDeps): Promise<Proce
     updateJobProgress(job.job_id, 40, deps.runnerId);
     extendJobLease(job.job_id, deps.runnerId, leaseMs);
 
-    const out = await generate(request);
+    const out = await generate(request, job, generationController.signal);
+    // Refuse toute persistance si le job a été annulé ou repris pendant la génération.
+    extendJobLease(job.job_id, deps.runnerId, leaseMs);
     updateJobProgress(job.job_id, 90, deps.runnerId);
+
+    const gateState = out.binaryImages?.length ? postGenerationGateState(request) : {
+      reports: [],
+      blockedGateIds: [],
+      evaluationError: null,
+    };
+    const candidates = out.binaryImages && out.workflowId && out.templateSha256
+      ? storeImageJobCandidates(job, request, out.binaryImages, {
+          workflowId: out.workflowId,
+          templateSha256: out.templateSha256,
+          postGenerationGates: gateState.reports,
+          gateEvaluationSource: 'request_prompt_heuristic_v1',
+        })
+      : [];
+    const imageCount = candidates.length > 0 ? candidates.length : out.images.length;
 
     markJobNeedsReview(
       job.job_id,
       {
         kind: 'image_generation',
-        image_count: out.images.length,
-        images: out.images,
+        image_count: imageCount,
+        ...(candidates.length > 0
+          ? {assets: candidates.map((asset) => ({asset_id: asset.id, storage_ref: asset.storage_ref, mime: asset.mime_type}))}
+          : {images: out.images}),
         provider: out.provider,
         model: out.model,
+        workflow_id: out.workflowId ?? null,
+        post_generation_gates: gateState.reports,
+        blocked_gate_ids: gateState.blockedGateIds,
+        gate_evaluation_source: out.binaryImages?.length ? 'request_prompt_heuristic_v1' : null,
+        gate_evaluation_error: gateState.evaluationError,
         prompt: request.prompt,
       },
-      out.images.length > 0
-        ? 'generated_images_require_human_validation'
+      imageCount > 0
+        ? gateState.blockedGateIds.length > 0
+          ? 'generated_images_blocked_by_post_generation_gates'
+          : 'generated_images_require_human_validation'
         : 'image_backend_returned_no_image',
       deps.runnerId,
     );
     return {
       status: 'processed',
       jobId: job.job_id,
-      imageCount: out.images.length,
+      imageCount,
       provider: out.provider,
     };
   } catch (err) {
@@ -228,6 +381,9 @@ export async function processNextImageJob(deps: ProcessImageDeps): Promise<Proce
       console.warn(`[runner:image] échec failJob ${job.job_id} :`, (failErr as Error).message);
     }
     return {status: 'failed', jobId: job.job_id, error: message};
+  } finally {
+    clearInterval(cancellationPoll);
+    clearInterval(leaseHeartbeat);
   }
 }
 

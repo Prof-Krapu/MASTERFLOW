@@ -156,7 +156,7 @@
     },
     {
       "pack_id": "ours-dor-pilot-v1",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "label": "Ours d'Or — pilote conversationnel",
       "description": "Guider le parcours Ours d'Or par projet, étape, checkpoint, sources et validations sans produire le rendu final de l'étudiant.",
       "minimum_role": "student",
@@ -166,25 +166,85 @@
       "optional_action_ids": ["list_available_actions", "manage_story_workbenches"],
       "stages": [
         {
-          "stage_id": "frame_ours_project",
-          "label": "Cadrer le projet",
-          "purpose": "Relier le brief, le participant ou binôme, l'étape et les questions ouvertes.",
+          "stage_id": "registration_and_zone",
+          "label": "Inscription et zone",
+          "purpose": "Confirmer la saison, la participation et la zone d'expérience avant de produire.",
           "activation": "always",
           "required_action_ids": ["get_current_context"],
-          "input_object_types": ["project", "brief", "participant"],
-          "output_object_types": ["pilot_project_state"],
+          "input_object_types": ["project", "brief", "participant", "season"],
+          "output_object_types": ["registration_candidate", "experience_zone_candidate"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        },
+        {
+          "stage_id": "articulate_monster_idea",
+          "label": "Formuler le monstre",
+          "purpose": "Exprimer le monstre, sa promesse et l'effet attendu sans fabriquer le film.",
+          "activation": "context_signal",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["pilot_project_state", "creative_intent"],
+          "output_object_types": ["monster_intent_candidate"],
           "target_mode": "project",
           "context_tier": "T2",
           "checkpoint_policy": "compact"
         },
         {
-          "stage_id": "guide_ours_checkpoint",
-          "label": "Guider le checkpoint",
-          "purpose": "Proposer une prochaine action bornée et suspendre toute validation professeur.",
+          "stage_id": "test_readability_impact",
+          "label": "Tester lisibilité et impact",
+          "purpose": "Vérifier compréhension, silhouette, rythme et impact dans un temps très court.",
           "activation": "context_signal",
           "required_action_ids": ["plan_conversation_turn"],
-          "input_object_types": ["pilot_project_state", "evidence"],
-          "output_object_types": ["guided_next_step", "approval_candidate"],
+          "input_object_types": ["monster_intent_candidate", "evidence"],
+          "output_object_types": ["readability_diagnostic", "guided_next_step"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        },
+        {
+          "stage_id": "technical_feasibility",
+          "label": "Vérifier la faisabilité",
+          "purpose": "Confronter l'ambition au temps, aux outils, aux rôles et aux contraintes de production.",
+          "activation": "manual",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["creative_intent", "production_constraints"],
+          "output_object_types": ["bounded_production_plan"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        },
+        {
+          "stage_id": "submission_readiness",
+          "label": "Préparer le dépôt",
+          "purpose": "Contrôler durée, format, droits, éléments requis et échéance sans déposer automatiquement.",
+          "activation": "manual",
+          "required_action_ids": ["get_current_context"],
+          "input_object_types": ["film_candidate", "submission_rules", "evidence"],
+          "output_object_types": ["submission_readiness_report"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        },
+        {
+          "stage_id": "projection_readiness",
+          "label": "Préparer la projection",
+          "purpose": "Préparer la présentation et le contexte de lecture publique du film.",
+          "activation": "manual",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["film_candidate", "projection_context"],
+          "output_object_types": ["projection_sheet_candidate"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        },
+        {
+          "stage_id": "verdict_debrief",
+          "label": "Débriefer le verdict",
+          "purpose": "Transformer les retours et le verdict en apprentissages sans noter ni juger la personne.",
+          "activation": "manual",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["public_feedback", "project_evidence"],
+          "output_object_types": ["learning_candidate", "debrief_candidate"],
           "target_mode": "project",
           "context_tier": "T2",
           "checkpoint_policy": "human_required"
@@ -199,6 +259,14 @@
         "tutorial_resource_id": null,
         "skippable": true
       },
+      "subject_context": {
+        "subject_kind": "contest",
+        "default_binding": "standalone",
+        "module_binding": "optional",
+        "participation_model": "individual_or_team_project",
+        "decomposition_policy": "decompose_when_module_bound",
+        "assignment_requires_human_validation": true
+      },
       "pilot_scope": {
         "pilot_id": "ours-dor",
         "source_namespace": "ours-dor",
@@ -211,11 +279,65 @@
           "timeout_ms": 30000,
           "max_cost_eur_per_turn": 0.2,
           "fallback": "static_guidance"
+        },
+        "journey_config": {
+          "experience_label": "Saison 2 · du monstre au verdict",
+          "progress_policy": "descriptive_not_graded",
+          "facts": [
+            {
+              "fact_id": "film_format",
+              "label": "Format",
+              "value": "1 film · 1 min maximum · 30 s cible",
+              "status": "confirmed_for_pilot"
+            },
+            {
+              "fact_id": "experience_zones",
+              "label": "Zones d'expérience",
+              "value": "Fear · Jumpscare · Nightmare · override professeur possible",
+              "status": "confirmed_for_pilot"
+            },
+            {
+              "fact_id": "submission_date",
+              "label": "Dépôt annoncé",
+              "value": "27 octobre · année, fuseau et URL à confirmer",
+              "status": "source_required"
+            },
+            {
+              "fact_id": "event_date",
+              "label": "Événement annoncé",
+              "value": "29 octobre · 19 h · année et fuseau à confirmer",
+              "status": "source_required"
+            }
+          ],
+          "responsibilities": [
+            {
+              "responsibility_id": "masterflex_creative_guide",
+              "label": "MasterFlex",
+              "purpose": "Pousser l'ambition, la lisibilité et la faisabilité créative sans produire le film.",
+              "kind": "guide",
+              "permission_effect": "none"
+            },
+            {
+              "responsibility_id": "incubator_operational_gate",
+              "label": "Incubator",
+              "purpose": "Cadrer inscription, dépôt et checkpoints humains sans exécution automatique.",
+              "kind": "operator",
+              "permission_effect": "none"
+            }
+          ],
+          "group_policy": null,
+          "excluded_capabilities": [
+            "vote_public_live",
+            "guest_accounts",
+            "automatic_submission",
+            "automatic_awards"
+          ]
         }
       },
       "source_refs": [
         "git:docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md#wave-3a",
-        "git:apps/backend/src/db/seed.ts#oursdor"
+        "git:apps/backend/src/db/seed.ts#oursdor",
+        "git:docs/pilots/OURS_DOR_TALENTS_CREATIFS_PRESENTATION_ABSORPTION_SPEC_2026-09-01.md#runtimepack-candidat--ours-dor-saison-2"
       ]
     },
     {
@@ -258,7 +380,7 @@
     },
     {
       "pack_id": "talents-creatifs-pilot-v1",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "label": "Talents Créatifs — pilote conversationnel",
       "description": "Fournir une façade conversationnelle du Core avec séparation stricte des sources équipe, professeur et étudiant.",
       "minimum_role": "student",
@@ -268,25 +390,73 @@
       "optional_action_ids": ["list_available_actions", "approve_validation_item"],
       "stages": [
         {
-          "stage_id": "frame_talents_project",
-          "label": "Cadrer le projet Talents",
-          "purpose": "Relier le brief, le groupe, les participants, le jalon et les dépôts autorisés.",
+          "stage_id": "brief_radar",
+          "label": "Brief Radar",
+          "purpose": "Explorer les briefs disponibles et comprendre leur terrain de jeu depuis des sources vérifiées.",
           "activation": "always",
           "required_action_ids": ["get_current_context"],
-          "input_object_types": ["project", "brief", "group"],
-          "output_object_types": ["pilot_project_state"],
+          "input_object_types": ["project", "brief_catalog"],
+          "output_object_types": ["brief_shortlist_candidate"],
           "target_mode": "project",
           "context_tier": "T2",
           "checkpoint_policy": "compact"
         },
         {
-          "stage_id": "guide_talents_checkpoint",
-          "label": "Guider le jalon",
-          "purpose": "Préparer une prochaine action et une décision candidate sans exposer les sources équipe.",
+          "stage_id": "team_build",
+          "label": "Team Build",
+          "purpose": "Constituer un groupe de 3 à 5 par défaut et rendre visibles les rôles de mission à couvrir.",
           "activation": "context_signal",
           "required_action_ids": ["plan_conversation_turn"],
-          "input_object_types": ["pilot_project_state", "evidence"],
-          "output_object_types": ["guided_next_step", "decision_candidate"],
+          "input_object_types": ["group", "mission_role"],
+          "output_object_types": ["team_candidate", "role_coverage"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        },
+        {
+          "stage_id": "brief_lock",
+          "label": "Brief Lock",
+          "purpose": "Choisir un brief compatible avec niveau, filière, langue, difficulté et délai.",
+          "activation": "context_signal",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["brief_shortlist_candidate", "team_candidate"],
+          "output_object_types": ["brief_assignment_candidate"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        },
+        {
+          "stage_id": "idea_lock",
+          "label": "Idea Lock",
+          "purpose": "Formuler l'idée directrice et tester sa pertinence avant production.",
+          "activation": "context_signal",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["brief_assignment", "creative_hypothesis"],
+          "output_object_types": ["idea_candidate", "objection_log"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "human_required"
+        },
+        {
+          "stage_id": "production_run",
+          "label": "Production Run",
+          "purpose": "Piloter la production par tâches, preuves, risques et checkpoints humains.",
+          "activation": "manual",
+          "required_action_ids": ["plan_conversation_turn"],
+          "input_object_types": ["idea_candidate", "production_task", "evidence"],
+          "output_object_types": ["production_state", "guided_next_step"],
+          "target_mode": "project",
+          "context_tier": "T2",
+          "checkpoint_policy": "review"
+        },
+        {
+          "stage_id": "proof_drop",
+          "label": "Proof Drop",
+          "purpose": "Réunir livrables, preuves et références de dépôt sans publier ni déposer automatiquement.",
+          "activation": "manual",
+          "required_action_ids": ["get_current_context"],
+          "input_object_types": ["production_state", "evidence", "submission_rules"],
+          "output_object_types": ["proof_bundle_candidate", "submission_readiness_report"],
           "target_mode": "project",
           "context_tier": "T2",
           "checkpoint_policy": "human_required"
@@ -301,6 +471,14 @@
         "tutorial_resource_id": null,
         "skippable": true
       },
+      "subject_context": {
+        "subject_kind": "challenge",
+        "default_binding": "standalone",
+        "module_binding": "optional",
+        "participation_model": "team_project",
+        "decomposition_policy": "decompose_when_module_bound",
+        "assignment_requires_human_validation": true
+      },
       "pilot_scope": {
         "pilot_id": "talents-creatifs",
         "source_namespace": "talents-creatifs",
@@ -313,11 +491,96 @@
           "timeout_ms": 30000,
           "max_cost_eur_per_turn": 0.2,
           "fallback": "static_guidance"
+        },
+        "journey_config": {
+          "experience_label": "Mission créative · du brief à la preuve",
+          "progress_policy": "descriptive_not_graded",
+          "facts": [
+            {
+              "fact_id": "team_default",
+              "label": "Équipe",
+              "value": "3 à 5 personnes par défaut · exceptions définies par le brief",
+              "status": "confirmed_for_pilot"
+            },
+            {
+              "fact_id": "journey_shape",
+              "label": "Progression",
+              "value": "6 jalons descriptifs · aucune note automatique",
+              "status": "confirmed_for_pilot"
+            },
+            {
+              "fact_id": "mission_role_stack",
+              "label": "Cumul de rôles",
+              "value": "Permis si le groupe compte moins de 5 personnes · charge à signaler",
+              "status": "confirmed_for_pilot"
+            },
+            {
+              "fact_id": "brief_catalog",
+              "label": "Catalogue de briefs",
+              "value": "Source réelle et URL propriétaires encore à connecter",
+              "status": "source_required"
+            },
+            {
+              "fact_id": "content_evidence",
+              "label": "Preuves de contenu",
+              "value": "Capturer, relire et décider · aucune publication automatique",
+              "status": "confirmed_for_pilot"
+            }
+          ],
+          "responsibilities": [
+            {
+              "responsibility_id": "mission_pilot",
+              "label": "Pilote",
+              "purpose": "Tenir le cap, les décisions et les checkpoints de la mission.",
+              "kind": "mission",
+              "permission_effect": "none"
+            },
+            {
+              "responsibility_id": "mission_concept_lead",
+              "label": "Lead concept",
+              "purpose": "Porter l'idée directrice et ses tests de pertinence.",
+              "kind": "mission",
+              "permission_effect": "none"
+            },
+            {
+              "responsibility_id": "mission_art_direction",
+              "label": "Direction artistique",
+              "purpose": "Garantir la cohérence visuelle sans disposer d'une permission technique supplémentaire.",
+              "kind": "mission",
+              "permission_effect": "none"
+            },
+            {
+              "responsibility_id": "mission_writing",
+              "label": "Rédaction",
+              "purpose": "Structurer les textes, arguments et traces utiles.",
+              "kind": "mission",
+              "permission_effect": "none"
+            },
+            {
+              "responsibility_id": "mission_submission_ref",
+              "label": "Référent dépôt",
+              "purpose": "Vérifier les éléments attendus et préparer le passage au checkpoint humain.",
+              "kind": "mission",
+              "permission_effect": "none"
+            }
+          ],
+          "group_policy": {
+            "default_min": 3,
+            "default_max": 5,
+            "exceptions": "brief_defined"
+          },
+          "excluded_capabilities": [
+            "automatic_grading",
+            "automatic_submission",
+            "automatic_publication",
+            "permission_from_mission_role"
+          ]
         }
       },
       "source_refs": [
         "git:docs/audits/fullstack-consolidation-2026-08-31/FINAL_ACTION_PLAN.md#wave-3b",
-        "external:FACTORIES/TALENTS_CREATIFS/_MINI_APP"
+        "external:FACTORIES/TALENTS_CREATIFS/_MINI_APP",
+        "git:docs/pilots/OURS_DOR_TALENTS_CREATIFS_PRESENTATION_ABSORPTION_SPEC_2026-09-01.md#runtimepack-candidat--talents-créatifs"
       ]
     },
     {

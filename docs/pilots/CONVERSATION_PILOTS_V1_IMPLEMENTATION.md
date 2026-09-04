@@ -1,9 +1,9 @@
 # Pilotes conversationnels MasterFlow V1
 
-Statut backend : implémenté sur `main` et déployé en preview privée au SHA
-`33f553fb8bbd633770294777fbbd1d06e104f42d`, provider `mock`.
+Statut backend : déployé en preview privée dans la release `927752348efb`, provider `mock`.
 
-Statut interface : enrichissement local vérifié, non commité et non déployé.
+Statut interface : enrichissement `1.1.0` actif en preview ; snapshot local non commité, GitHub en
+pause.
 
 ## Contrat produit
 
@@ -42,7 +42,8 @@ automatique.
 - la Home active expose Ours d'Or et Talents Créatifs comme deux entrées prioritaires ;
 - les deux pilotes utilisent le même composant conversationnel et gardent leur identité visuelle ;
 - l'état affiché vient de la projection backend du pilote, pas d'un résumé frontend inventé ;
-- MasterFlex accompagne Ours d'Or et ProfKrapu accompagne Talents Créatifs ;
+- MasterFlex accompagne Ours d'Or ; Talents Créatifs utilise `MasterFlow System`, assistant neutre,
+  jusqu'à validation d'une persona dédiée ; ProfKrapu n'est pas lié à ce pilote ;
 - les amorces de conversation préparent le message sans déclencher d'action automatique ;
 - le mode de préparation sans IA réelle est visible ;
 - sur mobile, la conversation passe avant le contexte détaillé ;
@@ -66,3 +67,21 @@ automatique.
 - le provider réel, son budget et ses secrets ne sont pas configurés ;
 - aucune ouverture à un groupe réel ;
 - aucune promotion stable.
+
+## Enrichissement local des parcours — 2026-09-01
+
+Les dernières présentations fournies par MALEX ont été absorbées comme sources candidates puis
+validées pour l'implémentation locale, sans devenir un canon global ni une base runtime.
+
+- Ours d'Or `1.1.0` : sept étapes de l'inscription/zone au debrief du verdict ; format film et zones
+  visibles ; dates sans année gardées `source_required` ; vote live, invités, dépôt et palmarès
+  automatiques explicitement hors V1 ;
+- Talents Créatifs `1.1.0` : Brief Radar, Team Build, Brief Lock, Idea Lock, Production Run et Proof
+  Drop ; groupes 3–5 par défaut avec exceptions par brief ; cinq rôles de mission cumulables sans
+  aucun effet de permission ; progression non notante et aucune publication automatique ;
+- le read-model commun expose le parcours, les faits, responsabilités et exclusions ;
+- l'étape courante peut venir d'un checkpoint privé `pilot-stage:<stage_id>` ;
+- aucun provider, endpoint d'exécution, migration ou source réelle n'est ajouté.
+
+Contrat et preuves :
+`docs/pilots/OURS_DOR_TALENTS_CREATIFS_PRESENTATION_ABSORPTION_SPEC_2026-09-01.md`.

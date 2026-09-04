@@ -10,6 +10,7 @@ import {
   MatchInventoryProjectNeedRequestSchema,
   ResolveCollectionMatchRequestSchema,
   ScanInventoryPhotoRequestSchema,
+  ShareInventoryItemToProjectRequestSchema,
   SetCollectionCompletionRequestSchema,
 } from '@masterflow/shared';
 
@@ -24,6 +25,7 @@ import {
   getInventoryItem,
   findInventoryDuplicateCandidates,
   ingestInventoryOcrCandidates,
+  importPersonalResourceProposals,
   indexInventoryItem,
   listInventoryItems,
   matchInventoryProjectNeed,
@@ -31,6 +33,7 @@ import {
   listCollectionMatches,
   resolveCollectionMatch,
   scanInventoryPhoto,
+  shareInventoryItemToProject,
   setInventoryCollectionCompletion,
   searchInventory,
   validateInventoryCollection,
@@ -136,6 +139,27 @@ export function createInventoryRouter(): Router {
     }
     try {
       res.status(201).json(createInventoryItem(actor(req), parsed.data));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/import-resource-proposals', (req: Request, res: Response): void => {
+    try {
+      res.json(importPersonalResourceProposals(actor(req)));
+    } catch (error) {
+      routeError(res, error);
+    }
+  });
+
+  router.post('/inventory/items/:id/share-to-project', (req: Request, res: Response): void => {
+    const parsed = ShareInventoryItemToProjectRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({error: 'invalid_body', detail: parsed.error.flatten()});
+      return;
+    }
+    try {
+      res.json(shareInventoryItemToProject(actor(req), req.params.id ?? '', parsed.data.project_id));
     } catch (error) {
       routeError(res, error);
     }

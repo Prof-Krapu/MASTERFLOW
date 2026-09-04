@@ -1,5 +1,6 @@
 import {ChevronLeft, ChevronRight} from 'lucide-react';
-import type {CSSProperties, ReactElement} from 'react';
+import {useRef} from 'react';
+import type {CSSProperties, KeyboardEvent, ReactElement} from 'react';
 import type {LucideIcon} from 'lucide-react';
 
 export type PrototypeSkillFamilyId = 'image' | 'volume' | 'system' | 'story' | 'soft';
@@ -34,6 +35,7 @@ export type PrototypeSkillArc = {
   metrics: PrototypePersonaMetric[];
   skills: Array<{
     label: string;
+    masteryLabel?: string;
     icon: LucideIcon;
     weight: number;
     mastery: number;
@@ -55,11 +57,32 @@ type PrototypeSkilltreeSurfaceProps = {
   shortLabels: Record<string, string>;
   skillFamilyColors: Record<PrototypeSkillFamilyId, string>;
   skillGalaxyOpen: boolean;
+  skillFamilyFilter: PrototypeSkillFamilyId | 'all';
   skillSliderIndex: number;
   skillsOverviewOpen: boolean;
   onSelectArc: (arcId: PrototypeSkillArcId) => void;
+  onSkillFamilyFilterChange: (family: PrototypeSkillFamilyId | 'all') => void;
   onSelectSkillSliderIndex: (index: number) => void;
+  onReturnToOverview?: () => void;
 };
+
+const skillFamilyLabels: Record<PrototypeSkillFamilyId, string> = {
+  image: 'Image',
+  volume: 'Volume',
+  system: 'Système',
+  story: 'Récit',
+  soft: 'Soft skills',
+};
+
+const navigationKeys = new Set(['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'End', 'Home']);
+
+function resolveKeyboardIndex(key: string, currentIndex: number, itemCount: number): number | null {
+  if (itemCount === 0 || !navigationKeys.has(key)) return null;
+  if (key === 'Home') return 0;
+  if (key === 'End') return itemCount - 1;
+  if (key === 'ArrowRight' || key === 'ArrowDown') return (currentIndex + 1) % itemCount;
+  return (currentIndex - 1 + itemCount) % itemCount;
+}
 
 export function PrototypeSkilltreeSurface({
   activePersonaMood,
@@ -69,17 +92,59 @@ export function PrototypeSkilltreeSurface({
   activeSkillFamily,
   displayedPersonaMood,
   onSelectArc,
+  onSkillFamilyFilterChange,
   onSelectSkillSliderIndex,
+  onReturnToOverview,
   personaDisplayValue,
   portraitLayers,
   selectedSkillArc,
   shortLabels,
   skillFamilyColors,
   skillGalaxyOpen,
+  skillFamilyFilter,
   skillSliderIndex,
   skillsOverviewOpen,
 }: PrototypeSkilltreeSurfaceProps): ReactElement {
+  const filterButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const skillNodeRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const SelectedSkillIcon = selectedSkillArc?.icon;
+  const visibleFamilies = selectedSkillArc
+    ? Array.from(new Set(selectedSkillArc.skills.map((skill) => skill.family)))
+    : [];
+  const filterOptions: Array<PrototypeSkillFamilyId | 'all'> = ['all', ...visibleFamilies];
+  const visibleSkillIndexes = selectedSkillArc
+    ? selectedSkillArc.skills.flatMap((skill, index) => (
+      skillFamilyFilter === 'all' || skill.family === skillFamilyFilter ? [index] : []
+    ))
+    : [];
+
+  const handleFilterKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    currentIndex: number,
+  ): void => {
+    const targetIndex = resolveKeyboardIndex(event.key, currentIndex, filterOptions.length);
+    if (targetIndex === null) return;
+    event.preventDefault();
+    const nextFilter = filterOptions[targetIndex];
+    if (!nextFilter) return;
+    onSkillFamilyFilterChange(nextFilter);
+    filterButtonRefs.current[targetIndex]?.focus({preventScroll: true});
+  };
+
+  const handleSkillNodeKeyDown = (
+    event: KeyboardEvent<HTMLSpanElement>,
+    skillIndex: number,
+  ): void => {
+    const currentVisibleIndex = visibleSkillIndexes.indexOf(skillIndex);
+    const targetVisibleIndex = resolveKeyboardIndex(event.key, currentVisibleIndex, visibleSkillIndexes.length);
+    if (targetVisibleIndex === null) return;
+    event.preventDefault();
+    const targetSkillIndex = visibleSkillIndexes[targetVisibleIndex];
+    if (targetSkillIndex === undefined) return;
+    // Le focus reste instantané : cette navigation n'introduit aucune animation JS,
+    // notamment lorsque prefers-reduced-motion est actif.
+    skillNodeRefs.current[targetSkillIndex]?.focus({preventScroll: true});
+  };
 
   return (
     <div
@@ -114,10 +179,45 @@ export function PrototypeSkilltreeSurface({
             <small>{selectedSkillArc.label}</small>
             <strong>{selectedSkillArc.galaxyTitle}</strong>
           </header>
-          <div className="proto-skill-constellation" key={`galaxy-${selectedSkillArc.id}`} aria-label={`Skills ${selectedSkillArc.label}`}>
+          <div className="proto-skill-family-filter" role="group" aria-label="Filtrer les compétences par famille">
+            <button
+              aria-pressed={skillFamilyFilter === 'all'}
+              onClick={() => onSkillFamilyFilterChange('all')}
+              onKeyDown={(event) => handleFilterKeyDown(event, 0)}
+              ref={(element) => { filterButtonRefs.current[0] = element; }}
+              tabIndex={skillFamilyFilter === 'all' ? 0 : -1}
+              type="button"
+            >
+              Toutes
+            </button>
+            {visibleFamilies.map((family, index) => (
+              <button
+                aria-pressed={skillFamilyFilter === family}
+                key={family}
+                onClick={() => onSkillFamilyFilterChange(family)}
+                onKeyDown={(event) => handleFilterKeyDown(event, index + 1)}
+                ref={(element) => { filterButtonRefs.current[index + 1] = element; }}
+                style={{'--skill-filter-color': skillFamilyColors[family]} as CSSProperties}
+                tabIndex={skillFamilyFilter === family ? 0 : -1}
+                type="button"
+              >
+                {skillFamilyLabels[family]}
+              </button>
+            ))}
+          </div>
+          <div
+            aria-label={`Compétences ${selectedSkillArc.label}. Utilisez les flèches pour parcourir les compétences.`}
+            className="proto-skill-constellation"
+            key={`galaxy-${selectedSkillArc.id}`}
+            role="list"
+          >
             {selectedSkillArc.skills.map((skill, index) => {
               const Icon = skill.icon;
-              const isActiveFamily = skill.family === activeSkillFamily;
+              const matchesFilter = skillFamilyFilter === 'all' || skill.family === skillFamilyFilter;
+              const isActiveFamily = skillFamilyFilter === 'all'
+                ? skill.weight >= 1.15
+                : matchesFilter;
+              const isDimmed = skillFamilyFilter !== 'all' && !matchesFilter;
               const distanceFactor = (100 - skill.mastery) / 100;
               const importanceFactor = Math.max(0.45, Math.min(skill.weight, 1.55));
               const orbitRadius = Math.round(116 + distanceFactor * 460 + (skill.family === 'soft' ? 34 : 0));
@@ -128,9 +228,11 @@ export function PrototypeSkilltreeSurface({
               );
               const iconSize = Math.round(12 + importanceFactor * 18 + (isActiveFamily ? 3 : 0));
               const orbitAngle = Math.round((360 / selectedSkillArc.skills.length) * index + (selectedSkillArc.id.length * 7) % 38);
-              const skillScale = isActiveFamily
-                ? 0.82 + importanceFactor * 0.92
-                : 0.48 + importanceFactor * 0.34;
+              const skillScale = isDimmed
+                ? 0.34
+                : isActiveFamily
+                  ? 0.82 + importanceFactor * 0.92
+                  : 0.48 + importanceFactor * 0.34;
               return (
                 <span
                   className="proto-skill-node-orbit"
@@ -144,17 +246,26 @@ export function PrototypeSkilltreeSurface({
                   } as CSSProperties}
                 >
                   <span
-                    className={`proto-skill-node${isActiveFamily ? ' is-active-family' : ''}`}
+                    aria-hidden={isDimmed || undefined}
+                    aria-label={`${skill.label}, ${skill.masteryLabel ?? `${skill.mastery}% de maîtrise`}, famille ${skillFamilyLabels[skill.family]}`}
+                    className={`proto-skill-node${isActiveFamily ? ' is-active-family' : ''}${isDimmed ? ' is-filtered-out' : ''}`}
+                    onKeyDown={(event) => handleSkillNodeKeyDown(event, index)}
+                    ref={(element) => { skillNodeRefs.current[index] = element; }}
+                    role="listitem"
                     style={{
                       '--skill-color': skillFamilyColors[skill.family],
                       '--skill-delay': `${index * 35}ms`,
                       '--skill-icon-size': `${iconSize}px`,
                       '--skill-scale': skillScale,
                     } as CSSProperties}
+                    tabIndex={isDimmed ? -1 : 0}
                   >
                     <span className="proto-skill-node__inner">
-                      <Icon size={18} />
-                      <small>{skill.label}</small>
+                      <Icon aria-hidden="true" size={18} />
+                      <small>
+                        <span>{skill.label}</span>
+                        <span aria-hidden="true"> · {skill.mastery}%</span>
+                      </small>
                     </span>
                   </span>
                 </span>
@@ -180,8 +291,8 @@ export function PrototypeSkilltreeSurface({
                       const SkillIcon = skill.icon;
                       return (
                         <li key={skill.label}>
-                          <SkillIcon size={14} />
-                          <span>{skill.label}</span>
+                          <SkillIcon aria-hidden="true" size={14} />
+                          <span>{skill.label} — {skill.masteryLabel ?? `${skill.mastery}% de maîtrise`}</span>
                         </li>
                       );
                     })}
@@ -209,6 +320,7 @@ export function PrototypeSkilltreeSurface({
                 } as CSSProperties}
               >
                 <button
+                  aria-label={`${arc.label}, maîtrise moyenne ${arc.metrics[0]?.masteryValue ?? 0}%`}
                   className={`proto-skill proto-skill--${positionClass}`}
                   onClick={() => onSelectArc(arc.id)}
                   style={{'--skill-color': arc.color} as CSSProperties}
@@ -269,6 +381,9 @@ export function PrototypeSkilltreeSurface({
         )}
         <div className="proto-character-affinity">
           {!selectedSkillArc ? <small>{shortLabels[activePersonaStat.id] ?? activePersonaStat.label}</small> : null}
+          {!selectedSkillArc && onReturnToOverview ? (
+            <button onClick={onReturnToOverview} type="button">Accueil Persona</button>
+          ) : null}
         </div>
       </div> : null}
     </div>

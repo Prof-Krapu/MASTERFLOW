@@ -10,5 +10,6 @@ apps/desktop/src-tauri/target/
 .masterbuild/local/
 .masterbuild/exports/
 .masterflow-server.local.json
+.masterplan-source.local.json
 deploy/manifests/*.json
 *-bootstrap-credentials.txt

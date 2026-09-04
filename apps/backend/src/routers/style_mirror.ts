@@ -1,10 +1,22 @@
 import {Router, type Request, type Response} from 'express';
-import {UpsertStyleMirrorRequestSchema} from '@masterflow/shared';
+import {
+  UpdatePersonaRepresentationStatusRequestSchema,
+  UpdateStyleLearningPreferencesRequestSchema,
+  UpsertPersonaRepresentationRequestSchema,
+  UpsertStyleMirrorRequestSchema,
+} from '@masterflow/shared';
 import {z} from 'zod';
 import {requireUser, type AuthUser} from '../middleware/auth.ts';
 import {
   getProfile, upsertProfile, updateProfileStatus,
 } from '../services/style_mirror_engine.ts';
+import {
+  getStyleLearningSnapshot,
+  proposePersonaRepresentation,
+  resetStyleLearning,
+  updatePersonaRepresentationStatus,
+  updateStyleLearningPreferences,
+} from '../services/style_learning_engine.ts';
 
 const actor = (r: Request): AuthUser => { if (!r.user) throw new Error('unauthorized'); return r.user; };
 const fail = (s: Response, e: unknown): void => {
@@ -34,6 +46,34 @@ export function createStyleMirrorRouter(): Router {
     const b = z.object({status: z.enum(['draft', 'active', 'archived'])}).safeParse(q.body);
     if (!b.success) return void s.status(400).json({error: 'invalid_body'});
     try { s.json(updateProfileStatus(actor(q), q.params.id ?? '', b.data.status)); } catch (e) { fail(s, e); }
+  });
+
+  r.get('/style-mirror/learning/me', (q, s) => {
+    try { s.json(getStyleLearningSnapshot(actor(q))); } catch (e) { fail(s, e); }
+  });
+
+  r.patch('/style-mirror/learning/me', (q, s) => {
+    const b = UpdateStyleLearningPreferencesRequestSchema.safeParse(q.body);
+    if (!b.success) return void s.status(400).json({error: 'invalid_body', detail: b.error.flatten()});
+    try { s.json(updateStyleLearningPreferences(actor(q), b.data)); } catch (e) { fail(s, e); }
+  });
+
+  r.post('/style-mirror/learning/me/reset', (q, s) => {
+    try { s.json(resetStyleLearning(actor(q))); } catch (e) { fail(s, e); }
+  });
+
+  r.put('/style-mirror/personas/:personaId/representation', (q, s) => {
+    const b = UpsertPersonaRepresentationRequestSchema.safeParse(q.body);
+    if (!b.success) return void s.status(400).json({error: 'invalid_body'});
+    try {
+      s.json(proposePersonaRepresentation(actor(q), q.params.personaId ?? '', b.data.represented_user_id));
+    } catch (e) { fail(s, e); }
+  });
+
+  r.post('/style-mirror/representations/:id/status', (q, s) => {
+    const b = UpdatePersonaRepresentationStatusRequestSchema.safeParse(q.body);
+    if (!b.success) return void s.status(400).json({error: 'invalid_body'});
+    try { s.json(updatePersonaRepresentationStatus(actor(q), q.params.id ?? '', b.data.status)); } catch (e) { fail(s, e); }
   });
 
   return r;

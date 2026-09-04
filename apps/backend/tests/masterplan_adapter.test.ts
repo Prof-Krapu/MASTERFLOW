@@ -6,6 +6,7 @@ import {
   compareMasterPlanParity,
   getMasterPlanAdapterStatus,
   inspectMasterPlanBundle,
+  projectMasterPlanPlanningView,
 } from '../src/services/masterplan_adapter.ts';
 
 const bundle = {
@@ -22,6 +23,13 @@ const bundle = {
         start: '09:00',
         end: '12:00',
         module: 'Privé',
+        domain: 'Création',
+        level: 'B2',
+        level_label: 'Bachelor 2',
+        level_scope: '2',
+        subject_ref: 'subject:private',
+        objective_refs: ['objective:composition'],
+        sequence: 2,
         source_ref: '/private/source.json',
       }],
     },
@@ -99,5 +107,32 @@ describe('MasterPlan Data-First adapter', () => {
       imported_bundle_ref: null,
       execution_policy: 'inspect_and_adapt_only',
     });
+  });
+
+  it('projette le planning privé sans étudiants, chemins source ni secret', () => {
+    const planning = projectMasterPlanPlanningView(bundle);
+    expect(planning).toMatchObject({
+      schema: 'masterplan.planning_view.v1',
+      school_year: '2026-2027',
+      source: {
+        mode: 'read_only',
+        authority: 'drive_projection',
+        contains_students: false,
+        contains_source_paths: false,
+      },
+    });
+    expect(planning.events).toEqual([expect.objectContaining({
+      calendar_id: 'iscom',
+      module: 'Privé',
+      date: '2026-09-01',
+      domain: 'Création',
+      level: 'B2',
+      level_label: 'Bachelor 2',
+      subject_ref: 'subject:private',
+      objective_refs: ['objective:composition'],
+      sequence: 2,
+    })]);
+    expect(JSON.stringify(planning)).not.toContain('/private/source.json');
+    expect(planning).not.toHaveProperty('students');
   });
 });

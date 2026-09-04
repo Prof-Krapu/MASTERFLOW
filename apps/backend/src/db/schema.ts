@@ -2213,6 +2213,58 @@ function migrate(d: Database.Database): void {
       updated_at      INTEGER NOT NULL,
       UNIQUE(user_id, project_id, persona_id)
     );
+
+    -- Liaison explicite entre un persona et l'humain qu'il représente. Une proposition
+    -- Godmode reste pending : seul l'humain concerné peut l'activer.
+    CREATE TABLE IF NOT EXISTS persona_representation_links (
+      id                    TEXT PRIMARY KEY,
+      persona_id            TEXT NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+      represented_user_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      proposed_by           TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      status                TEXT NOT NULL DEFAULT 'pending'
+                              CHECK (status IN ('pending','active','revoked')),
+      activated_at          INTEGER,
+      revoked_at            INTEGER,
+      created_at            INTEGER NOT NULL,
+      updated_at            INTEGER NOT NULL,
+      UNIQUE(persona_id)
+    );
+
+    -- Préférences du sujet pour l'apprentissage automatique de marqueurs. L'activation
+    -- est visible et réversible ; la valeur produit par défaut est active.
+    CREATE TABLE IF NOT EXISTS style_learning_preferences (
+      user_id                         TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      learning_enabled                INTEGER NOT NULL DEFAULT 1 CHECK (learning_enabled IN (0,1)),
+      collective_contribution_enabled INTEGER NOT NULL DEFAULT 1 CHECK (collective_contribution_enabled IN (0,1)),
+      notice_seen                     INTEGER NOT NULL DEFAULT 0 CHECK (notice_seen IN (0,1)),
+      overlay_intensity               REAL NOT NULL DEFAULT 0.30
+                                        CHECK (overlay_intensity >= 0 AND overlay_intensity <= 0.40),
+      reset_at                        INTEGER,
+      created_at                      INTEGER NOT NULL,
+      updated_at                      INTEGER NOT NULL
+    );
+
+    -- Agrégats dérivés uniquement : aucun message ou extrait brut n'est persisté.
+    CREATE TABLE IF NOT EXISTS style_learning_aggregates (
+      id                 TEXT PRIMARY KEY,
+      aggregate_scope    TEXT NOT NULL CHECK (aggregate_scope IN ('user','project_contributor')),
+      subject_user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id         TEXT REFERENCES projects(id) ON DELETE CASCADE,
+      metrics_json       TEXT NOT NULL DEFAULT '{}',
+      expressions_json   TEXT NOT NULL DEFAULT '{}',
+      transitions_json   TEXT NOT NULL DEFAULT '{}',
+      source_hashes_json TEXT NOT NULL DEFAULT '[]',
+      sample_count       INTEGER NOT NULL DEFAULT 0 CHECK (sample_count >= 0),
+      confidence         REAL NOT NULL DEFAULT 0 CHECK (confidence >= 0 AND confidence <= 1),
+      created_at         INTEGER NOT NULL,
+      updated_at         INTEGER NOT NULL,
+      UNIQUE(aggregate_scope, subject_user_id, project_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_style_learning_project
+      ON style_learning_aggregates(project_id, aggregate_scope, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_persona_representation_subject
+      ON persona_representation_links(represented_user_id, status, updated_at);
   `);
 
   ensureColumn(d, 'jobs', 'runner_id', 'TEXT');
@@ -2960,6 +3012,9 @@ export interface InventoryItemRow {
     | 'gear'
     | 'software'
     | 'product'
+    | 'video'
+    | 'link'
+    | 'note'
     | 'archive'
     | 'custom';
   label: string;
@@ -4035,6 +4090,44 @@ export interface StyleMirrorProfileRow {
   validation_version: string | null;
   visual_canon_ref: string | null;
   profile_status: 'draft' | 'active' | 'archived';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface PersonaRepresentationLinkRow {
+  id: string;
+  persona_id: string;
+  represented_user_id: string;
+  proposed_by: string;
+  status: 'pending' | 'active' | 'revoked';
+  activated_at: number | null;
+  revoked_at: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface StyleLearningPreferenceRow {
+  user_id: string;
+  learning_enabled: number;
+  collective_contribution_enabled: number;
+  notice_seen: number;
+  overlay_intensity: number;
+  reset_at: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface StyleLearningAggregateRow {
+  id: string;
+  aggregate_scope: 'user' | 'project_contributor';
+  subject_user_id: string;
+  project_id: string | null;
+  metrics_json: string;
+  expressions_json: string;
+  transitions_json: string;
+  source_hashes_json: string;
+  sample_count: number;
+  confidence: number;
   created_at: number;
   updated_at: number;
 }

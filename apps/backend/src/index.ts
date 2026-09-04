@@ -51,6 +51,7 @@ import {createPilotsRouter} from './routers/pilots.ts';
 import {createTeachingFoundationRouter} from './routers/teaching_foundation.ts';
 import {createMasterPlanAdapterRouter} from './routers/masterplan_adapter.ts';
 import {createOperationalIntakeRouter} from './routers/operational_intake.ts';
+import {createRuntimeUserProfileRouter} from './routers/runtime_user_profile.ts';
 import {attachChatWs} from './routers/ws/chat.ts';
 
 /**
@@ -144,6 +145,7 @@ async function main(): Promise<void> {
   app.use(api, createTeachingFoundationRouter());
   app.use(api, createMasterPlanAdapterRouter());
   app.use(api, createOperationalIntakeRouter());
+  app.use(api, createRuntimeUserProfileRouter());
 
   // Filet pour les routes /api/v1 inconnues (après tous les routers).
   app.use(api, (_req, res) => res.status(404).json({error: 'not_found'}));

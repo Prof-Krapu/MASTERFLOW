@@ -1,0 +1,197 @@
+.masterflow-stage {
+  animation: masterflow-stage-arrive 560ms 1040ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  height: 100dvh;
+  transform-origin: 50% 48%;
+  width: 100%;
+}
+
+.masterflow-intro {
+  --masterflow-intro-accent: #f15d32;
+  --masterflow-intro-bg: #0a0908;
+  --masterflow-intro-deep: #a93225;
+  --masterflow-intro-support: #8b62c9;
+  --masterflow-intro-user: #3979e8;
+  --masterflow-intro-copy: #b2a69e;
+
+  align-items: center;
+  animation: masterflow-intro-leave 440ms 1080ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  background: var(--masterflow-intro-bg);
+  clip-path: inset(0 round 0);
+  display: grid;
+  inset: 0;
+  justify-items: center;
+  pointer-events: none;
+  position: fixed;
+  will-change: clip-path, opacity;
+  z-index: 2147483000;
+}
+
+.masterflow-intro--light {
+  --masterflow-intro-bg: #f5f2ee;
+  --masterflow-intro-copy: #6b625c;
+}
+
+.masterflow-intro__lockup {
+  align-items: center;
+  animation: masterflow-lockup-leave 300ms 960ms cubic-bezier(0.4, 0, 1, 1) both;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.masterflow-intro__wordmark {
+  animation: masterflow-wordmark-arrive 650ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: linear-gradient(
+    90deg,
+    var(--masterflow-intro-user) 0%,
+    var(--masterflow-intro-user) 36%,
+    var(--masterflow-intro-support) 46%,
+    var(--masterflow-intro-support) 54%,
+    var(--masterflow-intro-accent) 64%,
+    var(--masterflow-intro-accent) 100%
+  );
+  display: block;
+  height: clamp(46px, 8vw, 82px);
+  mask-image: url("./assets/masterflow-wordmark.svg");
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("./assets/masterflow-wordmark.svg");
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  width: min(540px, 76vw);
+}
+
+.masterflow-intro__flowbar {
+  animation: masterflow-trace-arrive 520ms 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1.15fr 0.55fr 1.4fr;
+  height: 3px;
+  width: clamp(88px, 10vw, 118px);
+}
+
+.masterflow-intro__flowbar > span {
+  border-radius: 999px;
+}
+
+.masterflow-intro__flowbar > span:nth-child(1) {
+  background: var(--masterflow-intro-user);
+}
+
+.masterflow-intro__flowbar > span:nth-child(2) {
+  background: var(--masterflow-intro-support);
+}
+
+.masterflow-intro__flowbar > span:nth-child(3) {
+  background: var(--masterflow-intro-accent);
+}
+
+.masterflow-intro__punchline {
+  animation: masterflow-punchline-arrive 440ms 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  color: var(--masterflow-intro-copy);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(11px, 1.2vw, 13px);
+  font-weight: 680;
+  letter-spacing: 0.075em;
+  line-height: 1.2;
+}
+
+@keyframes masterflow-wordmark-arrive {
+  from {
+    filter: blur(10px);
+    opacity: 0;
+    transform: translateY(12px) scale(0.965);
+  }
+
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes masterflow-trace-arrive {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: 0.72;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes masterflow-punchline-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+@keyframes masterflow-lockup-leave {
+  from {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    filter: blur(7px);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+}
+
+@keyframes masterflow-intro-leave {
+  from {
+    clip-path: inset(0 round 0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  to {
+    clip-path: inset(49.8% 0 49.8% 0 round 999px);
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes masterflow-stage-arrive {
+  from {
+    filter: blur(8px);
+    opacity: 0;
+    transform: translateY(14px) scale(0.994);
+  }
+
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .masterflow-stage {
+    animation: none;
+  }
+
+  .masterflow-intro {
+    animation-delay: 80ms;
+    animation-duration: 1ms;
+  }
+
+  .masterflow-intro__wordmark,
+  .masterflow-intro__flowbar,
+  .masterflow-intro__punchline,
+  .masterflow-intro__lockup {
+    animation: none;
+  }
+}

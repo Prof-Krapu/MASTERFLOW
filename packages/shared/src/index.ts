@@ -142,6 +142,9 @@ export const InventoryItemTypeSchema = z.enum([
   'gear',
   'software',
   'product',
+  'video',
+  'link',
+  'note',
   'archive',
   'custom',
 ]);
@@ -240,6 +243,11 @@ export const CreateInventoryItemRequestSchema = z.object({
   visibility_scope: InventoryVisibilityScopeSchema.optional(),
 });
 export type CreateInventoryItemRequest = z.input<typeof CreateInventoryItemRequestSchema>;
+
+export const ShareInventoryItemToProjectRequestSchema = z.object({
+  project_id: z.string().min(1),
+});
+export type ShareInventoryItemToProjectRequest = z.input<typeof ShareInventoryItemToProjectRequestSchema>;
 
 export const ListInventoryItemsRequestSchema = z.object({
   project_id: z.string().min(1).nullable().optional(),
@@ -3874,12 +3882,21 @@ export type OcrPrepareRequest = z.infer<typeof OcrPrepareRequestSchema>;
 // par l'action sensible approuvée (preflight_image_action / create_render_manifest)
 // — jamais d'image sans ce gate. La sortie du runner part en `needs_review`, jamais
 // `completed` : un humain valide et ingère l'asset.
+export const ComfyUIWorkflowIdSchema = z.enum([
+  'masterflex_ipadapter_sdxl_v1',
+  'masterflow_photomaker_v2_v1',
+]);
+export type ComfyUIWorkflowId = z.infer<typeof ComfyUIWorkflowIdSchema>;
+
 export const ImageGenerationRequestSchema = z.object({
   owner_id: z.string().min(1),
   scope_type: z.enum(['owner', 'project']),
   scope_id: z.string().min(1),
+  manifest_id: z.string().min(1).nullable().optional(),
+  workflow_id: ComfyUIWorkflowIdSchema.optional(),
   prompt: z.string().min(1).max(2000),
   negative_prompt: z.string().max(2000).optional(),
+  seed: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).optional(),
   width: z.number().int().positive().max(4096).optional(),
   height: z.number().int().positive().max(4096).optional(),
   n: z.number().int().min(1).max(4).default(1),
@@ -4810,6 +4827,56 @@ export const RuntimePackGuidanceSchema = z.object({
 });
 export type RuntimePackGuidance = z.infer<typeof RuntimePackGuidanceSchema>;
 
+export const PilotJourneyFactSchema = z.object({
+  fact_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  value: z.string().min(1).max(500),
+  status: z.enum(['confirmed_for_pilot', 'source_required']),
+});
+export type PilotJourneyFact = z.infer<typeof PilotJourneyFactSchema>;
+
+export const PilotJourneyResponsibilitySchema = z.object({
+  responsibility_id: z.string().min(1),
+  label: z.string().min(1).max(160),
+  purpose: z.string().min(1).max(500),
+  kind: z.enum(['guide', 'operator', 'mission']),
+  permission_effect: z.literal('none'),
+});
+export type PilotJourneyResponsibility = z.infer<typeof PilotJourneyResponsibilitySchema>;
+
+export const PilotJourneyGroupPolicySchema = z.object({
+  default_min: z.number().int().min(1).max(100),
+  default_max: z.number().int().min(1).max(100),
+  exceptions: z.literal('brief_defined'),
+}).refine((policy) => policy.default_min <= policy.default_max, {
+  message: 'Le minimum du groupe doit rester inférieur ou égal au maximum.',
+});
+export type PilotJourneyGroupPolicy = z.infer<typeof PilotJourneyGroupPolicySchema>;
+
+export const PilotJourneyConfigSchema = z.object({
+  experience_label: z.string().min(1).max(160),
+  progress_policy: z.literal('descriptive_not_graded'),
+  facts: z.array(PilotJourneyFactSchema).max(20).default([]),
+  responsibilities: z.array(PilotJourneyResponsibilitySchema).max(20).default([]),
+  group_policy: PilotJourneyGroupPolicySchema.nullable().default(null),
+  excluded_capabilities: z.array(z.string().min(1).max(160)).max(20).default([]),
+});
+export type PilotJourneyConfig = z.infer<typeof PilotJourneyConfigSchema>;
+
+/**
+ * Statut pédagogique d'un pilote. Un sujet peut vivre de façon autonome ; son
+ * rattachement ultérieur à un module déclenche alors une décomposition en séquences.
+ */
+export const RuntimePackSubjectContextSchema = z.object({
+  subject_kind: z.enum(['course_subject', 'contest', 'challenge', 'transversal_event']),
+  default_binding: z.literal('standalone'),
+  module_binding: z.enum(['optional', 'required', 'forbidden']),
+  participation_model: z.enum(['individual_project', 'team_project', 'individual_or_team_project']),
+  decomposition_policy: z.literal('decompose_when_module_bound'),
+  assignment_requires_human_validation: z.literal(true),
+});
+export type RuntimePackSubjectContext = z.infer<typeof RuntimePackSubjectContextSchema>;
+
 export const RuntimePackManifestSchema = z
   .object({
     pack_id: z.string().min(1),
@@ -4823,6 +4890,7 @@ export const RuntimePackManifestSchema = z
     optional_action_ids: z.array(z.string().min(1)).default([]),
     stages: z.array(RuntimePackStageSchema).min(1),
     guidance: RuntimePackGuidanceSchema.nullable().default(null),
+    subject_context: RuntimePackSubjectContextSchema.nullable().optional(),
     pilot_scope: z.object({
       pilot_id: z.string().min(1).max(120),
       source_namespace: z.string().min(1).max(120),
@@ -4836,6 +4904,7 @@ export const RuntimePackManifestSchema = z
         max_cost_eur_per_turn: z.number().min(0).max(10),
         fallback: z.enum(['static_guidance', 'stop']),
       }),
+      journey_config: PilotJourneyConfigSchema.nullable().default(null),
     }).nullable().optional(),
     source_refs: z.array(z.string().min(1)).default([]),
   })
@@ -6341,6 +6410,49 @@ export const MasterPlanAdapterStatusSchema = z.object({
 });
 export type MasterPlanAdapterStatus = z.infer<typeof MasterPlanAdapterStatusSchema>;
 
+export const MasterPlanPlanningEventSchema = z.object({
+  id: z.string().min(1),
+  session_id: z.string().min(1),
+  calendar_id: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  start: z.string().regex(/^\d{2}:\d{2}$/),
+  end: z.string().regex(/^\d{2}:\d{2}$/),
+  module: z.string().min(1),
+  school_name: z.string().nullable(),
+  class_label: z.string().nullable(),
+  room: z.string().nullable(),
+  status: z.string().nullable(),
+  domain: z.string().nullable(),
+  level: z.string().nullable(),
+  level_label: z.string().nullable(),
+  level_scope: z.string().nullable(),
+  subject_ref: z.string().nullable(),
+  objective_refs: z.array(z.string()).default([]),
+  sequence: z.number().int().nonnegative().nullable(),
+}).strict();
+export type MasterPlanPlanningEvent = z.infer<typeof MasterPlanPlanningEventSchema>;
+
+export const MasterPlanPlanningViewSchema = z.object({
+  schema: z.literal('masterplan.planning_view.v1'),
+  engine_version: z.string().min(1),
+  generated_at: z.string().min(1),
+  school_year: z.string().min(1),
+  source: z.object({
+    mode: z.literal('read_only'),
+    authority: z.literal('drive_projection'),
+    original_unchanged: z.literal(true),
+    contains_students: z.literal(false),
+    contains_source_paths: z.literal(false),
+  }).strict(),
+  calendars: z.array(z.object({
+    id: z.string().min(1),
+    label: z.string().min(1),
+    event_count: z.number().int().nonnegative(),
+  }).strict()),
+  events: z.array(MasterPlanPlanningEventSchema),
+}).strict();
+export type MasterPlanPlanningView = z.infer<typeof MasterPlanPlanningViewSchema>;
+
 export const MasterPlanCalendarSourceSchema = z.object({
   source_id: z.string().min(1),
   label: z.string().min(1),
@@ -6598,7 +6710,33 @@ export const PilotJourneyStateSchema = z.object({
   project: z.object({project_id: z.string().min(1), name: z.string().min(1)}),
   room: z.object({room_id: z.string().min(1), name: z.string().min(1)}),
   participant_count: z.number().int().nonnegative(),
+  collaboration: z.object({
+    account_model: z.literal('individual_accounts'),
+    workspace_model: z.literal('shared_project'),
+    group_project_id: z.string().min(1),
+    current_membership: z.object({
+      user_id: z.string().min(1),
+      role: ProjectMemberRoleSchema,
+    }),
+  }).nullable(),
   current_stage: z.object({stage_id: z.string().min(1), label: z.string().min(1)}),
+  journey: z.object({
+    experience_label: z.string().min(1).max(160),
+    progress_policy: z.literal('descriptive_not_graded'),
+    current_position: z.number().int().positive(),
+    stage_count: z.number().int().positive(),
+    stages: z.array(z.object({
+      stage_id: z.string().min(1),
+      label: z.string().min(1).max(160),
+      purpose: z.string().min(1).max(500),
+      checkpoint_policy: z.enum(['none', 'compact', 'review', 'human_required']),
+      status: z.enum(['completed', 'current', 'upcoming']),
+    })).min(1),
+    facts: z.array(PilotJourneyFactSchema),
+    responsibilities: z.array(PilotJourneyResponsibilitySchema),
+    group_policy: PilotJourneyGroupPolicySchema.nullable(),
+    excluded_capabilities: z.array(z.string().min(1).max(160)),
+  }),
   checkpoint: z.object({checkpoint_id: z.string().min(1), summary: z.string().min(1)}).nullable(),
   visible_sources: z.array(SourceIntakeRecordSchema),
   evidence_refs: z.array(z.string().min(1)),
@@ -6653,7 +6791,10 @@ export const WsServerMessageSchema = z.discriminatedUnion('type', [
     speaker: z.string(),
     expressive_voice: z.object({
       profile_used: z.boolean(),
-      label: z.literal('Voix stylisée'),
+      label: z.string().min(1).max(160),
+      source: z.enum(['represented_user', 'project_collective', 'manual_profile']).optional(),
+      intensity: z.number().min(0).max(0.4).optional(),
+      confidence: z.number().min(0).max(1).optional(),
     }).optional(),
     conversation: z.object({
       turn_id: z.string().min(1),
@@ -7045,8 +7186,17 @@ export const PersonalLearningProfileSchema = z.object({
     autonomy_level: z.string().optional(),
   }).passthrough(),
   professional_self: z.object({
+    headline: z.string().optional(),
+    summary: z.string().optional(),
     working_style: z.string().optional(),
     creative_posture: z.string().optional(),
+    preferred_interaction: z.array(z.string()).optional(),
+    growth_zones: z.array(z.string()).optional(),
+    source_status: z.string().optional(),
+    source_refs: z.array(z.string()).optional(),
+    last_researched_at: z.string().optional(),
+    consent_ref: z.string().optional(),
+    profile_version: z.string().optional(),
     cv_export_preferences: z.object({
       tone: z.string().optional(),
       format: z.string().optional(),
@@ -7058,6 +7208,64 @@ export const PersonalLearningProfileSchema = z.object({
   updated_at: z.number(),
 });
 export type PersonalLearningProfile = z.infer<typeof PersonalLearningProfileSchema>;
+
+export const RuntimeProfessionalSkillFamilySchema = z.enum(['image', 'volume', 'system', 'story', 'soft']);
+export type RuntimeProfessionalSkillFamily = z.infer<typeof RuntimeProfessionalSkillFamilySchema>;
+
+export const RuntimeProfessionalSkillArcSchema = z.enum(['creation', 'direction', 'pedagogy', 'structure']);
+export type RuntimeProfessionalSkillArc = z.infer<typeof RuntimeProfessionalSkillArcSchema>;
+
+export const RuntimeProfessionalSkillSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  label: z.string(),
+  description: z.string().nullable(),
+  arc: RuntimeProfessionalSkillArcSchema,
+  family: RuntimeProfessionalSkillFamilySchema,
+  mastery_level: ProgressMasterySchema,
+  mastery_score: z.number().int().min(0).max(100),
+  autonomy_level: ProgressAutonomySchema.nullable(),
+  confidence: z.number().min(0).max(1),
+  signal_count: z.number().int().nonnegative(),
+  evidence_refs: z.array(z.string()),
+  validation_status: z.enum(['candidate', 'validated']),
+});
+export type RuntimeProfessionalSkill = z.infer<typeof RuntimeProfessionalSkillSchema>;
+
+/**
+ * Projection privée de la page Profil.
+ *
+ * Elle agrège uniquement les données appartenant à l'utilisateur authentifié. Le
+ * persona actif reste fourni par CurrentContext : identité utilisateur et persona
+ * d'accompagnement ne sont volontairement jamais confondus.
+ */
+export const RuntimeUserProfileSchema = z.object({
+  user: UserSchema,
+  learning_profile: PersonalLearningProfileSchema.nullable(),
+  progression: ProgressionSummarySchema,
+  competency_progress: z.array(UserCompetencyProgressSchema),
+  professional_skills: z.array(RuntimeProfessionalSkillSchema),
+  skill_tree: z.array(SkillTreeNodeSchema),
+  inventory: z.object({
+    total: z.number().int().nonnegative(),
+    candidates: z.number().int().nonnegative(),
+    validated: z.number().int().nonnegative(),
+    videos: z.number().int().nonnegative(),
+    links: z.number().int().nonnegative(),
+    documents: z.number().int().nonnegative(),
+  }),
+  declared_resources: z.object({
+    total: z.number().int().nonnegative(),
+    videos: z.number().int().nonnegative(),
+    links: z.number().int().nonnegative(),
+    documents: z.number().int().nonnegative(),
+    attached_to_inventory: z.number().int().nonnegative(),
+    pending_inventory: z.number().int().nonnegative(),
+  }),
+  projects_count: z.number().int().nonnegative(),
+  generated_at: z.number().int().nonnegative(),
+});
+export type RuntimeUserProfile = z.infer<typeof RuntimeUserProfileSchema>;
 
 export const HelpContextSnapshotSchema = z.object({
   id: z.string(),
@@ -7203,7 +7411,76 @@ export const STYLE_MIRROR_API = {
     upsert: '/api/v1/style-mirror/profiles',
     updateStatus: '/api/v1/style-mirror/profiles/:id/status',
   },
+  learning: {
+    me: '/api/v1/style-mirror/learning/me',
+    reset: '/api/v1/style-mirror/learning/me/reset',
+  },
+  representations: {
+    upsert: '/api/v1/style-mirror/personas/:personaId/representation',
+    updateStatus: '/api/v1/style-mirror/representations/:id/status',
+  },
 } as const;
+
+export const StyleLearningPreferencesSchema = z.object({
+  learning_enabled: z.boolean(),
+  collective_contribution_enabled: z.boolean(),
+  notice_seen: z.boolean(),
+  overlay_intensity: z.number().min(0).max(0.4),
+  reset_at: z.number().int().nonnegative().nullable(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type StyleLearningPreferences = z.infer<typeof StyleLearningPreferencesSchema>;
+
+export const UpdateStyleLearningPreferencesRequestSchema = z.object({
+  learning_enabled: z.boolean().optional(),
+  collective_contribution_enabled: z.boolean().optional(),
+  notice_seen: z.boolean().optional(),
+  overlay_intensity: z.number().min(0).max(0.4).optional(),
+}).refine((value) => Object.keys(value).length > 0, {message: 'empty_update'});
+export type UpdateStyleLearningPreferencesRequest = z.infer<typeof UpdateStyleLearningPreferencesRequestSchema>;
+
+export const LanguageStylePreviewSchema = z.object({
+  sample_count: z.number().int().nonnegative(),
+  confidence: z.number().min(0).max(1),
+  readiness: z.enum(['empty', 'learning', 'ready']),
+  rhythm: z.enum(['short', 'balanced', 'expansive']).nullable(),
+  recurring_expressions: z.array(z.string().min(1).max(40)).max(5),
+  transitions: z.array(z.string().min(1).max(40)).max(5),
+  last_updated_at: z.number().int().nonnegative().nullable(),
+});
+export type LanguageStylePreview = z.infer<typeof LanguageStylePreviewSchema>;
+
+export const StyleLearningSnapshotSchema = z.object({
+  preferences: StyleLearningPreferencesSchema,
+  preview: LanguageStylePreviewSchema,
+});
+export type StyleLearningSnapshot = z.infer<typeof StyleLearningSnapshotSchema>;
+
+export const PersonaRepresentationLinkSchema = z.object({
+  id: z.string().min(1),
+  persona_id: z.string().min(1),
+  represented_user_id: z.string().min(1),
+  status: z.enum(['pending', 'active', 'revoked']),
+  activated_at: z.number().int().nonnegative().nullable(),
+  revoked_at: z.number().int().nonnegative().nullable(),
+  updated_at: z.number().int().nonnegative(),
+});
+export type PersonaRepresentationLink = z.infer<typeof PersonaRepresentationLinkSchema>;
+
+export const UpsertPersonaRepresentationRequestSchema = z.object({
+  represented_user_id: z.string().min(1),
+});
+export const UpdatePersonaRepresentationStatusRequestSchema = z.object({
+  status: z.enum(['active', 'revoked']),
+});
+
+export const PersonaStyleSourceMetadataSchema = z.object({
+  source: z.enum(['represented_user', 'project_collective']),
+  label: z.string().min(1).max(160),
+  intensity: z.number().min(0).max(0.4),
+  confidence: z.number().min(0).max(1),
+});
+export type PersonaStyleSourceMetadata = z.infer<typeof PersonaStyleSourceMetadataSchema>;
 
 export const ExpressiveCanonCapabilityMapSchema = z.object({
   generated_at: z.number().int().nonnegative(),

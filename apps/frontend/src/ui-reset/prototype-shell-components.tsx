@@ -55,6 +55,7 @@ type NavigationRailProps = {
   activeMode: string;
   brandMark: ReactNode;
   characterActive: boolean;
+  characterName: string;
   homeActive: boolean;
   mobileLabel: string;
   modeGroups: PrototypeModeGroup[];
@@ -80,6 +81,7 @@ export function PrototypeNavigationRail({
   activeMode,
   brandMark,
   characterActive,
+  characterName,
   homeActive,
   mobileLabel,
   modeGroups,
@@ -121,7 +123,7 @@ export function PrototypeNavigationRail({
 
       <button
         aria-current={characterActive ? 'page' : undefined}
-        aria-label={`Ouvrir la page personnage ${profileName}`}
+        aria-label={`Ouvrir la page personnage ${characterName}`}
         className="proto-profile"
         onClick={onOpenCharacter}
         type="button"
@@ -493,6 +495,7 @@ export type PrototypeHistoryItem = {
   speaker: string;
   summary: string;
   detail: string;
+  meta?: string;
 };
 
 type ActionRailProps = {
@@ -662,7 +665,12 @@ export function PrototypeCommandDock({
                   <small>{item.speaker}</small>
                   <strong>{item.summary}</strong>
                 </span>
-                {expandedHistoryId === item.id ? <p>{item.detail}</p> : null}
+                {expandedHistoryId === item.id ? (
+                  <>
+                    <p>{item.detail}</p>
+                    {item.meta ? <small className="proto-history-panel__meta">{item.meta}</small> : null}
+                  </>
+                ) : null}
               </button>
             ))}
           </div>
@@ -922,12 +930,80 @@ export function PrototypeOverlayFrame({
   closing = false,
   onClose,
 }: OverlayFrameProps): ReactElement {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    const previouslyFocused = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    if (!frame) return undefined;
+
+    const focusableSelector = [
+      'button:not([disabled])',
+      '[href]',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+    const focusables = (): HTMLElement[] => Array.from(
+      frame.querySelectorAll<HTMLElement>(focusableSelector),
+    ).filter((element) => !element.hasAttribute('hidden') && element.getClientRects().length > 0);
+
+    const focusTimer = window.requestAnimationFrame(() => {
+      const dialog = frame.querySelector<HTMLElement>('[role="dialog"]');
+      const first = focusables()[0];
+      if (first) first.focus();
+      else if (dialog) {
+        dialog.tabIndex = -1;
+        dialog.focus();
+      }
+    });
+
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeRef.current();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const elements = focusables();
+      if (elements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+      const first = elements[0]!;
+      const last = elements[elements.length - 1]!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusTimer);
+      document.removeEventListener('keydown', onKeyDown);
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+    };
+  }, []);
+
   return (
     <div
       className={`${className}${closing ? ' is-closing' : ''}`}
       onPointerDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
+      ref={frameRef}
     >
       {children}
     </div>

@@ -18,6 +18,8 @@ import type {
   Room,
   RoomCheckpoint,
   SourceIntakeRecord,
+  StyleLearningSnapshot,
+  UpdateStyleLearningPreferencesRequest,
   ValidationInboxItem,
   WsServerMessage,
 } from '@masterflow/shared';
@@ -26,6 +28,7 @@ import {
   attachProjectResource,
   clearRuntimeAuthToken,
   createAction,
+  createInventoryItem,
   createProject,
   decideValidationInboxItem,
   executeAction,
@@ -39,15 +42,17 @@ import {
   getResources,
   getRooms,
   getPilotJourneyState,
+  getStyleLearningSnapshot,
   login,
   preflightAction,
-  proposeResource,
   queryRag,
   syncCoordinationRag,
   updateRoomInstance,
   validateAction,
   validateResource,
   restoreRuntimeAuthToken,
+  resetStyleLearning,
+  updateStyleLearningPreferences,
 } from './api.ts';
 import {
   ChatDock,
@@ -74,6 +79,15 @@ import type {WorkModeId} from './mode-runtime.ts';
 import {CurrentUiDemo} from './current-ui-demo.tsx';
 import type {CurrentUiRuntime} from './current-ui-demo.tsx';
 import {
+  expressiveVoiceDisclosureText,
+  type ExpressiveVoiceDisclosure,
+} from './expressive-voice-disclosure.ts';
+import {resolveAuthenticatedProfileId} from './runtime-account-identity.ts';
+import {
+  clearIntroUserSnapshot,
+  writeIntroUserSnapshot,
+} from './masterflow-intro-personalization.ts';
+import {
   appendResumeActivity,
   readResumeHistory,
   resumeActivityForMode,
@@ -87,6 +101,7 @@ type ChatTurn = {
   role: 'user' | 'assistant' | 'system';
   content: string;
   speaker?: string;
+  expressiveVoice?: ExpressiveVoiceDisclosure;
 };
 type ActionBuckets = Record<RegistryStatus, ActionRegistryEntry[]>;
 type EntryDensity = 'low' | 'medium' | 'high';
@@ -112,6 +127,7 @@ type ResourceProposalState = {
   status: 'idle' | 'loading' | 'submitting' | 'candidate' | 'validating' | 'validated' | 'error';
   message: string;
   resource?: Resource;
+  inventoryItemId?: string;
 };
 type ProjectSyncState = {
   status: 'idle' | 'loading' | 'creating' | 'ready' | 'attaching' | 'synced' | 'error';
@@ -218,6 +234,10 @@ const TeachingReadiness = lazy(async () => {
 const LearningWorkspace = lazy(async () => {
   const module = await import('./learning-workspace.tsx');
   return {default: module.LearningWorkspace};
+});
+const PlanningWorkspace = lazy(async () => {
+  const module = await import('./masterplan-planning.tsx');
+  return {default: module.MasterPlanPlanning};
 });
 
 const ENTRY_STORAGE_PREFIX = 'masterflow.entryProfile.';
@@ -333,6 +353,7 @@ function App(): ReactElement {
   });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [state, setState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [selectedMode, setSelectedMode] = useState<WorkModeId>('home');
@@ -359,6 +380,9 @@ function App(): ReactElement {
   const [chatInput, setChatInput] = useState('');
   const [chatOpenRequest, setChatOpenRequest] = useState(0);
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
+  const [styleLearningSnapshot, setStyleLearningSnapshot] = useState<StyleLearningSnapshot | null>(null);
+  const [styleLearningStatus, setStyleLearningStatus] = useState<'idle' | 'loading' | 'ready' | 'saving' | 'error'>('idle');
+  const [styleLearningError, setStyleLearningError] = useState<string | null>(null);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const assistantTurnRef = useRef<string | null>(null);
@@ -491,7 +515,16 @@ function App(): ReactElement {
   const loadContext = useCallback(async (token: string, roomId?: string): Promise<void> => {
     setState('loading');
     setError(null);
+    setStyleLearningStatus('loading');
+    setStyleLearningError(null);
     try {
+      const styleLearningRequest = getStyleLearningSnapshot(token).then(
+        (snapshot) => ({snapshot, error: null}),
+        (styleError: unknown) => ({
+          snapshot: null,
+          error: styleError instanceof Error ? styleError.message : 'Préférences de style indisponibles.',
+        }),
+      );
       const [current, nextResources, nextJobs, nextRooms] = await Promise.all([
         getCurrentContext(token, roomId),
         getResources(token),
@@ -500,6 +533,8 @@ function App(): ReactElement {
       ]);
       const checkpoint = await getLatestRoomCheckpoint(current.room.id, token);
       const nextProjects = await getProjects(token);
+      const styleLearning = await styleLearningRequest;
+      writeIntroUserSnapshot(current.user);
       setContext(current);
       setLatestCheckpoint(checkpoint);
       const storedEntry = readEntryProfile(current.user.id);
@@ -511,6 +546,9 @@ function App(): ReactElement {
       setRooms(nextRooms);
       setJobs(nextJobs);
       setProjects(nextProjects);
+      setStyleLearningSnapshot(styleLearning.snapshot);
+      setStyleLearningStatus(styleLearning.snapshot ? 'ready' : 'error');
+      setStyleLearningError(styleLearning.error);
       setSelectedProjectId((currentProjectId) => (
         current.room.project_id && nextProjects.some((project) => project.project_id === current.room.project_id)
           ? current.room.project_id
@@ -579,6 +617,7 @@ function App(): ReactElement {
       } catch {
         if (cancelled) return;
         clearRuntimeAuthToken();
+        clearIntroUserSnapshot();
         setState('idle');
       }
     };
@@ -595,7 +634,7 @@ function App(): ReactElement {
       setState('loading');
       setError(null);
       try {
-        const nextAuth = await login(username, password);
+        const nextAuth = await login(username, password, rememberMe ? 'persistent' : 'session');
         setAuth(nextAuth);
         await loadContext(nextAuth.token);
       } catch (err) {
@@ -603,7 +642,7 @@ function App(): ReactElement {
         setError(err instanceof Error ? err.message : 'Connexion impossible.');
       }
     },
-    [loadContext, password, username],
+    [loadContext, password, rememberMe, username],
   );
 
   const handleLogout = useCallback((): void => {
@@ -629,6 +668,7 @@ function App(): ReactElement {
     setRagQuestion('');
     setRagSync({status: 'idle', message: 'Memoire de coordination non interrogee.'});
     clearRuntimeAuthToken();
+    clearIntroUserSnapshot();
     setState('idle');
     setSelectedMode('home');
     setPilotageOpen(false);
@@ -651,9 +691,43 @@ function App(): ReactElement {
     setChatInput('');
     setChatOpenRequest(0);
     setChatTurns([]);
+    setStyleLearningSnapshot(null);
+    setStyleLearningStatus('idle');
+    setStyleLearningError(null);
     setPassword('');
+    setRememberMe(false);
     setError(null);
   }, []);
+
+  const handleStyleLearningUpdate = useCallback(async (
+    input: UpdateStyleLearningPreferencesRequest,
+  ): Promise<void> => {
+    if (!auth) return;
+    setStyleLearningStatus('saving');
+    setStyleLearningError(null);
+    try {
+      const snapshot = await updateStyleLearningPreferences(input, auth.token);
+      setStyleLearningSnapshot(snapshot);
+      setStyleLearningStatus('ready');
+    } catch (styleError) {
+      setStyleLearningStatus('error');
+      setStyleLearningError(styleError instanceof Error ? styleError.message : 'Préférence non enregistrée.');
+    }
+  }, [auth]);
+
+  const handleStyleLearningReset = useCallback(async (): Promise<void> => {
+    if (!auth) return;
+    setStyleLearningStatus('saving');
+    setStyleLearningError(null);
+    try {
+      const snapshot = await resetStyleLearning(auth.token);
+      setStyleLearningSnapshot(snapshot);
+      setStyleLearningStatus('ready');
+    } catch (styleError) {
+      setStyleLearningStatus('error');
+      setStyleLearningError(styleError instanceof Error ? styleError.message : 'Réinitialisation impossible.');
+    }
+  }, [auth]);
 
   const sendChat = useCallback((): void => {
     const content = chatInput.trim();
@@ -1001,23 +1075,23 @@ function App(): ReactElement {
       return;
     }
 
-    setResourceProposal({status: 'submitting', message: 'Proposition en cours.'});
+    setResourceProposal({status: 'submitting', message: 'Ajout à votre inventaire.'});
     try {
-      const proposed = await proposeResource({
-        type: url ? 'link' : 'note',
-        title,
-        ...(url ? {url} : {}),
-        source: 'frontend_proposal',
-        subjects,
+      const looksLikeVideo = /youtube|youtu\.be|vimeo|dailymotion|\.mp4(?:$|\?)/i.test(url);
+      const item = await createInventoryItem({
+        type: url ? (looksLikeVideo ? 'video' : 'link') : 'note',
+        label: title,
+        item_status: 'owned_declared',
+        intent: 'Ressource personnelle',
+        usage_tags: subjects,
+        source_refs: url ? [url.slice(0, 240)] : ['manual:resource'],
+        visibility_scope: 'private',
       }, auth.token);
       setResourceProposal({
         status: 'candidate',
-        message: 'Ressource candidate creee. Elle reste hors canon avant validation.',
-        resource: proposed,
+        message: 'Ressource personnelle ajoutée à Inventory. Elle reste privée et à valider.',
+        inventoryItemId: item.item_id,
       });
-      if (canReviewResourceTruth) {
-        await refreshResources();
-      }
       setResourceTitle('');
       setResourceUrl('');
       setResourceSubjects('');
@@ -1027,7 +1101,7 @@ function App(): ReactElement {
         message: err instanceof Error ? err.message : 'Proposition impossible.',
       });
     }
-  }, [auth, canReviewResourceTruth, refreshResources, resourceSubjects, resourceTitle, resourceUrl]);
+  }, [auth, resourceSubjects, resourceTitle, resourceUrl]);
 
   const handleResourceValidation = useCallback(async (resource: Resource): Promise<void> => {
     if (!auth) return;
@@ -1259,7 +1333,13 @@ function App(): ReactElement {
         assistantTurnRef.current = id;
         setChatTurns((current) => [
           ...current,
-          {id, role: 'assistant', content: '', speaker: message.speaker},
+          {
+            id,
+            role: 'assistant',
+            content: '',
+            speaker: message.speaker,
+            expressiveVoice: message.expressive_voice,
+          },
         ]);
         return;
       }
@@ -1485,7 +1565,7 @@ function App(): ReactElement {
     }
     const mappedMode: WorkModeId | null = surface === 'learn'
       ? 'learning'
-      : surface === 'project' || surface === 'teaching' || surface === 'inventory' || surface === 'story'
+      : surface === 'project' || surface === 'teaching' || surface === 'planning' || surface === 'inventory' || surface === 'story'
         ? surface
         : null;
     if (mappedMode) handleModeSelect(mappedMode);
@@ -1555,6 +1635,16 @@ function App(): ReactElement {
               token={auth.token}
               userId={context.user.id}
             />
+          </Suspense>
+        </section>
+      );
+    }
+
+    if (surface === 'planning') {
+      return (
+        <section className="proto-runtime-workspace" aria-label="Planning">
+          <Suspense fallback={<p className="panel panel--wide muted">Chargement Planning…</p>}>
+            <PlanningWorkspace token={auth.token} />
           </Suspense>
         </section>
       );
@@ -1635,7 +1725,7 @@ function App(): ReactElement {
       return [{
         id: room.id,
         label: "Ours d'Or",
-        summary: 'Projet, étape et prochaines actions.',
+        summary: 'Concours autonome · projet, étape et prochaines actions.',
         theme: 'gold' as const,
       }];
     }
@@ -1643,7 +1733,7 @@ function App(): ReactElement {
       return [{
         id: room.id,
         label: 'Talents Créatifs',
-        summary: 'Brief, groupe et prochain jalon.',
+        summary: 'Challenge autonome · brief, groupe et prochain jalon.',
         theme: 'coral' as const,
       }];
     }
@@ -1680,7 +1770,7 @@ function App(): ReactElement {
   ) : null;
 
   const currentUiRuntime: CurrentUiRuntime | null = auth && context ? {
-    activeProfileId: activePersona?.id === 'profkrapu-001' ? 'profkrapu' : 'masterflex',
+    authenticatedProfileId: resolveAuthenticatedProfileId(context.user),
     context,
     inboxItems: pendingActions,
     jobs,
@@ -1702,6 +1792,13 @@ function App(): ReactElement {
       onInputChange: setChatInput,
       onSubmit: sendChat,
     },
+    styleLearning: {
+      snapshot: styleLearningSnapshot,
+      status: styleLearningStatus,
+      error: styleLearningError,
+    },
+    onStyleLearningReset: () => void handleStyleLearningReset(),
+    onStyleLearningUpdate: (input) => void handleStyleLearningUpdate(input),
     onActionSelect: (action) => void handleActionClick(action),
     onLogout: handleLogout,
     onModeSelect: handleCurrentModeSelect,
@@ -1717,6 +1814,7 @@ function App(): ReactElement {
           busy: state === 'loading',
           error,
           password,
+          rememberMe,
           registerAction: (
             <RegisterWithCode
               onAuthed={(nextAuth) => {
@@ -1727,6 +1825,7 @@ function App(): ReactElement {
           ),
           username,
           onPasswordChange: setPassword,
+          onRememberMeChange: setRememberMe,
           onSubmit: handleSubmit,
           onUsernameChange: setUsername,
         }}
@@ -2089,7 +2188,7 @@ function App(): ReactElement {
 
           {activeMode.id !== 'inventory' ? <article className="panel panel--wide source-strip">
             <div className="panel-header">
-              <h2>Sources</h2>
+              <h2>Sources fiables</h2>
               <span className="counter">{resources.length}</span>
             </div>
             {resources.length > 0 ? (
@@ -2108,7 +2207,7 @@ function App(): ReactElement {
               <input
                 aria-label="Titre de ressource"
                 onChange={(event) => setResourceTitle(event.target.value)}
-                placeholder="Proposer une source"
+                placeholder="Ajouter à mes ressources"
                 type="text"
                 value={resourceTitle}
               />
@@ -2127,13 +2226,14 @@ function App(): ReactElement {
                 value={resourceSubjects}
               />
               <button disabled={resourceProposal.status === 'submitting'} type="submit">
-                Proposer
+                Ajouter à Inventory
               </button>
             </form>
             <div className={`resource-proposal resource-proposal--${resourceProposal.status}`} aria-live="polite">
               <strong>{resourceProposal.status}</strong>
               <span>{resourceProposal.message}</span>
               {resourceProposal.resource?.id ? <small>{resourceProposal.resource.id}</small> : null}
+              {resourceProposal.inventoryItemId ? <small>{resourceProposal.inventoryItemId}</small> : null}
             </div>
             {canReviewResourceTruth ? (
               <div className="resource-candidates">
@@ -2349,6 +2449,11 @@ function App(): ReactElement {
                   <article className={`chat-turn chat-turn--${turn.role}`} key={turn.id}>
                     <strong>{turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'Assistant')}</strong>
                     <p>{turn.content || '...'}</p>
+                    {turn.expressiveVoice ? (
+                      <small className="expressive-voice-disclosure">
+                        {expressiveVoiceDisclosureText(turn.expressiveVoice)}
+                      </small>
+                    ) : null}
                   </article>
                 ))
               ) : (

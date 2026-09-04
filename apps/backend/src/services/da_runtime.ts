@@ -1,4 +1,11 @@
-import type {GeneratedAsset, ReviewGeneratedAssetRequest, StoreGeneratedAssetRequest} from '@masterflow/shared';
+import type {
+  ComfyUIWorkflowId,
+  GeneratedAsset,
+  ImageGenerationRequest,
+  Job,
+  ReviewGeneratedAssetRequest,
+  StoreGeneratedAssetRequest,
+} from '@masterflow/shared';
 import {createHash} from 'node:crypto';
 
 import {getDb} from '../db/schema.ts';
@@ -62,9 +69,16 @@ function assertAssetAccess(actor: AuthUser, row: {owner_id: string; project_id: 
 }
 
 export function storeGeneratedAsset(actor: AuthUser, data: StoreGeneratedAssetRequest): GeneratedAsset {
+  let assetOwnerId = actor.id;
+  let projectId: string | null = null;
   if (data.manifest_id) {
-    const manifest = getDb().prepare('SELECT id FROM visual_manifests WHERE id = ?').get(data.manifest_id);
+    const manifest = getDb().prepare(
+      'SELECT id, owner_id, project_id FROM visual_manifests WHERE id = ?',
+    ).get(data.manifest_id) as {id: string; owner_id: string; project_id: string | null} | undefined;
     if (!manifest) throw new Error('visual_manifest_not_found');
+    assertAssetAccess(actor, manifest);
+    assetOwnerId = manifest.owner_id;
+    projectId = manifest.project_id;
   }
   const id = uuid();
   const now = Date.now();
@@ -73,8 +87,8 @@ export function storeGeneratedAsset(actor: AuthUser, data: StoreGeneratedAssetRe
         (id, manifest_id, job_id, owner_id, project_id, asset_type, status, mime_type, storage_ref, thumbnail_ref, metadata_json, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, 'candidate', ?, ?, ?, ?, ?, ?)
     `).run(
-      id, data.manifest_id ?? null, data.job_id ?? null, actor.id,
-      null, // project_id — set below via ensureColumn if needed
+      id, data.manifest_id ?? null, data.job_id ?? null, assetOwnerId,
+      projectId,
       data.asset_type,
       data.mime_type ?? null, data.storage_ref ?? null, data.thumbnail_ref ?? null,
       JSON.stringify(data.metadata ?? {}), now, now,
@@ -82,6 +96,115 @@ export function storeGeneratedAsset(actor: AuthUser, data: StoreGeneratedAssetRe
 
   audit({event_type: 'da.asset_stored', user_id: actor.id, detail: {asset_id: id, asset_type: data.asset_type, manifest_id: data.manifest_id}});
   return toDTO(getDb().prepare('SELECT * FROM generated_assets WHERE id = ?').get(id) as GeneratedAssetRow);
+}
+
+export interface GeneratedAssetBinaryCandidate {
+  mime: 'image/png' | 'image/jpeg' | 'image/webp';
+  bytes: Buffer;
+  sourceFilename?: string;
+}
+
+/**
+ * Persiste immédiatement les sorties binaires d'un job image en candidats privés.
+ * Les octets ne transitent jamais par `jobs.result_json` et le manifest, le scope,
+ * le propriétaire et le job doivent tous concorder.
+ */
+export function storeImageJobCandidates(
+  job: Job,
+  request: ImageGenerationRequest,
+  images: GeneratedAssetBinaryCandidate[],
+  provenance: {
+    workflowId: ComfyUIWorkflowId;
+    templateSha256: string;
+    postGenerationGates?: Array<{
+      gate_id: string;
+      severity: string;
+      status: 'blocked' | 'warning' | 'passed';
+      retake_lever: string | null;
+    }>;
+    gateEvaluationSource?: string;
+  },
+): GeneratedAsset[] {
+  if (job.type !== 'asset_prepare' || job.owner_id !== request.owner_id) {
+    throw new Error('image_asset_job_context_mismatch');
+  }
+  if (job.scope_type !== request.scope_type || job.scope_id !== request.scope_id) {
+    throw new Error('image_asset_scope_mismatch');
+  }
+
+  const projectId = request.scope_type === 'project' ? request.scope_id : null;
+  if (request.manifest_id) {
+    const manifest = getDb().prepare(
+      'SELECT owner_id, project_id FROM visual_manifests WHERE id = ?',
+    ).get(request.manifest_id) as {owner_id: string; project_id: string | null} | undefined;
+    if (!manifest) throw new Error('visual_manifest_not_found');
+    if (manifest.owner_id !== request.owner_id || manifest.project_id !== projectId) {
+      throw new Error('image_asset_manifest_scope_mismatch');
+    }
+  }
+
+  const now = Date.now();
+  const created: Array<{id: string; storageRef: string}> = [];
+  try {
+    for (const [index, image] of images.entries()) {
+      const ext = MIME_EXTENSIONS[image.mime];
+      if (!ext) throw new Error('asset_mime_unsupported');
+      const id = uuid();
+      const storageRef = storeFile(`assets/${request.owner_id}/${id}.${ext}`, image.bytes);
+      try {
+        getDb().prepare(`
+          INSERT INTO generated_assets
+            (id, manifest_id, job_id, owner_id, project_id, asset_type, status, mime_type,
+             storage_ref, thumbnail_ref, metadata_json, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, 'image', 'candidate', ?, ?, NULL, ?, ?, ?)
+        `).run(
+          id,
+          request.manifest_id ?? null,
+          job.job_id,
+          request.owner_id,
+          projectId,
+          image.mime,
+          storageRef,
+          JSON.stringify({
+            source: 'comfyui_local',
+            workflow_id: provenance.workflowId,
+            template_sha256: provenance.templateSha256,
+            post_generation_gates: provenance.postGenerationGates ?? [],
+            gate_evaluation_source: provenance.gateEvaluationSource ?? null,
+            output_index: index,
+            size_bytes: image.bytes.length,
+            sha256: createHash('sha256').update(image.bytes).digest('hex'),
+            source_filename: image.sourceFilename ?? null,
+          }),
+          now,
+          now,
+        );
+        created.push({id, storageRef});
+      } catch (error) {
+        // Le fichier courant n'est pas encore dans `created` : purge immédiate.
+        deleteFile(storageRef);
+        throw error;
+      }
+    }
+  } catch (error) {
+    for (const item of created) {
+      getDb().prepare('DELETE FROM generated_assets WHERE id = ?').run(item.id);
+      deleteFile(item.storageRef);
+    }
+    throw error;
+  }
+
+  for (const item of created) {
+    audit({
+      event_type: 'da.asset_stored',
+      user_id: request.owner_id,
+      scope: request.scope_id,
+      detail: {asset_id: item.id, job_id: job.job_id, source: 'comfyui_local'},
+    });
+  }
+  return created.map((item) =>
+    toDTO(getDb().prepare('SELECT * FROM generated_assets WHERE id = ?').get(item.id) as GeneratedAssetRow),
+  );
 }
 
 const MIME_EXTENSIONS: Record<string, string> = {

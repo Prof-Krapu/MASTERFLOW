@@ -30,13 +30,14 @@ import {
 } from 'lucide-react';
 import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react';
 import type {CSSProperties, FormEvent, KeyboardEvent as ReactKeyboardEvent, ReactElement, ReactNode} from 'react';
-import type {ActionRegistryEntry, CurrentContext, Job, ValidationInboxItem} from '@masterflow/shared';
+import type {ActionRegistryEntry, CurrentContext, Job, Persona, RuntimeUserProfile, UpdateStyleLearningPreferencesRequest, ValidationInboxItem} from '@masterflow/shared';
 
 import './current-ui-demo.css';
 import {
   clearRuntimeAuthToken,
   getCurrentContext,
   getJobs,
+  getRuntimeUserProfile,
   getValidationInboxItems,
   restoreRuntimeAuthToken,
 } from './api';
@@ -61,6 +62,23 @@ import type {
 import {PrototypeCharacterSurface, PrototypeHomeSurface} from './ui-reset/prototype-product-surfaces';
 import type {PrototypeHomeMode, PrototypePilotEntry} from './ui-reset/prototype-product-surfaces';
 import {PrototypeSkilltreeSurface} from './ui-reset/prototype-skilltree-surface';
+import {RuntimePersonaOverview} from './ui-reset/runtime-persona-overview';
+import {buildRuntimePersonaGalaxy} from './ui-reset/runtime-persona-galaxy';
+import {RuntimeSettingsPanel} from './runtime-settings-panel';
+import type {RuntimeSettingsView} from './runtime-settings-panel';
+import type {RuntimeStyleLearningState} from './runtime-style-learning-settings';
+import {
+  expressiveVoiceDisclosureText,
+  type ExpressiveVoiceDisclosure,
+} from './expressive-voice-disclosure';
+import {readRuntimeAuthPersistence} from './runtime-auth-storage';
+import {
+  applyRuntimeUserPreferences,
+  readRuntimeUserPreferences,
+  runtimeMotionIsReduced,
+  storeRuntimeUserPreferences,
+} from './runtime-user-preferences';
+import type {RuntimeUserPreferences} from './runtime-user-preferences';
 import {MasterbuildConsole} from './masterbuild-console';
 import {prototypeShortcutGroups} from './ui-reset/prototype-shortcut-registry';
 import {buildPrototypeTunnelFixture} from './ui-reset/prototype-tunnel-model';
@@ -78,10 +96,15 @@ import {
   getPrototypeThemePalette,
   modeGroups,
   personaStats,
-  prototypeProfileIds,
+  readStoredAppearanceTheme,
+  readStoredThemePaletteId,
+  readStoredThemeUserColor,
   resolvePersonaMoodState,
   skillFamilyColors,
+  appearanceThemeStorageKey,
   themePalettes,
+  themePaletteStorageKey,
+  themeUserColorStorageKey,
 } from './ui-reset/prototype-profile-registry';
 import type {
   AccessLevel,
@@ -154,17 +177,6 @@ const historyItems = [
   },
 ];
 
-const appearanceStorageKey = 'masterflow.appearance-theme';
-
-const readAppearanceTheme = (): AppearanceTheme => {
-  try {
-    const value = window.localStorage.getItem(appearanceStorageKey);
-    return value === 'light' || value === 'dark' || value === 'auto' ? value : 'auto';
-  } catch {
-    return 'auto';
-  }
-};
-
 type RuntimeBridgeState = {
   context: CurrentContext | null;
   inboxItems: ValidationInboxItem[];
@@ -174,7 +186,7 @@ type RuntimeBridgeState = {
 };
 
 export type CurrentUiRuntime = {
-  activeProfileId: PrototypeProfileId;
+  authenticatedProfileId: PrototypeProfileId;
   context: CurrentContext;
   inboxItems: ValidationInboxItem[];
   jobs: Job[];
@@ -197,6 +209,7 @@ export type CurrentUiRuntime = {
       role: 'user' | 'assistant' | 'system';
       content: string;
       speaker?: string;
+      expressiveVoice?: ExpressiveVoiceDisclosure;
     }>;
     onInputChange: (value: string) => void;
     onSubmit: () => void;
@@ -206,18 +219,39 @@ export type CurrentUiRuntime = {
   onModeSelect: (mode: ActiveSurface) => void;
   onPilotSelect: (roomId: string) => void;
   onResume: () => void;
+  styleLearning: RuntimeStyleLearningState;
+  onStyleLearningReset: () => void;
+  onStyleLearningUpdate: (input: UpdateStyleLearningPreferencesRequest) => void;
 };
 
 export type CurrentUiLogin = {
   busy: boolean;
   error: string | null;
   password: string;
+  rememberMe: boolean;
   registerAction: ReactNode;
   username: string;
   onPasswordChange: (value: string) => void;
+  onRememberMeChange: (value: boolean) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onUsernameChange: (value: string) => void;
 };
+
+function resolveRuntimePersona(context: CurrentContext | null): Persona | null {
+  if (!context) return null;
+  const configuredPersonaId = context.room.context?.['active_persona'];
+  const personaId = context.active_blend?.speaker_persona_id
+    ?? (typeof configuredPersonaId === 'string' ? configuredPersonaId : null);
+  return personaId
+    ? context.personas.find((persona) => persona.id === personaId) ?? null
+    : null;
+}
+
+function readInitialThemeUserColor(): string {
+  const paletteId = readStoredThemePaletteId() ?? 'masterflow';
+  const palette = getPrototypeThemePalette(paletteId);
+  return readStoredThemeUserColor(paletteId) ?? palette.userColor;
+}
 
 const runtimeModeAliases: Record<string, DemoMode> = {
   course: 'teaching',
@@ -228,6 +262,8 @@ const runtimeModeAliases: Record<string, DemoMode> = {
   learn: 'learn',
   learning: 'learn',
   narrative: 'story',
+  planning: 'planning',
+  masterplan: 'planning',
   project: 'project',
   story: 'story',
   teaching: 'teaching',
@@ -240,6 +276,7 @@ const runtimeSurfaceModes: Array<{mode: DemoMode; pattern: RegExp}> = [
   {mode: 'story', pattern: /(story|narrative|workbench)/},
   {mode: 'da', pattern: /(^|_)(da|theme|manifest)(_|$)/},
   {mode: 'inventory', pattern: /(inventory|asset_storage|asset_review|asset_gallery)/},
+  {mode: 'planning', pattern: /(planning|masterplan|calendar)/},
   {mode: 'teaching', pattern: /(teaching|pedagogical|competency|badge|skill_tree)/},
   {mode: 'learn', pattern: /(learning|help_context|style_profile)/},
 ];
@@ -361,7 +398,10 @@ function useAnimatedPresence<T>(value: T | null, duration = 220): {
       return;
     }
     if (renderedValue === null) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const motionPreference = document.documentElement.dataset.masterflowMotion;
+    const motionReduced = motionPreference === 'reduce'
+      || (motionPreference !== 'full' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (motionReduced) {
       setRenderedValue(null);
       return;
     }
@@ -378,10 +418,12 @@ function useAnimatedPresence<T>(value: T | null, duration = 220): {
 export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime?: CurrentUiRuntime}): ReactElement {
   const [activeMode, setActiveMode] = useState<ActiveSurface>('home');
   const [activePrototypeProfileId, setActivePrototypeProfileId] = useState<PrototypeProfileId>('masterflex');
-  const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>(readAppearanceTheme);
-  const [themePaletteId, setThemePaletteId] = useState<ThemePaletteId>('masterflow');
-  const [paletteValuesInverted, setPaletteValuesInverted] = useState(false);
-  const [personaColor, setPersonaColor] = useState('#3979e8');
+  const [appearanceTheme, setAppearanceTheme] = useState<AppearanceTheme>(readStoredAppearanceTheme);
+  const [themePaletteId, setThemePaletteId] = useState<ThemePaletteId>(() => readStoredThemePaletteId() ?? 'masterflow');
+  const [runtimeUserPreferences, setRuntimeUserPreferences] = useState<RuntimeUserPreferences>(() =>
+    readRuntimeUserPreferences(runtime?.context.user.id ?? 'prototype')
+  );
+  const [personaColor, setPersonaColor] = useState<string>(readInitialThemeUserColor);
   const [input, setInput] = useState('');
   const [railOpen, setRailOpen] = useState(false);
   const [accessLevel, setAccessLevel] = useState<AccessLevel>('teacher');
@@ -389,6 +431,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   const [characterOpen, setCharacterOpen] = useState(false);
   const [characterClosing, setCharacterClosing] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsView, setSettingsView] = useState<RuntimeSettingsView>('account');
   const [actionLibraryOpen, setActionLibraryOpen] = useState(false);
   const [renderedActionLibraryOpen, setRenderedActionLibraryOpen] = useState(false);
   const [actionLibraryClosing, setActionLibraryClosing] = useState(false);
@@ -410,8 +453,9 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   const [quickSearch, setQuickSearch] = useState('');
   const [selectedSkillArcId, setSelectedSkillArcId] = useState<SkillArcId | null>(null);
   const [skillsOverviewOpen, setSkillsOverviewOpen] = useState(false);
+  const [personaView, setPersonaView] = useState<'overview' | 'galaxy'>('overview');
   const [personaStatIndex, setPersonaStatIndex] = useState(0);
-  const [skillFamilyIndex, setSkillFamilyIndex] = useState(0);
+  const [skillFamilyFilter, setSkillFamilyFilter] = useState<SkillFamilyId | 'all'>('all');
   const [personaDisplayValue, setPersonaDisplayValue] = useState(0);
   const [personaDisplayMasteryValue, setPersonaDisplayMasteryValue] = useState(0);
   const [portraitLayers, setPortraitLayers] = useState<{
@@ -428,6 +472,8 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     jobs: [],
     status: 'prototype',
   });
+  const [runtimeUserProfile, setRuntimeUserProfile] = useState<RuntimeUserProfile | null>(null);
+  const [runtimeUserProfileError, setRuntimeUserProfileError] = useState<string | null>(null);
   const runtimeBridge: RuntimeBridgeState = runtime
     ? {
         context: runtime.context,
@@ -437,6 +483,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
         status: 'runtime',
       }
     : runtimeBridgeState;
+  const runtimePreferenceScope = runtimeBridge.context?.user.id ?? 'prototype';
   const navigationDestinationRef = useRef<NavigationDestination>('home');
   const lastChatOpenRequestRef = useRef(0);
   const [systemPrefersLight, setSystemPrefersLight] = useState(false);
@@ -451,6 +498,11 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     [accessLevel, runtimeBridge.status, runtimeModeIds],
   );
   const activePrototypeProfile = getPrototypeProfile(activePrototypeProfileId);
+  const authenticatedDisplayName = runtimeBridge.context?.user.display_name ?? activePrototypeProfile.displayName;
+  const activeRuntimePersona = useMemo(
+    () => resolveRuntimePersona(runtimeBridge.context),
+    [runtimeBridge.context],
+  );
   const tunnelFixture = buildPrototypeTunnelFixture(activePrototypeProfile);
   const modeCycle = useMemo<NavigationDestination[]>(
     () => ['home', 'character', ...modeGroups.flatMap((group) => group.ids).filter((id) => visibleModeIds.has(id))],
@@ -458,16 +510,25 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   );
   const resolvedAppearance = appearanceTheme === 'auto' ? (systemPrefersLight ? 'light' : 'dark') : appearanceTheme;
   const themePalette = getPrototypeThemePalette(themePaletteId);
-  const activeSkillArcs = activePrototypeProfile.skillArcs;
+  const activeSkillFamilyColors = useMemo(() => runtimeBridge.context ? {
+    image: themePalette.userColor,
+    volume: themePalette.supportColor,
+    system: themePalette.color,
+    story: themePalette.top,
+    soft: themePalette.deep,
+  } : skillFamilyColors, [runtimeBridge.context, themePalette]);
+  const runtimePersonaGalaxy = useMemo(
+    () => buildRuntimePersonaGalaxy(runtimeUserProfile, activeSkillFamilyColors),
+    [activeSkillFamilyColors, runtimeUserProfile],
+  );
+  const activeSkillArcs = runtimePersonaGalaxy?.skillArcs ?? activePrototypeProfile.skillArcs;
+  const activePersonaStats = runtimePersonaGalaxy?.stats ?? activePrototypeProfile.stats;
+  const activePersonaShortLabels = runtimePersonaGalaxy?.shortLabels ?? activePrototypeProfile.shortLabels;
   const selectedSkillArc = activeSkillArcs.find((arc) => arc.id === selectedSkillArcId) ?? null;
   const skillGalaxyOpen = selectedSkillArc !== null || skillsOverviewOpen;
-  const activeMetricSet = selectedSkillArc?.metrics ?? activePrototypeProfile.stats;
+  const activeMetricSet = selectedSkillArc?.metrics ?? activePersonaStats;
   const activePersonaStat = activeMetricSet[personaStatIndex] ?? activeMetricSet[0] ?? activePrototypeProfile.stats[0]!;
-  const activeSkillFamilies = useMemo(
-    () => selectedSkillArc ? Array.from(new Set(selectedSkillArc.skills.map((skill) => skill.family))) : [],
-    [selectedSkillArc],
-  );
-  const activeSkillFamily = activeSkillFamilies[skillFamilyIndex % activeSkillFamilies.length] ?? null;
+  const activeSkillFamily = skillFamilyFilter === 'all' ? null : skillFamilyFilter;
   const skillSliderIndex = skillsOverviewOpen
     ? activeSkillArcs.length + 1
     : selectedSkillArc
@@ -478,15 +539,18 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     if (normalizedIndex === 0) {
       setSelectedSkillArcId(null);
       setSkillsOverviewOpen(false);
+      setSkillFamilyFilter('all');
       return;
     }
     if (normalizedIndex === activeSkillArcs.length + 1) {
       setSelectedSkillArcId(null);
       setSkillsOverviewOpen(true);
+      setSkillFamilyFilter('all');
       return;
     }
     setSelectedSkillArcId(activeSkillArcs[normalizedIndex - 1]?.id ?? null);
     setSkillsOverviewOpen(false);
+    setSkillFamilyFilter('all');
   }, [activeSkillArcs]);
   const activePersonaMood = useMemo(
     () => {
@@ -518,7 +582,23 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     if (systemPanel === 'dm') return 'Plus attirant qu’un vortex';
     return activePrototypeProfile.modePunchlines[activeMode] ?? activePrototypeProfile.defaultPunchline;
   }, [activeMode, activePrototypeProfile, actionLibraryOpen, dockPanel, historyOpen, recording, selectedSkillArc, settingsOpen, systemPanel, transcribing]);
-  const profileRank = getPrototypeProfileRank(activePrototypeProfile);
+  const profileRank = getPrototypeProfileRank({
+    ...activePrototypeProfile,
+    rankScore: runtimePersonaGalaxy?.rankScore ?? activePrototypeProfile.rankScore,
+  });
+  const runtimeInventoryItems = runtimeUserProfile
+    ? [
+        {id: 'resources', label: 'Ressources', count: runtimeUserProfile.declared_resources.total, color: themePalette.userColor, icon: PackageOpen},
+        {id: 'videos', label: 'Vidéos', count: runtimeUserProfile.declared_resources.videos, color: themePalette.color, icon: Clapperboard},
+        {id: 'skills', label: 'Skills', count: runtimeUserProfile.professional_skills.length, color: themePalette.supportColor, icon: Network},
+        {id: 'projects', label: 'Projets', count: runtimeUserProfile.projects_count, color: themePalette.deep, icon: FolderKanban},
+      ]
+    : [
+        {id: 'resources-loading', label: 'Ressources', count: '—', color: themePalette.userColor, icon: PackageOpen},
+        {id: 'videos-loading', label: 'Vidéos', count: '—', color: themePalette.color, icon: Clapperboard},
+        {id: 'skills-loading', label: 'Skills', count: '—', color: themePalette.supportColor, icon: Network},
+        {id: 'projects-loading', label: 'Projets', count: '—', color: themePalette.deep, icon: FolderKanban},
+      ];
   const homeCopy = runtimeBridge.context
     ? {
         eyebrow: activePrototypeProfile.id === 'masterflex'
@@ -550,6 +630,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
         title: 'Bonjour Malex.',
         body: 'MasterFlow est prêt. Toi, on va vérifier. Tu attaques quoi ?',
       };
+  const paletteValuesInverted = runtimeUserPreferences.paletteValuesInverted;
   const interfaceColor = paletteValuesInverted ? personaColor : themePalette.color;
   const interfaceTop = paletteValuesInverted ? `color-mix(in srgb, ${personaColor} 74%, white)` : themePalette.top;
   const interfaceDeep = paletteValuesInverted ? `color-mix(in srgb, ${personaColor} 74%, black)` : themePalette.deep;
@@ -566,42 +647,44 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   } as CSSProperties;
   const closeTunnel = useCallback((): void => {
     if (tunnelClosing) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (runtimeMotionIsReduced(runtimeUserPreferences)) {
       setTunnelOpen(false);
       setTunnelClosing(false);
       return;
     }
     setTunnelClosing(true);
-  }, [tunnelClosing]);
+  }, [runtimeUserPreferences, tunnelClosing]);
   const closeShortcuts = useCallback((): void => {
     if (shortcutsClosing) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (runtimeMotionIsReduced(runtimeUserPreferences)) {
       setShortcutsOpen(false);
       setShortcutsClosing(false);
       return;
     }
     setShortcutsClosing(true);
-  }, [shortcutsClosing]);
+  }, [runtimeUserPreferences, shortcutsClosing]);
   const closeCharacterPage = useCallback((): void => {
     if (characterClosing) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (runtimeMotionIsReduced(runtimeUserPreferences)) {
       setCharacterOpen(false);
       setSelectedSkillArcId(null);
       setSkillsOverviewOpen(false);
       return;
     }
     setCharacterClosing(true);
-  }, [characterClosing]);
+  }, [characterClosing, runtimeUserPreferences]);
   const applyPrototypeProfile = useCallback((profileId: PrototypeProfileId): void => {
     const profile = getPrototypeProfile(profileId);
+    const storedThemePaletteId = readStoredThemePaletteId();
+    const selectedThemePalette = getPrototypeThemePalette(storedThemePaletteId ?? profile.defaultThemePaletteId);
     setActivePrototypeProfileId(profileId);
-    setThemePaletteId(profile.defaultThemePaletteId);
-    setPersonaColor(profile.personaColor);
-    setPaletteValuesInverted(false);
+    setThemePaletteId(selectedThemePalette.id);
+    setPersonaColor(readStoredThemeUserColor(selectedThemePalette.id) ?? selectedThemePalette.userColor);
     setSelectedSkillArcId(null);
     setSkillsOverviewOpen(false);
+    setPersonaView('overview');
     setPersonaStatIndex(0);
-    setSkillFamilyIndex(0);
+    setSkillFamilyFilter('all');
     const baseMood = resolvePersonaMoodState(profile.stats[0]!.masteryValue);
     setPortraitLayers({
       current: {...baseMood, asset: profile.moodAssets[baseMood.id]},
@@ -609,9 +692,33 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     });
   }, []);
   useEffect(() => {
-    if (!runtime || runtime.activeProfileId === activePrototypeProfileId) return;
-    applyPrototypeProfile(runtime.activeProfileId);
+    if (!runtime) return;
+    if (runtime.authenticatedProfileId !== activePrototypeProfileId) {
+      applyPrototypeProfile(runtime.authenticatedProfileId);
+    }
   }, [activePrototypeProfileId, applyPrototypeProfile, runtime]);
+  useEffect(() => {
+    if (!runtimeBridge.context) {
+      setRuntimeUserProfile(null);
+      setRuntimeUserProfileError(null);
+      return;
+    }
+    let cancelled = false;
+    setRuntimeUserProfile(null);
+    setRuntimeUserProfileError(null);
+    void getRuntimeUserProfile()
+      .then((profile) => {
+        if (!cancelled) setRuntimeUserProfile(profile);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setRuntimeUserProfileError(error instanceof Error ? error.message : 'runtime_profile_error');
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [runtimeBridge.context?.user.id]);
   const selectMode = useCallback((mode: DemoMode): void => {
     navigationDestinationRef.current = mode;
     setActiveMode(mode);
@@ -656,6 +763,8 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     setCharacterOpen(true);
     setSelectedSkillArcId(null);
     setSkillsOverviewOpen(false);
+    setPersonaView('overview');
+    setSkillFamilyFilter('all');
     setRailOpen(false);
     setActionLibraryOpen(false);
     setActionLibraryClosing(false);
@@ -705,7 +814,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
       return;
     }
     if (!renderedActionLibraryOpen) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (runtimeMotionIsReduced(runtimeUserPreferences)) {
       setRenderedActionLibraryOpen(false);
       setActionLibraryClosing(false);
       return;
@@ -717,7 +826,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
       setActionLibraryClosing(false);
     }, 240);
     return () => window.clearTimeout(timer);
-  }, [actionLibraryOpen, renderedActionLibraryOpen]);
+  }, [actionLibraryOpen, renderedActionLibraryOpen, runtimeUserPreferences]);
 
   useEffect(() => {
     if (dockPanel) {
@@ -746,11 +855,52 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   useEffect(() => {
     document.documentElement.dataset.masterflowTheme = appearanceTheme;
     try {
-      window.localStorage.setItem(appearanceStorageKey, appearanceTheme);
+      window.localStorage.setItem(appearanceThemeStorageKey, appearanceTheme);
     } catch {
       // Le theme reste actif pour la session si le stockage est indisponible.
     }
   }, [appearanceTheme]);
+
+  useEffect(() => {
+    applyRuntimeUserPreferences(runtimeUserPreferences);
+    storeRuntimeUserPreferences(runtimeUserPreferences, runtimePreferenceScope);
+  }, [runtimePreferenceScope, runtimeUserPreferences]);
+
+  useEffect(() => {
+    if (!runtimeUserPreferences.privacy.localHistory) setHistoryOpen(false);
+  }, [runtimeUserPreferences.privacy.localHistory]);
+
+  useEffect(() => {
+    document.documentElement.dataset.masterflowPalette = themePaletteId;
+    try {
+      window.localStorage.setItem(themePaletteStorageKey, themePaletteId);
+    } catch {
+      // La palette reste active pour la session si le stockage est indisponible.
+    }
+
+    const browserThemeColor = resolvedAppearance === 'light' ? themePalette.top : themePalette.deep;
+    const themeColorMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (themeColorMeta) themeColorMeta.content = browserThemeColor;
+
+    window.dispatchEvent(new CustomEvent('masterflow:theme-change', {
+      detail: {
+        accent: themePalette.color,
+        appearance: resolvedAppearance,
+        paletteId: themePalette.id,
+        support: themePalette.supportColor,
+        user: personaColor,
+      },
+    }));
+  }, [personaColor, resolvedAppearance, themePalette, themePaletteId]);
+
+  useEffect(() => {
+    if (!themePalette.userTones.some((tone) => tone.color === personaColor)) return;
+    try {
+      window.localStorage.setItem(themeUserColorStorageKey, personaColor);
+    } catch {
+      // La nuance reste active pour la session si le stockage est indisponible.
+    }
+  }, [personaColor, themePalette]);
 
   useEffect(() => {
     if (runtime) return undefined;
@@ -800,24 +950,18 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
       ? runtime.context.user.role as AccessLevel
       : 'student';
     setAccessLevel(nextAccessLevel);
-    if (runtime.context.user.username.toLocaleLowerCase('fr').includes('vincent')) {
-      applyPrototypeProfile('profkrapu');
-    }
-  }, [applyPrototypeProfile, runtime?.context.user.role, runtime?.context.user.username]);
+  }, [runtime?.context.user.role]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setPersonaStatIndex((current) => (current + 1) % activeMetricSet.length);
-      if (activeSkillFamilies.length > 0) {
-        setSkillFamilyIndex((current) => (current + 1) % activeSkillFamilies.length);
-      }
     }, 5600);
     return () => window.clearInterval(timer);
-  }, [activeMetricSet.length, activeSkillFamilies.length]);
+  }, [activeMetricSet.length]);
 
   useEffect(() => {
     setPersonaStatIndex(0);
-    setSkillFamilyIndex(0);
+    setSkillFamilyFilter('all');
   }, [activePrototypeProfileId, selectedSkillArcId]);
 
   useEffect(() => {
@@ -829,7 +973,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
 
   useEffect(() => {
     if (portraitLayers.current.id === activePersonaMood.id) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (runtimeMotionIsReduced(runtimeUserPreferences)) {
       setPortraitLayers({current: activePersonaMood, previous: null});
       return;
     }
@@ -844,12 +988,12 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
         : current);
     }, 420);
     return () => window.clearTimeout(timer);
-  }, [activePersonaMood]);
+  }, [activePersonaMood, portraitLayers.current.id, runtimeUserPreferences]);
 
   useEffect(() => {
     const target = activePersonaStat.value;
     const masteryTarget = activePersonaStat.masteryValue;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (runtimeMotionIsReduced(runtimeUserPreferences)) {
       setPersonaDisplayValue(target);
       setPersonaDisplayMasteryValue(masteryTarget);
       return;
@@ -869,7 +1013,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     };
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
-  }, [activePersonaStat]);
+  }, [activePersonaStat, runtimeUserPreferences]);
 
   usePrototypeShortcuts({
     accessOpen,
@@ -962,8 +1106,12 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
   );
   const runtimeLibraryActions = buildRuntimeLibraryActions(runtimeBridge.context);
   const runtimeSearchResults = getRuntimeSearchResults(runtimeBridge.context, quickSearch);
-  const queueCount = runtimeBridge.status === 'runtime' ? countAttentionJobs(runtimeBridge.jobs) : 0;
-  const notificationCount = runtimeBridge.status === 'runtime' ? countOpenInboxItems(runtimeBridge.inboxItems) : 0;
+  const queueCount = runtimeBridge.status === 'runtime' && runtimeUserPreferences.notifications.jobs
+    ? countAttentionJobs(runtimeBridge.jobs)
+    : 0;
+  const notificationCount = runtimeBridge.status === 'runtime' && runtimeUserPreferences.notifications.validations
+    ? countOpenInboxItems(runtimeBridge.inboxItems)
+    : 0;
   const dmCount = 0;
   const navigationModeGroups: PrototypeModeGroup[] = buildPrototypeModeGroups(visibleModeIds, runtimeBridge.status === 'runtime');
   const visibleAccessLevels = runtimeBridge.context
@@ -982,7 +1130,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
     ['project', 'teaching', 'learn'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[],
   ).map(markResumeMode);
   const homeSecondaryModes = buildPrototypeHomeModes(
-    ['story', 'da', 'inventory', 'masterbuild'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[],
+    ['planning', 'story', 'da', 'inventory', 'masterbuild'].filter((id) => visibleModeIds.has(id as DemoMode)) as DemoMode[],
   ).map(markResumeMode);
   const homeResumeMode = runtime?.resumeMode && visibleModeIds.has(runtime.resumeMode as DemoMode)
     ? buildPrototypeHomeModes([runtime.resumeMode as DemoMode])[0]
@@ -1008,6 +1156,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
           speaker: turn.speaker ?? (turn.role === 'user' ? 'Vous' : 'MasterFlow'),
           summary: turn.content || 'Réponse en cours…',
           detail: turn.content || 'Réponse en cours…',
+          meta: expressiveVoiceDisclosureText(turn.expressiveVoice) ?? undefined,
         }))
     : historyItems;
 
@@ -1078,6 +1227,18 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
                 />
               </label>
 
+              <label className="proto-auth-panel__remember">
+                <input
+                  checked={login.rememberMe}
+                  onChange={(event) => login.onRememberMeChange(event.target.checked)}
+                  type="checkbox"
+                />
+                <span>
+                  <strong>Se souvenir de moi</strong>
+                  <small>Garde la session ouverte sur cet appareil pendant 30 jours.</small>
+                </span>
+              </label>
+
               <button className="proto-auth-panel__submit" disabled={login.busy} type="submit">
                 {login.busy ? <LoaderCircle aria-hidden="true" size={18} /> : <Lock aria-hidden="true" size={17} />}
                 <span>{login.busy ? 'Chargement de ton espace…' : 'Se connecter'}</span>
@@ -1123,8 +1284,9 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
         activeMode={activeMode}
         brandMark={<MasterflowMark className="proto-mf-mark" />}
         characterActive={characterOpen}
+        characterName={runtimeBridge.context ? authenticatedDisplayName : activePrototypeProfile.name}
         homeActive={!characterOpen && activeMode === 'home'}
-        mobileLabel={activePrototypeProfile.mobileLabel}
+        mobileLabel={authenticatedDisplayName}
         modeGroups={navigationModeGroups}
         onCloseRail={() => setRailOpen(false)}
         onOpenActions={() => {
@@ -1156,7 +1318,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
         onSelectMode={(id) => selectMode(id as DemoMode)}
         onToggleAccess={() => setAccessOpen((current) => !current)}
         profileAvatar={activePrototypeProfile.avatarAsset}
-        profileName={activePrototypeProfile.name}
+        profileName={authenticatedDisplayName}
       />
 
       <section className="proto-workspace" aria-label="Espace MasterFlow">
@@ -1165,8 +1327,8 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
             canonAlt={activePrototypeProfile.canonAlt}
             canonAsset={activePrototypeProfile.canonAsset}
             closing={characterClosing}
-            galaxyOpen={skillGalaxyOpen}
-            inventoryItems={activePrototypeProfile.inventoryConnections}
+            galaxyOpen={personaView === 'galaxy' && skillGalaxyOpen}
+            inventoryItems={runtimeBridge.context ? runtimeInventoryItems : activePrototypeProfile.inventoryConnections}
             name={activePrototypeProfile.name}
             onAnimationEnd={(event) => {
               if (!characterClosing || event.animationName !== 'proto-page-out') return;
@@ -1174,34 +1336,62 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
               setCharacterClosing(false);
               setSelectedSkillArcId(null);
               setSkillsOverviewOpen(false);
+              setPersonaView('overview');
+              setSkillFamilyFilter('all');
             }}
             onClose={closeCharacterPage}
+            onInventoryItemSelect={runtimeBridge.context ? () => selectMode('inventory') : undefined}
             profileId={activePrototypeProfile.id}
             punchline={characterPunchline}
             rankTitle={profileRank.title}
             skillsOverviewOpen={skillsOverviewOpen}
           >
-            <PrototypeSkilltreeSurface
-              activePersonaMood={activePersonaMood}
-              activePersonaStat={activePersonaStat}
-              activeProfileName={activePrototypeProfile.name}
-              activeSkillArcs={activeSkillArcs}
-              activeSkillFamily={activeSkillFamily}
-              displayedPersonaMood={displayedPersonaMood}
-              onSelectArc={(arcId) => {
-                setSelectedSkillArcId(arcId);
-                setSkillsOverviewOpen(false);
-              }}
-              onSelectSkillSliderIndex={selectSkillSliderIndex}
-              personaDisplayValue={personaDisplayValue}
-              portraitLayers={portraitLayers}
-              selectedSkillArc={selectedSkillArc}
-              shortLabels={activePrototypeProfile.shortLabels}
-              skillFamilyColors={skillFamilyColors}
-              skillGalaxyOpen={skillGalaxyOpen}
-              skillSliderIndex={skillSliderIndex}
-              skillsOverviewOpen={skillsOverviewOpen}
-            />
+            {runtimeBridge.context && personaView === 'overview' ? (
+              <RuntimePersonaOverview
+                error={runtimeUserProfileError}
+                onOpenGalaxy={() => {
+                  setPersonaView('galaxy');
+                  setSelectedSkillArcId(null);
+                  setSkillsOverviewOpen(false);
+                  setSkillFamilyFilter('all');
+                }}
+                onOpenInventory={() => selectMode('inventory')}
+                persona={activeRuntimePersona}
+                profile={runtimeUserProfile}
+              />
+            ) : (
+              <PrototypeSkilltreeSurface
+                activePersonaMood={activePersonaMood}
+                activePersonaStat={activePersonaStat}
+                activeProfileName={activePrototypeProfile.name}
+                activeSkillArcs={activeSkillArcs}
+                activeSkillFamily={activeSkillFamily}
+                displayedPersonaMood={displayedPersonaMood}
+                onSelectArc={(arcId) => {
+                  setPersonaView('galaxy');
+                  setSelectedSkillArcId(arcId);
+                  setSkillsOverviewOpen(false);
+                  setSkillFamilyFilter('all');
+                }}
+                onSkillFamilyFilterChange={setSkillFamilyFilter}
+                onSelectSkillSliderIndex={selectSkillSliderIndex}
+                onReturnToOverview={runtimeBridge.context ? () => {
+                  setPersonaView('overview');
+                  setSelectedSkillArcId(null);
+                  setSkillsOverviewOpen(false);
+                  setSkillFamilyFilter('all');
+                } : undefined}
+                personaDisplayValue={personaDisplayValue}
+                portraitLayers={portraitLayers}
+                selectedSkillArc={selectedSkillArc}
+                shortLabels={activePersonaShortLabels}
+                skillFamilyColors={activeSkillFamilyColors}
+                skillFamilyFilter={skillFamilyFilter}
+                skillGalaxyOpen={skillGalaxyOpen}
+                skillSliderIndex={skillSliderIndex}
+                skillsOverviewOpen={skillsOverviewOpen}
+              />
+            )}
           </PrototypeCharacterSurface>
         ) : null}
 
@@ -1215,129 +1405,38 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
               <button aria-label="Fermer les paramètres" className="proto-settings__close" onClick={() => setSettingsOpen(false)} type="button">
                 <X size={19} />
               </button>
-              <aside className="proto-settings__menu">
-                <strong>Paramètres</strong>
-                <button type="button"><UserRound size={17} /> Compte</button>
-                <button className="is-active" type="button"><Palette size={17} /> Interface</button>
-                <button type="button"><ShieldCheck size={17} /> Accessibilité</button>
-                <button type="button"><Mic size={17} /> Voix et transcription</button>
-                <button type="button"><Bell size={17} /> Notifications</button>
-                <button type="button"><Lock size={17} /> Confidentialité</button>
-              </aside>
-              <div className="proto-settings__content">
-                <small>Interface</small>
-                <h2>Apparence</h2>
-                <section className="proto-profile-switcher" aria-label="Profil prototype actif">
-                  <h3>Profil prototype</h3>
-                  <div>
-                    {prototypeProfileIds.map((profileId) => {
-                      const profile = getPrototypeProfile(profileId);
-                      return (
-                      <button
-                        aria-pressed={activePrototypeProfileId === profile.id}
-                        key={profile.id}
-                        onClick={() => applyPrototypeProfile(profile.id)}
-                        type="button"
-                      >
-                        <span>
-                          <img alt="" src={profile.avatarAsset} />
-                        </span>
-                        <strong>{profile.name}</strong>
-                        <small>{profile.id === 'profkrapu' ? 'Orchidée rose · science verte' : 'MasterFlow · bleu persona'}</small>
-                      </button>
-                      );
-                    })}
-                  </div>
-                </section>
-                <div className="proto-theme-choice" role="group" aria-label="Thème de l’interface">
-                  <button aria-pressed={appearanceTheme === 'auto'} onClick={() => setAppearanceTheme('auto')} type="button">
-                    <Monitor size={20} />
-                    <span>Automatique</span>
-                  </button>
-                  <button aria-pressed={appearanceTheme === 'dark'} onClick={() => setAppearanceTheme('dark')} type="button">
-                    <Moon size={20} />
-                    <span>Sombre</span>
-                  </button>
-                  <button aria-pressed={appearanceTheme === 'light'} onClick={() => setAppearanceTheme('light')} type="button">
-                    <Sun size={20} />
-                    <span>Clair</span>
-                  </button>
-                </div>
-                <div className="proto-theme-customizer">
-                  <section>
-                    <h3>Palettes recommandées</h3>
-                    <div className="proto-palette-presets" role="group" aria-label="Palettes recommandées">
-                      {themePalettes.map((palette) => (
-                        <button
-                          aria-label={palette.label}
-                          aria-pressed={themePaletteId === palette.id}
-                          key={palette.id}
-                          onClick={() => {
-                            setThemePaletteId(palette.id);
-                            setPersonaColor(palette.userColor);
-                          }}
-                          type="button"
-                        >
-                          <span className="proto-palette-presets__colors" aria-hidden="true">
-                            <i style={{background: palette.color}} />
-                            <i style={{background: palette.userColor}} />
-                            <i style={{background: palette.supportColor}} />
-                          </span>
-                          <strong>{palette.label}</strong>
-                          <small>{palette.logic}</small>
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                  <section>
-                    <h3>Ta nuance</h3>
-                    <div className="proto-color-swatches" role="group" aria-label="Couleur personnelle et bulles utilisateur">
-                      {themePalette.userTones.map((option) => (
-                        <button
-                          aria-label={option.label}
-                          aria-pressed={personaColor === option.color}
-                          key={option.color}
-                          onClick={() => setPersonaColor(option.color)}
-                          style={{'--swatch-color': option.color} as CSSProperties}
-                          type="button"
-                        >
-                          <span />
-                          <small>{option.label}</small>
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                  <section>
-                    <h3>Valeurs</h3>
-                    <button
-                      aria-pressed={paletteValuesInverted}
-                      className="proto-value-switch"
-                      onClick={() => setPaletteValuesInverted((current) => !current)}
-                      type="button"
-                    >
-                      <span aria-hidden="true">
-                        <i style={{background: interfaceColor}} />
-                      </span>
-                      <strong>{paletteValuesInverted ? 'Valeurs inversées' : 'Valeurs originales'}</strong>
-                      <small>{paletteValuesInverted ? 'La couleur solo pilote l’interface' : 'La palette pilote l’interface'}</small>
-                    </button>
-                  </section>
-                  <section className="proto-theme-preview" aria-label="Aperçu des rôles de couleur">
-                    <div>
-                      <span style={{background: interfaceColor}} />
-                      <small>Interface</small>
-                    </div>
-                    <div>
-                      <span style={{background: userRoleColor}} />
-                      <small>Toi · bulles</small>
-                    </div>
-                    <div>
-                      <span style={{background: themePalette.supportColor}} />
-                      <small>Signal secondaire</small>
-                    </div>
-                  </section>
-                </div>
-              </div>
+              <RuntimeSettingsPanel
+                activeView={settingsView}
+                appearanceTheme={appearanceTheme}
+                displayName={authenticatedDisplayName}
+                interfaceColor={interfaceColor}
+                onAppearanceThemeChange={setAppearanceTheme}
+                onLogout={() => {
+                  setSettingsOpen(false);
+                  if (runtime) runtime.onLogout();
+                  else {
+                    clearRuntimeAuthToken();
+                    window.location.reload();
+                  }
+                }}
+                onPaletteChange={(paletteId, userColor) => {
+                  setThemePaletteId(paletteId);
+                  setPersonaColor(userColor);
+                }}
+                onPersonaColorChange={setPersonaColor}
+                onPreferencesChange={setRuntimeUserPreferences}
+                onViewChange={setSettingsView}
+                personaColor={personaColor}
+                preferences={runtimeUserPreferences}
+                role={runtimeBridge.context?.user.role ?? null}
+                sessionPersistence={readRuntimeAuthPersistence()}
+                styleLearning={runtime?.styleLearning}
+                onStyleLearningReset={runtime?.onStyleLearningReset}
+                onStyleLearningUpdate={runtime?.onStyleLearningUpdate}
+                themePaletteId={themePaletteId}
+                userRoleColor={userRoleColor}
+                username={runtimeBridge.context?.user.username ?? null}
+              />
             </div>
           </PrototypeOverlayFrame>
         ) : null}
@@ -1395,7 +1494,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
           panel={systemPanel}
           panelClosing={systemPanelPresence.closing}
           profileAvatar={activePrototypeProfile.avatarAsset}
-          profileName={activePrototypeProfile.name}
+          profileName={authenticatedDisplayName}
           quickSearch={quickSearch}
           queueCount={queueCount}
           railOpen={railOpen}
@@ -1448,7 +1547,9 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
           onInputKeyDown={submitOnEnter}
           onSubmit={submit}
           onToggleExpandedHistory={(id) => setExpandedHistoryId((current) => current === id ? null : id)}
-          onToggleHistory={() => setHistoryOpen((current) => !current)}
+          onToggleHistory={() => {
+            if (runtimeUserPreferences.privacy.localHistory) setHistoryOpen((current) => !current);
+          }}
           onToggleKeyboard={() => {
             const nextDock = resolveKeyboardToggle({dockPanel});
             setRecording(nextDock.recording);
@@ -1472,7 +1573,7 @@ export function CurrentUiDemo({login, runtime}: {login?: CurrentUiLogin; runtime
           runtimeState={runtime?.chat.state}
           recording={recording}
           renderedDockPanel={renderedDockPanel}
-          showHistory={activeMode !== 'home'}
+          showHistory={activeMode !== 'home' && runtimeUserPreferences.privacy.localHistory}
           showSuggestions={false}
           suggestions={commandSuggestions}
           transcribing={transcribing}

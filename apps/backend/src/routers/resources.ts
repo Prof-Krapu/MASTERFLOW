@@ -3,12 +3,14 @@ import {Router, type Request, type Response} from 'express';
 import {ProposeResourceSchema} from '@masterflow/shared';
 
 import {audit} from '../lib/audit.ts';
+import {getDb} from '../db/schema.ts';
 import {requireRole, requireUser} from '../middleware/auth.ts';
 import {
   proposeResource,
   searchResources,
   validateResource,
 } from '../engines/resource_truth.ts';
+import {mirrorResourceProposalIntoInventory} from '../services/inventory.ts';
 
 /**
  * Router /resources — registre de vérité des ressources (anti-hallucination).
@@ -62,13 +64,21 @@ export function createResourcesRouter(): Router {
       return;
     }
 
-    const resource = proposeResource(parsed.data);
-    audit({
-      event_type: 'resource.proposed',
-      user_id: req.user?.id ?? null,
-      scope: 'resource',
-      detail: {resource_id: resource.id, title: resource.title, source: resource.source},
-    });
+    if (!req.user) {
+      res.status(401).json({error: 'unauthorized'});
+      return;
+    }
+    const resource = getDb().transaction(() => {
+      const proposed = proposeResource(parsed.data);
+      mirrorResourceProposalIntoInventory(req.user!, proposed);
+      audit({
+        event_type: 'resource.proposed',
+        user_id: req.user!.id,
+        scope: 'resource',
+        detail: {resource_id: proposed.id, title: proposed.title, source: proposed.source},
+      });
+      return proposed;
+    })();
 
     res.status(201).json(resource);
   });

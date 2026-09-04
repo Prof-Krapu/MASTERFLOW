@@ -719,6 +719,7 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
               activeMode={activeMode}
               brandMark={renderBrandMark('proto-mf-mark')}
               characterActive={characterOpen}
+              characterName={profile.name}
               homeActive={!characterOpen && activeMode === 'home'}
               mobileLabel={profile.name}
               modeGroups={labModeGroups}
@@ -861,9 +862,11 @@ export function ComponentLab({workspaceId}: ComponentLabProps): ReactElement {
                 selectedSkillArc={resolvedFixtureArc}
                 shortLabels={{[fixtureMetric.id]: fixtureMetric.label}}
                 skillFamilyColors={skillFamilyColors}
+                skillFamilyFilter={activeFixtureFamily ?? 'all'}
                 skillGalaxyOpen={Boolean(resolvedFixtureArc)}
                 skillSliderIndex={fixtureSkillSliderIndex}
                 skillsOverviewOpen={skillsOverviewOpen}
+                onSkillFamilyFilterChange={(family) => setActiveFixtureFamilyId(family === 'all' ? null : family)}
               />
             </PrototypeCharacterSurface>
           </>

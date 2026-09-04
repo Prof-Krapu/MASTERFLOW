@@ -21,6 +21,10 @@ import type {
 
 import type {ModeView, WorkMode, WorkModeId} from './mode-runtime.ts';
 import {playTts} from './api.ts';
+import {
+  expressiveVoiceDisclosureText,
+  type ExpressiveVoiceDisclosure,
+} from './expressive-voice-disclosure.ts';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -29,6 +33,7 @@ type ChatTurn = {
   role: 'user' | 'assistant' | 'system';
   content: string;
   speaker?: string;
+  expressiveVoice?: ExpressiveVoiceDisclosure;
 };
 
 export type PersonaVisualState =
@@ -544,6 +549,11 @@ export function ChatDock(props: ChatDockProps): ReactElement {
                 ) : null}
               </strong>
               <p>{turn.content || '…'}</p>
+              {turn.expressiveVoice ? (
+                <small className="expressive-voice-disclosure">
+                  {expressiveVoiceDisclosureText(turn.expressiveVoice)}
+                </small>
+              ) : null}
             </article>
           ))
         ) : (

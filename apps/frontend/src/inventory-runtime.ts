@@ -20,6 +20,9 @@ export const INVENTORY_TYPE_LABELS: Record<InventoryItemType, string> = {
   gear: 'Equipement',
   software: 'Logiciel',
   product: 'Produit',
+  video: 'Vidéo',
+  link: 'Lien',
+  note: 'Note',
   archive: 'Archive',
   custom: 'Autre',
 };

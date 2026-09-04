@@ -140,6 +140,9 @@ describe('style_mirror_engine', () => {
     const instructionsSpecific = getStyleInstructions(student.id, 'masterflex-001');
     expect(instructionsSpecific).not.toBeNull();
     expect(instructionsSpecific).toContain('playful');
+    expect(instructionsSpecific).toContain('Intensité miroir : 0.40');
+    expect(instructionsSpecific).not.toContain('Intensité miroir : 0.90');
+    expect(instructionsSpecific).toContain('ne modifie jamais les permissions');
   });
 
   it('getStyleInstructions préfère le profil projet puis coupe après révocation', () => {

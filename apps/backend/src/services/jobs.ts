@@ -394,13 +394,14 @@ export function createImageGenerationJob(actor: AuthUser, input: ImageGeneration
   const request = ImageGenerationRequestSchema.parse(input);
   if (request.scope_type === 'project') {
     if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
-      const decision = decideScopedPermission({
-        actor,
-        projectId: request.scope_id,
-        minimumProjectRole: 'participant',
-      });
-      if (!decision.allowed) throw new Error('scope_denied');
+      throw new Error('scope_denied');
     }
+    const decision = decideScopedPermission({
+      actor,
+      projectId: request.scope_id,
+      minimumProjectRole: 'participant',
+    });
+    if (!decision.allowed) throw new Error('scope_denied');
   } else if (actor.id !== request.owner_id && ROLE_RANK[actor.role] < ROLE_RANK.admin) {
     throw new Error('scope_denied');
   }

@@ -1,6 +1,7 @@
 import {
   ExpressiveBehaviorConfigSchema,
   type ExpressiveBehaviorConfig,
+  type PersonaStyleSourceMetadata,
   type StyleMirrorProfile,
   type UpsertStyleMirrorRequest,
 } from '@masterflow/shared';
@@ -13,9 +14,19 @@ import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 import {decideScopedPermission} from './projects.ts';
+import {
+  getActivePersonaRepresentation,
+  getCollectiveProjectStyle,
+  getLearnedUserStyle,
+} from './style_learning_engine.ts';
 
 const EXPRESSIVE_CANON_VALIDATION_VERSION = 'expressive_canon_p1';
 const STYLE_INSTRUCTION_LIMIT = 1_200;
+
+export type ResolvedPersonaStyleOverlay = {
+  instructions: string;
+  metadata: PersonaStyleSourceMetadata;
+};
 
 function parseStringArray(raw: string): string[] {
   const parsed = JSON.parse(raw) as unknown;
@@ -126,18 +137,26 @@ export function upsertProfile(actor: AuthUser, data: UpsertStyleMirrorRequest): 
     : existing?.visual_canon_ref ?? null;
 
   if (existing) {
+    const requiresSubjectRevalidation =
+      existing.profile_status === 'active' && actor.id !== existing.user_id;
     getDb().prepare(`
       UPDATE style_mirror_profiles SET
         register_target = ?, energy_target = ?, lexical_complexity = ?,
         mirror_intensity = ?,
         lexical_overrides_json = ?, signature_moves_override_json = ?, tone_rules_json = ?,
         behavior_config_json = ?, source_refs_json = ?, visual_canon_ref = ?,
+        profile_status = ?, consent_status = ?, validated_by = ?, validated_at = ?, validation_version = ?,
         updated_at = ?
       WHERE id = ?
     `).run(
       registerTarget, energyTarget, lexComp, intensity,
       JSON.stringify(lexOverrides), JSON.stringify(movesOverride), JSON.stringify(toneRules),
       JSON.stringify(behaviorConfig), JSON.stringify(sourceRefs), visualCanonRef,
+      requiresSubjectRevalidation ? 'draft' : existing.profile_status,
+      requiresSubjectRevalidation ? 'pending' : existing.consent_status,
+      requiresSubjectRevalidation ? null : existing.validated_by,
+      requiresSubjectRevalidation ? null : existing.validated_at,
+      requiresSubjectRevalidation ? null : existing.validation_version,
       now, existing.id,
     );
   } else {
@@ -199,7 +218,7 @@ export function updateProfileStatus(actor: AuthUser, profileId: string, status: 
           updated_at = ?
       WHERE id = ?
     `).run(`subject:${actor.id}:style_mirror`, now, actor.id, now, EXPRESSIVE_CANON_VALIDATION_VERSION, now, profileId);
-  } else if (status === 'archived' && actor.id === row.user_id) {
+  } else if (status === 'archived') {
     getDb().prepare(`
       UPDATE style_mirror_profiles
       SET profile_status = 'archived',
@@ -273,7 +292,7 @@ export function getStyleInstructions(userId: string, personaId: string, projectI
   if (behavior.rhythm !== 'auto') {
     parts.push(`Rythme : ${behavior.rhythm}.`);
   }
-  parts.push(`Intensité miroir : ${profile.mirror_intensity.toFixed(2)}.`);
+  parts.push(`Intensité miroir : ${Math.min(0.4, profile.mirror_intensity).toFixed(2)}.`);
   parts.push(`Chaleur ${behavior.warmth.toFixed(2)}, franchise ${behavior.frankness.toFixed(2)}, ludisme ${behavior.playfulness.toFixed(2)}, densité technique ${behavior.technical_density.toFixed(2)}.`);
   if (profile.lexical_overrides.length > 0) {
     parts.push(`Termes autorisés : ${profile.lexical_overrides.slice(0, 8).join(', ')}.`);
@@ -285,6 +304,16 @@ export function getStyleInstructions(userId: string, personaId: string, projectI
   if (profile.tone_rules.length > 0) {
     parts.push(`Règles de ton : ${profile.tone_rules.slice(0, 6).join(' ; ')}.`);
   }
+  if (behavior.recurring_expressions.length > 0) {
+    parts.push(`Expressions récurrentes possibles : ${behavior.recurring_expressions.slice(0, 5).join(' ; ')}. Jamais à chaque phrase.`);
+  }
+  if (behavior.humor > 0) {
+    parts.push(`Humour borné : ${behavior.humor.toFixed(2)}.`);
+  }
+  const observablePatterns = Object.values(behavior.observable_patterns).filter(Boolean).slice(0, 4);
+  if (observablePatterns.length > 0) {
+    parts.push(`Patterns observables : ${observablePatterns.join(' ; ')}.`);
+  }
   if (behavior.forbidden_tones.length > 0) {
     parts.push(`Tons interdits : ${behavior.forbidden_tones.join(', ')}.`);
   }
@@ -292,4 +321,101 @@ export function getStyleInstructions(userId: string, personaId: string, projectI
   parts.push("N'imite pas l'identité réelle de la personne ; adapte seulement des comportements langagiers consentis.");
 
   return boundedInstruction(parts);
+}
+
+function learnedInstructions(input: {
+  rhythm: 'short' | 'balanced' | 'expansive' | null;
+  recurring_expressions: string[];
+  transitions: string[];
+  intensity: number;
+  collective: boolean;
+}): string {
+  const parts = [
+    input.collective
+      ? 'Couleur langagière collective et anonyme du projet.'
+      : 'Marqueurs langagiers dérivés de la personne représentée.',
+    `Intensité secondaire ${Math.min(0.4, input.intensity).toFixed(2)} ; la personnalité canonique du persona reste dominante.`,
+    input.rhythm ? `Rythme : ${input.rhythm}.` : '',
+    input.transitions.length > 0 ? `Transitions possibles : ${input.transitions.join(', ')}.` : '',
+    input.recurring_expressions.length > 0
+      ? `Expressions possibles : ${input.recurring_expressions.join(' ; ')}. Maximum une par réponse, jamais à chaque phrase.`
+      : '',
+    "Le persona parle toujours en son propre nom. Il ne prétend jamais être la personne ou le groupe source.",
+    'Cette couche ne modifie jamais le rôle, le comportement canonique, les permissions, les faits, les sources ou la méthode.',
+  ];
+  return boundedInstruction(parts.filter(Boolean)) ?? '';
+}
+
+/**
+ * Résout la couche secondaire du persona. Le style de l'interlocuteur n'est jamais
+ * utilisé comme repli : personne représentée, puis collectif du projet, sinon canon seul.
+ */
+export function resolvePersonaStyleOverlay(
+  personaId: string,
+  projectId?: string | null,
+): ResolvedPersonaStyleOverlay | null {
+  const representation = getActivePersonaRepresentation(personaId);
+  if (representation) {
+    const learned = getLearnedUserStyle(representation.represented_user_id);
+    if (learned.enabled && learned.preview.readiness === 'ready') {
+      const user = getDb().prepare('SELECT display_name FROM users WHERE id = ?')
+        .get(representation.represented_user_id) as {display_name: string} | undefined;
+      return {
+        instructions: learnedInstructions({
+          rhythm: learned.preview.rhythm,
+          recurring_expressions: learned.preview.recurring_expressions,
+          transitions: learned.preview.transitions,
+          intensity: learned.intensity,
+          collective: false,
+        }),
+        metadata: {
+          source: 'represented_user',
+          label: `Style inspiré de ${user?.display_name ?? 'la personne représentée'}`,
+          intensity: learned.intensity,
+          confidence: learned.preview.confidence,
+        },
+      };
+    }
+  }
+
+  if (projectId) {
+    const collective = getCollectiveProjectStyle(projectId);
+    if (collective.preview.readiness === 'ready') {
+      const project = getDb().prepare('SELECT name FROM projects WHERE id = ?')
+        .get(projectId) as {name: string} | undefined;
+      return {
+        instructions: learnedInstructions({
+          rhythm: collective.preview.rhythm,
+          recurring_expressions: collective.preview.recurring_expressions,
+          transitions: collective.preview.transitions,
+          intensity: collective.intensity,
+          collective: true,
+        }),
+        metadata: {
+          source: 'project_collective',
+          label: `Couleur du groupe ${project?.name ?? 'projet'}`,
+          intensity: collective.intensity,
+          confidence: collective.preview.confidence,
+        },
+      };
+    }
+  }
+  return null;
+}
+
+/** Les préférences de A ne règlent que la lisibilité, jamais les tics du persona. */
+export function getReadabilityInstructions(userId: string, projectId?: string | null): string | null {
+  const row = getDb().prepare(`
+    SELECT help_density, help_format
+    FROM personal_learning_profiles
+    WHERE user_id = ? AND project_id IS ? AND profile_status != 'archived'
+    ORDER BY updated_at DESC LIMIT 1
+  `).get(userId, projectId ?? null) as {help_density: string | null; help_format: string | null} | undefined;
+  if (!row) return null;
+  const parts = [
+    row.help_density ? `Densité de lecture demandée par l'interlocuteur : ${row.help_density}.` : '',
+    row.help_format ? `Format d'aide préféré : ${row.help_format}.` : '',
+    "Ces préférences changent seulement la lisibilité, jamais l'identité ou le style source du persona.",
+  ].filter(Boolean);
+  return parts.length > 1 ? parts.join(' ') : null;
 }

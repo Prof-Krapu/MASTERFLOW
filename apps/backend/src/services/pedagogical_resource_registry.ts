@@ -14,7 +14,7 @@ import {audit} from '../lib/audit.ts';
 import {uuid} from '../lib/uuid.ts';
 import type {AuthUser} from '../middleware/auth.ts';
 
-type JsonRecord = Record<string, unknown>;
+export type JsonRecord = Record<string, unknown>;
 
 type VideoSeed = {
   id: string;
@@ -123,7 +123,7 @@ const DEFAULT_LEVELS = [
   {code: 'B5', label: 'Master 2 / 5e annee', short: '5e', order: 50, aliases: ['b5', 'master 2', 'mba 2', 'm2', '5e', '5eme', '5eme annee', 'is05', 'is5']},
 ] as const;
 
-function normalize(value: string): string {
+export function normalize(value: string): string {
   return value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -132,11 +132,11 @@ function normalize(value: string): string {
     .trim();
 }
 
-function stableHash(value: unknown): string {
+export function stableHash(value: unknown): string {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
-function deterministicId(prefix: string, value: string): string {
+export function deterministicId(prefix: string, value: string): string {
   return `${prefix}-${createHash('sha256').update(value).digest('hex').slice(0, 24)}`;
 }
 
@@ -149,7 +149,7 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
   }
 }
 
-function parseDuration(value?: string | null): number | null {
+export function parseDuration(value?: string | null): number | null {
   if (!value) return null;
   const parts = value.split(':').map(Number);
   if (parts.some((part) => !Number.isFinite(part) || part < 0)) return null;
@@ -378,7 +378,7 @@ export function reconcilePedagogicalClassification(
   );
 }
 
-function upsertParentResource(input: {
+export function upsertParentResource(input: {
   id: string;
   type: string;
   title: string;
@@ -396,7 +396,7 @@ function upsertParentResource(input: {
   `).run(input.id, input.type, input.title, input.url, input.source, input.status, JSON.stringify(input.subjects), Date.now());
 }
 
-function upsertProfile(input: {
+export function upsertProfile(input: {
   resourceId: string;
   legacyId: string | null;
   resourceKind: string;
@@ -453,7 +453,7 @@ function upsertProfile(input: {
   );
 }
 
-function upsertNotion(
+export function upsertNotion(
   notionId: string,
   label: string,
   notionType: string,
@@ -496,7 +496,7 @@ function upsertNotion(
   return id;
 }
 
-function upsertNotionLink(input: {
+export function upsertNotionLink(input: {
   resourceId: string;
   notionId: string;
   relation: 'teaches' | 'illustrates';
@@ -568,7 +568,7 @@ function upsertEdge(input: {
   );
 }
 
-function refreshFts(resourceId: string): void {
+export function refreshFts(resourceId: string): void {
   const db = getDb();
   const row = db.prepare(`
     SELECT r.title, p.description, p.pedagogical_reading, p.software_json, p.tags_json, p.usable_for_json

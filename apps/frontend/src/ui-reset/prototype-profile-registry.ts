@@ -1,6 +1,7 @@
 import {
   BookOpen,
   Boxes,
+  CalendarDays,
   Check,
   Clapperboard,
   Command,
@@ -65,7 +66,7 @@ import type {
 import type {PrototypeModeGroup} from './prototype-shell-components';
 import type {PrototypeHomeMode} from './prototype-product-surfaces';
 
-export type DemoMode = 'teaching' | 'learn' | 'project' | 'inventory' | 'da' | 'story' | 'companions' | 'masterbuild';
+export type DemoMode = 'teaching' | 'learn' | 'planning' | 'project' | 'inventory' | 'da' | 'story' | 'companions' | 'masterbuild';
 export type ActiveSurface = 'home' | DemoMode;
 export type AppearanceTheme = 'auto' | 'dark' | 'light';
 export type DockPanel = 'keyboard' | 'micro' | null;
@@ -134,6 +135,7 @@ export const modes: ModeItem[] = [
   {id: 'teaching', label: 'Teaching', icon: GraduationCap, status: 'available'},
   {id: 'learn', label: 'Learn', icon: BookOpen, status: 'available'},
   {id: 'project', label: 'Project', icon: FolderKanban, status: 'available'},
+  {id: 'planning', label: 'Planning', icon: CalendarDays, status: 'available'},
   {id: 'inventory', label: 'Inventory', icon: PackageOpen, status: 'available'},
   {id: 'da', label: 'DA Studio', icon: Paintbrush, status: 'locked'},
   {id: 'story', label: 'MasterStory', icon: ScrollText, status: 'locked'},
@@ -145,7 +147,7 @@ export const modeGroups = [
   {label: 'Projet actif', ids: ['project'] as DemoMode[], kind: 'project'},
   {label: 'Expériences', ids: ['teaching', 'learn'] as DemoMode[], kind: 'experience'},
   {label: 'Studios', ids: ['story', 'da'] as DemoMode[], kind: 'studio'},
-  {label: 'Personnel', ids: ['inventory'] as DemoMode[], kind: 'personal'},
+  {label: 'Personnel', ids: ['planning', 'inventory'] as DemoMode[], kind: 'personal'},
   {label: 'Système', ids: ['masterbuild'] as DemoMode[], kind: 'system'},
 ];
 
@@ -159,10 +161,10 @@ export const accessLevels: Array<{id: AccessLevel; label: string; icon: LucideIc
 
 export const accessModeMap: Record<AccessLevel, DemoMode[]> = {
   student: ['project', 'learn', 'story'],
-  teacher: ['project', 'teaching', 'learn', 'story', 'da', 'inventory'],
-  supervision: ['project', 'teaching', 'learn', 'inventory'],
+  teacher: ['project', 'teaching', 'learn', 'planning', 'story', 'da', 'inventory'],
+  supervision: ['project', 'teaching', 'learn', 'planning', 'inventory'],
   admin: ['project', 'da', 'inventory'],
-  godmode: ['project', 'teaching', 'learn', 'story', 'da', 'inventory', 'masterbuild'],
+  godmode: ['project', 'teaching', 'learn', 'planning', 'story', 'da', 'inventory', 'masterbuild'],
 };
 
 export const libraryActions: LibraryAction[] = [
@@ -263,6 +265,38 @@ export const themePalettes = [
   },
 ] as const;
 
+export const appearanceThemeStorageKey = 'masterflow.appearance-theme';
+export const themePaletteStorageKey = 'masterflow.theme-palette';
+export const themeUserColorStorageKey = 'masterflow.theme-user-color';
+
+export const readStoredAppearanceTheme = (): AppearanceTheme => {
+  try {
+    const value = window.localStorage.getItem(appearanceThemeStorageKey);
+    return value === 'light' || value === 'dark' || value === 'auto' ? value : 'auto';
+  } catch {
+    return 'auto';
+  }
+};
+
+export const readStoredThemePaletteId = (): ThemePaletteId | null => {
+  try {
+    const value = window.localStorage.getItem(themePaletteStorageKey);
+    return themePalettes.some((palette) => palette.id === value) ? value as ThemePaletteId : null;
+  } catch {
+    return null;
+  }
+};
+
+export const readStoredThemeUserColor = (paletteId: ThemePaletteId): string | null => {
+  try {
+    const value = window.localStorage.getItem(themeUserColorStorageKey);
+    const palette = getPrototypeThemePalette(paletteId);
+    return palette.userTones.some((tone) => tone.color === value) ? value : null;
+  } catch {
+    return null;
+  }
+};
+
 export const personaMoodAssets: Record<PersonaMoodId, string> = {
   fear: fearPortraitAsset,
   disgust: disgustPortraitAsset,
@@ -309,6 +343,7 @@ export const modePunchlines: Record<ActiveSurface, MasterflexPunchline> = {
   project: 'Plus attirant qu’un vortex',
   teaching: 'Plus mordant qu’un T-Rex',
   learn: 'Plus réactif qu’un cortex',
+  planning: 'Plus rapide que Fedex',
   inventory: 'Plus Minus que Cortex',
   da: 'Plus instinctif qu’un réflexe',
   story: 'Plus épicé qu’un Tex-Mex',
@@ -630,6 +665,7 @@ export const profKrapuPunchlines = {
   project: 'Votre bazar a mis une blouse.',
   teaching: 'Cours prêt. Mauvaise foi sous contrôle.',
   learn: 'On apprend, mais on vérifie.',
+  planning: 'Agenda net, surprise sous surveillance.',
   inventory: 'Ressources rangées, miracle discret.',
   da: 'Le style attendra les données.',
   story: 'Narration oui, intox non.',

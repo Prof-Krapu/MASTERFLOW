@@ -143,10 +143,10 @@ export function ProjectWorkspaceV2({
       );
     }
 
-    if (project && !archived && resources.length === 0 && canAttachResource && attachableResources.length > 0) {
+    if (project && !archived && canAttachResource && attachableResources.length > 0) {
       return (
         <div className="project-v2__attach">
-          <label htmlFor="project-v2-resource">Source validée disponible</label>
+          <label htmlFor="project-v2-resource">{resources.length > 0 ? 'Ajouter une autre source' : 'Source validée disponible'}</label>
           <div>
             <select
               id="project-v2-resource"
@@ -163,7 +163,7 @@ export function ProjectWorkspaceV2({
               onClick={onAttachResource}
               type="button"
             >
-              Ajouter la source
+              {resources.length > 0 ? 'Ajouter au projet' : 'Ajouter la source'}
             </button>
           </div>
         </div>

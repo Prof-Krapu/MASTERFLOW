@@ -40,8 +40,10 @@ import {
   getInventoryItems,
   getLivingCompanions,
   indexInventoryItem,
+  importPersonalResourceProposals,
   matchInventoryProjectNeed,
   searchInventory,
+  shareInventoryItemToProject,
   setInventoryCollectionCompletion,
   validateInventoryCollection,
   validateInventoryItem,
@@ -304,6 +306,23 @@ export function InventoryWorkspace({
     }
   }, [effectiveProjectId, query, token]);
 
+  const handleImportResourceProposals = useCallback(async (): Promise<void> => {
+    setOperation({status: 'working', message: 'Récupération de vos anciennes ressources.'});
+    try {
+      const result = await importPersonalResourceProposals(token);
+      await refresh();
+      setView(result.imported > 0 ? 'review' : 'catalog');
+      setOperation({
+        status: 'ready',
+        message: result.imported > 0
+          ? `${result.imported} ressource(s) personnelle(s) récupérée(s) dans Inventory.`
+          : `${result.already_present} ressource(s) déjà présente(s), aucune duplication.`,
+      });
+    } catch (error) {
+      setOperation({status: 'error', message: formatInventoryError(error)});
+    }
+  }, [refresh, token]);
+
   const handleCreateItem = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     const label = itemLabel.trim();
@@ -457,6 +476,16 @@ export function InventoryWorkspace({
             </select>
           </label>
         ) : null}
+        {scope === 'personal' ? (
+          <button
+            className="secondary"
+            disabled={operation.status === 'working'}
+            onClick={() => void handleImportResourceProposals()}
+            type="button"
+          >
+            <DatabaseZap aria-hidden="true" size={16} /> Récupérer mes anciennes ressources
+          </button>
+        ) : null}
       </div>
 
       <div className={`inventory-operation inventory-operation--${operation.status}`} aria-live="polite">
@@ -578,6 +607,17 @@ export function InventoryWorkspace({
                 </div>
                 {canManage ? (
                   <div className="inventory-item__actions">
+                    {scope === 'personal' && selectedProjectId ? (
+                      <button
+                        onClick={() => void runMutation(
+                          `Partage avec ${project?.name ?? 'le projet'}.`,
+                          () => shareInventoryItemToProject(item.item_id, selectedProjectId, token),
+                        )}
+                        type="button"
+                      >
+                        <FolderKanban aria-hidden="true" size={16} /> Ajouter au projet
+                      </button>
+                    ) : null}
                     <button
                       className="secondary"
                       onClick={() => void runMutation('Indexation RAG.', () => indexInventoryItem(item.item_id, token))}

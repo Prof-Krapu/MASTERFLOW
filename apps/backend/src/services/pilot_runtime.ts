@@ -6,6 +6,9 @@ import {
   ROLE_RANK,
   type PilotHarvest,
   type PilotJourneyState,
+  type RoomCheckpoint,
+  type RuntimePackManifest,
+  type RuntimePackStage,
 } from '@masterflow/shared';
 
 import {getDb, type RoomRow} from '../db/schema.ts';
@@ -30,6 +33,20 @@ function roomPackIds(room: RoomRow): string[] {
   }
 }
 
+const PILOT_STAGE_WIDGET_PREFIX = 'pilot-stage:';
+
+function currentPilotStage(
+  pack: RuntimePackManifest,
+  checkpoint: RoomCheckpoint | null,
+): RuntimePackStage | undefined {
+  const explicitStageId = checkpoint?.active_widgets
+    .find((widget) => widget.startsWith(PILOT_STAGE_WIDGET_PREFIX))
+    ?.slice(PILOT_STAGE_WIDGET_PREFIX.length);
+  return pack.stages.find((stage) => stage.stage_id === explicitStageId)
+    ?? pack.stages.find((stage) => stage.target_mode === checkpoint?.active_mode)
+    ?? pack.stages[0];
+}
+
 /** Projection conversation-first commune aux deux pilotes, sans backend vertical parallèle. */
 export function getPilotJourneyState(
   actor: AuthUser,
@@ -47,6 +64,13 @@ export function getPilotJourneyState(
   if (!pack?.pilot_scope) throw new Error('pilot_runtime_pack_required');
   const project = getProject(actor, room.project_id);
   const members = listProjectMembers(actor, room.project_id);
+  const usesSharedProject = pack.subject_context?.participation_model === 'team_project';
+  const currentMembership = usesSharedProject
+    ? members.find((member) => member.user_id === actor.id)
+    : undefined;
+  if (usesSharedProject && !currentMembership) {
+    throw new Error('pilot_project_membership_required');
+  }
   const checkpoint = getLatestRoomCheckpoint(actor, roomInstanceId);
   const sources = listSourceIntake(actor, runtimePackId, room.project_id);
   const canInspectPedagogy = ROLE_RANK[actor.role] >= ROLE_RANK.teacher;
@@ -60,14 +84,24 @@ export function getPilotJourneyState(
         ].some((ref) => ref.includes(room.project_id!)),
       )
     : [];
-  const currentStage = pack.stages.find((stage) => stage.target_mode === checkpoint?.active_mode)
-    ?? pack.stages[0];
+  const currentStage = currentPilotStage(pack, checkpoint);
   if (!currentStage) throw new Error('pilot_runtime_pack_has_no_stage');
+  const currentStageIndex = pack.stages.findIndex((stage) => stage.stage_id === currentStage.stage_id);
+  const journeyConfig = pack.pilot_scope.journey_config ?? {
+    experience_label: pack.label,
+    progress_policy: 'descriptive_not_graded' as const,
+    facts: [],
+    responsibilities: [],
+    group_policy: null,
+    excluded_capabilities: [],
+  };
+  const factsAwaitingSource = journeyConfig.facts.filter((fact) => fact.status === 'source_required');
   const openQuestions = [
     ...(sources.length === 0 ? ['Quelles sources du pilote doivent être enregistrées et validées ?'] : []),
     ...(!checkpoint ? ['Quel premier checkpoint humain doit cadrer le parcours ?'] : []),
     ...(canInspectPedagogy && evidence.length === 0 ? ['Quelles preuves doivent être rattachées au projet ?'] : []),
     ...(validations.length > 0 ? [`${validations.length} validation(s) humaine(s) restent en attente.`] : []),
+    ...factsAwaitingSource.map((fact) => `${fact.label} : quelle source officielle peut confirmer cette information ?`),
   ];
   return PilotJourneyStateSchema.parse({
     runtime_pack_id: pack.pack_id,
@@ -75,7 +109,39 @@ export function getPilotJourneyState(
     project: {project_id: project.project_id, name: project.name},
     room: {room_id: room.id, name: room.name},
     participant_count: members.length,
+    collaboration: usesSharedProject && currentMembership
+      ? {
+          account_model: 'individual_accounts',
+          workspace_model: 'shared_project',
+          group_project_id: project.project_id,
+          current_membership: {
+            user_id: actor.id,
+            role: currentMembership.role,
+          },
+        }
+      : null,
     current_stage: {stage_id: currentStage.stage_id, label: currentStage.label},
+    journey: {
+      experience_label: journeyConfig.experience_label,
+      progress_policy: journeyConfig.progress_policy,
+      current_position: currentStageIndex + 1,
+      stage_count: pack.stages.length,
+      stages: pack.stages.map((stage, index) => ({
+        stage_id: stage.stage_id,
+        label: stage.label,
+        purpose: stage.purpose,
+        checkpoint_policy: stage.checkpoint_policy,
+        status: index < currentStageIndex
+          ? 'completed'
+          : index === currentStageIndex
+            ? 'current'
+            : 'upcoming',
+      })),
+      facts: journeyConfig.facts,
+      responsibilities: journeyConfig.responsibilities,
+      group_policy: journeyConfig.group_policy,
+      excluded_capabilities: journeyConfig.excluded_capabilities,
+    },
     checkpoint: checkpoint
       ? {checkpoint_id: checkpoint.checkpoint_id, summary: checkpoint.summary}
       : null,
